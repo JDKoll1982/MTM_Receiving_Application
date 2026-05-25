@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -6,7 +5,6 @@ using MTM_Receiving_Application.Module_Core.Data.Authentication;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Settings.Core.Services;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Settings.Core.Services;
 
@@ -16,7 +14,7 @@ public sealed class Service_UserPreferencesTests
     public async Task GetLatestUserPreferenceAsync_ShouldPreserveMissingModuleDefaults()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao
@@ -47,7 +45,7 @@ public sealed class Service_UserPreferencesTests
     public async Task UpdateDefaultDunnageModeAsync_ShouldNormalizeModeAndPassUserIdToDao()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao
@@ -76,7 +74,7 @@ public sealed class Service_UserPreferencesTests
     public async Task UpdateDefaultDunnageModeAsync_ShouldSucceedWithoutUpdating_WhenUserIsMissing()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao

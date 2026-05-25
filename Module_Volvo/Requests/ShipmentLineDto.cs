@@ -1,5 +1,3 @@
-using MediatR;
-
 namespace MTM_Receiving_Application.Module_Volvo.Requests;
 
 /// <summary>

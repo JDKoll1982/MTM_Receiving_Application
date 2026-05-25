@@ -51,7 +51,7 @@
                                 <h2>Customer Pull n' Pack</h2>
                                 <p>Volvo Group · Due date-driven pack and pull view with linked MTM waitlist workflow.</p>
                             </div>
-                            <div class="command-row"><span class="cmd primary">Refresh from Visual</span><span class="cmd">Print Current View</span><span class="cmd warn">Print Floor Copy</span><span class="cmd">Open Waitlist Page</span></div>
+                            <div class="command-row"><span class="cmd primary">Refresh from Visual</span><span class="cmd">Print Current View</span><span class="cmd warn">Print Floor Copy</span></div>
                         </div>
 
                         <div class="metric-row">
@@ -73,41 +73,20 @@
                             <div class="field-card span-3"><span class="field-label">Location</span><div class="fake-select">Any location</div></div>
                         </div>
 
-                        <div class="workspace-split">
-                            <div class="table-shell">
-                                <div class="table-header"><div><h3>Live Report Grid</h3><div class="table-sub">Shortage and waitlist linkage shown directly on the report.</div></div><div class="flow-strip"><span class="state-pill is-red">Shortage</span><span class="state-pill is-gold">Late Order</span><span class="state-pill is-blue">Waitlist Linked</span></div></div>
-                                <table class="mock-table">
-                                    <thead><tr><th>Pull Date</th><th>Customer Order</th><th>Parent Part</th><th>Location</th><th>Qty To Pack</th><th>FG On Hand</th><th>Status</th><th>Waitlist</th><th>Action</th></tr></thead>
-                                    <tbody>
-                                        <tr class="is-short"><td>05/20</td><td class="mono">CO-46092</td><td class="mono">P/N 2158840</td><td>A-14-02</td><td>180</td><td>42</td><td><span class="state-pill is-red">Not Enough Parts</span></td><td><span class="state-pill is-blue">Linked</span></td><td><a class="link-action" href="03-waitlist-entry.html">Update Waitlist</a></td></tr>
-                                        <tr class="is-late"><td>05/19</td><td class="mono">CO-46077</td><td class="mono">P/N 1184320</td><td>B-07-01</td><td>60</td><td>88</td><td><span class="state-pill is-gold">Late Order</span></td><td><span class="state-pill">None</span></td><td><a class="link-action" href="03-waitlist-entry.html">Create Waitlist</a></td></tr>
-                                        <tr class="is-selected"><td>05/21</td><td class="mono">CO-46102</td><td class="mono">P/N 8870214</td><td>C-03-05</td><td>120</td><td>130</td><td><span class="state-pill is-green">Normal</span></td><td><span class="state-pill is-blue">Linked</span></td><td><a class="link-action" href="03-waitlist-entry.html">Update Waitlist</a></td></tr>
-                                        <tr><td>05/22</td><td class="mono">CO-46109</td><td class="mono">P/N 5528019</td><td>D-11-03</td><td>40</td><td>55</td><td><span class="state-pill is-green">Normal</span></td><td><span class="state-pill">None</span></td><td><a class="link-action" href="03-waitlist-entry.html">Create Waitlist</a></td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="detail-stack">
-                                <div class="surface-card">
-                                    <h3>Selected Row Context</h3>
-                                    <div class="info-list">
-                                        <div class="info-item"><span class="label">Customer</span><span class="value">VOLVO</span></div>
-                                        <div class="info-item"><span class="label">Order</span><span class="value">CO-46102</span></div>
-                                        <div class="info-item"><span class="label">Parent Part</span><span class="value mono">8870214</span></div>
-                                        <div class="info-item"><span class="label">Requested Location</span><span class="value">C-03-05</span></div>
-                                        <div class="info-item"><span class="label">Ship Qty</span><span class="value">120</span></div>
-                                        <div class="info-item"><span class="label">Sub Parts On Hand</span><span class="value">Calculated / expandable</span></div>
-                                    </div>
-                                </div>
-                                <div class="alert-strip"><span>🔗</span><div><strong>Linked waitlist record found.</strong> This report row already has an MTM waitlist item. Users can update the entry here or jump to the dedicated waitlist page for handler work.</div></div>
-                                <div class="surface-card">
-                                    <h3>Available Actions</h3>
-                                    <div class="button-row"><span class="cmd primary">Update Waitlist Entry</span><span class="cmd">Open Waitlist Page</span><span class="cmd">Row Details</span></div>
-                                </div>
-                            </div>
+                        <div class="table-shell">
+                            <div class="table-header"><div><h3>Crystal-style Report Layout</h3><div class="table-sub">Shortage and waitlist linkage shown directly on the report.</div></div><div class="flow-strip"><span class="state-pill is-red">Shortage</span><span class="state-pill is-gold">Late Order</span><span class="state-pill is-blue">Waitlist Linked</span></div></div>
+                            <table class="mock-table">
+                                <thead><tr><th>Pull Date</th><th>Customer Order</th><th>Parent Part</th><th>Location</th><th>Qty To Pack</th><th>FG On Hand</th><th>Status</th><th>Waitlist</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <tr class="is-short"><td>05/20</td><td class="mono">CO-46092</td><td class="mono">P/N 2158840</td><td>A-14-02</td><td>180</td><td>42</td><td><span class="state-pill is-red">Not Enough Parts</span></td><td><span class="state-pill is-blue">Linked</span></td><td><a class="link-action" href="03-waitlist-entry.html">Update Waitlist</a></td></tr>
+                                    <tr class="is-late"><td>05/19</td><td class="mono">CO-46077</td><td class="mono">P/N 1184320</td><td>B-07-01</td><td>60</td><td>88</td><td><span class="state-pill is-gold">Late Order</span></td><td><span class="state-pill">None</span></td><td><a class="link-action" href="03-waitlist-entry.html">Create Waitlist</a></td></tr>
+                                    <tr class="is-selected"><td>05/21</td><td class="mono">CO-46102</td><td class="mono">P/N 8870214</td><td>C-03-05</td><td>120</td><td>130</td><td><span class="state-pill is-green">Normal</span></td><td><span class="state-pill is-blue">Linked</span></td><td><a class="link-action" href="03-waitlist-entry.html">Update Waitlist</a></td></tr>
+                                    <tr><td>05/22</td><td class="mono">CO-46109</td><td class="mono">P/N 5528019</td><td>D-11-03</td><td>40</td><td>55</td><td><span class="state-pill is-green">Normal</span></td><td><span class="state-pill">None</span></td><td><a class="link-action" href="03-waitlist-entry.html">Create Waitlist</a></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="button-row" style="margin-top:16px;"><span class="cmd primary">Queue To Waitlist</span><span class="cmd">Show Waitlist</span></div>
+                            <div class="table-sub" style="margin-top:12px;">Waitlist actions sit below the report so the report remains the primary review surface and screenshot-derived side summary cards are not needed.</div>
                         </div>
-                    </div>
-                </div>
             </div>
         </section>
 

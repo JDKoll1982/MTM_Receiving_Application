@@ -10,53 +10,36 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid
+        Margin="16,0,16,16"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <!--  Tool Selection  -->
+        <ContentControl
+            x:Name="ToolSelectionHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsToolSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <!--  Back Button - visible when a tool is active  -->
-        <StackPanel
-            Grid.Row="0"
-            Margin="16,12"
-            Orientation="Horizontal"
-            Spacing="12"
-            Visibility="{x:Bind ViewModel.IsToolSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
-            <Button Command="{x:Bind ViewModel.ShowToolSelectionCommand}" Style="{StaticResource AccentButtonStyle}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="14" Glyph="&#xE72B;" />
-                    <TextBlock Text="Back to Tools" />
-                </StackPanel>
-            </Button>
-        </StackPanel>
+        <!--  Outside Service History Tool  -->
+        <ContentControl
+            x:Name="OutsideServiceHistoryHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsOutsideServiceHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <!--  Content Area  -->
-        <Grid
-            Grid.Row="1"
-            Margin="16,0,16,16"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
-            <!--  Tool Selection  -->
-            <ContentControl
-                x:Name="ToolSelectionHost"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsToolSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <!--  Material Availability Board Tool  -->
+        <ContentControl
+            x:Name="MaterialAvailabilityBoardHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsMaterialAvailabilityBoardVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <!--  Outside Service History Tool  -->
-            <ContentControl
-                x:Name="OutsideServiceHistoryHost"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsOutsideServiceHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-            <!--  Material Availability Board Tool  -->
-            <ContentControl
-                x:Name="MaterialAvailabilityBoardHost"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsMaterialAvailabilityBoardVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        </Grid>
+        <!--  Customer Pull n' Pack Tool  -->
+        <ContentControl
+            x:Name="CustomerPullPackHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsCustomerPullPackVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

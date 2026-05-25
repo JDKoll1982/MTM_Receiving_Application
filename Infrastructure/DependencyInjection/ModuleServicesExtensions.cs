@@ -9,7 +9,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using MTM_Receiving_Application.Module_Dunnage.Views;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Services;
@@ -25,7 +24,10 @@ using MTM_Receiving_Application.Module_Settings.Core.Services;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Data;
@@ -119,7 +121,10 @@ public static class ModuleServicesExtensions
             Module_Receiving.Services.Service_ReceivingSettings
         >();
         services.AddSingleton<IService_ReceivingShortcuts, Service_ReceivingShortcuts>();
-        services.AddSingleton<IService_ReceivingUserLabelSettings, Service_ReceivingUserLabelSettings>();
+        services.AddSingleton<
+            IService_ReceivingUserLabelSettings,
+            Service_ReceivingUserLabelSettings
+        >();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -183,7 +188,10 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
         services.AddSingleton<IService_DunnageShortcuts, Service_DunnageShortcuts>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
-        services.AddSingleton<IService_DunnageUserLabelSettings, Service_DunnageUserLabelSettings>();
+        services.AddSingleton<
+            IService_DunnageUserLabelSettings,
+            Service_DunnageUserLabelSettings
+        >();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
@@ -501,13 +509,30 @@ public static class ModuleServicesExtensions
     /// Uses the InforVisual connection string for read-only Infor Visual queries.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
-    /// <param name="_">The application configuration (unused).</param>
+    /// <param name="configuration">The application configuration.</param>
     /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
     private static IServiceCollection AddShipRecToolsModule(
         this IServiceCollection services,
-        IConfiguration _
+        IConfiguration configuration
     )
     {
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+        var inforVisualConnectionString =
+            configuration.GetConnectionString("InforVisual")
+            ?? throw new InvalidOperationException("InforVisual connection string not found");
+
+        // DAOs (Singleton - stateless data access)
+        services.AddSingleton(sp => new Dao_CustomerPullPackDemand(
+            inforVisualConnectionString,
+            sp.GetRequiredService<IService_AppSettings>(),
+            sp.GetRequiredService<IService_LoggingUtility>(),
+            sp.GetRequiredService<IService_InforVisualMockDataCatalog>()
+        ));
+        services.AddSingleton(_ => new Dao_CustomerPullPackWaitlist(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_CustomerPullPackUserDefaults(mySqlConnectionString));
+
         // Services (Singleton)
         services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
         services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
@@ -523,18 +548,25 @@ public static class ModuleServicesExtensions
             return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
         });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
+        services.AddTransient<Command_CustomerPullPackBatchUpsertHandler>();
+        services.AddTransient<Query_CustomerPullPackLinkedWaitlistHandler>();
+        services.AddTransient<Query_CustomerPullPackReportHandler>();
 
         // ViewModels (Transient - Per-navigation instances)
         services.AddTransient<ViewModel_ShipRecTools_Main>();
         services.AddTransient<ViewModel_ShipRecTools_ToolSelection>();
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
+        services.AddTransient<ViewModel_Dialog_CustomerPullPackWaitlistEditor>();
+        services.AddTransient<ViewModel_Tool_CustomerPullPackReport>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackReport>();
+        services.AddTransient<Module_ShipRec_Tools.Dialogs.Dialog_CustomerPullPackWaitlistEditor>();
 
         return services;
     }

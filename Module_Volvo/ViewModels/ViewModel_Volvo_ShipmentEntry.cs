@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -25,7 +24,6 @@ using MTM_Receiving_Application.Module_Volvo.Requests;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Module_Volvo.Settings;
-using Windows.ApplicationModel.DataTransfer;
 using AppInfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
 namespace MTM_Receiving_Application.Module_Volvo.ViewModels;
@@ -1820,6 +1818,7 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
     /// Moves all active Volvo shipment rows from the queue tables to the
     /// history archive tables after an explicit user confirmation.
     /// </summary>
+    /// <param name="clearAllRows"></param>
     [RelayCommand(CanExecute = nameof(CanClearLabelData))]
     private async Task ClearLabelDataAsync(bool clearAllRows = false)
     {

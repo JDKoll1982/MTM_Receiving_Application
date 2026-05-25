@@ -5,7 +5,6 @@ using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Volvo.ViewModels;
 

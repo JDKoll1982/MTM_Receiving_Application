@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -8,7 +6,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Settings.Dunnage.ViewModels;
 
@@ -50,19 +47,39 @@ public sealed class ViewModel_Settings_Dunnage_WorkflowVisualsTests
         await viewModel.SaveCommand.ExecuteAsync(null);
 
         dunnageSettings.Verify(
-            service => service.SaveStringAsync(DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection, "False", It.IsAny<int?>()),
+            service =>
+                service.SaveStringAsync(
+                    DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection,
+                    "False",
+                    It.IsAny<int?>()
+                ),
             Times.Once
         );
         dunnageSettings.Verify(
-            service => service.SaveStringAsync(DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection, "False", It.IsAny<int?>()),
+            service =>
+                service.SaveStringAsync(
+                    DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection,
+                    "False",
+                    It.IsAny<int?>()
+                ),
             Times.Once
         );
         dunnageSettings.Verify(
-            service => service.SaveStringAsync(DunnageSettingsKeys.Workflow.ShowImagesOnReview, "True", It.IsAny<int?>()),
+            service =>
+                service.SaveStringAsync(
+                    DunnageSettingsKeys.Workflow.ShowImagesOnReview,
+                    "True",
+                    It.IsAny<int?>()
+                ),
             Times.Once
         );
         dunnageSettings.Verify(
-            service => service.SaveStringAsync(DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing, "False", It.IsAny<int?>()),
+            service =>
+                service.SaveStringAsync(
+                    DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing,
+                    "False",
+                    It.IsAny<int?>()
+                ),
             Times.Once
         );
         viewModel.StatusMessage.Should().Be("Dunnage workflow visual settings saved.");
@@ -92,35 +109,71 @@ public sealed class ViewModel_Settings_Dunnage_WorkflowVisualsTests
         await viewModel.ResetCommand.ExecuteAsync(null);
 
         settingsCore.Verify(
-            service => service.ResetSettingAsync("Dunnage", DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection, null),
+            service =>
+                service.ResetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection,
+                    null
+                ),
             Times.Once
         );
         settingsCore.Verify(
-            service => service.ResetSettingAsync("Dunnage", DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection, null),
+            service =>
+                service.ResetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection,
+                    null
+                ),
             Times.Once
         );
         settingsCore.Verify(
-            service => service.ResetSettingAsync("Dunnage", DunnageSettingsKeys.Workflow.ShowImagesOnReview, null),
+            service =>
+                service.ResetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.Workflow.ShowImagesOnReview,
+                    null
+                ),
             Times.Once
         );
         settingsCore.Verify(
-            service => service.ResetSettingAsync("Dunnage", DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing, null),
+            service =>
+                service.ResetSettingAsync(
+                    "Dunnage",
+                    DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing,
+                    null
+                ),
             Times.Once
         );
         dunnageSettings.Verify(
-            service => service.GetBoolAsync(DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection, It.IsAny<int?>()),
+            service =>
+                service.GetBoolAsync(
+                    DunnageSettingsKeys.Workflow.ShowTypeImagesOnTypeSelection,
+                    It.IsAny<int?>()
+                ),
             Times.AtLeast(2)
         );
         dunnageSettings.Verify(
-            service => service.GetBoolAsync(DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection, It.IsAny<int?>()),
+            service =>
+                service.GetBoolAsync(
+                    DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection,
+                    It.IsAny<int?>()
+                ),
             Times.AtLeast(2)
         );
         dunnageSettings.Verify(
-            service => service.GetBoolAsync(DunnageSettingsKeys.Workflow.ShowImagesOnReview, It.IsAny<int?>()),
+            service =>
+                service.GetBoolAsync(
+                    DunnageSettingsKeys.Workflow.ShowImagesOnReview,
+                    It.IsAny<int?>()
+                ),
             Times.AtLeast(2)
         );
         dunnageSettings.Verify(
-            service => service.GetBoolAsync(DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing, It.IsAny<int?>()),
+            service =>
+                service.GetBoolAsync(
+                    DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing,
+                    It.IsAny<int?>()
+                ),
             Times.AtLeast(2)
         );
     }
@@ -163,7 +216,9 @@ public sealed class ViewModel_Settings_Dunnage_WorkflowVisualsTests
             .Setup(service => service.GetBoolAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync((string key, int? _) => workflowValues[key]);
         dunnageSettings
-            .Setup(service => service.SaveStringAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>()))
+            .Setup(service =>
+                service.SaveStringAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>())
+            )
             .Returns(Task.CompletedTask);
 
         return dunnageSettings;

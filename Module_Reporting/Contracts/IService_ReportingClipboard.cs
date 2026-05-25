@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using Windows.ApplicationModel.DataTransfer;

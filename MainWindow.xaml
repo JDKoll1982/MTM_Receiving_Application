@@ -169,13 +169,30 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock
-                            x:Name="PageTitleTextBlock"
+                        <StackPanel
+                            Grid.Column="0"
                             HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            MaxLines="1"
-                            Style="{StaticResource BodyLargeStrongTextBlockStyle}"
-                            Text="Dashboard" />
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <Button
+                                x:Name="HeaderBackButton"
+                                Padding="8"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Click="HeaderBackButton_Click"
+                                Visibility="Collapsed">
+                                <FontIcon FontSize="14" Glyph="&#xE72B;" />
+                            </Button>
+
+                            <TextBlock
+                                x:Name="PageTitleTextBlock"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                MaxLines="1"
+                                Style="{StaticResource BodyLargeStrongTextBlockStyle}"
+                                Text="Dashboard" />
+                        </StackPanel>
 
                         <Button
                             x:Name="UserMenuButton"
@@ -213,7 +230,14 @@
                         IsClosable="True"
                         IsOpen="{x:Bind ViewModel.NotificationService.IsStatusOpen, Mode=TwoWay}"
                         Message="{x:Bind ViewModel.NotificationService.StatusMessage, Mode=OneWay}"
-                        Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}" />
+                        Severity="{x:Bind ViewModel.WinUIStatusSeverity, Mode=OneWay}">
+                        <InfoBar.ActionButton>
+                            <Button
+                                x:Name="StatusInfoBarActionButton"
+                                Click="StatusInfoBarActionButton_Click"
+                                Visibility="Collapsed" />
+                        </InfoBar.ActionButton>
+                    </InfoBar>
                 </Grid>
             </NavigationView.Header>
 
@@ -298,13 +322,12 @@
                                     BorderBrush="#374151"
                                     BorderThickness="1.5"
                                     CornerRadius="3" />
-                                <TextBlock
+                                <Image
+                                    Width="24"
+                                    Height="24"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontSize="22"
-                                    FontWeight="Bold"
-                                    Foreground="#16a34a"
-                                    Text="R" />
+                                    Source="Assets/Icons/open-label-receiving.png" />
                             </Grid>
                         </Button>
                         <!--  Mini-Receiving label: small red 'mini' above bold green R  -->
@@ -318,22 +341,17 @@
                                     BorderBrush="#374151"
                                     BorderThickness="1.5"
                                     CornerRadius="3" />
-                                <StackPanel
+                                <Border
+                                    Background="#F8FAFB"
+                                    BorderBrush="#374151"
+                                    BorderThickness="1.5"
+                                    CornerRadius="3" />
+                                <Image
+                                    Width="24"
+                                    Height="24"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Spacing="-2">
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        FontSize="8"
-                                        Foreground="#dc2626"
-                                        Text="mini" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        FontSize="19"
-                                        FontWeight="Bold"
-                                        Foreground="#16a34a"
-                                        Text="R" />
-                                </StackPanel>
+                                    Source="Assets/Icons/open-label-mini-receiving.png" />
                             </Grid>
                         </Button>
                         <!--  Separator between receiving group and dunnage  -->
@@ -354,13 +372,12 @@
                                     BorderBrush="#374151"
                                     BorderThickness="1.5"
                                     CornerRadius="3" />
-                                <TextBlock
+                                <Image
+                                    Width="24"
+                                    Height="24"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontSize="22"
-                                    FontWeight="Bold"
-                                    Foreground="#1d4ed8"
-                                    Text="D" />
+                                    Source="Assets/Icons/open-label-dunnage.png" />
                             </Grid>
                         </Button>
                         <!--  Separator between dunnage and volvo  -->
@@ -381,13 +398,12 @@
                                     BorderBrush="#374151"
                                     BorderThickness="1.5"
                                     CornerRadius="3" />
-                                <TextBlock
+                                <Image
+                                    Width="24"
+                                    Height="24"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontSize="22"
-                                    FontWeight="Bold"
-                                    Foreground="#111827"
-                                    Text="V" />
+                                    Source="Assets/Icons/open-label-volvo.png" />
                             </Grid>
                         </Button>
                     </StackPanel>

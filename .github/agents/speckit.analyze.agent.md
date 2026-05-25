@@ -20,6 +20,16 @@ Identify inconsistencies, duplications, ambiguities, and underspecified items ac
 
 **Constitution Authority**: The project constitution (`.specify/memory/constitution.md`) is **non-negotiable** within this analysis scope. Constitution conflicts are automatically CRITICAL and require adjustment of the spec, plan, or tasks—not dilution, reinterpretation, or silent ignoring of the principle. If a principle itself needs to change, that must occur in a separate, explicit constitution update outside `/speckit.analyze`.
 
+## Major Assumption Approval
+
+If the analysis would rely on a **major assumption** that could materially change conclusions or recommendations, do not proceed silently and do not create an assumption file by default. Instead, use the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/prompt-engineer-every-message.instructions.md`.
+
+- Use the same readable markdown layout, `Enhanced Prompt Ready` approval step, and approval options from that instruction.
+- Put the blocked analysis task in `**🎯 Task**`.
+- Put the assumption, why it is needed, and the impact if it is wrong in `**📋 Key constraints**`.
+- Put the inferred interpretation and the main alternative interpretations in `**➕ What was added vs. your original message**`.
+- Wait for approval, correction, skip, or regeneration before continuing.
+
 ## Execution Steps
 
 ### 1. Initialize Analysis Context

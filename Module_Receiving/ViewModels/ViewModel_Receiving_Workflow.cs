@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI.Triggers;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;

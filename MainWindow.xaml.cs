@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -16,14 +16,11 @@ using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
-using MTM_Receiving_Application.Module_Volvo.Settings;
 using Windows.Graphics;
 
 namespace MTM_Receiving_Application
@@ -42,6 +39,7 @@ namespace MTM_Receiving_Application
         private readonly IService_DunnageUserLabelSettings _dunnageUserLabelSettings;
         private readonly IService_VolvoUserLabelSettings _volvoUserLabelSettings;
         private readonly IService_ErrorHandler _errorHandler;
+        private readonly IService_HeaderBackNavigation _headerBackNavigation;
         private readonly List<object> _applicationMenuItems = new();
         private readonly List<object> _applicationFooterItems = new();
         private readonly List<object> _settingsMenuItems = new();
@@ -132,6 +130,7 @@ namespace MTM_Receiving_Application
             IService_ReceivingUserLabelSettings receivingUserLabelSettings,
             IService_DunnageUserLabelSettings dunnageUserLabelSettings,
             IService_VolvoUserLabelSettings volvoUserLabelSettings,
+            IService_HeaderBackNavigation headerBackNavigation,
             IService_ErrorHandler errorHandler
         )
         {
@@ -144,7 +143,10 @@ namespace MTM_Receiving_Application
             _receivingUserLabelSettings = receivingUserLabelSettings;
             _dunnageUserLabelSettings = dunnageUserLabelSettings;
             _volvoUserLabelSettings = volvoUserLabelSettings;
+            _headerBackNavigation = headerBackNavigation;
             _errorHandler = errorHandler;
+            ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
+            _headerBackNavigation.PropertyChanged += HeaderBackNavigation_PropertyChanged;
 
             _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
             _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
@@ -196,6 +198,68 @@ namespace MTM_Receiving_Application
             AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
 
             ApplyNavigationMode(isSettingsMode: false);
+            UpdateHeaderBackButton();
+            UpdateStatusInfoBarActionButton();
+        }
+
+        private void HeaderBackNavigation_PropertyChanged(
+            object? sender,
+            PropertyChangedEventArgs e
+        )
+        {
+            if (
+                e.PropertyName
+                is nameof(IService_HeaderBackNavigation.IsBackButtonVisible)
+                    or nameof(IService_HeaderBackNavigation.BackButtonToolTip)
+            )
+            {
+                UpdateHeaderBackButton();
+            }
+        }
+
+        private void UpdateHeaderBackButton()
+        {
+            if (HeaderBackButton is null)
+            {
+                return;
+            }
+
+            HeaderBackButton.Visibility = _headerBackNavigation.IsBackButtonVisible
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            ToolTipService.SetToolTip(HeaderBackButton, _headerBackNavigation.BackButtonToolTip);
+        }
+
+        private async void HeaderBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _headerBackNavigation.ExecuteBackActionAsync();
+        }
+
+        private void NotificationService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (
+                e.PropertyName
+                is nameof(IService_Notification.StatusActionLabel)
+                    or nameof(IService_Notification.IsStatusActionVisible)
+            )
+            {
+                UpdateStatusInfoBarActionButton();
+            }
+        }
+
+        private void UpdateStatusInfoBarActionButton()
+        {
+            if (StatusInfoBarActionButton is null)
+            {
+                return;
+            }
+
+            StatusInfoBarActionButton.Content = ViewModel.NotificationService.StatusActionLabel;
+            StatusInfoBarActionButton.Visibility = ViewModel
+                .NotificationService
+                .IsStatusActionVisible
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -234,6 +298,11 @@ namespace MTM_Receiving_Application
         private void PaneToggleButton_Click(object sender, RoutedEventArgs e)
         {
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
+        }
+
+        private async void StatusInfoBarActionButton_Click(object sender, RoutedEventArgs e)
+        {
+            await ViewModel.NotificationService.ExecuteStatusActionAsync();
         }
 
         private static readonly Dictionary<string, (Type PageType, string Title)> _navRoutes = new()
@@ -1456,6 +1525,7 @@ namespace MTM_Receiving_Application
         private void SyncPageHeader(object? content, string? fallbackTitle = null)
         {
             ClearHeaderSubscription();
+            _headerBackNavigation.ClearBackAction();
 
             var headerProvider = ResolveHeaderProvider(content);
             if (headerProvider != null)

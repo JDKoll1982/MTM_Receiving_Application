@@ -84,6 +84,8 @@ Use it to guide the first mockup pass so the screens feel like the current MTM R
   - clear pull date and quantity emphasis
   - visible relationship between parent part, FG on hand, and sub-parts
 - Waitlist actions should be clearly available but visually secondary to the report itself.
+- Remove screenshot-derived summary cards or helper panels that sit beside the report.
+- Put the report-to-waitlist actions in a separate row directly below the crystal-style report layout.
 
 ## Screen 03
 

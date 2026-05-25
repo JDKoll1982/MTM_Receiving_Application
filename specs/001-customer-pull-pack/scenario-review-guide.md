@@ -1,6 +1,6 @@
 # Customer Pull n' Pack Scenario Review Guide
 
-Last Updated: 2026-05-21
+Last Updated: 2026-05-25
 
 ## Purpose
 
@@ -9,6 +9,8 @@ This document is a plain-language review guide for the Customer Pull n' Pack wai
 It is written for end users and process reviewers, not developers.
 
 Use it to review how the tool should behave in normal day-to-day work, in unusual situations, and in edge cases where the team needs the workflow to be clear before implementation continues.
+
+For this review version, assume part locations are selected on the main display screen before the waitlist create or update window opens, and that the `SUB PARTS ON HAND` rows are the location buttons.
 
 ## How To Use This Guide
 
@@ -22,10 +24,22 @@ For each scenario:
 ## Quick Navigation
 
 - [Daily Use Scenarios](#daily-use-scenarios)
+- [Current UI Review Focus](#current-ui-review-focus)
 - [Ownership And Queue Scenarios](#ownership-and-queue-scenarios)
 - [Problem And Exception Scenarios](#problem-and-exception-scenarios)
 - [Completed Work And Recheck Scenarios](#completed-work-and-recheck-scenarios)
 - [Open Review Questions](#open-review-questions)
+
+## Current UI Review Focus
+
+Use these points while reviewing the current app version of Customer Pull n' Pack:
+
+- the filter card starts collapsed by default
+- the primary report actions stay visible in the filter-card header even while collapsed
+- the main window widens for Customer Pull n' Pack and returns to the normal application size when the user leaves the tool
+- the crystal-style request-line headers sit directly above the rows they describe
+- the row itself is the selection surface for both request lines and `SUB PARTS ON HAND` rows
+- any temporary sample rows in the crystal-style report still need to be replaced by live report data before final sign-off
 
 ## Daily Use Scenarios
 
@@ -70,10 +84,12 @@ Blank screens look broken. Users need a clear answer about whether there is trul
 
 **Situation**
 
-A requester selects several compatible customer-order lines for the same customer and parent part.
+A requester selects several compatible customer-order lines for the same customer and parent part, then clicks location rows directly in the `SUB PARTS ON HAND` section of the main display.
 
 **Expected end-user outcome**
 
+- the requester chooses locations by clicking `SUB PARTS ON HAND` rows before opening the waitlist action
+- the requester sees row-level highlight feedback on the clicked location rows instead of a checkbox-only cue
 - the requester can save them in one action
 - the system creates one waitlist item per selected source line
 - the queue does not end up with one mixed record holding several different source lines inside it
@@ -90,13 +106,17 @@ This keeps queue ownership, status, and history easy to follow line by line.
 
 A requester sees a report line that already has open waitlist work and tries to create another request for the same source line.
 
-**Expected review point**
+**Expected end-user outcome**
 
-This still needs a business decision.
+- the system does not create a second open waitlist item for the same source line
+- the user sees a clear, easy-to-understand message explaining that open waitlist work already exists
+- the user gets an obvious next step, such as opening or updating the existing waitlist item instead of creating a duplicate
 
-**Review question**
+**Why this matters**
 
-Should the tool force the user into the existing waitlist item instead of allowing a duplicate open request?
+This keeps ownership, status, and queue visibility tied to one open item per source line instead of splitting work across duplicates.
+
+
 
 ---
 
@@ -211,11 +231,11 @@ Users need to know what final state the system keeps when edits overlap.
 
 ## Problem And Exception Scenarios
 
-### 11. No Selectable Sub-Part Locations Exist
+### 11. No Selectable Part Locations Exist
 
 **Situation**
 
-A requester wants to create a waitlist item, but there are no selectable sub-part locations available for the chosen line.
+A requester wants to create a waitlist item, but there are no selectable part locations available on the main display for the chosen line.
 
 **Expected end-user outcome**
 
@@ -230,7 +250,45 @@ Work should not disappear just because the location data is incomplete.
 
 ---
 
-### 12. Handler Marks A Line As Problem
+### 12. Select Locations On The Main Display Before Opening The Waitlist Window
+
+**Situation**
+
+A requester highlights the report line, clicks one or more `SUB PARTS ON HAND` rows directly on the main display, and then opens the waitlist create or update window.
+
+**Expected end-user outcome**
+
+- the user does not reselect those locations inside the waitlist window
+- the selection state is visible on the main display by highlighting the selected rows themselves
+- the waitlist window opens with the selected lines and locations already in context
+- the waitlist window is used for confirming or editing request details, not for browsing location choices
+
+**Why this matters**
+
+This keeps the report screen as the place where users compare lines to available locations and reduces back-and-forth between the report and the waitlist window.
+
+---
+
+### 13. New Location Review Starts With Nothing Selected
+
+**Situation**
+
+A requester selects a valid report line and the main display shows several available `SUB PARTS ON HAND` rows.
+
+**Expected end-user outcome**
+
+- none of the available locations are selected automatically for a brand-new request
+- the user can leave every location unselected while reviewing the options
+- only the locations the user explicitly clicks become part of the request context
+- the main display communicates that choice by highlighting the selected rows rather than showing separate checkbox columns
+
+**Why this matters**
+
+This prevents the tool from silently assuming all visible locations should be part of the request.
+
+---
+
+### 14. Handler Marks A Line As Problem
 
 **Situation**
 
@@ -259,29 +317,25 @@ The team needs consistent reasons for common problems without blocking uncommon 
 
 ---
 
-### 13. Current Review Issue: Who Owns A Problem Line?
+### 15. Problem Status Keeps The Current Owner Until Explicit Handoff
 
 **Situation**
 
 A handler owns a line, marks it `Problem`, and saves it.
 
-**Why this needs review**
+**Expected end-user outcome**
 
-The system still needs a final business decision on whether a `Problem` line keeps the same owner or immediately becomes unowned.
-
-**Review options in plain language**
-
-- the current owner keeps responsibility until they un-assign themselves
-- the line becomes unowned immediately
-- some other ownership rule is used
+- changing the line to `Problem` does not automatically remove the current owner
+- the current owner stays responsible until they explicitly un-assign themselves or another explicit handoff happens
+- the queue continues to show who currently owns the problem line
 
 **Why this matters**
 
-This affects accountability, reassignment, and how quickly problem lines move through the queue.
+This keeps accountability clear while still allowing a deliberate handoff when the work needs to move to someone else.
 
 ---
 
-### 14. A Problem Reason Does Not Fit The Real Situation
+### 16. A Problem Reason Does Not Fit The Real Situation
 
 **Situation**
 
@@ -301,7 +355,7 @@ Preset lists are useful, but they cannot cover every floor scenario.
 
 ## Completed Work And Recheck Scenarios
 
-### 15. Source Data Changes After A Line Was Completed
+### 17. Source Data Changes After A Line Was Completed
 
 **Situation**
 
@@ -320,7 +374,7 @@ Completed work should remain historical truth, while still warning the requester
 
 ---
 
-### 16. Print While Some On-Screen Detail Was Never Expanded
+### 18. Print While Some On-Screen Detail Was Never Expanded
 
 **Situation**
 
@@ -337,32 +391,33 @@ Printed floor documents need to be complete even when the on-screen view is part
 
 ---
 
+### 19. Leave Customer Pull n' Pack And Return To Normal Application Width
+
+**Situation**
+
+The user leaves Customer Pull n' Pack and navigates back to another Ship/Rec tool or the tool-selection screen.
+
+**Expected end-user outcome**
+
+- the main window returns to the standard application width
+- the wider Customer Pull n' Pack shell does not persist after the user leaves the tool
+
+**Why this matters**
+
+Customer Pull n' Pack needs extra width, but the rest of the application should not remain stretched after the user moves away.
+
+---
+
 ## Open Review Questions
 
-These are the main scenarios that still need business review or confirmation:
-
-### A. Duplicate Open Waitlist Items For The Same Source Line
-
-Should the system allow more than one open waitlist item for the same source line?
-
-Current concern:
-
-- duplicates can split ownership and confuse status tracking
-
-### B. Ownership Of A Line In Problem Status
-
-When a handler marks a line `Problem`, should the current owner stay assigned until they explicitly un-assign themselves, or should the line become unowned automatically?
-
-Current concern:
-
-- this affects accountability and how problem lines get handed off
+No unresolved edge cases remain in this review version.
 
 ## Suggested Review Method
 
 1. Review the Daily Use scenarios first.
 2. Review the Ownership and Queue scenarios second.
 3. Review the Problem and Exception scenarios third.
-4. Decide the Open Review Questions last.
+4. Confirm there are no new edge cases to add.
 
 ## Review Notes
 

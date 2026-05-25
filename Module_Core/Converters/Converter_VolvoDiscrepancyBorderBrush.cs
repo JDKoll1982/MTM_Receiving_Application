@@ -1,4 +1,3 @@
-using Microsoft.UI;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;

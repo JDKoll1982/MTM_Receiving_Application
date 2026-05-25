@@ -57,6 +57,7 @@ public static class CoreServiceExtensions
 
         // UI Services (Singleton - Stateless utilities)
         services.AddSingleton<IService_Notification, Service_Notification>();
+        services.AddSingleton<IService_HeaderBackNavigation, Service_HeaderBackNavigation>();
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
         services.AddSingleton<IService_LabelViewLauncher, Service_LabelViewLauncher>();

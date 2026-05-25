@@ -32,6 +32,10 @@
 ## Notes
 
 - Automated validation found no placeholder text, no clarification markers, and no file errors.
-- Workflow data blocks and diagram placeholders are present for each user story with interactive flow.
+- Workflow data blocks and inline Mermaid diagrams are present for each user story with interactive flow.
+- The documentation set now consistently describes part-location selection as a main-display action that happens before the waitlist create or update window opens.
+- The documentation set also now states that `SUB PARTS ON HAND` rows are the location buttons and that a new location review starts with no automatic selection unless prior waitlist data is being reused.
 - The remaining report-location ambiguity from the review document was resolved as a documented assumption for Phase 1 rather than left as a clarification blocker.
+- The documentation set now also captures the reviewed UI decisions from the implementation chat: collapsed filter expander, header-level report actions, embedded crystal-style report surface, row-highlight selection cues, and temporary wide-window behavior while Customer Pull n' Pack is active.
+- Implementation-facing documents now explicitly track the remaining work required to replace the crystal-style preview surface's sample data and preview-only row selection with live report projections and live waitlist-selection bindings.
 - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`

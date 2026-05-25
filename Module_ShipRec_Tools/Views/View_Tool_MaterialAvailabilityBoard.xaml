@@ -11,10 +11,9 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
-        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
     </Page.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="8,0,8,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

@@ -11,11 +11,9 @@ using Microsoft.Extensions.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -586,7 +584,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var match = CanonicalPoNumberPattern.Match(value.Trim());
             if (!match.Success)
             {
-                validationMessage = "Invalid PO format. Enter: 66868, 66868B, PO-066868, or PO-066868B";
+                validationMessage =
+                    "Invalid PO format. Enter: 66868, 66868B, PO-066868, or PO-066868B";
                 return false;
             }
 

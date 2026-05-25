@@ -173,7 +173,7 @@ Produce mockups for these screens:
    - customer picker
    - report filters
    - main report grid
-   - row-level action to create or update a waitlist entry
+   - a dedicated action row below the crystal-style report layout for `Queue To Waitlist` and `Show Waitlist`
    - clear visual indication if a row is already linked to a waitlist record
 3. Create/Edit Waitlist entry experience launched from the report page.
 4. Dedicated Waitlist page for material handlers showing pull work queue.
@@ -212,6 +212,7 @@ Respect these feature rules from the current spec:
 - Waitlist status values should support: Accepted, Completed, Cancelled, Problem.
 - Handler notes are important when status is Problem.
 - The UI should reflect that the waitlist is MTM-managed workflow data layered on top of read-only Infor Visual report data.
+- Remove screenshot-only helper panels or image-derived summary cards from the report mockup package.
 </waitlist-rules>
 
 <navigation-rules>

@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Data.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Services.Database;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Services.Database;
 

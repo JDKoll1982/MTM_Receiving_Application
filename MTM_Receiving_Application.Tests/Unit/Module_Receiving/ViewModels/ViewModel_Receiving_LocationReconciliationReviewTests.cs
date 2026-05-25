@@ -4,7 +4,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
 
@@ -38,7 +37,9 @@ public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
         viewModel.NeedsAttentionCount.Should().Be(1);
         viewModel.VisibleUnresolvedItems.Should().HaveCount(1);
         viewModel.VisibleUnresolvedItems[0].PartID.Should().Be("PART-2");
-        viewModel.SummaryDescription.Should().Contain("1 row(s) that still need manual transfer review");
+        viewModel
+            .SummaryDescription.Should()
+            .Contain("1 row(s) that still need manual transfer review");
     }
 
     [Fact]
@@ -60,9 +61,9 @@ public sealed class ViewModel_Receiving_LocationReconciliationReviewTests
 
         viewModel.Initialize(summary);
 
-        viewModel.CurrentEvidenceSummaryText.Should().Be(
-            "2 transfer(s) considered. Source locations: Unknown"
-        );
+        viewModel
+            .CurrentEvidenceSummaryText.Should()
+            .Be("2 transfer(s) considered. Source locations: Unknown");
     }
 
     private static ViewModel_Receiving_LocationReconciliationReview CreateViewModel()

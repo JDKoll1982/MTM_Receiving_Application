@@ -1,9 +1,6 @@
-using System;
-using System.IO;
 using System.Reflection;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Services.Authentication;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Module_Core.Services.Authentication;
 

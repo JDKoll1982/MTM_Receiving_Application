@@ -1,10 +1,8 @@
-using System;
 using System.Data;
 using System.Reflection;
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Data;
 
@@ -16,7 +14,7 @@ public sealed class Dao_DunnageLoadTests
         using var reader = CreateHistoryReader();
         reader.Read().Should().BeTrue();
 
-        var dao = new Dao_DunnageLoad("Server=172.16.1.104;Database=test;");
+        var dao = new Dao_DunnageLoad("Server=localhost;Database=test;");
         var methodInfo = typeof(Dao_DunnageLoad).GetMethod(
             "MapFromReader",
             BindingFlags.Instance | BindingFlags.NonPublic

@@ -130,10 +130,10 @@
     <None Include="Assets\app-icon.svg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Icons\open-label-dunnage.svg" />
-    <Content Include="Assets\Icons\open-label-mini-receiving.svg" />
-    <Content Include="Assets\Icons\open-label-receiving.svg" />
-    <Content Include="Assets\Icons\open-label-volvo.svg" />
+    <Content Include="Assets\Icons\open-label-dunnage.png" />
+    <Content Include="Assets\Icons\open-label-mini-receiving.png" />
+    <Content Include="Assets\Icons\open-label-receiving.png" />
+    <Content Include="Assets\Icons\open-label-volvo.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="**\*.png;**\*.jpg;**\*.jpeg;**\*.gif;**\*.webp;**\*.svg;**\*.ico;**\*.bmp">
@@ -319,7 +319,7 @@
   </PropertyGroup>
   <!-- Embed Infor Visual SQL query files as resources -->
   <ItemGroup>
-    <EmbeddedResource Include="Database\InforVisualScripts\Queries\*.sql" />
+    <EmbeddedResource Include="Database\InforVisualScripts\Queries\**\*.sql" />
   </ItemGroup>
   <!-- Include Themes folder in published output -->
   <ItemGroup>

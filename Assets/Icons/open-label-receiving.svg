@@ -1,10 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-  <path d="M6 3.75h7.8L18.25 8.2V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75Z" fill="#F8FAFB" stroke="#16353D" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M13.75 3.75V8.25H18.25" stroke="#16353D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Bold R: stem + bump + leg -->
-  <g stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <line x1="8" y1="10" x2="8" y2="19.5"/>
-    <path d="M8 10 h3 q3.5 0 3.5 2.75 q0 2.75-3.5 2.75 H8"/>
-    <line x1="11.5" y1="15.5" x2="15" y2="19.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="512" height="512">
+  <g transform="translate(1 0)">
+    <path d="M6 3.75h7.8L18.25 8.2V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75Z" fill="#F8FAFB" stroke="#16353D" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M13.75 3.75V8.25H18.25" stroke="#16353D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
+  <text x="12" y="14.35" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" font-weight="700" fill="#16a34a">R</text>
 </svg>

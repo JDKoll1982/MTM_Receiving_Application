@@ -1157,6 +1157,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         /// Atomically moves matching rows from <c>dunnage_label_data</c> to <c>dunnage_history</c>
         /// and clears them from the active queue. Returns the number of rows moved.
         /// </summary>
+        /// <param name="archivedBy"></param>
+        /// <param name="employeeNumber"></param>
+        /// <param name="clearAllRows"></param>
         public async Task<Model_Dao_Result<int>> ClearLabelDataAsync(
             string archivedBy,
             int employeeNumber,

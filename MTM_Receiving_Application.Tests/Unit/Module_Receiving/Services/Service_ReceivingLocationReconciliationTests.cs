@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using DaoResultFactory = MTM_Receiving_Application.Module_Core.Models.Core.Model_Dao_Result_Factory;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Services;
-using Xunit;
+using DaoResultFactory = MTM_Receiving_Application.Module_Core.Models.Core.Model_Dao_Result_Factory;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Services;
 
@@ -33,9 +28,36 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000650", "PO-066868", "1", "RECV", "V-A0-01", 12000m, receivedDate.AddHours(1), "visual-a"),
-                CreateTransfer("MMC0000650", "PO-066868", "1", "RECV", "V-B0-01", 5000m, receivedDate.AddHours(2), "visual-b"),
-                CreateTransfer("MMC0000650", "PO-066868", "1", "RECV", "V-C0-01", 6350m, receivedDate.AddHours(3), "visual-c"),
+                CreateTransfer(
+                    "MMC0000650",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-A0-01",
+                    12000m,
+                    receivedDate.AddHours(1),
+                    "visual-a"
+                ),
+                CreateTransfer(
+                    "MMC0000650",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-B0-01",
+                    5000m,
+                    receivedDate.AddHours(2),
+                    "visual-b"
+                ),
+                CreateTransfer(
+                    "MMC0000650",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-C0-01",
+                    6350m,
+                    receivedDate.AddHours(3),
+                    "visual-c"
+                ),
             }
         );
 
@@ -45,7 +67,9 @@ public sealed class Service_ReceivingLocationReconciliationTests
         result.Data.Should().NotBeNull();
         result.Data!.UpdatedItems.Should().HaveCount(5);
 
-        var byLoadNumber = result.Data.UpdatedItems.ToDictionary(item => item.SourceLoad!.LoadNumber);
+        var byLoadNumber = result.Data.UpdatedItems.ToDictionary(item =>
+            item.SourceLoad!.LoadNumber
+        );
         byLoadNumber[1].ProposedLocation.Should().Be("V-A0-01");
         byLoadNumber[2].ProposedLocation.Should().Be("V-B0-01");
         byLoadNumber[3].ProposedLocation.Should().Be("V-A0-01");
@@ -71,7 +95,16 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000100", "PO-066868", "1", "RECV", "V-D0-01", 60m, receivedDate.AddHours(1), "visual-d"),
+                CreateTransfer(
+                    "MMC0000100",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-D0-01",
+                    60m,
+                    receivedDate.AddHours(1),
+                    "visual-d"
+                ),
             }
         );
 
@@ -97,8 +130,26 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000200", "PO-066868", "1", "RECV", "V-E0-01", 10m, receivedDate.AddHours(1), "visual-e"),
-                CreateTransfer("MMC0000200", "PO-066869", "1", "V-STAGE", "V-E0-01", 5m, receivedDate.AddHours(2), "visual-e"),
+                CreateTransfer(
+                    "MMC0000200",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-E0-01",
+                    10m,
+                    receivedDate.AddHours(1),
+                    "visual-e"
+                ),
+                CreateTransfer(
+                    "MMC0000200",
+                    "PO-066869",
+                    "1",
+                    "V-STAGE",
+                    "V-E0-01",
+                    5m,
+                    receivedDate.AddHours(2),
+                    "visual-e"
+                ),
             }
         );
 
@@ -123,7 +174,16 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000300", "PO-066868", "1", "RECV", "V-F0-01", 10m, receivedDate.AddHours(1), "visual-f"),
+                CreateTransfer(
+                    "MMC0000300",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-F0-01",
+                    10m,
+                    receivedDate.AddHours(1),
+                    "visual-f"
+                ),
             }
         );
 
@@ -154,17 +214,39 @@ public sealed class Service_ReceivingLocationReconciliationTests
             .Setup(service => service.GetCurrentLabelDataAsync())
             .ReturnsAsync(DaoResultFactory.Success(loads));
         mySqlReceivingMock
-            .Setup(service => service.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .Setup(service =>
+                service.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>())
+            )
             .ReturnsAsync(DaoResultFactory.Success(new List<Model_ReceivingLoad>()));
 
         inforVisualMock
-            .Setup(service => service.GetReceivingLocationTransferMovementsAsync("MMC0000400", receivedDate.Date))
+            .Setup(service =>
+                service.GetReceivingLocationTransferMovementsAsync("MMC0000400", receivedDate.Date)
+            )
             .ReturnsAsync(
                 DaoResultFactory.Success(
                     new List<Model_InforVisualLocationTransferMovement>
                     {
-                        CreateTransfer("MMC0000400", "PO-066868", "1", "RECV", "V-G0-01", 10m, receivedDate.AddHours(1), "visual-g"),
-                        CreateTransfer("MMC0000400", "PO-066869", "1", "RECV", "V-H0-01", 5m, receivedDate.AddHours(2), "visual-h"),
+                        CreateTransfer(
+                            "MMC0000400",
+                            "PO-066868",
+                            "1",
+                            "RECV",
+                            "V-G0-01",
+                            10m,
+                            receivedDate.AddHours(1),
+                            "visual-g"
+                        ),
+                        CreateTransfer(
+                            "MMC0000400",
+                            "PO-066869",
+                            "1",
+                            "RECV",
+                            "V-H0-01",
+                            5m,
+                            receivedDate.AddHours(2),
+                            "visual-h"
+                        ),
                     }
                 )
             );
@@ -180,7 +262,8 @@ public sealed class Service_ReceivingLocationReconciliationTests
 
         result.IsSuccess.Should().BeTrue();
         inforVisualMock.Verify(
-            visual => visual.GetReceivingLocationTransferMovementsAsync("MMC0000400", receivedDate.Date),
+            visual =>
+                visual.GetReceivingLocationTransferMovementsAsync("MMC0000400", receivedDate.Date),
             Times.Once
         );
     }
@@ -198,8 +281,26 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000500", "PO-066868", "1", "RECV", "V-STAGE", 12m, receivedDate.AddHours(1), "stage-user"),
-                CreateTransfer("MMC0000500", "PO-066868", "1", "V-STAGE", "V-Z9-01", 12m, receivedDate.AddHours(2), "final-user"),
+                CreateTransfer(
+                    "MMC0000500",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-STAGE",
+                    12m,
+                    receivedDate.AddHours(1),
+                    "stage-user"
+                ),
+                CreateTransfer(
+                    "MMC0000500",
+                    "PO-066868",
+                    "1",
+                    "V-STAGE",
+                    "V-Z9-01",
+                    12m,
+                    receivedDate.AddHours(2),
+                    "final-user"
+                ),
             }
         );
 
@@ -224,8 +325,26 @@ public sealed class Service_ReceivingLocationReconciliationTests
             loads,
             new List<Model_InforVisualLocationTransferMovement>
             {
-                CreateTransfer("MMC0000600", "PO-066868", "1", "RECV", "V-STAGE", 10m, receivedDate.AddHours(1), "cycle-a"),
-                CreateTransfer("MMC0000600", "PO-066868", "1", "V-STAGE", "RECV", 10m, receivedDate.AddHours(2), "cycle-b"),
+                CreateTransfer(
+                    "MMC0000600",
+                    "PO-066868",
+                    "1",
+                    "RECV",
+                    "V-STAGE",
+                    10m,
+                    receivedDate.AddHours(1),
+                    "cycle-a"
+                ),
+                CreateTransfer(
+                    "MMC0000600",
+                    "PO-066868",
+                    "1",
+                    "V-STAGE",
+                    "RECV",
+                    10m,
+                    receivedDate.AddHours(2),
+                    "cycle-b"
+                ),
             }
         );
 
@@ -299,10 +418,7 @@ public sealed class Service_ReceivingLocationReconciliationTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!
-            .Select(location => location.LocationId)
-            .Should()
-            .Equal("RECV", "FG");
+        result.Data!.Select(location => location.LocationId).Should().Equal("RECV", "FG");
     }
 
     private static Service_ReceivingLocationReconciliation CreateService(
@@ -318,11 +434,18 @@ public sealed class Service_ReceivingLocationReconciliationTests
             .Setup(service => service.GetCurrentLabelDataAsync())
             .ReturnsAsync(DaoResultFactory.Success(currentLabelRows));
         mySqlReceivingMock
-            .Setup(service => service.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .Setup(service =>
+                service.GetAllReceivingLoadsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>())
+            )
             .ReturnsAsync(DaoResultFactory.Success(new List<Model_ReceivingLoad>()));
 
         inforVisualMock
-            .Setup(service => service.GetReceivingLocationTransferMovementsAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+            .Setup(service =>
+                service.GetReceivingLocationTransferMovementsAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>()
+                )
+            )
             .ReturnsAsync(DaoResultFactory.Success(transferMovements));
 
         return new Service_ReceivingLocationReconciliation(

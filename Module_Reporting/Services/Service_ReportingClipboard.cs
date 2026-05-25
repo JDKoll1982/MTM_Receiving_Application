@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;

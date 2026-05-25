@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -9,7 +6,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Services;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Services;
 
@@ -18,7 +14,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task DeleteTypeAsync_ShouldPassCurrentUserToDaoDelete()
     {
-        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        var daoType = new Mock<Dao_DunnageType>("Server=localhost;Database=test;");
         daoType
             .Setup(dao => dao.GetByIdAsync(5))
             .ReturnsAsync(
@@ -35,12 +31,12 @@ public sealed class Service_MySQL_DunnageTests
             .Setup(dao => dao.DeleteAsync(5, "System"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
 
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         daoPart
             .Setup(dao => dao.GetByTypeAsync(5))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnagePart>()));
 
-        var daoSpec = new Mock<Dao_DunnageSpec>("Server=172.16.1.104;Database=test;");
+        var daoSpec = new Mock<Dao_DunnageSpec>("Server=localhost;Database=test;");
         daoSpec
             .Setup(dao => dao.DeleteByTypeAsync(5))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
@@ -67,7 +63,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task DeletePartAsync_ShouldReturnFriendlyMessage_WhenHistoryReferencesExist()
     {
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         daoPart
             .Setup(dao => dao.GetByIdAsync("PART-100"))
             .ReturnsAsync(
@@ -95,7 +91,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task DeletePartAsync_ShouldDeletePart_WhenNoHistoryReferencesExist()
     {
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         daoPart
             .Setup(dao => dao.GetByIdAsync("PART-200"))
             .ReturnsAsync(
@@ -129,7 +125,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task InsertPartWithInventoryAsync_ShouldInjectNormalizedImagePathIntoSpecJson()
     {
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         daoPart
             .Setup(dao => dao.GetAllAsync())
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnagePart>()));
@@ -202,7 +198,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task InsertPartWithInventoryAsync_ShouldReturnFriendlyDuplicateFailure_WhenPartIdAlreadyExists()
     {
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         daoPart
             .Setup(dao => dao.GetAllAsync())
             .ReturnsAsync(
@@ -249,7 +245,7 @@ public sealed class Service_MySQL_DunnageTests
     [Fact]
     public async Task InsertTypeAsync_ShouldUseTypeImageImport_WhenImagePathIsAbsolute()
     {
-        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        var daoType = new Mock<Dao_DunnageType>("Server=localhost;Database=test;");
         daoType
             .Setup(dao =>
                 dao.InsertAsync(
@@ -261,7 +257,7 @@ public sealed class Service_MySQL_DunnageTests
             )
             .ReturnsAsync(Model_Dao_Result_Factory.Success<int>(12));
 
-        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var daoPart = new Mock<Dao_DunnagePart>("Server=localhost;Database=test;");
         var imageStorage = new Mock<IService_DunnageImageStorage>();
         imageStorage
             .Setup(storage => storage.ImportTypeImageAsync(It.IsAny<string>(), "Pallet"))
@@ -305,16 +301,16 @@ public sealed class Service_MySQL_DunnageTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_UserSessionManager>().Object,
-            new Mock<Dao_DunnageLoad>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;").Object,
-            daoType ?? new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;").Object,
+            new Mock<Dao_DunnageLoad>("Server=localhost;Database=test;").Object,
+            new Mock<Dao_DunnageLabelData>("Server=localhost;Database=test;").Object,
+            daoType ?? new Mock<Dao_DunnageType>("Server=localhost;Database=test;").Object,
             daoPart,
-            new Mock<Dao_DunnageQuantityType>("Server=172.16.1.104;Database=test;").Object,
-            daoSpec ?? new Mock<Dao_DunnageSpec>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_InventoriedDunnage>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageUserPreference>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageNonPOEntry>("Server=172.16.1.104;Database=test;").Object,
+            new Mock<Dao_DunnageQuantityType>("Server=localhost;Database=test;").Object,
+            daoSpec ?? new Mock<Dao_DunnageSpec>("Server=localhost;Database=test;").Object,
+            new Mock<Dao_InventoriedDunnage>("Server=localhost;Database=test;").Object,
+            new Mock<Dao_DunnageCustomField>("Server=localhost;Database=test;").Object,
+            new Mock<Dao_DunnageUserPreference>("Server=localhost;Database=test;").Object,
+            new Mock<Dao_DunnageNonPOEntry>("Server=localhost;Database=test;").Object,
             imageStorage ?? new Mock<IService_DunnageImageStorage>().Object
         );
     }

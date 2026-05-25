@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -7,7 +5,6 @@ using MTM_Receiving_Application.Module_Dunnage.Services;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Services;
 
@@ -18,13 +15,10 @@ public sealed class Service_DunnageSettingsTests
     {
         var settingsCore = new Mock<IService_SettingsCoreFacade>();
         settingsCore
-            .Setup(service => service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>()))
-            .ReturnsAsync(
-                new Model_Dao_Result<Model_SettingsValue>
-                {
-                    Success = false,
-                }
-            );
+            .Setup(service =>
+                service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>())
+            )
+            .ReturnsAsync(new Model_Dao_Result<Model_SettingsValue> { Success = false });
 
         var service = new Service_DunnageSettings(settingsCore.Object);
 
@@ -47,16 +41,15 @@ public sealed class Service_DunnageSettingsTests
 
         var settingsCore = new Mock<IService_SettingsCoreFacade>();
         settingsCore
-            .Setup(service => service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>()))
+            .Setup(service =>
+                service.GetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<int?>())
+            )
             .ReturnsAsync(
                 (string _, string key, int? _) =>
                     new Model_Dao_Result<Model_SettingsValue>
                     {
                         Success = true,
-                        Data = new Model_SettingsValue
-                        {
-                            Value = settingsValues[key],
-                        },
+                        Data = new Model_SettingsValue { Value = settingsValues[key] },
                     }
             );
 
@@ -79,7 +72,12 @@ public sealed class Service_DunnageSettingsTests
         var settingsCore = new Mock<IService_SettingsCoreFacade>();
         settingsCore
             .Setup(service =>
-                service.SetSettingAsync("Dunnage", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>())
+                service.SetSettingAsync(
+                    "Dunnage",
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int?>()
+                )
             )
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
 

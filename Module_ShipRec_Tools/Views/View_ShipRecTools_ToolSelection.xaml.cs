@@ -1,12 +1,13 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
 /// <summary>
 /// Tool selection screen for the ShipRec Tools module.
-/// Displays tool cards grouped by category populated from IService_ShipRecTools_Navigation.
+/// Displays the available tool cards populated from IService_ShipRecTools_Navigation.
 /// </summary>
 public sealed partial class View_ShipRecTools_ToolSelection : UserControl
 {
@@ -21,5 +22,15 @@ public sealed partial class View_ShipRecTools_ToolSelection : UserControl
         InitializeComponent();
 
         ViewModel.LoadTools();
+    }
+
+    private void ToolCard_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is not Model_ToolDefinition selectedTool)
+        {
+            return;
+        }
+
+        ViewModel.SelectToolCommand.Execute(selectedTool.ToolKey);
     }
 }

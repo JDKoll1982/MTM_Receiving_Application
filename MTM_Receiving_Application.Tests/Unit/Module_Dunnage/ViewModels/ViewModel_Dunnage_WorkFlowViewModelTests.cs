@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using FluentAssertions;
 using Material.Icons;
 using Moq;
@@ -7,7 +6,6 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.ViewModels;
 
@@ -74,12 +72,12 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         viewModel.IsPartSelectionVisible.Should().BeTrue();
         viewModel.CurrentHeaderTitle.Should().Be("Dunnage - Select Part");
         viewModel.CurrentHeaderContextTitle.Should().Be("Select Part - Bags");
-        viewModel.CurrentHeaderContextSubtitle.Should().Be(
-            "Use the search function to quickly find parts. Parts with a green badge are tracked in inventory."
-        );
-        viewModel.CurrentHeaderContextIconKind.Should().Be(
-            MaterialIconKind.PackageVariantClosed
-        );
+        viewModel
+            .CurrentHeaderContextSubtitle.Should()
+            .Be(
+                "Use the search function to quickly find parts. Parts with a green badge are tracked in inventory."
+            );
+        viewModel.CurrentHeaderContextIconKind.Should().Be(MaterialIconKind.PackageVariantClosed);
     }
 
     [Fact]
@@ -102,9 +100,9 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
 
         viewModel.IsQuantityEntryVisible.Should().BeTrue();
         viewModel.CurrentHeaderContextTitle.Should().Be("Enter Loads");
-        viewModel.CurrentHeaderContextSubtitle.Should().Be(
-            "Set the number of loads and enter the quantity for each load."
-        );
+        viewModel
+            .CurrentHeaderContextSubtitle.Should()
+            .Be("Set the number of loads and enter the quantity for each load.");
         viewModel.CurrentHeaderContextIconKind.Should().BeNull();
     }
 
@@ -128,9 +126,11 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
 
         viewModel.IsDetailsEntryVisible.Should().BeTrue();
         viewModel.CurrentHeaderContextTitle.Should().Be("Enter Details");
-        viewModel.CurrentHeaderContextSubtitle.Should().Be(
-            "Enter the PO number, confirm the location, and review per-load details before saving."
-        );
+        viewModel
+            .CurrentHeaderContextSubtitle.Should()
+            .Be(
+                "Enter the PO number, confirm the location, and review per-load details before saving."
+            );
         viewModel.CurrentHeaderContextIconKind.Should().BeNull();
     }
 

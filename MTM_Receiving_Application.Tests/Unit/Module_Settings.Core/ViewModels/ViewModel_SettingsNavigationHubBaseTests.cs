@@ -4,7 +4,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Settings.Core.ViewModels;
 
@@ -88,7 +87,8 @@ public sealed class ViewModel_SettingsNavigationHubBaseTests
             }
 
             var startIndex = (pageNumber - 1) * PageSize;
-            return Enumerable.Range(startIndex, PageSize)
+            return Enumerable
+                .Range(startIndex, PageSize)
                 .Where(index => index >= 0 && index < totalCount)
                 .ToArray();
         }

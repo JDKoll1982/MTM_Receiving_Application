@@ -3359,11 +3359,12 @@
           "Back-to-tools routing"
         ],
         "screens": ["View_ShipRecTools_Main.xaml"],
-        "currentUiPatterns": ["Container host", "Conditional content region"],
+        "currentUiPatterns": ["Container host", "Conditional content region", "Uses MainWindow shared status bar", "Uses MainWindow shared back button"],
         "desiredUiPatterns": ["Container host", "Card list", "Split layout"],
         "uiElements": [
-          "Back to Tools button",
+          "MainWindow shared back button",
           "Current tool title",
+          "MainWindow shared status bar",
           "Selection host region",
           "Active tool host region"
         ],
@@ -3377,11 +3378,12 @@
         ],
         "acceptanceCriteria": [
           "The correct tool host becomes visible after selection",
-          "The Back to Tools action returns the user to the selection screen"
+          "The Back to Tools action returns the user to the selection screen via the MainWindow header"
         ],
         "validationHints": [
           "Confirm tool navigation still toggles the correct host region",
-          "Confirm the shell title updates for the active tool"
+          "Confirm the shell title updates for the active tool",
+          "Confirm the MainWindow header back button only appears while a hosted Ship/Rec tool is active"
         ]
       },
       "subFeatures": []

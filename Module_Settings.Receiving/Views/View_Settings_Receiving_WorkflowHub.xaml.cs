@@ -1,13 +1,9 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
-using Windows.Foundation;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.Views;
 

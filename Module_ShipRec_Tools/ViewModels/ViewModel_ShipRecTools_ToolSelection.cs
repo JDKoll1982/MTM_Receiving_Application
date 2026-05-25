@@ -1,42 +1,25 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 /// <summary>
 /// ViewModel for the tool selection screen.
-/// Loads tool cards grouped by category from the navigation service.
+/// Loads the available tool cards from the navigation service.
 /// </summary>
 public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Base
 {
     private readonly IService_ShipRecTools_Navigation _navigationService;
 
     [ObservableProperty]
-    private ObservableCollection<Model_ToolDefinition> _lookupTools = new();
-
-    [ObservableProperty]
-    private ObservableCollection<Model_ToolDefinition> _analysisTools = new();
-
-    [ObservableProperty]
-    private ObservableCollection<Model_ToolDefinition> _utilityTools = new();
-
-    [ObservableProperty]
-    private bool _hasLookupTools;
-
-    [ObservableProperty]
-    private bool _hasAnalysisTools;
-
-    [ObservableProperty]
-    private bool _hasUtilityTools;
+    private ObservableCollection<Model_ToolDefinition> _allTools = new();
 
     /// <summary>
     /// Raised when the user selects a tool. The string value is the ToolKey.
@@ -56,29 +39,25 @@ public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Bas
     }
 
     /// <summary>
-    /// Populates tool collections from the registry. Called when the screen becomes visible.
+    /// Shows the shared guidance message for the Ship/Rec tool selection screen.
+    /// </summary>
+    public void ActivateView()
+    {
+        ShowStatus("Choose a Ship/Rec tool to continue.", InfoBarSeverity.Informational);
+    }
+
+    /// <summary>
+    /// Populates tool cards from the registry. Called when the screen becomes visible.
     /// </summary>
     public void LoadTools()
     {
         try
         {
-            LookupTools = new ObservableCollection<Model_ToolDefinition>(
-                _navigationService.GetToolsByCategory(Enum_ToolCategory.Lookup)
-            );
-            AnalysisTools = new ObservableCollection<Model_ToolDefinition>(
-                _navigationService.GetToolsByCategory(Enum_ToolCategory.Analysis)
-            );
-            UtilityTools = new ObservableCollection<Model_ToolDefinition>(
-                _navigationService.GetToolsByCategory(Enum_ToolCategory.Utilities)
+            AllTools = new ObservableCollection<Model_ToolDefinition>(
+                _navigationService.GetAllTools()
             );
 
-            HasLookupTools = LookupTools.Count > 0;
-            HasAnalysisTools = AnalysisTools.Count > 0;
-            HasUtilityTools = UtilityTools.Count > 0;
-
-            _logger.LogInfo(
-                $"Tool selection loaded: {LookupTools.Count} lookup, {AnalysisTools.Count} analysis, {UtilityTools.Count} utility tools."
-            );
+            _logger.LogInfo($"Tool selection loaded: {AllTools.Count} available tools.");
         }
         catch (Exception ex)
         {

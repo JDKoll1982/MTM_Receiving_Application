@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
-using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Receiving.ViewModels;
@@ -75,8 +74,12 @@ public partial class ViewModel_Settings_Receiving_LabelPaths : ViewModel_Shared_
         try
         {
             IsBusy = true;
-            await _userLabelSettings.SaveReceivingLabelPathAsync(ReceivingLabelPath ?? string.Empty);
-            await _userLabelSettings.SaveMiniReceivingLabelPathAsync(MiniReceivingLabelPath ?? string.Empty);
+            await _userLabelSettings.SaveReceivingLabelPathAsync(
+                ReceivingLabelPath ?? string.Empty
+            );
+            await _userLabelSettings.SaveMiniReceivingLabelPathAsync(
+                MiniReceivingLabelPath ?? string.Empty
+            );
 
             StatusMessage = "Receiving label paths saved.";
         }

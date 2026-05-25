@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -151,6 +149,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         ///  <summary>
         /// Resets the label-data store.
         /// </summary>
+        /// <param name="clearAllRows"></param>
         public Task<Model_LabelDataClearResult> ResetLabelDataAsync(bool clearAllRows = false);
 
         /// <summary>

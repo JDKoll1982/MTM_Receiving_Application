@@ -93,6 +93,68 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             .ToList();
     }
 
+    public IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow> GetCustomerPullPackDemandRows()
+    {
+        var mergedRows = new Dictionary<string, Model_InforVisualCustomerPullPackDemandRow>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        void Merge(IEnumerable<Model_InforVisualCustomerPullPackDemandRow> rows)
+        {
+            foreach (var row in rows.Select(NormalizeCustomerPullPackDemandRow))
+            {
+                if (string.IsNullOrWhiteSpace(row.SourceLineKey))
+                {
+                    continue;
+                }
+
+                mergedRows[row.SourceLineKey] = row;
+            }
+        }
+
+        Merge(GetCatalog().CustomerPullPackDemandRows);
+        Merge(_runtimeCatalog.Value.CustomerPullPackDemandRows);
+
+        return mergedRows
+            .Values.OrderBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.PullDate)
+            .ThenBy(row => row.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.ParentPartId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> GetCustomerPullPackLocationRows()
+    {
+        var mergedRows = new Dictionary<string, Model_InforVisualCustomerPullPackLocationRow>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        void Merge(IEnumerable<Model_InforVisualCustomerPullPackLocationRow> rows)
+        {
+            foreach (var row in rows.Select(NormalizeCustomerPullPackLocationRow))
+            {
+                var key = string.IsNullOrWhiteSpace(row.LocationKey)
+                    ? $"{row.SourceLineKey}|{row.LocationId}"
+                    : row.LocationKey;
+
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    continue;
+                }
+
+                mergedRows[key] = row;
+            }
+        }
+
+        Merge(GetCatalog().CustomerPullPackLocationRows);
+        Merge(_runtimeCatalog.Value.CustomerPullPackLocationRows);
+
+        return mergedRows
+            .Values.OrderBy(row => row.SourceLineKey, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     public async Task<Model_Dao_Result<int>> AppendReceivingTransactionsAsync(
         IEnumerable<Model_InforVisualMockReceivingTransaction> transactions
     )
@@ -267,6 +329,20 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             .ThenBy(run => run.NextDueToRunDate ?? DateTime.MaxValue)
             .ThenBy(run => run.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+        catalog.CustomerPullPackDemandRows = catalog
+            .CustomerPullPackDemandRows.Select(NormalizeCustomerPullPackDemandRow)
+            .OrderBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.PullDate)
+            .ThenBy(row => row.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.ParentPartId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        catalog.CustomerPullPackLocationRows = catalog
+            .CustomerPullPackLocationRows.Select(NormalizeCustomerPullPackLocationRow)
+            .OrderBy(row => row.SourceLineKey, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     private static Model_InforVisualMockReceivingTransaction NormalizeTransaction(
@@ -330,6 +406,51 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             RequirementStatus = row.RequirementStatus?.Trim().ToUpperInvariant() ?? string.Empty,
             ScheduledStartDate = row.ScheduledStartDate,
             ScheduledFinishDate = row.ScheduledFinishDate,
+        };
+    }
+
+    private static Model_InforVisualCustomerPullPackDemandRow NormalizeCustomerPullPackDemandRow(
+        Model_InforVisualCustomerPullPackDemandRow row
+    )
+    {
+        return new Model_InforVisualCustomerPullPackDemandRow
+        {
+            SourceLineKey = row.SourceLineKey?.Trim() ?? string.Empty,
+            CustomerId = row.CustomerId?.Trim().ToUpperInvariant() ?? string.Empty,
+            CustomerName = row.CustomerName?.Trim() ?? string.Empty,
+            CustomerOrderId = row.CustomerOrderId?.Trim().ToUpperInvariant() ?? string.Empty,
+            ParentPartId = row.ParentPartId?.Trim().ToUpperInvariant() ?? string.Empty,
+            SourceLocationId = row.SourceLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
+            ShipQuantity = row.ShipQuantity,
+            PullDate = row.PullDate,
+            QuantityToPack = row.QuantityToPack,
+            FgOnHandQuantity = row.FgOnHandQuantity,
+            FgLocationId = row.FgLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
+            ShortageFlag = row.ShortageFlag,
+            LateOrderFlag = row.LateOrderFlag,
+            PulledFlag = row.PulledFlag,
+            HasLinkedWaitlist = row.HasLinkedWaitlist,
+            LinkedWaitlistId = row.LinkedWaitlistId?.Trim() ?? string.Empty,
+            LinkedWaitlistStatus = row.LinkedWaitlistStatus?.Trim() ?? string.Empty,
+            RequesterNote = row.RequesterNote?.Trim() ?? string.Empty,
+            RecheckIndicator = row.RecheckIndicator,
+        };
+    }
+
+    private static Model_InforVisualCustomerPullPackLocationRow NormalizeCustomerPullPackLocationRow(
+        Model_InforVisualCustomerPullPackLocationRow row
+    )
+    {
+        return new Model_InforVisualCustomerPullPackLocationRow
+        {
+            LocationKey = row.LocationKey?.Trim() ?? string.Empty,
+            SourceLineKey = row.SourceLineKey?.Trim() ?? string.Empty,
+            ParentPartId = row.ParentPartId?.Trim().ToUpperInvariant() ?? string.Empty,
+            LocationId = row.LocationId?.Trim().ToUpperInvariant() ?? string.Empty,
+            DisplayLabel = row.DisplayLabel?.Trim() ?? string.Empty,
+            OnHandQuantity = row.OnHandQuantity,
+            SourceType = row.SourceType?.Trim() ?? string.Empty,
+            InitiallySelected = row.InitiallySelected,
         };
     }
 

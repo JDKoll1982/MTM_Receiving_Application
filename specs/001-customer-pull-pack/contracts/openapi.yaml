@@ -1,0 +1,477 @@
+openapi: 3.0.3
+info:
+  title: Customer Pull n' Pack Contracts
+  version: 1.0.0
+  description: Contract surface for planning the Customer Pull n' Pack feature inside the MTM Receiving Application.
+servers:
+  - url: https://mtm.local/internal
+paths:
+  /customer-pull-pack/report:
+    get:
+      summary: Get grouped customer demand report data
+      parameters:
+        - in: query
+          name: customerId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: dateFrom
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: dateTo
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: shortagesOnly
+          schema:
+            type: boolean
+        - in: query
+          name: unpulledOnly
+          schema:
+            type: boolean
+        - in: query
+          name: sortMode
+          schema:
+            $ref: '#/components/schemas/SortMode'
+        - in: query
+          name: searchText
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Report loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemandReportResponse'
+  /customer-pull-pack/waitlist/linked/{sourceLineKey}:
+    get:
+      summary: Get existing linked waitlist context for a source line
+      parameters:
+        - in: path
+          name: sourceLineKey
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Existing linked waitlist context found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistEntry'
+        '404':
+          description: No linked waitlist context exists
+  /customer-pull-pack/waitlist/batch:
+    post:
+      summary: Create or update waitlist entries from selected report lines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitlistBatchUpsertRequest'
+      responses:
+        '200':
+          description: Batch save succeeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistBatchUpsertResponse'
+        '409':
+          description: Duplicate open waitlist conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateWaitlistConflict'
+        '422':
+          description: Validation failed
+  /customer-pull-pack/waitlist:
+    get:
+      summary: Query the dedicated waitlist queue
+      parameters:
+        - in: query
+          name: statuses
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/WaitlistStatus'
+          style: form
+          explode: false
+        - in: query
+          name: customerId
+          schema:
+            type: string
+        - in: query
+          name: locationId
+          schema:
+            type: string
+        - in: query
+          name: requesterSearchText
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Queue results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistQueueResponse'
+  /customer-pull-pack/waitlist/{waitlistId}/status:
+    patch:
+      summary: Update queue status, problem reason, and notes
+      parameters:
+        - in: path
+          name: waitlistId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitlistStatusUpdateRequest'
+      responses:
+        '200':
+          description: Queue item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistEntry'
+        '422':
+          description: Problem reason or validation rule failed
+  /customer-pull-pack/waitlist/{waitlistId}/unassign:
+    post:
+      summary: Explicitly clear current owner from an owned line
+      parameters:
+        - in: path
+          name: waitlistId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner cleared
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitlistEntry'
+  /customer-pull-pack/print/floor-copy:
+    post:
+      summary: Generate floor copy print context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrintRequest'
+      responses:
+        '200':
+          description: Floor copy print context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrintContext'
+  /customer-pull-pack/print/pull-list:
+    post:
+      summary: Generate pull-list print context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrintRequest'
+      responses:
+        '200':
+          description: Pull-list print context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrintContext'
+components:
+  schemas:
+    SortMode:
+      type: string
+      enum: [PullDate, ShortageFirst, Part]
+    WaitlistStatus:
+      type: string
+      enum: [Requested, Accepted, Completed, Cancelled, Problem]
+    ProblemReason:
+      type: string
+      enum: [NotInLocation, IncorrectQty, IncorrectPartNumber, Other]
+    DemandReportResponse:
+      type: object
+      required: [customerId, lines]
+      properties:
+        customerId:
+          type: string
+        customerName:
+          type: string
+        emptyState:
+          type: boolean
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemandLine'
+    DemandLine:
+      type: object
+      required:
+        - sourceLineKey
+        - customerOrderId
+        - parentPartId
+        - shipQuantity
+        - pullDate
+        - locationOptions
+        - hasLinkedWaitlist
+      properties:
+        sourceLineKey:
+          type: string
+        customerId:
+          type: string
+        customerOrderId:
+          type: string
+        parentPartId:
+          type: string
+        sourceLocationId:
+          type: string
+          nullable: true
+        shipQuantity:
+          type: number
+        pullDate:
+          type: string
+          format: date
+        quantityToPack:
+          type: number
+        fgOnHandQuantity:
+          type: number
+        fgLocationId:
+          type: string
+          nullable: true
+        shortageFlag:
+          type: boolean
+        lateOrderFlag:
+          type: boolean
+        hasLinkedWaitlist:
+          type: boolean
+        locationOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationOption'
+    LocationOption:
+      type: object
+      required: [locationKey, locationId, displayLabel, onHandQuantity, selected]
+      properties:
+        locationKey:
+          type: string
+        locationId:
+          type: string
+        displayLabel:
+          type: string
+        onHandQuantity:
+          type: number
+        sourceType:
+          type: string
+          enum: [SubPartOnHand, FinishedGoodsFallback]
+        selected:
+          type: boolean
+    WaitlistBatchUpsertRequest:
+      type: object
+      required: [requestMode, sourceLineKeys, selectedLocationKeys]
+      properties:
+        requestMode:
+          type: string
+          enum: [Create, Update]
+        sourceLineKeys:
+          type: array
+          items:
+            type: string
+        selectedLocationKeys:
+          type: array
+          items:
+            type: string
+        requesterContextNote:
+          type: string
+          nullable: true
+        requestedByUserId:
+          type: string
+        existingWaitlistIds:
+          type: array
+          items:
+            type: string
+    WaitlistBatchUpsertResponse:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitlistBatchLineResult'
+    WaitlistBatchLineResult:
+      type: object
+      required: [sourceLineKey, waitlistId, action]
+      properties:
+        sourceLineKey:
+          type: string
+        waitlistId:
+          type: string
+        action:
+          type: string
+          enum: [Created, Updated]
+    DuplicateWaitlistConflict:
+      type: object
+      required: [message, existingItems]
+      properties:
+        message:
+          type: string
+        existingItems:
+          type: array
+          items:
+            type: object
+            required: [sourceLineKey, waitlistId, currentStatus]
+            properties:
+              sourceLineKey:
+                type: string
+              waitlistId:
+                type: string
+              currentStatus:
+                $ref: '#/components/schemas/WaitlistStatus'
+    WaitlistQueueResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitlistEntry'
+    WaitlistStatusUpdateRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: '#/components/schemas/WaitlistStatus'
+        problemReason:
+          $ref: '#/components/schemas/ProblemReason'
+        handlerNote:
+          type: string
+          nullable: true
+    WaitlistEntry:
+      type: object
+      required:
+        - waitlistId
+        - sourceLineKey
+        - customerOrderId
+        - parentPartId
+        - requestedQuantity
+        - currentStatus
+        - locationReviewFlag
+        - lastUpdatedByUserId
+        - lastUpdatedTimestamp
+      properties:
+        waitlistId:
+          type: string
+        sourceLineKey:
+          type: string
+        customerId:
+          type: string
+        customerOrderId:
+          type: string
+        parentPartId:
+          type: string
+        requestedQuantity:
+          type: number
+        selectedLocations:
+          type: array
+          items:
+            type: string
+        requesterContextNote:
+          type: string
+          nullable: true
+        requestedByUserId:
+          type: string
+        currentStatus:
+          $ref: '#/components/schemas/WaitlistStatus'
+        currentOwnerUserId:
+          type: string
+          nullable: true
+        locationReviewFlag:
+          type: boolean
+        problemReason:
+          $ref: '#/components/schemas/ProblemReason'
+        handlerNote:
+          type: string
+          nullable: true
+        completionUserId:
+          type: string
+          nullable: true
+        completionTimestamp:
+          type: string
+          format: date-time
+          nullable: true
+        lastUpdatedByUserId:
+          type: string
+        lastUpdatedTimestamp:
+          type: string
+          format: date-time
+        recheckIndicator:
+          type: boolean
+    PrintRequest:
+      type: object
+      required: [printMode, customerId]
+      properties:
+        printMode:
+          type: string
+          enum: [CurrentView, FloorCopy, PullList, ShortageOnly, WaitlistOnly]
+        customerId:
+          type: string
+        sourceLineKeys:
+          type: array
+          items:
+            type: string
+        waitlistIds:
+          type: array
+          items:
+            type: string
+    PrintContext:
+      type: object
+      required: [printMode, customerId, generatedAt]
+      properties:
+        printMode:
+          type: string
+        customerId:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        activeFiltersSummary:
+          type: string
+        demandLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemandLine'
+        waitlistEntries:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitlistEntry'
+        groupedSubPartTotals:
+          type: array
+          items:
+            type: object
+            required: [subPartId, totalQuantityNeeded, totalQuantityOnHand, chosenLocations]
+            properties:
+              subPartId:
+                type: string
+              totalQuantityNeeded:
+                type: number
+              totalQuantityOnHand:
+                type: number
+              chosenLocations:
+                type: array
+                items:
+                  type: string

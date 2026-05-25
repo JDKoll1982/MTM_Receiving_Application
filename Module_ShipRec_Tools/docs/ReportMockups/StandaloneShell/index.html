@@ -293,6 +293,13 @@
             color: var(--red);
         }
 
+        .toolbar button:disabled,
+        .button-row button:disabled,
+        .ghost-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .metrics {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -426,6 +433,92 @@
             align-items: center;
             justify-content: space-between;
             gap: 12px;
+        }
+
+        .settings-expander {
+            background: var(--panel);
+            border: 1px solid var(--panel-line);
+            border-radius: 18px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .settings-expander summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 16px 18px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .settings-expander summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .settings-expander .summary-copy strong {
+            display: block;
+            font-size: 0.96rem;
+            margin-bottom: 4px;
+        }
+
+        .settings-expander .summary-copy span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .settings-expander .summary-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .settings-expander .summary-state::before {
+            content: "▾";
+            font-size: 0.88rem;
+        }
+
+        .settings-expander:not([open]) .summary-state::before {
+            content: "▸";
+        }
+
+        .settings-body {
+            padding: 0 18px 18px;
+            border-top: 1px solid var(--panel-line);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 12px;
+        }
+
+        .calendar-control input {
+            width: 172px;
+            max-width: 100%;
+        }
+
+        .actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 18px;
+        }
+
+        .actions-row .selection-copy-inline {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
         }
 
         .field .toggle input { width: auto; transform: scale(1.1); }
@@ -682,6 +775,21 @@
         .mini-box tr:last-child td,
         .mini-box tr:last-child th { border-bottom: none; }
         .mini-box th { font-size: 0.76rem; }
+
+        .mini-box tr.location-option {
+            cursor: pointer;
+            transition: background 120ms ease, box-shadow 120ms ease;
+        }
+
+        .mini-box tr.location-option:hover td {
+            background: rgba(47, 88, 128, 0.1);
+        }
+
+        .mini-box tr.location-option.active td {
+            background: rgba(47, 88, 128, 0.18);
+            box-shadow: inset 0 0 0 1px rgba(47, 88, 128, 0.22);
+            font-weight: 700;
+        }
 
         .schedule {
             width: 100%;
@@ -946,6 +1054,7 @@
 
                     <div class="nav-group">
                         <h2>Interactive Shortcuts</h2>
+                        <button class="subtle" id="showApplicationBtn">Show as Application</button>
                         <button class="subtle" id="jumpVolvo">Load Volvo example</button>
                         <button class="subtle" id="jumpMack">Load Mack example</button>
                         <button class="subtle" id="jumpNoDemand">Show no-demand customer</button>
@@ -1009,59 +1118,78 @@
                             </div>
                             <div class="toolbar">
                                 <button class="primary" id="refreshReportBtn">Refresh from Visual</button>
-                                <button id="goWaitlistBtn">Open Waitlist Page</button>
                                 <button class="warn" id="goFloorPrintBtn">Floor Copy Print</button>
                                 <button id="goPullListBtn">Pull List Print</button>
                             </div>
                         </div>
 
-                        <div class="metrics" id="reportMetrics"></div>
+                        <details class="settings-expander" open>
+                            <summary>
+                                <div class="summary-copy">
+                                    <strong>Report Filters &amp; Settings</strong>
+                                    <span>Customer scope, compact calendar controls, sort options, and review filters for the active report.</span>
+                                </div>
+                                <span class="summary-state">Expanded</span>
+                            </summary>
 
-                        <div class="filters">
-                            <div class="field span-4">
-                                <span class="label">Customer</span>
-                                <select id="customerSelect"></select>
-                            </div>
-                            <div class="field span-2">
-                                <span class="label">Date From</span>
-                                <input id="dateFrom" type="date" value="2026-05-20" />
-                            </div>
-                            <div class="field span-2">
-                                <span class="label">Date To</span>
-                                <input id="dateTo" type="date" value="2026-07-01" />
-                            </div>
-                            <div class="field span-2">
-                                <span class="label">Sort</span>
-                                <select id="sortSelect">
-                                    <option value="pullDate">Pull Date → Customer Order → Part</option>
-                                    <option value="shortage">Shortage First</option>
-                                    <option value="part">Parent Part</option>
-                                </select>
-                            </div>
-                            <div class="field span-2">
-                                <span class="label">Search</span>
-                                <input id="searchInput" type="text" placeholder="Part, order, or location" />
-                            </div>
-                            <div class="field span-3">
-                                <span class="label">Show Shortages Only</span>
-                                <label class="toggle"><span>Filter visible rows</span><input id="shortagesOnly" type="checkbox" /></label>
-                            </div>
-                            <div class="field span-3">
-                                <span class="label">Show Unpulled Only</span>
-                                <label class="toggle"><span>Hide completed pulls</span><input id="unpulledOnly" type="checkbox" checked /></label>
-                            </div>
-                            <div class="field span-3">
-                                <span class="label">Quick Actions</span>
-                                <div class="button-row">
-                                    <button id="showVolvoBtn">Volvo</button>
-                                    <button id="showMackBtn">Mack</button>
+                            <div class="settings-body">
+                                <div class="settings-grid">
+                                    <div class="field span-4">
+                                        <span class="label">Customer</span>
+                                        <select id="customerSelect"></select>
+                                    </div>
+                                    <div class="field span-2 calendar-control">
+                                        <span class="label">Date From</span>
+                                        <input id="dateFrom" type="date" value="2026-05-20" />
+                                    </div>
+                                    <div class="field span-2 calendar-control">
+                                        <span class="label">Date To</span>
+                                        <input id="dateTo" type="date" value="2026-07-01" />
+                                    </div>
+                                    <div class="field span-2">
+                                        <span class="label">Sort</span>
+                                        <select id="sortSelect">
+                                            <option value="pullDate">Pull Date → Customer Order → Part</option>
+                                            <option value="shortage">Shortage First</option>
+                                            <option value="part">Parent Part</option>
+                                        </select>
+                                    </div>
+                                    <div class="field span-2">
+                                        <span class="label">Search</span>
+                                        <input id="searchInput" type="text" placeholder="Part, order, or location" />
+                                    </div>
+                                    <div class="field span-3">
+                                        <span class="label">Show Shortages Only</span>
+                                        <label class="toggle"><span>Filter visible rows</span><input id="shortagesOnly" type="checkbox" /></label>
+                                    </div>
+                                    <div class="field span-3">
+                                        <span class="label">Show Unpulled Only</span>
+                                        <label class="toggle"><span>Hide completed pulls</span><input id="unpulledOnly" type="checkbox" checked /></label>
+                                    </div>
+                                    <div class="field span-3">
+                                        <span class="label">Quick Actions</span>
+                                        <div class="button-row">
+                                            <button id="showVolvoBtn">Volvo</button>
+                                            <button id="showMackBtn">Mack</button>
+                                        </div>
+                                    </div>
+                                    <div class="field span-3">
+                                        <span class="label">Linked Waitlist Indicator</span>
+                                        <div class="chip-row"><span class="status-pill blue">Waitlist Linked</span><span class="status-pill">No Waitlist</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="actions-row">
+                                    <div class="selection-copy-inline" id="reportSelectionSummary">0 selected lines</div>
+                                    <div class="button-row">
+                                        <button id="clearFiltersBtn">Clear Filters</button>
+                                        <button id="clearCustomerBtn">Clear Customer</button>
+                                        <button class="primary" id="openWaitlistModalBtn">Queue To Waitlist</button>
+                                        <button id="jumpToWaitlistBtn">Show Waitlist</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="field span-3">
-                                <span class="label">Linked Waitlist Indicator</span>
-                                <div class="chip-row"><span class="status-pill blue">Waitlist Linked</span><span class="status-pill">No Waitlist</span></div>
-                            </div>
-                        </div>
+                        </details>
 
                         <div id="reportEmptyHost" class="empty hidden">
                             <div>
@@ -1074,7 +1202,7 @@
                             </div>
                         </div>
 
-                        <div id="reportContent" class="split">
+                        <div id="reportContent">
                             <div class="panel">
                                 <div class="panel-header">
                                     <div>
@@ -1088,35 +1216,6 @@
                                 </div>
                                 <div class="report-canvas">
                                     <div class="paper" id="reportPaper"></div>
-                                </div>
-                            </div>
-
-                            <div class="stack">
-                                <div class="panel">
-                                    <div class="panel-header">
-                                        <div>
-                                            <h3>Selected Report Lines</h3>
-                                            <p>Select the customer-order lines to work, then launch a no-typing waitlist flow with selectable sub-part locations.</p>
-                                        </div>
-                                    </div>
-                                    <div class="info-grid" id="selectedRowInfo"></div>
-                                    <div class="callout" id="rowWaitlistCallout"></div>
-                                    <div style="padding:0 16px 16px;">
-                                        <div class="button-row">
-                                            <button class="primary" id="openWaitlistModalBtn">Create / Update Waitlist</button>
-                                            <button id="jumpToWaitlistBtn">Go To Waitlist Page</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="panel">
-                                    <div class="panel-header">
-                                        <div>
-                                            <h3>Selected Line Waitlist Snapshot</h3>
-                                            <p>MTM-managed workflow state layered on top of the currently selected report lines.</p>
-                                        </div>
-                                    </div>
-                                    <div class="info-grid" id="selectedWaitlistInfo"></div>
                                 </div>
                             </div>
                         </div>
@@ -1186,7 +1285,7 @@
 
                             <div class="stack">
                                 <div class="panel">
-                                    <div class="panel-header"><div><h3>Selected Queue Item</h3><p>Problem handling should be note-driven and explicit.</p></div></div>
+                                    <div class="panel-header"><div><h3>Selected Queue Item</h3><p>Problem handling should be reason-driven, explicit, and easy to hand off.</p></div></div>
                                     <div class="info-grid" id="waitlistDetailInfo"></div>
                                 </div>
 
@@ -1211,7 +1310,7 @@
 
                                 <div class="callout danger" id="problemHint">
                                     <span>⚠</span>
-                                    <div><strong>Problem state note expectation.</strong> If a handler marks an item as Problem, the UI should strongly encourage a useful note describing what failed or what needs review.</div>
+                                    <div><strong>Problem reason expectation.</strong> If a handler marks an item as Problem, the UI should require a clear reason and still allow a note when the preset reasons do not fit.</div>
                                 </div>
                             </div>
                         </div>
@@ -1330,7 +1429,7 @@
             <div class="modal-body">
                 <div class="callout">
                     <span>ℹ</span>
-                    <div><strong>Source-linked MTM workflow.</strong> The user selects customer-order lines from the report and chooses the sub-part locations here, so new waitlist items can be created without typing.</div>
+                    <div><strong>Source-linked MTM workflow.</strong> The user selects customer-order lines and part locations on the main display first, then uses this window to confirm and save the waitlist request.</div>
                 </div>
                 <div class="filters">
                     <div class="field span-4"><span class="label">Customer ID</span><input id="modalCustomer" type="text" readonly /></div>
@@ -1338,7 +1437,7 @@
                     <div class="field span-4 readonly-field"><span class="label">Selected Qty</span><span class="readonly-value" id="modalQty"></span></div>
                     <div class="field span-4"><span class="label">Parent Part</span><input id="modalPart" class="mono" type="text" readonly /></div>
                     <div class="field span-12"><span class="label">Selected Customer Order Lines</span><div id="modalLineChoices" class="selection-list"></div></div>
-                    <div class="field span-12"><span class="label">Sub Part Locations To Add To Waitlist</span><div id="modalLocationChoices" class="selection-list"></div></div>
+                    <div class="field span-12"><span class="label">Part Locations Selected On Main Display</span><div id="modalLocationChoices" class="selection-list"></div></div>
                     <div class="field span-6"><span class="label">Requested By Person</span><input id="modalRequestedBy" type="text" readonly /></div>
                     <div class="field span-6"><span class="label">Handler Status</span><select id="modalStatus"><option>Accepted</option><option>Completed</option><option>Cancelled</option><option>Problem</option></select></div>
                     <div class="field span-12"><span class="label">Handler Notes</span><textarea id="modalNotes"></textarea></div>
@@ -1555,7 +1654,7 @@
             waitlistRequesterSearch: "",
             selectedWaitlistKey: "volvo-20461010-0527",
             modalRowKeys: [],
-            modalSelectedLocations: [],
+            selectedLocationIds: [],
             settings: {
                 defaultCustomer: "VOLVO",
                 favorites: "VOLVO, MACK, PACCAR",
@@ -1749,18 +1848,30 @@
                 .filter(Boolean);
         }
 
-        function syncModalSelections() {
-            const modalRows = state.modalRowKeys
+        function syncReportLocationSelections() {
+            const rows = selectedRows();
+            const relatedWaitlists = rows.map(row => getWaitlistForRow(row.key)).filter(Boolean);
+            const locationOptions = availableLocationOptions(rows);
+            const validIds = new Set(locationOptions.map(option => option.id));
+
+            state.selectedLocationIds = state.selectedLocationIds.filter(id => validIds.has(id));
+
+            if (state.selectedLocationIds.length > 0 || locationOptions.length === 0) {
+                return;
+            }
+
+            const storedLocations = relatedWaitlists.flatMap(waitlist => splitStoredLocations(waitlist.location));
+            const matchingStoredIds = locationOptions
+                .filter(option => storedLocations.includes(option.location))
+                .map(option => option.id);
+
+            state.selectedLocationIds = matchingStoredIds;
+        }
+
+        function modalRows() {
+            return state.modalRowKeys
                 .map(key => flatRows().find(row => row.key === key))
                 .filter(Boolean);
-
-            const locationOptions = availableLocationOptions(modalRows);
-            const validIds = new Set(locationOptions.map(option => option.id));
-            state.modalSelectedLocations = state.modalSelectedLocations.filter(id => validIds.has(id));
-
-            if (state.modalSelectedLocations.length === 0 && locationOptions.length > 0) {
-                state.modalSelectedLocations = locationOptions.map(option => option.id);
-            }
         }
 
         function isOpenStatus(status) {
@@ -1837,6 +1948,8 @@
                 state.selectedRowKeys = [rows[0].key];
             }
 
+            syncReportLocationSelections();
+
             const waitlists = filteredWaitlists();
             if (!waitlists.find(w => w.key === state.selectedWaitlistKey)) {
                 state.selectedWaitlistKey = waitlists[0]?.key || null;
@@ -1850,20 +1963,6 @@
             document.querySelectorAll(".nav-view").forEach(btn => {
                 btn.classList.toggle("active", btn.dataset.view === state.currentView);
             });
-        }
-
-        function renderMetrics() {
-            const rows = filteredRows();
-            const shortageCount = rows.filter(r => r.shortage).length;
-            const lateCount = rows.filter(r => r.late).length;
-            const linkedCount = rows.filter(r => getWaitlistForRow(r.key)).length;
-            const html = [
-                { value: rows.length, label: "Visible schedule rows" },
-                { value: shortageCount, label: "Shortage rows" },
-                { value: lateCount, label: "Late order rows" },
-                { value: linkedCount, label: "Rows linked to waitlist" }
-            ].map(item => `<div class="metric-card"><strong>${item.value}</strong><span>${item.label}</span></div>`).join("");
-            document.getElementById("reportMetrics").innerHTML = html;
         }
 
         function renderPaper() {
@@ -1909,7 +2008,12 @@
                             <div class="mini-box">
                                 <table>
                                     <tr><th>SUB PARTS ON HAND:</th><th style="text-align:right;">${group.subParts.reduce((sum, item) => sum + item.qty, 0).toLocaleString()}</th></tr>
-                                    ${group.subParts.length ? group.subParts.map(item => `<tr><td>${item.id}</td><td style="text-align:right;">${item.qty.toLocaleString()}</td></tr>`).join("") : `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`}
+                                    ${group.subParts.length ? group.subParts.map(item => {
+                                        const location = parseSubPartLocation(item.id);
+                                        const optionId = `${group.part}:${location}`;
+                                        const activeClass = state.selectedLocationIds.includes(optionId) ? "location-option active" : "location-option";
+                                        return `<tr class="${activeClass}" data-report-location-id="${optionId}"><td>${item.id}</td><td style="text-align:right;">${item.qty.toLocaleString()}</td></tr>`;
+                                    }).join("") : `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`}
                                 </table>
                             </div>
                         </div>
@@ -1950,66 +2054,46 @@
                     renderApp();
                 });
             });
+
+            host.querySelectorAll("[data-report-location-id]").forEach(locationEl => {
+                locationEl.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    toggleReportLocation(locationEl.dataset.reportLocationId);
+                });
+            });
         }
 
         function renderSelectedRow() {
             const rows = selectedRows();
             const row = firstSelectedRow();
-            const host = document.getElementById("selectedRowInfo");
-            const callout = document.getElementById("rowWaitlistCallout");
-            const waitlistHost = document.getElementById("selectedWaitlistInfo");
             const waitlistButton = document.getElementById("openWaitlistModalBtn");
 
             if (!row || rows.length === 0) {
-                host.innerHTML = `<div class="info-block" style="grid-column:1/-1;"><span class="mini">Selection</span><strong>No visible lines selected.</strong></div>`;
-                callout.className = "callout";
-                callout.innerHTML = `<span>ℹ</span><div><strong>No lines selected.</strong> Click one or more customer-order lines inside a single part group, then launch the waitlist flow.</div>`;
-                waitlistHost.innerHTML = `<div class="info-block" style="grid-column:1/-1;"><span class="mini">Waitlist State</span><strong>Select at least one line to review or create waitlist records.</strong></div>`;
-                waitlistButton.textContent = "Create / Update Waitlist";
+                document.getElementById("reportSelectionSummary").textContent = "0 selected lines";
+                waitlistButton.textContent = "Queue To Waitlist";
                 return;
             }
 
-            const waitlists = rows.map(item => getWaitlistForRow(item.key)).filter(Boolean);
-            const totalShipQty = rows.reduce((sum, item) => sum + item.shipQty, 0);
-            const locationOptions = availableLocationOptions(rows);
-            host.innerHTML = `
-                <div class="info-block"><span class="mini">Customer</span><strong>${row.customer}</strong></div>
-                <div class="info-block"><span class="mini">Parent Part</span><strong class="mono">${row.part}</strong></div>
-                <div class="info-block"><span class="mini">Selected CO Lines</span><strong>${rows.length}</strong></div>
-                <div class="info-block"><span class="mini">Total Selected Qty</span><strong>${totalShipQty}</strong></div>
-                <div class="info-block"><span class="mini">Available Sub Part Locations</span><strong>${locationOptions.length}</strong></div>
-                <div class="info-block"><span class="mini">Linked Waitlist Rows</span><strong>${waitlists.length}</strong></div>
-                <div class="info-block" style="grid-column:1/-1;"><span class="mini">Selected Lines</span><div class="chip-row" style="margin-top:8px;">${rows.map(item => `<span class="status-pill gold">${item.order} · ${formatDateShort(item.pullDate)} · ${item.shipQty}</span>`).join("")}</div></div>
-            `;
-
+            document.getElementById("reportSelectionSummary").textContent = `${rows.length} selected ${rows.length === 1 ? "line" : "lines"}`;
             waitlistButton.textContent = rows.length > 1
-                ? `Create / Update Waitlist For ${rows.length} Lines`
-                : "Create / Update Waitlist For 1 Line";
+                ? `Queue To Waitlist For ${rows.length} Lines`
+                : "Queue To Waitlist For 1 Line";
+        }
 
-            if (waitlists.length > 0) {
-                callout.className = "callout success";
-                callout.innerHTML = `<span>🔗</span><div><strong>${waitlists.length} linked waitlist record${waitlists.length === 1 ? "" : "s"} found.</strong> The selected lines can be updated together, and the modal will reuse the selected line set plus chosen sub-part locations.</div>`;
-                waitlistHost.innerHTML = `
-                    <div class="info-block"><span class="mini">Selected Lines</span><strong>${rows.length}</strong></div>
-                    <div class="info-block"><span class="mini">Existing Waitlist Entries</span><strong>${waitlists.length}</strong></div>
-                    <div class="info-block"><span class="mini">Problem Status Count</span><strong>${waitlists.filter(item => item.status === "Problem").length}</strong></div>
-                    <div class="info-block"><span class="mini">Accepted Status Count</span><strong>${waitlists.filter(item => item.status === "Accepted").length}</strong></div>
-                    <div class="info-block" style="grid-column:1/-1;"><span class="mini">Selected Line Statuses</span><div class="chip-row" style="margin-top:8px;">${rows.map(item => {
-                        const linked = getWaitlistForRow(item.key);
-                        return `<span class="status-pill ${linked ? statusClass(linked.status) : "gold"}">${item.order} · ${linked ? linked.status : "No record"}</span>`;
-                    }).join("")}</div></div>
-                `;
-            } else {
-                callout.className = "callout warn";
-                callout.innerHTML = `<span>＋</span><div><strong>No linked waitlist records yet.</strong> The user can create waitlist items for the selected lines and choose sub-part locations in the modal without typing a location manually.</div>`;
-                waitlistHost.innerHTML = `
-                    <div class="info-block"><span class="mini">Selected Lines</span><strong>${rows.length}</strong></div>
-                    <div class="info-block"><span class="mini">Parent Part</span><strong class="mono">${row.part}</strong></div>
-                    <div class="info-block"><span class="mini">Sub Part Location Choices</span><strong>${locationOptions.length}</strong></div>
-                    <div class="info-block"><span class="mini">Ready To Create</span><strong>${totalShipQty} total pieces</strong></div>
-                    <div class="info-block" style="grid-column:1/-1;"><span class="mini">Selected Lines</span><div class="chip-row" style="margin-top:8px;">${rows.map(item => `<span class="status-pill gold">${item.order} · ${formatDateShort(item.pullDate)} · ${item.shipQty}</span>`).join("")}</div></div>
-                `;
+        function toggleReportLocation(locationId) {
+            const rows = selectedRows();
+            const locationOptions = availableLocationOptions(rows);
+            if (!locationOptions.find(option => option.id === locationId)) {
+                return;
             }
+
+            if (state.selectedLocationIds.includes(locationId)) {
+                state.selectedLocationIds = state.selectedLocationIds.filter(id => id !== locationId);
+            } else {
+                state.selectedLocationIds = [...state.selectedLocationIds, locationId];
+            }
+
+            renderApp();
         }
 
         function toggleRowSelection(rowKey) {
@@ -2267,11 +2351,10 @@
                 return;
             }
 
-            const rows = state.modalRowKeys
-                .map(key => flatRows().find(row => row.key === key))
-                .filter(Boolean);
+            const rows = modalRows();
             const locationOptions = availableLocationOptions(rows);
             const totalQty = rows.reduce((sum, item) => sum + item.shipQty, 0);
+            const selectedLocationOptions = locationOptions.filter(option => state.selectedLocationIds.includes(option.id));
 
             document.getElementById("modalLineCount").textContent = rows.length === 0
                 ? "No lines selected"
@@ -2283,38 +2366,26 @@
             lineHost.innerHTML = rows.length === 0
                 ? `<div class="selection-empty">Select at least one report line before saving.</div>`
                 : rows.map(row => `
-                    <label class="selection-option active">
-                        <input type="checkbox" data-modal-line-key="${row.key}" checked />
+                    <div class="selection-option active">
                         <div class="selection-copy">
                             <strong>${row.order} · ${formatDateShort(row.pullDate)} · ${row.shipQty} pcs</strong>
                             <span>${row.customerLabel}${row.location ? ` · ${row.location}` : ""}</span>
                         </div>
-                    </label>
+                    </div>
                 `).join("");
 
             locationHost.innerHTML = locationOptions.length === 0
-                ? `<div class="selection-empty">No sub-part locations are available for the current selection.</div>`
-                : locationOptions.map(option => {
-                    const checked = state.modalSelectedLocations.includes(option.id) ? "checked" : "";
-                    const active = checked ? "active" : "";
-                    return `
-                        <label class="selection-option ${active}">
-                            <input type="checkbox" data-modal-location-id="${option.id}" ${checked} />
+                ? `<div class="selection-empty">No selectable part locations were available on the main display for this selection.</div>`
+                : selectedLocationOptions.length === 0
+                    ? `<div class="selection-empty">No part locations are currently selected on the main display. Close this window if you need to change that selection.</div>`
+                    : selectedLocationOptions.map(option => `
+                        <div class="selection-option active">
                             <div class="selection-copy">
                                 <strong>${option.location}</strong>
                                 <span>${option.label} · ${option.qty.toLocaleString()} on hand</span>
                             </div>
-                        </label>
-                    `;
-                }).join("");
-
-            lineHost.querySelectorAll("[data-modal-line-key]").forEach(input => {
-                input.addEventListener("change", () => toggleModalLine(input.dataset.modalLineKey));
-            });
-
-            locationHost.querySelectorAll("[data-modal-location-id]").forEach(input => {
-                input.addEventListener("change", () => toggleModalLocation(input.dataset.modalLocationId));
-            });
+                        </div>
+                    `).join("");
         }
 
         function openWaitlistModal(rowKeys) {
@@ -2327,22 +2398,14 @@
             const row = rows[0];
             const existingWaitlists = rows.map(item => getWaitlistForRow(item.key)).filter(Boolean);
             const waitlist = existingWaitlists[0] || null;
-            const locationOptions = availableLocationOptions(rows);
-            const storedLocations = waitlist ? splitStoredLocations(waitlist.location) : [];
 
             document.getElementById("modalTitle").textContent = existingWaitlists.length > 0 ? "Create / Update Waitlist Entries" : "Create Waitlist Entries";
-            document.getElementById("modalSubtitle").textContent = `${rows.length} selected line${rows.length === 1 ? "" : "s"} · ${row.part} · choose sub-part locations without typing`;
+            document.getElementById("modalSubtitle").textContent = `${rows.length} selected line${rows.length === 1 ? "" : "s"} · ${row.part} · main-display location selection carries into this request`;
             document.getElementById("modalCustomer").value = row.customer;
             document.getElementById("modalPart").value = row.part;
             document.getElementById("modalRequestedBy").value = waitlist?.requestedBy || currentUser();
             document.getElementById("modalStatus").value = waitlist?.status || "Accepted";
             document.getElementById("modalNotes").value = waitlist?.notes || "";
-
-            state.modalSelectedLocations = storedLocations.length > 0
-                ? locationOptions.filter(option => storedLocations.includes(option.location)).map(option => option.id)
-                : locationOptions.map(option => option.id);
-
-            syncModalSelections();
             renderModalSelectionLists();
             document.getElementById("waitlistModal").classList.remove("hidden");
         }
@@ -2350,7 +2413,6 @@
         function closeWaitlistModal() {
             document.getElementById("waitlistModal").classList.add("hidden");
             state.modalRowKeys = [];
-            state.modalSelectedLocations = [];
         }
 
         function saveWaitlist(openQueueAfterSave = false) {
@@ -2360,18 +2422,18 @@
                 return;
             }
 
-            if (state.modalSelectedLocations.length === 0) {
-                showToast("Select at least one sub-part location.");
-                return;
-            }
-
             const rows = keys
                 .map(key => flatRows().find(item => item.key === key))
                 .filter(Boolean);
             const locationOptions = availableLocationOptions(rows);
             const selectedLocationNames = locationOptions
-                .filter(option => state.modalSelectedLocations.includes(option.id))
+                .filter(option => state.selectedLocationIds.includes(option.id))
                 .map(option => option.location);
+
+            if (selectedLocationNames.length === 0 && locationOptions.length > 0) {
+                showToast("Select at least one part location on the main display.");
+                return;
+            }
 
             rows.forEach(row => {
                 state.waitlists[row.key] = {
@@ -2403,49 +2465,10 @@
             }
         }
 
-        function toggleModalLine(rowKey) {
-            const currentRows = state.modalRowKeys
-                .map(key => flatRows().find(item => item.key === key))
-                .filter(Boolean);
-            const targetRow = flatRows().find(item => item.key === rowKey);
-            if (!targetRow) {
-                return;
-            }
-
-            if (state.modalRowKeys.includes(rowKey)) {
-                if (state.modalRowKeys.length === 1) {
-                    return;
-                }
-
-                state.modalRowKeys = state.modalRowKeys.filter(key => key !== rowKey);
-            } else {
-                const firstRow = currentRows[0];
-                if (firstRow && (firstRow.part !== targetRow.part || firstRow.customer !== targetRow.customer)) {
-                    state.modalRowKeys = [targetRow.key];
-                } else {
-                    state.modalRowKeys = [...state.modalRowKeys, targetRow.key];
-                }
-            }
-
-            syncModalSelections();
-            renderModalSelectionLists();
-        }
-
-        function toggleModalLocation(locationId) {
-            if (state.modalSelectedLocations.includes(locationId)) {
-                state.modalSelectedLocations = state.modalSelectedLocations.filter(id => id !== locationId);
-            } else {
-                state.modalSelectedLocations = [...state.modalSelectedLocations, locationId];
-            }
-
-            renderModalSelectionLists();
-        }
-
         function renderApp() {
             renderSelectors();
             ensureSelections();
             renderView();
-            renderMetrics();
             renderReportVisibility();
             renderPaper();
             renderSelectedRow();
@@ -2482,13 +2505,26 @@
             document.getElementById("searchInput").addEventListener("input", (e) => { state.search = e.target.value; renderApp(); });
             document.getElementById("shortagesOnly").addEventListener("change", (e) => { state.shortagesOnly = e.target.checked; renderApp(); });
             document.getElementById("unpulledOnly").addEventListener("change", (e) => { state.unpulledOnly = e.target.checked; renderApp(); });
+            document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+                state.search = "";
+                state.sort = "pullDate";
+                state.shortagesOnly = false;
+                state.unpulledOnly = true;
+                renderApp();
+            });
+            document.getElementById("clearCustomerBtn").addEventListener("click", () => {
+                state.customer = "VOLVO";
+                state.selectedRowKeys = [];
+                state.selectedLocationIds = [];
+                renderApp();
+            });
 
             document.getElementById("openWaitlistModalBtn").addEventListener("click", () => openWaitlistModal(state.selectedRowKeys));
             document.getElementById("jumpToWaitlistBtn").addEventListener("click", () => { state.currentView = "waitlist"; const row = firstSelectedRow(); if (row && state.waitlists[row.key]) state.selectedWaitlistKey = row.key; renderApp(); });
-            document.getElementById("goWaitlistBtn").addEventListener("click", () => { state.currentView = "waitlist"; renderApp(); });
             document.getElementById("goFloorPrintBtn").addEventListener("click", () => { state.currentView = "floor-copy"; renderApp(); });
             document.getElementById("goPullListBtn").addEventListener("click", () => { state.currentView = "pull-list"; renderApp(); });
             document.getElementById("refreshReportBtn").addEventListener("click", () => showToast("Report refreshed from Visual (mocked)."));
+            document.getElementById("showApplicationBtn").addEventListener("click", () => window.open("./application-shell.html", "_blank", "noopener"));
             document.getElementById("showVolvoBtn").addEventListener("click", () => { state.customer = "VOLVO"; state.currentView = "report"; renderApp(); });
             document.getElementById("showMackBtn").addEventListener("click", () => { state.customer = "MACK"; state.currentView = "report"; renderApp(); });
 

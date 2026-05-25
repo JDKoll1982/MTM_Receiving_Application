@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;

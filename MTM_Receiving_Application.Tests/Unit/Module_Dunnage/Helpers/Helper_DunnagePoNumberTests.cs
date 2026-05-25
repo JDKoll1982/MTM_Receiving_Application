@@ -1,6 +1,5 @@
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Dunnage.Helpers;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Helpers;
 
@@ -21,7 +20,9 @@ public sealed class Helper_DunnagePoNumberTests
     [InlineData("PO-12A")]
     [InlineData("Not a PO")]
     [InlineData("PO-1234567")]
-    public void FormatForEntry_ShouldLeaveUnsupportedValuesTrimmedButOtherwiseUnchanged(string input)
+    public void FormatForEntry_ShouldLeaveUnsupportedValuesTrimmedButOtherwiseUnchanged(
+        string input
+    )
     {
         Helper_DunnagePoNumber.FormatForEntry(input).Should().Be(input.Trim());
     }

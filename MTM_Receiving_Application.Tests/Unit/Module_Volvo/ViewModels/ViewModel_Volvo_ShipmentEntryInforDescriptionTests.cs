@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Moq;
@@ -15,7 +11,6 @@ using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Queries;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Volvo.ViewModels;
 

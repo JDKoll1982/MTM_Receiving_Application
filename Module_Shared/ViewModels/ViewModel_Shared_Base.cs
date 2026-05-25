@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -51,6 +52,19 @@ public abstract partial class ViewModel_Shared_Base : ObservableObject
         _notificationService.ShowStatus(message, severity);
 
         // Update local properties
+        StatusMessage = message;
+        StatusSeverity = severity;
+        IsStatusOpen = true;
+    }
+
+    protected void ShowStatusWithAction(
+        string message,
+        InfoBarSeverity severity,
+        string actionLabel,
+        Func<Task> action
+    )
+    {
+        _notificationService.ShowStatusWithAction(message, severity, actionLabel, action);
         StatusMessage = message;
         StatusSeverity = severity;
         IsStatusOpen = true;

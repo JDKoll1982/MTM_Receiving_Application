@@ -13,7 +13,6 @@ using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Settings;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -109,7 +108,18 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         _service = service;
         _shipRecToolsSettings = shipRecToolsSettings;
         _isMockDataEnabled = appSettings.GetUseInforVisualMockData();
-        SetLocalStatus("Enter a warehouse location or part number and click Search.");
+    }
+
+    /// <summary>
+    /// Shows the shared guidance message for the Material Availability Board when it becomes active.
+    /// </summary>
+    public void ActivateView()
+    {
+        SetLocalStatus(
+            IsSearchByLocationMode
+                ? "Enter a warehouse location and click Search."
+                : "Enter a part number and click Search."
+        );
     }
 
     [RelayCommand]
@@ -493,9 +503,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         InfoBarSeverity severity = InfoBarSeverity.Informational
     )
     {
-        StatusMessage = message ?? string.Empty;
-        StatusSeverity = severity;
-        IsStatusOpen = string.IsNullOrWhiteSpace(StatusMessage) is false;
+        ShowStatus(message ?? string.Empty, severity);
     }
 
     private sealed class NullNotificationServiceShim : IService_Notification
@@ -505,6 +513,10 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         public InfoBarSeverity StatusSeverity => InfoBarSeverity.Informational;
 
         public bool IsStatusOpen { get; set; }
+
+        public string StatusActionLabel => string.Empty;
+
+        public bool IsStatusActionVisible => false;
 
         public event PropertyChangedEventHandler? PropertyChanged
         {
@@ -516,5 +528,19 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
             string message,
             InfoBarSeverity severity = InfoBarSeverity.Informational
         ) { }
+
+        public void ShowStatusWithAction(
+            string message,
+            InfoBarSeverity severity,
+            string actionLabel,
+            Func<Task> action
+        ) { }
+
+        public Task ExecuteStatusActionAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void ClearStatusAction() { }
     }
 }

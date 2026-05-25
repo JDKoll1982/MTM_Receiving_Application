@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FluentAssertions;
 using MediatR;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Volvo.ViewModels;
 

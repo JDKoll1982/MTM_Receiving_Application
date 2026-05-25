@@ -1,6 +1,5 @@
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Receiving.Models;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Models;
 
@@ -9,11 +8,7 @@ public sealed class Model_ReceivingLoadTests
     [Fact]
     public void WeightPerPackageValueDisplay_ShouldUseCeilingAndUnitOfMeasure_WhenPackagesPerLoadChanges()
     {
-        var load = new Model_ReceivingLoad
-        {
-            UnitOfMeasure = "ea",
-            WeightQuantity = 10,
-        };
+        var load = new Model_ReceivingLoad { UnitOfMeasure = "ea", WeightQuantity = 10 };
 
         load.PackagesPerLoad = 3;
 

@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -8,7 +6,6 @@ using MTM_Receiving_Application.Module_Volvo.Data;
 using MTM_Receiving_Application.Module_Volvo.Handlers.Commands;
 using MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 using MTM_Receiving_Application.Module_Volvo.Services;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Volvo.Handlers;
 

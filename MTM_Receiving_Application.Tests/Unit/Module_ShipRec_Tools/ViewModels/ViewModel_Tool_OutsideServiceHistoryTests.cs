@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -7,12 +5,34 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.ViewModels;
 
 public sealed class ViewModel_Tool_OutsideServiceHistoryTests
 {
+    [Fact]
+    public void ActivateView_ShouldShowSharedSearchStatus()
+    {
+        var notificationServiceMock = new Mock<IService_Notification>();
+        var viewModel = new ViewModel_Tool_OutsideServiceHistory(
+            new Mock<IService_Tool_OutsideServiceHistory>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            notificationServiceMock.Object
+        );
+
+        viewModel.ActivateView();
+
+        notificationServiceMock.Verify(
+            service =>
+                service.ShowStatus(
+                    "Enter a part number and click Search.",
+                    MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Informational
+                ),
+            Times.Once
+        );
+    }
+
     [Fact]
     public async Task SearchAsync_ShouldCombineMatchingVendorRows_WhenSearchingByPart()
     {

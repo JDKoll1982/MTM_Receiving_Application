@@ -386,6 +386,26 @@ All spacing must follow 8px increments:
 
 ### Volvo Module
 
+- **Brand Symbol (2021–present)**: Flat black roundel — a circle outline with a diagonal arrow
+  emerging from the top-right of the circle at ~45° (the ancient iron/Mars alchemical symbol).
+  Completely flat: no gradients, no shadows, no 3D chrome effects. Render in SVG as:
+  ```
+  <!-- Volvo roundel: circle + diagonal arrow, flat black -->
+  <circle cx="CX" cy="CY" r="R" fill="none" stroke="#000000" stroke-width="2.5"/>
+  <!-- arrow shaft exiting circle at ~45° upper-right -->
+  <line x1="CX+0.7R" y1="CY-0.7R" x2="CX+1.35R" y2="CY-1.35R"
+        stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- arrowhead (two short lines) -->
+  <line x1="CX+1.35R" y1="CY-1.35R" x2="CX+1.0R"  y2="CY-1.35R"
+        stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="CX+1.35R" y1="CY-1.35R" x2="CX+1.35R" y2="CY-1.0R"
+        stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+  ```
+- **Wordmark**: `VOLVO` in all-caps, spaced serif typeface (thin square serifs), flat black,
+  placed to the right of the roundel or below it. Letter-spacing: wide (0.2em equivalent).
+  Do NOT use the old 3D chrome/silver + blue-banner style (that was pre-2021).
+- **Module Header Color**: Use `#000000` (black) for the Volvo brand accent rather than
+  `#0078D4`; the Volvo identity is strictly monochrome black-on-white.
 - **Part Numbers**: `V-EMB-XXX` format in monospace
 - **Skid Counts**: Numeric input fields
 - **Component Explosion**: Calculated display (read-only preview)

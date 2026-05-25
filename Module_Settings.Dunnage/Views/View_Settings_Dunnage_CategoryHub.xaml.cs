@@ -2,7 +2,6 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
 

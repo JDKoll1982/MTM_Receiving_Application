@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
 using Microsoft.UI.Xaml.Media;

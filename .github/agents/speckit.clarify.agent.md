@@ -20,6 +20,16 @@ Goal: Detect and reduce ambiguity or missing decision points in the active featu
 
 Note: This clarification workflow is expected to run (and be completed) BEFORE invoking `/speckit.plan`. If the user explicitly states they are skipping clarification (e.g., exploratory spike), you may proceed, but must warn that downstream rework risk increases.
 
+## Major Assumption Approval
+
+If continuing would require a **major assumption**, do not proceed silently and do not create an assumption file by default. Instead, use the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/prompt-engineer-every-message.instructions.md`.
+
+- Use the same readable markdown layout, `Enhanced Prompt Ready` approval step, and approval options from that instruction.
+- Put the blocked work in `**🎯 Task**`.
+- Put the assumption, why it is needed, and the impact if it is wrong in `**📋 Key constraints**`.
+- Put the inferred choice and the main alternative interpretations in `**➕ What was added vs. your original message**`.
+- Wait for approval, correction, skip, or regeneration before continuing.
+
 Execution steps:
 
 1. Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -PathsOnly` from repo root **once** (combined `--json --paths-only` mode / `-Json -PathsOnly`). Parse minimal JSON payload fields:

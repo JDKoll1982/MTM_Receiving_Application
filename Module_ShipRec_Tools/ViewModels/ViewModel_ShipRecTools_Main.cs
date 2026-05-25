@@ -20,6 +20,7 @@ public partial class ViewModel_ShipRecTools_Main
         IViewModel_HeaderTitleProvider
 {
     private readonly IService_ShipRecTools_Navigation _navigationService;
+    private readonly IService_HeaderBackNavigation _headerBackNavigation;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
@@ -36,8 +37,12 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isMaterialAvailabilityBoardVisible;
 
+    [ObservableProperty]
+    private bool _isCustomerPullPackVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
+        IService_HeaderBackNavigation headerBackNavigation,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -45,7 +50,9 @@ public partial class ViewModel_ShipRecTools_Main
         : base(errorHandler, logger, notificationService)
     {
         ArgumentNullException.ThrowIfNull(navigationService);
+        ArgumentNullException.ThrowIfNull(headerBackNavigation);
         _navigationService = navigationService;
+        _headerBackNavigation = headerBackNavigation;
     }
 
     /// <summary>
@@ -69,11 +76,19 @@ public partial class ViewModel_ShipRecTools_Main
                 case "OutsideServiceHistory":
                     IsOutsideServiceHistoryVisible = true;
                     CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
                     break;
 
                 case "MaterialAvailabilityBoard":
                     IsMaterialAvailabilityBoardVisible = true;
                     CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "CustomerPullPack":
+                    IsCustomerPullPackVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
                     break;
 
                 default:
@@ -102,7 +117,20 @@ public partial class ViewModel_ShipRecTools_Main
         HideAllViews();
         IsToolSelectionVisible = true;
         CurrentToolTitle = "Ship/Rec Tools";
+        _headerBackNavigation.ClearBackAction();
         _logger.LogInfo("Returned to ShipRec tool selection.");
+    }
+
+    private void ShowHeaderBackButton()
+    {
+        _headerBackNavigation.RegisterBackAction(
+            () =>
+            {
+                ShowToolSelection();
+                return Task.CompletedTask;
+            },
+            "Back to Tools"
+        );
     }
 
     private void HideAllViews()
@@ -110,5 +138,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsToolSelectionVisible = false;
         IsOutsideServiceHistoryVisible = false;
         IsMaterialAvailabilityBoardVisible = false;
+        IsCustomerPullPackVisible = false;
     }
 }

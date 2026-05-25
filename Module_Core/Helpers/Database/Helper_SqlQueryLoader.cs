@@ -9,6 +9,11 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
     /// </summary>
     public static class Helper_SqlQueryLoader
     {
+        private static string NormalizeResourcePath(string resourcePath)
+        {
+            return resourcePath.Replace('\\', '.').Replace('/', '.');
+        }
+
         /// <summary>
         /// Loads a SQL query from an embedded resource file
         /// </summary>
@@ -22,8 +27,9 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database
             {
                 // Get the executing assembly
                 var assembly = Assembly.GetExecutingAssembly();
+                var normalizedResourcePath = NormalizeResourcePath(resourcePath);
                 var resourceName =
-                    $"MTM_Receiving_Application.Database.InforVisualScripts.Queries.{resourcePath}";
+                    $"MTM_Receiving_Application.Database.InforVisualScripts.Queries.{normalizedResourcePath}";
 
                 using var stream = assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)

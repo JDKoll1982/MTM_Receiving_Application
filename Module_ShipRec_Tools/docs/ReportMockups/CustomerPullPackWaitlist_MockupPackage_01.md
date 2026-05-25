@@ -115,6 +115,8 @@ This page should feel like the current Crystal report translated into an interac
 - Prefer `DataGrid`, `ComboBox`, `AutoSuggestBox`, `InfoBar`, `CommandBar`, and `Expander` style solutions where appropriate.
 - Keep the page dense and practical, not airy or consumer-app-like.
 - Maintain a clear distinction between report data from Visual and waitlist workflow actions from MTM.
+- Do not add screenshot-derived side panels such as selected-line summary cards or waitlist snapshot cards beside the report.
+- Place the waitlist actions in a dedicated row below the crystal-style report layout.
 
 ---
 

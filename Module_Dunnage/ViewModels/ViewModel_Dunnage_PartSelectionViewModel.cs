@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
@@ -175,9 +174,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     /// Tooltip for the display-format toggle that describes what clicking it will do.
     /// </summary>
     public string DisplayFormatToggleTooltip =>
-        IsImageDisplayPreferred
-            ? "Switch to drop-down list view"
-            : "Switch to image card view";
+        IsImageDisplayPreferred ? "Switch to drop-down list view" : "Switch to image card view";
 
     /// <summary>
     /// Helper property for UI binding
@@ -938,7 +935,10 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         return !string.IsNullOrWhiteSpace(result.ErrorMessage)
             && (
                 result.ErrorMessage.Contains("already exists", StringComparison.OrdinalIgnoreCase)
-                || result.ErrorMessage.Contains("Duplicate entry", StringComparison.OrdinalIgnoreCase)
+                || result.ErrorMessage.Contains(
+                    "Duplicate entry",
+                    StringComparison.OrdinalIgnoreCase
+                )
             );
     }
 

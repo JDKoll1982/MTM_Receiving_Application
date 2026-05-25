@@ -69,6 +69,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// Moves active label queue rows to history and clears the queue.
         /// </summary>
         /// <param name="archivedBy">User performing the archive action</param>
+        /// <param name="employeeNumber"></param>
+        /// <param name="clearAllRows"></param>
         /// <returns>DAO result containing number of rows moved</returns>
         public Task<Model_Dao_Result<int>> ClearLabelDataToHistoryAsync(
             string archivedBy,

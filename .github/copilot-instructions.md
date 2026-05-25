@@ -42,11 +42,11 @@ Manufacturing receiving operations desktop application for streamlined label gen
 
 ### 🛑 ASSUMPTION DOCUMENTATION — REQUIRED BEFORE PROCEEDING
 
-Whenever the AI agent is about to make a **major assumption** during coding or planning, it **MUST** first create an assumption file for the user to review before continuing. Do **NOT** proceed with implementation until the user has confirmed, corrected, or approved the assumptions.
+Whenever the AI agent is about to make a **major assumption** during coding or planning, it **MUST** pause and present the assumption to the user using the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/prompt-engineer-every-message.instructions.md`. Do **NOT** proceed until the user has confirmed, corrected, or approved the assumptions.
 
 **This rule applies in ALL modes, including Noob Mode.**
 
-**Examples of major assumptions that require a file:**
+**Examples of major assumptions that require approval:**
 
 - Inferring missing or ambiguous requirements
 - Choosing one implementation approach when multiple valid ones exist
@@ -56,19 +56,18 @@ Whenever the AI agent is about to make a **major assumption** during coding or p
 - Inferring the scope of a refactor, migration, or architectural change
 - Assuming which module, service, or DAO should own a new piece of logic
 
-**File location:** `.github/assumptions/`
+**Required interaction pattern:**
 
-**File naming format:** `MMDDYYYY-HHMMam/pm-Assumptions.md`
+- Use `vscode_askQuestions` before continuing.
+- Use the same chat-facing layout, `Enhanced Prompt Ready` approval step, and approval options as `.github/instructions/prompt-engineer-every-message.instructions.md`.
+- Keep the prompt readable and user-facing rather than writing an assumption file.
+- Encode the assumption details into that structure:
+    - `**🎯 Task**` — the work that is blocked by the assumption
+    - `**📋 Key constraints**` — the assumption itself, why it is needed, and the impact if it is wrong
+    - `**➕ What was added vs. your original message**` — the inferred choice and the main alternative interpretations considered
+- Wait for the user to approve, adjust, skip, or regenerate before proceeding.
 
-**Example filename:** `03212026-0101PM-Assumptions.md`
-
-**Required file contents:**
-
-1. A numbered list of each assumption being made
-2. Why the assumption is needed (what information is missing or ambiguous)
-3. The potential impact if the assumption turns out to be wrong
-4. Alternative interpretations the agent considered
-5. An explicit request for the user to confirm, correct, or clarify before work continues
+**Do not create an assumption file unless the user explicitly asks for one.**
 
 ---
 

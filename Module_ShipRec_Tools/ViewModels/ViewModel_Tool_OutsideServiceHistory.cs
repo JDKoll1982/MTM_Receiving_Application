@@ -105,6 +105,19 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
         _service = service;
     }
 
+    /// <summary>
+    /// Shows the shared guidance message for the Outside Service History tool when it becomes active.
+    /// </summary>
+    public void ActivateView()
+    {
+        ShowStatus(
+            IsSearchByPartMode
+                ? "Enter a part number and click Search."
+                : "Enter a vendor name and click Search.",
+            InfoBarSeverity.Informational
+        );
+    }
+
     // ─── Commands ───────────────────────────────────────────────────────────
 
     [RelayCommand]
@@ -435,7 +448,9 @@ public partial class ViewModel_Tool_OutsideServiceHistory : ViewModel_Shared_Bas
             .ToList();
     }
 
-    private static Model_OutsideServiceHistory CloneHistoryRecord(Model_OutsideServiceHistory source)
+    private static Model_OutsideServiceHistory CloneHistoryRecord(
+        Model_OutsideServiceHistory source
+    )
     {
         return new Model_OutsideServiceHistory
         {

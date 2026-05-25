@@ -14,191 +14,59 @@
 
     <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
         <StackPanel Padding="8,0,8,24" Spacing="32">
-            <!--  Header  -->
-            <StackPanel Spacing="8">
-                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Shipping / Receiving Tools" />
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource BodyTextBlockStyle}"
-                    Text="Select a utility tool below to get started." />
-            </StackPanel>
 
-            <!--  Lookup Tools Category  -->
-            <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.HasLookupTools, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon
-                        FontSize="16"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE721;" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Lookup Tools" />
-                </StackPanel>
-
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.LookupTools, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            ItemsStretch="Uniform"
-                            MinColumnSpacing="12"
-                            MinItemHeight="180"
-                            MinItemWidth="240"
-                            MinRowSpacing="12" />
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_ToolDefinition">
-                            <Button
-                                MinHeight="160"
-                                Padding="20"
-                                HorizontalAlignment="Stretch"
-                                AutomationProperties.Name="{x:Bind Title}"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                Command="{Binding ElementName=UserControlRoot, Path=ViewModel.SelectToolCommand}"
-                                CommandParameter="{x:Bind ToolKey}"
-                                CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" Spacing="12">
-                                    <FontIcon
-                                        HorizontalAlignment="Center"
-                                        FontSize="40"
-                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Glyph="{x:Bind IconGlyph}" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        Text="{x:Bind Title}" />
-                                    <TextBlock
-                                        MaxWidth="240"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind Description}"
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </StackPanel>
-
-            <!--  Analysis Tools Category  -->
-            <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.HasAnalysisTools, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon
-                        FontSize="16"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE9D9;" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Analysis Tools" />
-                </StackPanel>
-
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AnalysisTools, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            ItemsStretch="Uniform"
-                            MinColumnSpacing="12"
-                            MinItemHeight="180"
-                            MinItemWidth="240"
-                            MinRowSpacing="12" />
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_ToolDefinition">
-                            <Button
-                                MinHeight="160"
-                                Padding="20"
-                                HorizontalAlignment="Stretch"
-                                AutomationProperties.Name="{x:Bind Title}"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                Command="{Binding ElementName=UserControlRoot, Path=ViewModel.SelectToolCommand}"
-                                CommandParameter="{x:Bind ToolKey}"
-                                CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" Spacing="12">
-                                    <FontIcon
-                                        HorizontalAlignment="Center"
-                                        FontSize="40"
-                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Glyph="{x:Bind IconGlyph}" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        Text="{x:Bind Title}" />
-                                    <TextBlock
-                                        MaxWidth="240"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind Description}"
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </StackPanel>
-
-            <!--  Utility Tools Category  -->
-            <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.HasUtilityTools, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon
-                        FontSize="16"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE90F;" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Utilities" />
-                </StackPanel>
-
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.UtilityTools, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            ItemsStretch="Uniform"
-                            MinColumnSpacing="12"
-                            MinItemHeight="160"
-                            MinItemWidth="240"
-                            MinRowSpacing="12" />
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_ToolDefinition">
-                            <Button
-                                MinHeight="160"
-                                Padding="20"
-                                HorizontalAlignment="Stretch"
-                                AutomationProperties.Name="{x:Bind Title}"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                Command="{Binding ElementName=UserControlRoot, Path=ViewModel.SelectToolCommand}"
-                                CommandParameter="{x:Bind ToolKey}"
-                                CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" Spacing="12">
-                                    <FontIcon
-                                        HorizontalAlignment="Center"
-                                        FontSize="40"
-                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Glyph="{x:Bind IconGlyph}" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        Text="{x:Bind Title}" />
-                                    <TextBlock
-                                        MaxWidth="240"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="{x:Bind Description}"
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </StackPanel>
+            <!--  Tools  -->
+            <GridView
+                HorizontalAlignment="Center"
+                IsItemClickEnabled="True"
+                ItemClick="ToolCard_ItemClick"
+                ItemsSource="{x:Bind ViewModel.AllTools, Mode=OneWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.HorizontalScrollMode="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollMode="Disabled"
+                SelectionMode="None">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.ItemContainerStyle>
+                    <Style TargetType="GridViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    </Style>
+                </GridView.ItemContainerStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_ToolDefinition">
+                        <Border
+                            Padding="20"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <StackPanel HorizontalAlignment="Center" Spacing="12">
+                                <FontIcon
+                                    HorizontalAlignment="Center"
+                                    FontSize="40"
+                                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                    Glyph="{x:Bind IconGlyph}" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind Title}" />
+                                <TextBlock
+                                    MaxWidth="240"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind Description}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

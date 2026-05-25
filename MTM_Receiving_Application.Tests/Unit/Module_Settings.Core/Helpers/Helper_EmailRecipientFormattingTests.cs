@@ -1,7 +1,6 @@
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Settings.Core.Helpers;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Settings.Core.Helpers;
 

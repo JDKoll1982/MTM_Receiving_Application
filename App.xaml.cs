@@ -8,9 +8,7 @@ using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
-using MTM_Receiving_Application.Module_Core.Services.Startup;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
-using MTM_Receiving_Application.Module_Shared.Views;
 using MySql.Data.MySqlClient;
 using Serilog;
 

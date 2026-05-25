@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
 
@@ -64,9 +60,9 @@ public sealed class ViewModel_Receiving_WorkflowTests
         workflow.Raise(service => service.StepChanged += null, workflow.Object, EventArgs.Empty);
 
         viewModel.CurrentHeaderTitle.Should().Be("Receiving - Review & Save");
-        viewModel.CurrentHeaderContextSubtitle.Should().Be(
-            "Review every generated load before saving labels and database records."
-        );
+        viewModel
+            .CurrentHeaderContextSubtitle.Should()
+            .Be("Review every generated load before saving labels and database records.");
     }
 
     private static Mock<IService_ReceivingWorkflow> CreateWorkflowMock()

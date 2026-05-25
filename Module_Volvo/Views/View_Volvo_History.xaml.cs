@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
 

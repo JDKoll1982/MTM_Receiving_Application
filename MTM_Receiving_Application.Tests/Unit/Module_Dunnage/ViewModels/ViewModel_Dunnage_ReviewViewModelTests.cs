@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -8,7 +7,6 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.ViewModels;
 
@@ -18,19 +16,17 @@ public sealed class ViewModel_Dunnage_ReviewViewModelTests
     public async Task LoadSessionLoadsAsync_ShouldNormalizeCurrentLoadPoAndShowVendor_WhenPoExists()
     {
         var workflowService = new Mock<IService_DunnageWorkflow>();
-        workflowService.SetupGet(service => service.CurrentSession).Returns(
-            new Model_DunnageSession
-            {
-                Loads = new ObservableCollection<Model_DunnageLoad>
+        workflowService
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_DunnageSession
                 {
-                    new()
+                    Loads = new ObservableCollection<Model_DunnageLoad>
                     {
-                        PartId = "DUN-100",
-                        PoNumber = "62450",
+                        new() { PartId = "DUN-100", PoNumber = "62450" },
                     },
-                },
-            }
-        );
+                }
+            );
 
         var inforVisualService = new Mock<IService_InforVisual>();
         inforVisualService
@@ -60,19 +56,17 @@ public sealed class ViewModel_Dunnage_ReviewViewModelTests
     public async Task LoadSessionLoadsAsync_ShouldShowNotFoundMessage_WhenPoFormatIsValidButPoDoesNotExist()
     {
         var workflowService = new Mock<IService_DunnageWorkflow>();
-        workflowService.SetupGet(service => service.CurrentSession).Returns(
-            new Model_DunnageSession
-            {
-                Loads = new ObservableCollection<Model_DunnageLoad>
+        workflowService
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_DunnageSession
                 {
-                    new()
+                    Loads = new ObservableCollection<Model_DunnageLoad>
                     {
-                        PartId = "DUN-100",
-                        PoNumber = "PO-066866",
+                        new() { PartId = "DUN-100", PoNumber = "PO-066866" },
                     },
-                },
-            }
-        );
+                }
+            );
 
         var inforVisualService = new Mock<IService_InforVisual>();
         inforVisualService
@@ -92,19 +86,17 @@ public sealed class ViewModel_Dunnage_ReviewViewModelTests
     public async Task LoadSessionLoadsAsync_ShouldHideVendorState_WhenPoIsMalformed()
     {
         var workflowService = new Mock<IService_DunnageWorkflow>();
-        workflowService.SetupGet(service => service.CurrentSession).Returns(
-            new Model_DunnageSession
-            {
-                Loads = new ObservableCollection<Model_DunnageLoad>
+        workflowService
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_DunnageSession
                 {
-                    new()
+                    Loads = new ObservableCollection<Model_DunnageLoad>
                     {
-                        PartId = "DUN-100",
-                        PoNumber = "Nothing Entered",
+                        new() { PartId = "DUN-100", PoNumber = "Nothing Entered" },
                     },
-                },
-            }
-        );
+                }
+            );
 
         var inforVisualService = new Mock<IService_InforVisual>();
         var viewModel = CreateViewModel(workflowService.Object, inforVisualService.Object);
@@ -114,7 +106,10 @@ public sealed class ViewModel_Dunnage_ReviewViewModelTests
         viewModel.CurrentVendorName.Should().BeEmpty();
         viewModel.CurrentVendorErrorMessage.Should().BeEmpty();
         viewModel.HasCurrentVendorState.Should().BeFalse();
-        inforVisualService.Verify(service => service.GetPOWithPartsAsync(It.IsAny<string>()), Times.Never);
+        inforVisualService.Verify(
+            service => service.GetPOWithPartsAsync(It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     private static ViewModel_Dunnage_Review CreateViewModel(

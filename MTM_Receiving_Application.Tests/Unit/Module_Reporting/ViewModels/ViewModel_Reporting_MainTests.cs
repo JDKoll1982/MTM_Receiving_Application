@@ -1,5 +1,3 @@
-using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using FluentAssertions;
 using Moq;
@@ -7,7 +5,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Models;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Reporting.ViewModels;
 
@@ -21,8 +18,10 @@ public sealed class ViewModel_Reporting_MainTests
 
         viewModel.SelectedDateRangePreset = "Yesterday";
 
-        viewModel.StartDate.Date.Should().Be(today.AddDays(-1));
-        viewModel.EndDate.Date.Should().Be(today.AddDays(-1));
+        viewModel.StartDate.Should().HaveValue();
+        viewModel.EndDate.Should().HaveValue();
+        viewModel.StartDate!.Value.Date.Should().Be(today.AddDays(-1));
+        viewModel.EndDate!.Value.Date.Should().Be(today.AddDays(-1));
     }
 
     [Fact]
@@ -33,8 +32,10 @@ public sealed class ViewModel_Reporting_MainTests
 
         viewModel.SelectedDateRangePreset = "Today";
 
-        viewModel.StartDate.Date.Should().Be(today);
-        viewModel.EndDate.Date.Should().Be(today);
+        viewModel.StartDate.Should().HaveValue();
+        viewModel.EndDate.Should().HaveValue();
+        viewModel.StartDate!.Value.Date.Should().Be(today);
+        viewModel.EndDate!.Value.Date.Should().Be(today);
     }
 
     [Fact]
@@ -47,8 +48,10 @@ public sealed class ViewModel_Reporting_MainTests
 
         viewModel.SelectedDateRangePreset = "This Week";
 
-        viewModel.StartDate.Date.Should().Be(today.AddDays(-delta));
-        viewModel.EndDate.Date.Should().Be(today);
+        viewModel.StartDate.Should().HaveValue();
+        viewModel.EndDate.Should().HaveValue();
+        viewModel.StartDate!.Value.Date.Should().Be(today.AddDays(-delta));
+        viewModel.EndDate!.Value.Date.Should().Be(today);
     }
 
     [Fact]
@@ -57,7 +60,8 @@ public sealed class ViewModel_Reporting_MainTests
         var viewModel = CreateViewModel();
 
         viewModel.SelectedDateRangePreset = "Today";
-        viewModel.StartDate = viewModel.StartDate.AddDays(-2);
+        viewModel.StartDate.Should().HaveValue();
+        viewModel.StartDate = viewModel.StartDate!.Value.AddDays(-2);
 
         viewModel.SelectedDateRangePreset.Should().Be("Custom");
     }

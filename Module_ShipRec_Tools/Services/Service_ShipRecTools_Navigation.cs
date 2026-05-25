@@ -92,5 +92,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "CustomerPullPack",
+                Title = "Customer Pull n' Pack",
+                Description =
+                    "Interactive pull-and-pack reporting with linked MTM waitlist workflow for warehouse execution.",
+                IconGlyph = "\uE8A5",
+                Category = Enum_ToolCategory.Utilities,
+                IsAvailable = true,
+            }
+        );
     }
 }

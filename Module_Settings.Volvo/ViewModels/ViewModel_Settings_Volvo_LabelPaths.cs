@@ -6,7 +6,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
-using MTM_Receiving_Application.Module_Volvo.Settings;
 
 namespace MTM_Receiving_Application.Module_Settings.Volvo.ViewModels;
 
@@ -30,7 +29,8 @@ public partial class ViewModel_Settings_Volvo_LabelPaths : ViewModel_Shared_Base
     )
         : base(errorHandler, logger, notificationService)
     {
-        _userLabelSettings = userLabelSettings ?? throw new ArgumentNullException(nameof(userLabelSettings));
+        _userLabelSettings =
+            userLabelSettings ?? throw new ArgumentNullException(nameof(userLabelSettings));
         _labelViewLauncher =
             labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
         Title = "Volvo Label Paths";

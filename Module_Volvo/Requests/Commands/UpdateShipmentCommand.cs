@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Volvo.Requests;
 
 namespace MTM_Receiving_Application.Module_Volvo.Requests.Commands;
 

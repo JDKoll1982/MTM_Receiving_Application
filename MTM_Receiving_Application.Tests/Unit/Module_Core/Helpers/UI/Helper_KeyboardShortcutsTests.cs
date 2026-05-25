@@ -2,7 +2,6 @@ using FluentAssertions;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using Windows.System;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Core.Helpers.UI;
 

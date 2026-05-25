@@ -1,6 +1,5 @@
 using FluentAssertions;
 using MTM_Receiving_Application.Module_Volvo.Models;
-using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Volvo.Models;
 
@@ -38,10 +37,7 @@ public sealed class VolvoShipmentStatusTests
     [Fact]
     public void ModelVolvoShipment_ShouldExposeNormalizedStatusDisplay()
     {
-        var shipment = new Model_VolvoShipment
-        {
-            Status = "Pending",
-        };
+        var shipment = new Model_VolvoShipment { Status = "Pending" };
 
         shipment.Status.Should().Be(VolvoShipmentStatus.PendingPo);
         shipment.StatusDisplay.Should().Be(VolvoShipmentStatus.PendingPoDisplayName);
