@@ -8,8 +8,6 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MySql.Data.MySqlClient;
@@ -27,38 +25,20 @@ public class Dao_CustomerPullPackWaitlist
     };
 
     private readonly string _connectionString;
-    private readonly IService_AppSettings? _appSettings;
     private readonly IService_LoggingUtility? _logger;
-    private readonly IService_InforVisualMockDataCatalog? _mockDataCatalog;
-
-    private bool UseMockData => _appSettings?.GetUseInforVisualMockData() == true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Dao_CustomerPullPackWaitlist"/> class.
     /// </summary>
     /// <param name="connectionString">MySQL application connection string.</param>
-    public Dao_CustomerPullPackWaitlist(string connectionString)
-        : this(connectionString, null, null, null) { }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Dao_CustomerPullPackWaitlist"/> class with optional mock-mode dependencies.
-    /// </summary>
-    /// <param name="connectionString">MySQL application connection string.</param>
-    /// <param name="appSettings">Application settings used to detect mock mode.</param>
-    /// <param name="logger">Optional logger for diagnostics.</param>
-    /// <param name="mockDataCatalog">Optional mock catalog provider.</param>
     public Dao_CustomerPullPackWaitlist(
         string connectionString,
-        IService_AppSettings? appSettings,
-        IService_LoggingUtility? logger,
-        IService_InforVisualMockDataCatalog? mockDataCatalog
+        IService_LoggingUtility? logger = null
     )
     {
         ArgumentNullException.ThrowIfNull(connectionString);
         _connectionString = connectionString;
-        _appSettings = appSettings;
         _logger = logger;
-        _mockDataCatalog = mockDataCatalog;
     }
 
     /// <summary>
@@ -228,27 +208,6 @@ public class Dao_CustomerPullPackWaitlist
         int maxResults = 250
     )
     {
-        if (UseMockData)
-        {
-            _logger?.LogInfo(
-                "[MOCK DATA MODE] Loading Customer Pull n' Pack waitlist queue from mock catalog."
-            );
-            var mockEntries = BuildMockQueueEntries(
-                waitlistId,
-                customerId,
-                requesterUserId,
-                currentOwnerUserId,
-                locationId,
-                statusSet,
-                useDefaultOpenWork,
-                maxResults
-            );
-
-            return Task.FromResult(
-                Model_Dao_Result_Factory.Success(mockEntries, mockEntries.Count)
-            );
-        }
-
         var parameters = new Dictionary<string, object>
         {
             {
@@ -299,32 +258,6 @@ public class Dao_CustomerPullPackWaitlist
             return Model_Dao_Result_Factory.Failure<Model_CustomerPullPack_WaitlistEntry>(
                 "Waitlist ID is required."
             );
-        }
-
-        if (UseMockData)
-        {
-            var mockQueueResult = await GetQueueAsync(
-                waitlistId: waitlistId,
-                useDefaultOpenWork: false,
-                maxResults: 1
-            );
-            if (!mockQueueResult.IsSuccess)
-            {
-                return Model_Dao_Result_Factory.Failure<Model_CustomerPullPack_WaitlistEntry>(
-                    mockQueueResult.ErrorMessage,
-                    mockQueueResult.Exception
-                );
-            }
-
-            var mockEntry = mockQueueResult.Data?.FirstOrDefault();
-            if (mockEntry is null)
-            {
-                return Model_Dao_Result_Factory.Failure<Model_CustomerPullPack_WaitlistEntry>(
-                    "Waitlist item not found."
-                );
-            }
-
-            return Model_Dao_Result_Factory.Success(mockEntry, 1);
         }
 
         var queueResult = await GetQueueAsync(
@@ -424,163 +357,6 @@ public class Dao_CustomerPullPackWaitlist
 
         var names = statusSet.Select(static status => status.ToString()).Distinct().ToList();
         return JsonSerializer.Serialize(names, SerializerOptions);
-    }
-
-    private List<Model_CustomerPullPack_WaitlistEntry> BuildMockQueueEntries(
-        string? waitlistId,
-        string? customerId,
-        string? requesterUserId,
-        string? currentOwnerUserId,
-        string? locationId,
-        IReadOnlyCollection<Enum_CustomerPullPackWaitlistStatus>? statusSet,
-        bool useDefaultOpenWork,
-        int maxResults
-    )
-    {
-        var catalog = _mockDataCatalog ?? new Service_InforVisualMockDataCatalog(_logger);
-        var locationRows = catalog.GetCustomerPullPackLocationRows();
-
-        IEnumerable<Model_CustomerPullPack_WaitlistEntry> entries = catalog
-            .GetCustomerPullPackDemandRows()
-            .Where(static row => row.HasLinkedWaitlist)
-            .Where(static row => string.IsNullOrWhiteSpace(row.LinkedWaitlistId) is false)
-            .Select(row => CreateMockWaitlistEntry(row, locationRows));
-
-        if (string.IsNullOrWhiteSpace(waitlistId) is false)
-        {
-            entries = entries.Where(entry =>
-                string.Equals(
-                    entry.WaitlistId,
-                    waitlistId.Trim(),
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(customerId) is false)
-        {
-            entries = entries.Where(entry =>
-                string.Equals(
-                    entry.CustomerId,
-                    customerId.Trim(),
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(requesterUserId) is false)
-        {
-            entries = entries.Where(entry =>
-                string.Equals(
-                    entry.RequestedByUserId,
-                    requesterUserId.Trim(),
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(currentOwnerUserId) is false)
-        {
-            entries = entries.Where(entry =>
-                string.Equals(
-                    entry.CurrentOwnerUserId,
-                    currentOwnerUserId.Trim(),
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
-        }
-
-        if (string.IsNullOrWhiteSpace(locationId) is false)
-        {
-            entries = entries.Where(entry =>
-                entry.SelectedLocations.Contains(
-                    locationId.Trim(),
-                    StringComparer.OrdinalIgnoreCase
-                )
-            );
-        }
-
-        if (useDefaultOpenWork)
-        {
-            var defaultStatuses = new HashSet<Enum_CustomerPullPackWaitlistStatus>
-            {
-                Enum_CustomerPullPackWaitlistStatus.Requested,
-                Enum_CustomerPullPackWaitlistStatus.Accepted,
-                Enum_CustomerPullPackWaitlistStatus.Problem,
-            };
-            entries = entries.Where(entry => defaultStatuses.Contains(entry.CurrentStatus));
-        }
-        else if (statusSet is not null && statusSet.Count > 0)
-        {
-            var normalizedStatuses = new HashSet<Enum_CustomerPullPackWaitlistStatus>(statusSet);
-            entries = entries.Where(entry => normalizedStatuses.Contains(entry.CurrentStatus));
-        }
-
-        return entries
-            .OrderBy(entry => entry.CustomerId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(entry => entry.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(entry => entry.ParentPartId, StringComparer.OrdinalIgnoreCase)
-            .Take(maxResults)
-            .ToList();
-    }
-
-    private static Model_CustomerPullPack_WaitlistEntry CreateMockWaitlistEntry(
-        Model_InforVisualCustomerPullPackDemandRow row,
-        IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
-    )
-    {
-        var selectedLocations = locationRows
-            .Where(location =>
-                string.Equals(
-                    location.SourceLineKey,
-                    row.SourceLineKey,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            )
-            .Where(static location => location.InitiallySelected)
-            .Select(static location => location.LocationId)
-            .Where(static locationId => string.IsNullOrWhiteSpace(locationId) is false)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        var hasAnyLocationRows = locationRows.Any(location =>
-            string.Equals(
-                location.SourceLineKey,
-                row.SourceLineKey,
-                StringComparison.OrdinalIgnoreCase
-            )
-        );
-
-        var status = ParseStatus(row.LinkedWaitlistStatus);
-        DateTime? completionTimestamp =
-            status == Enum_CustomerPullPackWaitlistStatus.Completed ? row.PullDate : null;
-
-        return new Model_CustomerPullPack_WaitlistEntry
-        {
-            WaitlistId = row.LinkedWaitlistId,
-            SourceLineKey = row.SourceLineKey,
-            CustomerId = row.CustomerId,
-            CustomerName = row.CustomerName,
-            CustomerOrderId = row.CustomerOrderId,
-            ParentPartId = row.ParentPartId,
-            RequestedQuantity = row.QuantityToPack,
-            SelectedLocations = selectedLocations,
-            RequestedByUserId = "mock.requester",
-            RequestedByDisplayName = "Mock Requester",
-            RequesterContextNote = row.RequesterNote,
-            CurrentStatus = status,
-            CurrentOwnerUserId = string.Empty,
-            CurrentOwnerDisplayName = string.Empty,
-            LocationReviewFlag = hasAnyLocationRows is false,
-            ProblemReason = Enum_CustomerPullPackProblemReason.None,
-            HandlerNote = string.Empty,
-            CompletionUserId = completionTimestamp.HasValue ? "mock.handler" : string.Empty,
-            CompletionTimestamp = completionTimestamp,
-            LastUpdatedByUserId = "mock.catalog",
-            LastUpdatedTimestamp = row.PullDate,
-            RequestTimestamp = row.PullDate,
-            RecheckIndicator = row.RecheckIndicator,
-        };
     }
 
     private static List<string> SplitLocations(string joinedLocations)

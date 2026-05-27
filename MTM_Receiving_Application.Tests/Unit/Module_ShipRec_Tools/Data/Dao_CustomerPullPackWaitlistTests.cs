@@ -1,23 +1,20 @@
 using FluentAssertions;
 using Moq;
-using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.Data;
 
-public sealed class Dao_CustomerPullPackWaitlistTests
+public sealed class Service_CustomerPullPackMockWaitlistSourceTests
 {
     [Fact]
-    public async Task GetQueueAsync_ShouldReturnMockEntries_WhenMockModeIsEnabled()
+    public async Task GetQueueAsync_ShouldReturnSeededMockEntries()
     {
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(true);
-
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
+            .Setup(service => service.GetDemandRows())
             .Returns([
                 new Model_InforVisualCustomerPullPackDemandRow
                 {
@@ -35,7 +32,7 @@ public sealed class Dao_CustomerPullPackWaitlistTests
                 },
             ]);
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackLocationRows())
+            .Setup(service => service.GetLocationRows())
             .Returns([
                 new Model_InforVisualCustomerPullPackLocationRow
                 {
@@ -49,14 +46,9 @@ public sealed class Dao_CustomerPullPackWaitlistTests
                 },
             ]);
 
-        var dao = new Dao_CustomerPullPackWaitlist(
-            "Server=localhost;",
-            appSettingsMock.Object,
-            new Mock<IService_LoggingUtility>().Object,
-            mockCatalog.Object
-        );
+        var service = new Service_CustomerPullPackMockWaitlistSource(mockCatalog.Object);
 
-        var result = await dao.GetQueueAsync(customerId: "VOLVO");
+        var result = await service.GetQueueAsync(customerId: "VOLVO");
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().ContainSingle();
@@ -66,14 +58,11 @@ public sealed class Dao_CustomerPullPackWaitlistTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnMockEntry_WhenMockModeIsEnabled()
+    public async Task GetByIdAsync_ShouldReturnSeededMockEntry()
     {
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(true);
-
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
+            .Setup(service => service.GetDemandRows())
             .Returns([
                 new Model_InforVisualCustomerPullPackDemandRow
                 {
@@ -91,17 +80,12 @@ public sealed class Dao_CustomerPullPackWaitlistTests
                 },
             ]);
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackLocationRows())
+            .Setup(service => service.GetLocationRows())
             .Returns(Array.Empty<Model_InforVisualCustomerPullPackLocationRow>());
 
-        var dao = new Dao_CustomerPullPackWaitlist(
-            "Server=localhost;",
-            appSettingsMock.Object,
-            new Mock<IService_LoggingUtility>().Object,
-            mockCatalog.Object
-        );
+        var service = new Service_CustomerPullPackMockWaitlistSource(mockCatalog.Object);
 
-        var result = await dao.GetByIdAsync("CPP-WL-0002");
+        var result = await service.GetByIdAsync("CPP-WL-0002");
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();

@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
@@ -16,11 +16,13 @@ public class Query_CustomerPullPackLinkedWaitlistHandler
         Model_Dao_Result<Model_CustomerPullPack_WaitlistEntry>
     >
 {
-    private readonly Dao_CustomerPullPackWaitlist _waitlistDao;
+    private readonly IService_CustomerPullPackWaitlistSource _waitlistSource;
 
-    public Query_CustomerPullPackLinkedWaitlistHandler(Dao_CustomerPullPackWaitlist waitlistDao)
+    public Query_CustomerPullPackLinkedWaitlistHandler(
+        IService_CustomerPullPackWaitlistSource waitlistSource
+    )
     {
-        _waitlistDao = waitlistDao;
+        _waitlistSource = waitlistSource;
     }
 
     public Task<Model_Dao_Result<Model_CustomerPullPack_WaitlistEntry>> Handle(
@@ -28,6 +30,6 @@ public class Query_CustomerPullPackLinkedWaitlistHandler
         CancellationToken cancellationToken
     )
     {
-        return _waitlistDao.GetByIdAsync(request.WaitlistId);
+        return _waitlistSource.GetByIdAsync(request.WaitlistId);
     }
 }

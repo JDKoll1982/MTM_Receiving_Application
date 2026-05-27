@@ -7,15 +7,13 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_Core.Services.Database;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
 
 /// <summary>
-/// Read-only data access for Customer Pull n' Pack demand.
-/// Loads the live Infor Visual demand query and falls back to the JSON-backed mock catalog when mock mode is enabled.
+/// Read-only data access for live Customer Pull n' Pack demand from Infor Visual.
 /// </summary>
 public class Dao_CustomerPullPackDemand
 {
@@ -24,33 +22,22 @@ public class Dao_CustomerPullPackDemand
     private const string DefaultWarehouseCode = "002";
 
     private readonly string _inforVisualConnectionString;
-    private readonly IService_AppSettings _appSettings;
     private readonly IService_LoggingUtility? _logger;
-    private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
-
-    private bool UseMockData => _appSettings.GetUseInforVisualMockData();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Dao_CustomerPullPackDemand"/> class.
     /// </summary>
     /// <param name="inforVisualConnectionString">Read-only Infor Visual SQL Server connection string.</param>
-    /// <param name="appSettings">Application settings service used to detect mock mode.</param>
     /// <param name="logger">Optional logger for diagnostics.</param>
-    /// <param name="mockDataCatalog">Optional mock catalog provider.</param>
     public Dao_CustomerPullPackDemand(
         string inforVisualConnectionString,
-        IService_AppSettings appSettings,
-        IService_LoggingUtility? logger = null,
-        IService_InforVisualMockDataCatalog? mockDataCatalog = null
+        IService_LoggingUtility? logger = null
     )
     {
         ValidateReadOnlyConnection(inforVisualConnectionString);
-        ArgumentNullException.ThrowIfNull(appSettings);
 
         _inforVisualConnectionString = inforVisualConnectionString;
-        _appSettings = appSettings;
         _logger = logger;
-        _mockDataCatalog = mockDataCatalog ?? new Service_InforVisualMockDataCatalog(logger);
     }
 
     /// <summary>
@@ -76,14 +63,6 @@ public class Dao_CustomerPullPackDemand
             return Model_Dao_Result_Factory.Failure<List<Model_CustomerPullPack_DemandLine>>(
                 "DateTo cannot be earlier than DateFrom."
             );
-        }
-
-        if (UseMockData)
-        {
-            _logger?.LogInfo(
-                $"[MOCK DATA MODE] Loading Customer Pull n' Pack demand for customer '{filter.CustomerId}'."
-            );
-            return Model_Dao_Result_Factory.Success(CreateMockDemand(filter));
         }
 
         try
@@ -156,7 +135,7 @@ public class Dao_CustomerPullPackDemand
             }
 
             return Model_Dao_Result_Factory.Success(
-                ApplyLocalFiltersAndSorting(demandLines, filter)
+                ApplyLocalFiltersAndSorting(demandLines, filter, _logger)
             );
         }
         catch (Exception ex)
@@ -195,70 +174,10 @@ public class Dao_CustomerPullPackDemand
         }
     }
 
-    private List<Model_CustomerPullPack_DemandLine> CreateMockDemand(
-        Model_CustomerPullPack_DemandFilter filter
-    )
-    {
-        var normalizedCustomerId = filter.CustomerId.Trim().ToUpperInvariant();
-        var locationRows = _mockDataCatalog.GetCustomerPullPackLocationRows();
-
-        var demandLines = _mockDataCatalog
-            .GetCustomerPullPackDemandRows()
-            .Where(row =>
-                string.Equals(
-                    row.CustomerId,
-                    normalizedCustomerId,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            )
-            .Where(row =>
-                row.PullDate.Date >= filter.DateFrom.Date && row.PullDate.Date <= filter.DateTo.Date
-            )
-            .Select(row => new Model_CustomerPullPack_DemandLine
-            {
-                SourceLineKey = row.SourceLineKey,
-                CustomerId = row.CustomerId,
-                CustomerName = row.CustomerName,
-                CustomerOrderId = row.CustomerOrderId,
-                ParentPartId = row.ParentPartId,
-                SourceLocationId = row.SourceLocationId,
-                ShipQuantity = row.ShipQuantity,
-                PullDate = row.PullDate,
-                QuantityToPack = row.QuantityToPack,
-                FgOnHandQuantity = row.FgOnHandQuantity,
-                FgLocationId = row.FgLocationId,
-                ShortageFlag = row.ShortageFlag,
-                LateOrderFlag = row.LateOrderFlag,
-                PulledFlag = row.PulledFlag,
-                HasLinkedWaitlist = row.HasLinkedWaitlist,
-                LinkedWaitlistId = row.LinkedWaitlistId,
-                RecheckIndicator = row.RecheckIndicator,
-                WaitlistStateDisplay = BuildWaitlistStateDisplay(
-                    row.HasLinkedWaitlist,
-                    row.LinkedWaitlistStatus,
-                    row.LinkedWaitlistId
-                ),
-                SubPartAvailabilitySummary = BuildMockAvailabilitySummary(
-                    row.SourceLineKey,
-                    row.ParentPartId,
-                    row.FgOnHandQuantity,
-                    locationRows
-                ),
-                RequesterNote = row.RequesterNote,
-                LocationOptions = BuildMockLocationOptions(
-                    row.SourceLineKey,
-                    row.ParentPartId,
-                    locationRows
-                ),
-            })
-            .ToList();
-
-        return ApplyLocalFiltersAndSorting(demandLines, filter);
-    }
-
-    private List<Model_CustomerPullPack_DemandLine> ApplyLocalFiltersAndSorting(
+    internal static List<Model_CustomerPullPack_DemandLine> ApplyLocalFiltersAndSorting(
         IEnumerable<Model_CustomerPullPack_DemandLine> demandLines,
-        Model_CustomerPullPack_DemandFilter filter
+        Model_CustomerPullPack_DemandFilter filter,
+        IService_LoggingUtility? logger = null
     )
     {
         IEnumerable<Model_CustomerPullPack_DemandLine> filtered = demandLines;
@@ -270,7 +189,7 @@ public class Dao_CustomerPullPackDemand
 
         if (filter.RequesterWorkOnly)
         {
-            _logger?.LogWarning(
+            logger?.LogWarning(
                 "Customer Pull n' Pack requester-only filtering is not yet available in the demand DAO; returning the full result set for this flag."
             );
         }
@@ -349,7 +268,7 @@ public class Dao_CustomerPullPackDemand
         ];
     }
 
-    private static List<Model_CustomerPullPack_LocationOption> BuildMockLocationOptions(
+    internal static List<Model_CustomerPullPack_LocationOption> BuildMockLocationOptions(
         string sourceLineKey,
         string parentPartId,
         IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
@@ -373,7 +292,7 @@ public class Dao_CustomerPullPackDemand
             .ToList();
     }
 
-    private static string BuildMockAvailabilitySummary(
+    internal static string BuildMockAvailabilitySummary(
         string sourceLineKey,
         string parentPartId,
         decimal fgOnHandQuantity,
@@ -389,7 +308,7 @@ public class Dao_CustomerPullPackDemand
         return $"{matchingLocationCount} selectable locations / {fgOnHandQuantity:0.##} on hand";
     }
 
-    private static List<Model_InforVisualCustomerPullPackLocationRow> ResolveMockLocationRows(
+    internal static List<Model_InforVisualCustomerPullPackLocationRow> ResolveMockLocationRows(
         string sourceLineKey,
         string parentPartId,
         IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
@@ -414,7 +333,7 @@ public class Dao_CustomerPullPackDemand
             .ToList();
     }
 
-    private static Enum_CustomerPullPackLocationSourceType ParseLocationSourceType(
+    internal static Enum_CustomerPullPackLocationSourceType ParseLocationSourceType(
         string sourceType
     )
     {
@@ -426,7 +345,7 @@ public class Dao_CustomerPullPackDemand
         };
     }
 
-    private static string BuildWaitlistStateDisplay(
+    internal static string BuildWaitlistStateDisplay(
         bool hasLinkedWaitlist,
         string linkedWaitlistStatus,
         string linkedWaitlistId

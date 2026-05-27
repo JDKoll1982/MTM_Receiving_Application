@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -18,11 +18,13 @@ public sealed class Command_CustomerPullPackUpdateStatusHandler
         Model_Dao_Result<Model_CustomerPullPack_WaitlistEntry>
     >
 {
-    private readonly Dao_CustomerPullPackWaitlist _waitlistDao;
+    private readonly IService_CustomerPullPackWaitlistSource _waitlistSource;
 
-    public Command_CustomerPullPackUpdateStatusHandler(Dao_CustomerPullPackWaitlist waitlistDao)
+    public Command_CustomerPullPackUpdateStatusHandler(
+        IService_CustomerPullPackWaitlistSource waitlistSource
+    )
     {
-        _waitlistDao = waitlistDao;
+        _waitlistSource = waitlistSource;
     }
 
     public async Task<Model_Dao_Result<Model_CustomerPullPack_WaitlistEntry>> Handle(
@@ -32,7 +34,7 @@ public sealed class Command_CustomerPullPackUpdateStatusHandler
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var existingResult = await _waitlistDao.GetByIdAsync(request.WaitlistId);
+        var existingResult = await _waitlistSource.GetByIdAsync(request.WaitlistId);
         if (!existingResult.IsSuccess || existingResult.Data is null)
         {
             return Model_Dao_Result_Factory.Failure<Model_CustomerPullPack_WaitlistEntry>(
@@ -53,7 +55,7 @@ public sealed class Command_CustomerPullPackUpdateStatusHandler
         }
 
         var updatedEntry = BuildUpdatedEntry(existingResult.Data, request);
-        return await _waitlistDao.UpsertAsync(updatedEntry);
+        return await _waitlistSource.UpsertAsync(updatedEntry);
     }
 
     private static Model_CustomerPullPack_WaitlistEntry BuildUpdatedEntry(

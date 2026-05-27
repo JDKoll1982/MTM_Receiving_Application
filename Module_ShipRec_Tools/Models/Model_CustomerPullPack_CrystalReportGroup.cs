@@ -11,9 +11,16 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 /// </summary>
 public sealed class Model_CustomerPullPack_CrystalReportGroup
 {
-    public string ParentPartId { get; set; } = string.Empty;
+    public string GroupKey { get; set; } = string.Empty;
 
-    public string ParentPartDisplay => $"P/N:{ParentPartId}";
+    public string CustomerOrderId { get; set; } = string.Empty;
+
+    public string PrimaryPartId { get; set; } = string.Empty;
+
+    public string GroupHeaderDisplay =>
+        string.IsNullOrWhiteSpace(CustomerOrderId)
+            ? $"P/N:{PrimaryPartId}"
+            : $"CO:{CustomerOrderId}";
 
     public decimal QuantityToPack { get; set; }
 
@@ -61,6 +68,8 @@ public sealed class Model_CustomerPullPack_CrystalReportGroup
 public sealed class Model_CustomerPullPack_CrystalRequestLine
 {
     public string SourceLineKey { get; set; } = string.Empty;
+
+    public string CustomerId { get; set; } = string.Empty;
 
     public string CustomerOrderId { get; set; } = string.Empty;
 

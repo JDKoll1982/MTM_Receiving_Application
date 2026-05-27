@@ -254,8 +254,10 @@ public class Service_InforVisualConnect : IService_InforVisual
                 return Model_Dao_Result_Factory.Failure<int>("PO not found");
             }
 
-            var matchingLines = result.Data
-                .Where(line => line.PartNumber.Equals(partID, StringComparison.OrdinalIgnoreCase))
+            var matchingLines = result
+                .Data.Where(line =>
+                    line.PartNumber.Equals(partID, StringComparison.OrdinalIgnoreCase)
+                )
                 .ToList();
 
             if (matchingLines.Count == 0)
@@ -535,9 +537,9 @@ public class Service_InforVisualConnect : IService_InforVisual
     {
         if (string.IsNullOrWhiteSpace(partID))
         {
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
-                "Part ID cannot be null or empty"
-            );
+            return Model_Dao_Result_Factory.Failure<
+                List<Model_InforVisualLocationTransferMovement>
+            >("Part ID cannot be null or empty");
         }
 
         if (UseMockData)
@@ -593,10 +595,9 @@ public class Service_InforVisualConnect : IService_InforVisual
                 $"Unexpected error retrieving receiving location transfer movements for part {partID}: {ex.Message}",
                 ex
             );
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
-                $"Unexpected error: {ex.Message}",
-                ex
-            );
+            return Model_Dao_Result_Factory.Failure<
+                List<Model_InforVisualLocationTransferMovement>
+            >($"Unexpected error: {ex.Message}", ex);
         }
     }
 
@@ -772,6 +773,40 @@ public class Service_InforVisualConnect : IService_InforVisual
         return Model_Dao_Result_Factory.Success(results);
     }
 
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyCustomers(string term)
+    {
+        var normalizedTerm = term.Trim();
+        var results = _mockDataCatalog
+            .GetCustomerPullPackDemandRows()
+            .Where(row =>
+                row.CustomerId.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+                || row.CustomerName.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .GroupBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
+            .Take(10)
+            .Select(group =>
+            {
+                var customerId = group.Key.Trim().ToUpperInvariant();
+                var customerName = group
+                    .Select(row => row.CustomerName?.Trim() ?? string.Empty)
+                    .FirstOrDefault(static value => string.IsNullOrWhiteSpace(value) is false);
+                var label = string.IsNullOrWhiteSpace(customerName)
+                    ? customerId
+                    : $"{customerId} - {customerName}";
+
+                return new Model_FuzzySearchResult
+                {
+                    Key = customerId,
+                    Label = label,
+                    Detail = string.IsNullOrWhiteSpace(customerName) ? null : customerName,
+                };
+            })
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string vendorId)
     {
         var results = _mockDataCatalog
@@ -904,6 +939,27 @@ public class Service_InforVisualConnect : IService_InforVisual
         }
 
         return await _dao.FuzzySearchVendorsByNameAsync(term);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchCustomersAsync(
+        string term
+    )
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                "Search term cannot be empty"
+            );
+        }
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy customer results for: {term}");
+            return CreateMockFuzzyCustomers(term);
+        }
+
+        return await _dao.FuzzySearchCustomersByIdOrNameAsync(term);
     }
 
     /// <inheritdoc />

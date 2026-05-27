@@ -15,8 +15,11 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : ViewModel_Shared_Base
 {
     private readonly Model_CustomerPullPack_WaitlistEntry? _existingEntry;
+    private readonly IReadOnlyList<Model_CustomerPullPack_DemandLine> _selectedLines;
 
     public Model_CustomerPullPack_DemandLine SelectedLine { get; }
+
+    public IReadOnlyList<Model_CustomerPullPack_DemandLine> SelectedLines => _selectedLines;
 
     public string RequesterContextNote { get; set; }
 
@@ -29,12 +32,15 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
 
     public int ExistingLinkedItemCount => _existingEntry is null ? 0 : 1;
 
+    public int SelectedLineCount => _selectedLines.Count;
+
     public bool HasLockedOperationalFields =>
         _existingEntry?.CurrentStatus
             is not null
                 and not Enum_CustomerPullPackWaitlistStatus.Requested;
 
-    public bool RequiresRequesterNote => SelectedLine.LocationOptions.Count == 0;
+    public bool RequiresRequesterNote =>
+        _selectedLines.Any(line => line.LocationOptions.Count == 0);
 
     public string CustomerDisplay
     {
@@ -46,10 +52,16 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
         }
     }
 
-    public string ParentPartDisplay => SelectedLine.ParentPartId;
+    public string ParentPartDisplay =>
+        string.Join(
+            ", ",
+            _selectedLines
+                .Select(static line => line.ParentPartId)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
 
     public string SelectionSummary =>
-        $"1 selected row across {SelectedLine.LocationOptions.Count(static option => option.Selected)} chosen locations.";
+        $"{SelectedLineCount} selected row{(SelectedLineCount == 1 ? string.Empty : "s")} across {_selectedLines.Sum(static line => line.LocationOptions.Count(static option => option.Selected))} chosen locations.";
 
     public string InstructionText =>
         HasExistingLinkedContext
@@ -62,12 +74,17 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
             : string.Empty;
 
     public string LocationCoverageSummary =>
-        SelectedLine.LocationOptions.Count(static option => option.Selected) == 0
-            ? $"{SelectedLine.CustomerOrderId} / {SelectedLine.ParentPartId}: no location selected"
-            : $"{SelectedLine.CustomerOrderId} / {SelectedLine.ParentPartId}: {string.Join(", ", SelectedLine.LocationOptions.Where(static option => option.Selected).Select(static option => option.LocationId))}";
+        string.Join(
+            Environment.NewLine,
+            _selectedLines.Select(line =>
+                line.LocationOptions.Count(static option => option.Selected) == 0
+                    ? $"{line.CustomerOrderId} / {line.ParentPartId}: no location selected"
+                    : $"{line.CustomerOrderId} / {line.ParentPartId}: {string.Join(", ", line.LocationOptions.Where(static option => option.Selected).Select(static option => option.LocationId))}"
+            )
+        );
 
     public ViewModel_Dialog_CustomerPullPackWaitlistEditor(
-        Model_CustomerPullPack_DemandLine selectedLine,
+        IReadOnlyList<Model_CustomerPullPack_DemandLine> selectedLines,
         Model_CustomerPullPack_WaitlistEntry? existingEntry,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -75,23 +92,34 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
     )
         : base(errorHandler, logger, notificationService)
     {
-        ArgumentNullException.ThrowIfNull(selectedLine);
+        ArgumentNullException.ThrowIfNull(selectedLines);
+        if (selectedLines.Count == 0)
+        {
+            throw new ArgumentException(
+                "At least one selected line is required.",
+                nameof(selectedLines)
+            );
+        }
 
-        SelectedLine = selectedLine;
+        _selectedLines = selectedLines.ToList().AsReadOnly();
+        SelectedLine = _selectedLines[0];
         _existingEntry = existingEntry;
         RequesterContextNote = existingEntry?.RequesterContextNote?.Trim() ?? string.Empty;
     }
 
     public bool ValidateInputs(out string errorMessage)
     {
-        if (
-            SelectedLine.LocationOptions.Count > 0
-            && SelectedLine.LocationOptions.All(static option => option.Selected is false)
-        )
+        foreach (var line in _selectedLines)
         {
-            errorMessage =
-                $"Select at least one SUB PARTS ON HAND location for {SelectedLine.CustomerOrderId} before saving.";
-            return false;
+            if (
+                line.LocationOptions.Count > 0
+                && line.LocationOptions.All(static option => option.Selected is false)
+            )
+            {
+                errorMessage =
+                    $"Select at least one SUB PARTS ON HAND location for {line.CustomerOrderId} before saving.";
+                return false;
+            }
         }
 
         if (RequiresRequesterNote && string.IsNullOrWhiteSpace(RequesterContextNote))
@@ -116,50 +144,55 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
             _existingEntry?.CurrentStatus
             is not null
                 and not Enum_CustomerPullPackWaitlistStatus.Requested;
-        var selectedLocations = SelectedLine
-            .LocationOptions.Where(static option => option.Selected)
-            .Select(static option => option.LocationId)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        return
-        [
-            new Model_CustomerPullPack_WaitlistEntry
+        return _selectedLines
+            .Select(selectedLine =>
             {
-                WaitlistId = _existingEntry?.WaitlistId ?? SelectedLine.LinkedWaitlistId,
-                SourceLineKey = _existingEntry?.SourceLineKey ?? SelectedLine.SourceLineKey,
-                CustomerId = _existingEntry?.CustomerId ?? SelectedLine.CustomerId,
-                CustomerName = _existingEntry?.CustomerName ?? SelectedLine.CustomerName,
-                CustomerOrderId = _existingEntry?.CustomerOrderId ?? SelectedLine.CustomerOrderId,
-                ParentPartId = _existingEntry?.ParentPartId ?? SelectedLine.ParentPartId,
-                RequestedQuantity = isRequesterOnlyEdit
-                    ? _existingEntry!.RequestedQuantity
-                    : SelectedLine.QuantityToPack,
-                SelectedLocations = isRequesterOnlyEdit
-                    ? _existingEntry!.SelectedLocations.ToList()
-                    : selectedLocations,
-                RequestedByUserId = _existingEntry?.RequestedByUserId ?? currentUserId,
-                RequestedByDisplayName =
-                    _existingEntry?.RequestedByDisplayName ?? currentUserDisplayName,
-                RequesterContextNote = RequesterContextNote.Trim(),
-                CurrentStatus =
-                    _existingEntry?.CurrentStatus ?? Enum_CustomerPullPackWaitlistStatus.Requested,
-                CurrentOwnerUserId = _existingEntry?.CurrentOwnerUserId ?? string.Empty,
-                CurrentOwnerDisplayName = _existingEntry?.CurrentOwnerDisplayName ?? string.Empty,
-                LocationReviewFlag = isRequesterOnlyEdit
-                    ? _existingEntry!.LocationReviewFlag
-                    : SelectedLine.LocationOptions.Count == 0,
-                ProblemReason =
-                    _existingEntry?.ProblemReason ?? Enum_CustomerPullPackProblemReason.None,
-                HandlerNote = _existingEntry?.HandlerNote ?? string.Empty,
-                CompletionUserId = _existingEntry?.CompletionUserId ?? string.Empty,
-                CompletionTimestamp = _existingEntry?.CompletionTimestamp,
-                LastUpdatedByUserId = currentUserId,
-                LastUpdatedTimestamp = utcNow,
-                RequestTimestamp = _existingEntry?.RequestTimestamp ?? utcNow,
-                RecheckIndicator =
-                    _existingEntry?.RecheckIndicator ?? SelectedLine.RecheckIndicator,
-            },
-        ];
+                var selectedLocations = selectedLine
+                    .LocationOptions.Where(static option => option.Selected)
+                    .Select(static option => option.LocationId)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new Model_CustomerPullPack_WaitlistEntry
+                {
+                    WaitlistId = _existingEntry?.WaitlistId ?? selectedLine.LinkedWaitlistId,
+                    SourceLineKey = _existingEntry?.SourceLineKey ?? selectedLine.SourceLineKey,
+                    CustomerId = _existingEntry?.CustomerId ?? selectedLine.CustomerId,
+                    CustomerName = _existingEntry?.CustomerName ?? selectedLine.CustomerName,
+                    CustomerOrderId =
+                        _existingEntry?.CustomerOrderId ?? selectedLine.CustomerOrderId,
+                    ParentPartId = _existingEntry?.ParentPartId ?? selectedLine.ParentPartId,
+                    RequestedQuantity = isRequesterOnlyEdit
+                        ? _existingEntry!.RequestedQuantity
+                        : selectedLine.QuantityToPack,
+                    SelectedLocations = isRequesterOnlyEdit
+                        ? _existingEntry!.SelectedLocations.ToList()
+                        : selectedLocations,
+                    RequestedByUserId = _existingEntry?.RequestedByUserId ?? currentUserId,
+                    RequestedByDisplayName =
+                        _existingEntry?.RequestedByDisplayName ?? currentUserDisplayName,
+                    RequesterContextNote = RequesterContextNote.Trim(),
+                    CurrentStatus =
+                        _existingEntry?.CurrentStatus
+                        ?? Enum_CustomerPullPackWaitlistStatus.Requested,
+                    CurrentOwnerUserId = _existingEntry?.CurrentOwnerUserId ?? string.Empty,
+                    CurrentOwnerDisplayName =
+                        _existingEntry?.CurrentOwnerDisplayName ?? string.Empty,
+                    LocationReviewFlag = isRequesterOnlyEdit
+                        ? _existingEntry!.LocationReviewFlag
+                        : selectedLine.LocationOptions.Count == 0,
+                    ProblemReason =
+                        _existingEntry?.ProblemReason ?? Enum_CustomerPullPackProblemReason.None,
+                    HandlerNote = _existingEntry?.HandlerNote ?? string.Empty,
+                    CompletionUserId = _existingEntry?.CompletionUserId ?? string.Empty,
+                    CompletionTimestamp = _existingEntry?.CompletionTimestamp,
+                    LastUpdatedByUserId = currentUserId,
+                    LastUpdatedTimestamp = utcNow,
+                    RequestTimestamp = _existingEntry?.RequestTimestamp ?? utcNow,
+                    RecheckIndicator =
+                        _existingEntry?.RecheckIndicator ?? selectedLine.RecheckIndicator,
+                };
+            })
+            .ToList();
     }
 }

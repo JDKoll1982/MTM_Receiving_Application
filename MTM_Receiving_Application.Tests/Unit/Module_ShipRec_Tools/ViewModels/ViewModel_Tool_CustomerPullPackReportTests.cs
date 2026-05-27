@@ -5,7 +5,9 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -29,6 +31,178 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
                 ),
             Times.Once
         );
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldDoNothing_WhenTextDidNotChange()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>(MockBehavior.Strict);
+        var viewModel = CreateViewModel(inforVisual: inforVisualMock.Object);
+        viewModel.CustomerSearchText = "VOLVO";
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("VOLVO");
+
+        inforVisualMock.Verify(
+            service => service.FuzzySearchCustomersAsync(It.IsAny<string>()),
+            Times.Never
+        );
+        viewModel.CustomerSearchText.Should().Be("VOLVO");
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldDoNothing_WhenTextIsBlank()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>(MockBehavior.Strict);
+        var viewModel = CreateViewModel(inforVisual: inforVisualMock.Object);
+        viewModel.CustomerSearchText = string.Empty;
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("VOLVO");
+
+        inforVisualMock.Verify(
+            service => service.FuzzySearchCustomersAsync(It.IsAny<string>()),
+            Times.Never
+        );
+        viewModel.CustomerSearchText.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldNormalizeCustomer_WhenSingleLiveCandidateMatches()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        inforVisualMock
+            .Setup(service => service.FuzzySearchCustomersAsync("Volvo"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_FuzzySearchResult>
+                    {
+                        new()
+                        {
+                            Key = "VOLVO",
+                            Label = "VOLVO - Volvo Trucks",
+                            Detail = "Volvo Trucks",
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(inforVisual: inforVisualMock.Object);
+        viewModel.CustomerSearchText = "Volvo";
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("Vol");
+
+        viewModel.CustomerSearchText.Should().Be("VOLVO - Volvo Trucks");
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldUseSharedPicker_WhenMultipleLiveCandidatesMatch()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var candidates = new List<Model_FuzzySearchResult>
+        {
+            new()
+            {
+                Key = "VOLVO",
+                Label = "VOLVO - Volvo Trucks",
+                Detail = "Volvo Trucks",
+            },
+            new()
+            {
+                Key = "VTC",
+                Label = "VTC - Volvo Trucks Canada",
+                Detail = "Volvo Trucks Canada",
+            },
+        };
+
+        inforVisualMock
+            .Setup(service => service.FuzzySearchCustomersAsync("Vol"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(candidates));
+
+        var viewModel = CreateViewModel(inforVisual: inforVisualMock.Object);
+        viewModel.ShowFuzzyPickerAsync = (options, title) =>
+        {
+            title.Should().Be("Select Customer");
+            options.Should().HaveCount(2);
+            return Task.FromResult<Model_FuzzySearchResult?>(options[1]);
+        };
+        viewModel.CustomerSearchText = "Vol";
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("V");
+
+        viewModel.CustomerSearchText.Should().Be("VTC - Volvo Trucks Canada");
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldLeaveTextUnchanged_WhenPickerIsCancelled()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var candidates = new List<Model_FuzzySearchResult>
+        {
+            new()
+            {
+                Key = "VOLVO",
+                Label = "VOLVO - Volvo Trucks",
+                Detail = "Volvo Trucks",
+            },
+            new()
+            {
+                Key = "VTC",
+                Label = "VTC - Volvo Trucks Canada",
+                Detail = "Volvo Trucks Canada",
+            },
+        };
+
+        inforVisualMock
+            .Setup(service => service.FuzzySearchCustomersAsync("Vol"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(candidates));
+
+        var viewModel = CreateViewModel(inforVisual: inforVisualMock.Object);
+        viewModel.ShowFuzzyPickerAsync = (_, _) => Task.FromResult<Model_FuzzySearchResult?>(null);
+        viewModel.CustomerSearchText = "Vol";
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("V");
+
+        viewModel.CustomerSearchText.Should().Be("Vol");
+    }
+
+    [Fact]
+    public async Task ResolveCustomerSearchTextOnBlurAsync_ShouldUseFeatureOwnedMockCustomers_WhenResolverIsInMockMode()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>(MockBehavior.Strict);
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
+        mockCatalog
+            .Setup(service => service.GetDemandRows())
+            .Returns(
+                new List<Model_InforVisualCustomerPullPackDemandRow>
+                {
+                    new()
+                    {
+                        SourceLineKey = "LINE-1",
+                        CustomerId = "VOLVO",
+                        CustomerName = "Volvo Trucks",
+                    },
+                    new()
+                    {
+                        SourceLineKey = "LINE-2",
+                        CustomerId = "MACK",
+                        CustomerName = "Mack Trucks",
+                    },
+                }
+            );
+
+        var viewModel = CreateViewModel(
+            dataSourceResolver: CreateResolver(isMockMode: true).Object,
+            mockDataCatalog: mockCatalog.Object,
+            inforVisual: inforVisualMock.Object
+        );
+        viewModel.CustomerSearchText = "Volvo";
+
+        await viewModel.ResolveCustomerSearchTextOnBlurAsync("Vol");
+
+        inforVisualMock.Verify(
+            service => service.FuzzySearchCustomersAsync(It.IsAny<string>()),
+            Times.Never
+        );
+        viewModel.CustomerSearchText.Should().Be("VOLVO - Volvo Trucks");
     }
 
     [Fact]
@@ -87,10 +261,10 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.LateOrderLineCount.Should().Be(1);
         viewModel.LinkedWaitlistLineCount.Should().Be(1);
         viewModel.IsEmptyStateVisible.Should().BeFalse();
-        viewModel.SelectedDemandLine.Should().NotBeNull();
+        viewModel.SelectedDemandLine.Should().BeNull();
         viewModel.ActiveCustomerId.Should().Be("VOLVO");
         viewModel.CrystalReportGroups.Should().HaveCount(2);
-        viewModel.CrystalReportGroups[0].ParentPartId.Should().Be("PART-100");
+        viewModel.CrystalReportGroups[0].CustomerOrderId.Should().Be("CO-1001");
     }
 
     [Fact]
@@ -171,17 +345,17 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
 
-        viewModel.CrystalReportGroups.Should().ContainSingle();
+        viewModel.CrystalReportGroups.Should().HaveCount(2);
         var group = viewModel.CrystalReportGroups[0];
-        group.ParentPartId.Should().Be("PART-100");
-        group.QuantityToPack.Should().Be(34);
+        group.CustomerOrderId.Should().Be("CO-1001");
+        group.QuantityToPack.Should().Be(24);
         group.QuantitySelected.Should().Be(0);
-        group.RequestLines.Should().HaveCount(2);
-        group.SubPartLocations.Should().HaveCount(2);
+        group.RequestLines.Should().ContainSingle();
+        group.SubPartLocations.Should().ContainSingle();
         group
             .SubPartLocations.Single(location => location.LocationId == "SUB-01")
             .OnHandQuantity.Should()
-            .Be(15);
+            .Be(12);
     }
 
     [Fact]
@@ -231,7 +405,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-2");
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-2"]);
 
         viewModel
             .DemandLines.Single(line => line.SourceLineKey == "LINE-2")
@@ -243,10 +417,10 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
             .BeFalse();
         viewModel.SelectedDemandLine.Should().NotBeNull();
         viewModel.SelectedDemandLine!.SourceLineKey.Should().Be("LINE-2");
-        viewModel.CrystalReportGroups[0].QuantitySelected.Should().Be(0);
+        viewModel.CrystalReportGroups.Should().OnlyContain(group => group.QuantitySelected == 0);
         viewModel
-            .CrystalReportGroups[0]
-            .RequestLines.Single(line => line.SourceLineKey == "LINE-2")
+            .CrystalReportGroups.SelectMany(group => group.RequestLines)
+            .Single(line => line.SourceLineKey == "LINE-2")
             .IsSelected.Should()
             .BeTrue();
     }
@@ -323,15 +497,19 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
         viewModel
-            .DemandLines.SelectMany(line =>
-                line.LocationOptions.Where(option => option.LocationId == "SUB-01")
-            )
-            .Should()
-            .OnlyContain(option => option.Selected);
+            .DemandLines.Single(line => line.SourceLineKey == "LINE-1")
+            .LocationOptions.Single(option => option.LocationId == "SUB-01")
+            .Selected.Should()
+            .BeTrue();
+        viewModel
+            .DemandLines.Single(line => line.SourceLineKey == "LINE-2")
+            .LocationOptions.Single(option => option.LocationId == "SUB-01")
+            .Selected.Should()
+            .BeFalse();
         viewModel
             .DemandLines.SelectMany(line =>
                 line.LocationOptions.Where(option => option.LocationId == "SUB-02")
@@ -389,7 +567,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
         viewModel.DemandLines[0].IsSelected.Should().BeFalse();
         viewModel
@@ -466,10 +644,10 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
-        viewModel.ApplyCrystalRequestLineSelection("LINE-2");
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-2"]);
 
         viewModel.SelectedDemandLine.Should().NotBeNull();
         viewModel.SelectedDemandLine!.SourceLineKey.Should().Be("LINE-2");
@@ -524,10 +702,10 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
-        viewModel.ApplyCrystalRequestLineSelection(string.Empty);
+        viewModel.ApplyCrystalRequestLineSelection([]);
 
         viewModel.SelectedDemandLine.Should().BeNull();
         viewModel.DemandLines.Should().OnlyContain(static line => !line.IsSelected);
@@ -589,8 +767,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         };
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -599,6 +777,106 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
             .SelectedLine.LocationOptions.Single(option => option.LocationId == "SUB-01")
             .Selected.Should()
             .BeTrue();
+    }
+
+    [Fact]
+    public async void CreateOrUpdateWaitlistAsync_ShouldBuildBatchEntries_ForMultipleSelectedLines()
+    {
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock
+            .Setup(mediator =>
+                mediator.Send(
+                    It.IsAny<Query_CustomerPullPackReport>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomerPullPack_DemandLine>
+                    {
+                        new()
+                        {
+                            SourceLineKey = "LINE-1",
+                            CustomerId = "VOLVO",
+                            CustomerName = "Volvo Group",
+                            CustomerOrderId = "CO-1001",
+                            ParentPartId = "PART-100",
+                            PullDate = new DateTime(2026, 5, 27),
+                            QuantityToPack = 24,
+                            ShipQuantity = 24,
+                            LocationOptions =
+                            [
+                                new Model_CustomerPullPack_LocationOption
+                                {
+                                    LocationKey = "LOC-1",
+                                    LocationId = "SUB-01",
+                                    DisplayLabel = "SUB-01",
+                                    OnHandQuantity = 12,
+                                },
+                            ],
+                        },
+                        new()
+                        {
+                            SourceLineKey = "LINE-2",
+                            CustomerId = "VOLVO",
+                            CustomerName = "Volvo Group",
+                            CustomerOrderId = "CO-1002",
+                            ParentPartId = "PART-200",
+                            PullDate = new DateTime(2026, 5, 28),
+                            QuantityToPack = 10,
+                            ShipQuantity = 10,
+                            LocationOptions =
+                            [
+                                new Model_CustomerPullPack_LocationOption
+                                {
+                                    LocationKey = "LOC-2",
+                                    LocationId = "SUB-02",
+                                    DisplayLabel = "SUB-02",
+                                    OnHandQuantity = 8,
+                                },
+                            ],
+                        },
+                    }
+                )
+            );
+
+        IReadOnlyList<Model_CustomerPullPack_WaitlistEntry>? capturedEntries = null;
+        mediatorMock
+            .Setup(mediator =>
+                mediator.Send(
+                    It.IsAny<Command_CustomerPullPackBatchUpsert>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns<Command_CustomerPullPackBatchUpsert, CancellationToken>(
+                (request, _) =>
+                {
+                    capturedEntries = request.Entries;
+                    return Task.FromResult(
+                        Model_Dao_Result_Factory.Success(
+                            new List<Model_CustomerPullPack_WaitlistEntry>()
+                        )
+                    );
+                }
+            );
+
+        var viewModel = CreateViewModel(mediatorMock);
+        viewModel.CustomerSearchText = "VOLVO - Volvo Group";
+        viewModel.ShowWaitlistEditorAsync = _ => Task.FromResult(true);
+
+        await viewModel.RefreshReportCommand.ExecuteAsync(null);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1", "LINE-2"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1002", ["SUB-02"]);
+
+        await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
+
+        capturedEntries.Should().NotBeNull();
+        capturedEntries.Should().HaveCount(2);
+        capturedEntries!
+            .Select(entry => entry.SourceLineKey)
+            .Should()
+            .BeEquivalentTo(["LINE-1", "LINE-2"]);
     }
 
     [Fact]
@@ -666,8 +944,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         };
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01", "SUB-02"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -732,8 +1010,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
             );
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01", "SUB-02"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -809,16 +1087,16 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
         viewModel
             .DemandLines.Single(line => line.ParentPartId == "PART-200")
             .IsSelected.Should()
-            .BeFalse();
+            .BeTrue();
         viewModel
             .DemandLines.Single(line => line.ParentPartId == "PART-200")
             .LocationOptions.Should()
-            .OnlyContain(option => !option.Selected);
+            .ContainSingle(option => option.Selected && option.LocationId == "SUB-09");
     }
 
     [Fact]
@@ -953,8 +1231,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalRequestLineSelection("LINE-1");
-        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
 
@@ -1002,12 +1280,11 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
                 Model_Dao_Result_Factory.Failure<Model_CustomerPullPack_UserDefaults>("No defaults")
             );
 
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(true);
+        var resolverMock = CreateResolver(isMockMode: true);
 
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
+            .Setup(service => service.GetDemandRows())
             .Returns([
                 new Model_InforVisualCustomerPullPackDemandRow
                 {
@@ -1021,7 +1298,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
                 },
             ]);
 
-        var viewModel = CreateViewModel(mediatorMock, appSettingsMock.Object, mockCatalog.Object);
+        var viewModel = CreateViewModel(mediatorMock, resolverMock.Object, mockCatalog.Object);
 
         await viewModel.LoadUserDefaultsAsync();
 
@@ -1052,12 +1329,11 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
                 )
             );
 
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(true);
+        var resolverMock = CreateResolver(isMockMode: true);
 
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
         mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
+            .Setup(service => service.GetDemandRows())
             .Returns([
                 new Model_InforVisualCustomerPullPackDemandRow
                 {
@@ -1066,7 +1342,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
                 },
             ]);
 
-        var viewModel = CreateViewModel(mediatorMock, appSettingsMock.Object, mockCatalog.Object);
+        var viewModel = CreateViewModel(mediatorMock, resolverMock.Object, mockCatalog.Object);
 
         await viewModel.LoadUserDefaultsAsync();
 
@@ -1076,15 +1352,17 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
     private static ViewModel_Tool_CustomerPullPackReport CreateViewModel(
         Mock<IMediator>? mediatorMock = null,
-        IService_AppSettings? appSettings = null,
-        IService_InforVisualMockDataCatalog? mockDataCatalog = null,
+        IService_CustomerPullPackDataSourceResolver? dataSourceResolver = null,
+        IService_CustomerPullPackMockDataCatalog? mockDataCatalog = null,
+        IService_InforVisual? inforVisual = null,
         IService_Notification? notificationService = null
     )
     {
         return new ViewModel_Tool_CustomerPullPackReport(
             (mediatorMock ?? new Mock<IMediator>()).Object,
-            appSettings ?? CreateAppSettings(),
+            dataSourceResolver ?? CreateResolver().Object,
             mockDataCatalog ?? CreateMockDataCatalog(),
+            inforVisual ?? new Mock<IService_InforVisual>().Object,
             CreateSessionManager(),
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
@@ -1092,17 +1370,20 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         );
     }
 
-    private static IService_AppSettings CreateAppSettings()
+    private static Mock<IService_CustomerPullPackDataSourceResolver> CreateResolver(
+        bool isMockMode = false
+    )
     {
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
-        return appSettingsMock.Object;
+        var resolverMock = new Mock<IService_CustomerPullPackDataSourceResolver>();
+        resolverMock.Setup(service => service.IsMockMode).Returns(isMockMode);
+        resolverMock.Setup(service => service.ResolveForWorkflow());
+        return resolverMock;
     }
 
-    private static IService_InforVisualMockDataCatalog CreateMockDataCatalog()
+    private static IService_CustomerPullPackMockDataCatalog CreateMockDataCatalog()
     {
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
-        mockCatalog.Setup(service => service.GetCustomerPullPackDemandRows()).Returns([]);
+        var mockCatalog = new Mock<IService_CustomerPullPackMockDataCatalog>();
+        mockCatalog.Setup(service => service.GetDemandRows()).Returns([]);
         return mockCatalog.Object;
     }
 

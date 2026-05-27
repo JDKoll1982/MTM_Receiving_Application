@@ -94,7 +94,7 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
     )
     {
         return new ViewModel_Dialog_CustomerPullPackWaitlistEditor(
-            selectedLine,
+            new[] { selectedLine },
             existingEntry,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,

@@ -526,15 +526,11 @@ public static class ModuleServicesExtensions
         // DAOs (Singleton - stateless data access)
         services.AddSingleton(sp => new Dao_CustomerPullPackDemand(
             inforVisualConnectionString,
-            sp.GetRequiredService<IService_AppSettings>(),
-            sp.GetRequiredService<IService_LoggingUtility>(),
-            sp.GetRequiredService<IService_InforVisualMockDataCatalog>()
+            sp.GetRequiredService<IService_LoggingUtility>()
         ));
         services.AddSingleton(sp => new Dao_CustomerPullPackWaitlist(
             mySqlConnectionString,
-            sp.GetRequiredService<IService_AppSettings>(),
-            sp.GetRequiredService<IService_LoggingUtility>(),
-            sp.GetRequiredService<IService_InforVisualMockDataCatalog>()
+            sp.GetRequiredService<IService_LoggingUtility>()
         ));
         services.AddSingleton(_ => new Dao_CustomerPullPackUserDefaults(mySqlConnectionString));
 
@@ -553,6 +549,29 @@ public static class ModuleServicesExtensions
             return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
         });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
+        services.AddSingleton<
+            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackDataSourceResolver,
+            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackDataSourceResolver
+        >();
+        services.AddSingleton<Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackMockDataCatalog>(
+            sp =>
+            {
+                var logger = sp.GetService<IService_LoggingUtility>();
+                return new Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockDataCatalog(
+                    logger
+                );
+            }
+        );
+        services.AddSingleton<Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockWaitlistSource>();
+        services.AddSingleton<Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockDemandSource>();
+        services.AddSingleton<
+            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackDemandSource,
+            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackDemandSource
+        >();
+        services.AddSingleton<
+            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackWaitlistSource,
+            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackWaitlistSource
+        >();
         services.AddTransient<Command_CustomerPullPackBatchUpsertHandler>();
         services.AddTransient<Command_CustomerPullPackSaveDefaultsHandler>();
         services.AddTransient<Command_CustomerPullPackUnassignOwnerHandler>();

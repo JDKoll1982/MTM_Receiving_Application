@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
 
@@ -17,10 +17,10 @@ public sealed class Query_CustomerPullPackWaitlistQueueHandlerTests
             new() { WaitlistId = "WL-1", CustomerOrderId = "CO-1001" },
         };
 
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        daoMock
-            .Setup(dao =>
-                dao.GetQueueAsync(
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service =>
+                service.GetQueueAsync(
                     It.IsAny<string?>(),
                     It.IsAny<string?>(),
                     It.IsAny<string?>(),
@@ -33,7 +33,7 @@ public sealed class Query_CustomerPullPackWaitlistQueueHandlerTests
             )
             .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedItems));
 
-        var handler = new Query_CustomerPullPackWaitlistQueueHandler(daoMock.Object);
+        var handler = new Query_CustomerPullPackWaitlistQueueHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Query_CustomerPullPackWaitlistQueue(CustomerId: "VOLVO"),

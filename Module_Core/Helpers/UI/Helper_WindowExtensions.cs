@@ -12,7 +12,11 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI;
 /// </summary>
 public static class Helper_WindowExtensions
 {
-    private const string SharedWindowIconRelativePath = "Assets\\MTMIcon.ico";
+    private static readonly string[] SharedWindowIconRelativePaths =
+    [
+        "MTMIcon.ico",
+        "Assets\\MTMIcon.ico",
+    ];
 
     /// <summary>
     /// Sets the window size
@@ -81,18 +85,15 @@ public static class Helper_WindowExtensions
     /// </summary>
     /// <param name="window">The window to configure.</param>
     /// <param name="logger">Optional logger for diagnostic output.</param>
-    public static void ApplySharedIcon(
-        this Window window,
-        IService_LoggingUtility? logger = null
-    )
+    public static void ApplySharedIcon(this Window window, IService_LoggingUtility? logger = null)
     {
         ArgumentNullException.ThrowIfNull(window);
 
-        var iconPath = System.IO.Path.Combine(AppContext.BaseDirectory, SharedWindowIconRelativePath);
-        if (!System.IO.File.Exists(iconPath))
+        var iconPath = ResolveSharedWindowIconPath();
+        if (iconPath is null)
         {
             logger?.LogWarning(
-                $"Shared window icon was not found at '{iconPath}'.",
+                $"Shared window icon was not found in any expected location under '{AppContext.BaseDirectory}'.",
                 nameof(Helper_WindowExtensions)
             );
             return;
@@ -110,6 +111,20 @@ public static class Helper_WindowExtensions
                 nameof(Helper_WindowExtensions)
             );
         }
+    }
+
+    private static string? ResolveSharedWindowIconPath()
+    {
+        foreach (var relativePath in SharedWindowIconRelativePaths)
+        {
+            var candidatePath = System.IO.Path.Combine(AppContext.BaseDirectory, relativePath);
+            if (System.IO.File.Exists(candidatePath))
+            {
+                return candidatePath;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

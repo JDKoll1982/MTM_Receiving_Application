@@ -34,12 +34,6 @@
             </Setter>
         </Style>
 
-        <Style
-            x:Key="CrystalSingleSelectListViewStyle"
-            BasedOn="{StaticResource CrystalSelectableListViewStyle_Base}"
-            TargetType="ListView">
-            <Setter Property="SelectionMode" Value="Single" />
-        </Style>
     </UserControl.Resources>
 
     <StackPanel HorizontalAlignment="Stretch" Spacing="10">
@@ -201,7 +195,7 @@
                                                         FontSize="16"
                                                         FontWeight="Bold"
                                                         MaxLines="1"
-                                                        Text="{x:Bind ParentPartDisplay, Mode=OneTime}"
+                                                        Text="{x:Bind GroupHeaderDisplay, Mode=OneTime}"
                                                         TextTrimming="CharacterEllipsis" />
 
                                                     <Grid
@@ -394,7 +388,7 @@
                                                     ItemsSource="{x:Bind RequestLines, Mode=OneTime}"
                                                     Loaded="OnSelectableRequestLineListLoaded"
                                                     SelectionChanged="OnSelectableRequestLineListSelectionChanged"
-                                                    Style="{StaticResource CrystalSingleSelectListViewStyle}">
+                                                    Style="{StaticResource CrystalSelectableListViewStyle_Base}">
                                                     <ListView.ItemTemplate>
                                                         <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalRequestLine">
                                                             <Grid Padding="8,6" ColumnSpacing="8">

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using Windows.Graphics;
 
@@ -23,11 +24,13 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
     private readonly ViewModel_Tool_CustomerPullPackReport _customerPullPackReportViewModel;
     private readonly ViewModel_Tool_CustomerPullPackQueue _customerPullPackQueueViewModel;
+    private readonly IService_CustomerPullPackDataSourceResolver _customerPullPackDataSourceResolver;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
     public View_ShipRecTools_Main(
         ViewModel_ShipRecTools_Main viewModel,
+        IService_CustomerPullPackDataSourceResolver customerPullPackDataSourceResolver,
         View_ShipRecTools_ToolSelection toolSelectionView,
         View_Tool_OutsideServiceHistory outsideServiceHistoryView,
         View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
@@ -41,8 +44,10 @@ public sealed partial class View_ShipRecTools_Main : Page
         ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
         ArgumentNullException.ThrowIfNull(customerPullPackReportView);
         ArgumentNullException.ThrowIfNull(customerPullPackQueueView);
+        ArgumentNullException.ThrowIfNull(customerPullPackDataSourceResolver);
 
         ViewModel = viewModel;
+        _customerPullPackDataSourceResolver = customerPullPackDataSourceResolver;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
         _outsideServiceHistoryViewModel = outsideServiceHistoryView.ViewModel;
         _materialAvailabilityBoardViewModel = materialAvailabilityBoardView.ViewModel;
@@ -106,6 +111,7 @@ public sealed partial class View_ShipRecTools_Main : Page
 
         if (ViewModel.IsCustomerPullPackVisible)
         {
+            _customerPullPackDataSourceResolver.ResolveForWorkflow();
             ResizeMainWindowForCustomerPullPack();
             _customerPullPackReportViewModel.ActivateView();
             return;
@@ -113,6 +119,7 @@ public sealed partial class View_ShipRecTools_Main : Page
 
         if (ViewModel.IsCustomerPullPackWaitlistVisible)
         {
+            _customerPullPackDataSourceResolver.ResolveForWorkflow();
             ResizeMainWindowForCustomerPullPack();
             _ = _customerPullPackQueueViewModel.ActivateViewAsync();
         }

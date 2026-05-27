@@ -151,6 +151,15 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Fuzzy-searches customers by ID or name using a LIKE '%term%' query against Infor Visual.
+        /// Returns up to 50 candidates for display in a selection picker.
+        /// </summary>
+        /// <param name="term">Partial customer ID or customer name entered by the user.</param>
+        public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchCustomersAsync(
+            string term
+        );
+
+        /// <summary>
         /// Returns all distinct part numbers serviced by a specific vendor,
         /// along with dispatch count and last dispatch date.
         /// Used to populate the part selection picker after vendor confirmation.

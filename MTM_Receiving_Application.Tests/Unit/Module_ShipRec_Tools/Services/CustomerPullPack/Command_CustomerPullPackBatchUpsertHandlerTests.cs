@@ -2,7 +2,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
@@ -14,9 +14,11 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
     [Fact]
     public async void Handle_ShouldUpsertEveryEntry_WhenBatchIsValid()
     {
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>(CreateConnectionString());
-        daoMock
-            .SetupSequence(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .SetupSequence(service =>
+                service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>())
+            )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new Model_CustomerPullPack_WaitlistEntry { WaitlistId = "WL-1001" }
@@ -28,7 +30,7 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
                 )
             );
 
-        var handler = new Command_CustomerPullPackBatchUpsertHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackBatchUpsertHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Command_CustomerPullPackBatchUpsert([CreateEntry("LINE-1"), CreateEntry("LINE-2")]),
@@ -37,8 +39,8 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().HaveCount(2);
-        daoMock.Verify(
-            dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()),
+        sourceMock.Verify(
+            service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()),
             Times.Exactly(2)
         );
     }
@@ -47,9 +49,9 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
     public async void Handle_ShouldFlagLocationReview_WhenNoLocationsWereSelected()
     {
         Model_CustomerPullPack_WaitlistEntry? capturedEntry = null;
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>(CreateConnectionString());
-        daoMock
-            .Setup(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
             .Callback<Model_CustomerPullPack_WaitlistEntry>(entry => capturedEntry = entry)
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
@@ -57,7 +59,7 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
                 )
             );
 
-        var handler = new Command_CustomerPullPackBatchUpsertHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackBatchUpsertHandler(sourceMock.Object);
         var entry = CreateEntry("LINE-3");
         entry.SelectedLocations.Clear();
         entry.RequesterContextNote = "No location available on the report.";
@@ -78,9 +80,9 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
         var duplicateEntry = CreateEntry("LINE-4");
         duplicateEntry.WaitlistId = "WL-EXISTING";
 
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>(CreateConnectionString());
-        daoMock
-            .Setup(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
             .ReturnsAsync(
                 new Model_Dao_Result<Model_CustomerPullPack_WaitlistEntry>
                 {
@@ -92,7 +94,7 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
                 }
             );
 
-        var handler = new Command_CustomerPullPackBatchUpsertHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackBatchUpsertHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Command_CustomerPullPackBatchUpsert([CreateEntry("LINE-4")]),
@@ -121,16 +123,16 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
         existingAcceptedEntry.SelectedLocations = ["SUB-LOCKED"];
         existingAcceptedEntry.RequestedQuantity = 11;
 
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>(CreateConnectionString());
-        daoMock
-            .Setup(dao => dao.GetByIdAsync("WL-ACCEPTED"))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.GetByIdAsync("WL-ACCEPTED"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(existingAcceptedEntry));
-        daoMock
-            .Setup(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        sourceMock
+            .Setup(service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
             .Callback<Model_CustomerPullPack_WaitlistEntry>(entry => capturedEntry = entry)
             .ReturnsAsync(Model_Dao_Result_Factory.Success(existingAcceptedEntry));
 
-        var handler = new Command_CustomerPullPackBatchUpsertHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackBatchUpsertHandler(sourceMock.Object);
         var changedEntry = CreateEntry("LINE-5");
         changedEntry.WaitlistId = "WL-ACCEPTED";
         changedEntry.CurrentStatus = Enum_CustomerPullPackWaitlistStatus.Requested;
@@ -174,10 +176,5 @@ public sealed class Command_CustomerPullPackBatchUpsertHandlerTests
             CurrentStatus = Enum_CustomerPullPackWaitlistStatus.Requested,
             LastUpdatedByUserId = "jkoll",
         };
-    }
-
-    private static string CreateConnectionString()
-    {
-        return "Server=MYSQL;Database=mtm_receiving_application;Uid=root;Pwd=test;";
     }
 }

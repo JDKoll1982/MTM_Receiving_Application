@@ -63,6 +63,31 @@ public sealed class Service_InforVisualConnectTests
     }
 
     [Fact]
+    public async Task FuzzySearchCustomersAsync_ShouldFail_WhenTermIsBlank()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.FuzzySearchCustomersAsync(string.Empty);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Search term cannot be empty");
+    }
+
+    [Fact]
+    public async Task FuzzySearchCustomersAsync_ShouldReturnDistinctMockCustomers_WhenTermMatchesIdOrName()
+    {
+        var service = CreateService(useMockData: true);
+
+        var result = await service.FuzzySearchCustomersAsync("Volvo");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data.Should().ContainSingle();
+        result.Data![0].Key.Should().Be("VOLVO");
+        result.Data[0].Label.Should().Be("VOLVO - Volvo Trucks");
+    }
+
+    [Fact]
     public async Task GetRemainingQuantityAsync_ShouldSumRemainingAcrossDuplicatePartLines_WhenMockPOContainsMultipleLines()
     {
         var service = CreateService(
@@ -256,6 +281,31 @@ public sealed class Service_InforVisualConnectTests
         mockCatalog
             .Setup(service => service.GetReceivingTransactions())
             .Returns(activeCatalog.ReceivingTransactions);
+        mockCatalog
+            .Setup(service => service.GetCustomerPullPackDemandRows())
+            .Returns(
+                new List<Model_InforVisualCustomerPullPackDemandRow>
+                {
+                    new()
+                    {
+                        SourceLineKey = "LINE-1",
+                        CustomerId = "VOLVO",
+                        CustomerName = "Volvo Trucks",
+                    },
+                    new()
+                    {
+                        SourceLineKey = "LINE-2",
+                        CustomerId = "VOLVO",
+                        CustomerName = "Volvo Trucks",
+                    },
+                    new()
+                    {
+                        SourceLineKey = "LINE-3",
+                        CustomerId = "MACK",
+                        CustomerName = "Mack Trucks",
+                    },
+                }
+            );
 
         return new Service_InforVisualConnect(
             dao,

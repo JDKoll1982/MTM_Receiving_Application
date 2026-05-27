@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
@@ -14,18 +14,18 @@ public sealed class Command_CustomerPullPackUpdateStatusHandlerTests
     public async Task Handle_ShouldAssignOwner_WhenStatusChangesToAccepted()
     {
         var existingEntry = CreateEntry();
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        daoMock
-            .Setup(dao => dao.GetByIdAsync("WL-1"))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.GetByIdAsync("WL-1"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(existingEntry));
-        daoMock
-            .Setup(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        sourceMock
+            .Setup(service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
             .ReturnsAsync(
                 (Model_CustomerPullPack_WaitlistEntry entry) =>
                     Model_Dao_Result_Factory.Success(entry)
             );
 
-        var handler = new Command_CustomerPullPackUpdateStatusHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackUpdateStatusHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Command_CustomerPullPackUpdateStatus(
@@ -50,18 +50,18 @@ public sealed class Command_CustomerPullPackUpdateStatusHandlerTests
         existingEntry.CurrentOwnerUserId = "handler1";
         existingEntry.CurrentOwnerDisplayName = "Handler One";
 
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        daoMock
-            .Setup(dao => dao.GetByIdAsync("WL-1"))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.GetByIdAsync("WL-1"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(existingEntry));
-        daoMock
-            .Setup(dao => dao.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
+        sourceMock
+            .Setup(service => service.UpsertAsync(It.IsAny<Model_CustomerPullPack_WaitlistEntry>()))
             .ReturnsAsync(
                 (Model_CustomerPullPack_WaitlistEntry entry) =>
                     Model_Dao_Result_Factory.Success(entry)
             );
 
-        var handler = new Command_CustomerPullPackUpdateStatusHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackUpdateStatusHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Command_CustomerPullPackUpdateStatus(
@@ -83,12 +83,12 @@ public sealed class Command_CustomerPullPackUpdateStatusHandlerTests
     [Fact]
     public async Task Handle_ShouldRejectProblemWithoutReasonOrNote()
     {
-        var daoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        daoMock
-            .Setup(dao => dao.GetByIdAsync("WL-1"))
+        var sourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        sourceMock
+            .Setup(service => service.GetByIdAsync("WL-1"))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(CreateEntry()));
 
-        var handler = new Command_CustomerPullPackUpdateStatusHandler(daoMock.Object);
+        var handler = new Command_CustomerPullPackUpdateStatusHandler(sourceMock.Object);
 
         var result = await handler.Handle(
             new Command_CustomerPullPackUpdateStatus(

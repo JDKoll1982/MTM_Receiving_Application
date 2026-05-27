@@ -2,8 +2,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
@@ -27,24 +26,16 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             },
         };
 
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
-
-        var demandDaoMock = new Mock<Dao_CustomerPullPackDemand>(
-            CreateReadOnlyConnectionString(),
-            appSettingsMock.Object,
-            new Mock<IService_LoggingUtility>().Object,
-            new Mock<IService_InforVisualMockDataCatalog>().Object
-        );
-        demandDaoMock
-            .Setup(dao => dao.GetDemandAsync(filter))
+        var demandSourceMock = new Mock<IService_CustomerPullPackDemandSource>();
+        demandSourceMock
+            .Setup(service => service.GetDemandAsync(filter))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedLines, expectedLines.Count));
-        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
+        var waitlistSourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
 
         var loggerMock = new Mock<IService_LoggingUtility>();
         var handler = new Query_CustomerPullPackReportHandler(
-            demandDaoMock.Object,
-            waitlistDaoMock.Object,
+            demandSourceMock.Object,
+            waitlistSourceMock.Object,
             loggerMock.Object
         );
 
@@ -55,7 +46,7 @@ public sealed class Query_CustomerPullPackReportHandlerTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().BeEquivalentTo(expectedLines);
-        demandDaoMock.Verify(dao => dao.GetDemandAsync(filter), Times.Once);
+        demandSourceMock.Verify(service => service.GetDemandAsync(filter), Times.Once);
     }
 
     [Fact]
@@ -64,20 +55,12 @@ public sealed class Query_CustomerPullPackReportHandlerTests
         var filter = CreateFilter();
         filter.CustomerId = string.Empty;
 
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
-
-        var demandDaoMock = new Mock<Dao_CustomerPullPackDemand>(
-            CreateReadOnlyConnectionString(),
-            appSettingsMock.Object,
-            new Mock<IService_LoggingUtility>().Object,
-            new Mock<IService_InforVisualMockDataCatalog>().Object
-        );
-        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
+        var demandSourceMock = new Mock<IService_CustomerPullPackDemandSource>();
+        var waitlistSourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
 
         var handler = new Query_CustomerPullPackReportHandler(
-            demandDaoMock.Object,
-            waitlistDaoMock.Object,
+            demandSourceMock.Object,
+            waitlistSourceMock.Object,
             new Mock<IService_LoggingUtility>().Object
         );
 
@@ -88,69 +71,49 @@ public sealed class Query_CustomerPullPackReportHandlerTests
 
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessage.Should().Be("Customer ID is required.");
-        demandDaoMock.Verify(
-            dao => dao.GetDemandAsync(It.IsAny<Model_CustomerPullPack_DemandFilter>()),
+        demandSourceMock.Verify(
+            service => service.GetDemandAsync(It.IsAny<Model_CustomerPullPack_DemandFilter>()),
             Times.Never
         );
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnMockCatalogDemand_WhenMockModeIsEnabled()
+    public async Task Handle_ShouldReturnDemandLineMetadata_FromResolvedSource()
     {
         var filter = CreateFilter();
-        filter.SortMode = Enum_CustomerPullPackSortMode.Part;
-
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(true);
-
-        var mockCatalog = new Mock<IService_InforVisualMockDataCatalog>();
-        mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
-            .Returns(
-                new List<Model_InforVisualCustomerPullPackDemandRow>
-                {
-                    new()
-                    {
-                        SourceLineKey = "CO-1001|10|1",
-                        CustomerId = "CUST-100",
-                        CustomerName = "Acme Automotive",
-                        CustomerOrderId = "CO-1001",
-                        ParentPartId = "PART-100",
-                        SourceLocationId = "FG-A1",
-                        ShipQuantity = 12,
-                        PullDate = new DateTime(2026, 5, 27),
-                        QuantityToPack = 12,
-                        FgOnHandQuantity = 40,
-                        FgLocationId = "FG-A1",
-                        HasLinkedWaitlist = true,
-                        LinkedWaitlistId = "WL-1001",
-                        LinkedWaitlistStatus = "Requested",
-                        RequesterNote = "Pull before lunch",
-                    },
-                }
-            );
-        mockCatalog
-            .Setup(service => service.GetCustomerPullPackLocationRows())
-            .Returns(
-                new List<Model_InforVisualCustomerPullPackLocationRow>
-                {
-                    new()
+        var expectedLines = new List<Model_CustomerPullPack_DemandLine>
+        {
+            new()
+            {
+                SourceLineKey = "CO-1001|10|1",
+                CustomerId = "CUST-100",
+                CustomerName = "Acme Automotive",
+                CustomerOrderId = "CO-1001",
+                ParentPartId = "PART-100",
+                HasLinkedWaitlist = true,
+                LinkedWaitlistId = "WL-1001",
+                WaitlistStateDisplay = "Requested (WL-1001)",
+                RequesterNote = "Pull before lunch",
+                LocationOptions =
+                [
+                    new Model_CustomerPullPack_LocationOption
                     {
                         LocationKey = "CO-1001|10|1|SUB-01",
-                        SourceLineKey = "CO-1001|10|1",
-                        ParentPartId = "PART-100",
                         LocationId = "SUB-01",
                         DisplayLabel = "SUB-01 (22)",
-                        OnHandQuantity = 22,
-                        SourceType = "SubPartOnHand",
-                        InitiallySelected = false,
                     },
-                }
-            );
+                ],
+            },
+        };
 
-        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        waitlistDaoMock
-            .Setup(dao => dao.GetByIdAsync("WL-1001"))
+        var demandSourceMock = new Mock<IService_CustomerPullPackDemandSource>();
+        demandSourceMock
+            .Setup(service => service.GetDemandAsync(filter))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedLines, expectedLines.Count));
+
+        var waitlistSourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        waitlistSourceMock
+            .Setup(service => service.GetByIdAsync("WL-1001"))
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new Model_CustomerPullPack_WaitlistEntry
@@ -168,13 +131,8 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             );
 
         var handler = new Query_CustomerPullPackReportHandler(
-            new Dao_CustomerPullPackDemand(
-                CreateReadOnlyConnectionString(),
-                appSettingsMock.Object,
-                new Mock<IService_LoggingUtility>().Object,
-                mockCatalog.Object
-            ),
-            waitlistDaoMock.Object,
+            demandSourceMock.Object,
+            waitlistSourceMock.Object,
             new Mock<IService_LoggingUtility>().Object
         );
 
@@ -218,22 +176,14 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             },
         };
 
-        var appSettingsMock = new Mock<IService_AppSettings>();
-        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
-
-        var demandDaoMock = new Mock<Dao_CustomerPullPackDemand>(
-            CreateReadOnlyConnectionString(),
-            appSettingsMock.Object,
-            new Mock<IService_LoggingUtility>().Object,
-            new Mock<IService_InforVisualMockDataCatalog>().Object
-        );
-        demandDaoMock
-            .Setup(dao => dao.GetDemandAsync(filter))
+        var demandSourceMock = new Mock<IService_CustomerPullPackDemandSource>();
+        demandSourceMock
+            .Setup(service => service.GetDemandAsync(filter))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedLines, expectedLines.Count));
 
-        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
-        waitlistDaoMock
-            .Setup(dao => dao.GetByIdAsync("WL-1001"))
+        var waitlistSourceMock = new Mock<IService_CustomerPullPackWaitlistSource>();
+        waitlistSourceMock
+            .Setup(service => service.GetByIdAsync("WL-1001"))
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
                     new Model_CustomerPullPack_WaitlistEntry
@@ -251,8 +201,8 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             );
 
         var handler = new Query_CustomerPullPackReportHandler(
-            demandDaoMock.Object,
-            waitlistDaoMock.Object,
+            demandSourceMock.Object,
+            waitlistSourceMock.Object,
             new Mock<IService_LoggingUtility>().Object
         );
 
@@ -275,10 +225,5 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             DateFrom = new DateTime(2026, 5, 24),
             DateTo = new DateTime(2026, 5, 31),
         };
-    }
-
-    private static string CreateReadOnlyConnectionString()
-    {
-        return "Server=VISUAL;Database=MTMFG;ApplicationIntent=ReadOnly;Trusted_Connection=True;";
     }
 }

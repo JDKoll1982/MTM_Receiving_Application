@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -20,11 +20,13 @@ public class Command_CustomerPullPackBatchUpsertHandler
         Model_Dao_Result<List<Model_CustomerPullPack_WaitlistEntry>>
     >
 {
-    private readonly Dao_CustomerPullPackWaitlist _waitlistDao;
+    private readonly IService_CustomerPullPackWaitlistSource _waitlistSource;
 
-    public Command_CustomerPullPackBatchUpsertHandler(Dao_CustomerPullPackWaitlist waitlistDao)
+    public Command_CustomerPullPackBatchUpsertHandler(
+        IService_CustomerPullPackWaitlistSource waitlistSource
+    )
     {
-        _waitlistDao = waitlistDao;
+        _waitlistSource = waitlistSource;
     }
 
     public async Task<Model_Dao_Result<List<Model_CustomerPullPack_WaitlistEntry>>> Handle(
@@ -41,7 +43,7 @@ public class Command_CustomerPullPackBatchUpsertHandler
             var preparedEntry = PrepareEntry(entry);
             if (string.IsNullOrWhiteSpace(preparedEntry.WaitlistId) is false)
             {
-                var existingResult = await _waitlistDao.GetByIdAsync(preparedEntry.WaitlistId);
+                var existingResult = await _waitlistSource.GetByIdAsync(preparedEntry.WaitlistId);
                 if (!existingResult.IsSuccess || existingResult.Data is null)
                 {
                     return Model_Dao_Result_Factory.Failure<
@@ -61,7 +63,7 @@ public class Command_CustomerPullPackBatchUpsertHandler
                 }
             }
 
-            var upsertResult = await _waitlistDao.UpsertAsync(preparedEntry);
+            var upsertResult = await _waitlistSource.UpsertAsync(preparedEntry);
             if (!upsertResult.IsSuccess)
             {
                 var failureEntries = upsertResult.Data is null

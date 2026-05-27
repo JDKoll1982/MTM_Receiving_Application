@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -16,6 +18,7 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 public sealed partial class View_Tool_CustomerPullPackReport : Page
 {
     private Func<Task>? _showWaitlistQueueAsync;
+    private string _customerSearchTextAtFocusGain = string.Empty;
 
     public ViewModel_Tool_CustomerPullPackReport ViewModel { get; }
 
@@ -30,6 +33,7 @@ public sealed partial class View_Tool_CustomerPullPackReport : Page
         ViewModel.ShowWaitlistQueueAsync = ShowWaitlistQueueAsync;
         ViewModel.ShowDefaultsAsync = ShowDefaultsAsync;
         ViewModel.ShowPrintPreviewAsync = ShowPrintPreviewAsync;
+        ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
         InitializeComponent();
         Loaded += OnLoaded;
     }
@@ -137,12 +141,40 @@ public sealed partial class View_Tool_CustomerPullPackReport : Page
         await dialog.ShowAsync();
     }
 
+    private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(
+        System.Collections.Generic.IReadOnlyList<Model_FuzzySearchResult> candidates,
+        string title
+    )
+    {
+        var dialog = new Dialog_FuzzySearchPicker(
+            candidates,
+            title,
+            subtitle: $"{candidates.Count} possible matches — select the correct one."
+        )
+        {
+            XamlRoot = XamlRoot,
+        };
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary ? dialog.SelectedResult : null;
+    }
+
+    private void OnCustomerSearchBoxGotFocus(object sender, RoutedEventArgs e)
+    {
+        _customerSearchTextAtFocusGain = ViewModel.CustomerSearchText;
+    }
+
+    private async void OnCustomerSearchBoxLostFocus(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.ResolveCustomerSearchTextOnBlurAsync(_customerSearchTextAtFocusGain);
+    }
+
     private void OnCrystalRequestLineSelectionChanged(
         object sender,
         CrystalRequestLineSelectionChangedEventArgs e
     )
     {
-        ViewModel.ApplyCrystalRequestLineSelection(e.SelectedSourceLineKey);
+        ViewModel.ApplyCrystalRequestLineSelection(e.SelectedSourceLineKeys);
     }
 
     private void OnCrystalLocationSelectionChanged(
@@ -150,6 +182,6 @@ public sealed partial class View_Tool_CustomerPullPackReport : Page
         CrystalLocationSelectionChangedEventArgs e
     )
     {
-        ViewModel.ApplyCrystalLocationSelection(e.ParentPartId, e.SelectedLocationIds);
+        ViewModel.ApplyCrystalLocationSelection(e.GroupKey, e.SelectedLocationIds);
     }
 }

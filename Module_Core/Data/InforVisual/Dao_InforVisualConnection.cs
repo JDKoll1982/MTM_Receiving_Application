@@ -444,8 +444,7 @@ public class Dao_InforVisualConnection
                             reader["TransactionDate"] == DBNull.Value
                                 ? DateTime.MinValue
                                 : Convert.ToDateTime(reader["TransactionDate"]),
-                        TransactionUserId =
-                            reader["TransactionUserId"].ToString() ?? string.Empty,
+                        TransactionUserId = reader["TransactionUserId"].ToString() ?? string.Empty,
                         SourceTransactionId =
                             reader["SourceTransactionId"] == DBNull.Value
                                 ? null
@@ -466,10 +465,9 @@ public class Dao_InforVisualConnection
                 $"Error retrieving receiving location transfer movements for part {partNumber}: {ex.Message}",
                 ex
             );
-            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationTransferMovement>>(
-                $"Error retrieving receiving location transfer movements: {ex.Message}",
-                ex
-            );
+            return Model_Dao_Result_Factory.Failure<
+                List<Model_InforVisualLocationTransferMovement>
+            >($"Error retrieving receiving location transfer movements: {ex.Message}", ex);
         }
     }
 
@@ -837,6 +835,66 @@ public class Dao_InforVisualConnection
             _logger?.LogError($"Error fuzzy-searching vendors: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
                 $"Error searching vendors: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Fuzzy search for customers whose ID or NAME contains <paramref name="term"/> (LIKE '%term%').
+    /// Uses: 21_FuzzySearchCustomersByIdOrName.sql
+    /// </summary>
+    /// <param name="term">Partial customer ID or customer name to search for.</param>
+    /// <param name="maxResults">Maximum number of results to return.</param>
+    public async Task<
+        Model_Dao_Result<List<Model_FuzzySearchResult>>
+    > FuzzySearchCustomersByIdOrNameAsync(string term, int maxResults = 50)
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Fuzzy-searching customers by ID or name: '{term}' (max {maxResults})"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "21_FuzzySearchCustomersByIdOrName.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Term", $"%{term}%");
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_FuzzySearchResult>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var customerId = reader["CustomerID"].ToString() ?? string.Empty;
+                var customerName = reader["CustomerName"].ToString() ?? string.Empty;
+                var label = string.IsNullOrWhiteSpace(customerName)
+                    ? customerId
+                    : $"{customerId} - {customerName}";
+
+                results.Add(
+                    new Model_FuzzySearchResult
+                    {
+                        Key = customerId,
+                        Label = label,
+                        Detail = string.IsNullOrWhiteSpace(customerName) ? null : customerName,
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Fuzzy customer search found {results.Count} results for '{term}'");
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error fuzzy-searching customers: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                $"Error searching customers: {ex.Message}",
                 ex
             );
         }

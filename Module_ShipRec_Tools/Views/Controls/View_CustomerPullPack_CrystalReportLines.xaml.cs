@@ -201,7 +201,7 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
             LocationSelectionChanged?.Invoke(
                 this,
                 new CrystalLocationSelectionChangedEventArgs(
-                    group.ParentPartId,
+                    group.GroupKey,
                     selectedItems.Select(static item => item.LocationId).ToList()
                 )
             );
@@ -242,22 +242,19 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
 
     private void ApplyRequestLineSelectionToModel(ListView listView)
     {
-        var selectedRequestLine =
-            listView.SelectionMode == ListViewSelectionMode.Single
-                ? listView.SelectedItem as Model_CustomerPullPack_CrystalRequestLine
-                : listView
-                    .SelectedItems.OfType<Model_CustomerPullPack_CrystalRequestLine>()
-                    .FirstOrDefault();
+        var selectedRequestLines = listView
+            .SelectedItems.OfType<Model_CustomerPullPack_CrystalRequestLine>()
+            .ToHashSet();
 
         foreach (var item in listView.Items.OfType<Model_CustomerPullPack_CrystalRequestLine>())
         {
-            item.IsSelected = ReferenceEquals(item, selectedRequestLine);
+            item.IsSelected = selectedRequestLines.Contains(item);
         }
 
         RequestLineSelectionChanged?.Invoke(
             this,
             new CrystalRequestLineSelectionChangedEventArgs(
-                selectedRequestLine?.SourceLineKey ?? string.Empty
+                selectedRequestLines.Select(static item => item.SourceLineKey).ToList()
             )
         );
     }
@@ -266,25 +263,25 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
 public sealed class CrystalLocationSelectionChangedEventArgs : EventArgs
 {
     public CrystalLocationSelectionChangedEventArgs(
-        string parentPartId,
+        string groupKey,
         IReadOnlyList<string> selectedLocationIds
     )
     {
-        ParentPartId = parentPartId;
+        GroupKey = groupKey;
         SelectedLocationIds = selectedLocationIds;
     }
 
-    public string ParentPartId { get; }
+    public string GroupKey { get; }
 
     public IReadOnlyList<string> SelectedLocationIds { get; }
 }
 
 public sealed class CrystalRequestLineSelectionChangedEventArgs : EventArgs
 {
-    public CrystalRequestLineSelectionChangedEventArgs(string selectedSourceLineKey)
+    public CrystalRequestLineSelectionChangedEventArgs(IReadOnlyList<string> selectedSourceLineKeys)
     {
-        SelectedSourceLineKey = selectedSourceLineKey;
+        SelectedSourceLineKeys = selectedSourceLineKeys;
     }
 
-    public string SelectedSourceLineKey { get; }
+    public IReadOnlyList<string> SelectedSourceLineKeys { get; }
 }

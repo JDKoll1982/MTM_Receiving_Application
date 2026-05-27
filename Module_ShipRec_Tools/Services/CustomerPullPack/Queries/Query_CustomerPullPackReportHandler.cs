@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -21,8 +21,8 @@ public class Query_CustomerPullPackReportHandler
         Model_Dao_Result<List<Model_CustomerPullPack_DemandLine>>
     >
 {
-    private readonly Dao_CustomerPullPackDemand _demandDao;
-    private readonly Dao_CustomerPullPackWaitlist _waitlistDao;
+    private readonly IService_CustomerPullPackDemandSource _demandSource;
+    private readonly IService_CustomerPullPackWaitlistSource _waitlistSource;
     private readonly IService_LoggingUtility _logger;
 
     /// <summary>
@@ -31,13 +31,13 @@ public class Query_CustomerPullPackReportHandler
     /// <param name="demandDao"></param>
     /// <param name="logger"></param>
     public Query_CustomerPullPackReportHandler(
-        Dao_CustomerPullPackDemand demandDao,
-        Dao_CustomerPullPackWaitlist waitlistDao,
+        IService_CustomerPullPackDemandSource demandSource,
+        IService_CustomerPullPackWaitlistSource waitlistSource,
         IService_LoggingUtility logger
     )
     {
-        _demandDao = demandDao;
-        _waitlistDao = waitlistDao;
+        _demandSource = demandSource;
+        _waitlistSource = waitlistSource;
         _logger = logger;
     }
 
@@ -62,7 +62,7 @@ public class Query_CustomerPullPackReportHandler
             $"Loading Customer Pull n' Pack report for customer '{request.Filter.CustomerId}'."
         );
 
-        var demandResult = await _demandDao.GetDemandAsync(request.Filter);
+        var demandResult = await _demandSource.GetDemandAsync(request.Filter);
         if (!demandResult.IsSuccess || demandResult.Data is null || demandResult.Data.Count == 0)
         {
             return demandResult;
@@ -82,7 +82,7 @@ public class Query_CustomerPullPackReportHandler
             )
         )
         {
-            var waitlistResult = await _waitlistDao.GetByIdAsync(line.LinkedWaitlistId);
+            var waitlistResult = await _waitlistSource.GetByIdAsync(line.LinkedWaitlistId);
             if (!waitlistResult.IsSuccess || waitlistResult.Data is null)
             {
                 continue;

@@ -118,7 +118,10 @@
                                 Text="Customer"
                                 TextTrimming="CharacterEllipsis" />
                             <AutoSuggestBox
+                                x:Name="CustomerSearchBox"
                                 HorizontalAlignment="Stretch"
+                                GotFocus="OnCustomerSearchBoxGotFocus"
+                                LostFocus="OnCustomerSearchBoxLostFocus"
                                 PlaceholderText="Enter customer ID or 'ID - Name'"
                                 Text="{x:Bind ViewModel.CustomerSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <ComboBox
