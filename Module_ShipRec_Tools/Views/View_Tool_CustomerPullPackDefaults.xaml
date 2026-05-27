@@ -1,0 +1,60 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackDefaults"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Padding="16">
+        <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Spacing="12">
+                <TextBox Header="Default Customer" Text="{x:Bind DefaultCustomerId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    MinHeight="96"
+                    AcceptsReturn="True"
+                    Header="Favorite Customers (comma or newline separated)"
+                    Text="{x:Bind FavoriteCustomersText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap" />
+
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <CalendarDatePicker
+                        Grid.Column="0"
+                        Date="{x:Bind LastGoodDateFrom, Mode=TwoWay}"
+                        Header="Last Good Date From" />
+                    <CalendarDatePicker
+                        Grid.Column="1"
+                        Date="{x:Bind LastGoodDateTo, Mode=TwoWay}"
+                        Header="Last Good Date To" />
+                </Grid>
+
+                <ComboBox
+                    Header="Default Sort"
+                    ItemsSource="{x:Bind SortModes, Mode=OneWay}"
+                    SelectedItem="{x:Bind DefaultSortMode, Mode=TwoWay}" />
+                <ComboBox
+                    Header="Default Print Preset"
+                    ItemsSource="{x:Bind PrintModes, Mode=OneWay}"
+                    SelectedItem="{x:Bind DefaultPrintPreset, Mode=TwoWay}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox Content="Shortages Only" IsChecked="{x:Bind DefaultShortagesOnly, Mode=TwoWay}" />
+                    <CheckBox Content="Unpulled Only" IsChecked="{x:Bind DefaultUnpulledOnly, Mode=TwoWay}" />
+                    <CheckBox Content="Late Orders Only" IsChecked="{x:Bind DefaultLateOrdersOnly, Mode=TwoWay}" />
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Default Waitlist Status Set" />
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox Content="Requested" IsChecked="{x:Bind IncludeRequested, Mode=TwoWay}" />
+                    <CheckBox Content="Accepted" IsChecked="{x:Bind IncludeAccepted, Mode=TwoWay}" />
+                    <CheckBox Content="Problem" IsChecked="{x:Bind IncludeProblem, Mode=TwoWay}" />
+                    <CheckBox Content="Completed" IsChecked="{x:Bind IncludeCompleted, Mode=TwoWay}" />
+                    <CheckBox Content="Cancelled" IsChecked="{x:Bind IncludeCancelled, Mode=TwoWay}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

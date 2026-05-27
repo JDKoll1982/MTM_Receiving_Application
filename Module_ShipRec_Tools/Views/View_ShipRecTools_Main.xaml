@@ -41,5 +41,12 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsCustomerPullPackVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Customer Pull n' Pack Waitlist Tool  -->
+        <ContentControl
+            x:Name="CustomerPullPackWaitlistHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsCustomerPullPackWaitlistVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

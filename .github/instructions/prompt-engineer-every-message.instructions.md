@@ -48,6 +48,12 @@ Silently evaluate the user's message against the following checklist:
 - Avoid: missing length specification when it matters
 - Avoid: missing format instructions
 
+**Implementation-Handoff Gap Check**
+- [ ] If the user wants a rough note, bug list, or change log turned into an implementation-ready prompt, have they specified whether clarifications should be gathered first?
+- [ ] Does the task need exact codebase grounding such as owning files, method names, tests, or architectural seams before the prompt can be trusted?
+- [ ] Are there likely scope mistakes or unrelated files in the user's raw list that should be confirmed or pruned before rewriting the prompt?
+- [ ] Does the final artifact need implementation order, validation expectations, or explicit non-scope items so a later coding pass can proceed without rediscovery?
+
 ---
 
 ### Step 2 — Construct the Enhanced Prompt
@@ -97,6 +103,57 @@ Prepend the five context types if absent and inferrable:
 4. Constraints and boundaries
 5. Relevant background (use workspace knowledge if the task is code-related)
 
+**Repository-Grounded Prompt Construction (Required for implementation-ready prompts)**
+
+When the user asks you to rewrite rough notes, specs, change requests, issue bullets, or a scratchpad into a prompt that will later drive real code changes, do not stop at generic prompt enhancement. Build a repo-grounded implementation handoff.
+
+Use this workflow inside Step 2 before presenting the approval prompt:
+
+1. **Identify the owning surfaces**
+  - Inspect the smallest set of nearby files needed to determine which views, viewmodels, services, controls, tests, and docs actually own the requested behavior.
+  - Prefer the direct behavior owner over broad repo mapping.
+
+2. **Collect targeted clarifications**
+  - Ask only the questions needed to resolve implementation-affecting ambiguity.
+  - Focus on behavior rules, scope splits, display semantics, required calculations, and explicit non-scope items.
+  - Resolve ambiguous file lists by checking the repo instead of preserving bad guesses.
+
+2a. **Run additional clarification passes when needed**
+  - If the first rewritten prompt is still missing implementation-critical decisions, or the user explicitly asks for more clarification before coding, run another targeted clarification pass instead of guessing.
+  - Group questions by theme when possible: behavior rules, visual semantics, selection rules, navigation, validation, and testing.
+  - If the user asks for a minimum number of questions, satisfy that minimum while still keeping the questions implementation-relevant.
+  - Prefer a single batched clarification pass over many tiny interruptions when the ambiguities are known and related.
+
+3. **Ground the prompt in real code anchors**
+  - Name the actual files that should change.
+  - Include method names, view/control anchors, test files, and documentation files when they are discoverable and useful.
+  - If exact line numbers are unstable or not requested, use method or symbol anchors instead of inventing precision.
+
+4. **Separate primary scope from conditional scope**
+  - Distinguish between files that almost certainly must change and files that are verify-only or conditional.
+  - Call out explicit non-scope items when the user's raw list includes likely unrelated surfaces.
+
+5. **Convert the result into an implementation-ready handoff**
+  - The final enhanced prompt should include, when relevant:
+    - personas or roles
+    - confirmed clarifications
+    - required outcome
+    - constraints and guardrails
+    - files grouped by primary / conditional / non-scope
+    - code anchors such as methods, controls, tests, or handlers
+    - ordered implementation plan
+    - checkbox task list
+    - validation expectations for the later coding pass
+
+6. **Optimize for no-rediscovery later**
+  - The rewritten prompt should be self-contained enough that a later implementation pass does not need another broad discovery round.
+  - Add only the context that prevents likely misexecution; do not pad the prompt with generic commentary.
+
+7. **Reintegrate later clarifications into the artifact**
+  - After any follow-up clarification pass, update the rewritten prompt/spec itself rather than leaving the answers only in chat.
+  - Merge the new answers into the correct sections such as Confirmed Clarifications, Required Outcome, Constraints And Guardrails, Files That Should Change, Ordered Implementation Plan, Task List, and Validation Expectations.
+  - Keep the artifact internally consistent after reintegration. Do not leave stale earlier assumptions in place once clarified answers supersede them.
+
 ---
 
 ### Step 3 — Present and Get Approval BEFORE Acting
@@ -133,6 +190,15 @@ Use the `vscode_askQuestions` tool with the following structure:
   - [Key addition 2 — e.g., "Specified FluentAssertions for assertions"]
   ```
 
+For implementation-ready prompt rewrites, also summarize whichever of these were added:
+
+- clarified behavior rules
+- real file or method anchors
+- primary vs conditional scope
+- explicit non-scope items
+- ordered plan
+- validation/test expectations
+
 - **options:**
   - `"✅ Yes — use this prompt"` *(recommended)*
   - `"✏️ Let me adjust it first"`
@@ -157,6 +223,7 @@ Apply when the user's message is:
 - Vague, incomplete, or missing format/context
 - Complex enough that a poorly formed prompt would produce mediocre output
 - A first message in a new conversation about a new topic
+- A request to turn rough notes or a scratchpad into an implementation-ready prompt or spec for a later coding pass
 
 ### Lightweight Mode (Step 3 only — ask with minimal enhancement)
 Apply when:
@@ -170,6 +237,54 @@ In lightweight mode, still present the prompt but note "Your prompt looks well-f
 - Purely conversational greetings or acknowledgements ("thanks", "got it")
 - Explicit user instruction: "Just do it, skip the prompt review"
 - Follow-up iterations where the user already approved a base prompt and is refining
+
+---
+
+## Specialized Pattern — Rewriting Rough Notes Into Implementation Prompts
+
+Use this pattern when the raw input is a change list, markdown scratchpad, copied issue notes, or a rough feature idea that will later be used to drive code changes.
+
+### Required deliverable shape
+
+When appropriate, shape the rewritten prompt/spec with sections like:
+
+- Audience
+- Personas
+- Confirmed Clarifications
+- Required Outcome
+- Constraints And Guardrails
+- Primary Change Areas In Implementation Order
+- Files That Should Change
+- Focused Tests That Should Change
+- Documentation Files That Should Change
+- Verify-Only / Conditional Files
+- Explicit Non-Scope Items
+- Ordered Implementation Plan
+- Task List
+- Validation Expectations For The Later Implementation Pass
+
+### Clarification priorities
+
+When deciding what to ask before rewriting, prioritize:
+
+1. ambiguous behavior rules that would change implementation
+2. scope splits such as separate page vs dialog, replace vs coexist, count vs sum, style vs logic
+3. questionable or unrelated files in the user's source list
+4. the level of precision desired for anchors: exact lines, methods, or best-effort symbols
+
+### Clarification hardening after the first draft
+
+If the first rewritten prompt/spec is good but still not implementation-safe, or the user asks for a deeper clarification pass:
+
+1. inspect the current draft to identify which sections still contain assumptions
+2. ask a focused second-round question set aimed only at those unresolved decisions
+3. prefer thematic batches over ad hoc one-off questions
+4. update the draft immediately after the answers arrive
+5. keep the final artifact as the single source of truth rather than splitting key decisions between the file and the chat
+
+### Research budget rule
+
+Before rewriting the prompt, do enough targeted repo inspection to identify the controlling surfaces and major seams, but do not perform a full implementation investigation. The goal is to create a high-confidence handoff prompt, not to start coding yet.
 
 ---
 
@@ -266,6 +381,8 @@ This workflow applies to every session regardless of topic. For non-code tasks (
 analysis, planning), adapt the workspace context section to reflect the user's actual
 domain. For code tasks in this repository, workspace knowledge (MVVM architecture,
 forbidden patterns, DAO conventions) should automatically inform the enhanced context.
+
+When the user asks for a prompt that will later drive implementation work, treat prompt quality as partly a research task: first confirm the behavior rules and repo anchors, then write the prompt so the later coding pass can execute with minimal rediscovery.
 
 The goal is not longer prompts — it is **complete** prompts that give the AI no room to
 misinterpret. A well-formed prompt of 5 sentences beats a vague paragraph every time.

@@ -39,10 +39,12 @@ public sealed class Query_CustomerPullPackReportHandlerTests
         demandDaoMock
             .Setup(dao => dao.GetDemandAsync(filter))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedLines, expectedLines.Count));
+        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
 
         var loggerMock = new Mock<IService_LoggingUtility>();
         var handler = new Query_CustomerPullPackReportHandler(
             demandDaoMock.Object,
+            waitlistDaoMock.Object,
             loggerMock.Object
         );
 
@@ -71,9 +73,11 @@ public sealed class Query_CustomerPullPackReportHandlerTests
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_InforVisualMockDataCatalog>().Object
         );
+        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
 
         var handler = new Query_CustomerPullPackReportHandler(
             demandDaoMock.Object,
+            waitlistDaoMock.Object,
             new Mock<IService_LoggingUtility>().Object
         );
 
@@ -144,6 +148,25 @@ public sealed class Query_CustomerPullPackReportHandlerTests
                 }
             );
 
+        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
+        waitlistDaoMock
+            .Setup(dao => dao.GetByIdAsync("WL-1001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_CustomerPullPack_WaitlistEntry
+                    {
+                        WaitlistId = "WL-1001",
+                        SourceLineKey = "CO-1001|10|1",
+                        CustomerId = "CUST-100",
+                        CustomerOrderId = "CO-1001",
+                        ParentPartId = "PART-100",
+                        RequestedQuantity = 12,
+                        SelectedLocations = ["SUB-01"],
+                        CurrentStatus = Enum_CustomerPullPackWaitlistStatus.Requested,
+                    }
+                )
+            );
+
         var handler = new Query_CustomerPullPackReportHandler(
             new Dao_CustomerPullPackDemand(
                 CreateReadOnlyConnectionString(),
@@ -151,6 +174,7 @@ public sealed class Query_CustomerPullPackReportHandlerTests
                 new Mock<IService_LoggingUtility>().Object,
                 mockCatalog.Object
             ),
+            waitlistDaoMock.Object,
             new Mock<IService_LoggingUtility>().Object
         );
 
@@ -165,6 +189,81 @@ public sealed class Query_CustomerPullPackReportHandlerTests
         result.Data[0].LocationOptions.Should().ContainSingle();
         result.Data[0].LocationOptions[0].LocationId.Should().Be("SUB-01");
         result.Data[0].RequesterNote.Should().Be("Pull before lunch");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldFlagRecheckIndicator_WhenCompletedLineContextChanges()
+    {
+        var filter = CreateFilter();
+        var expectedLines = new List<Model_CustomerPullPack_DemandLine>
+        {
+            new()
+            {
+                SourceLineKey = "CO-1001|10|1",
+                CustomerId = "CUST-100",
+                CustomerOrderId = "CO-1001",
+                ParentPartId = "PART-100",
+                QuantityToPack = 12,
+                HasLinkedWaitlist = true,
+                LinkedWaitlistId = "WL-1001",
+                LocationOptions =
+                [
+                    new Model_CustomerPullPack_LocationOption
+                    {
+                        LocationKey = "CO-1001|10|1|SUB-01",
+                        LocationId = "SUB-01",
+                        DisplayLabel = "SUB-01",
+                    },
+                ],
+            },
+        };
+
+        var appSettingsMock = new Mock<IService_AppSettings>();
+        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
+
+        var demandDaoMock = new Mock<Dao_CustomerPullPackDemand>(
+            CreateReadOnlyConnectionString(),
+            appSettingsMock.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_InforVisualMockDataCatalog>().Object
+        );
+        demandDaoMock
+            .Setup(dao => dao.GetDemandAsync(filter))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(expectedLines, expectedLines.Count));
+
+        var waitlistDaoMock = new Mock<Dao_CustomerPullPackWaitlist>("Server=localhost;");
+        waitlistDaoMock
+            .Setup(dao => dao.GetByIdAsync("WL-1001"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_CustomerPullPack_WaitlistEntry
+                    {
+                        WaitlistId = "WL-1001",
+                        SourceLineKey = "CO-1001|10|1",
+                        CustomerId = "CUST-100",
+                        CustomerOrderId = "CO-1001",
+                        ParentPartId = "PART-100",
+                        RequestedQuantity = 10,
+                        SelectedLocations = ["SUB-01"],
+                        CurrentStatus = Enum_CustomerPullPackWaitlistStatus.Completed,
+                    }
+                )
+            );
+
+        var handler = new Query_CustomerPullPackReportHandler(
+            demandDaoMock.Object,
+            waitlistDaoMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await handler.Handle(
+            new Query_CustomerPullPackReport(filter),
+            CancellationToken.None
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].RecheckIndicator.Should().BeTrue();
     }
 
     private static Model_CustomerPullPack_DemandFilter CreateFilter()

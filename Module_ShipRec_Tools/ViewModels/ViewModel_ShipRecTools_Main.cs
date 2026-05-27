@@ -40,6 +40,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isCustomerPullPackVisible;
 
+    [ObservableProperty]
+    private bool _isCustomerPullPackWaitlistVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -87,6 +90,12 @@ public partial class ViewModel_ShipRecTools_Main
 
                 case "CustomerPullPack":
                     IsCustomerPullPackVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "CustomerPullPackWaitlist":
+                    IsCustomerPullPackWaitlistVisible = true;
                     CurrentToolTitle = toolTitle;
                     ShowHeaderBackButton();
                     break;
@@ -139,5 +148,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsOutsideServiceHistoryVisible = false;
         IsMaterialAvailabilityBoardVisible = false;
         IsCustomerPullPackVisible = false;
+        IsCustomerPullPackWaitlistVisible = false;
     }
 }

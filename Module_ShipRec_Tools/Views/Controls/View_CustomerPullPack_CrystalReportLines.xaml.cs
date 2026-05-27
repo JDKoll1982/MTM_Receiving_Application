@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.UI.Xaml;
@@ -11,8 +12,8 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views.Controls;
 /// </summary>
 public sealed partial class View_CustomerPullPack_CrystalReportLines : UserControl
 {
-    private static readonly IList<Model_CustomerPullPack_CrystalReportGroup> PlaceholderGroups =
-        CreatePlaceholderGroups();
+    private bool _isSynchronizingLocationSelection;
+    private bool _isSynchronizingRequestLineSelection;
 
     public static readonly DependencyProperty GroupsProperty = DependencyProperty.Register(
         nameof(Groups),
@@ -21,10 +22,25 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
         new PropertyMetadata(null, OnGroupsChanged)
     );
 
+    public static readonly DependencyProperty ReportDateDisplayProperty =
+        DependencyProperty.Register(
+            nameof(ReportDateDisplay),
+            typeof(string),
+            typeof(View_CustomerPullPack_CrystalReportLines),
+            new PropertyMetadata(string.Empty)
+        );
+
+    public static readonly DependencyProperty ReportTimeDisplayProperty =
+        DependencyProperty.Register(
+            nameof(ReportTimeDisplay),
+            typeof(string),
+            typeof(View_CustomerPullPack_CrystalReportLines),
+            new PropertyMetadata(string.Empty)
+        );
+
     public View_CustomerPullPack_CrystalReportLines()
     {
         InitializeComponent();
-        RefreshDisplayGroups();
     }
 
     public IList<Model_CustomerPullPack_CrystalReportGroup>? Groups
@@ -33,26 +49,34 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
         set => SetValue(GroupsProperty, value);
     }
 
+    public string ReportDateDisplay
+    {
+        get => (string)GetValue(ReportDateDisplayProperty);
+        set => SetValue(ReportDateDisplayProperty, value);
+    }
+
+    public string ReportTimeDisplay
+    {
+        get => (string)GetValue(ReportTimeDisplayProperty);
+        set => SetValue(ReportTimeDisplayProperty, value);
+    }
+
     public IList<Model_CustomerPullPack_CrystalReportGroup> DisplayGroups { get; private set; } =
-        PlaceholderGroups;
+    [];
 
-    public Model_CustomerPullPack_CrystalSubPartLocation? SelectedSubPartPlaceholder { get; set; }
+    public event EventHandler<CrystalLocationSelectionChangedEventArgs>? LocationSelectionChanged;
 
-    public Model_CustomerPullPack_CrystalRequestLine? SelectedRequestLinePlaceholder { get; set; }
-
-    public string ReportDateDisplay => "5/20/2026";
-
-    public string ReportTimeDisplay => "5:11:23 AM";
+    public event EventHandler<CrystalRequestLineSelectionChangedEventArgs>? RequestLineSelectionChanged;
 
     private static void OnGroupsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        ((View_CustomerPullPack_CrystalReportLines)d).RefreshDisplayGroups();
+        ((View_CustomerPullPack_CrystalReportLines)d).DisplayGroups =
+            ((View_CustomerPullPack_CrystalReportLines)d).Groups ?? [];
     }
 
     private void RefreshDisplayGroups()
     {
-        DisplayGroups = Groups is { Count: > 0 } ? Groups : PlaceholderGroups;
-        Bindings.Update();
+        DisplayGroups = Groups ?? [];
     }
 
     private void OnSelectableLocationListLoaded(object sender, RoutedEventArgs e)
@@ -70,6 +94,11 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
         SelectionChangedEventArgs e
     )
     {
+        if (_isSynchronizingLocationSelection)
+        {
+            return;
+        }
+
         if (sender is not ListView listView)
         {
             return;
@@ -93,6 +122,11 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
         SelectionChangedEventArgs e
     )
     {
+        if (_isSynchronizingRequestLineSelection)
+        {
+            return;
+        }
+
         if (sender is not ListView listView)
         {
             return;
@@ -103,21 +137,56 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
 
     private void SyncLocationListSelectionFromModel(ListView listView)
     {
-        listView.SelectedItems.Clear();
+        _isSynchronizingLocationSelection = true;
 
-        foreach (var item in listView.Items.OfType<Model_CustomerPullPack_CrystalSubPartLocation>())
+        try
         {
-            if (item.IsSelected)
+            listView.SelectedItems.Clear();
+
+            foreach (
+                var item in listView.Items.OfType<Model_CustomerPullPack_CrystalSubPartLocation>()
+            )
             {
-                listView.SelectedItems.Add(item);
+                if (item.IsSelected)
+                {
+                    listView.SelectedItems.Add(item);
+                }
             }
         }
-
-        Bindings.Update();
+        finally
+        {
+            _isSynchronizingLocationSelection = false;
+        }
     }
 
     private void ApplyLocationSelectionToModel(ListView listView)
     {
+        if (
+            listView.DataContext is Model_CustomerPullPack_CrystalReportGroup gatedGroup
+            && gatedGroup.HasSelectedRequestLine is false
+        )
+        {
+            _isSynchronizingLocationSelection = true;
+
+            try
+            {
+                listView.SelectedItems.Clear();
+
+                foreach (
+                    var item in listView.Items.OfType<Model_CustomerPullPack_CrystalSubPartLocation>()
+                )
+                {
+                    item.IsSelected = false;
+                }
+            }
+            finally
+            {
+                _isSynchronizingLocationSelection = false;
+            }
+
+            return;
+        }
+
         var selectedItems = listView
             .SelectedItems.OfType<Model_CustomerPullPack_CrystalSubPartLocation>()
             .ToHashSet();
@@ -127,121 +196,95 @@ public sealed partial class View_CustomerPullPack_CrystalReportLines : UserContr
             item.IsSelected = selectedItems.Contains(item);
         }
 
-        Bindings.Update();
+        if (listView.DataContext is Model_CustomerPullPack_CrystalReportGroup group)
+        {
+            LocationSelectionChanged?.Invoke(
+                this,
+                new CrystalLocationSelectionChangedEventArgs(
+                    group.ParentPartId,
+                    selectedItems.Select(static item => item.LocationId).ToList()
+                )
+            );
+        }
     }
 
     private void SyncRequestLineSelectionFromModel(ListView listView)
     {
-        listView.SelectedItems.Clear();
+        _isSynchronizingRequestLineSelection = true;
 
-        foreach (var item in listView.Items.OfType<Model_CustomerPullPack_CrystalRequestLine>())
+        try
         {
-            if (item.IsSelected)
+            var selectedItem = listView
+                .Items.OfType<Model_CustomerPullPack_CrystalRequestLine>()
+                .FirstOrDefault(item => item.IsSelected);
+
+            if (listView.SelectionMode == ListViewSelectionMode.Single)
             {
-                listView.SelectedItems.Add(item);
+                listView.SelectedItem = selectedItem;
+                return;
+            }
+
+            listView.SelectedItems.Clear();
+
+            foreach (var item in listView.Items.OfType<Model_CustomerPullPack_CrystalRequestLine>())
+            {
+                if (item.IsSelected)
+                {
+                    listView.SelectedItems.Add(item);
+                }
             }
         }
-
-        Bindings.Update();
+        finally
+        {
+            _isSynchronizingRequestLineSelection = false;
+        }
     }
 
     private void ApplyRequestLineSelectionToModel(ListView listView)
     {
-        var selectedItems = listView
-            .SelectedItems.OfType<Model_CustomerPullPack_CrystalRequestLine>()
-            .ToHashSet();
+        var selectedRequestLine =
+            listView.SelectionMode == ListViewSelectionMode.Single
+                ? listView.SelectedItem as Model_CustomerPullPack_CrystalRequestLine
+                : listView
+                    .SelectedItems.OfType<Model_CustomerPullPack_CrystalRequestLine>()
+                    .FirstOrDefault();
 
         foreach (var item in listView.Items.OfType<Model_CustomerPullPack_CrystalRequestLine>())
         {
-            item.IsSelected = selectedItems.Contains(item);
+            item.IsSelected = ReferenceEquals(item, selectedRequestLine);
         }
 
-        Bindings.Update();
+        RequestLineSelectionChanged?.Invoke(
+            this,
+            new CrystalRequestLineSelectionChangedEventArgs(
+                selectedRequestLine?.SourceLineKey ?? string.Empty
+            )
+        );
+    }
+}
+
+public sealed class CrystalLocationSelectionChangedEventArgs : EventArgs
+{
+    public CrystalLocationSelectionChangedEventArgs(
+        string parentPartId,
+        IReadOnlyList<string> selectedLocationIds
+    )
+    {
+        ParentPartId = parentPartId;
+        SelectedLocationIds = selectedLocationIds;
     }
 
-    private static IList<Model_CustomerPullPack_CrystalReportGroup> CreatePlaceholderGroups()
+    public string ParentPartId { get; }
+
+    public IReadOnlyList<string> SelectedLocationIds { get; }
+}
+
+public sealed class CrystalRequestLineSelectionChangedEventArgs : EventArgs
+{
+    public CrystalRequestLineSelectionChangedEventArgs(string selectedSourceLineKey)
     {
-        return
-        [
-            new Model_CustomerPullPack_CrystalReportGroup
-            {
-                ParentPartId = "20433220",
-                QuantityToPack = 69,
-                QuantitySelected = 69,
-                FgLocationId = "DD-E0-12",
-                FgOnHandQuantity = 69,
-                SubPartLocations =
-                [
-                    new Model_CustomerPullPack_CrystalSubPartLocation
-                    {
-                        PartLocationId = "20433220-PKG DD-M1-01",
-                        OnHandQuantity = 58,
-                    },
-                    new Model_CustomerPullPack_CrystalSubPartLocation
-                    {
-                        PartLocationId = "20433220-PKG DD-M1-03",
-                        OnHandQuantity = 14,
-                        IsSelected = true,
-                    },
-                ],
-                RequestLines =
-                [
-                    new Model_CustomerPullPack_CrystalRequestLine
-                    {
-                        CustomerOrderId = "CO-086516",
-                        ParentPartId = "20433220",
-                        LocationId = "undefined",
-                        CustomerLabel = "Volvo - Volvo Group (10)",
-                        ShipQuantity = 69,
-                        PullDateDisplay = "5/27/26",
-                        IsSelected = true,
-                    },
-                ],
-                ServiceNote = "SERVICE PARTS - PRIORITIZE OTHER ORDERS FIRST!",
-            },
-            new Model_CustomerPullPack_CrystalReportGroup
-            {
-                ParentPartId = "20461010",
-                QuantityToPack = 550,
-                QuantitySelected = 550,
-                FgLocationId = "DD-E0-01",
-                FgOnHandQuantity = 40,
-                ShortageFlag = true,
-                SubPartLocations =
-                [
-                    new Model_CustomerPullPack_CrystalSubPartLocation
-                    {
-                        PartLocationId = "20461010-PKG DC-H3-23",
-                        OnHandQuantity = 1296,
-                    },
-                    new Model_CustomerPullPack_CrystalSubPartLocation
-                    {
-                        PartLocationId = "20461010-PKG DD-A0-09",
-                        OnHandQuantity = 1710,
-                    },
-                    new Model_CustomerPullPack_CrystalSubPartLocation
-                    {
-                        PartLocationId = "20461010-PKG DD-A1-19",
-                        OnHandQuantity = 1690,
-                        IsSelected = true,
-                    },
-                ],
-                RequestLines =
-                [
-                    new Model_CustomerPullPack_CrystalRequestLine
-                    {
-                        CustomerOrderId = "CO-086516",
-                        ParentPartId = "20461010",
-                        LocationId = "undefined",
-                        CustomerLabel = "Volvo - Volvo Group (10)",
-                        ShipQuantity = 550,
-                        PullDateDisplay = "5/27/26",
-                        IsSelected = true,
-                        StatusBadgeText = "Problem",
-                    },
-                ],
-                ServiceNote = "SERVICE PARTS - PRIORITIZE OTHER ORDERS FIRST!",
-            },
-        ];
+        SelectedSourceLineKey = selectedSourceLineKey;
     }
+
+    public string SelectedSourceLineKey { get; }
 }

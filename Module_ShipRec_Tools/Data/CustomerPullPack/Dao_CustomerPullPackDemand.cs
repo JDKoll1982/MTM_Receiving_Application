@@ -240,6 +240,7 @@ public class Dao_CustomerPullPackDemand
                 ),
                 SubPartAvailabilitySummary = BuildMockAvailabilitySummary(
                     row.SourceLineKey,
+                    row.ParentPartId,
                     row.FgOnHandQuantity,
                     locationRows
                 ),
@@ -354,10 +355,7 @@ public class Dao_CustomerPullPackDemand
         IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
     )
     {
-        return locationRows
-            .Where(row =>
-                string.Equals(row.SourceLineKey, sourceLineKey, StringComparison.OrdinalIgnoreCase)
-            )
+        return ResolveMockLocationRows(sourceLineKey, parentPartId, locationRows)
             .OrderBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
             .Select(row => new Model_CustomerPullPack_LocationOption
             {
@@ -377,15 +375,43 @@ public class Dao_CustomerPullPackDemand
 
     private static string BuildMockAvailabilitySummary(
         string sourceLineKey,
+        string parentPartId,
         decimal fgOnHandQuantity,
         IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
     )
     {
-        var matchingLocationCount = locationRows.Count(row =>
-            string.Equals(row.SourceLineKey, sourceLineKey, StringComparison.OrdinalIgnoreCase)
-        );
+        var matchingLocationCount = ResolveMockLocationRows(
+            sourceLineKey,
+            parentPartId,
+            locationRows
+        ).Count;
 
         return $"{matchingLocationCount} selectable locations / {fgOnHandQuantity:0.##} on hand";
+    }
+
+    private static List<Model_InforVisualCustomerPullPackLocationRow> ResolveMockLocationRows(
+        string sourceLineKey,
+        string parentPartId,
+        IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> locationRows
+    )
+    {
+        var sourceLineRows = locationRows
+            .Where(row =>
+                string.Equals(row.SourceLineKey, sourceLineKey, StringComparison.OrdinalIgnoreCase)
+            )
+            .ToList();
+
+        if (sourceLineRows.Count > 0)
+        {
+            return sourceLineRows;
+        }
+
+        return locationRows
+            .Where(row => string.IsNullOrWhiteSpace(row.SourceLineKey))
+            .Where(row =>
+                string.Equals(row.ParentPartId, parentPartId, StringComparison.OrdinalIgnoreCase)
+            )
+            .ToList();
     }
 
     private static Enum_CustomerPullPackLocationSourceType ParseLocationSourceType(

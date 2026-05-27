@@ -105,5 +105,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "CustomerPullPackWaitlist",
+                Title = "Customer Pull n' Pack Waitlist",
+                Description =
+                    "Standalone waitlist work queue for Customer Pull n' Pack handlers and request follow-up.",
+                IconGlyph = "\uE8A5",
+                Category = Enum_ToolCategory.Utilities,
+                IsAvailable = true,
+            }
+        );
     }
 }

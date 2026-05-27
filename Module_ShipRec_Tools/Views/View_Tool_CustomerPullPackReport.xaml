@@ -79,7 +79,10 @@
                                 Command="{x:Bind ViewModel.CreateOrUpdateWaitlistCommand}"
                                 Content="Update Waitlist"
                                 Style="{StaticResource AccentButtonStyle}" />
-                            <Button Content="Show Waitlist" Style="{StaticResource AccentButtonStyle}" />
+                            <Button
+                                Command="{x:Bind ViewModel.OpenWaitlistQueueCommand}"
+                                Content="Show Waitlist"
+                                Style="{StaticResource AccentButtonStyle}" />
                             <ProgressRing
                                 Width="24"
                                 Height="24"
@@ -118,6 +121,12 @@
                                 HorizontalAlignment="Stretch"
                                 PlaceholderText="Enter customer ID or 'ID - Name'"
                                 Text="{x:Bind ViewModel.CustomerSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                Header="Favorites"
+                                ItemsSource="{x:Bind ViewModel.FavoriteCustomerIds, Mode=OneWay}"
+                                PlaceholderText="Recall saved customer"
+                                SelectedItem="{x:Bind ViewModel.SelectedFavoriteCustomerId, Mode=TwoWay}" />
                         </StackPanel>
 
                         <StackPanel
@@ -195,6 +204,22 @@
                             HorizontalAlignment="Right"
                             Orientation="Horizontal"
                             Spacing="8">
+                            <ComboBox
+                                Width="180"
+                                ItemsSource="{x:Bind ViewModel.PrintModes, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedPrintMode, Mode=TwoWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.PrintSelectedModeCommand}"
+                                Content="Print Preview"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.OpenDefaultsCommand}"
+                                Content="Defaults"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.SaveCurrentDefaultsCommand}"
+                                Content="Save Defaults"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                             <Button
                                 Command="{x:Bind ViewModel.ClearReportFiltersCommand}"
                                 Content="Clear Filters"
@@ -239,51 +264,13 @@
                     <controls:View_CustomerPullPack_CrystalReportLines
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch" />
+                        HorizontalContentAlignment="Stretch"
+                        Groups="{x:Bind ViewModel.CrystalReportGroups, Mode=OneWay}"
+                        LocationSelectionChanged="OnCrystalLocationSelectionChanged"
+                        ReportDateDisplay="{x:Bind ViewModel.CrystalReportDateDisplay, Mode=OneWay}"
+                        ReportTimeDisplay="{x:Bind ViewModel.CrystalReportTimeDisplay, Mode=OneWay}"
+                        RequestLineSelectionChanged="OnCrystalRequestLineSelectionChanged" />
 
-                    <Border
-                        Padding="12"
-                        HorizontalAlignment="Stretch"
-                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Visibility="{x:Bind ViewModel.IsSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <StackPanel HorizontalAlignment="Stretch" Spacing="8">
-                            <TextBlock
-                                MaxLines="1"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="SUB PARTS ON HAND Location Selection"
-                                TextTrimming="CharacterEllipsis" />
-                            <TextBlock
-                                MaxLines="2"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="{x:Bind ViewModel.SelectedDemandLineLocationSummary, Mode=OneWay}"
-                                TextWrapping="WrapWholeWords" />
-                            <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedDemandLineLocationOptions, Mode=OneWay}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapGrid Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Model_CustomerPullPack_LocationOption">
-                                        <CheckBox
-                                            Margin="0,0,8,6"
-                                            HorizontalAlignment="Stretch"
-                                            Content="{x:Bind DisplayLabel}"
-                                            IsChecked="{x:Bind Selected, Mode=TwoWay}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                MaxLines="2"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="If no selectable locations are available for the focused line, add a requester note before saving."
-                                TextWrapping="WrapWholeWords" />
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
             </ScrollViewer>
         </Border>

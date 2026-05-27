@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using Windows.Graphics;
@@ -21,6 +22,7 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_Tool_OutsideServiceHistory _outsideServiceHistoryViewModel;
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
     private readonly ViewModel_Tool_CustomerPullPackReport _customerPullPackReportViewModel;
+    private readonly ViewModel_Tool_CustomerPullPackQueue _customerPullPackQueueViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
@@ -29,7 +31,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         View_ShipRecTools_ToolSelection toolSelectionView,
         View_Tool_OutsideServiceHistory outsideServiceHistoryView,
         View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
-        View_Tool_CustomerPullPackReport customerPullPackReportView
+        View_Tool_CustomerPullPackReport customerPullPackReportView,
+        View_Tool_CustomerPullPackQueue customerPullPackQueueView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -37,18 +40,25 @@ public sealed partial class View_ShipRecTools_Main : Page
         ArgumentNullException.ThrowIfNull(outsideServiceHistoryView);
         ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
         ArgumentNullException.ThrowIfNull(customerPullPackReportView);
+        ArgumentNullException.ThrowIfNull(customerPullPackQueueView);
 
         ViewModel = viewModel;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
         _outsideServiceHistoryViewModel = outsideServiceHistoryView.ViewModel;
         _materialAvailabilityBoardViewModel = materialAvailabilityBoardView.ViewModel;
         _customerPullPackReportViewModel = customerPullPackReportView.ViewModel;
+        _customerPullPackQueueViewModel = customerPullPackQueueView.ViewModel;
         InitializeComponent();
+
+        customerPullPackReportView.ConfigureWaitlistQueueNavigation(
+            ShowCustomerPullPackWaitlistAsync
+        );
 
         ToolSelectionHost.Content = toolSelectionView;
         OutsideServiceHistoryHost.Content = outsideServiceHistoryView;
         MaterialAvailabilityBoardHost.Content = materialAvailabilityBoardView;
         CustomerPullPackHost.Content = customerPullPackReportView;
+        CustomerPullPackWaitlistHost.Content = customerPullPackQueueView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -64,6 +74,7 @@ public sealed partial class View_ShipRecTools_Main : Page
                 or nameof(ViewModel_ShipRecTools_Main.IsOutsideServiceHistoryVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsMaterialAvailabilityBoardVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsCustomerPullPackVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsCustomerPullPackWaitlistVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -97,7 +108,20 @@ public sealed partial class View_ShipRecTools_Main : Page
         {
             ResizeMainWindowForCustomerPullPack();
             _customerPullPackReportViewModel.ActivateView();
+            return;
         }
+
+        if (ViewModel.IsCustomerPullPackWaitlistVisible)
+        {
+            ResizeMainWindowForCustomerPullPack();
+            _ = _customerPullPackQueueViewModel.ActivateViewAsync();
+        }
+    }
+
+    private Task ShowCustomerPullPackWaitlistAsync()
+    {
+        ViewModel.NavigateToTool("CustomerPullPackWaitlist");
+        return Task.CompletedTask;
     }
 
     private static void ResizeMainWindowForCustomerPullPack()

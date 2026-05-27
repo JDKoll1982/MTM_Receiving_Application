@@ -2,7 +2,7 @@
 
 **Feature Branch**: `[001-customer-pull-pack]`  
 **Created**: 2026-05-21  
-**Updated**: 2026-05-25  
+**Updated**: 2026-05-26  
 **Status**: In Progress  
 **Input**: User description: "Formalize the Customer Pull n' Pack Tool for Ship/Rec Tools using the attached review spec, mockup prompt, report references, and current mockup package, including no-typing waitlist creation from selected customer-order lines and part locations chosen from the main display."
 
@@ -36,6 +36,16 @@
 - Q: How should report-line and location selection be shown? → A: The row itself is the selection target and selected state is communicated by row highlighting rather than checkbox-only affordances.
 - Q: How should the application shell behave while this wide report is open? → A: The main window widens while Customer Pull n' Pack is active and returns to the standard shell size when the user leaves the tool.
 
+### Session 2026-05-26
+
+- Q: Should the waitlist remain report-hosted only, or become its own Ship/Rec tool entry? → A: It should become its own Ship/Rec tool entry and standalone page while the report keeps a `Show Waitlist` navigation action.
+- Q: What should the standalone waitlist tool be called and how should it be categorized? → A: Use `Customer Pull n' Pack Waitlist` in the `Utilities` category.
+- Q: How should `QTY SELECTED` be calculated? → A: It should equal the sum of selected sub-part quantities for the active parent-part group and should show `0` when nothing is selected.
+- Q: How should selection behave across parent-part groups? → A: Only one parent-part group should be active at a time, and moving to another group clears the previous group's line and location selections.
+- Q: How should the selectable sub-part rows be displayed? → A: Show a one-line `PART_ID • LOCATION_ID` presentation with part id left, separator centered, and location right.
+- Q: How should the report status indicator be rendered? → A: Use simplified colored note labels `Normal`, `Shortage`, `Late Order`, and `Waitlist`, with priority `Shortage > Late Order > Waitlist/Recheck > Normal`.
+- Q: What should happen when refresh or filter changes invalidate active selections? → A: Clear those selections and warn the user only when there were active selections to lose.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Review Daily Customer Demand (Priority: P1)
@@ -52,6 +62,7 @@ A warehouse or planning user opens the tool, selects one customer at a time, rev
 2. **Given** the user changes filters or sort order, **When** the results refresh, **Then** the system preserves the one-customer scope and updates the visible lines to match the chosen criteria.
 3. **Given** the user selects a customer with no open demand, **When** the tool finishes loading, **Then** the system shows a clear no-open-demand state instead of a blank results surface.
 4. **Given** the user opens the tool, **When** the report page loads, **Then** the filter surface starts collapsed while the primary report actions remain visible in the collapsible panel header.
+5. **Given** the user has active line or location selections, **When** they refresh the report or change filters and those selections are invalidated, **Then** the system clears the selections and warns that the prior line and location selections were cleared.
 
 ## User Story 1 Workflow Data
 
@@ -195,6 +206,7 @@ A requester selects one or more compatible customer-order lines from the report,
 5. **Given** the selected lines do not belong to the same customer and parent part context, **When** the user attempts to combine them into one request, **Then** the system prevents the mixed selection from being saved as a single waitlist action.
 6. **Given** the selected line has no selectable part locations on the main display, **When** the requester creates the waitlist item, **Then** the system allows the save only if the requester adds a note and the new item is flagged for location review.
 7. **Given** the user is reviewing lines or `SUB PARTS ON HAND` rows on the report surface, **When** they select one or more rows, **Then** the selected state is communicated by highlighting the selected rows rather than relying on separate checkbox-only selection affordances.
+8. **Given** one parent-part group is already active on the report, **When** the user interacts with a different parent-part group, **Then** the system clears the earlier group's line and location selections so only one parent-part group remains active at a time.
 
 ## User Story 2 Workflow Data
 
@@ -610,6 +622,7 @@ flowchart TD
 - **FR-005**: The system MUST allow users to sort and filter the demand view by customer, date range, shortage state, late-order state, part, location, waitlist state, pulled state, and requester-related work filters where applicable.
 - **FR-005A**: The report filter surface MUST be collapsible and MUST default to the collapsed state when the page opens.
 - **FR-005B**: Clear, refresh, and waitlist-oriented actions MUST remain visible in the collapsible filter header even when the filter body is collapsed.
+- **FR-005C**: If refresh or filter changes invalidate active report selections, the system MUST clear those selections and warn the user only when there were active selections to lose.
 - **FR-006**: The default sort order MUST remain pull date, then customer order, then parent part unless the user chooses a different sort.
 - **FR-007**: The system MUST provide a clear no-open-demand state when the selected customer has no matching work instead of leaving the user on a blank report surface.
 - **FR-008**: The system MUST let users select one or more report lines to work from the demand view.
@@ -619,8 +632,10 @@ flowchart TD
 - **FR-011**: The system MUST let users create a new waitlist request from selected report lines without manually typing a requested location for the new request.
 - **FR-012**: When creating or updating waitlist work, the system MUST let the user select available part locations directly from the main display screen before the waitlist create or update window opens.
 - **FR-012A**: The `SUB PARTS ON HAND` rows on the main display MUST act as the location-selection controls for the waitlist workflow.
+- **FR-012AA**: The selectable `SUB PARTS ON HAND` rows MUST display as a one-line `PART_ID • LOCATION_ID` presentation.
 - **FR-012B**: For a new request, available part locations MUST remain unselected until the user explicitly chooses them.
 - **FR-012C**: When updating an existing linked waitlist item, the main display MAY preselect locations that were already saved on that waitlist item.
+- **FR-012D**: The report MUST allow only one active parent-part selection group at a time, and switching to another group MUST clear the previous group's line and location selections.
 - **FR-013**: When creating a new waitlist request, the system MUST derive the requested quantity from the selected report lines rather than requiring manual quantity entry.
 - **FR-014**: The system MUST allow users to update existing waitlist work from the report-side request editor when selected lines already have linked waitlist records.
 - **FR-014A**: The system MUST NOT allow more than one open waitlist item for the same source report line at the same time.
@@ -635,6 +650,8 @@ flowchart TD
 - **FR-020A**: Newly created waitlist items MUST default to Requested status until a material handler explicitly accepts the line.
 - **FR-020B**: Each waitlist line MUST have exactly one current status at a time, and setting a new status MUST replace the prior current status rather than appending an additional active status to the same line.
 - **FR-021**: The system MUST provide a dedicated waitlist page where handlers can review, filter, and update open waitlist work without working directly from the report page.
+- **FR-021A**: The dedicated waitlist page MUST also be exposed as its own Ship/Rec tool entry named `Customer Pull n' Pack Waitlist` in the `Utilities` category.
+- **FR-021B**: The report page MUST keep a `Show Waitlist` navigation action that routes users to the standalone waitlist page.
 - **FR-022**: The dedicated waitlist page MUST allow filtering by status, location, customer, and requester.
 - **FR-022A**: The default open-work queue filter MUST show Requested, Accepted, and Problem items while excluding Completed and Cancelled items unless the user changes the filter.
 - **FR-023**: Material handlers MUST be able to update waitlist entries created by other users when needed.

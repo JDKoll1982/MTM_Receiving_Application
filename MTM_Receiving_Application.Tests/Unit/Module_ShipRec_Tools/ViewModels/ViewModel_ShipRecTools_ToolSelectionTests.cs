@@ -80,4 +80,37 @@ public sealed class ViewModel_ShipRecTools_ToolSelectionTests
 
         selectedToolKey.Should().Be("CustomerPullPack");
     }
+
+    [Fact]
+    public void LoadTools_ShouldKeepWaitlistUtilityEntry_WhenProvidedByNavigationService()
+    {
+        var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
+        navigationServiceMock
+            .Setup(service => service.GetAllTools())
+            .Returns(
+                new List<Model_ToolDefinition>
+                {
+                    new() { ToolKey = "CustomerPullPack", Title = "Customer Pull n' Pack" },
+                    new()
+                    {
+                        ToolKey = "CustomerPullPackWaitlist",
+                        Title = "Customer Pull n' Pack Waitlist",
+                    },
+                }
+            );
+
+        var viewModel = new ViewModel_ShipRecTools_ToolSelection(
+            navigationServiceMock.Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        viewModel.LoadTools();
+
+        viewModel
+            .AllTools.Select(tool => tool.ToolKey)
+            .Should()
+            .Contain("CustomerPullPackWaitlist");
+    }
 }

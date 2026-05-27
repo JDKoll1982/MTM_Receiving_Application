@@ -60,11 +60,11 @@
 - [x] T019 [US1] Implement the report page state and filtering logic in `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
 - [x] T020 [US1] Create the report page UI with customer scope, filters, shortage cues, linked waitlist indicators, and main-window shared status presentation in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml` and `MainWindow.xaml`
 - [x] T020A [US1] Align the report host UX with the reviewed layout: collapsed filter expander, header-level report actions, embedded crystal-style report surface, and Customer Pull n' Pack window resize/restore behavior in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml`, `Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml.cs`, and `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml`
-- [ ] T020B [US1] Replace the temporary crystal-style sample groups in `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml.cs` with a live grouped presentation model derived from `ViewModel_Tool_CustomerPullPackReport.cs`
-- [ ] T020C [US1] Bind the embedded crystal-style request-line rows and `SUB PARTS ON HAND` rows to the actual report-side selection state used by waitlist creation instead of preview-only control-local selection state in `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml`, `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml.cs`, and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
+- [x] T020B [US1] Replace the temporary crystal-style sample groups in `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml.cs` with a live grouped presentation model derived from `ViewModel_Tool_CustomerPullPackReport.cs`
+- [x] T020C [US1] Bind the embedded crystal-style request-line rows and `SUB PARTS ON HAND` rows to the actual report-side selection state used by waitlist creation instead of preview-only control-local selection state in `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml`, `Module_ShipRec_Tools/Views/Controls/View_CustomerPullPack_CrystalReportLines.xaml.cs`, and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
 - [x] T021 [US1] Wire report page launch and host state in `Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs`
 
-- [ ] T021a [MISC] For any thourough data anasis you needed to perform in this user story, if it makes sence to do so create new serena memories on what you found so this analasis does not need to happen again in the future.
+- [x] T021a [MISC] For any thourough data anasis you needed to perform in this user story, if it makes sence to do so create new serena memories on what you found so this analasis does not need to happen again in the future.
 
 **Checkpoint**: User Story 1 is independently functional and demoable as the MVP.
 
@@ -107,22 +107,22 @@
 
 ### Tests for User Story 3
 
-- [ ] T033 [P] [US3] Add queue query handler tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackWaitlistQueueHandlerTests.cs`
-- [ ] T034 [P] [US3] Add queue status transition tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Command_CustomerPullPackUpdateStatusHandlerTests.cs`
-- [ ] T035 [P] [US3] Add queue ownership and Problem-state tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueueTests.cs`
-- [ ] T035A [P] [US3] Add completed-line recheck indicator tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackReportHandlerTests.cs` and `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReportTests.cs`
+- [x] T033 [P] [US3] Add queue query handler tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackWaitlistQueueHandlerTests.cs`
+- [x] T034 [P] [US3] Add queue status transition tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Command_CustomerPullPackUpdateStatusHandlerTests.cs`
+- [x] T035 [P] [US3] Add queue ownership and Problem-state tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueueTests.cs`
+- [x] T035A [P] [US3] Add completed-line recheck indicator tests in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackReportHandlerTests.cs` and `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReportTests.cs`
 
 ### Implementation for User Story 3
 
-- [ ] T036 [P] [US3] Create the queue query contract in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackWaitlistQueue.cs`
-- [ ] T037 [P] [US3] Implement the queue query handler in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackWaitlistQueueHandler.cs`
-- [ ] T038 [P] [US3] Create the status update command and validator in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUpdateStatus.cs`
-- [ ] T039 [P] [US3] Create the explicit unassign command in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUnassignOwner.cs`
-- [ ] T040 [US3] Implement the status update and unassign handlers in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUpdateStatusHandler.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUnassignOwnerHandler.cs`
-- [ ] T040A [US3] Implement requester-facing recheck indicator projection for completed work whose source demand or location context changes in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackReportHandler.cs` and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
-- [ ] T041 [US3] Implement the queue page ViewModel in `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueue.cs`
-- [ ] T042 [US3] Create the queue page UI in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
-- [ ] T043 [US3] Add Problem reason selection, retained-owner display, and explicit unassign UX in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
+- [x] T036 [P] [US3] Create the queue query contract in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackWaitlistQueue.cs`
+- [x] T037 [P] [US3] Implement the queue query handler in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackWaitlistQueueHandler.cs`
+- [x] T038 [P] [US3] Create the status update command and validator in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUpdateStatus.cs`
+- [x] T039 [P] [US3] Create the explicit unassign command in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUnassignOwner.cs`
+- [x] T040 [US3] Implement the status update and unassign handlers in `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUpdateStatusHandler.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackUnassignOwnerHandler.cs`
+- [x] T040A [US3] Implement requester-facing recheck indicator projection for completed work whose source demand or location context changes in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackReportHandler.cs` and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
+- [x] T041 [US3] Implement the queue page ViewModel in `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueue.cs`
+- [x] T042 [US3] Create the queue page UI in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
+- [x] T043 [US3] Add Problem reason selection, retained-owner display, and explicit unassign UX in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
 
 **Checkpoint**: User Stories 1, 2, and 3 are independently testable, including queue execution workflows.
 
@@ -136,18 +136,18 @@
 
 ### Tests for User Story 4
 
-- [ ] T044 [P] [US4] Add defaults persistence integration tests covering favorite customers, saved sort and filter state, print presets, and waitlist default status filters in `MTM_Receiving_Application.Tests/Integration/Module_ShipRec_Tools/Dao_CustomerPullPackUserDefaultsIntegrationTests.cs`
-- [ ] T045 [P] [US4] Add print context query tests for current-view, floor-copy, shortage-only, waitlist-only, pull-list, and selected part/customer-order outputs in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackPrintContextHandlerTests.cs`
+- [x] T044 [P] [US4] Add defaults persistence integration tests covering favorite customers, saved sort and filter state, print presets, and waitlist default status filters in `MTM_Receiving_Application.Tests/Integration/Module_ShipRec_Tools/Dao_CustomerPullPackUserDefaultsIntegrationTests.cs`
+- [x] T045 [P] [US4] Add print context query tests for current-view, floor-copy, shortage-only, waitlist-only, pull-list, and selected part/customer-order outputs in `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/CustomerPullPack/Query_CustomerPullPackPrintContextHandlerTests.cs`
 
 ### Implementation for User Story 4
 
-- [ ] T046 [P] [US4] Create the defaults query and save command for favorite customers, customer/date-range behavior, sort/filter state, print preset, and waitlist default status filter in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackDefaults.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackSaveDefaults.cs`
-- [ ] T047 [P] [US4] Create the print context query in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackPrintContext.cs`
-- [ ] T048 [US4] Implement the defaults and print handlers in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackPrintContextHandler.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackSaveDefaultsHandler.cs`
-- [ ] T049 [US4] Implement defaults restoration, favorite-customer recall, and print mode actions in `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs` and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueue.cs`
-- [ ] T050 [US4] Create the defaults view and favorite-customer management UI in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackDefaults.xaml`
-- [ ] T051 [US4] Create the floor-copy and pull-list views in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackFloorCopy.xaml` and `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackPullList.xaml`
-- [ ] T051A [US4] Add print mode selection UX for current-view, shortage-only, waitlist-only, and selected part/customer-order contexts in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml` and `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
+- [x] T046 [P] [US4] Create the defaults query and save command for favorite customers, customer/date-range behavior, sort/filter state, print preset, and waitlist default status filter in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackDefaults.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackSaveDefaults.cs`
+- [x] T047 [P] [US4] Create the print context query in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackPrintContext.cs`
+- [x] T048 [US4] Implement the defaults and print handlers in `Module_ShipRec_Tools/Services/CustomerPullPack/Queries/Query_CustomerPullPackPrintContextHandler.cs` and `Module_ShipRec_Tools/Services/CustomerPullPack/Commands/Command_CustomerPullPackSaveDefaultsHandler.cs`
+- [x] T049 [US4] Implement defaults restoration, favorite-customer recall, and print mode actions in `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs` and `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackQueue.cs`
+- [x] T050 [US4] Create the defaults view and favorite-customer management UI in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackDefaults.xaml`
+- [x] T051 [US4] Create the floor-copy and pull-list views in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackFloorCopy.xaml` and `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackPullList.xaml`
+- [x] T051A [US4] Add print mode selection UX for current-view, shortage-only, waitlist-only, and selected part/customer-order contexts in `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml` and `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackQueue.xaml`
 
 **Checkpoint**: All four user stories are independently functional and testable.
 
@@ -157,9 +157,11 @@
 
 **Purpose**: Finalize cross-story documentation, metadata, and validation.
 
-- [ ] T052 [P] Update implementation-facing feature notes in `Module_ShipRec_Tools/docs/` to reflect the delivered Customer Pull n' Pack workflow
-- [ ] T053 [P] Update Ship/Rec CopilotForms metadata in `docs/development/CopilotForms/data/module-metadata/Module_ShipRec_Tools/shiprec-tools-catalog.json`
+- [x] T052 [P] Update implementation-facing feature notes in `Module_ShipRec_Tools/docs/` to reflect the delivered Customer Pull n' Pack workflow
+- [x] T053 [P] Update Ship/Rec CopilotForms metadata in `docs/development/CopilotForms/data/module-metadata/Module_ShipRec_Tools/shiprec-tools-catalog.json`
 - [ ] T054 Run the end-to-end validation checklist in `specs/001-customer-pull-pack/quickstart.md`, including timed checks for the 30-second load target and 60-second print target
+
+Current status note: Focused `CustomerPullPack` automated tests passed on 2026-05-26, but the manual quickstart walk-through and timed validation in `specs/001-customer-pull-pack/quickstart.md` are still pending.
 
 ---
 

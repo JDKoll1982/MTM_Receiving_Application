@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Views.Controls;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
@@ -12,6 +15,8 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 /// </summary>
 public sealed partial class View_Tool_CustomerPullPackReport : Page
 {
+    private Func<Task>? _showWaitlistQueueAsync;
+
     public ViewModel_Tool_CustomerPullPackReport ViewModel { get; }
 
     public View_Tool_CustomerPullPackReport(ViewModel_Tool_CustomerPullPackReport viewModel)
@@ -20,7 +25,30 @@ public sealed partial class View_Tool_CustomerPullPackReport : Page
         ViewModel = viewModel;
         DataContext = ViewModel;
         ViewModel.ShowWaitlistEditorAsync = ShowWaitlistEditorAsync;
+        ViewModel.ShowOverSelectedQuantityConfirmationAsync =
+            ShowOverSelectedQuantityConfirmationAsync;
+        ViewModel.ShowWaitlistQueueAsync = ShowWaitlistQueueAsync;
+        ViewModel.ShowDefaultsAsync = ShowDefaultsAsync;
+        ViewModel.ShowPrintPreviewAsync = ShowPrintPreviewAsync;
         InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    public void ConfigureWaitlistQueueNavigation(Func<Task> showWaitlistQueueAsync)
+    {
+        ArgumentNullException.ThrowIfNull(showWaitlistQueueAsync);
+        _showWaitlistQueueAsync = showWaitlistQueueAsync;
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        Loaded -= OnLoaded;
+        await ViewModel.LoadUserDefaultsAsync();
+
+        if (string.IsNullOrWhiteSpace(ViewModel.CustomerSearchText) is false)
+        {
+            await ViewModel.RefreshReportCommand.ExecuteAsync(null);
+        }
     }
 
     private async System.Threading.Tasks.Task<bool> ShowWaitlistEditorAsync(
@@ -36,16 +64,92 @@ public sealed partial class View_Tool_CustomerPullPackReport : Page
         return result == ContentDialogResult.Primary;
     }
 
-    private void OnDemandLineSelectionClick(object sender, RoutedEventArgs e)
+    private async Task<bool> ShowOverSelectedQuantityConfirmationAsync(
+        decimal quantitySelected,
+        decimal quantityToPack
+    )
     {
-        if (
-            sender is not CheckBox checkBox
-            || checkBox.DataContext is not Model_CustomerPullPack_DemandLine demandLine
-        )
+        var dialog = new ContentDialog
         {
+            XamlRoot = XamlRoot,
+            Title = "Selected quantity looks high",
+            PrimaryButtonText = "Continue",
+            CloseButtonText = "Review Selection",
+            DefaultButton = ContentDialogButton.Close,
+            Content =
+                $"QTY SELECTED is {quantitySelected:0.##}, which is more than 20% above QTY TO PACK at {quantityToPack:0.##}. Make sure you did not select too many locations before continuing.",
+        };
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
+    private async Task ShowWaitlistQueueAsync()
+    {
+        if (_showWaitlistQueueAsync is null)
+        {
+            ViewModel.ShowStatus(
+                "The waitlist page is not available in the current report host.",
+                Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
             return;
         }
 
-        ViewModel.SelectDemandLineCommand.Execute(demandLine);
+        await _showWaitlistQueueAsync();
+    }
+
+    private async Task<Model_CustomerPullPack_UserDefaults?> ShowDefaultsAsync(
+        Model_CustomerPullPack_UserDefaults defaults
+    )
+    {
+        var defaultsView = new View_Tool_CustomerPullPackDefaults(defaults);
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "Customer Pull n' Pack Defaults",
+            PrimaryButtonText = "Save Defaults",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            Content = defaultsView,
+        };
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary ? defaultsView.BuildDefaults() : null;
+    }
+
+    private async Task ShowPrintPreviewAsync(Model_CustomerPullPack_PrintContext printContext)
+    {
+        FrameworkElement content =
+            printContext.PrintMode == Enum_CustomerPullPackPrintMode.PullList
+                ? new View_Tool_CustomerPullPackPullList(printContext)
+                : new View_Tool_CustomerPullPackFloorCopy(printContext);
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = printContext.Title,
+            PrimaryButtonText = "Close",
+            DefaultButton = ContentDialogButton.Primary,
+            FullSizeDesired = true,
+            Content = content,
+        };
+
+        await dialog.ShowAsync();
+    }
+
+    private void OnCrystalRequestLineSelectionChanged(
+        object sender,
+        CrystalRequestLineSelectionChangedEventArgs e
+    )
+    {
+        ViewModel.ApplyCrystalRequestLineSelection(e.SelectedSourceLineKey);
+    }
+
+    private void OnCrystalLocationSelectionChanged(
+        object sender,
+        CrystalLocationSelectionChangedEventArgs e
+    )
+    {
+        ViewModel.ApplyCrystalLocationSelection(e.ParentPartId, e.SelectedLocationIds);
     }
 }

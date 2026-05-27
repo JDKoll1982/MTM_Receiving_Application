@@ -33,6 +33,13 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style
+            x:Key="CrystalSingleSelectListViewStyle"
+            BasedOn="{StaticResource CrystalSelectableListViewStyle_Base}"
+            TargetType="ListView">
+            <Setter Property="SelectionMode" Value="Single" />
+        </Style>
     </UserControl.Resources>
 
     <StackPanel HorizontalAlignment="Stretch" Spacing="10">
@@ -46,7 +53,7 @@
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 MaxLines="2"
                 Style="{StaticResource BodyTextBlockStyle}"
-                Text="Matches the HTML grouped report layout while previewing the future embedded app control."
+                Text="Matches the live grouped Customer Pull n' Pack report layout inside the application shell."
                 TextTrimming="CharacterEllipsis" />
         </StackPanel>
 
@@ -165,352 +172,392 @@
 
                         <Border Height="2" Background="#FF333333" />
 
-                        <ItemsControl ItemsSource="{x:Bind DisplayGroups, Mode=OneTime}">
+                        <ItemsControl ItemsSource="{x:Bind Groups, Mode=OneWay}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalReportGroup">
                                     <Border
                                         Padding="0,10,0,12"
                                         BorderBrush="#FF333333"
                                         BorderThickness="0,0,0,2">
-                                        <StackPanel HorizontalAlignment="Stretch" Spacing="8">
-                                            <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="168" />
-                                                    <ColumnDefinition Width="260" />
-                                                </Grid.ColumnDefinitions>
+                                        <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="260" />
+                                            </Grid.ColumnDefinitions>
 
-                                                <TextBlock
-                                                    Grid.Column="0"
-                                                    FontSize="16"
-                                                    FontWeight="Bold"
-                                                    MaxLines="1"
-                                                    Text="{x:Bind ParentPartDisplay, Mode=OneTime}"
-                                                    TextTrimming="CharacterEllipsis" />
-
-                                                <Grid
-                                                    Grid.Column="1"
-                                                    HorizontalAlignment="Left"
-                                                    VerticalAlignment="Top"
-                                                    ColumnSpacing="6"
-                                                    RowSpacing="4">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
+                                            <StackPanel
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Stretch"
+                                                Spacing="8">
+                                                <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
                                                     <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
                                                         <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="70" />
+                                                        <ColumnDefinition Width="168" />
                                                     </Grid.ColumnDefinitions>
 
                                                     <TextBlock
-                                                        Grid.Row="0"
                                                         Grid.Column="0"
-                                                        FontSize="14"
+                                                        FontSize="16"
                                                         FontWeight="Bold"
                                                         MaxLines="1"
-                                                        Text="QTY TO PACK:"
+                                                        Text="{x:Bind ParentPartDisplay, Mode=OneTime}"
                                                         TextTrimming="CharacterEllipsis" />
-                                                    <Border
-                                                        Grid.Row="0"
-                                                        Grid.Column="1"
-                                                        Width="70"
-                                                        Padding="10,2"
-                                                        Background="{x:Bind QuantityToPackBackgroundBrush, Mode=OneTime}">
-                                                        <TextBlock
-                                                            HorizontalAlignment="Center"
-                                                            FontSize="14"
-                                                            FontWeight="Bold"
-                                                            Foreground="{x:Bind QuantityToPackForegroundBrush, Mode=OneTime}"
-                                                            MaxLines="1"
-                                                            Text="{x:Bind QuantityToPack, Mode=OneTime}"
-                                                            TextTrimming="CharacterEllipsis" />
-                                                    </Border>
 
-                                                    <TextBlock
-                                                        Grid.Row="1"
-                                                        Grid.Column="0"
-                                                        FontSize="14"
-                                                        FontWeight="Bold"
-                                                        MaxLines="1"
-                                                        Text="QTY SELECTED:"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <Border
-                                                        Grid.Row="1"
+                                                    <Grid
                                                         Grid.Column="1"
-                                                        Width="70"
-                                                        Padding="10,2"
-                                                        Background="{x:Bind QuantitySelectedBackgroundBrush, Mode=OneTime}">
-                                                        <TextBlock
-                                                            HorizontalAlignment="Center"
-                                                            FontSize="14"
-                                                            FontWeight="Bold"
-                                                            Foreground="{x:Bind QuantitySelectedForegroundBrush, Mode=OneTime}"
-                                                            MaxLines="1"
-                                                            Text="{x:Bind QuantitySelected, Mode=OneTime}"
-                                                            TextTrimming="CharacterEllipsis" />
-                                                    </Border>
-                                                </Grid>
-
-                                                <Border
-                                                    Grid.Column="2"
-                                                    VerticalAlignment="Top"
-                                                    BorderBrush="#FF333333"
-                                                    BorderThickness="1">
-                                                    <Grid>
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Top"
+                                                        ColumnSpacing="6"
+                                                        RowSpacing="4">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="Auto" />
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*" />
                                                             <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="70" />
                                                         </Grid.ColumnDefinitions>
 
                                                         <TextBlock
                                                             Grid.Row="0"
                                                             Grid.Column="0"
-                                                            Margin="6,2"
+                                                            FontSize="14"
+                                                            FontWeight="Bold"
                                                             MaxLines="1"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="FG ON HAND:"
-                                                            TextTrimming="CharacterEllipsis" />
-                                                        <TextBlock
-                                                            Grid.Row="0"
-                                                            Grid.Column="1"
-                                                            Margin="6,2"
-                                                            HorizontalAlignment="Right"
-                                                            MaxLines="1"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="{x:Bind FgOnHandQuantity, Mode=OneTime}"
+                                                            Text="QTY TO PACK:"
                                                             TextTrimming="CharacterEllipsis" />
                                                         <Border
                                                             Grid.Row="0"
-                                                            Grid.ColumnSpan="2"
-                                                            Height="1"
-                                                            VerticalAlignment="Bottom"
-                                                            Background="#FFBBBBBB" />
+                                                            Grid.Column="1"
+                                                            Width="70"
+                                                            Padding="10,2"
+                                                            Background="{x:Bind QuantityToPackBackgroundBrush, Mode=OneTime}">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                FontSize="14"
+                                                                FontWeight="Bold"
+                                                                Foreground="{x:Bind QuantityToPackForegroundBrush, Mode=OneTime}"
+                                                                MaxLines="1"
+                                                                Text="{x:Bind QuantityToPack, Mode=OneTime}"
+                                                                TextTrimming="CharacterEllipsis" />
+                                                        </Border>
 
                                                         <TextBlock
                                                             Grid.Row="1"
                                                             Grid.Column="0"
-                                                            Margin="6,2"
+                                                            FontSize="14"
+                                                            FontWeight="Bold"
                                                             MaxLines="1"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="{x:Bind FgLocationId, Mode=OneTime}"
+                                                            Text="QTY SELECTED:"
                                                             TextTrimming="CharacterEllipsis" />
-                                                        <TextBlock
+                                                        <Border
                                                             Grid.Row="1"
                                                             Grid.Column="1"
-                                                            Margin="6,2"
-                                                            HorizontalAlignment="Right"
-                                                            MaxLines="1"
-                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                            Text="{x:Bind FgOnHandQuantity, Mode=OneTime}"
-                                                            TextTrimming="CharacterEllipsis" />
+                                                            Width="70"
+                                                            Padding="10,2"
+                                                            Background="{x:Bind QuantitySelectedBackgroundBrush, Mode=OneTime}">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                FontSize="14"
+                                                                FontWeight="Bold"
+                                                                Foreground="{x:Bind QuantitySelectedForegroundBrush, Mode=OneTime}"
+                                                                MaxLines="1"
+                                                                Text="{x:Bind QuantitySelected, Mode=OneTime}"
+                                                                TextTrimming="CharacterEllipsis" />
+                                                        </Border>
                                                     </Grid>
-                                                </Border>
 
-                                                <Border
-                                                    Grid.Column="3"
-                                                    BorderBrush="#FF333333"
-                                                    BorderThickness="1">
-                                                    <StackPanel>
+                                                    <Border
+                                                        Grid.Column="2"
+                                                        VerticalAlignment="Top"
+                                                        BorderBrush="#FF333333"
+                                                        BorderThickness="1">
                                                         <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="Auto" />
                                                             </Grid.ColumnDefinitions>
+
                                                             <TextBlock
+                                                                Grid.Row="0"
                                                                 Grid.Column="0"
                                                                 Margin="6,2"
                                                                 MaxLines="1"
                                                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="SUB PARTS ON HAND:"
+                                                                Text="FG ON HAND:"
                                                                 TextTrimming="CharacterEllipsis" />
                                                             <TextBlock
+                                                                Grid.Row="0"
                                                                 Grid.Column="1"
                                                                 Margin="6,2"
                                                                 HorizontalAlignment="Right"
                                                                 MaxLines="1"
                                                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind TotalSubPartsOnHand, Mode=OneTime}"
+                                                                Text="{x:Bind FgOnHandQuantity, Mode=OneTime}"
+                                                                TextTrimming="CharacterEllipsis" />
+                                                            <Border
+                                                                Grid.Row="0"
+                                                                Grid.ColumnSpan="2"
+                                                                Height="1"
+                                                                VerticalAlignment="Bottom"
+                                                                Background="#FFBBBBBB" />
+
+                                                            <TextBlock
+                                                                Grid.Row="1"
+                                                                Grid.Column="0"
+                                                                Margin="6,2"
+                                                                MaxLines="1"
+                                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                                Text="{x:Bind FgLocationId, Mode=OneTime}"
+                                                                TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock
+                                                                Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                Margin="6,2"
+                                                                HorizontalAlignment="Right"
+                                                                MaxLines="1"
+                                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                                Text="{x:Bind FgOnHandQuantity, Mode=OneTime}"
                                                                 TextTrimming="CharacterEllipsis" />
                                                         </Grid>
-                                                        <Border Height="1" Background="#FFBBBBBB" />
+                                                    </Border>
+                                                </Grid>
 
-                                                        <ListView ItemsSource="{x:Bind SubPartLocations, Mode=OneTime}" Style="{StaticResource CrystalSelectableListViewStyle_Base}">
-                                                            <ListView.ItemTemplate>
-                                                                <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalSubPartLocation">
-                                                                    <Grid Padding="12,4,12,4">
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="*" />
-                                                                            <ColumnDefinition Width="Auto" />
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <TextBlock
-                                                                            Grid.Column="0"
-                                                                            FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
-                                                                            MaxLines="1"
-                                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                                            Text="{x:Bind PartLocationId, Mode=OneTime}"
-                                                                            TextTrimming="CharacterEllipsis" />
-                                                                        <TextBlock
-                                                                            Grid.Column="1"
-                                                                            Margin="6,0,0,0"
-                                                                            HorizontalAlignment="Right"
-                                                                            FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
-                                                                            MaxLines="1"
-                                                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                                                            Text="{x:Bind OnHandQuantity, Mode=OneTime}"
-                                                                            TextTrimming="CharacterEllipsis" />
-                                                                    </Grid>
-                                                                </DataTemplate>
-                                                            </ListView.ItemTemplate>
-                                                        </ListView>
-                                                    </StackPanel>
+                                                <Border
+                                                    VerticalAlignment="Top"
+                                                    Background="#FFF4F6F8"
+                                                    BorderBrush="#FFD7DCE2"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4">
+                                                    <Grid Padding="8,6" ColumnSpacing="8">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="116" />
+                                                            <ColumnDefinition Width="116" />
+                                                            <ColumnDefinition Width="122" />
+                                                            <ColumnDefinition Width="210" />
+                                                            <ColumnDefinition Width="70" />
+                                                            <ColumnDefinition Width="80" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock
+                                                            Grid.Column="0"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="CUST_ORDER_ID"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="1"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="PART_ID"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="2"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="LOCATION ID"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="3"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="CUSTOMER"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="4"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="SHIP QTY"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="5"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="PULL DATE"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="6"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="STATUS"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                    </Grid>
                                                 </Border>
-                                            </Grid>
+
+                                                <ListView
+                                                    VerticalAlignment="Top"
+                                                    ItemsSource="{x:Bind RequestLines, Mode=OneTime}"
+                                                    Loaded="OnSelectableRequestLineListLoaded"
+                                                    SelectionChanged="OnSelectableRequestLineListSelectionChanged"
+                                                    Style="{StaticResource CrystalSingleSelectListViewStyle}">
+                                                    <ListView.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalRequestLine">
+                                                            <Grid Padding="8,6" ColumnSpacing="8">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="116" />
+                                                                    <ColumnDefinition Width="116" />
+                                                                    <ColumnDefinition Width="122" />
+                                                                    <ColumnDefinition Width="210" />
+                                                                    <ColumnDefinition Width="70" />
+                                                                    <ColumnDefinition Width="80" />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock
+                                                                    Grid.Column="0"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind CustomerOrderId, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock
+                                                                    Grid.Column="1"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind ParentPartId, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock
+                                                                    Grid.Column="2"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind LocationId, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock
+                                                                    Grid.Column="3"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind CustomerLabel, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock
+                                                                    Grid.Column="4"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind ShipQuantity, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock
+                                                                    Grid.Column="5"
+                                                                    MaxLines="1"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind PullDateDisplay, Mode=OneTime}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <StackPanel
+                                                                    Grid.Column="6"
+                                                                    Orientation="Horizontal"
+                                                                    Spacing="8">
+                                                                    <Border
+                                                                        Padding="10,4"
+                                                                        Background="{x:Bind StatusNoteBackgroundBrush, Mode=OneTime}"
+                                                                        CornerRadius="4"
+                                                                        Visibility="{x:Bind HasStatusNote, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                        <TextBlock
+                                                                            Foreground="{x:Bind StatusNoteForegroundBrush, Mode=OneTime}"
+                                                                            MaxLines="1"
+                                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                                            Text="{x:Bind StatusNoteText, Mode=OneTime}"
+                                                                            TextTrimming="CharacterEllipsis" />
+                                                                    </Border>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ListView.ItemTemplate>
+                                                </ListView>
+
+                                                <TextBlock
+                                                    FontWeight="Bold"
+                                                    MaxLines="1"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Text="{x:Bind ServiceNote, Mode=OneTime}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Visibility="{x:Bind HasServiceNote, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </StackPanel>
 
                                             <Border
-                                                Background="#FFF4F6F8"
-                                                BorderBrush="#FFD7DCE2"
-                                                BorderThickness="1"
-                                                CornerRadius="4">
-                                                <Grid Padding="8,6" ColumnSpacing="8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="116" />
-                                                        <ColumnDefinition Width="116" />
-                                                        <ColumnDefinition Width="122" />
-                                                        <ColumnDefinition Width="210" />
-                                                        <ColumnDefinition Width="70" />
-                                                        <ColumnDefinition Width="80" />
-                                                        <ColumnDefinition Width="*" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock
-                                                        Grid.Column="0"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="CUST_ORDER_ID"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="1"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="PART_ID"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="2"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="LOCATION ID"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="3"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="CUSTOMER"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="4"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="SHIP QTY"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="5"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="PULL_DATE"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock
-                                                        Grid.Column="6"
-                                                        MaxLines="1"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="STATUS"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                </Grid>
-                                            </Border>
+                                                Grid.Column="1"
+                                                VerticalAlignment="Top"
+                                                BorderBrush="#FF333333"
+                                                BorderThickness="1">
+                                                <StackPanel>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock
+                                                            Grid.Column="0"
+                                                            Margin="6,2"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="SUB PARTS ON HAND:"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock
+                                                            Grid.Column="1"
+                                                            Margin="6,2"
+                                                            HorizontalAlignment="Right"
+                                                            MaxLines="1"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="{x:Bind TotalSubPartsOnHand, Mode=OneTime}"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                    </Grid>
+                                                    <Border Height="1" Background="#FFBBBBBB" />
 
-                                            <ListView ItemsSource="{x:Bind RequestLines, Mode=OneTime}" Style="{StaticResource CrystalSelectableListViewStyle_Base}">
-                                                <ListView.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalRequestLine">
-                                                        <Grid Padding="8,4,8,4" ColumnSpacing="8">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="116" />
-                                                                <ColumnDefinition Width="116" />
-                                                                <ColumnDefinition Width="122" />
-                                                                <ColumnDefinition Width="210" />
-                                                                <ColumnDefinition Width="70" />
-                                                                <ColumnDefinition Width="80" />
-                                                                <ColumnDefinition Width="*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBlock
-                                                                Grid.Column="0"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind CustomerOrderId, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock
-                                                                Grid.Column="1"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind ParentPartId, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock
-                                                                Grid.Column="2"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind LocationId, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock
-                                                                Grid.Column="3"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind CustomerLabel, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock
-                                                                Grid.Column="4"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind ShipQuantity, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock
-                                                                Grid.Column="5"
-                                                                MaxLines="1"
-                                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                                Text="{x:Bind PullDateDisplay, Mode=OneTime}"
-                                                                TextTrimming="CharacterEllipsis" />
-                                                            <StackPanel
-                                                                Grid.Column="6"
-                                                                Orientation="Horizontal"
-                                                                Spacing="8">
-                                                                <Border
-                                                                    Padding="10,4"
-                                                                    Background="{x:Bind StatusBadgeBackgroundBrush, Mode=OneTime}"
-                                                                    CornerRadius="999"
-                                                                    Visibility="{x:Bind HasStatusBadge, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                    <ListView
+                                                        IsEnabled="{x:Bind HasSelectedRequestLine, Mode=OneWay}"
+                                                        ItemsSource="{x:Bind SubPartLocations, Mode=OneTime}"
+                                                        Loaded="OnSelectableLocationListLoaded"
+                                                        SelectionChanged="OnSelectableLocationListSelectionChanged"
+                                                        Style="{StaticResource CrystalSelectableListViewStyle_Base}">
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate x:DataType="models:Model_CustomerPullPack_CrystalSubPartLocation">
+                                                                <Grid Padding="12,4,12,4">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                    </Grid.ColumnDefinitions>
                                                                     <TextBlock
-                                                                        Foreground="{x:Bind StatusBadgeForegroundBrush, Mode=OneTime}"
+                                                                        Grid.Column="0"
+                                                                        FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
                                                                         MaxLines="1"
                                                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                                                        Text="{x:Bind StatusBadgeText, Mode=OneTime}"
+                                                                        Text="{x:Bind PartId, Mode=OneTime}"
                                                                         TextTrimming="CharacterEllipsis" />
-                                                                </Border>
-                                                            </StackPanel>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                            </ListView>
-
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                MaxLines="1"
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind ServiceNote, Mode=OneTime}"
-                                                TextTrimming="CharacterEllipsis"
-                                                Visibility="{x:Bind HasServiceNote, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                        </StackPanel>
+                                                                    <TextBlock
+                                                                        Grid.Column="1"
+                                                                        Margin="8,0"
+                                                                        FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
+                                                                        MaxLines="1"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind SeparatorText, Mode=OneTime}"
+                                                                        TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock
+                                                                        Grid.Column="2"
+                                                                        Margin="0,0,8,0"
+                                                                        HorizontalAlignment="Right"
+                                                                        FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
+                                                                        MaxLines="1"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind PartLocationId, Mode=OneTime}"
+                                                                        TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock
+                                                                        Grid.Column="3"
+                                                                        Margin="6,0,0,0"
+                                                                        HorizontalAlignment="Right"
+                                                                        FontWeight="{x:Bind RowFontWeight, Mode=OneTime}"
+                                                                        MaxLines="1"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind OnHandQuantity, Mode=OneTime}"
+                                                                        TextTrimming="CharacterEllipsis" />
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

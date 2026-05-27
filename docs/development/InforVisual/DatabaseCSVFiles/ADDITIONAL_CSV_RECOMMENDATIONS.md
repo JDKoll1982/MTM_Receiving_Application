@@ -1,275 +1,411 @@
-# Additional CSV Reference Files for Infor Visual (MTMFG) Database
+# Additional CSV Recommendations for Infor Visual (MTMFG) Research
 
-This document lists recommended CSV files to generate from **SQL Server Management Studio (SSMS)**
-connected to the MTMFG Infor Visual database. Each file fills a gap in what the three existing
-reference files provide, and each includes a copy-paste SQL query to run in SSMS.
+This document replaces the older "generate the missing core schema files" guidance. The core
+schema pack has already been generated in this folder. The goal of this document is now narrower:
+recommend additional CSV exports that a normal read-only Visual SQL user can pull to accelerate
+future research, especially when the base schema exports do not fully explain status semantics,
+bridge-table behavior, or chronology rules.
 
 ---
 
-## Existing Files (Summary)
+## Current State of the Core Reference Pack
 
-| File                      | Purpose                                            |
-| ------------------------- | -------------------------------------------------- |
-| `MTMFG_Schema_Tables.csv` | All tables — column names, data types, nullability |
-| `MTMFG_Schema_FKs.csv`    | All foreign key relationships                      |
-| `MTMFG_Schema_PKs.csv`    | All primary key column compositions                |
+The following files already exist in this folder and should be treated as the baseline schema pack:
+
+| File | Status | Primary Use |
+| --- | --- | --- |
+| `MTMFG_Schema_Tables.csv` | Present | Table and column inventory |
+| `MTMFG_Schema_FKs.csv` | Present | Declared foreign key paths |
+| `MTMFG_Schema_PKs.csv` | Present | Primary key composition |
+| `MTMFG_Schema_ColumnDetails.csv` | Present | Length, precision, identity, computed flags |
+| `MTMFG_Schema_Views.csv` | Present | Actual SQL Server views |
+| `MTMFG_Schema_Indexes.csv` | Present | Index coverage and query planning |
+| `MTMFG_Schema_TableRowCounts.csv` | Present | Table size and scale awareness |
+| `MTMFG_Schema_UniqueConstraints.csv` | Present | Natural/business key discovery |
+| `MTMFG_Schema_Triggers.csv` | Present | ERP-side table-trigger visibility |
+| `MTMFG_Schema_DefaultConstraints.csv` | Present | Default-presence inventory |
+| `MTMFG_Schema_CheckConstraints.csv` | Present | Check-constraint presence inventory |
+
+### Verified Corrections From Current Research
+
+- Do not treat every `V_`-prefixed object as a SQL Server view. The current exports show that many
+  `V_` objects are base tables.
+- The current work-order and customer-order investigation relied on base tables such as
+  `CUSTOMER_ORDER`, `CUST_ORDER_LINE`, `CUST_ORDER_ALLOC`, `CO_PRODUCT`, and `WORK_ORDER`.
+- The existing constraint exports confirm which constraints exist, but many definitions are `NULL`,
+  so they do not fully decode status semantics.
+- `MTMFG_Schema_StoredProcedures.csv` and `MTMFG_Schema_ExtendedProperties.csv` remain unnecessary
+  in this environment unless the server configuration changes.
+
+---
+
+## Non-Admin Export Guidelines
+
+The recommendations below are designed for a non-admin, read-only research workflow.
+
+- Prefer plain `SELECT` queries against visible application tables.
+- Prefer `INFORMATION_SCHEMA.COLUMNS` for column inventory queries when possible.
+- Avoid DMVs that require `VIEW DATABASE STATE`.
+- Avoid assumptions that `sys.sql_modules`, object definitions, or encrypted constraint text will be visible.
+- If metadata visibility is restricted, the export will still be useful, but it will reflect only the
+  objects the current account can see.
+- Sample-data exports are intended for internal research only. Trim customer-identifying columns if a
+  CSV needs to be shared more broadly.
 
 ---
 
 ## Recommended Additional Files
 
-### 1. `MTMFG_Schema_ColumnDetails.csv`
+### 1. `MTMFG_Research_StatusValueProfiles.csv`
 
-**Why:** The Tables CSV only shows `nvarchar`, `decimal`, `int` — it omits string lengths,
-numeric precision/scale, identity flags, and computed column flags. This detail is required to
-write accurate C# model properties and stored procedure parameters.
+**Why:** The existing check/default constraint exports prove that status columns exist, but they do
+not reveal the actual values in use. This export helps decode what the application stores in key
+status fields without requiring admin access.
 
-**SSMS Query:**
+**Query:**
+
+```sql
+SELECT 'CUST_ORDER_LINE' AS TABLE_NAME, 'LINE_STATUS' AS COLUMN_NAME,
+       CAST(LINE_STATUS AS NVARCHAR(100)) AS COLUMN_VALUE,
+       COUNT(*) AS ROW_COUNT
+FROM dbo.CUST_ORDER_LINE
+GROUP BY LINE_STATUS
+
+UNION ALL
+
+SELECT 'CUST_ORDER_LINE', 'SHIP_ORDER_STATUS',
+       CAST(SHIP_ORDER_STATUS AS NVARCHAR(100)),
+       COUNT(*)
+FROM dbo.CUST_ORDER_LINE
+GROUP BY SHIP_ORDER_STATUS
+
+UNION ALL
+
+SELECT 'CO_PRODUCT', 'LINE_STATUS',
+       CAST(LINE_STATUS AS NVARCHAR(100)),
+       COUNT(*)
+FROM dbo.CO_PRODUCT
+GROUP BY LINE_STATUS
+
+UNION ALL
+
+SELECT 'WORK_ORDER', 'STATUS',
+       CAST(STATUS AS NVARCHAR(100)),
+       COUNT(*)
+FROM dbo.WORK_ORDER
+GROUP BY STATUS
+
+ORDER BY TABLE_NAME, COLUMN_NAME, COLUMN_VALUE;
+```
+
+---
+
+### 2. `MTMFG_Research_CustOrderAlloc_TypeProfiles.csv`
+
+**Why:** `CUST_ORDER_ALLOC` is currently the strongest candidate bridge between customer-order
+lines and supply-side records, but its type fields need data-level interpretation. This export helps
+explain how `DEMAND_TYPE` and `SUPPLY_TYPE` are actually used.
+
+**Query:**
 
 ```sql
 SELECT
-    t.name                                                                  AS TABLE_NAME,
-    c.column_id                                                             AS COLUMN_ORDER,
-    c.name                                                                  AS COLUMN_NAME,
-    ty.name                                                                 AS DATA_TYPE,
+    DEMAND_TYPE,
+    SUPPLY_TYPE,
+    COUNT(*) AS ROW_COUNT,
+    COUNT(DISTINCT ORDER_ID) AS DISTINCT_ORDER_IDS,
+    COUNT(DISTINCT CONCAT(ORDER_ID, '|', ORDER_LINE_NO, '|', ORDER_DEL_NO)) AS DISTINCT_ORDER_LINES,
+    COUNT(DISTINCT CONCAT(BASE_ID, '|', LOT_ID, '|', SPLIT_ID)) AS DISTINCT_SUPPLY_KEYS,
+    MIN(WANT_DATE) AS MIN_WANT_DATE,
+    MAX(WANT_DATE) AS MAX_WANT_DATE,
+    MIN(FINISH_DATE) AS MIN_FINISH_DATE,
+    MAX(FINISH_DATE) AS MAX_FINISH_DATE
+FROM dbo.CUST_ORDER_ALLOC
+GROUP BY DEMAND_TYPE, SUPPLY_TYPE
+ORDER BY DEMAND_TYPE, SUPPLY_TYPE;
+```
+
+---
+
+### 3. `MTMFG_Research_CustOrderAlloc_Samples.csv`
+
+**Why:** The schema proves that `CUST_ORDER_ALLOC` stores both demand-side and supply-side keys,
+but a sample export is the fastest way to inspect real row shape and validate whether the table is
+usable for future CO-line-to-supply research.
+
+**Query:**
+
+```sql
+SELECT TOP (1000)
+    SITE_ID,
+    CUST_ID,
+    ORDER_ID,
+    ORDER_LINE_NO,
+    ORDER_DEL_NO,
+    DEMAND_KEY,
+    DEMAND_TYPE,
+    SUPPLY_KEY,
+    SUPPLY_TYPE,
+    BASE_ID,
+    LOT_ID,
+    SPLIT_ID,
+    PART_ID,
+    WANT_DATE,
+    FINISH_DATE,
+    ORDER_QTY,
+    SHIPPED_QTY,
+    DESIRED_QTY,
+    RECEIVED_QTY,
+    ALLOCATED_QTY
+FROM dbo.CUST_ORDER_ALLOC
+ORDER BY WANT_DATE DESC, ORDER_ID, ORDER_LINE_NO;
+```
+
+---
+
+### 4. `MTMFG_Research_WorkOrderCustomerOrderCoverage.csv`
+
+**Why:** `WORK_ORDER.WBS_CUST_ORDER_ID` is one of the few visible columns suggesting a
+customer-order relationship from the work-order side. This export measures how often that field is
+present and whether it actually matches a `CUSTOMER_ORDER.ID`.
+
+**Query:**
+
+```sql
+SELECT
     CASE
-        WHEN ty.name IN ('nvarchar', 'nchar') AND c.max_length = -1 THEN 'MAX'
-        WHEN ty.name IN ('nvarchar', 'nchar')                        THEN CAST(c.max_length / 2 AS VARCHAR)
-        WHEN ty.name IN ('varchar',  'char')  AND c.max_length = -1 THEN 'MAX'
-        WHEN ty.name IN ('varchar',  'char')                         THEN CAST(c.max_length AS VARCHAR)
-        ELSE NULL
-    END                                                                     AS MAX_CHAR_LENGTH,
-    c.precision                                                             AS NUMERIC_PRECISION,
-    c.scale                                                                 AS NUMERIC_SCALE,
-    CASE c.is_nullable  WHEN 1 THEN 'YES' ELSE 'NO' END                    AS IS_NULLABLE,
-    CASE c.is_identity  WHEN 1 THEN 'YES' ELSE 'NO' END                    AS IS_IDENTITY,
-    CASE c.is_computed  WHEN 1 THEN 'YES' ELSE 'NO' END                    AS IS_COMPUTED
-FROM sys.tables t
-JOIN sys.columns c  ON t.object_id = c.object_id
-JOIN sys.types  ty  ON c.user_type_id = ty.user_type_id
-ORDER BY t.name, c.column_id;
-```
-
----
-
-### 2. `MTMFG_Schema_Views.csv`
-
-**Why:** Infor Visual exposes many business objects through views (all `V_` prefix tables in the
-Tables CSV are actually views). Knowing view column definitions lets Copilot write correct SELECT
-queries against them rather than guessing from table names.
-
-**SSMS Query:**
-
-```sql
-SELECT
-    SCHEMA_NAME(v.schema_id)                            AS VIEW_SCHEMA,
-    v.name                                              AS VIEW_NAME,
-    c.column_id                                         AS COLUMN_ORDER,
-    c.name                                              AS COLUMN_NAME,
-    ty.name                                             AS DATA_TYPE,
+        WHEN w.WBS_CUST_ORDER_ID IS NULL OR LTRIM(RTRIM(w.WBS_CUST_ORDER_ID)) = '' THEN 'NULL_OR_BLANK'
+        WHEN co.ID IS NULL THEN 'NO_CUSTOMER_ORDER_MATCH'
+        ELSE 'MATCHES_CUSTOMER_ORDER'
+    END AS MATCH_BUCKET,
+    COUNT(*) AS WORK_ORDER_COUNT,
+    COUNT(DISTINCT w.WBS_CUST_ORDER_ID) AS DISTINCT_WBS_CUST_ORDER_IDS,
+    MIN(w.CREATE_DATE) AS MIN_WORK_ORDER_CREATE_DATE,
+    MAX(w.CREATE_DATE) AS MAX_WORK_ORDER_CREATE_DATE
+FROM dbo.WORK_ORDER w
+LEFT JOIN dbo.CUSTOMER_ORDER co ON co.ID = w.WBS_CUST_ORDER_ID
+GROUP BY
     CASE
-        WHEN ty.name IN ('nvarchar','nchar') AND c.max_length = -1 THEN 'MAX'
-        WHEN ty.name IN ('nvarchar','nchar')                        THEN CAST(c.max_length / 2 AS VARCHAR)
-        ELSE NULL
-    END                                                 AS MAX_CHAR_LENGTH,
-    c.precision                                         AS NUMERIC_PRECISION,
-    c.scale                                             AS NUMERIC_SCALE,
-    CASE c.is_nullable WHEN 1 THEN 'YES' ELSE 'NO' END  AS IS_NULLABLE
-FROM sys.views    v
-JOIN sys.columns  c  ON v.object_id = c.object_id
-JOIN sys.types    ty ON c.user_type_id = ty.user_type_id
-ORDER BY v.name, c.column_id;
+        WHEN w.WBS_CUST_ORDER_ID IS NULL OR LTRIM(RTRIM(w.WBS_CUST_ORDER_ID)) = '' THEN 'NULL_OR_BLANK'
+        WHEN co.ID IS NULL THEN 'NO_CUSTOMER_ORDER_MATCH'
+        ELSE 'MATCHES_CUSTOMER_ORDER'
+    END
+ORDER BY MATCH_BUCKET;
 ```
 
 ---
 
-### 3. `MTMFG_Schema_StoredProcedures.csv` — ⛔ SKIP: Not applicable
+### 5. `MTMFG_Research_TargetColumnInventory.csv`
 
-**Verified (2026-03-06):** MTMFG has **no user-defined stored procedures and no user-defined
-functions** in SQL Server. Both `sys.procedures` and `sys.objects WHERE type IN ('P','FN','IF','TF')`
-return 0 rows. Infor Visual implements all business logic in the application tier, not the database
-tier. **Do not generate this file — it will always be empty.**
+**Why:** When declared FKs are missing, research often becomes a column-name hunt. This export
+pulls the most important bridge, chronology, and status columns into one CSV using
+`INFORMATION_SCHEMA`, which is usually safer for non-admin users than heavier system catalog work.
 
----
-
-### 4. `MTMFG_Schema_Indexes.csv`
-
-**Why:** Knowing which columns are indexed on large tables (e.g., `PURCHASE_ORDER`,
-`CUSTOMER_ORDER`, `INVENTORY_TRANS`) lets Copilot write WHERE clauses that use indexed paths,
-avoiding full-table scans in read-only query DAOs.
-
-**SSMS Query:**
+**Query:**
 
 ```sql
 SELECT
-    t.name                                              AS TABLE_NAME,
-    i.name                                              AS INDEX_NAME,
-    i.type_desc                                         AS INDEX_TYPE,
-    CASE i.is_unique        WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_UNIQUE,
-    CASE i.is_primary_key   WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_PRIMARY_KEY,
-    c.name                                              AS COLUMN_NAME,
-    ic.key_ordinal                                      AS KEY_ORDINAL,
-    CASE ic.is_included_column WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_INCLUDED
-FROM sys.tables          t
-JOIN sys.indexes         i  ON t.object_id = i.object_id
-JOIN sys.index_columns   ic ON i.object_id  = ic.object_id AND i.index_id = ic.index_id
-JOIN sys.columns         c  ON ic.object_id = c.object_id  AND ic.column_id = c.column_id
-WHERE i.name IS NOT NULL
-ORDER BY t.name, i.name, ic.key_ordinal;
+    TABLE_SCHEMA,
+    TABLE_NAME,
+    COLUMN_NAME,
+    DATA_TYPE,
+    CHARACTER_MAXIMUM_LENGTH,
+    NUMERIC_PRECISION,
+    NUMERIC_SCALE,
+    IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE COLUMN_NAME IN (
+    'CUST_ORDER_ID',
+    'LINE_NO',
+    'ORDER_ID',
+    'ORDER_LINE_NO',
+    'ORDER_DEL_NO',
+    'WBS_CUST_ORDER_ID',
+    'WORKORDER_TYPE',
+    'WORKORDER_BASE_ID',
+    'WORKORDER_LOT_ID',
+    'WORKORDER_SPLIT_ID',
+    'WORKORDER_SUB_ID',
+    'TYPE',
+    'BASE_ID',
+    'LOT_ID',
+    'SPLIT_ID',
+    'SUB_ID',
+    'LINE_STATUS',
+    'SHIP_ORDER_STATUS',
+    'STATUS',
+    'CREATE_DATE',
+    'ORDER_DATE',
+    'DESIRED_SHIP_DATE',
+    'PROMISE_DATE',
+    'STATUS_EFF_DATE',
+    'WANT_DATE',
+    'FINISH_DATE',
+    'ALLOCATED_QTY',
+    'FULFILLED_QTY',
+    'TOTAL_SHIPPED_QTY',
+    'RECEIVED_QTY'
+)
+ORDER BY COLUMN_NAME, TABLE_SCHEMA, TABLE_NAME;
 ```
 
 ---
 
-### 5. `MTMFG_Schema_TableRowCounts.csv`
+### 6. `MTMFG_Research_BridgeColumnPopulation.csv`
 
-**Why:** Knowing row counts helps prioritise filtering strategies in DAO queries. A table with
-10 rows can be fully scanned; a table with 10 million rows needs tight WHERE clauses and indexed
-columns. This file is a one-time snapshot — regenerate after major data migrations.
+**Why:** A bridge column is only useful if it is actually populated. This export measures how
+often the key relationship and chronology columns are present in the tables that matter most to
+customer-order and work-order research.
 
-**SSMS Query:**
+**Query:**
 
 ```sql
-SELECT
-    t.name                              AS TABLE_NAME,
-    SUM(p.rows)                         AS APPROX_ROW_COUNT
-FROM sys.tables    t
-JOIN sys.partitions p ON t.object_id = p.object_id
-WHERE p.index_id IN (0, 1)  -- heap or clustered index only (avoids double-counting)
-GROUP BY t.name
-ORDER BY SUM(p.rows) DESC;
+SELECT 'CUST_ORDER_ALLOC' AS TABLE_NAME, 'ORDER_ID' AS COLUMN_NAME,
+       COUNT(*) AS TOTAL_ROWS,
+       SUM(CASE WHEN ORDER_ID IS NULL OR LTRIM(RTRIM(ORDER_ID)) = '' THEN 0 ELSE 1 END) AS POPULATED_ROWS
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'ORDER_LINE_NO', COUNT(*),
+       SUM(CASE WHEN ORDER_LINE_NO IS NULL THEN 0 ELSE 1 END)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'BASE_ID', COUNT(*),
+       SUM(CASE WHEN BASE_ID IS NULL OR LTRIM(RTRIM(BASE_ID)) = '' THEN 0 ELSE 1 END)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'LOT_ID', COUNT(*),
+       SUM(CASE WHEN LOT_ID IS NULL OR LTRIM(RTRIM(LOT_ID)) = '' THEN 0 ELSE 1 END)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'SPLIT_ID', COUNT(*),
+       SUM(CASE WHEN SPLIT_ID IS NULL OR LTRIM(RTRIM(SPLIT_ID)) = '' THEN 0 ELSE 1 END)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'WORK_ORDER', 'WBS_CUST_ORDER_ID', COUNT(*),
+       SUM(CASE WHEN WBS_CUST_ORDER_ID IS NULL OR LTRIM(RTRIM(WBS_CUST_ORDER_ID)) = '' THEN 0 ELSE 1 END)
+FROM dbo.WORK_ORDER
+
+UNION ALL
+
+SELECT 'CO_PRODUCT', 'WORKORDER_TYPE', COUNT(*),
+       SUM(CASE WHEN WORKORDER_TYPE IS NULL OR LTRIM(RTRIM(CAST(WORKORDER_TYPE AS NVARCHAR(100)))) = '' THEN 0 ELSE 1 END)
+FROM dbo.CO_PRODUCT
+
+ORDER BY TABLE_NAME, COLUMN_NAME;
 ```
 
 ---
 
-### 6. `MTMFG_Schema_UniqueConstraints.csv`
+### 7. `MTMFG_Research_DateFieldRanges.csv`
 
-**Why:** Beyond PKs, many Infor Visual tables enforce uniqueness on business-key columns (e.g.,
-`PART.ID`, `VENDOR.ID`). Knowing these prevents Copilot from generating duplicate-check logic that
-is already enforced at the database layer, and reveals natural lookup keys for queries.
+**Why:** The biggest chronology gap in the recent CO-line fulfillment research was the lack of a
+clearly authoritative `Oldest Added` field. This export profiles the most likely date candidates so
+future investigations can see which fields are populated and what time ranges they cover.
 
-**SSMS Query:**
+**Query:**
 
 ```sql
-SELECT
-    t.name                                              AS TABLE_NAME,
-    i.name                                              AS CONSTRAINT_NAME,
-    c.name                                              AS COLUMN_NAME,
-    ic.key_ordinal                                      AS KEY_ORDINAL
-FROM sys.tables          t
-JOIN sys.indexes         i  ON t.object_id = i.object_id
-JOIN sys.index_columns   ic ON i.object_id  = ic.object_id AND i.index_id = ic.index_id
-JOIN sys.columns         c  ON ic.object_id = c.object_id  AND ic.column_id = c.column_id
-WHERE i.is_unique = 1 AND i.is_primary_key = 0
-ORDER BY t.name, i.name, ic.key_ordinal;
+SELECT 'CUSTOMER_ORDER' AS TABLE_NAME, 'CREATE_DATE' AS COLUMN_NAME,
+       COUNT(*) AS TOTAL_ROWS,
+       SUM(CASE WHEN CREATE_DATE IS NULL THEN 0 ELSE 1 END) AS POPULATED_ROWS,
+       MIN(CREATE_DATE) AS MIN_VALUE,
+       MAX(CREATE_DATE) AS MAX_VALUE
+FROM dbo.CUSTOMER_ORDER
+
+UNION ALL
+
+SELECT 'CUSTOMER_ORDER', 'ORDER_DATE', COUNT(*),
+       SUM(CASE WHEN ORDER_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(ORDER_DATE), MAX(ORDER_DATE)
+FROM dbo.CUSTOMER_ORDER
+
+UNION ALL
+
+SELECT 'CUST_ORDER_LINE', 'DESIRED_SHIP_DATE', COUNT(*),
+       SUM(CASE WHEN DESIRED_SHIP_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(DESIRED_SHIP_DATE), MAX(DESIRED_SHIP_DATE)
+FROM dbo.CUST_ORDER_LINE
+
+UNION ALL
+
+SELECT 'CUST_ORDER_LINE', 'PROMISE_DATE', COUNT(*),
+       SUM(CASE WHEN PROMISE_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(PROMISE_DATE), MAX(PROMISE_DATE)
+FROM dbo.CUST_ORDER_LINE
+
+UNION ALL
+
+SELECT 'CUST_ORDER_LINE', 'STATUS_EFF_DATE', COUNT(*),
+       SUM(CASE WHEN STATUS_EFF_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(STATUS_EFF_DATE), MAX(STATUS_EFF_DATE)
+FROM dbo.CUST_ORDER_LINE
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'WANT_DATE', COUNT(*),
+       SUM(CASE WHEN WANT_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(WANT_DATE), MAX(WANT_DATE)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'CUST_ORDER_ALLOC', 'FINISH_DATE', COUNT(*),
+       SUM(CASE WHEN FINISH_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(FINISH_DATE), MAX(FINISH_DATE)
+FROM dbo.CUST_ORDER_ALLOC
+
+UNION ALL
+
+SELECT 'WORK_ORDER', 'CREATE_DATE', COUNT(*),
+       SUM(CASE WHEN CREATE_DATE IS NULL THEN 0 ELSE 1 END),
+       MIN(CREATE_DATE), MAX(CREATE_DATE)
+FROM dbo.WORK_ORDER
+
+ORDER BY TABLE_NAME, COLUMN_NAME;
 ```
-
----
-
-### 7. `MTMFG_Schema_Triggers.csv`
-
-**Why:** Infor Visual uses database triggers extensively to enforce business rules and maintain
-denormalized summary fields. Knowing which tables have triggers prevents Copilot from suggesting
-direct writes (which are forbidden) and helps document side-effects when explaining what happens
-when a record is updated from the ERP side.
-
-**SSMS Query:**
-
-```sql
-SELECT
-    OBJECT_NAME(tr.parent_id)                               AS TABLE_NAME,
-    tr.name                                                 AS TRIGGER_NAME,
-    tr.type_desc                                            AS TRIGGER_TYPE,
-    CASE tr.is_disabled         WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_DISABLED,
-    CASE tr.is_instead_of_trigger WHEN 1 THEN 'YES' ELSE 'NO' END AS IS_INSTEAD_OF,
-    STUFF((
-        SELECT ', ' + te.type_desc
-        FROM sys.trigger_events te
-        WHERE te.object_id = tr.object_id
-        FOR XML PATH(''), TYPE
-    ).value('.', 'NVARCHAR(MAX)'), 1, 2, '')                AS TRIGGER_EVENTS
-FROM sys.triggers tr
-WHERE tr.parent_class = 1   -- table triggers only
-ORDER BY OBJECT_NAME(tr.parent_id), tr.name;
-```
-
----
-
-### 8. `MTMFG_Schema_DefaultConstraints.csv`
-
-**Why:** Default values on columns affect what is safe to omit from INSERT statements (which
-only apply to the MySQL database in this project, but are useful reference when understanding
-Infor Visual data patterns and when writing test fixture data).
-
-**SSMS Query:**
-
-```sql
-SELECT
-    t.name          AS TABLE_NAME,
-    c.name          AS COLUMN_NAME,
-    dc.name         AS CONSTRAINT_NAME,
-    dc.definition   AS DEFAULT_EXPRESSION
-FROM sys.default_constraints dc
-JOIN sys.columns c ON dc.parent_object_id = c.object_id AND dc.parent_column_id = c.column_id
-JOIN sys.tables  t ON dc.parent_object_id = t.object_id
-ORDER BY t.name, c.name;
-```
-
----
-
-### 9. `MTMFG_Schema_CheckConstraints.csv`
-
-**Why:** Check constraints encode Infor Visual's business-rule validation at the database level
-(e.g., status codes, flag values `'Y'`/`'N'`). This helps Copilot generate correct enum mappings
-and validation logic without reverse-engineering values from sample data.
-
-**SSMS Query:**
-
-```sql
-SELECT
-    t.name      AS TABLE_NAME,
-    cc.name     AS CONSTRAINT_NAME,
-    cc.definition AS CHECK_DEFINITION
-FROM sys.check_constraints cc
-JOIN sys.tables t ON cc.parent_object_id = t.object_id
-ORDER BY t.name, cc.name;
-```
-
----
-
-### 10. `MTMFG_Schema_ExtendedProperties.csv` — ⛔ SKIP: Not applicable
-
-**Verified (2026-03-06):** MTMFG has **no `MS_Description` extended properties** on any tables
-or columns. `sys.extended_properties` returns 0 rows for `ep.class = 1`. This MTMFG installation
-was not configured with schema descriptions. **Do not generate this file — it will always be empty.**
 
 ---
 
 ## How to Export from SSMS to CSV
 
-1. Open SSMS and connect to the MTMFG SQL Server instance.
-2. Open a new query window and paste the SQL above.
-3. In the **Query** menu → **Results To** → **Results to File** (or press `Ctrl+Shift+F`).
-4. Execute the query (`F5`). SSMS will prompt for a save location.
-5. Save as `.csv` in `docs/InforVisual/DatabaseCSVFiles/`.
-6. Open the file and verify the first row contains column headers.
+1. Open SSMS and connect with the normal read-only Visual SQL account.
+2. Open a new query window and paste one query at a time.
+3. Use **Query -> Results To -> Results to File** or **Results to Grid** and save as CSV.
+4. Save the file into this folder with the exact recommended name.
+5. Keep the export date in the commit message or a nearby note if the data profile is likely to age.
 
-> **Tip:** Use **Query → Query Options → Results → Text** and set **Output format** to
-> **Comma Delimited** before running, or use **Results to Grid** → right-click → **Save Results As**
-> and choose CSV.
+> Tip: For data-profile exports, regenerate when investigating a new domain or when business users
+> suspect the operational meaning of a field has changed over time.
 
 ---
 
 ## Priority Order
 
-| Priority | File                                  | Reason                                                 |
-| -------- | ------------------------------------- | ------------------------------------------------------ |
-| ★★★      | `MTMFG_Schema_ColumnDetails.csv`      | Required for accurate C# model generation              |
-| ★★★      | `MTMFG_Schema_Views.csv`              | Required for `V_` prefix query DAOs                    |
-| ★★       | `MTMFG_Schema_Indexes.csv`            | Query performance guidance                             |
-| ★★       | `MTMFG_Schema_TableRowCounts.csv`     | Query strategy decisions                               |
-| ★★       | `MTMFG_Schema_Triggers.csv`           | Understand ERP side-effect behaviour                   |
-| ⛔       | `MTMFG_Schema_StoredProcedures.csv`   | Not applicable — no SPs or UDFs in MTMFG               |
-| ★        | `MTMFG_Schema_UniqueConstraints.csv`  | Natural key / lookup guidance                          |
-| ★        | `MTMFG_Schema_DefaultConstraints.csv` | Fixture data / model defaults                          |
-| ★        | `MTMFG_Schema_CheckConstraints.csv`   | Enum / validation mapping                              |
-| ⛔       | `MTMFG_Schema_ExtendedProperties.csv` | Not applicable — no MS_Description properties in MTMFG |
+| Priority | File | Reason |
+| --- | --- | --- |
+| ★★★ | `MTMFG_Research_StatusValueProfiles.csv` | Fastest path to decoding undocumented status fields |
+| ★★★ | `MTMFG_Research_CustOrderAlloc_TypeProfiles.csv` | Highest-value bridge-table semantics for CO-to-supply research |
+| ★★★ | `MTMFG_Research_CustOrderAlloc_Samples.csv` | Direct inspection of real bridge rows |
+| ★★ | `MTMFG_Research_WorkOrderCustomerOrderCoverage.csv` | Tests whether `WBS_CUST_ORDER_ID` is a usable link |
+| ★★ | `MTMFG_Research_TargetColumnInventory.csv` | Speeds up future missing-FK relationship discovery |
+| ★★ | `MTMFG_Research_BridgeColumnPopulation.csv` | Validates whether bridge fields are populated enough to trust |
+| ★★ | `MTMFG_Research_DateFieldRanges.csv` | Helps settle chronology questions such as `Oldest Added` |
+
+---
+
+## Summary
+
+The core schema export set is already complete for this repository. The next useful exports are not
+more generic metadata dumps; they are targeted research extracts that explain how Visual actually
+uses status fields, demand/supply bridge rows, chronology columns, and customer-order/work-order
+cross-reference fields under a normal read-only account.

@@ -1,0 +1,218 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackQueue"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shiprecModels="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+    </Page.Resources>
+
+    <Grid Padding="16" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="12"
+            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10">
+            <StackPanel Spacing="12">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        Grid.Column="0"
+                        Header="Customer"
+                        Text="{x:Bind ViewModel.CustomerFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        Grid.Column="1"
+                        Header="Location"
+                        Text="{x:Bind ViewModel.LocationFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        Grid.Column="2"
+                        Header="Requester"
+                        Text="{x:Bind ViewModel.RequesterFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        Grid.Column="3"
+                        Header="Owner"
+                        Text="{x:Bind ViewModel.OwnerFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <StackPanel
+                        Grid.Column="4"
+                        VerticalAlignment="Bottom"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            Command="{x:Bind ViewModel.RefreshQueueCommand}"
+                            Content="Refresh Queue"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <ProgressRing
+                            Width="24"
+                            Height="24"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox Content="Requested" IsChecked="{x:Bind ViewModel.IncludeRequested, Mode=TwoWay}" />
+                    <CheckBox Content="Accepted" IsChecked="{x:Bind ViewModel.IncludeAccepted, Mode=TwoWay}" />
+                    <CheckBox Content="Problem" IsChecked="{x:Bind ViewModel.IncludeProblem, Mode=TwoWay}" />
+                    <CheckBox Content="Completed" IsChecked="{x:Bind ViewModel.IncludeCompleted, Mode=TwoWay}" />
+                    <CheckBox Content="Cancelled" IsChecked="{x:Bind ViewModel.IncludeCancelled, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <ComboBox
+                        Width="180"
+                        ItemsSource="{x:Bind ViewModel.EditablePrintModes, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.SelectedPrintMode, Mode=TwoWay}" />
+                    <Button Command="{x:Bind ViewModel.PrintSelectedModeCommand}" Content="Print Preview" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Column="0"
+                Padding="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+                <ListView
+                    ItemsSource="{x:Bind ViewModel.QueueItems, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedQueueItem, Mode=TwoWay}"
+                    SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="shiprecModels:Model_CustomerPullPack_WaitlistEntry">
+                            <Grid Padding="10,8" RowSpacing="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind CustomerOrderId, Mode=OneWay}" />
+                                    <TextBlock Grid.Column="1" Text="{x:Bind CurrentStatus, Mode=OneWay}" />
+                                </Grid>
+                                <Grid Grid.Row="1" ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind ParentPartId, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind CurrentOwnerDisplayName, Mode=OneWay}" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+
+            <Border
+                Grid.Column="1"
+                Padding="12"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+                <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Select a waitlist item to review ownership, status, and problem details."
+                            Visibility="{x:Bind ViewModel.HasSelectedQueueItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}" />
+
+                        <StackPanel Visibility="{x:Bind ViewModel.HasSelectedQueueItem, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Customer" />
+                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.SelectedQueueItem.CustomerId, Mode=OneWay}" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Order" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.CustomerOrderId, Mode=OneWay}" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Parent Part" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.ParentPartId, Mode=OneWay}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Owner" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.CurrentOwnerDisplayName, Mode=OneWay}" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Selected Locations" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.SelectedLocationsDisplay, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Requester Note" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.RequesterContextNote, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+                            </Grid>
+
+                            <ComboBox
+                                Header="New Status"
+                                ItemsSource="{x:Bind ViewModel.EditableStatuses, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedStatus, Mode=TwoWay}" />
+
+                            <ComboBox
+                                Header="Problem Reason"
+                                ItemsSource="{x:Bind ViewModel.ProblemReasons, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedProblemReason, Mode=TwoWay}"
+                                Visibility="{x:Bind ViewModel.IsProblemSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                            <TextBox
+                                MinHeight="120"
+                                AcceptsReturn="True"
+                                Header="Handler Note"
+                                Text="{x:Bind ViewModel.HandlerNote, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    Command="{x:Bind ViewModel.SaveStatusUpdateCommand}"
+                                    Content="Save Status"
+                                    Style="{StaticResource AccentButtonStyle}" />
+                                <Button
+                                    Command="{x:Bind ViewModel.UnassignOwnerCommand}"
+                                    Content="Un-assign Owner"
+                                    IsEnabled="{x:Bind ViewModel.CanUnassignOwner, Mode=OneWay}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

@@ -62,6 +62,30 @@ public sealed class ViewModel_ShipRecTools_MainTests
         headerBackServiceMock.Verify(service => service.ClearBackAction(), Times.Once);
     }
 
+    [Fact]
+    public void NavigateToTool_ShouldShowWaitlistHost_WhenWaitlistToolIsSelected()
+    {
+        var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
+        var headerBackServiceMock = new Mock<IService_HeaderBackNavigation>();
+        navigationServiceMock
+            .Setup(service => service.GetToolByKey("CustomerPullPackWaitlist"))
+            .Returns(
+                new Model_ToolDefinition
+                {
+                    ToolKey = "CustomerPullPackWaitlist",
+                    Title = "Customer Pull n' Pack Waitlist",
+                }
+            );
+
+        var viewModel = CreateViewModel(navigationServiceMock.Object, headerBackServiceMock.Object);
+
+        viewModel.NavigateToTool("CustomerPullPackWaitlist");
+
+        viewModel.IsCustomerPullPackWaitlistVisible.Should().BeTrue();
+        viewModel.IsCustomerPullPackVisible.Should().BeFalse();
+        viewModel.CurrentHeaderTitle.Should().Be("Customer Pull n' Pack Waitlist");
+    }
+
     private static ViewModel_ShipRecTools_Main CreateViewModel(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation

@@ -12,7 +12,7 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
     [Fact]
     public void ValidateInputs_ShouldRequireRequesterNote_WhenNoSelectableLocationsExist()
     {
-        var viewModel = CreateViewModel([
+        var viewModel = CreateViewModel(
             new Model_CustomerPullPack_DemandLine
             {
                 SourceLineKey = "LINE-1",
@@ -21,8 +21,8 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
                 CustomerOrderId = "CO-1001",
                 ParentPartId = "PART-100",
                 QuantityToPack = 12,
-            },
-        ]);
+            }
+        );
 
         var isValid = viewModel.ValidateInputs(out var validationMessage);
 
@@ -75,13 +75,7 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
             LocationReviewFlag = false,
         };
 
-        var viewModel = CreateViewModel(
-            [selectedLine],
-            new Dictionary<string, Model_CustomerPullPack_WaitlistEntry>
-            {
-                [selectedLine.SourceLineKey] = acceptedEntry,
-            }
-        );
+        var viewModel = CreateViewModel(selectedLine, acceptedEntry);
         viewModel.RequesterContextNote = "Requester update";
 
         var entries = viewModel.BuildBatchEntries("jkoll", "John Koll (Emp #1)");
@@ -95,13 +89,13 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
     }
 
     private static ViewModel_Dialog_CustomerPullPackWaitlistEditor CreateViewModel(
-        IReadOnlyList<Model_CustomerPullPack_DemandLine> selectedLines,
-        IReadOnlyDictionary<string, Model_CustomerPullPack_WaitlistEntry>? existingEntries = null
+        Model_CustomerPullPack_DemandLine selectedLine,
+        Model_CustomerPullPack_WaitlistEntry? existingEntry = null
     )
     {
         return new ViewModel_Dialog_CustomerPullPackWaitlistEditor(
-            selectedLines,
-            existingEntries ?? new Dictionary<string, Model_CustomerPullPack_WaitlistEntry>(),
+            selectedLine,
+            existingEntry,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

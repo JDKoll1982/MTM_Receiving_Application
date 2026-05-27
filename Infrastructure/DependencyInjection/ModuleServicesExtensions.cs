@@ -530,7 +530,12 @@ public static class ModuleServicesExtensions
             sp.GetRequiredService<IService_LoggingUtility>(),
             sp.GetRequiredService<IService_InforVisualMockDataCatalog>()
         ));
-        services.AddSingleton(_ => new Dao_CustomerPullPackWaitlist(mySqlConnectionString));
+        services.AddSingleton(sp => new Dao_CustomerPullPackWaitlist(
+            mySqlConnectionString,
+            sp.GetRequiredService<IService_AppSettings>(),
+            sp.GetRequiredService<IService_LoggingUtility>(),
+            sp.GetRequiredService<IService_InforVisualMockDataCatalog>()
+        ));
         services.AddSingleton(_ => new Dao_CustomerPullPackUserDefaults(mySqlConnectionString));
 
         // Services (Singleton)
@@ -549,8 +554,14 @@ public static class ModuleServicesExtensions
         });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
         services.AddTransient<Command_CustomerPullPackBatchUpsertHandler>();
+        services.AddTransient<Command_CustomerPullPackSaveDefaultsHandler>();
+        services.AddTransient<Command_CustomerPullPackUnassignOwnerHandler>();
+        services.AddTransient<Command_CustomerPullPackUpdateStatusHandler>();
+        services.AddTransient<Query_CustomerPullPackDefaultsHandler>();
         services.AddTransient<Query_CustomerPullPackLinkedWaitlistHandler>();
+        services.AddTransient<Query_CustomerPullPackPrintContextHandler>();
         services.AddTransient<Query_CustomerPullPackReportHandler>();
+        services.AddTransient<Query_CustomerPullPackWaitlistQueueHandler>();
 
         // ViewModels (Transient - Per-navigation instances)
         services.AddTransient<ViewModel_ShipRecTools_Main>();
@@ -558,6 +569,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
         services.AddTransient<ViewModel_Dialog_CustomerPullPackWaitlistEditor>();
+        services.AddTransient<ViewModel_Tool_CustomerPullPackQueue>();
         services.AddTransient<ViewModel_Tool_CustomerPullPackReport>();
 
         // Views (Transient - Per-navigation instances)
@@ -565,6 +577,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackQueue>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackReport>();
         services.AddTransient<Module_ShipRec_Tools.Dialogs.Dialog_CustomerPullPackWaitlistEditor>();
 

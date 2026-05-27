@@ -1,0 +1,9259 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: May 26, 2026 at 12:14 PM
+-- Server version: 5.7.24
+-- PHP Version: 8.3.1
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+CREATE DATABASE IF NOT EXISTS `mtm_receiving_application`
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+USE `mtm_receiving_application`;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `mtm_receiving_application`
+--
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_Activity_Log` (IN `p_event_type` VARCHAR(50), IN `p_username` VARCHAR(50), IN `p_workstation_name` VARCHAR(50), IN `p_details` TEXT)   BEGIN
+    
+    
+
+    INSERT INTO settings_personal_activity_log (
+        event_type,
+        username,
+        workstation_name,
+        event_timestamp,
+        details
+    ) VALUES (
+        p_event_type,
+        p_username,
+        p_workstation_name,
+        NOW(),
+        p_details
+    );
+
+    
+    SELECT ROW_COUNT() AS rows_affected;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_Department_GetAll` ()   BEGIN 
+
+SELECT
+    department_id,
+    department_name,
+    sort_order
+FROM
+    departments
+WHERE
+    is_active = TRUE
+ORDER BY
+    sort_order ASC,
+    department_name ASC;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_Terminal_GetShared` ()   BEGIN 
+
+SELECT
+    workstation_name,
+    workstation_type,
+    description
+FROM
+    auth_workstation_config
+WHERE
+    workstation_type = 'shared_terminal'
+    AND is_active = TRUE
+ORDER BY
+    workstation_name;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_Create` (IN `p_employee_number` INT, IN `p_windows_username` VARCHAR(50), IN `p_full_name` VARCHAR(100), IN `p_pin` VARCHAR(64), IN `p_department` VARCHAR(50), IN `p_shift` VARCHAR(20), IN `p_created_by` VARCHAR(50), IN `p_visual_username` VARCHAR(256), IN `p_visual_password` VARCHAR(256), OUT `p_error_message` VARCHAR(500))   BEGIN DECLARE v_existing_count INT DEFAULT 0;
+
+DECLARE v_emp_count INT DEFAULT 0;
+
+
+SET
+    p_error_message = NULL;
+
+
+START TRANSACTION;
+
+
+IF p_pin IS NULL OR TRIM(p_pin) = '' THEN
+SET
+    p_error_message = 'Protected PIN value is required';
+
+ROLLBACK;
+
+END IF;
+
+
+IF p_error_message IS NULL
+AND (
+    p_employee_number IS NULL
+    OR p_employee_number <= 0
+) THEN
+SET
+    p_error_message = 'Employee number must be a positive number';
+
+ROLLBACK;
+
+END IF;
+
+
+IF p_error_message IS NULL THEN
+SELECT
+    COUNT(*) INTO v_emp_count
+FROM
+    auth_users
+WHERE
+    employee_number = p_employee_number;
+
+IF v_emp_count > 0 THEN
+SET
+    p_error_message = 'Employee number already exists in database';
+
+ROLLBACK;
+
+END IF;
+
+END IF;
+
+
+IF p_error_message IS NULL THEN
+SELECT
+    COUNT(*) INTO v_existing_count
+FROM
+    auth_users
+WHERE
+    windows_username = p_windows_username;
+
+IF v_existing_count > 0 THEN
+SET
+    p_error_message = 'Windows username already exists in database';
+
+ROLLBACK;
+
+END IF;
+
+END IF;
+
+
+IF p_error_message IS NULL
+AND (
+    p_full_name IS NULL
+    OR TRIM(p_full_name) = ''
+) THEN
+SET
+    p_error_message = 'Full Name is required';
+
+ROLLBACK;
+
+END IF;
+
+
+IF p_error_message IS NULL
+AND (
+    p_department IS NULL
+    OR TRIM(p_department) = ''
+) THEN
+SET
+    p_error_message = 'Department is required';
+
+ROLLBACK;
+
+END IF;
+
+
+IF p_error_message IS NULL
+AND p_shift NOT IN ('1st Shift', '2nd Shift', '3rd Shift') THEN
+SET
+    p_error_message = 'Shift must be 1st Shift, 2nd Shift, or 3rd Shift';
+
+ROLLBACK;
+
+END IF;
+
+
+IF p_error_message IS NULL THEN
+INSERT INTO
+    auth_users (
+        employee_number,
+        windows_username,
+        full_name,
+        pin,
+        department,
+        shift,
+        is_active,
+        visual_username,
+        visual_password,
+        created_by,
+        created_date,
+        modified_date
+    )
+VALUES
+    (
+        p_employee_number,
+        p_windows_username,
+        TRIM(p_full_name),
+        p_pin,
+        TRIM(p_department),
+        p_shift,
+        TRUE,
+        NULLIF(TRIM(COALESCE(p_visual_username, '')), ''),
+        NULLIF(TRIM(COALESCE(p_visual_password, '')), ''),
+        p_created_by,
+        NOW(),
+        NOW()
+    );
+
+
+
+
+CALL sp_Auth_User_SeedDefaultModes(p_employee_number);
+
+
+COMMIT;
+
+END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_Deactivate` (IN `p_employee_number` INT, IN `p_updated_by` VARCHAR(50), OUT `p_error_message` VARCHAR(500))   sp: BEGIN DECLARE v_existing_count INT DEFAULT 0;
+
+SET
+    p_error_message = NULL;
+
+
+SELECT
+    COUNT(*) INTO v_existing_count
+FROM
+    auth_users
+WHERE
+    employee_number = p_employee_number;
+
+IF v_existing_count = 0 THEN
+SET
+    p_error_message = 'Employee not found';
+
+LEAVE sp;
+
+END IF;
+
+START TRANSACTION;
+
+UPDATE
+    auth_users
+SET
+    is_active = 0,
+    modified_date = NOW()
+WHERE
+    employee_number = p_employee_number;
+
+
+INSERT INTO
+    settings_personal_activity_log (
+        event_type,
+        username,
+        workstation_name,
+        event_timestamp,
+        details
+    )
+VALUES
+    (
+        'user_deactivated',
+        p_updated_by,
+        'SETTINGS_UI',
+        NOW(),
+        CONCAT(
+            'User deactivated: employee_number=',
+            p_employee_number
+        )
+    );
+
+COMMIT;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_GetAll` ()   BEGIN
+SELECT
+    employee_number,
+    windows_username,
+    full_name,
+    pin,
+    department,
+    shift,
+    is_active,
+    visual_username,
+    visual_password,
+    default_receiving_mode,
+    default_dunnage_mode,
+    created_date,
+    created_by,
+    modified_date
+FROM
+    auth_users
+ORDER BY
+    full_name ASC;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_GetByWindowsUsername` (IN `p_windows_username` VARCHAR(50))   BEGIN 
+
+SELECT
+    employee_number,
+    windows_username,
+    full_name,
+    pin,
+    department,
+    shift,
+    is_active,
+    visual_username,
+    visual_password,
+    default_receiving_mode,
+    default_dunnage_mode,
+    created_date,
+    created_by,
+    modified_date
+FROM
+    auth_users
+WHERE
+    windows_username = p_windows_username
+    AND is_active = TRUE
+LIMIT
+    1;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_GetDefaultMode` (IN `p_user_id` INT)   BEGIN 
+SELECT
+    default_receiving_mode
+FROM
+    auth_users
+WHERE
+    employee_number = p_user_id;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_IsWindowsUsernameUnique` (IN `p_windows_username` VARCHAR(50), IN `p_exclude_employee_number` INT)   BEGIN
+    SELECT COUNT(*) AS username_count
+    FROM auth_users
+    WHERE windows_username = p_windows_username
+      AND (
+        p_exclude_employee_number IS NULL
+        OR employee_number <> p_exclude_employee_number
+      );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_SeedDefaultModes` (IN `p_user_id` INT)   BEGIN
+    DECLARE v_has_default_receiving_mode INT DEFAULT 0;
+    DECLARE v_has_default_dunnage_mode INT DEFAULT 0;
+
+    
+    SELECT COUNT(*)
+    INTO v_has_default_receiving_mode
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'auth_users'
+      AND COLUMN_NAME = 'default_receiving_mode';
+
+    IF v_has_default_receiving_mode > 0 THEN
+        UPDATE auth_users
+        SET default_receiving_mode = COALESCE(default_receiving_mode, 'guided'),
+            modified_date = NOW()
+        WHERE employee_number = p_user_id;
+    END IF;
+
+    
+    SELECT COUNT(*)
+    INTO v_has_default_dunnage_mode
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'auth_users'
+      AND COLUMN_NAME = 'default_dunnage_mode';
+
+    IF v_has_default_dunnage_mode > 0 THEN
+        UPDATE auth_users
+        SET default_dunnage_mode = COALESCE(default_dunnage_mode, 'guided'),
+            modified_date = NOW()
+        WHERE employee_number = p_user_id;
+    END IF;
+
+    SELECT 1 AS success;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_Update` (IN `p_employee_number` INT, IN `p_full_name` VARCHAR(100), IN `p_pin` VARCHAR(64), IN `p_department` VARCHAR(50), IN `p_shift` VARCHAR(20), IN `p_is_active` TINYINT(1), IN `p_visual_username` VARCHAR(256), IN `p_visual_password` VARCHAR(256), IN `p_updated_by` VARCHAR(50), OUT `p_error_message` VARCHAR(500))   sp: BEGIN DECLARE v_existing_count INT DEFAULT 0;
+
+DECLARE v_workstation VARCHAR(50) DEFAULT 'SETTINGS_UI';
+
+SET
+    p_error_message = NULL;
+
+
+SELECT
+    COUNT(*) INTO v_existing_count
+FROM
+    auth_users
+WHERE
+    employee_number = p_employee_number;
+
+IF v_existing_count = 0 THEN
+SET
+    p_error_message = 'Employee not found';
+
+LEAVE sp;
+
+END IF;
+
+
+IF p_pin IS NOT NULL
+AND TRIM(p_pin) = '' THEN
+SET
+    p_error_message = 'Protected PIN value cannot be empty when provided';
+
+LEAVE sp;
+
+END IF;
+
+
+IF p_shift NOT IN ('1st Shift', '2nd Shift', '3rd Shift') THEN
+SET
+    p_error_message = 'Shift must be 1st Shift, 2nd Shift, or 3rd Shift';
+
+LEAVE sp;
+
+END IF;
+
+START TRANSACTION;
+
+UPDATE
+    auth_users
+SET
+    full_name = TRIM(p_full_name),
+    pin = CASE
+        WHEN p_pin IS NULL OR TRIM(p_pin) = '' THEN pin
+        ELSE p_pin
+    END,
+    department = TRIM(p_department),
+    shift = p_shift,
+    is_active = p_is_active,
+    visual_username = NULLIF(TRIM(COALESCE(p_visual_username, '')), ''),
+    visual_password = NULLIF(TRIM(COALESCE(p_visual_password, '')), ''),
+    modified_date = NOW()
+WHERE
+    employee_number = p_employee_number;
+
+
+INSERT INTO
+    settings_personal_activity_log (
+        event_type,
+        username,
+        workstation_name,
+        event_timestamp,
+        details
+    )
+VALUES
+    (
+        'user_updated',
+        p_updated_by,
+        v_workstation,
+        NOW(),
+        CONCAT(
+            'User record updated for employee_number=',
+            p_employee_number
+        )
+    );
+
+COMMIT;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_UpdateDefaultDunnageMode` (IN `p_user_id` INT, IN `p_default_mode` VARCHAR(20))   BEGIN
+    UPDATE auth_users
+    SET default_dunnage_mode = p_default_mode,
+        modified_date = NOW()
+    WHERE employee_number = p_user_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_UpdateDefaultMode` (IN `p_user_id` INT, IN `p_default_mode` VARCHAR(20))   BEGIN
+    
+    
+
+    UPDATE auth_users
+    SET default_receiving_mode = p_default_mode
+    WHERE employee_number = p_user_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_UpdateDefaultReceivingMode` (IN `p_user_id` INT, IN `p_default_mode` VARCHAR(20))   BEGIN
+    UPDATE auth_users
+    SET default_receiving_mode = p_default_mode,
+        modified_date = NOW()
+    WHERE employee_number = p_user_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_UpdateVisualCredentials` (IN `p_employee_number` INT, IN `p_visual_username` VARCHAR(256), IN `p_visual_password` VARCHAR(256), IN `p_updated_by` VARCHAR(50), OUT `p_error_message` VARCHAR(500))   sp: BEGIN DECLARE v_existing_count INT DEFAULT 0;
+
+SET
+    p_error_message = NULL;
+
+
+SELECT
+    COUNT(*) INTO v_existing_count
+FROM
+    auth_users
+WHERE
+    employee_number = p_employee_number;
+
+IF v_existing_count = 0 THEN
+SET
+    p_error_message = 'Employee not found';
+
+LEAVE sp;
+
+END IF;
+
+START TRANSACTION;
+
+UPDATE
+    auth_users
+SET
+    visual_username = NULLIF(TRIM(COALESCE(p_visual_username, '')), ''),
+    visual_password = NULLIF(TRIM(COALESCE(p_visual_password, '')), ''),
+    modified_date = NOW()
+WHERE
+    employee_number = p_employee_number;
+
+
+INSERT INTO
+    settings_personal_activity_log (
+        event_type,
+        username,
+        workstation_name,
+        event_timestamp,
+        details
+    )
+VALUES
+    (
+        'visual_credentials_updated',
+        p_updated_by,
+        'SETTINGS_UI',
+        NOW(),
+        CONCAT(
+            'Visual credentials updated for employee_number=',
+            p_employee_number
+        )
+    );
+
+COMMIT;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_Upsert` (IN `p_employee_number` INT, IN `p_windows_username` VARCHAR(50), IN `p_full_name` VARCHAR(100), IN `p_pin` VARCHAR(64), IN `p_department` VARCHAR(50), IN `p_shift` VARCHAR(20), IN `p_is_active` BOOLEAN, IN `p_visual_username` VARCHAR(256), IN `p_visual_password` VARCHAR(256), IN `p_created_by` VARCHAR(50))   sp: BEGIN
+    DECLARE v_emp_exists INT DEFAULT 0;
+    DECLARE v_conflict_username INT DEFAULT 0;
+
+    
+    SELECT COUNT(*)
+    INTO v_conflict_username
+    FROM auth_users
+    WHERE windows_username = p_windows_username
+      AND employee_number <> p_employee_number;
+
+    IF v_conflict_username > 0 THEN
+        SELECT 0 AS success,
+               0 AS affected_rows,
+               'Windows username already assigned to a different employee_number' AS error_message;
+        LEAVE sp;
+    END IF;
+
+    
+    SELECT COUNT(*)
+    INTO v_emp_exists
+    FROM auth_users
+    WHERE employee_number = p_employee_number;
+
+    IF v_emp_exists > 0 THEN
+        UPDATE auth_users
+        SET windows_username = p_windows_username,
+            full_name = p_full_name,
+            pin = p_pin,
+            department = p_department,
+            shift = p_shift,
+            is_active = p_is_active,
+            visual_username = NULLIF(TRIM(p_visual_username), ''),
+            visual_password = NULLIF(TRIM(p_visual_password), ''),
+            created_by = p_created_by,
+            modified_date = NOW()
+        WHERE employee_number = p_employee_number;
+    ELSE
+        INSERT INTO auth_users (
+            employee_number,
+            windows_username,
+            full_name,
+            pin,
+            department,
+            shift,
+            is_active,
+            visual_username,
+            visual_password,
+            created_by,
+            created_date,
+            modified_date
+        ) VALUES (
+            p_employee_number,
+            p_windows_username,
+            p_full_name,
+            p_pin,
+            p_department,
+            p_shift,
+            p_is_active,
+            NULLIF(TRIM(p_visual_username), ''),
+            NULLIF(TRIM(p_visual_password), ''),
+            p_created_by,
+            NOW(),
+            NOW()
+        );
+    END IF;
+
+    
+    CALL sp_Auth_User_SeedDefaultModes(p_employee_number);
+
+    SELECT 1 AS success,
+           ROW_COUNT() AS affected_rows,
+           NULL AS error_message;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_User_ValidatePin` (IN `p_username` VARCHAR(50), IN `p_pin` VARCHAR(64))   BEGIN
+    
+    
+
+    SELECT
+        employee_number,
+        windows_username,
+        full_name,
+        pin,
+        department,
+        shift,
+        is_active,
+        visual_username,
+        visual_password,
+        default_receiving_mode,
+        default_dunnage_mode,
+        created_date,
+        created_by,
+        modified_date
+    FROM auth_users
+    WHERE (windows_username = p_username OR full_name = p_username)
+      AND pin = p_pin
+      AND is_active = TRUE
+    LIMIT 1;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Auth_Workstation_Upsert` (IN `p_workstation_name` VARCHAR(50), IN `p_workstation_type` VARCHAR(50), IN `p_is_active` BOOLEAN, IN `p_description` VARCHAR(200))   BEGIN
+    DECLARE v_type VARCHAR(50);
+
+    SET v_type = LOWER(TRIM(COALESCE(p_workstation_type, '')));
+
+    IF v_type NOT IN ('shared_terminal', 'personal_workstation') THEN
+        SET v_type = 'personal_workstation';
+    END IF;
+
+    INSERT INTO auth_workstation_config (
+        workstation_name,
+        workstation_type,
+        is_active,
+        description,
+        created_date,
+        modified_date
+    ) VALUES (
+        TRIM(p_workstation_name),
+        v_type,
+        COALESCE(p_is_active, TRUE),
+        NULLIF(TRIM(p_description), ''),
+        NOW(),
+        NOW()
+    )
+    ON DUPLICATE KEY UPDATE
+        workstation_type = v_type,
+        is_active = COALESCE(p_is_active, is_active),
+        description = COALESCE(NULLIF(TRIM(p_description), ''), description),
+        modified_date = NOW();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_CustomFields_Delete` (IN `p_field_id` INT)   BEGIN
+    DELETE FROM dunnage_custom_fields
+    WHERE ID = p_field_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_CustomFields_GetByType` (IN `p_dunnage_type_id` INT)   BEGIN
+    
+    SELECT
+        ID,
+        DunnageTypeID,
+        FieldName,
+        DatabaseColumnName,
+        FieldType,
+        DisplayOrder,
+        IsRequired,
+        ValidationRules,
+        CreatedDate,
+        CreatedBy
+    FROM dunnage_custom_fields
+    WHERE DunnageTypeID = p_dunnage_type_id
+    ORDER BY DisplayOrder;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_CustomFields_Insert` (IN `p_dunnage_type_id` INT, IN `p_field_name` VARCHAR(100), IN `p_database_column_name` VARCHAR(64), IN `p_field_type` VARCHAR(20), IN `p_display_order` INT, IN `p_is_required` BOOLEAN, IN `p_validation_rules` TEXT, IN `p_user` VARCHAR(50), OUT `p_new_id` INT, OUT `p_status` INT, OUT `p_error_msg` VARCHAR(500))   BEGIN
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
+        SET p_status = -1;
+        SET p_new_id = NULL;
+        ROLLBACK;
+    END;
+
+    
+    START TRANSACTION;
+
+    
+    IF EXISTS (
+        SELECT 1 FROM dunnage_custom_fields
+        WHERE DunnageTypeID = p_dunnage_type_id
+        AND DatabaseColumnName = p_database_column_name
+    ) THEN
+        SET p_status = -1;
+        SET p_error_msg = CONCAT('Column name "', p_database_column_name, '" already exists for this type');
+        SET p_new_id = NULL;
+        ROLLBACK;
+    ELSE
+        
+        INSERT INTO dunnage_custom_fields (
+            DunnageTypeID,
+            FieldName,
+            DatabaseColumnName,
+            FieldType,
+            DisplayOrder,
+            IsRequired,
+            ValidationRules,
+            CreatedDate,
+            CreatedBy
+        ) VALUES (
+            p_dunnage_type_id,
+            p_field_name,
+            p_database_column_name,
+            p_field_type,
+            p_display_order,
+            p_is_required,
+            p_validation_rules,
+            NOW(),
+            p_user
+        );
+
+        
+        SET p_new_id = LAST_INSERT_ID();
+        SET p_status = 1;
+        SET p_error_msg = 'Custom field created successfully';
+        COMMIT;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_CustomFields_Update` (IN `p_field_id` INT, IN `p_field_name` VARCHAR(100), IN `p_database_column_name` VARCHAR(64), IN `p_field_type` VARCHAR(20), IN `p_display_order` INT, IN `p_is_required` BOOLEAN, IN `p_validation_rules` TEXT)   BEGIN
+    UPDATE dunnage_custom_fields
+    SET
+        FieldName = p_field_name,
+        DatabaseColumnName = p_database_column_name,
+        FieldType = p_field_type,
+        DisplayOrder = p_display_order,
+        IsRequired = p_is_required,
+        ValidationRules = p_validation_rules
+    WHERE ID = p_field_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_Check` (IN `p_part_id` VARCHAR(50))   BEGIN
+    SELECT COUNT(*) > 0 as requires_inventory
+    FROM dunnage_requires_inventory
+    WHERE part_id = p_part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_Delete` (IN `p_id` INT)   BEGIN
+    DELETE FROM dunnage_requires_inventory
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_GetAll` ()   BEGIN
+    SELECT
+        i.id,
+        i.part_id,
+        t.type_name,
+        i.inventory_method,
+        i.notes,
+        i.created_by,
+        i.created_date,
+        i.modified_by,
+        i.modified_date
+    FROM dunnage_requires_inventory i
+    JOIN dunnage_parts p ON i.part_id = p.part_id
+    JOIN dunnage_types t ON p.type_id = t.id
+    ORDER BY i.part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_GetByPart` (IN `p_part_id` VARCHAR(50))   BEGIN
+    SELECT
+        i.id,
+        i.part_id,
+        t.type_name,
+        i.inventory_method,
+        i.notes,
+        i.created_by,
+        i.created_date,
+        i.modified_by,
+        i.modified_date
+    FROM dunnage_requires_inventory i
+    JOIN dunnage_parts p ON i.part_id = p.part_id
+    JOIN dunnage_types t ON p.type_id = t.id
+    WHERE i.part_id = p_part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_Insert` (IN `p_part_id` VARCHAR(50), IN `p_inventory_method` VARCHAR(100), IN `p_notes` TEXT, IN `p_user` VARCHAR(50), OUT `p_new_id` INT)   BEGIN
+    INSERT INTO dunnage_requires_inventory (
+        part_id,
+        inventory_method,
+        notes,
+        created_by,
+        created_date
+    ) VALUES (
+        p_part_id,
+        p_inventory_method,
+        p_notes,
+        p_user,
+        NOW()
+    );
+
+    SET p_new_id = LAST_INSERT_ID();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Inventory_Update` (IN `p_id` INT, IN `p_part_id` VARCHAR(50), IN `p_inventory_method` VARCHAR(100), IN `p_notes` TEXT, IN `p_user` VARCHAR(50))   BEGIN
+    UPDATE dunnage_requires_inventory
+    SET
+        part_id = p_part_id,
+        inventory_method = p_inventory_method,
+        notes = p_notes,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_ClearToHistory` (IN `p_archived_by` VARCHAR(100), IN `p_employee_number` INT, IN `p_clear_all` TINYINT(1), OUT `p_rows_moved` INT, OUT `p_archive_batch_id` CHAR(36), OUT `p_status` INT, OUT `p_error_message` VARCHAR(1000))   BEGIN
+    DECLARE v_rows_to_move INT DEFAULT 0;
+
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_rows_moved       = 0;
+        SET p_status           = 1;
+        SET p_error_message    = 'Clear Label Data failed. Transaction rolled back.';
+    END;
+
+    SET p_rows_moved      = 0;
+    SET p_status          = 0;
+    SET p_error_message   = NULL;
+    SET p_archive_batch_id = UUID();
+
+    IF COALESCE(p_clear_all, 0) = 0 AND COALESCE(p_employee_number, 0) <= 0 THEN
+        SET p_status = 1;
+        SET p_error_message = 'A valid employee number is required to clear your own dunnage label rows.';
+    ELSE
+        START TRANSACTION;
+
+        SELECT COUNT(*) INTO v_rows_to_move
+        FROM dunnage_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
+
+        IF v_rows_to_move = 0 THEN
+            
+            COMMIT;
+        ELSE
+            
+            INSERT INTO dunnage_history
+            (
+                load_uuid,
+                part_id,
+                quantity,
+                quantity_type,
+                received_date,
+                created_by,
+                employee_number,
+                created_date,
+                po_number,
+                type_id,
+                type_name,
+                type_icon,
+                location,
+                label_number,
+                part_skid_sequence,
+                part_skid_total,
+                specs_json,
+                archived_at,
+                archived_by,
+                archive_batch_id
+            )
+            SELECT
+                dld.load_uuid,
+                dld.part_id,
+                dld.quantity,
+                dld.quantity_type,
+                COALESCE(dld.received_date, NOW())  AS received_date,
+                dld.user_id                         AS created_by,
+                dld.employee_number                AS employee_number,
+                NOW()                               AS created_date,
+                dld.po_number,
+                dld.dunnage_type_id                 AS type_id,
+                dld.dunnage_type_name               AS type_name,
+                dld.dunnage_type_icon               AS type_icon,
+                dld.location,
+                dld.label_number,
+                dld.part_skid_sequence,
+                dld.part_skid_total,
+                dld.specs_json,
+                NOW()                               AS archived_at,
+                p_archived_by                       AS archived_by,
+                p_archive_batch_id                  AS archive_batch_id
+            FROM dunnage_label_data dld
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR dld.employee_number = p_employee_number;
+
+            
+            DELETE FROM dunnage_label_data
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR employee_number = p_employee_number;
+
+            COMMIT;
+
+            SET p_rows_moved = v_rows_to_move;
+        END IF;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_Delete` (IN `p_load_uuid` CHAR(36))   BEGIN
+    DELETE FROM dunnage_label_data
+    WHERE load_uuid = p_load_uuid;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_GetAll` ()   BEGIN
+    SELECT
+        id,
+        load_uuid,
+        part_id,
+        dunnage_type_id,
+        dunnage_type_name,
+        dunnage_type_icon,
+        quantity,
+        quantity_type,
+        po_number,
+        received_date,
+        user_id,
+        employee_number,
+        location,
+        label_number,
+        part_skid_sequence,
+        part_skid_total,
+        specs_json,
+        created_at
+    FROM dunnage_label_data
+    ORDER BY received_date ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_Insert` (IN `p_load_uuid` CHAR(36), IN `p_part_id` VARCHAR(50), IN `p_dunnage_type_id` INT, IN `p_dunnage_type_name` VARCHAR(100), IN `p_dunnage_type_icon` VARCHAR(100), IN `p_quantity` DECIMAL(10,2), IN `p_quantity_type` VARCHAR(100), IN `p_po_number` VARCHAR(50), IN `p_received_date` DATETIME, IN `p_user_id` VARCHAR(100), IN `p_employee_number` INT, IN `p_location` VARCHAR(100), IN `p_label_number` VARCHAR(50), IN `p_part_skid_sequence` INT, IN `p_part_skid_total` INT, IN `p_specs_json` JSON)   BEGIN
+    INSERT INTO dunnage_label_data
+    (
+        load_uuid,
+        part_id,
+        dunnage_type_id,
+        dunnage_type_name,
+        dunnage_type_icon,
+        quantity,
+        quantity_type,
+        po_number,
+        received_date,
+        user_id,
+        employee_number,
+        location,
+        label_number,
+        part_skid_sequence,
+        part_skid_total,
+        specs_json
+    )
+    VALUES
+    (
+        p_load_uuid,
+        p_part_id,
+        p_dunnage_type_id,
+        p_dunnage_type_name,
+        p_dunnage_type_icon,
+        p_quantity,
+        COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        p_po_number,
+        COALESCE(p_received_date, NOW()),
+        p_user_id,
+        p_employee_number,
+        p_location,
+        p_label_number,
+        p_part_skid_sequence,
+        p_part_skid_total,
+        p_specs_json
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_InsertBatch` (IN `p_load_data` JSON, IN `p_user` VARCHAR(100))   BEGIN
+    DECLARE i     INT DEFAULT 0;
+    DECLARE cnt   INT DEFAULT 0;
+    DECLARE v_load_uuid         CHAR(36);
+    DECLARE v_part_id           VARCHAR(50);
+    DECLARE v_dunnage_type_id   INT;
+    DECLARE v_dunnage_type_name VARCHAR(100);
+    DECLARE v_dunnage_type_icon VARCHAR(100);
+    DECLARE v_quantity          DECIMAL(10,2);
+    DECLARE v_quantity_type     VARCHAR(100);
+    DECLARE v_po_number         VARCHAR(50);
+    DECLARE v_received_date     DATETIME;
+    DECLARE v_location          VARCHAR(100);
+    DECLARE v_label_number      VARCHAR(50);
+    DECLARE v_part_skid_sequence INT;
+    DECLARE v_part_skid_total    INT;
+    DECLARE v_specs_json        JSON;
+
+    SET cnt = JSON_LENGTH(p_load_data);
+
+    WHILE i < cnt DO
+        SET v_load_uuid         = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].load_uuid')));
+        SET v_part_id           = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].part_id')));
+        SET v_dunnage_type_id   = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].dunnage_type_id'));
+        SET v_dunnage_type_name = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].dunnage_type_name')));
+        SET v_dunnage_type_icon = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].dunnage_type_icon')));
+        SET v_quantity          = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].quantity'));
+        SET v_quantity_type     = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].quantity_type')));
+        SET v_po_number         = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].po_number')));
+        SET v_received_date     = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].received_date')));
+        SET v_location          = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].location')));
+        SET v_label_number      = JSON_UNQUOTE(JSON_EXTRACT(p_load_data, CONCAT('$[', i, '].label_number')));
+        SET v_part_skid_sequence = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].part_skid_sequence'));
+        SET v_part_skid_total    = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].part_skid_total'));
+        SET v_specs_json        = JSON_EXTRACT(p_load_data,             CONCAT('$[', i, '].specs_json'));
+
+        INSERT INTO dunnage_label_data
+        (
+            load_uuid,
+            part_id,
+            dunnage_type_id,
+            dunnage_type_name,
+            dunnage_type_icon,
+            quantity,
+            quantity_type,
+            po_number,
+            received_date,
+            user_id,
+            location,
+            label_number,
+            part_skid_sequence,
+            part_skid_total,
+            specs_json
+        )
+        VALUES
+        (
+            v_load_uuid,
+            v_part_id,
+            v_dunnage_type_id,
+            v_dunnage_type_name,
+            v_dunnage_type_icon,
+            v_quantity,
+            COALESCE(NULLIF(v_quantity_type, 'null'), 'Quantity'),
+            NULLIF(v_po_number, 'null'),
+            COALESCE(v_received_date, NOW()),
+            p_user,
+            NULLIF(v_location, 'null'),
+            NULLIF(v_label_number, 'null'),
+            v_part_skid_sequence,
+            v_part_skid_total,
+            v_specs_json
+        );
+
+        SET i = i + 1;
+    END WHILE;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_LabelData_Update` (IN `p_load_uuid` CHAR(36), IN `p_part_id` VARCHAR(50), IN `p_dunnage_type_id` INT, IN `p_dunnage_type_name` VARCHAR(100), IN `p_dunnage_type_icon` VARCHAR(100), IN `p_quantity` DECIMAL(10,2), IN `p_quantity_type` VARCHAR(100), IN `p_po_number` VARCHAR(50), IN `p_received_date` DATETIME, IN `p_user_id` VARCHAR(100), IN `p_employee_number` INT, IN `p_location` VARCHAR(100), IN `p_label_number` VARCHAR(50), IN `p_part_skid_sequence` INT, IN `p_part_skid_total` INT, IN `p_specs_json` JSON)   BEGIN
+    UPDATE dunnage_label_data
+    SET
+        part_id = p_part_id,
+        dunnage_type_id = p_dunnage_type_id,
+        dunnage_type_name = p_dunnage_type_name,
+        dunnage_type_icon = p_dunnage_type_icon,
+        quantity = p_quantity,
+        quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        po_number = p_po_number,
+        received_date = COALESCE(p_received_date, received_date),
+        user_id = p_user_id,
+        employee_number = p_employee_number,
+        location = p_location,
+        label_number = p_label_number,
+        part_skid_sequence = p_part_skid_sequence,
+        part_skid_total = p_part_skid_total,
+        specs_json = p_specs_json
+    WHERE load_uuid = p_load_uuid;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Loads_Delete` (IN `p_load_uuid` CHAR(36))   BEGIN
+    DELETE FROM dunnage_history
+    WHERE load_uuid = p_load_uuid;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Loads_GetAll` ()   BEGIN
+    SELECT
+        l.load_uuid,
+        l.part_id,
+        COALESCE(l.type_id, p.type_id) AS type_id,
+        COALESCE(l.type_name, t.type_name) AS type_name,
+        COALESCE(l.type_icon, 'Help') AS type_icon,
+        l.quantity,
+        COALESCE(l.quantity_type, p.quantity_type, 'Quantity') AS quantity_type,
+        COALESCE(l.po_number, '') AS po_number,
+        l.received_date,
+        l.created_by,
+        l.created_date,
+        l.modified_by,
+        l.modified_date,
+        l.location,
+        l.label_number,
+        l.part_skid_sequence,
+        l.part_skid_total,
+        l.specs_json
+    FROM dunnage_history l
+    LEFT JOIN dunnage_parts p ON l.part_id = p.part_id
+    LEFT JOIN dunnage_types t ON p.type_id = t.id
+    ORDER BY l.received_date DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Loads_GetByDateRange` (IN `p_start_date` DATETIME, IN `p_end_date` DATETIME)   BEGIN
+    SELECT
+        l.load_uuid,
+        l.part_id,
+        COALESCE(l.type_id, p.type_id) AS type_id,
+        COALESCE(l.type_name, t.type_name) AS type_name,
+        COALESCE(l.type_icon, 'Help') AS type_icon,
+        l.quantity,
+        COALESCE(l.quantity_type, p.quantity_type, 'Quantity') AS quantity_type,
+        COALESCE(l.po_number, '') AS po_number,
+        l.received_date,
+        l.created_by,
+        l.created_date,
+        l.modified_by,
+        l.modified_date,
+        l.location,
+        l.label_number,
+        l.part_skid_sequence,
+        l.part_skid_total,
+        l.specs_json
+    FROM dunnage_history l
+    LEFT JOIN dunnage_parts p ON l.part_id = p.part_id
+    LEFT JOIN dunnage_types t ON p.type_id = t.id
+    WHERE l.received_date BETWEEN p_start_date AND p_end_date
+    ORDER BY l.received_date DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Loads_GetById` (IN `p_load_uuid` CHAR(36))   BEGIN
+    SELECT
+        l.load_uuid,
+        l.part_id,
+        COALESCE(l.type_id, p.type_id) AS type_id,
+        COALESCE(l.type_name, t.type_name) AS type_name,
+        COALESCE(l.type_icon, 'Help') AS type_icon,
+        l.quantity,
+        COALESCE(l.quantity_type, p.quantity_type, 'Quantity') AS quantity_type,
+        COALESCE(l.po_number, '') AS po_number,
+        l.received_date,
+        l.created_by,
+        l.created_date,
+        l.modified_by,
+        l.modified_date,
+        l.location,
+        l.label_number,
+        l.part_skid_sequence,
+        l.part_skid_total,
+        l.specs_json
+    FROM dunnage_history l
+    LEFT JOIN dunnage_parts p ON l.part_id = p.part_id
+    LEFT JOIN dunnage_types t ON p.type_id = t.id
+    WHERE l.load_uuid = p_load_uuid;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Loads_Update` (IN `p_load_uuid` CHAR(36), IN `p_part_id` VARCHAR(50), IN `p_quantity` DECIMAL(10,2), IN `p_po_number` VARCHAR(50), IN `p_type_id` INT, IN `p_type_name` VARCHAR(100), IN `p_type_icon` VARCHAR(100), IN `p_location` VARCHAR(100), IN `p_label_number` VARCHAR(50), IN `p_part_skid_sequence` INT, IN `p_part_skid_total` INT, IN `p_specs_json` JSON, IN `p_user` VARCHAR(50))   BEGIN
+    UPDATE dunnage_history
+    SET
+        part_id = p_part_id,
+        quantity = p_quantity,
+        po_number = p_po_number,
+        type_id = p_type_id,
+        type_name = p_type_name,
+        type_icon = p_type_icon,
+        location = p_location,
+        label_number = p_label_number,
+        part_skid_sequence = p_part_skid_sequence,
+        part_skid_total = p_part_skid_total,
+        specs_json = p_specs_json,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE load_uuid = p_load_uuid;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_NonPO_Delete` (IN `p_id` INT UNSIGNED)   BEGIN
+    DELETE FROM `dunnage_non_po_entries` WHERE `id` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_NonPO_GetAll` ()   BEGIN
+    SELECT
+        `id`,
+        `value`,
+        `created_by`,
+        `created_at`,
+        `use_count`
+    FROM   `dunnage_non_po_entries`
+    ORDER BY `use_count` DESC, `created_at` DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_NonPO_PartDefault_GetByPartId` (IN `p_part_id` VARCHAR(100))   BEGIN
+    SELECT `value`
+    FROM `dunnage_non_po_part_defaults`
+    WHERE `part_id` = p_part_id
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_NonPO_PartDefault_Upsert` (IN `p_part_id` VARCHAR(100), IN `p_value` VARCHAR(100), IN `p_updated_by` VARCHAR(100))   BEGIN
+    INSERT INTO `dunnage_non_po_part_defaults` (`part_id`, `value`, `updated_by`)
+    VALUES (p_part_id, p_value, p_updated_by)
+    ON DUPLICATE KEY UPDATE
+        `value` = VALUES(`value`),
+        `updated_by` = VALUES(`updated_by`),
+        `updated_at` = CURRENT_TIMESTAMP;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_NonPO_Upsert` (IN `p_value` VARCHAR(100), IN `p_created_by` VARCHAR(100))   BEGIN
+    INSERT INTO `dunnage_non_po_entries` (`value`, `created_by`, `use_count`)
+    VALUES (p_value, p_created_by, 1)
+    ON DUPLICATE KEY UPDATE `use_count` = `use_count` + 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_CountTransactions` (IN `p_part_id` VARCHAR(50))   BEGIN
+    SELECT COUNT(*) as transaction_count
+    FROM dunnage_history
+    WHERE part_id = p_part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_Delete` (IN `p_id` INT)   BEGIN
+    DELETE FROM dunnage_parts
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_GetAll` ()   BEGIN
+    SELECT
+        p.id,
+        p.part_id,
+        p.type_id,
+        t.type_name,
+        p.spec_values,
+        p.image_path,
+        p.quantity_type,
+        t.image_path AS type_image_path,
+        p.home_location,
+        p.created_by,
+        p.created_date,
+        p.modified_by,
+        p.modified_date
+    FROM dunnage_parts p
+    JOIN dunnage_types t ON p.type_id = t.id
+    ORDER BY p.part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_GetById` (IN `p_part_id` VARCHAR(50))   BEGIN
+    SELECT
+        p.id,
+        p.part_id,
+        p.type_id,
+        t.type_name,
+        p.spec_values,
+        p.image_path,
+        p.quantity_type,
+        t.image_path AS type_image_path,
+        p.home_location,
+        p.created_by,
+        p.created_date,
+        p.modified_by,
+        p.modified_date
+    FROM dunnage_parts p
+    JOIN dunnage_types t ON p.type_id = t.id
+    WHERE p.part_id = p_part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_GetByType` (IN `p_type_id` INT)   BEGIN
+    SELECT
+        p.id,
+        p.part_id,
+        p.type_id,
+        t.type_name,
+        p.spec_values,
+        p.image_path,
+        p.quantity_type,
+        t.image_path AS type_image_path,
+        p.home_location,
+        p.created_by,
+        p.created_date,
+        p.modified_by,
+        p.modified_date
+    FROM dunnage_parts p
+    JOIN dunnage_types t ON p.type_id = t.id
+    WHERE p.type_id = p_type_id
+    ORDER BY p.part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_GetTransactionCount` (IN `p_part_id` VARCHAR(100), OUT `p_count` INT)   BEGIN
+    
+    SELECT COUNT(*) INTO p_count
+    FROM dunnage_history
+    WHERE part_id = p_part_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_Insert` (IN `p_part_id` VARCHAR(50), IN `p_type_id` INT, IN `p_spec_values` JSON, IN `p_image_path` VARCHAR(255), IN `p_quantity_type` VARCHAR(100), IN `p_home_location` VARCHAR(100), IN `p_user` VARCHAR(50), OUT `p_new_id` INT)   BEGIN
+    INSERT INTO dunnage_parts (
+        part_id,
+        type_id,
+        spec_values,
+        image_path,
+        quantity_type,
+        home_location,
+        created_by,
+        created_date
+    ) VALUES (
+        p_part_id,
+        p_type_id,
+        p_spec_values,
+        NULLIF(p_image_path, ''),
+        COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        p_home_location,
+        p_user,
+        NOW()
+    );
+    
+    SET p_new_id = LAST_INSERT_ID();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_InsertWithInventory` (IN `p_part_id` VARCHAR(50), IN `p_type_id` INT, IN `p_spec_values` JSON, IN `p_image_path` VARCHAR(255), IN `p_quantity_type` VARCHAR(100), IN `p_home_location` VARCHAR(100), IN `p_inventory_method` VARCHAR(100), IN `p_inventory_notes` TEXT, IN `p_user` VARCHAR(50), OUT `p_new_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO dunnage_parts (
+        part_id,
+        type_id,
+        spec_values,
+        image_path,
+        quantity_type,
+        home_location,
+        created_by,
+        created_date
+    ) VALUES (
+        p_part_id,
+        p_type_id,
+        p_spec_values,
+        NULLIF(p_image_path, ''),
+        COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        p_home_location,
+        p_user,
+        NOW()
+    );
+
+    SET p_new_id = LAST_INSERT_ID();
+
+    IF p_inventory_method IS NOT NULL
+        AND TRIM(p_inventory_method) <> ''
+        AND UPPER(TRIM(p_inventory_method)) <> 'NOT INVENTORIED'
+    THEN
+        INSERT INTO dunnage_requires_inventory (
+            part_id,
+            inventory_method,
+            notes,
+            created_by,
+            created_date
+        ) VALUES (
+            p_part_id,
+            p_inventory_method,
+            NULLIF(p_inventory_notes, ''),
+            p_user,
+            NOW()
+        );
+    END IF;
+
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_Search` (IN `p_search_text` VARCHAR(100), IN `p_type_id` INT)   BEGIN
+    
+    
+    
+    
+
+    SELECT
+        p.id,
+        p.part_id,
+        p.type_id,
+        t.type_name,
+        p.spec_values,
+        p.image_path,
+        t.image_path AS type_image_path,
+        p.home_location,
+        p.created_by,
+        p.created_date,
+        p.modified_by,
+        p.modified_date
+    FROM dunnage_parts p
+    JOIN dunnage_types t ON p.type_id = t.id
+    WHERE (p_type_id IS NULL OR p_type_id = 0 OR p.type_id = p_type_id)
+    AND (
+        LOWER(p.part_id) LIKE LOWER(CONCAT('%', p_search_text, '%'))
+        OR JSON_SEARCH(LOWER(p.spec_values), 'one', LOWER(CONCAT('%', p_search_text, '%'))) IS NOT NULL
+    )
+    ORDER BY p.part_id
+    LIMIT 100;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_Update` (IN `p_id` INT, IN `p_part_id` VARCHAR(50), IN `p_spec_values` JSON, IN `p_image_path` VARCHAR(255), IN `p_quantity_type` VARCHAR(100), IN `p_home_location` VARCHAR(100), IN `p_user` VARCHAR(50))   BEGIN
+    UPDATE dunnage_parts
+    SET 
+        part_id = p_part_id,
+        spec_values = p_spec_values,
+        image_path = NULLIF(p_image_path, ''),
+        quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        home_location = p_home_location,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences` (IN `p_id` INT, IN `p_original_part_id` VARCHAR(50), IN `p_new_part_id` VARCHAR(50), IN `p_spec_values` JSON, IN `p_image_path` VARCHAR(255), IN `p_quantity_type` VARCHAR(100), IN `p_home_location` VARCHAR(100), IN `p_inventory_method` VARCHAR(100), IN `p_inventory_notes` TEXT, IN `p_user` VARCHAR(50))   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE dunnage_parts
+    SET
+        part_id = p_new_part_id,
+        spec_values = p_spec_values,
+        image_path = NULLIF(p_image_path, ''),
+        quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        home_location = p_home_location,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE id = p_id;
+
+    IF p_original_part_id <> p_new_part_id THEN
+        UPDATE dunnage_history
+        SET
+            part_id = p_new_part_id,
+            modified_by = p_user,
+            modified_date = NOW()
+        WHERE part_id = p_original_part_id;
+
+        UPDATE dunnage_label_data
+        SET part_id = p_new_part_id
+        WHERE part_id = p_original_part_id;
+    END IF;
+
+    IF p_inventory_method IS NULL
+        OR TRIM(p_inventory_method) = ''
+        OR UPPER(TRIM(p_inventory_method)) = 'NOT INVENTORIED'
+    THEN
+        DELETE FROM dunnage_requires_inventory
+        WHERE part_id IN (p_original_part_id, p_new_part_id);
+    ELSE
+        IF EXISTS(
+            SELECT 1
+            FROM dunnage_requires_inventory
+            WHERE part_id = p_original_part_id
+            LIMIT 1
+        ) THEN
+            UPDATE dunnage_requires_inventory
+            SET
+                part_id = p_new_part_id,
+                inventory_method = p_inventory_method,
+                notes = NULLIF(p_inventory_notes, ''),
+                modified_by = p_user,
+                modified_date = NOW()
+            WHERE part_id = p_original_part_id;
+        ELSEIF EXISTS(
+            SELECT 1
+            FROM dunnage_requires_inventory
+            WHERE part_id = p_new_part_id
+            LIMIT 1
+        ) THEN
+            UPDATE dunnage_requires_inventory
+            SET
+                inventory_method = p_inventory_method,
+                notes = NULLIF(p_inventory_notes, ''),
+                modified_by = p_user,
+                modified_date = NOW()
+            WHERE part_id = p_new_part_id;
+        ELSE
+            INSERT INTO dunnage_requires_inventory (
+                part_id,
+                inventory_method,
+                notes,
+                created_by,
+                created_date
+            ) VALUES (
+                p_new_part_id,
+                p_inventory_method,
+                NULLIF(p_inventory_notes, ''),
+                p_user,
+                NOW()
+            );
+        END IF;
+    END IF;
+
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_QuantityTypes_GetAll` ()   BEGIN
+    SELECT
+        id,
+        quantity_type
+    FROM dunnage_quantity_types
+    ORDER BY quantity_type;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_QuantityTypes_InsertIfMissing` (IN `p_quantity_type` VARCHAR(100), IN `p_user` VARCHAR(50))   BEGIN
+    IF p_quantity_type IS NOT NULL AND TRIM(p_quantity_type) <> '' THEN
+        INSERT IGNORE INTO dunnage_quantity_types (
+            quantity_type,
+            created_by,
+            created_date
+        ) VALUES (
+            TRIM(p_quantity_type),
+            COALESCE(NULLIF(TRIM(p_user), ''), 'SYSTEM'),
+            NOW()
+        );
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_CountPartsUsingSpec` (IN `p_type_id` INT, IN `p_spec_key` VARCHAR(100))   BEGIN
+    
+    
+    SELECT COUNT(*) as part_count
+    FROM dunnage_parts
+    WHERE type_id = p_type_id
+    AND JSON_CONTAINS_PATH(spec_values, 'one', CONCAT('$.', p_spec_key)) = 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_DeleteById` (IN `p_id` INT)   BEGIN
+    DELETE FROM dunnage_specs
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_DeleteByType` (IN `p_type_id` INT)   BEGIN
+    DELETE FROM dunnage_specs
+    WHERE type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_GetAll` ()   BEGIN
+    SELECT 
+        id,
+        type_id,
+        spec_key,
+        spec_value,
+        created_by,
+        created_date,
+        modified_by,
+        modified_date
+    FROM dunnage_specs;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_GetAllKeys` ()   BEGIN
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_spec_keys (
+        SpecKey VARCHAR(255)
+    );
+
+    TRUNCATE TABLE temp_spec_keys;
+
+    INSERT INTO temp_spec_keys (SpecKey)
+    SELECT DISTINCT
+        JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(ds.spec_value), CONCAT('$[', nums.n - 1, ']'))) AS SpecKey
+    FROM dunnage_specs ds
+    JOIN (
+        SELECT  1 n UNION ALL SELECT  2 UNION ALL SELECT  3 UNION ALL SELECT  4 UNION ALL SELECT  5
+        UNION ALL SELECT  6 UNION ALL SELECT  7 UNION ALL SELECT  8 UNION ALL SELECT  9 UNION ALL SELECT 10
+        UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15
+        UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
+        UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25
+        UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30
+        UNION ALL SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35
+        UNION ALL SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40
+        UNION ALL SELECT 41 UNION ALL SELECT 42 UNION ALL SELECT 43 UNION ALL SELECT 44 UNION ALL SELECT 45
+        UNION ALL SELECT 46 UNION ALL SELECT 47 UNION ALL SELECT 48 UNION ALL SELECT 49 UNION ALL SELECT 50
+        UNION ALL SELECT 51 UNION ALL SELECT 52 UNION ALL SELECT 53 UNION ALL SELECT 54 UNION ALL SELECT 55
+        UNION ALL SELECT 56 UNION ALL SELECT 57 UNION ALL SELECT 58 UNION ALL SELECT 59 UNION ALL SELECT 60
+        UNION ALL SELECT 61 UNION ALL SELECT 62 UNION ALL SELECT 63 UNION ALL SELECT 64 UNION ALL SELECT 65
+        UNION ALL SELECT 66 UNION ALL SELECT 67 UNION ALL SELECT 68 UNION ALL SELECT 69 UNION ALL SELECT 70
+        UNION ALL SELECT 71 UNION ALL SELECT 72 UNION ALL SELECT 73 UNION ALL SELECT 74 UNION ALL SELECT 75
+        UNION ALL SELECT 76 UNION ALL SELECT 77 UNION ALL SELECT 78 UNION ALL SELECT 79 UNION ALL SELECT 80
+        UNION ALL SELECT 81 UNION ALL SELECT 82 UNION ALL SELECT 83 UNION ALL SELECT 84 UNION ALL SELECT 85
+        UNION ALL SELECT 86 UNION ALL SELECT 87 UNION ALL SELECT 88 UNION ALL SELECT 89 UNION ALL SELECT 90
+        UNION ALL SELECT 91 UNION ALL SELECT 92 UNION ALL SELECT 93 UNION ALL SELECT 94 UNION ALL SELECT 95
+        UNION ALL SELECT 96 UNION ALL SELECT 97 UNION ALL SELECT 98 UNION ALL SELECT 99 UNION ALL SELECT 100
+    ) AS nums
+    WHERE ds.spec_value IS NOT NULL
+      AND JSON_TYPE(ds.spec_value) = 'OBJECT'
+      AND nums.n <= JSON_LENGTH(JSON_KEYS(ds.spec_value));
+
+    SELECT DISTINCT SpecKey
+    FROM temp_spec_keys
+    WHERE SpecKey IS NOT NULL AND SpecKey != ''
+    ORDER BY SpecKey;
+
+    DROP TEMPORARY TABLE IF EXISTS temp_spec_keys;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_GetById` (IN `p_id` INT)   BEGIN
+    SELECT 
+        id,
+        type_id,
+        spec_key,
+        spec_value,
+        created_by,
+        created_date,
+        modified_by,
+        modified_date
+    FROM dunnage_specs
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_GetByType` (IN `p_type_id` INT)   BEGIN
+    SELECT 
+        id,
+        type_id,
+        spec_key,
+        spec_value,
+        created_by,
+        created_date,
+        modified_by,
+        modified_date
+    FROM dunnage_specs
+    WHERE type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_Insert` (IN `p_type_id` INT, IN `p_spec_key` VARCHAR(100), IN `p_spec_value` JSON, IN `p_user` VARCHAR(50), OUT `p_new_id` INT)   BEGIN
+    INSERT INTO dunnage_specs (
+        type_id,
+        spec_key,
+        spec_value,
+        created_by,
+        created_date
+    ) VALUES (
+        p_type_id,
+        p_spec_key,
+        p_spec_value,
+        p_user,
+        NOW()
+    );
+    
+    SET p_new_id = LAST_INSERT_ID();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Specs_Update` (IN `p_id` INT, IN `p_spec_value` JSON, IN `p_user` VARCHAR(50))   BEGIN
+    UPDATE dunnage_specs
+    SET 
+        spec_value = p_spec_value,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_CheckDuplicate` (IN `p_type_name` VARCHAR(100), IN `p_exclude_id` INT, OUT `p_exists` BOOLEAN)   BEGIN
+    
+    IF EXISTS (
+        SELECT 1 FROM dunnage_types
+        WHERE type_name = p_type_name
+        AND (p_exclude_id IS NULL OR id != p_exclude_id)
+    ) THEN
+        SET p_exists = TRUE;
+    ELSE
+        SET p_exists = FALSE;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_CountParts` (IN `p_type_id` INT)   BEGIN
+    SELECT COUNT(*) as part_count
+    FROM dunnage_parts
+    WHERE type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_CountTransactions` (IN `p_type_id` INT)   BEGIN
+    SELECT COUNT(*) as transaction_count
+    FROM dunnage_history l
+    JOIN dunnage_parts p ON l.part_id = p.part_id
+    WHERE p.type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_Delete` (IN `p_id` INT, IN `p_modified_by` VARCHAR(50), OUT `p_status` INT, OUT `p_error_msg` VARCHAR(500))   BEGIN
+    DECLARE v_exists INT DEFAULT 0;
+    DECLARE v_parts_count INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
+        SET p_status = -1;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    
+    SELECT COUNT(*) INTO v_exists
+    FROM dunnage_types
+    WHERE id = p_id;
+
+    IF v_exists = 0 THEN
+        SET p_status = 0;
+        SET p_error_msg = 'Dunnage type not found';
+        ROLLBACK;
+    ELSE
+        
+        SELECT COUNT(*) INTO v_parts_count
+        FROM dunnage_parts
+        WHERE type_id = p_id;
+
+        IF v_parts_count > 0 THEN
+            SET p_status = -1;
+            SET p_error_msg = CONCAT('Cannot delete dunnage type that is in use by ', v_parts_count, ' part(s)');
+            ROLLBACK;
+        ELSE
+            
+            DELETE FROM dunnage_types
+            WHERE id = p_id;
+
+            SET p_status = 1;
+            SET p_error_msg = 'Dunnage type deleted successfully';
+            COMMIT;
+        END IF;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_GetAll` ()   BEGIN
+    SELECT
+        *
+    FROM dunnage_types
+    ORDER BY id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_GetById` (IN `p_id` INT)   BEGIN
+    SELECT
+        *
+    FROM dunnage_types
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_GetPartCount` (IN `p_type_id` INT, OUT `p_count` INT)   BEGIN
+    
+    SELECT COUNT(*) INTO p_count
+    FROM dunnage_parts
+    WHERE type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_GetTransactionCount` (IN `p_type_id` INT, OUT `p_count` INT)   BEGIN
+    
+    
+    
+    SELECT COUNT(*) INTO p_count
+    FROM dunnage_history dh
+    INNER JOIN dunnage_parts dp ON dh.part_id = dp.part_id
+    WHERE dp.type_id = p_type_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_GetUsageCount` (IN `p_id` INT)   BEGIN
+    SELECT COUNT(*) AS usage_count
+    FROM receiving_package_type_mapping
+    WHERE package_type = (SELECT type_name FROM dunnage_types WHERE id = p_id)
+      AND is_active = TRUE;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_Insert` (IN `p_type_name` VARCHAR(100), IN `p_icon` VARCHAR(50), IN `p_image_path` VARCHAR(255), IN `p_user` VARCHAR(50), OUT `p_new_id` INT)   BEGIN
+    
+    IF EXISTS (SELECT 1 FROM dunnage_types WHERE type_name = p_type_name) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Dunnage type name already exists';
+    END IF;
+
+    INSERT INTO dunnage_types (type_name, icon, image_path, created_by, created_date)
+    VALUES (p_type_name, p_icon, NULLIF(p_image_path, ''), p_user, NOW());
+
+    SET p_new_id = LAST_INSERT_ID();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_Types_Update` (IN `p_id` INT, IN `p_type_name` VARCHAR(100), IN `p_icon` VARCHAR(50), IN `p_image_path` VARCHAR(255), IN `p_modified_by` VARCHAR(50))   BEGIN
+    
+    IF EXISTS (SELECT 1 FROM dunnage_types WHERE type_name = p_type_name AND id != p_id) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Dunnage type name already exists';
+    END IF;
+
+    UPDATE dunnage_types
+    SET type_name = p_type_name,
+        icon = p_icon,
+        image_path = NULLIF(p_image_path, ''),
+        modified_by = p_modified_by,
+        modified_date = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_UserPreferences_GetRecentIcons` (IN `p_user_id` VARCHAR(50), IN `p_count` INT)   BEGIN
+    SELECT
+        SUBSTRING(PreferenceKey, 12) as icon_name
+    FROM settings_dunnage_personal
+        WHERE UserId = (CONVERT(p_user_id USING utf8mb4) COLLATE utf8mb4_general_ci)
+      AND PreferenceKey LIKE 'RecentIcon_%'
+    ORDER BY LastUpdated DESC
+    LIMIT p_count;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Dunnage_UserPreferences_Upsert` (IN `p_user_id` VARCHAR(50), IN `p_pref_key` VARCHAR(100), IN `p_pref_value` TEXT)   BEGIN
+    INSERT INTO settings_dunnage_personal (UserId, PreferenceKey, PreferenceValue, LastUpdated)
+    VALUES (p_user_id, p_pref_key, p_pref_value, NOW())
+    ON DUPLICATE KEY UPDATE
+        PreferenceValue = VALUES(PreferenceValue),
+        LastUpdated     = NOW();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_RequestLine_Insert` (IN `p_outside_service_request_id` INT, IN `p_line_number` INT, IN `p_part_id` VARCHAR(50), IN `p_package_count` INT, IN `p_package_summary` VARCHAR(500))   BEGIN
+    INSERT INTO outside_service_request_line
+    (
+        outside_service_request_id,
+        line_number,
+        part_id,
+        package_count,
+        package_summary,
+        line_phase
+    )
+    VALUES
+    (
+        p_outside_service_request_id,
+        p_line_number,
+        p_part_id,
+        p_package_count,
+        p_package_summary,
+        'Initialize'
+    );
+
+    SELECT LAST_INSERT_ID() AS outside_service_request_line_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_RequestLine_MarkComplete` (IN `p_outside_service_request_line_id` INT, IN `p_completion_notes` TEXT)   BEGIN
+    UPDATE outside_service_request_line
+    SET
+        completed_utc = UTC_TIMESTAMP(),
+        completion_notes = p_completion_notes,
+        line_phase = 'Complete'
+    WHERE outside_service_request_line_id = p_outside_service_request_line_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_RequestLine_UpdateSetup` (IN `p_outside_service_request_line_id` INT, IN `p_package_count` INT, IN `p_package_summary` VARCHAR(500), IN `p_setup_vendor_id` VARCHAR(50), IN `p_setup_vendor_name` VARCHAR(255), IN `p_setup_vendor_source` VARCHAR(30), IN `p_bol_number` VARCHAR(100), IN `p_scheduled_ship_utc` DATETIME, IN `p_shipping_contact` VARCHAR(255), IN `p_setup_notes` TEXT)   BEGIN
+    DECLARE v_package_index INT DEFAULT 1;
+    DECLARE v_package_quantity_text VARCHAR(50);
+
+    UPDATE outside_service_request_line
+    SET
+        package_count = p_package_count,
+        package_summary = p_package_summary,
+        setup_vendor_id = p_setup_vendor_id,
+        setup_vendor_name = p_setup_vendor_name,
+        setup_vendor_source = p_setup_vendor_source,
+        bol_number = p_bol_number,
+        scheduled_ship_utc = p_scheduled_ship_utc,
+        shipping_contact = p_shipping_contact,
+        setup_notes = p_setup_notes,
+        line_phase = 'Setup'
+    WHERE outside_service_request_line_id = p_outside_service_request_line_id;
+
+    DELETE FROM outside_service_request_package
+    WHERE outside_service_request_line_id = p_outside_service_request_line_id;
+
+    WHILE v_package_index <= p_package_count DO
+        SET v_package_quantity_text = TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX(COALESCE(p_package_summary, ''), ' / ', v_package_index),
+                ' / ',
+                -1
+            )
+        );
+
+        IF v_package_quantity_text <> '' THEN
+            INSERT INTO outside_service_request_package (
+                outside_service_request_line_id,
+                package_sequence,
+                package_quantity
+            )
+            VALUES (
+                p_outside_service_request_line_id,
+                v_package_index,
+                CAST(v_package_quantity_text AS DECIMAL(18, 4))
+            );
+        END IF;
+
+        SET v_package_index = v_package_index + 1;
+    END WHILE;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_RequestPackage_Insert` (IN `p_outside_service_request_line_id` INT, IN `p_package_sequence` INT, IN `p_package_quantity` DECIMAL(18,4))   BEGIN
+    INSERT INTO outside_service_request_package
+    (
+        outside_service_request_line_id,
+        package_sequence,
+        package_quantity
+    )
+    VALUES
+    (
+        p_outside_service_request_line_id,
+        p_package_sequence,
+        p_package_quantity
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_Request_GetCompleted` ()   BEGIN
+    SELECT
+        r.outside_service_request_id,
+        r.request_number,
+        r.created_by_user,
+        r.created_by_display,
+        r.created_utc,
+        r.request_notes,
+        l.outside_service_request_line_id,
+        l.line_number,
+        l.part_id,
+        l.package_count,
+        l.package_summary,
+        l.line_phase,
+        l.setup_vendor_id,
+        l.setup_vendor_name,
+        l.setup_vendor_source,
+        l.bol_number,
+        l.scheduled_ship_utc,
+        l.shipping_contact,
+        l.setup_notes,
+        l.completed_utc,
+        l.completion_notes
+    FROM outside_service_request r
+    INNER JOIN outside_service_request_line l ON r.outside_service_request_id = l.outside_service_request_id
+    WHERE l.line_phase = 'Complete'
+    ORDER BY l.completed_utc DESC, r.created_utc DESC, l.line_number ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_Request_GetOpen` ()   BEGIN
+    SELECT
+        r.outside_service_request_id,
+        r.request_number,
+        r.created_by_user,
+        r.created_by_display,
+        r.created_utc,
+        r.request_notes,
+        l.outside_service_request_line_id,
+        l.line_number,
+        l.part_id,
+        l.package_count,
+        l.package_summary,
+        l.line_phase,
+        l.setup_vendor_id,
+        l.setup_vendor_name,
+        l.setup_vendor_source,
+        l.bol_number,
+        l.scheduled_ship_utc,
+        l.shipping_contact,
+        l.setup_notes,
+        l.completed_utc,
+        l.completion_notes
+    FROM outside_service_request r
+    INNER JOIN outside_service_request_line l ON r.outside_service_request_id = l.outside_service_request_id
+    WHERE l.line_phase <> 'Complete'
+    ORDER BY r.created_utc DESC, l.line_number ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_OutsideService_Request_Insert` (IN `p_created_by_user` VARCHAR(255), IN `p_created_by_display` VARCHAR(255), IN `p_request_notes` TEXT)   BEGIN
+    DECLARE v_new_id INT;
+    DECLARE v_request_number VARCHAR(20);
+
+    INSERT INTO outside_service_request
+    (
+        request_number,
+        created_by_user,
+        created_by_display,
+        created_utc,
+        request_notes
+    )
+    VALUES
+    (
+        '',
+        p_created_by_user,
+        p_created_by_display,
+        UTC_TIMESTAMP(),
+        p_request_notes
+    );
+
+    SET v_new_id = LAST_INSERT_ID();
+    SET v_request_number = CONCAT('OS-', LPAD(v_new_id, 6, '0'));
+
+    UPDATE outside_service_request
+    SET request_number = v_request_number
+    WHERE outside_service_request_id = v_new_id;
+
+    SELECT
+        v_new_id AS outside_service_request_id,
+        v_request_number AS request_number,
+        UTC_TIMESTAMP() AS created_utc;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_History_Get` (IN `p_PartID` VARCHAR(50), IN `p_StartDate` DATE, IN `p_EndDate` DATE)   BEGIN
+    SELECT
+        id,
+        load_guid,
+        part_id,
+        part_description,
+        NULL AS part_type,
+        po_number,
+        po_line_number,
+        vendor_name,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        load_number,
+        quantity,
+        heat,
+        initial_location,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        is_non_po_item,
+        created_at,
+        transaction_date,
+        user_id,
+        employee_number,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type
+    FROM receiving_history
+    WHERE
+        (p_PartID    IS NULL OR part_id          = p_PartID)
+        AND (p_StartDate IS NULL OR transaction_date >= p_StartDate)
+        AND (p_EndDate   IS NULL OR transaction_date <= p_EndDate)
+    ORDER BY transaction_date DESC, id DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_History_Import` (IN `p_Quantity` INT, IN `p_PartID` VARCHAR(50), IN `p_PONumber` VARCHAR(20), IN `p_EmployeeNumber` INT, IN `p_Heat` VARCHAR(100), IN `p_TransactionDate` DATE, IN `p_InitialLocation` VARCHAR(50), IN `p_CoilsOnSkid` INT, IN `p_LabelNumber` INT, IN `p_VendorName` VARCHAR(255), IN `p_PartDescription` VARCHAR(500), IN `p_IsNonPOItem` TINYINT(1))   BEGIN
+    INSERT INTO receiving_history
+    (
+        quantity,
+        part_id,
+        po_number,
+        employee_number,
+        heat,
+        transaction_date,
+        initial_location,
+        coils_on_skid,
+        label_number,
+        vendor_name,
+        part_description,
+        is_non_po_item
+    )
+    VALUES
+    (
+        p_Quantity,
+        p_PartID,
+        NULLIF(TRIM(p_PONumber), ''),
+        p_EmployeeNumber,
+        NULLIF(TRIM(p_Heat), ''),
+        p_TransactionDate,
+        NULLIF(TRIM(p_InitialLocation), ''),
+        p_CoilsOnSkid,
+        IFNULL(p_LabelNumber, 1),
+        NULLIF(TRIM(p_VendorName), ''),
+        NULLIF(TRIM(p_PartDescription), ''),
+        IFNULL(p_IsNonPOItem, 0)
+    );
+
+    
+    
+    SELECT LAST_INSERT_ID() INTO @last_import_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_LabelData_ClearToHistory` (IN `p_archived_by` VARCHAR(100), IN `p_employee_number` INT, IN `p_clear_all` TINYINT(1), OUT `p_rows_moved` INT, OUT `p_archive_batch_id` CHAR(36), OUT `p_status` INT, OUT `p_error_message` VARCHAR(1000))   BEGIN
+    DECLARE v_rows_to_move INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_rows_moved = 0;
+        SET p_status = 1;
+        SET p_error_message = 'Clear Label Data failed. Transaction rolled back.';
+    END;
+
+    SET p_rows_moved = 0;
+    SET p_status = 0;
+    SET p_error_message = NULL;
+    SET p_archive_batch_id = UUID();
+
+    IF COALESCE(p_clear_all, 0) = 0 AND COALESCE(p_employee_number, 0) <= 0 THEN
+        SET p_status = 1;
+        SET p_error_message = 'A valid employee number is required to clear your own receiving label rows.';
+    ELSE
+        START TRANSACTION;
+
+        SELECT COUNT(*) INTO v_rows_to_move
+        FROM receiving_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
+
+        IF v_rows_to_move = 0 THEN
+            COMMIT;
+            SET p_rows_moved = 0;
+            SET p_status = 0;
+            SET p_error_message = NULL;
+        ELSE
+        
+        
+        
+        
+        
+        
+        
+        INSERT INTO receiving_history
+        (
+            load_guid,
+            quantity,
+            part_id,
+            part_description,
+            po_number,
+            po_line_number,
+            employee_number,
+            heat,
+            transaction_date,
+            created_at,
+            initial_location,
+            load_number,
+            packages_per_load,
+            package_type_name,
+            weight_per_package,
+            coils_on_skid,
+            label_number,
+            vendor_name,
+            po_status,
+            po_due_date,
+            qty_ordered,
+            unit_of_measure,
+            remaining_quantity,
+            user_id,
+            is_non_po_item,
+            is_quality_hold_required,
+            is_quality_hold_acknowledged,
+            quality_hold_restriction_type,
+            part_skid_sequence,
+            part_skid_total
+        )
+        SELECT
+            COALESCE(rld.load_id, UUID())                              AS load_guid,
+            rld.quantity                                               AS quantity,
+            rld.part_id                                                AS part_id,
+            rld.part_description                                       AS part_description,
+            rld.po_number                                              AS po_number,
+            rld.po_line_number                                         AS po_line_number,
+            rld.employee_number                                        AS employee_number,
+            rld.heat                                                   AS heat,
+            COALESCE(DATE(rld.received_date), rld.transaction_date)    AS transaction_date,
+            COALESCE(rld.received_date, rld.created_at, CURRENT_TIMESTAMP) AS created_at,
+            rld.initial_location                                       AS initial_location,
+            rld.load_number                                            AS load_number,
+            rld.packages_per_load                                      AS packages_per_load,
+            rld.package_type_name                                      AS package_type_name,
+            rld.weight_per_package                                     AS weight_per_package,
+            rld.coils_on_skid                                          AS coils_on_skid,
+            COALESCE(rld.label_number, 1)                              AS label_number,
+            COALESCE(rld.vendor_name, rld.po_vendor)                   AS vendor_name,
+            rld.po_status                                              AS po_status,
+            rld.po_due_date                                            AS po_due_date,
+            rld.qty_ordered                                            AS qty_ordered,
+            COALESCE(NULLIF(rld.unit_of_measure, ''), 'EA')            AS unit_of_measure,
+            rld.remaining_quantity                                     AS remaining_quantity,
+            rld.user_id                                                AS user_id,
+            COALESCE(rld.is_non_po_item, 0)                            AS is_non_po_item,
+            COALESCE(rld.is_quality_hold_required, 0)                  AS is_quality_hold_required,
+            COALESCE(rld.is_quality_hold_acknowledged, 0)              AS is_quality_hold_acknowledged,
+            rld.quality_hold_restriction_type                          AS quality_hold_restriction_type,
+            rld.part_skid_sequence                                     AS part_skid_sequence,
+            rld.part_skid_total                                        AS part_skid_total
+          FROM receiving_label_data rld
+          WHERE COALESCE(p_clear_all, 0) = 1
+              OR rld.employee_number = p_employee_number
+        ON DUPLICATE KEY UPDATE
+            quantity         = VALUES(quantity),
+            part_id          = VALUES(part_id),
+            part_description = VALUES(part_description),
+            po_number        = VALUES(po_number),
+            po_line_number   = VALUES(po_line_number),
+            employee_number  = VALUES(employee_number),
+            heat             = VALUES(heat),
+            transaction_date = VALUES(transaction_date),
+            created_at       = VALUES(created_at),
+            initial_location = VALUES(initial_location),
+            load_number      = VALUES(load_number),
+            packages_per_load = VALUES(packages_per_load),
+            package_type_name = VALUES(package_type_name),
+            weight_per_package = VALUES(weight_per_package),
+            coils_on_skid    = VALUES(coils_on_skid),
+            label_number     = VALUES(label_number),
+            vendor_name      = VALUES(vendor_name),
+            po_status        = VALUES(po_status),
+            po_due_date      = VALUES(po_due_date),
+            qty_ordered      = VALUES(qty_ordered),
+            unit_of_measure  = VALUES(unit_of_measure),
+            remaining_quantity = VALUES(remaining_quantity),
+            user_id          = VALUES(user_id),
+            is_non_po_item   = VALUES(is_non_po_item),
+            is_quality_hold_required = VALUES(is_quality_hold_required),
+            is_quality_hold_acknowledged = VALUES(is_quality_hold_acknowledged),
+            quality_hold_restriction_type = VALUES(quality_hold_restriction_type),
+            part_skid_sequence = VALUES(part_skid_sequence),
+            part_skid_total  = VALUES(part_skid_total);
+
+        DELETE FROM receiving_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
+
+            COMMIT;
+
+            SET p_rows_moved = v_rows_to_move;
+            SET p_status = 0;
+            SET p_error_message = NULL;
+        END IF;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_LabelData_Delete` (IN `p_label_data_record_id` INT, IN `p_load_id` CHAR(36))   BEGIN
+    DELETE FROM receiving_label_data
+    WHERE (p_label_data_record_id IS NOT NULL AND id = p_label_data_record_id)
+       OR (
+            p_label_data_record_id IS NULL
+            AND p_load_id IS NOT NULL
+            AND p_load_id <> ''
+            AND load_id = p_load_id
+        );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_LabelData_GetAll` ()   BEGIN
+    SELECT
+        id,
+        load_id,
+        part_id,
+        part_description,
+        part_type,
+        po_number,
+        po_line_number,
+        po_vendor,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        load_number,
+        weight_quantity,
+        heat,
+        initial_location,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        is_non_po_item,
+        received_date,
+        created_at,
+        user_id,
+        employee_number,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type
+    FROM receiving_label_data
+    ORDER BY load_number ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_LabelData_Insert` (IN `p_load_id` CHAR(36), IN `p_load_number` INT, IN `p_quantity` INT, IN `p_weight_quantity` DECIMAL(18,2), IN `p_part_id` VARCHAR(50), IN `p_part_description` VARCHAR(500), IN `p_part_type` VARCHAR(50), IN `p_po_number` VARCHAR(20), IN `p_po_line_number` VARCHAR(10), IN `p_po_vendor` VARCHAR(255), IN `p_po_status` VARCHAR(100), IN `p_po_due_date` DATE, IN `p_qty_ordered` DECIMAL(18,2), IN `p_unit_of_measure` VARCHAR(20), IN `p_remaining_quantity` INT, IN `p_employee_number` INT, IN `p_user_id` VARCHAR(100), IN `p_heat` VARCHAR(100), IN `p_received_date` DATETIME, IN `p_transaction_date` DATE, IN `p_initial_location` VARCHAR(50), IN `p_packages_per_load` INT, IN `p_package_type_name` VARCHAR(50), IN `p_weight_per_package` DECIMAL(18,2), IN `p_coils_on_skid` INT, IN `p_label_number` INT, IN `p_vendor_name` VARCHAR(255), IN `p_is_non_po_item` TINYINT(1), IN `p_is_quality_hold_required` TINYINT(1), IN `p_is_quality_hold_acknowledged` TINYINT(1), IN `p_quality_hold_restriction_type` VARCHAR(255), IN `p_part_skid_sequence` INT, IN `p_part_skid_total` INT)   BEGIN
+    INSERT IGNORE INTO receiving_label_data
+    (
+        load_id,
+        load_number,
+        quantity,
+        weight_quantity,
+        part_id,
+        part_description,
+        part_type,
+        po_number,
+        po_line_number,
+        po_vendor,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        employee_number,
+        user_id,
+        heat,
+        received_date,
+        transaction_date,
+        initial_location,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        coils_on_skid,
+        label_number,
+        vendor_name,
+        is_non_po_item,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type,
+        part_skid_sequence,
+        part_skid_total
+    )
+    VALUES
+    (
+        p_load_id,
+        p_load_number,
+        p_quantity,
+        p_weight_quantity,
+        p_part_id,
+        p_part_description,
+        p_part_type,
+        p_po_number,
+        p_po_line_number,
+        p_po_vendor,
+        p_po_status,
+        p_po_due_date,
+        p_qty_ordered,
+        p_unit_of_measure,
+        p_remaining_quantity,
+        p_employee_number,
+        p_user_id,
+        p_heat,
+        p_received_date,
+        p_transaction_date,
+        p_initial_location,
+        p_packages_per_load,
+        p_package_type_name,
+        p_weight_per_package,
+        p_coils_on_skid,
+        p_label_number,
+        p_vendor_name,
+        p_is_non_po_item,
+        p_is_quality_hold_required,
+        p_is_quality_hold_acknowledged,
+        p_quality_hold_restriction_type,
+        p_part_skid_sequence,
+        p_part_skid_total
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_LabelData_Update` (IN `p_label_data_record_id` INT, IN `p_load_id` CHAR(36), IN `p_load_number` INT, IN `p_quantity` INT, IN `p_weight_quantity` DECIMAL(18,2), IN `p_part_id` VARCHAR(50), IN `p_part_description` VARCHAR(500), IN `p_part_type` VARCHAR(50), IN `p_po_number` VARCHAR(20), IN `p_po_line_number` VARCHAR(10), IN `p_po_vendor` VARCHAR(255), IN `p_po_status` VARCHAR(100), IN `p_po_due_date` DATE, IN `p_qty_ordered` DECIMAL(18,2), IN `p_unit_of_measure` VARCHAR(20), IN `p_remaining_quantity` INT, IN `p_employee_number` INT, IN `p_user_id` VARCHAR(100), IN `p_heat` VARCHAR(100), IN `p_received_date` DATETIME, IN `p_transaction_date` DATE, IN `p_initial_location` VARCHAR(50), IN `p_packages_per_load` INT, IN `p_package_type_name` VARCHAR(50), IN `p_weight_per_package` DECIMAL(18,2), IN `p_coils_on_skid` INT, IN `p_label_number` INT, IN `p_vendor_name` VARCHAR(255), IN `p_is_non_po_item` TINYINT(1), IN `p_is_quality_hold_required` TINYINT(1), IN `p_is_quality_hold_acknowledged` TINYINT(1), IN `p_quality_hold_restriction_type` VARCHAR(255))   BEGIN
+    UPDATE receiving_label_data
+    SET
+        load_number = p_load_number,
+        quantity = p_quantity,
+        weight_quantity = p_weight_quantity,
+        part_id = p_part_id,
+        part_description = p_part_description,
+        part_type = p_part_type,
+        po_number = p_po_number,
+        po_line_number = p_po_line_number,
+        po_vendor = p_po_vendor,
+        po_status = p_po_status,
+        po_due_date = p_po_due_date,
+        qty_ordered = p_qty_ordered,
+        unit_of_measure = p_unit_of_measure,
+        remaining_quantity = p_remaining_quantity,
+        employee_number = p_employee_number,
+        user_id = p_user_id,
+        heat = p_heat,
+        received_date = p_received_date,
+        transaction_date = p_transaction_date,
+        initial_location = p_initial_location,
+        packages_per_load = p_packages_per_load,
+        package_type_name = p_package_type_name,
+        weight_per_package = p_weight_per_package,
+        coils_on_skid = p_coils_on_skid,
+        label_number = p_label_number,
+        vendor_name = p_vendor_name,
+        is_non_po_item = p_is_non_po_item,
+        is_quality_hold_required = p_is_quality_hold_required,
+        is_quality_hold_acknowledged = p_is_quality_hold_acknowledged,
+        quality_hold_restriction_type = p_quality_hold_restriction_type
+    WHERE (p_label_data_record_id IS NOT NULL AND id = p_label_data_record_id)
+       OR (
+            p_label_data_record_id IS NULL
+            AND p_load_id IS NOT NULL
+            AND p_load_id <> ''
+            AND load_id = p_load_id
+        );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_Line_Insert` (IN `p_Quantity` INT, IN `p_PartID` VARCHAR(50), IN `p_PONumber` INT, IN `p_EmployeeNumber` INT, IN `p_Heat` VARCHAR(100), IN `p_Date` DATE, IN `p_InitialLocation` VARCHAR(50), IN `p_CoilsOnSkid` INT, IN `p_VendorName` VARCHAR(255), IN `p_PartDescription` VARCHAR(500), OUT `p_Status` INT, OUT `p_ErrorMsg` VARCHAR(500))   BEGIN
+    
+    SET p_Status = 1;
+    SET p_ErrorMsg = 'sp_Receiving_Line_Insert is deprecated - use receiving_history table';
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_Load_Delete` (IN `p_LoadID` CHAR(36), IN `p_HistoryRecordID` INT)   BEGIN
+    DELETE FROM receiving_history
+    WHERE (p_HistoryRecordID IS NOT NULL AND id = p_HistoryRecordID)
+       OR (
+            p_HistoryRecordID IS NULL
+            AND p_LoadID IS NOT NULL
+            AND p_LoadID <> ''
+            AND load_guid = p_LoadID
+        );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_Load_GetAll` (IN `p_StartDate` DATE, IN `p_EndDate` DATE)   BEGIN
+    SELECT
+        id,
+        load_guid,
+        part_id,
+        part_description,
+        NULL AS part_type,
+        po_number,
+        po_line_number,
+        vendor_name,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        load_number,
+        quantity,
+        heat,
+        initial_location,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        is_non_po_item,
+        created_at,
+        transaction_date,
+        user_id,
+        employee_number,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type
+    FROM receiving_history
+    WHERE transaction_date >= p_StartDate
+      AND transaction_date <= p_EndDate
+      AND part_id IS NOT NULL
+      AND part_id != ''
+    ORDER BY transaction_date DESC, label_number ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_Load_Insert` (IN `p_LoadGuid` CHAR(36), IN `p_Quantity` INT, IN `p_PartID` VARCHAR(50), IN `p_PONumber` VARCHAR(20), IN `p_EmployeeNumber` INT, IN `p_Heat` VARCHAR(100), IN `p_TransactionDate` DATE, IN `p_InitialLocation` VARCHAR(50), IN `p_CoilsOnSkid` INT, IN `p_LabelNumber` INT, IN `p_VendorName` VARCHAR(255), IN `p_PartDescription` VARCHAR(500))   BEGIN
+    INSERT INTO receiving_history
+    (
+        load_guid,
+        quantity,
+        part_id,
+        po_number,
+        employee_number,
+        heat,
+        transaction_date,
+        initial_location,
+        coils_on_skid,
+        label_number,
+        vendor_name,
+        part_description
+    )
+    VALUES
+    (
+        p_LoadGuid,
+        p_Quantity,
+        p_PartID,
+        p_PONumber,
+        p_EmployeeNumber,
+        p_Heat,
+        p_TransactionDate,
+        p_InitialLocation,
+        p_CoilsOnSkid,
+        IFNULL(p_LabelNumber, 1),
+        p_VendorName,
+        p_PartDescription
+    );
+
+    SELECT LAST_INSERT_ID() AS new_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_Load_Update` (IN `p_LoadID` CHAR(36), IN `p_HistoryRecordID` INT, IN `p_PartID` VARCHAR(50), IN `p_PartType` VARCHAR(100), IN `p_PONumber` VARCHAR(20), IN `p_POLineNumber` VARCHAR(50), IN `p_LoadNumber` INT, IN `p_WeightQuantity` DECIMAL(18,4), IN `p_HeatLotNumber` VARCHAR(100), IN `p_InitialLocation` VARCHAR(50), IN `p_PackagesPerLoad` INT, IN `p_PackageTypeName` VARCHAR(100), IN `p_WeightPerPackage` DECIMAL(18,4), IN `p_IsNonPOItem` TINYINT(1), IN `p_ReceivedDate` DATETIME)   BEGIN
+    UPDATE receiving_history
+    SET
+        part_id          = p_PartID,
+        po_number        = p_PONumber,
+        quantity         = ROUND(p_WeightQuantity, 0),
+        heat             = p_HeatLotNumber,
+        initial_location = p_InitialLocation,
+        transaction_date = DATE(p_ReceivedDate),
+        label_number     = IFNULL(p_LoadNumber, 1),
+        is_non_po_item   = IFNULL(p_IsNonPOItem, 0)
+    WHERE (p_HistoryRecordID IS NOT NULL AND id = p_HistoryRecordID)
+       OR (
+            p_HistoryRecordID IS NULL
+            AND p_LoadID IS NOT NULL
+            AND p_LoadID <> ''
+            AND load_guid = p_LoadID
+        );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_NonPO_Delete` (IN `p_id` INT UNSIGNED)   BEGIN
+    DELETE FROM `receiving_non_po_entries` WHERE `id` = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_NonPO_GetAll` ()   BEGIN
+    SELECT
+        `id`,
+        `value`,
+        `created_by`,
+        `created_at`,
+        `use_count`
+    FROM `receiving_non_po_entries`
+    ORDER BY `use_count` DESC, `created_at` DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_NonPO_PartDefault_GetByPartId` (IN `p_part_id` VARCHAR(100))   BEGIN
+    SELECT `value`
+    FROM `receiving_non_po_part_defaults`
+    WHERE `part_id` = p_part_id
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_NonPO_PartDefault_Upsert` (IN `p_part_id` VARCHAR(100), IN `p_value` VARCHAR(100), IN `p_updated_by` VARCHAR(100))   BEGIN
+    INSERT INTO `receiving_non_po_part_defaults` (`part_id`, `value`, `updated_by`)
+    VALUES (p_part_id, p_value, p_updated_by)
+    ON DUPLICATE KEY UPDATE
+        `value` = VALUES(`value`),
+        `updated_by` = VALUES(`updated_by`),
+        `updated_at` = CURRENT_TIMESTAMP;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_NonPO_Upsert` (IN `p_value` VARCHAR(100), IN `p_created_by` VARCHAR(100))   BEGIN
+    INSERT INTO `receiving_non_po_entries` (`value`, `created_by`, `use_count`)
+    VALUES (p_value, p_created_by, 1)
+    ON DUPLICATE KEY UPDATE `use_count` = `use_count` + 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_Delete` (IN `p_id` INT)   proc_body: BEGIN
+    DECLARE v_exists INT DEFAULT 0;
+    DECLARE v_is_default TINYINT DEFAULT 0;
+
+    SELECT COUNT(*) INTO v_exists
+    FROM receiving_package_type_mapping
+    WHERE id = p_id;
+
+    IF v_exists = 0 THEN
+        SELECT 0 AS affected_rows, 'NotFound' AS status, 'Mapping not found' AS message;
+        LEAVE proc_body;
+    END IF;
+
+    SELECT IF(is_default,1,0) INTO v_is_default
+    FROM receiving_package_type_mapping
+    WHERE id = p_id
+    LIMIT 1;
+
+    IF v_is_default = 1 THEN
+        SELECT 0 AS affected_rows, 'Forbidden' AS status, 'Cannot delete default mapping' AS message;
+        LEAVE proc_body;
+    END IF;
+
+    UPDATE receiving_package_type_mapping
+    SET is_active = FALSE,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows, 'OK' AS status, NULL AS message;
+END proc_body$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_GetAll` (IN `p_includeInactive` BOOLEAN)   BEGIN
+    SELECT
+        id,
+        part_prefix,
+        package_type,
+        is_default,
+        display_order,
+        is_active,
+        created_at,
+        updated_at,
+        created_by
+    FROM mtm_receiving_application.receiving_package_type_mapping
+    WHERE (is_active = TRUE) OR (p_includeInactive = TRUE)
+    ORDER BY display_order, part_prefix;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_GetByPrefix` (IN `p_part_identifier` VARCHAR(100))   sp_end: BEGIN
+    DECLARE v_package_type VARCHAR(50) DEFAULT NULL;
+    DECLARE v_input VARCHAR(100) DEFAULT NULL;
+
+    SET v_input = TRIM(IFNULL(p_part_identifier, ''));
+
+    
+    IF v_input = '' THEN
+        SELECT package_type
+        INTO v_package_type
+        FROM receiving_package_type_mapping
+        WHERE is_default = TRUE
+          AND is_active = TRUE
+        LIMIT 1;
+
+        SELECT v_package_type AS package_type;
+        LEAVE sp_end;
+    END IF;
+
+    
+    
+    
+    SELECT package_type
+    INTO v_package_type
+    FROM receiving_package_type_mapping
+    WHERE is_active = TRUE
+      AND v_input LIKE CONCAT(part_prefix, '%')
+    ORDER BY CHAR_LENGTH(part_prefix) DESC, display_order ASC
+    LIMIT 1;
+
+    
+    IF v_package_type IS NULL THEN
+        SELECT package_type
+        INTO v_package_type
+        FROM receiving_package_type_mapping
+        WHERE is_default = TRUE
+          AND is_active = TRUE
+        LIMIT 1;
+    END IF;
+
+    SELECT v_package_type AS package_type;
+
+END sp_END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_Insert` (IN `p_part_prefix` VARCHAR(10), IN `p_package_type` VARCHAR(50), IN `p_is_default` TINYINT(1), IN `p_display_order` INT, IN `p_created_by` INT)   BEGIN
+    DECLARE v_prefix VARCHAR(10);
+
+    SET v_prefix = UPPER(TRIM(p_part_prefix));
+
+    
+    IF p_is_default = 1 THEN
+        UPDATE receiving_package_type_mapping
+        SET is_default = FALSE
+        WHERE is_default = TRUE;
+    END IF;
+
+    
+    
+    INSERT INTO receiving_package_type_mapping (
+        part_prefix,
+        package_type,
+        is_default,
+        display_order,
+        is_active,
+        created_by
+    ) VALUES (
+        v_prefix,
+        p_package_type,
+        p_is_default,
+        p_display_order,
+        TRUE,
+        p_created_by
+    )
+    ON DUPLICATE KEY UPDATE
+        package_type = VALUES(package_type),
+        is_default = VALUES(is_default),
+        display_order = VALUES(display_order),
+        is_active = TRUE,
+        created_by = IFNULL(VALUES(created_by), created_by),
+        updated_at = CURRENT_TIMESTAMP,
+        id = LAST_INSERT_ID(id);
+
+    SELECT LAST_INSERT_ID() AS id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_Update` (IN `p_id` INT, IN `p_part_prefix` VARCHAR(10), IN `p_package_type` VARCHAR(50), IN `p_is_default` BOOLEAN, IN `p_display_order` INT, IN `p_is_active` BOOLEAN)   BEGIN
+    DECLARE v_conflict_id INT DEFAULT NULL;
+
+    
+    SELECT id INTO v_conflict_id
+    FROM receiving_package_type_mapping
+    WHERE part_prefix = p_part_prefix
+      AND id <> p_id
+    LIMIT 1;
+
+    IF v_conflict_id IS NOT NULL THEN
+        SELECT 0 AS affected_rows, CONCAT('Duplicate part_prefix found with id=', v_conflict_id) AS error_message;
+    ELSE
+        
+        IF p_is_default THEN
+            UPDATE receiving_package_type_mapping
+            SET is_default = FALSE
+            WHERE is_default = TRUE
+              AND id <> p_id;
+        END IF;
+
+        
+        UPDATE receiving_package_type_mapping
+        SET part_prefix = p_part_prefix,
+            package_type = p_package_type,
+            is_default = p_is_default,
+            display_order = p_display_order,
+            is_active = p_is_active,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = p_id;
+
+        SELECT ROW_COUNT() AS affected_rows, NULL AS error_message;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypePreference_Delete` (IN `p_PartID` VARCHAR(50))   BEGIN
+    DELETE FROM receiving_package_types WHERE PartID = p_PartID;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypePreference_Get` (IN `p_PartID` VARCHAR(50))   BEGIN
+    SELECT * FROM receiving_package_types WHERE PartID = p_PartID;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypePreference_Save` (IN `p_PartID` VARCHAR(50), IN `p_PackageTypeName` VARCHAR(50), IN `p_CustomTypeName` VARCHAR(50), IN `p_LastModified` DATETIME)   BEGIN
+    INSERT INTO receiving_package_types (PartID, PackageTypeName, CustomTypeName, LastModified)
+    VALUES (p_PartID, p_PackageTypeName, p_CustomTypeName, p_LastModified)
+    ON DUPLICATE KEY UPDATE
+        PackageTypeName = p_PackageTypeName,
+        CustomTypeName = p_CustomTypeName,
+        LastModified = p_LastModified;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypes_Delete` (IN `p_id` INT)   BEGIN
+    
+    
+    
+    DELETE FROM receiving_package_types
+    WHERE PreferenceID = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_QualityHolds_GetByLoadID` (IN `p_LoadID` INT, OUT `p_Status` INT, OUT `p_ErrorMsg` VARCHAR(500))   BEGIN
+    SET p_Status = 1;
+    SET p_ErrorMsg = '';
+
+    
+    IF p_LoadID IS NULL OR p_LoadID <= 0 THEN
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'LoadID is required and must be positive';
+        SELECT NULL AS quality_hold_id LIMIT 0;
+    ELSE
+        
+        SELECT
+            quality_hold_id,
+            load_id,
+            part_id,
+            restriction_type,
+            quality_acknowledged_by,
+            quality_acknowledged_at,
+            created_at
+        FROM receiving_quality_holds
+        WHERE load_id = p_LoadID
+        ORDER BY created_at DESC;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_QualityHolds_Insert` (IN `p_LoadID` INT, IN `p_PartID` VARCHAR(50), IN `p_RestrictionType` VARCHAR(50), IN `p_QualityAcknowledgedBy` VARCHAR(255), IN `p_QualityAcknowledgedAt` DATETIME, OUT `p_QualityHoldID` INT, OUT `p_Status` INT, OUT `p_ErrorMsg` VARCHAR(500))   BEGIN
+    DECLARE v_RowCount INT;
+
+    SET p_Status = 1;
+    SET p_ErrorMsg = '';
+    SET p_QualityHoldID = -1;
+
+    
+    IF p_LoadID IS NULL OR p_LoadID <= 0 THEN
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'LoadID is required and must be positive';
+    ELSEIF p_PartID IS NULL OR p_PartID = '' THEN
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'PartID is required';
+    ELSEIF p_RestrictionType IS NULL OR p_RestrictionType = '' THEN
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'RestrictionType is required';
+    ELSE
+        
+        INSERT INTO receiving_quality_holds (
+            load_id,
+            part_id,
+            restriction_type,
+            quality_acknowledged_by,
+            quality_acknowledged_at,
+            created_at
+        ) VALUES (
+            p_LoadID,
+            p_PartID,
+            p_RestrictionType,
+            p_QualityAcknowledgedBy,
+            p_QualityAcknowledgedAt,
+            NOW()
+        );
+
+        SET v_RowCount = ROW_COUNT();
+
+        IF v_RowCount > 0 THEN
+            SET p_QualityHoldID = LAST_INSERT_ID();
+            SET p_Status = 1;
+        ELSE
+            SET p_Status = 0;
+            SET p_ErrorMsg = 'Failed to insert quality hold record';
+        END IF;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_QualityHolds_Update` (IN `p_QualityHoldID` INT, IN `p_QualityAcknowledgedBy` VARCHAR(255), IN `p_QualityAcknowledgedAt` DATETIME, OUT `p_Status` INT, OUT `p_ErrorMsg` VARCHAR(500))   BEGIN
+    DECLARE v_RowCount INT;
+
+    SET p_Status = 1;
+    SET p_ErrorMsg = '';
+
+    
+    IF p_QualityHoldID IS NULL OR p_QualityHoldID <= 0 THEN
+        SET p_Status = 0;
+        SET p_ErrorMsg = 'QualityHoldID is required and must be positive';
+    ELSE
+        
+        UPDATE receiving_quality_holds
+        SET
+            quality_acknowledged_by = p_QualityAcknowledgedBy,
+            quality_acknowledged_at = p_QualityAcknowledgedAt,
+            updated_at = NOW()
+        WHERE quality_hold_id = p_QualityHoldID;
+
+        SET v_RowCount = ROW_COUNT();
+
+        IF v_RowCount > 0 THEN
+            SET p_Status = 1;
+        ELSE
+            SET p_Status = 0;
+            SET p_ErrorMsg = 'Quality hold record not found';
+        END IF;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Reporting_Availability_GetByDateRange` (IN `p_start_date` DATETIME, IN `p_end_date` DATETIME)   BEGIN
+    SELECT
+        (SELECT COUNT(*) FROM view_receiving_history WHERE created_at >= p_start_date AND created_at < p_end_date) AS receiving_count,
+        (SELECT COUNT(*) FROM view_dunnage_history WHERE created_date >= p_start_date AND created_date < p_end_date) AS dunnage_count,
+        (SELECT COUNT(*) FROM view_volvo_history WHERE created_date >= p_start_date AND created_date < p_end_date) AS volvo_count;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Reporting_DunnageHistory_GetByDateRange` (IN `p_start_date` DATETIME, IN `p_end_date` DATETIME)   BEGIN
+    SELECT
+        id,
+        po_number,
+        dunnage_type,
+        part_number,
+        quantity,
+        created_date,
+        employee_number,
+        created_by_username,
+        source_module,
+        location,
+        notes,
+        NULL AS load_number,
+        NULL AS label_number,
+        NULL AS packages_per_load,
+        NULL AS package_type_name,
+        NULL AS coils_on_skid,
+        NULL AS quantity_per_skid,
+        NULL AS received_skid_count
+    FROM view_dunnage_history
+        WHERE created_date >= p_start_date
+            AND created_date < p_end_date
+    ORDER BY created_date DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Reporting_ReceivingHistory_GetByDateRange` (IN `p_start_date` DATETIME, IN `p_end_date` DATETIME)   BEGIN
+    SELECT
+        id,
+        po_number,
+        po_line_number,
+        part_id,
+        part_description,
+        quantity,
+        weight_lbs,
+        heat,
+        transaction_date,
+        created_at,
+        employee_number,
+        user_id,
+        source_module,
+        initial_location,
+        notes,
+        load_number,
+        label_number,
+        packages_per_load,
+        package_type_name,
+        weight_per_package,
+        coils_on_skid,
+        vendor_name,
+        po_status,
+        po_due_date,
+        qty_ordered,
+        unit_of_measure,
+        remaining_quantity,
+        is_non_po_item,
+        is_quality_hold_required,
+        is_quality_hold_acknowledged,
+        quality_hold_restriction_type,
+        part_skid_total,
+        NULL AS quantity_per_skid,
+        NULL AS received_skid_count
+    FROM view_receiving_history
+        WHERE created_at >= p_start_date
+            AND created_at < p_end_date
+    ORDER BY created_at DESC, id DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Reporting_VolvoHistory_GetByDateRange` (IN `p_start_date` DATETIME, IN `p_end_date` DATETIME)   BEGIN
+    SELECT
+        id,
+        po_number,
+        part_number,
+        quantity,
+        employee_number,
+        notes,
+        created_date,
+        NULL AS created_by_username,
+        source_module,
+        location,
+        NULL AS load_number,
+        NULL AS label_number,
+        NULL AS packages_per_load,
+        NULL AS package_type_name,
+        NULL AS coils_on_skid,
+        quantity_per_skid,
+        received_skid_count,
+        shipment_number,
+        receiver_number,
+        status,
+        part_count
+    FROM view_volvo_history
+        WHERE created_date >= p_start_date
+            AND created_date < p_end_date
+    ORDER BY created_date DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Audit_GetBySetting` (IN `p_category` VARCHAR(100), IN `p_setting_key` VARCHAR(150))   BEGIN
+    SELECT *
+    FROM settings_activity
+    WHERE category = p_category AND setting_key = p_setting_key
+    ORDER BY changed_at DESC
+    LIMIT 100;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Audit_GetByUser` (IN `p_user_id` INT)   BEGIN
+    SELECT *
+    FROM settings_activity
+    WHERE user_id = p_user_id
+    ORDER BY changed_at DESC
+    LIMIT 100;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Audit_Insert` (IN `p_scope` VARCHAR(20), IN `p_category` VARCHAR(100), IN `p_setting_key` VARCHAR(150), IN `p_old_value` TEXT, IN `p_new_value` TEXT, IN `p_change_type` VARCHAR(50), IN `p_user_id` INT, IN `p_changed_by` VARCHAR(100), IN `p_ip_address` VARCHAR(50), IN `p_workstation` VARCHAR(100))   BEGIN
+    INSERT INTO settings_activity (
+        scope, category, setting_key, old_value, new_value, change_type, user_id, changed_by, changed_at, ip_address, workstation
+    ) VALUES (
+        p_scope, p_category, p_setting_key, p_old_value, p_new_value, p_change_type, p_user_id, p_changed_by, NOW(), p_ip_address, p_workstation
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Meta_GetStoredProcedures` ()   BEGIN
+    SELECT routine_name AS procedure_name
+    FROM information_schema.routines
+    WHERE routine_schema = DATABASE()
+      AND routine_type = 'PROCEDURE'
+      AND routine_name LIKE 'sp_SettingsCore_%';
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Meta_GetTables` ()   BEGIN
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = DATABASE()
+      AND table_name IN (
+        'settings_universal',
+        'settings_personal',
+        'settings_activity',
+        'settings_roles',
+        'settings_user_roles'
+      );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Roles_GetAll` ()   BEGIN
+    SELECT * FROM settings_roles ORDER BY role_name;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_Roles_GetByName` (IN `p_role_name` VARCHAR(100))   BEGIN
+    SELECT 
+        id,
+        role_name,
+        description,
+        created_at
+    FROM settings_roles
+    WHERE role_name = p_role_name
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_System_GetByCategory` (IN `p_category` VARCHAR(100))   BEGIN
+    SELECT *
+    FROM settings_universal
+    WHERE category = p_category;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_System_GetByKey` (IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150))   BEGIN
+    SELECT *
+    FROM settings_universal
+    WHERE category = p_category AND setting_key = p_key
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_System_Reset` (IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150), IN `p_updated_by` VARCHAR(100))   BEGIN
+    UPDATE settings_universal
+    SET updated_by = p_updated_by,
+        updated_at = NOW()
+    WHERE category = p_category AND setting_key = p_key;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_System_Upsert` (IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150), IN `p_value` TEXT, IN `p_data_type` VARCHAR(50), IN `p_is_sensitive` TINYINT(1), IN `p_updated_by` VARCHAR(100))   BEGIN
+    INSERT INTO settings_universal (
+        category, setting_key, setting_value, data_type, is_sensitive, is_locked, updated_by, updated_at
+    ) VALUES (
+        p_category, p_key, p_value, p_data_type, p_is_sensitive, 0, p_updated_by, NOW()
+    )
+    ON DUPLICATE KEY UPDATE
+        setting_value = VALUES(setting_value),
+        data_type = VALUES(data_type),
+        is_sensitive = VALUES(is_sensitive),
+        updated_by = VALUES(updated_by),
+        updated_at = NOW();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_UserRoles_Assign` (IN `p_user_id` INT, IN `p_role_id` INT)   BEGIN
+    
+    IF NOT EXISTS (SELECT 1 FROM settings_user_roles 
+                   WHERE user_id = p_user_id AND role_id = p_role_id)
+    THEN
+        
+        BEGIN
+            DECLARE EXIT HANDLER FOR SQLEXCEPTION
+            BEGIN
+                
+                
+            END;
+            
+            INSERT INTO settings_user_roles (user_id, role_id, assigned_at)
+            VALUES (p_user_id, p_role_id, NOW());
+        END;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_UserRoles_GetByUser` (IN `p_user_id` INT)   BEGIN
+    SELECT * FROM settings_user_roles WHERE user_id = p_user_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_User_GetByCategory` (IN `p_user_id` INT, IN `p_category` VARCHAR(100))   BEGIN
+    SELECT *
+    FROM settings_personal
+    WHERE user_id = p_user_id AND category = p_category;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_User_GetByKey` (IN `p_user_id` INT, IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150))   BEGIN
+    SELECT *
+    FROM settings_personal
+    WHERE user_id = p_user_id AND category = p_category AND setting_key = p_key
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_User_Reset` (IN `p_user_id` INT, IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150), IN `p_updated_by` VARCHAR(100))   BEGIN
+    UPDATE settings_personal
+    SET updated_by = p_updated_by,
+        updated_at = NOW()
+    WHERE user_id = p_user_id AND category = p_category AND setting_key = p_key;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SettingsCore_User_Upsert` (IN `p_user_id` INT, IN `p_category` VARCHAR(100), IN `p_key` VARCHAR(150), IN `p_value` TEXT, IN `p_data_type` VARCHAR(50), IN `p_updated_by` VARCHAR(100))   BEGIN
+    INSERT INTO settings_personal (
+        user_id, category, setting_key, setting_value, data_type, updated_by, updated_at
+    ) VALUES (
+        p_user_id, p_category, p_key, p_value, p_data_type, p_updated_by, NOW()
+    )
+    ON DUPLICATE KEY UPDATE
+        setting_value = VALUES(setting_value),
+        data_type = VALUES(data_type),
+        updated_by = VALUES(updated_by),
+        updated_at = NOW();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ReportingRecipients_Delete` (IN `p_id` INT)   BEGIN
+    DELETE FROM settings_reporting_recipients
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ReportingRecipients_GetAll` ()   BEGIN
+    SELECT
+        id,
+        first_name,
+        last_name,
+        recipient_type,
+        email
+    FROM settings_reporting_recipients
+    ORDER BY FIELD(recipient_type, 'To', 'CC'), id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ReportingRecipients_Insert` (IN `p_first_name` VARCHAR(100), IN `p_last_name` VARCHAR(100), IN `p_recipient_type` VARCHAR(10), IN `p_email` VARCHAR(255))   BEGIN
+    INSERT INTO settings_reporting_recipients (
+        first_name,
+        last_name,
+        recipient_type,
+        email
+    )
+    VALUES (
+        p_first_name,
+        p_last_name,
+        p_recipient_type,
+        p_email
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ReportingRecipients_Update` (IN `p_id` INT, IN `p_first_name` VARCHAR(100), IN `p_last_name` VARCHAR(100), IN `p_recipient_type` VARCHAR(10), IN `p_email` VARCHAR(255))   BEGIN
+    UPDATE settings_reporting_recipients
+    SET
+        first_name = p_first_name,
+        last_name = p_last_name,
+        recipient_type = p_recipient_type,
+        email = p_email
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_Delete` (IN `p_id` INT)   BEGIN
+    
+    UPDATE reporting_scheduled_reports
+    SET is_active = 0,
+        updated_at = NOW()
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_GetActive` ()   BEGIN
+    SELECT
+        id,
+        report_type,
+        schedule,
+        email_recipients,
+        next_run_date,
+        last_run_date
+    FROM reporting_scheduled_reports
+    WHERE is_active = 1
+      AND next_run_date IS NOT NULL
+    ORDER BY next_run_date ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_GetAll` ()   BEGIN
+    SELECT
+        `id`,
+        `report_type`,
+        `schedule`,
+        `email_recipients`,
+        `is_active`,
+        `next_run_date`,
+        `last_run_date`,
+        `created_at`,
+        `updated_at`,
+        `created_by`
+    FROM `reporting_scheduled_reports`
+    WHERE `is_active` = 1
+    ORDER BY `next_run_date` ASC, `report_type`;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_GetById` (IN `p_id` INT)   BEGIN
+    SELECT
+        id,
+        report_type,
+        schedule,
+        email_recipients,
+        is_active,
+        next_run_date,
+        last_run_date,
+        created_at,
+        updated_at,
+        created_by
+    FROM reporting_scheduled_reports
+    WHERE id = p_id
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_GetDue` ()   BEGIN
+    SELECT
+        id,
+        report_type,
+        schedule,
+        email_recipients,
+        next_run_date,
+        last_run_date
+    FROM reporting_scheduled_reports
+    WHERE is_active = 1
+      AND next_run_date IS NOT NULL
+      AND next_run_date <= NOW()
+    ORDER BY next_run_date ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_Insert` (IN `p_report_type` VARCHAR(50), IN `p_schedule` VARCHAR(100), IN `p_email_recipients` VARCHAR(1000), IN `p_next_run_date` DATETIME, IN `p_created_by` INT)   BEGIN
+    INSERT INTO reporting_scheduled_reports (
+        report_type,
+        schedule,
+        email_recipients,
+        is_active,
+        next_run_date,
+        created_by
+    ) VALUES (
+        p_report_type,
+        p_schedule,
+        p_email_recipients,
+        1,
+        p_next_run_date,
+        p_created_by
+    );
+
+    SELECT LAST_INSERT_ID() AS id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_ToggleActive` (IN `p_id` INT, IN `p_is_active` TINYINT(1))   BEGIN
+    UPDATE reporting_scheduled_reports
+    SET is_active = p_is_active,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_Update` (IN `p_id` INT, IN `p_report_type` VARCHAR(50), IN `p_schedule` VARCHAR(100), IN `p_email_recipients` VARCHAR(1000), IN `p_next_run_date` DATETIME)   BEGIN
+    UPDATE reporting_scheduled_reports
+    SET report_type = p_report_type,
+        schedule = p_schedule,
+        email_recipients = p_email_recipients,
+        next_run_date = p_next_run_date,
+        updated_at = NOW()
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_ScheduledReport_UpdateLastRun` (IN `p_id` INT, IN `p_last_run_date` DATETIME, IN `p_next_run_date` DATETIME, OUT `p_affected_rows` INT)   BEGIN
+    UPDATE reporting_scheduled_reports
+    SET last_run_date = p_last_run_date,
+        next_run_date = p_next_run_date,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+
+    
+    SET p_affected_rows = ROW_COUNT();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_VolvoRecipients_Delete` (IN `p_id` INT)   BEGIN
+    DELETE FROM settings_volvo_recipents
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_VolvoRecipients_GetAll` ()   BEGIN
+    SELECT
+        id,
+        first_name,
+        last_name,
+        recipient_type,
+        email
+    FROM settings_volvo_recipents
+    ORDER BY FIELD(recipient_type, 'To', 'CC'), id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_VolvoRecipients_Insert` (IN `p_first_name` VARCHAR(100), IN `p_last_name` VARCHAR(100), IN `p_recipient_type` VARCHAR(10), IN `p_email` VARCHAR(255))   BEGIN
+    INSERT INTO settings_volvo_recipents (
+        first_name,
+        last_name,
+        recipient_type,
+        email
+    )
+    VALUES (
+        p_first_name,
+        p_last_name,
+        p_recipient_type,
+        p_email
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Settings_VolvoRecipients_Update` (IN `p_id` INT, IN `p_first_name` VARCHAR(100), IN `p_last_name` VARCHAR(100), IN `p_recipient_type` VARCHAR(10), IN `p_email` VARCHAR(255))   BEGIN
+    UPDATE settings_volvo_recipents
+    SET
+        first_name = p_first_name,
+        last_name = p_last_name,
+        recipient_type = p_recipient_type,
+        email = p_email
+    WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SoftwareVersion_GetCurrent` ()   BEGIN
+    SELECT
+        id,
+        required_version,
+        created_at,
+        updated_at,
+        updated_by
+    FROM software_version
+    WHERE id = 1
+    LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_SoftwareVersion_Upsert` (IN `p_required_version` VARCHAR(50), IN `p_updated_by` VARCHAR(100))   BEGIN
+    INSERT INTO software_version (
+        id,
+        required_version,
+        updated_by
+    ) VALUES (
+        1,
+        p_required_version,
+        p_updated_by
+    )
+    ON DUPLICATE KEY UPDATE
+        required_version = VALUES(required_version),
+        updated_by = VALUES(updated_by),
+        updated_at = NOW();
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_GeneratedLabelData_ClearToHistory` (IN `p_archived_by` VARCHAR(100), IN `p_employee_number` INT, IN `p_clear_all` TINYINT(1), OUT `p_rows_moved` INT, OUT `p_archive_batch_id` CHAR(36), OUT `p_status` INT, OUT `p_error_message` VARCHAR(1000))   BEGIN
+    DECLARE v_rows_count INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_rows_moved = 0;
+        SET p_status = 1;
+        SET p_error_message = 'Clear generated Volvo label data failed. Transaction rolled back.';
+    END;
+
+    SET p_rows_moved = 0;
+    SET p_status = 0;
+    SET p_error_message = NULL;
+    SET p_archive_batch_id = UUID();
+
+    IF COALESCE(p_clear_all, 0) = 0 AND COALESCE(p_employee_number, 0) <= 0 THEN
+        SET p_status = 1;
+        SET p_error_message = 'A valid employee number is required to clear your own Volvo generated label rows.';
+    ELSE
+        START TRANSACTION;
+
+        SELECT COUNT(*) INTO v_rows_count
+        FROM volvo_generated_label_data
+        WHERE COALESCE(p_clear_all, 0) = 1
+           OR employee_number = p_employee_number;
+
+        IF v_rows_count = 0 THEN
+            COMMIT;
+        ELSE
+            INSERT INTO volvo_generated_label_history (
+                original_id,
+                shipment_id,
+                shipment_number,
+                shipment_date,
+                part_number,
+                quantity,
+                skid_number,
+                total_skids,
+                part_description,
+                employee_number,
+                source_created_at,
+                source_updated_at,
+                archived_at,
+                archived_by,
+                archive_batch_id
+            )
+            SELECT
+                vgl.id,
+                vgl.shipment_id,
+                vgl.shipment_number,
+                vgl.shipment_date,
+                vgl.part_number,
+                vgl.quantity,
+                vgl.skid_number,
+                vgl.total_skids,
+                vgl.part_description,
+                vgl.employee_number,
+                vgl.created_at,
+                vgl.updated_at,
+                NOW(),
+                p_archived_by,
+                p_archive_batch_id
+            FROM volvo_generated_label_data vgl
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR vgl.employee_number = p_employee_number;
+
+            DELETE FROM volvo_generated_label_data
+            WHERE COALESCE(p_clear_all, 0) = 1
+               OR employee_number = p_employee_number;
+
+            SET p_rows_moved = v_rows_count;
+
+            COMMIT;
+        END IF;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_GeneratedLabelData_DeleteByShipment` (IN `p_shipment_id` INT)   BEGIN
+    DELETE FROM volvo_generated_label_data
+    WHERE shipment_id = p_shipment_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_GeneratedLabelData_GetAll` ()   BEGIN
+    SELECT
+        id,
+        shipment_id,
+        shipment_number,
+        shipment_date,
+        part_number,
+        quantity,
+        skid_number,
+        total_skids,
+        part_description,
+        employee_number,
+        created_at,
+        updated_at
+    FROM volvo_generated_label_data
+    ORDER BY shipment_date ASC, shipment_number ASC, part_number ASC, skid_number ASC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_GeneratedLabelData_Insert` (IN `p_shipment_id` INT, IN `p_shipment_number` INT, IN `p_shipment_date` DATE, IN `p_part_number` VARCHAR(20), IN `p_quantity` INT, IN `p_skid_number` INT, IN `p_total_skids` INT, IN `p_part_description` VARCHAR(255), IN `p_employee_number` INT)   BEGIN
+    INSERT INTO volvo_generated_label_data (
+        shipment_id,
+        shipment_number,
+        shipment_date,
+        part_number,
+        quantity,
+        skid_number,
+        total_skids,
+        part_description,
+        employee_number
+    )
+    VALUES (
+        p_shipment_id,
+        p_shipment_number,
+        p_shipment_date,
+        p_part_number,
+        p_quantity,
+        p_skid_number,
+        p_total_skids,
+        p_part_description,
+        p_employee_number
+    );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_LabelData_ClearToHistory` (IN `p_archived_by` VARCHAR(100), OUT `p_headers_moved` INT, OUT `p_lines_moved` INT, OUT `p_archive_batch_id` CHAR(36), OUT `p_status` INT, OUT `p_error_message` VARCHAR(1000))   BEGIN
+    DECLARE v_headers_count   INT DEFAULT 0;
+    DECLARE v_lines_count     INT DEFAULT 0;
+
+    
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_headers_moved    = 0;
+        SET p_lines_moved      = 0;
+        SET p_status           = 1;
+        SET p_error_message    = 'Clear Label Data failed. Transaction rolled back.';
+    END;
+
+    SET p_headers_moved    = 0;
+    SET p_lines_moved      = 0;
+    SET p_status           = 0;
+    SET p_error_message    = NULL;
+    SET p_archive_batch_id = UUID();
+
+    START TRANSACTION;
+
+    
+    SELECT COUNT(*) INTO v_headers_count
+    FROM volvo_label_data
+    ;
+
+    IF v_headers_count = 0 THEN
+        
+        COMMIT;
+    ELSE
+        
+        SELECT COUNT(*) INTO v_lines_count
+        FROM volvo_line_data vld
+        WHERE vld.shipment_id IN (
+            SELECT id FROM volvo_label_data
+        );
+
+        
+        
+        
+        INSERT INTO volvo_label_history (
+            original_id,
+            shipment_date,
+            shipment_number,
+            po_number,
+            receiver_number,
+            employee_number,
+            notes,
+            status,
+            created_date,
+            modified_date,
+            archived_at,
+            archived_by,
+            archive_batch_id
+        )
+        SELECT
+            vl.id               AS original_id,
+            vl.shipment_date,
+            vl.shipment_number,
+            vl.po_number,
+            vl.receiver_number,
+            vl.employee_number,
+            vl.notes,
+            vl.status,
+            vl.created_date,
+            vl.modified_date,
+            NOW()               AS archived_at,
+            p_archived_by       AS archived_by,
+            p_archive_batch_id  AS archive_batch_id
+        FROM volvo_label_data vl
+        ;
+
+        
+        
+        
+        
+        INSERT INTO volvo_line_history (
+            original_id,
+            shipment_history_id,
+            original_shipment_id,
+            part_number,
+            po_status,
+            location,
+            quantity_per_skid,
+            received_skid_count,
+            calculated_piece_count,
+            has_discrepancy,
+            expected_skid_count,
+            discrepancy_note,
+            archived_at,
+            archived_by,
+            archive_batch_id
+        )
+        SELECT
+            vld.id             AS original_id,
+            vlh.id             AS shipment_history_id,
+            vld.shipment_id    AS original_shipment_id,
+            vld.part_number,
+            COALESCE(NULLIF(TRIM(vld.po_status), ''), 'Pending'),
+            vld.location,
+            vld.quantity_per_skid,
+            vld.received_skid_count,
+            vld.calculated_piece_count,
+            vld.has_discrepancy,
+            vld.expected_skid_count,
+            vld.discrepancy_note,
+            NOW()              AS archived_at,
+            p_archived_by      AS archived_by,
+            p_archive_batch_id AS archive_batch_id
+        FROM volvo_line_data vld
+        INNER JOIN volvo_label_history vlh
+            ON vlh.original_id = vld.shipment_id
+           AND vlh.archive_batch_id = p_archive_batch_id
+        CROSS JOIN (
+            SELECT 'Pending' AS po_status
+        ) VolvoLineStatus;
+
+        
+        
+        
+        DELETE FROM volvo_line_data
+        WHERE shipment_id IN (
+            SELECT id FROM volvo_label_data
+        );
+
+        
+        
+        
+        DELETE FROM volvo_label_data
+        ;
+
+        SET p_headers_moved = v_headers_count;
+        SET p_lines_moved   = v_lines_count;
+
+        COMMIT;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartComponent_DeleteByParent` (IN `p_parent_part_number` VARCHAR(20))   BEGIN
+  DELETE FROM volvo_part_components
+  WHERE parent_part_number = p_parent_part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartComponent_Get` (IN `p_parent_part_number` VARCHAR(20))   BEGIN
+  SELECT
+    c.component_part_number,
+    c.quantity,
+    p.quantity_per_skid as component_quantity_per_skid
+  FROM volvo_part_components c
+  INNER JOIN volvo_masterdata p ON c.component_part_number = p.part_number
+  WHERE c.parent_part_number = p_parent_part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartComponent_Insert` (IN `p_parent_part_number` VARCHAR(20), IN `p_component_part_number` VARCHAR(20), IN `p_quantity` INT)   BEGIN
+  INSERT INTO volvo_part_components (parent_part_number, component_part_number, quantity)
+  VALUES (p_parent_part_number, p_component_part_number, p_quantity);
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartMaster_GetAll` (IN `p_include_inactive` TINYINT(1))   BEGIN
+  SELECT part_number, quantity_per_skid, is_active, created_date, modified_date
+  FROM volvo_masterdata
+  WHERE (p_include_inactive = 1 OR is_active = 1)
+  ORDER BY part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartMaster_GetById` (IN `p_part_number` VARCHAR(20))   BEGIN
+  SELECT part_number, quantity_per_skid, is_active, created_date, modified_date
+  FROM volvo_masterdata
+  WHERE part_number = p_part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartMaster_Insert` (IN `p_part_number` VARCHAR(20), IN `p_quantity_per_skid` INT, IN `p_is_active` TINYINT(1))   BEGIN
+  INSERT INTO volvo_masterdata (part_number, quantity_per_skid, is_active)
+  VALUES (p_part_number, p_quantity_per_skid, p_is_active);
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartMaster_SetActive` (IN `p_part_number` VARCHAR(20), IN `p_is_active` TINYINT(1))   BEGIN
+  UPDATE volvo_masterdata
+  SET
+    is_active = p_is_active,
+    modified_date = CURRENT_TIMESTAMP
+  WHERE part_number = p_part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_PartMaster_Update` (IN `p_part_number` VARCHAR(20), IN `p_quantity_per_skid` INT)   BEGIN
+  UPDATE volvo_masterdata
+  SET
+    quantity_per_skid = p_quantity_per_skid,
+    modified_date = CURRENT_TIMESTAMP
+  WHERE part_number = p_part_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_volvo_part_check_references` (IN `p_part_number` VARCHAR(50), OUT `p_active_reference_count` INT)   BEGIN
+    
+    SELECT COUNT(*) INTO p_active_reference_count
+    FROM volvo_line_data vsl
+    INNER JOIN volvo_label_data vs ON vsl.shipment_id = vs.id
+    WHERE vsl.part_number = p_part_number
+      AND vs.status NOT IN ('completed', 'archived')
+      AND vs.is_archived = 0;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Settings_Get` (IN `p_setting_key` VARCHAR(100))   BEGIN
+  SELECT
+    setting_key,
+    setting_value,
+    setting_type,
+    category,
+    description,
+    default_value,
+    min_value,
+    max_value,
+    modified_date,
+    modified_by
+  FROM settings_module_volvo
+  WHERE setting_key = p_setting_key;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Settings_GetAll` (IN `p_category` VARCHAR(50))   BEGIN
+  IF p_category IS NULL OR p_category = '' THEN
+    SELECT
+      setting_key,
+      setting_value,
+      setting_type,
+      category,
+      description,
+      default_value,
+      min_value,
+      max_value,
+      modified_date,
+      modified_by
+    FROM settings_module_volvo
+    ORDER BY category, setting_key;
+  ELSE
+    SELECT
+      setting_key,
+      setting_value,
+      setting_type,
+      category,
+      description,
+      default_value,
+      min_value,
+      max_value,
+      modified_date,
+      modified_by
+    FROM settings_module_volvo
+    WHERE category = p_category
+    ORDER BY setting_key;
+  END IF;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Settings_Reset` (IN `p_setting_key` VARCHAR(100), IN `p_modified_by` VARCHAR(50))   BEGIN
+  UPDATE settings_module_volvo
+  SET setting_value = default_value,
+      modified_date = CURRENT_TIMESTAMP,
+      modified_by = p_modified_by
+  WHERE setting_key = p_setting_key;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Settings_Upsert` (IN `p_setting_key` VARCHAR(100), IN `p_setting_value` TEXT, IN `p_modified_by` VARCHAR(50))   BEGIN
+  INSERT INTO settings_module_volvo (setting_key, setting_value, setting_type, category, description, default_value, modified_by)
+  SELECT
+    p_setting_key,
+    p_setting_value,
+    setting_type,
+    category,
+    description,
+    default_value,
+    p_modified_by
+  FROM settings_module_volvo
+  WHERE setting_key = p_setting_key
+  ON DUPLICATE KEY UPDATE
+    setting_value = p_setting_value,
+    modified_date = CURRENT_TIMESTAMP,
+    modified_by = p_modified_by;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentHistory_Delete` (IN `p_shipment_history_id` INT)   BEGIN
+  DELETE FROM volvo_label_history
+  WHERE id = p_shipment_history_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentHistory_GetById` (IN `p_id` INT)   BEGIN
+  SELECT
+    id,
+    shipment_date,
+    shipment_number,
+    po_number,
+    receiver_number,
+    employee_number,
+    notes,
+    status,
+    created_date,
+    modified_date,
+    1 AS is_archived
+  FROM volvo_label_history
+  WHERE id = p_id
+  LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentLineHistory_GetByShipmentHistoryId` (IN `p_shipment_history_id` INT)   BEGIN
+  SELECT
+    id,
+    original_shipment_id AS shipment_id,
+    part_number,
+    po_status,
+    location,
+    quantity_per_skid,
+    received_skid_count,
+    calculated_piece_count,
+    has_discrepancy,
+    expected_skid_count,
+    discrepancy_note
+  FROM volvo_line_history
+  WHERE shipment_history_id = p_shipment_history_id
+  ORDER BY id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentLine_Delete` (IN `p_id` INT)   BEGIN
+  DELETE FROM volvo_line_data
+  WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentLine_GetByShipment` (IN `p_shipment_id` INT)   BEGIN
+  SELECT
+    id, shipment_id, part_number, po_status, location, quantity_per_skid, received_skid_count, calculated_piece_count,
+    has_discrepancy, expected_skid_count, discrepancy_note
+  FROM volvo_line_data
+  WHERE shipment_id = p_shipment_id
+  ORDER BY id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentLine_Insert` (IN `p_shipment_id` INT, IN `p_part_number` VARCHAR(20), IN `p_po_status` VARCHAR(20), IN `p_location` VARCHAR(50), IN `p_quantity_per_skid` INT, IN `p_received_skid_count` INT, IN `p_calculated_piece_count` INT, IN `p_has_discrepancy` TINYINT(1), IN `p_expected_skid_count` INT, IN `p_discrepancy_note` TEXT)   BEGIN
+  INSERT INTO volvo_line_data (
+    shipment_id, part_number, po_status, location, quantity_per_skid, received_skid_count, calculated_piece_count,
+    has_discrepancy, expected_skid_count, discrepancy_note
+  ) VALUES (
+    p_shipment_id, p_part_number, COALESCE(NULLIF(TRIM(p_po_status), ''), 'Pending'), NULLIF(TRIM(p_location), ''), p_quantity_per_skid, p_received_skid_count, p_calculated_piece_count,
+    p_has_discrepancy, p_expected_skid_count, p_discrepancy_note
+  );
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_ShipmentLine_Update` (IN `p_id` INT, IN `p_part_number` VARCHAR(20), IN `p_po_status` VARCHAR(20), IN `p_location` VARCHAR(50), IN `p_quantity_per_skid` INT, IN `p_received_skid_count` INT, IN `p_calculated_piece_count` INT, IN `p_has_discrepancy` TINYINT(1), IN `p_expected_skid_count` INT, IN `p_discrepancy_note` TEXT)   BEGIN
+  UPDATE volvo_line_data
+  SET
+    part_number = p_part_number,
+    po_status = COALESCE(NULLIF(TRIM(p_po_status), ''), 'Pending'),
+    location = NULLIF(TRIM(p_location), ''),
+    quantity_per_skid = p_quantity_per_skid,
+    received_skid_count = p_received_skid_count,
+    calculated_piece_count = p_calculated_piece_count,
+    has_discrepancy = p_has_discrepancy,
+    expected_skid_count = p_expected_skid_count,
+    discrepancy_note = p_discrepancy_note
+  WHERE id = p_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_Complete` (IN `p_shipment_id` INT, IN `p_po_number` VARCHAR(50), IN `p_receiver_number` VARCHAR(50), IN `p_archived_by` VARCHAR(100))   BEGIN
+  DECLARE v_history_id INT;
+  DECLARE v_archive_batch_id CHAR(36);
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    ROLLBACK;
+    RESIGNAL;
+  END;
+
+  SET v_archive_batch_id = UUID();
+
+  START TRANSACTION;
+
+  INSERT INTO volvo_label_history (
+    original_id,
+    shipment_date,
+    shipment_number,
+    po_number,
+    receiver_number,
+    employee_number,
+    notes,
+    status,
+    created_date,
+    modified_date,
+    archived_at,
+    archived_by,
+    archive_batch_id
+  )
+  SELECT
+    vld.id,
+    vld.shipment_date,
+    vld.shipment_number,
+    NULLIF(TRIM(p_po_number), ''),
+    NULLIF(TRIM(p_receiver_number), ''),
+    vld.employee_number,
+    vld.notes,
+    'completed',
+    vld.created_date,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP,
+    NULLIF(TRIM(p_archived_by), ''),
+    v_archive_batch_id
+  FROM volvo_label_data vld
+  WHERE vld.id = p_shipment_id;
+
+  SET v_history_id = LAST_INSERT_ID();
+
+  INSERT INTO volvo_line_history (
+    original_id,
+    shipment_history_id,
+    original_shipment_id,
+    part_number,
+    po_status,
+    location,
+    quantity_per_skid,
+    received_skid_count,
+    calculated_piece_count,
+    has_discrepancy,
+    expected_skid_count,
+    discrepancy_note,
+    archived_at,
+    archived_by,
+    archive_batch_id
+  )
+  SELECT
+    vln.id,
+    v_history_id,
+    vln.shipment_id,
+    vln.part_number,
+    'Received',
+    vln.location,
+    vln.quantity_per_skid,
+    vln.received_skid_count,
+    vln.calculated_piece_count,
+    vln.has_discrepancy,
+    vln.expected_skid_count,
+    vln.discrepancy_note,
+    CURRENT_TIMESTAMP,
+    NULLIF(TRIM(p_archived_by), ''),
+    v_archive_batch_id
+  FROM volvo_line_data vln
+  WHERE vln.shipment_id = p_shipment_id;
+
+  DELETE FROM volvo_line_data
+  WHERE shipment_id = p_shipment_id;
+
+  DELETE FROM volvo_label_data
+  WHERE id = p_shipment_id;
+
+  COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_Delete` (IN `p_shipment_id` INT)   BEGIN
+  
+  DELETE FROM volvo_label_data
+  WHERE id = p_shipment_id;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_GetById` (IN `p_id` INT)   BEGIN
+  SELECT
+    id,
+    shipment_date,
+    shipment_number,
+    po_number,
+    receiver_number,
+    employee_number,
+    notes,
+    status,
+    created_date,
+    modified_date,
+    is_archived
+  FROM volvo_label_data
+  WHERE id = p_id
+  LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_GetHistory` (IN `p_start_date` DATE, IN `p_end_date` DATE, IN `p_status` VARCHAR(20))   BEGIN
+  SELECT
+    s.id, s.shipment_date, s.shipment_number, s.po_number, s.receiver_number,
+    s.employee_number, s.notes, s.status, s.created_date, s.modified_date,
+    s.is_archived,
+    COUNT(l.id) as part_count
+  FROM volvo_label_data s
+  LEFT JOIN volvo_line_data l ON s.id = l.shipment_id
+  WHERE s.shipment_date BETWEEN p_start_date AND p_end_date
+    AND (p_status = 'all' OR s.status = p_status)
+  GROUP BY s.id
+
+  UNION ALL
+
+  SELECT
+    h.id, h.shipment_date, h.shipment_number, h.po_number, h.receiver_number,
+    h.employee_number, h.notes, h.status, h.created_date, h.modified_date,
+    1 AS is_archived,
+    COUNT(lh.id) AS part_count
+  FROM volvo_label_history h
+  LEFT JOIN volvo_line_history lh ON h.id = lh.shipment_history_id
+  WHERE h.shipment_date BETWEEN p_start_date AND p_end_date
+    AND (p_status = 'all' OR h.status = p_status)
+  GROUP BY h.id
+
+  ORDER BY shipment_date DESC, shipment_number DESC;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_GetNextShipmentNumber` ()   BEGIN
+  SELECT COALESCE(MAX(shipment_number), 0) + 1 AS next_shipment_number
+  FROM volvo_label_data;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_GetPending` ()   BEGIN
+  SELECT
+    id, shipment_date, shipment_number, po_number, receiver_number,
+    employee_number, notes, status, created_date, modified_date, is_archived
+  FROM volvo_label_data
+  WHERE status = 'pending_po' AND is_archived = 0
+  LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_Insert` (IN `p_shipment_date` DATE, IN `p_employee_number` VARCHAR(20), IN `p_notes` TEXT, OUT `p_new_id` INT, OUT `p_shipment_number` INT)   BEGIN
+  DECLARE v_next_number INT;
+
+  
+  SELECT COALESCE(MAX(shipment_number), 0) + 1
+  INTO v_next_number
+  FROM volvo_label_data
+  WHERE shipment_date = p_shipment_date;
+
+  
+  INSERT INTO volvo_label_data (
+    shipment_date, shipment_number, employee_number, notes, status
+  ) VALUES (
+    p_shipment_date, v_next_number, p_employee_number, p_notes, 'pending_po'
+  );
+
+  SET p_new_id = LAST_INSERT_ID();
+  SET p_shipment_number = v_next_number;
+END$$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_Volvo_Shipment_Update` (IN `p_id` INT, IN `p_notes` TEXT)   BEGIN
+    UPDATE volvo_label_data
+    SET notes = p_notes,
+        modified_date = CURRENT_TIMESTAMP
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS affected_rows;
+END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `auth_users`
+--
+
+CREATE TABLE `auth_users` (
+  `employee_number` int(11) NOT NULL COMMENT 'Unique identifier for each employee',
+  `windows_username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Active Directory username for Windows authentication',
+  `full_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee full name for display purposes',
+  `pin` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'One-way protected PIN value used for quick authentication at workstations',
+  `department` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee department (e.g., Receiving, Shipping, Quality)',
+  `shift` enum('1st Shift','2nd Shift','3rd Shift') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee assigned shift',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Flag indicating if employee account is active',
+  `visual_username` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Encrypted Infor Visual ERP username for integration (optional)',
+  `visual_password` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Encrypted Infor Visual ERP password (optional)',
+  `default_receiving_mode` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Default receiving workflow mode: "guided", "manual", or NULL for always showing selection',
+  `default_dunnage_mode` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Default dunnage workflow mode: "guided", "manual", "edit", or NULL for always showing selection',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when user record was created',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of person who created this record',
+  `modified_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last modification'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Employee authentication and profile data';
+
+--
+-- Dumping data for table `auth_users`
+--
+
+INSERT INTO `auth_users` (`employee_number`, `windows_username`, `full_name`, `pin`, `department`, `shift`, `is_active`, `visual_username`, `visual_password`, `default_receiving_mode`, `default_dunnage_mode`, `created_date`, `created_by`, `modified_date`) VALUES
+(6229, 'jkoll', 'John Koll', 'lEODioKTou15LvmLpehPwNEdLVPqMz/0m2CxAemzM1M=', 'Receiving', '1st Shift', 1, 'OMiw1oI7BDE1ucZ+b7R0iqGb8vu1+tNT16aYPW/1TD8=', 'cSyitBLgH2K3hz7zb/Bxuk6vZY/A/njke5G6S3cWJFc=', NULL, NULL, '2026-03-30 07:22:54', 'johnk', '2026-05-07 09:43:27'),
+(6230, 'admin', 'Core Administrator', 'C0AASYi42xs6uUrqkjIoAoRRRoR0gOvBXnrk9LhXYpQ=', 'Receiving', '1st Shift', 1, NULL, NULL, 'guided', 'guided', '2026-03-30 07:22:54', 'system', '2026-03-30 07:22:54'),
+(6231, 'developer', 'Core Developer', 'C0AASYi42xs6uUrqkjIoAoRRRoR0gOvBXnrk9LhXYpQ=', 'Receiving', '1st Shift', 1, NULL, NULL, 'guided', 'guided', '2026-03-30 07:22:54', 'system', '2026-03-30 07:22:54'),
+(6524, 'gwhitson', 'Greg Whitson', 'Y4uVX4xc6dEymmyhtfO+NcC1FSj0t00K+EUouKANs4s=', 'Receiving', '1st Shift', 1, '+6IonXaMLskGRPdqxYgY6nbJhpM+3QZZT3krlP8HfH0=', 'bh602so09ls7RxcQM4DhCg5lOobI4iUcoX2YY+6YTZc=', NULL, NULL, '2026-04-22 08:00:13', 'gwhitson', '2026-04-22 08:01:05'),
+(6604, 'traddatz', 'Tim Raddatz', 'oalIlgIWSCO3zDvGfOozFrMOxVNhOIAr2mC4Q6MBrbA=', 'Shipping', '1st Shift', 1, NULL, NULL, 'guided', 'guided', '2026-03-30 08:46:39', 'traddatz', '2026-05-22 14:57:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `auth_workstation_config`
+--
+
+CREATE TABLE `auth_workstation_config` (
+  `config_id` int(11) NOT NULL COMMENT 'Unique identifier for workstation configuration',
+  `workstation_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Computer name or hostname for workstation identification',
+  `workstation_type` enum('shared_terminal','personal_workstation') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Type of workstation: shared_terminal (requires login) or personal_workstation (auto-login)',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Indicates if this workstation configuration is currently active',
+  `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Optional description of the workstation location or purpose',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when this configuration was created',
+  `modified_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last modification'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Workstation type detection configuration for authentication flow determination';
+
+--
+-- Dumping data for table `auth_workstation_config`
+--
+
+INSERT INTO `auth_workstation_config` (`config_id`, `workstation_name`, `workstation_type`, `is_active`, `description`, `created_date`, `modified_date`) VALUES
+(1, 'MTMFG-101', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-07 07:34:04', '2026-05-12 12:48:46'),
+(8, 'MTMFG-FORK-20', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-07 10:27:29', '2026-05-26 05:29:16'),
+(13, 'V-MTMFG-5', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-14 17:37:36', '2026-05-22 10:36:41'),
+(16, 'MTMFG-84', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-15 07:44:54', '2026-05-22 14:54:26'),
+(25, 'MTMFG-FORK-19', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-15 14:50:06', '2026-04-22 09:06:43'),
+(35, 'V-MTMFG-10', 'personal_workstation', 1, 'Personal workstation - Windows authentication', '2026-04-22 08:00:26', '2026-05-13 07:11:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `departments`
+--
+
+CREATE TABLE `departments` (
+  `department_id` int(11) NOT NULL COMMENT 'Unique identifier for department',
+  `department_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Display name of department (must be unique)',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Whether department is available for selection',
+  `sort_order` int(11) NOT NULL DEFAULT '999' COMMENT 'Display order in dropdowns (lower = higher)',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when department was created'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Department options for user assignment';
+
+--
+-- Dumping data for table `departments`
+--
+
+INSERT INTO `departments` (`department_id`, `department_name`, `is_active`, `sort_order`, `created_date`) VALUES
+(1, 'Receiving', 1, 1, '2026-04-07 07:11:56'),
+(2, 'Shipping', 1, 2, '2026-04-07 07:11:56'),
+(3, 'Production', 1, 3, '2026-04-07 07:11:56'),
+(4, 'Quality Control', 1, 4, '2026-04-07 07:11:56'),
+(5, 'Maintenance', 1, 5, '2026-04-07 07:11:56'),
+(6, 'Administration', 1, 6, '2026-04-07 07:11:56'),
+(7, 'Management', 1, 7, '2026-04-07 07:11:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_custom_fields`
+--
+
+CREATE TABLE `dunnage_custom_fields` (
+  `ID` int(11) NOT NULL COMMENT 'Unique identifier for each custom field',
+  `DunnageTypeID` int(11) NOT NULL COMMENT 'References dunnage_types.id',
+  `FieldName` varchar(100) NOT NULL COMMENT 'Display name of the field (e.g., "Weight (lbs)")',
+  `DatabaseColumnName` varchar(64) NOT NULL COMMENT 'Sanitized column name for database (e.g., "weight_lbs")',
+  `FieldType` varchar(20) NOT NULL COMMENT 'Field type: Text, Number, Date, Boolean',
+  `DisplayOrder` int(11) NOT NULL COMMENT 'Order of field in UI (1, 2, 3, ...)',
+  `IsRequired` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Whether field is mandatory during data entry',
+  `ValidationRules` text COMMENT 'JSON validation rules (e.g., {"min": 1, "max": 9999, "decimals": 2})',
+  `CreatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when field was created',
+  `CreatedBy` varchar(50) NOT NULL COMMENT 'Username of person who created the field'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='User-defined custom fields for Add Type Dialog';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_history`
+--
+
+CREATE TABLE `dunnage_history` (
+  `load_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Unique identifier for the load transaction',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Foreign key to dunnage_parts',
+  `quantity` decimal(10,2) NOT NULL COMMENT 'Quantity received in this transaction',
+  `quantity_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot preserved when queue rows move to history',
+  `received_date` datetime NOT NULL COMMENT 'Date and time the dunnage was received',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username of user who created the record',
+  `employee_number` int(11) DEFAULT NULL COMMENT '4-digit employee identifier preserved from the active queue row',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when record was created',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of user who last modified the record',
+  `modified_date` datetime DEFAULT NULL COMMENT 'Timestamp when record was last modified',
+  `po_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO number snapshot; NULL for non-PO items',
+  `type_id` int(11) DEFAULT NULL COMMENT 'FK to dunnage_types.id; snapshot at time of archive',
+  `type_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Type name snapshot (e.g. Corrugated Cardboard)',
+  `type_icon` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'MaterialIconKind string snapshot (e.g. PackageVariantClosed)',
+  `location` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Warehouse location for received dunnage',
+  `label_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Label number for this row (supports multi-label splits)',
+  `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
+  `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for the same part in the saved batch',
+  `specs_json` json DEFAULT NULL COMMENT 'Snapshot of all per-line dynamic spec key/value pairs as JSON object',
+  `archived_at` datetime DEFAULT NULL COMMENT 'Timestamp when the row was moved from the active queue to history',
+  `archived_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of the user who triggered Clear Label Data',
+  `archive_batch_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'UUID shared by all rows archived in the same Clear Label Data operation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Transaction records of received dunnage items';
+
+--
+-- Dumping data for table `dunnage_history`
+--
+
+INSERT INTO `dunnage_history` (`load_uuid`, `part_id`, `quantity`, `quantity_type`, `received_date`, `created_by`, `employee_number`, `created_date`, `modified_by`, `modified_date`, `po_number`, `type_id`, `type_name`, `type_icon`, `location`, `label_number`, `part_skid_sequence`, `part_skid_total`, `specs_json`, `archived_at`, `archived_by`, `archive_batch_id`) VALUES
+('00306321-0917-46d7-9c03-55de763b83ce', 'Short K Crates - Damaged', 16.00, 'Quantity', '2026-05-06 11:31:26', 'jkoll', 6229, '2026-05-06 15:52:20', NULL, NULL, 'Customer Supplied', 3, 'Wooden Dunnage', 'PackageVariantClosed', 'U-A0-00', NULL, 1, 1, '{\"Size\": \"Short\"}', '2026-05-06 15:52:20', 'jkoll', '7d927ba1-498d-11f1-b2fb-005056bbe55b'),
+('0254342e-1eb6-49ac-a4ff-59f496596a2a', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 8, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('02665cf1-54fd-4353-9e85-4ce086ce19e4', 'Short Baskets', 5.00, 'Quantity', '2026-05-08 12:28:26', 'jkoll', 6229, '2026-05-08 12:29:40', NULL, NULL, 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-05-08 12:29:40', 'jkoll', '7f621ade-4b03-11f1-9370-005056bbe55b'),
+('09144fb1-5670-4b1e-954a-7cbd77bfc87f', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 5, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('0b2d56ce-bd44-4a13-b2d6-1766f8a78ff1', 'Fireball Cleaner', 2.00, 'Boxes', '2026-05-01 07:50:12', 'jkoll', NULL, '2026-05-01 11:08:32', NULL, NULL, 'PO-069397', 16, 'Janitor Closet', 'PackageVariantClosed', 'W-00', NULL, 1, 1, NULL, '2026-05-01 11:08:32', 'jkoll', '00969e3e-4578-11f1-b2fb-005056bbe55b'),
+('0f0d1893-82c9-4b64-8f0e-d6acd3d38677', 'Long A Totes', 52.00, 'Quantity', '2026-05-15 08:33:56', 'jkoll', 6229, '2026-05-19 08:51:50', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'DD-I4-05', NULL, 1, 1, '{\"Depth\": 9, \"Width\": 11, \"Length\": 23, \"Customer\": \"GM5312\"}', '2026-05-19 08:51:50', 'jkoll', 'e384fd1b-5389-11f1-9147-005056bbe55b'),
+('1253dbb1-af1b-4f33-9909-166734d02012', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 7, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('1259e8d6-3812-4574-a73a-e819424f84c4', 'Short Baskets', 3.00, 'Quantity', '2026-04-28 15:13:19', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('1378e233-27a5-4c3d-a964-2ba161a13c0b', 'Paper Towels', 8.00, 'Boxes', '2026-05-01 07:42:26', 'jkoll', NULL, '2026-05-01 07:44:11', NULL, NULL, 'PO-069398', 16, 'Janitor Closet', 'PackageVariantClosed', 'W-00', NULL, 1, 1, NULL, '2026-05-01 07:44:11', 'jkoll', '74660c8e-455b-11f1-b2fb-005056bbe55b'),
+('176a8f67-d703-4c05-bfdb-3721d2e30366', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 5, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('183dae95-ae9c-45e8-8d06-e25f5803363f', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 3, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('191c1083-098c-4f10-8d34-248b27d19bf0', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 6, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('1dcd753e-2499-4b41-b2df-3e33739970f3', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 6, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('233a30f6-089e-4128-812c-3f277e2e0094', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 8, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('279909d3-aa02-4601-ac8c-4bf65e72d8b1', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 8, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('27b726c7-1045-4944-bb14-1f5118f0bad7', 'Z Totes', 36.00, 'Totes', '2026-05-19 13:19:08', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 5, 5, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('285b9b3c-66ab-48f0-9fdd-3fdf45e9fcff', 'Black A Totes', 180.00, 'Quantity', '2026-05-08 10:13:32', 'jkoll', 6229, '2026-05-08 10:14:37', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 3, '{\"Depth\": 8, \"Width\": 11, \"Length\": 12, \"Customer\": \"Allison Transmission\"}', '2026-05-08 10:14:37', 'jkoll', 'a19d0ebc-4af0-11f1-9370-005056bbe55b'),
+('29d244c6-752f-4591-a93d-2302f4b68111', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 7, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('2be85d97-99dd-4332-b605-dc9e2729c898', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 3, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('2c157b79-349f-49a1-8e4d-8a829b77477c', '24 x 15 x 7 - Grey Totes', 36.00, 'Totes', '2026-04-24 15:38:22', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 2, 4, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('33fc96ef-1ef1-48e8-b846-6b0d8b0c87d9', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 2, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('351bbc47-8724-4c0e-9664-51a2f71fb709', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 4, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('36a6f84d-0268-423a-81d5-7b5e8fee9854', '24 x 15 x 7 - Grey Totes', 21.00, 'Totes', '2026-05-05 12:59:24', 'jkoll', 6229, '2026-05-05 13:49:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-05-05 13:49:16', 'jkoll', '21437619-48b3-11f1-b2fb-005056bbe55b'),
+('38a8f116-f133-4aa3-81e2-ef8788174783', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 5, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('39444d9c-c655-461e-b11f-1470b96621d6', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 7, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('3be3e5a9-0349-432c-bc3a-914690e8785a', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 1, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('4403a48b-3938-4815-b282-fe571913963a', '24 x 15 x 7 - Grey Totes', 36.00, 'Totes', '2026-04-24 15:38:22', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 1, 4, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('45a51796-f755-4ed1-83a0-921a4177ed8d', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 1, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('45cfd691-951f-437c-91a8-fe61d18d41ee', '15 x 12 x 7 - Grey Totes', 36.00, 'Totes', '2026-05-12 08:02:17', 'gwhitson', 6524, '2026-05-15 07:31:18', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:31:18', 'jkoll', 'f962c253-5059-11f1-9eb9-005056bbe55b'),
+('47570433-333f-494a-b48f-6cc160ca9364', '24 x 15 x 7 - Grey Totes', 8.00, 'Totes', '2026-04-24 15:39:41', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('49a42426-6813-4f7b-b86a-12c3fa991ac2', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 3, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('4ccc787e-7dd2-4d57-9240-4b8525016fed', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 1, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('4d9aeeaa-e8d5-4d00-a610-9172a1812d87', 'RCK34', 24.00, 'Crates', '2026-04-28 15:05:13', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 1, '{\"Depth\": 34, \"Width\": 45, \"Length\": 48, \"Customer\": \"John Deere\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('4edc2b81-6705-48ec-b1ab-d9f050f6ca7b', '24 x 15 x 7 - Grey Totes', 30.00, 'Totes', '2026-05-11 05:30:00', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('4f168943-116f-47b9-8f00-44f7e22e9797', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 7, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('509512ea-eea2-42fc-aa9f-47a10e01567b', '12 x 12 x 6 - Double Walled', 77.00, 'Boxes', '2026-05-19 15:17:11', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Return to Inventory', 7, 'Boxes', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Width\": 12, \"Height\": 6, \"Length\": 12, \"Wall Thickness\": \"Double Walled\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('51dbc145-e706-4293-bb77-7fb88f3fa4da', '15 x 12 x 7 - Grey Totes', 84.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 10, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('56904a80-b64d-4cdd-8b54-2ff54b5028ef', 'RCA05', 144.00, 'Totes', '2026-05-15 07:28:55', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 1, 1, '{\"Depth\": 5, \"Width\": 10, \"Length\": 6, \"Customer\": \"JD\"}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('58807899-c7a8-4b8f-bc7c-6c4e18185061', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 9, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('5b77da1d-6b18-4e39-bbef-101ddc263f60', 'Perdraw 1043', 330.00, 'Gallons', '2026-05-22 10:28:49', 'jkoll', 6229, '2026-05-22 10:40:33', 'jkoll', '2026-05-22 10:41:33', 'PO-069820', 11, 'Oils & Lubricants', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Quantity Type\": \"Gallons\", \"Quantity Amount\": 330}', '2026-05-22 10:40:33', 'jkoll', '9246d898-55f4-11f1-a4f4-005056bbe55b'),
+('5f1e609e-81e7-45db-b891-e6724e920c7e', 'AKK46582', 2.00, 'Quantity', '2026-04-28 14:38:48', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 1, 'Metal Dunnage', 'TrainCarContainer', 'RECV', NULL, 1, 1, '{\"Customer\": \"John Deere\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('634bb083-8ac8-46dd-a5a8-4510c665261e', 'Z Totes', 36.00, 'Totes', '2026-05-19 13:19:08', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 1, 5, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('67f89e2a-40af-4635-b2fe-101e4675edda', 'Short Baskets', 6.00, 'Quantity', '2026-05-01 11:08:09', 'jkoll', NULL, '2026-05-01 11:08:32', NULL, NULL, 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-05-01 11:08:32', 'jkoll', '00969e3e-4578-11f1-b2fb-005056bbe55b'),
+('6c4e1e1a-093d-4fc1-822a-035c797b31c8', '24 x 22 x 9 - Green Totes', 32.00, 'Quantity', '2026-04-29 14:36:04', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Depth\": 9, \"Width\": 21, \"Length\": 20}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('6c941c58-1971-4304-acb0-2abe0c2fe6e2', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 2, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('6cc4f0ab-c99e-4a08-95ad-d595f73e5c3d', 'Z Totes', 36.00, 'Totes', '2026-05-19 13:19:08', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 2, 5, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('6ec57bc1-62b9-45ce-a818-fba37de90897', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 6, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('6f2bb9db-29dd-442f-ad40-8c0286ceae1c', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 2, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('6fb496e6-fd12-4b69-bb5a-e5ce0814678a', '74 x 40 Heat Treated', 25.00, 'Skids', '2026-05-19 08:51:42', 'jkoll', 6229, '2026-05-19 08:51:50', 'jkoll', '2026-05-22 10:41:33', 'PO-069732', 14, 'Skids', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Width\": 40, \"Length\": 74}', '2026-05-19 08:51:50', 'jkoll', 'e384fd1b-5389-11f1-9147-005056bbe55b'),
+('720b8fa0-efea-4d2f-9a8e-a1ec19521dd7', 'Black A Totes', 180.00, 'Quantity', '2026-05-11 10:05:04', 'jkoll', 6229, '2026-05-11 10:05:36', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 1, '{\"Depth\": 8, \"Width\": 11, \"Length\": 12, \"Customer\": \"Allison Transmission\"}', '2026-05-11 10:05:36', 'jkoll', 'dfe721d5-4d4a-11f1-9370-005056bbe55b'),
+('73171a1e-58d7-4fb3-a4d9-223e634bf38f', 'Used 40 x 48', 200.00, 'Sheets', '2026-05-20 09:58:06', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Return to Inventory', 6, 'Cardboard', 'ShippingPallet', 'RECV-VITS', NULL, 1, 1, '{\"Width\": 40, \"Length\": 48}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('73b5891b-ca17-4346-b8d5-ce516a51a308', '24 x 15 x 7 - Grey Totes', 32.00, 'Totes', '2026-04-24 15:38:22', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 3, 4, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('75c4b35b-1e84-491e-b70f-d44397760446', '12 x 12 x 12 - Single Walled', 184.00, 'Boxes', '2026-05-19 15:24:14', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Return to Inventory', 7, 'Boxes', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Width\": 12, \"Height\": 12, \"Length\": 12, \"Wall Thickness\": \"Single Walled\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('7a8763db-216c-4d2e-81ee-8e106e09913e', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 6, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('7a8df545-83ee-4297-af20-e7add2e4d6df', 'Tall Baskets', 24.00, 'Quantity', '2026-04-28 15:13:46', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('7b774400-81d3-4b42-9c29-20606a203222', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 8, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('80a89904-8302-4fad-8f01-4a059d800762', '6 x 4 Thermal Labels', 48.00, 'Rolls', '2026-05-22 10:41:59', 'jkoll', 6229, '2026-05-22 10:42:56', NULL, NULL, 'PO-069862', 15, 'Office Supplies', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, NULL, '2026-05-22 10:42:56', 'jkoll', 'e71b9cdd-55f4-11f1-a4f4-005056bbe55b'),
+('8173d0cb-6010-44c3-a157-a03261a66b7b', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 1, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('87f7c83e-0d0c-43c4-89e3-c1cb878ebe03', '15 x 12 x 7 - Grey Totes', 80.00, 'Totes', '2026-04-30 07:51:38', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 4, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('8821ebd9-7733-4606-b336-a2c428e20e61', 'DuraKlean', 55.00, 'Gallons', '2026-04-30 14:38:35', 'jkoll', NULL, '2026-05-01 07:44:11', NULL, NULL, 'PO-069353', 11, 'Oils & Lubricants', 'PackageVariantClosed', 'U-A0-00', NULL, 1, 1, '{\"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', '2026-05-01 07:44:11', 'jkoll', '74660c8e-455b-11f1-b2fb-005056bbe55b'),
+('8aca3e84-9f7d-4315-9d9b-85e7bd70c316', 'RCK25', 24.00, 'Quantity', '2026-04-25 11:35:04', 'traddatz', NULL, '2026-04-28 12:15:40', NULL, NULL, 'replenishment', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 1, '{\"Depth\": 25, \"Width\": 45, \"Length\": 48, \"Customer\": \"John Deere\"}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('90e0d189-dc08-41ff-9b92-95fe42899f82', '16 x 15 x 9 - Grey Totes', 7.00, 'Totes', '2026-05-05 12:58:59', 'jkoll', 6229, '2026-05-05 13:49:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 9, \"Width\": 13, \"Length\": 13}', '2026-05-05 13:49:16', 'jkoll', '21437619-48b3-11f1-b2fb-005056bbe55b'),
+('91613df6-d0c9-40d8-ac5e-aedf0613f064', 'Sparkle Cleaner', 1.00, 'Boxes', '2026-05-01 07:49:43', 'jkoll', NULL, '2026-05-01 11:08:32', NULL, NULL, 'PO-069397', 16, 'Janitor Closet', 'PackageVariantClosed', 'W-00', NULL, 1, 1, NULL, '2026-05-01 11:08:32', 'jkoll', '00969e3e-4578-11f1-b2fb-005056bbe55b'),
+('94f1c181-34b3-4990-bcbc-89f4872f4a9e', 'RCA05', 144.00, 'Totes', '2026-05-14 08:20:26', 'traddatz', 6604, '2026-05-14 08:22:26', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 1, 1, '{\"Depth\": 5, \"Width\": 10, \"Length\": 6, \"Customer\": \"JD\"}', '2026-05-14 08:22:26', 'traddatz', 'f332b6f9-4f97-11f1-9eb9-005056bbe55b'),
+('9749a7a0-c0b0-45e7-8cf4-170fcf7c7c2b', '15 x 12 x 7 - Grey Totes', 54.00, 'Totes', '2026-05-05 12:58:42', 'jkoll', 6229, '2026-05-05 13:49:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-05 13:49:16', 'jkoll', '21437619-48b3-11f1-b2fb-005056bbe55b'),
+('9b69b3bb-35d7-4767-8f5d-ef112c53f3f3', 'RCA05', 144.00, 'Totes', '2026-05-14 08:22:41', 'traddatz', 6604, '2026-05-14 08:26:07', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 1, 1, '{\"Depth\": 5, \"Width\": 10, \"Length\": 6, \"Customer\": \"JD\"}', '2026-05-14 08:26:07', 'traddatz', '76f18f28-4f98-11f1-9eb9-005056bbe55b'),
+('9cab36b4-21ac-4f17-8892-c8ce9e087f15', 'U-LINE FREE ITEM', 1.00, 'Quantity', '2026-05-13 16:40:44', 'traddatz', 6604, '2026-05-13 16:46:13', NULL, NULL, 'PO-069526', 16, 'Janitor Closet', 'PackageVariantClosed', 'RECV', NULL, 1, 1, NULL, '2026-05-13 16:46:13', 'traddatz', '2d936a71-4f15-11f1-9370-005056bbe55b'),
+('9e9fa163-b700-4313-a2f4-d027d7962719', 'AKK543', 4.00, 'Quantity', '2026-04-28 14:38:18', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 1, 'Metal Dunnage', 'TrainCarContainer', 'RECV', NULL, 1, 1, '{\"Customer\": \"John Deere\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('a2bdc3ce-77e8-4f10-8b8f-b3f01b321ed6', 'DuraDraw 6802', 55.00, 'Gallons', '2026-05-08 14:29:21', 'jkoll', 6229, '2026-05-11 10:05:36', NULL, NULL, 'PO-069496', 11, 'Oils & Lubricants', 'PackageVariantClosed', 'U-A0-00', NULL, 1, 1, '{\"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', '2026-05-11 10:05:36', 'jkoll', 'dfe721d5-4d4a-11f1-9370-005056bbe55b'),
+('a5923fb6-7744-4749-a0fe-58b2f7b840f7', '24 x 22 x 9 - Green Totes', 32.00, 'Quantity', '2026-05-05 13:00:33', 'jkoll', 6229, '2026-05-05 13:49:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 2, '{\"Depth\": 9, \"Width\": 21, \"Length\": 20}', '2026-05-05 13:49:16', 'jkoll', '21437619-48b3-11f1-b2fb-005056bbe55b'),
+('a5a32bef-aba2-4b19-8fb5-d4dba036086a', 'Short Baskets', 5.00, 'Quantity', '2026-04-28 15:12:37', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('a89afbbe-1b44-483f-80f3-13191e0efa77', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 4, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('a987022d-a26b-4f7c-a73b-6e2748201e14', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 5, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('aa217f42-abc2-4cd1-b121-696f3042c1fc', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 3, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('aaf4dcec-a0ab-4734-beba-8c491b411e59', '24 x 15 x 7 - Grey Totes', 32.00, 'Totes', '2026-04-24 15:38:22', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 4, 4, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('abdf56f3-ab29-4b4c-8738-dfeb8c821204', 'Z Totes', 36.00, 'Totes', '2026-05-19 13:19:08', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 3, 5, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('ac344470-8c01-4008-8f54-72290ebcae5a', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 6, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('b1499b8b-a913-44f1-8c9f-a2a4a4303d12', 'Hand Held', 12.00, 'Quantity', '2026-05-08 07:16:48', 'jkoll', 6229, '2026-05-08 10:14:37', NULL, NULL, 'PO-069338', 13, 'Shrink Wrap', 'PackageVariantClosed', 'T-A0-00', NULL, 1, 1, NULL, '2026-05-08 10:14:37', 'jkoll', 'a19d0ebc-4af0-11f1-9370-005056bbe55b'),
+('b9744ab9-9207-4c42-ad72-368a09a9789c', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-30 07:51:38', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 3, 4, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('b9b901ef-1a94-441a-b279-f9bf29f95404', 'RCG25', 24.00, 'Crates', '2026-04-28 15:04:21', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 1, '{\"Depth\": 25, \"Width\": 30, \"Length\": 32, \"Customer\": \"John Deere\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('bb818002-a683-4c81-82e5-5af6610c8ec6', '15 x 12 x 7 - Grey Totes', 80.00, 'Totes', '2026-04-30 07:51:38', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 2, 4, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('bdb72bdd-7e24-4701-9de7-e7680c8d025c', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 2, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('be57f85f-5214-4525-a961-6b7748d16ff1', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 10, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('c07012f7-d2f6-4205-9ebf-a0279630aa46', 'Black A Totes', 180.00, 'Quantity', '2026-05-08 10:13:32', 'jkoll', 6229, '2026-05-08 10:14:37', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 2, 3, '{\"Depth\": 8, \"Width\": 11, \"Length\": 12, \"Customer\": \"Allison Transmission\"}', '2026-05-08 10:14:37', 'jkoll', 'a19d0ebc-4af0-11f1-9370-005056bbe55b'),
+('c4a02197-876c-4633-92a7-afe4605318b6', '42 x 54 Heat Treated', 28.00, 'Skids', '2026-05-19 08:50:59', 'jkoll', 6229, '2026-05-19 08:51:50', 'jkoll', '2026-05-22 10:41:33', 'PO-069729', 14, 'Skids', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Width\": 42, \"Length\": 54}', '2026-05-19 08:51:50', 'jkoll', 'e384fd1b-5389-11f1-9147-005056bbe55b'),
+('cacb6bbc-cf0d-433a-a8fa-9881c0e55394', 'Z Totes', 36.00, 'Totes', '2026-05-19 13:19:08', 'jkoll', 6229, '2026-05-20 10:00:13', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV-VITS', NULL, 4, 5, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\"}', '2026-05-20 10:00:13', 'jkoll', '9bf47c3c-545c-11f1-9147-005056bbe55b'),
+('ce12d81f-6ea3-49f0-aa33-93349273c9df', 'Blue Jarkies', 20.00, 'Jarkies', '2026-04-30 10:23:36', 'jkoll', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 1, 'Metal Dunnage', 'TrainCarContainer', 'Door 13', NULL, 1, 1, '{\"Customer\": \"Lennox\"}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('d0430063-716d-4b98-bb7a-2410c223b8f3', 'Tall Baskets', 16.00, 'Quantity', '2026-05-01 11:08:28', 'jkoll', NULL, '2026-05-01 11:08:32', NULL, NULL, 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-05-01 11:08:32', 'jkoll', '00969e3e-4578-11f1-b2fb-005056bbe55b'),
+('d08be74f-5adf-4239-a89a-4719cd376ba2', '24 x 22 x 9 - Green Totes', 16.00, 'Quantity', '2026-05-05 13:00:33', 'jkoll', 6229, '2026-05-05 13:49:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 2, 2, '{\"Depth\": 9, \"Width\": 21, \"Length\": 20}', '2026-05-05 13:49:16', 'jkoll', '21437619-48b3-11f1-b2fb-005056bbe55b'),
+('d0a89801-b3a3-4f84-8b61-1fa77e5a8cb0', 'Short K Crates', 95.00, 'Quantity', '2026-05-06 11:32:31', 'jkoll', 6229, '2026-05-06 15:52:20', NULL, NULL, 'Customer Supplied', 3, 'Wooden Dunnage', 'PackageVariantClosed', 'Back Pad', NULL, 1, 1, '{\"Size\": \"Short\"}', '2026-05-06 15:52:20', 'jkoll', '7d927ba1-498d-11f1-b2fb-005056bbe55b'),
+('d2a2c58d-2163-4d08-ba32-aa430f38b9e5', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 5, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('d789ae89-3947-448b-8aa0-b7e61c0d79a8', '47 x 52', 325.00, 'Sheets', '2026-05-01 15:30:13', 'jkoll', NULL, '2026-05-01 15:31:11', NULL, NULL, 'PO-069131', 6, 'Cardboard', 'ShippingPallet', 'RECV', NULL, 3, 7, '{\"Width\": 47, \"Length\": 52}', '2026-05-01 15:31:11', 'jkoll', 'b17b4500-459c-11f1-b2fb-005056bbe55b'),
+('d8228e97-6160-44b5-b5f5-8aeb7905fa30', '24 x 15 x 7 - Grey Totes', 30.00, 'Totes', '2026-05-11 05:35:38', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('db4c1084-c197-409a-ab73-31779f07f23e', 'Tall Baskets', 38.00, 'Quantity', '2026-04-28 15:12:54', 'jkoll', NULL, '2026-04-28 15:15:00', 'jkoll', '2026-04-28 15:15:43', 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-04-28 15:15:00', 'jkoll', 'ef902bb7-433e-11f1-8e17-005056bbe55b'),
+('dfdfd124-d5d8-4850-9f34-d1e831ea37dd', 'Blue Racks', 26.00, 'Racks', '2026-05-19 09:09:39', 'jkoll', 6229, '2026-05-19 13:15:20', 'jkoll', '2026-05-22 10:41:33', 'Customer Supplied', 1, 'Metal Dunnage', 'TrainCarContainer', 'DD-H0-00', NULL, 1, 1, '{\"Customer\": \"Daimler\", \"Returnable ID\": \"XL-2404\", \"Trailer Number\": \"10380\"}', '2026-05-19 13:15:20', 'jkoll', 'b319ee22-53ae-11f1-9147-005056bbe55b'),
+('e05d2c8b-0214-4766-a069-6ced81e0b406', '24 x 22 x 9 - Green Totes', 6.00, 'Quantity', '2026-05-15 13:13:45', 'jkoll', 6229, '2026-05-19 08:51:50', 'jkoll', '2026-05-22 10:41:33', 'Return to Inventory', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 1, 1, '{\"Depth\": 9, \"Width\": 21, \"Length\": 20}', '2026-05-19 08:51:50', 'jkoll', 'e384fd1b-5389-11f1-9147-005056bbe55b'),
+('e1361e2c-9d70-4899-bd83-d7017e90f166', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 2, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('e51c7528-613d-4656-8387-99e278dfee5f', '24 x 15 x 7 - Grey Totes', 3.00, 'Totes', '2026-04-30 07:46:39', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 1, 1, '{\"Depth\": 7, \"Width\": 14, \"Length\": 24}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('e6ee87bd-e7ea-42eb-ad2e-279749b4efce', 'Blue Jarkies', 20.00, 'Jarkies', '2026-05-07 07:14:43', 'jkoll', 6229, '2026-05-07 07:14:50', NULL, NULL, 'Customer Supplied', 1, 'Metal Dunnage', 'TrainCarContainer', 'R-05', NULL, 1, 1, '{\"Customer\": \"Lennox\"}', '2026-05-07 07:14:50', 'jkoll', '5d0ced3e-4a0e-11f1-b2fb-005056bbe55b'),
+('e7d52f25-6000-49df-b963-f4d00689d058', 'Black A Totes', 180.00, 'Quantity', '2026-05-08 10:13:32', 'jkoll', 6229, '2026-05-08 10:14:37', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 3, 3, '{\"Depth\": 8, \"Width\": 11, \"Length\": 12, \"Customer\": \"Allison Transmission\"}', '2026-05-08 10:14:37', 'jkoll', 'a19d0ebc-4af0-11f1-9370-005056bbe55b'),
+('eaa5ba30-1891-4c50-8fec-315a3960e15b', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 4, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('eb3139fd-4492-4d48-ae68-d11f1e0e0d71', '40 x 48', 390.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 1, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('efd15477-0029-4012-a119-523ad25bf1c3', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-04-24 15:37:12', 'jkoll', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 9, 10, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b'),
+('f2b9e0af-94f2-4f1f-8b00-1cfcae84e78e', '15 x 12 x 7 - Grey Totes', 66.00, 'Totes', '2026-04-30 07:51:38', 'gwhitson', NULL, '2026-04-30 10:47:16', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-VITS', NULL, 4, 4, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('f45f99d9-06a7-4775-b92b-de1dd1f2e09f', 'Tall Baskets', 51.00, 'Quantity', '2026-05-08 12:27:43', 'jkoll', 6229, '2026-05-08 12:29:40', NULL, NULL, 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'CS-01', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-05-08 12:29:40', 'jkoll', '7f621ade-4b03-11f1-9370-005056bbe55b'),
+('f60eff2a-b7c6-4f27-96cf-53f5d5441ab9', '32 x 30 Skids', 70.00, 'Quantity', '2026-04-30 09:56:01', 'jkoll', NULL, '2026-04-30 10:47:16', NULL, NULL, 'PO-069133', 14, 'Skids', 'PackageVariantClosed', 'Door 13', NULL, 1, 1, '{\"Width\": 30, \"Length\": 32}', '2026-04-30 10:47:16', 'jkoll', 'dddefb66-44ab-11f1-989d-005056bbe55b'),
+('f6aaac92-f1dc-4881-ad2e-ebd668698831', '40 x 48', 246.00, 'Quantity', '2026-05-04 10:53:12', 'jkoll', 6229, '2026-05-04 10:55:02', NULL, NULL, 'PO-069327', 6, 'Cardboard', 'ShippingPallet', 'V-A0-00', NULL, 11, 11, '{\"Width\": 40, \"Length\": 48}', '2026-05-04 10:55:02', 'jkoll', '9eb97d88-47d1-11f1-b2fb-005056bbe55b'),
+('f74c5978-d9ac-4a8f-8404-d64e90552543', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 4, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('f7d619d4-64a4-46d1-9f10-945a64a2f15c', 'RCA05', 144.00, 'Totes', '2026-05-14 08:15:28', 'traddatz', 6604, '2026-05-14 08:22:26', NULL, NULL, 'Customer Supplied', 2, 'Plastic Dunnage', 'WindowOpenVariant', 'RECV', NULL, 1, 1, '{\"Depth\": \"5\", \"Width\": \"10\", \"Length\": \"6\", \"Customer\": \"JD\"}', '2026-05-14 08:22:26', 'traddatz', 'f332b6f9-4f97-11f1-9eb9-005056bbe55b'),
+('fa00aa35-781f-4272-b594-33171501095c', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-11 05:34:23', 'gwhitson', 6524, '2026-05-11 13:36:32', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'RECV-vits', NULL, 7, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-11 13:36:32', 'jkoll', '57e1b25b-4d68-11f1-9370-005056bbe55b'),
+('fb63549e-ddd4-48a9-97c3-c30625fed4c5', '15 x 12 x 7 - Grey Totes', 72.00, 'Totes', '2026-05-13 12:54:29', 'jkoll', 6229, '2026-05-15 07:30:24', NULL, NULL, 'Customer Supplied', 4, 'K - Totes', 'PackageVariantClosed', 'DD-H0-00', NULL, 4, 8, '{\"Depth\": 7, \"Width\": 12, \"Length\": 14}', '2026-05-15 07:30:24', 'jkoll', 'd97640bf-5059-11f1-9eb9-005056bbe55b'),
+('fe34074e-cffa-4c07-b4e7-2b798d570e85', 'Tall Baskets', 38.00, 'Quantity', '2026-04-25 11:42:53', 'traddatz', NULL, '2026-04-28 12:15:40', NULL, NULL, 'Customer Supplied', 8, 'Wire Baskets', 'PackageVariantClosed', 'U-04', NULL, 1, 1, '{\"Customer\": \"Insinkerator\"}', '2026-04-28 12:15:40', 'jkoll', 'e19c472d-4325-11f1-8e17-005056bbe55b');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_label_data`
+--
+
+CREATE TABLE `dunnage_label_data` (
+  `id` int(11) NOT NULL COMMENT 'Auto-incrementing unique identifier',
+  `load_uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'GUID identifying the load transaction from the workflow session',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part identifier from dunnage_parts',
+  `dunnage_type_id` int(11) DEFAULT NULL COMMENT 'FK to dunnage_types.id; snapshot at time of save',
+  `dunnage_type_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Type name snapshot (e.g. Corrugated Cardboard)',
+  `dunnage_type_icon` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'MaterialIconKind string snapshot (e.g. PackageVariantClosed)',
+  `quantity` decimal(10,2) NOT NULL COMMENT 'Quantity received in this transaction',
+  `quantity_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot copied from dunnage_parts at save time',
+  `po_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO number; NULL for non-PO items',
+  `received_date` datetime NOT NULL COMMENT 'Date and time the dunnage was received',
+  `user_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Application user identifier (Windows username)',
+  `employee_number` int(11) DEFAULT NULL COMMENT '4-digit employee identifier for the user who saved the queue row',
+  `location` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Warehouse location for received dunnage',
+  `label_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Label number for this row (supports multi-label splits)',
+  `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
+  `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for the same part in the saved batch',
+  `specs_json` json DEFAULT NULL COMMENT 'Snapshot of all per-line dynamic spec key/value pairs as JSON object',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the queue record was inserted'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Active dunnage label queue. Rows are moved to dunnage_history on Clear Label Data. Do not write directly to dunnage_history from the workflow.';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_non_po_entries`
+--
+
+CREATE TABLE `dunnage_non_po_entries` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `use_count` int(10) UNSIGNED NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Saved non-PO reference reasons for dunnage receiving';
+
+--
+-- Dumping data for table `dunnage_non_po_entries`
+--
+
+INSERT INTO `dunnage_non_po_entries` (`id`, `value`, `created_by`, `created_at`, `use_count`) VALUES
+(1, 'Customer Supplied', 'jkoll', '2026-04-01 12:17:37', 94),
+(7, 'replenishment', 'traddatz', '2026-04-25 11:42:01', 1),
+(13, 'Return to Inventory', 'jkoll', '2026-05-15 13:13:45', 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_non_po_part_defaults`
+--
+
+CREATE TABLE `dunnage_non_po_part_defaults` (
+  `part_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Per-part default non-PO references for dunnage';
+
+--
+-- Dumping data for table `dunnage_non_po_part_defaults`
+--
+
+INSERT INTO `dunnage_non_po_part_defaults` (`part_id`, `value`, `updated_by`, `updated_at`) VALUES
+('12 X 12 X 12', 'Return to Inventory', 'jkoll', '2026-05-19 15:20:46'),
+('12 x 12 x 12 - Single Walled', 'Return to Inventory', 'jkoll', '2026-05-19 15:24:14'),
+('12 x 12 x 6 - Double Walled', 'Return to Inventory', 'jkoll', '2026-05-19 15:17:10'),
+('15 x 12 x 7 - Grey Totes', 'Customer Supplied', 'jkoll', '2026-05-13 12:54:28'),
+('16 x 15 x 9 - Grey Totes', 'Customer Supplied', 'jkoll', '2026-05-07 10:51:58'),
+('24 x 15 x 7 - Grey Totes', 'Customer Supplied', 'gwhitson', '2026-05-11 05:35:10'),
+('24 x 22 x 9 - Green Totes', 'Customer Supplied', 'jkoll', '2026-05-07 10:53:39'),
+('40 x 48', 'Customer Supplied', 'jkoll', '2026-05-08 07:49:39'),
+('AKK46582', 'Customer Supplied', 'jkoll', '2026-04-28 14:38:49'),
+('AKK543', 'Customer Supplied', 'jkoll', '2026-04-28 14:38:18'),
+('Black A Totes', 'Customer Supplied', 'jkoll', '2026-05-11 10:05:04'),
+('Blue Jarkies', 'Customer Supplied', 'jkoll', '2026-05-07 07:14:43'),
+('Blue Racks', 'Customer Supplied', 'jkoll', '2026-05-19 09:09:38'),
+('Long A Totes', 'Customer Supplied', 'jkoll', '2026-05-15 08:33:56'),
+('RCA05', 'Customer Supplied', 'jkoll', '2026-05-15 07:28:55'),
+('RCG25', 'Customer Supplied', 'jkoll', '2026-04-28 15:04:22'),
+('RCK34', 'Customer Supplied', 'jkoll', '2026-04-28 15:05:13'),
+('Short Baskets', 'Customer Supplied', 'jkoll', '2026-05-08 12:28:25'),
+('Short K Crates', 'Customer Supplied', 'jkoll', '2026-05-06 11:32:31'),
+('Short K Crates - Damaged', 'Customer Supplied', 'jkoll', '2026-05-06 11:31:26'),
+('Tall Baskets', 'Customer Supplied', 'jkoll', '2026-05-08 12:27:43'),
+('Used 40 x 48', 'Return to Inventory', 'jkoll', '2026-05-20 09:58:06'),
+('Z Totes', 'Customer Supplied', 'jkoll', '2026-05-19 13:19:07'),
+('ZF Totes', 'Customer Supplied', 'jkoll', '2026-05-19 13:08:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_parts`
+--
+
+CREATE TABLE `dunnage_parts` (
+  `id` int(11) NOT NULL COMMENT 'Unique identifier for dunnage part',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Business identifier (e.g., barcode, SKU) for the dunnage part',
+  `type_id` int(11) NOT NULL COMMENT 'Foreign key to dunnage_types - defines what kind of dunnage this is',
+  `spec_values` json DEFAULT NULL COMMENT 'Dynamic attributes based on type specifications (dimensions, capacity, etc.)',
+  `image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Relative PNG path for app-managed part imagery stored in local app data',
+  `quantity_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Quantity' COMMENT 'Label header used for quantity on printed dunnage labels',
+  `home_location` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Default storage location for this dunnage part',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User who created this record',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when record was created',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User who last modified this record',
+  `modified_date` datetime DEFAULT NULL COMMENT 'Timestamp when record was last modified'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data for physical dunnage items - links part IDs to types and specifications';
+
+--
+-- Dumping data for table `dunnage_parts`
+--
+
+INSERT INTO `dunnage_parts` (`id`, `part_id`, `type_id`, `spec_values`, `image_path`, `quantity_type`, `home_location`, `created_by`, `created_date`, `modified_by`, `modified_date`) VALUES
+(1, 'AKK543', 1, '{\"Customer\": \"John Deere\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Metal Racks-John Deere - AKK543.png\"}', 'Parts/Metal Racks-John Deere - AKK543.png', 'Quantity', 'Outside Door 5', 'jkoll', '2026-04-01 12:16:27', 'jkoll', '2026-04-21 08:00:22'),
+(2, 'AKK46582', 1, '{\"Customer\": \"John Deere\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Metal Racks-John Deere - AKK46582.png\"}', 'Parts/Metal Racks-John Deere - AKK46582.png', 'Quantity', 'Outside Door 5', 'jkoll', '2026-04-01 12:16:55', 'jkoll', '2026-04-21 08:00:42'),
+(3, 'RCK25', 2, '{\"Depth\": 25, \"Width\": 45, \"Length\": 48, \"Customer\": \"John Deere\"}', NULL, 'Quantity', 'Outside Receiving Docks', 'jkoll', '2026-04-01 12:30:39', 'jkoll', '2026-04-28 14:56:02'),
+(5, 'Short K Crates', 3, '{\"Size\": \"Short\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Wooden Dunnage-Short K Crates.png\"}', 'Parts/Wooden Dunnage-Short K Crates.png', 'Quantity', 'Outside Door 5', 'jkoll', '2026-04-01 12:44:03', 'jkoll', '2026-05-06 11:32:16'),
+(6, 'Tall', 3, '{\"Size\": \"Tall\"}', NULL, 'Quantity', '', 'jkoll', '2026-04-01 12:44:19', 'jkoll', '2026-04-01 12:45:26'),
+(7, '15 x 12 x 7 - Grey Totes', 4, '{\"Color\": \"Grey\", \"Depth\": 7, \"Width\": 12, \"Length\": 14, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Kawasaki Totes-7 x 9.5 x 13 - Grey.jpg\"}', 'Parts/Kawasaki Totes-7 x 9.5 x 13 - Grey.jpg', 'Totes', 'RECV', 'jkoll', '2026-04-01 12:52:09', 'jkoll', '2026-04-24 15:32:34'),
+(10, '40 x 48', 6, '{\"Width\": 40, \"Length\": 48, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Cardboard-40 x 48.png\"}', 'Parts/Cardboard-40 x 48.png', 'Quantity', 'V-A Racking', 'jkoll', '2026-04-02 13:38:41', 'jkoll', '2026-04-21 07:59:21'),
+(11, 'Mixed Totes', 4, '{\"Color\": \"Grey\"}', NULL, 'Quantity', 'RECV', 'jkoll', '2026-04-02 14:51:48', 'jkoll', '2026-04-21 17:19:55'),
+(12, '12 x 12 x 6 - Single Walled', 7, '{\"Width\": 12, \"Height\": 6, \"Length\": 12, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Boxes-12 x 12 x 6 - Single Walled.jpg\", \"Wall Thickness\": \"Single Walled\"}', 'Parts/Boxes-12 x 12 x 6 - Single Walled.jpg', 'Boxes', 'V-B0-00', 'jkoll', '2026-04-03 10:42:20', 'jkoll', '2026-05-04 11:26:15'),
+(13, '12 x 12 x 6 - Double Walled', 7, '{\"Width\": 12, \"Height\": 6, \"Length\": 12, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Boxes-12 x 12 x 6 - Double Walled.jpg\", \"Wall Thickness\": \"Double Walled\"}', 'Parts/Boxes-12 x 12 x 6 - Double Walled.jpg', 'Boxes', 'V-B0-00', 'jkoll', '2026-04-03 10:44:15', 'jkoll', '2026-05-04 11:24:10'),
+(14, 'Short Baskets', 8, '{\"Customer\": \"Insinkerator\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Insinkerator Baskets-Short Baskets.png\"}', 'Parts/Insinkerator Baskets-Short Baskets.png', 'Quantity', 'U-04', 'jkoll', '2026-04-07 08:38:54', 'jkoll', '2026-04-21 08:04:48'),
+(15, 'Multi-Purpose Rack', 1, '{\"Customer\": \"Crenlo\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Metal Racks-Crenlo Rack.png\"}', 'Parts/Metal Racks-Crenlo Rack.png', 'Racks', '', 'jkoll', '2026-04-08 12:10:53', 'jkoll', '2026-04-24 15:19:47'),
+(16, 'Tall Baskets', 8, '{\"Customer\": \"Insinkerator\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Insinkerator Baskets-Tall Baskets.png\"}', 'Parts/Insinkerator Baskets-Tall Baskets.png', 'Quantity', 'U-04', 'jkoll', '2026-04-08 12:11:34', 'jkoll', '2026-04-21 08:05:08'),
+(17, '30.75 x 28.75 x 25', 7, '{\"Width\": 30.75, \"Height\": 25, \"Length\": 28.75, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Boxes-Electrolux Boxes.png\", \"Wall Thickness\": \"Double Walled\"}', 'Parts/Boxes-Electrolux Boxes.png', 'Quantity', 'U-04', 'jkoll', '2026-04-08 12:13:35', 'jkoll', '2026-04-24 15:23:01'),
+(18, '39 x 39', 6, '{\"Width\": 39, \"Length\": 39, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Cardboard-39 x 39.png\"}', 'Parts/Cardboard-39 x 39.png', 'Quantity', 'U-A Racking', 'jkoll', '2026-04-08 12:14:53', 'jkoll', '2026-04-21 07:53:44'),
+(19, 'Short Gaylords', 9, '{\"Size\": \"Short\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Gaylords-Short Gaylords.jpg\"}', 'Parts/Gaylords-Short Gaylords.jpg', 'Quantity', 'R-04', 'jkoll', '2026-04-08 14:17:40', 'jkoll', '2026-04-21 13:16:36'),
+(20, 'Mixed Gaylords', 9, '{\"Size\": \"Mixed\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Gaylords-Mixed Gaylords.png\"}', 'Parts/Gaylords-Mixed Gaylords.png', 'Quantity', 'R Bay', 'jkoll', '2026-04-08 14:19:07', 'jkoll', '2026-04-21 08:03:00'),
+(21, 'Tall Gaylords', 9, '{\"Size\": \"Tall\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Gaylords-Tall Gaylords.jpg\"}', 'Parts/Gaylords-Tall Gaylords.jpg', 'Quantity', 'R Bay', 'jkoll', '2026-04-08 14:19:26', 'jkoll', '2026-04-21 08:02:42'),
+(24, 'Perdraw 1043', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-Perdraw 1043.png\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 330}', 'Parts/Oils & Lubricants-Perdraw 1043.png', 'Gallons', 'T-A or R-A Racking', 'jkoll', '2026-04-09 11:02:01', 'jkoll', '2026-05-08 14:27:49'),
+(25, 'Nylon Banding', 10, '{\"Type\": \"Nylon\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Banding-Nylon Banding.png\"}', 'Parts/Banding-Nylon Banding.png', 'Quantity', 'T-A Racking', 'jkoll', '2026-04-09 12:37:21', 'jkoll', '2026-04-21 08:25:43'),
+(26, '3/4 Inch Steel Banding', 10, '{\"Type\": \"3/4 Inch\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Banding-3-4 Inch Steel Banding.png\"}', 'Parts/Banding-3-4 Inch Steel Banding.png', 'Quantity', 'T-A Racking', 'jkoll', '2026-04-09 12:41:26', 'jkoll', '2026-04-21 08:22:11'),
+(27, '1 1/4 Inch Steel Banding', 10, '{\"Type\": \"1 1/4 Inch\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Banding-1 1-4 Inch Steel Banding.png\"}', 'Parts/Banding-1 1-4 Inch Steel Banding.png', 'Quantity', 'T-A Racking', 'jkoll', '2026-04-09 12:42:30', 'jkoll', '2026-04-21 08:21:55'),
+(28, 'Gaylord Bags', 12, '{\"Width\": 42, \"Height\": 66, \"Length\": 48, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Bags-Gaylord Bags.png\"}', 'Parts/Bags-Gaylord Bags.png', 'Quantity', 'V-A0-01', 'jkoll', '2026-04-09 12:43:42', 'jkoll', '2026-04-21 08:24:10'),
+(29, 'Blue Shrink Wrap', 13, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Shrink Wrap-Blue Generac Shrink Wrap.png\"}', 'Parts/Shrink Wrap-Blue Generac Shrink Wrap.png', 'Quantity', 'V-A0-01', 'jkoll', '2026-04-09 12:45:32', 'jkoll', '2026-04-24 15:21:03'),
+(30, 'Hand Held', 13, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Shrink Wrap-Hand Held.png\"}', 'Parts/Shrink Wrap-Hand Held.png', 'Quantity', 'T-A0-00', 'jkoll', '2026-04-14 07:29:39', 'jkoll', '2026-04-21 08:21:08'),
+(31, 'Black A Totes', 2, '{\"Depth\": 8, \"Width\": 11, \"Length\": 12, \"Customer\": \"Allison Transmission\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-Black A Totes.jpg\"}', 'Parts/Plastic Dunnage-Black A Totes.jpg', 'Quantity', 'Vits Drive', 'jkoll', '2026-04-14 12:05:50', 'jkoll', '2026-05-08 10:12:11'),
+(32, '32 x 30 Skids', 14, '{\"Width\": 30, \"Length\": 32, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Skids-32 x 30 Skids.png\"}', 'Parts/Skids-32 x 30 Skids.png', 'Quantity', 'Outside Door 13', 'jkoll', '2026-04-14 12:39:53', 'jkoll', '2026-04-21 07:24:45'),
+(33, 'NCM Tags', 15, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Office Supplies-NCM Tags.png\"}', 'Parts/Office Supplies-NCM Tags.png', 'Quantity', 'Production Office', 'jkoll', '2026-04-14 13:44:25', 'jkoll', '2026-04-21 08:20:05'),
+(34, 'Receiving Tags', 15, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Office Supplies-Receiving Tags.png\"}', 'Parts/Office Supplies-Receiving Tags.png', 'Quantity', 'Receiving Office', 'jkoll', '2026-04-14 13:45:55', 'jkoll', '2026-04-21 08:20:20'),
+(35, 'Pro Performance Gear EP 220-55', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-Pro Performance Gear EP 220-55.png\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-Pro Performance Gear EP 220-55.png', 'Gallons', 'U-A Area', 'jkoll', '2026-04-16 08:24:36', 'jkoll', '2026-05-08 14:27:58'),
+(36, 'Pro Performance Way 68-55', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-Pro Performance Way 68-55.png\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-Pro Performance Way 68-55.png', 'Gallons', 'U-A Racking', 'jkoll', '2026-04-16 08:30:08', 'jkoll', '2026-05-08 14:28:23'),
+(37, 'Pro Performance Way 220-55', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-Pro Performance Way 220-55.png\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-Pro Performance Way 220-55.png', 'Gallons', 'U-A0-00', 'jkoll', '2026-04-16 08:31:20', 'jkoll', '2026-05-08 14:28:12'),
+(38, 'Draw Lube 47', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-Draw Lube 47.jpg\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-Draw Lube 47.jpg', 'Quantity', 'U-A0-00', 'jkoll', '2026-04-21 08:41:40', NULL, NULL),
+(40, '16 x 15 x 9 - Grey Totes', 4, '{\"Color\": \"Grey\", \"Depth\": 9, \"Width\": 13, \"Length\": 13, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Kawasaki Totes-9.5 x 13 x 13 - Grey.jpg\"}', 'Parts/Kawasaki Totes-9.5 x 13 x 13 - Grey.jpg', 'Totes', 'RECV', 'jkoll', '2026-04-21 16:13:51', 'jkoll', '2026-04-24 15:35:03'),
+(41, '24 x 15 x 7 - Grey Totes', 4, '{\"Color\": \"Grey\", \"Depth\": 7, \"Width\": 14, \"Length\": 24, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Kawasaki Totes-7.5 x 13 x 21.5 - Grey.jpg\"}', 'Parts/Kawasaki Totes-7.5 x 13 x 21.5 - Grey.jpg', 'Totes', 'RECV', 'jkoll', '2026-04-21 16:14:38', 'jkoll', '2026-04-24 15:33:29'),
+(42, '24 x 22 x 9 - Green Totes', 4, '{\"Color\": \"Green\", \"Depth\": 9, \"Width\": 21, \"Length\": 20, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Kawasaki Totes-9 x 20.5 x 21.5 - Green.jpg\"}', 'Parts/Kawasaki Totes-9 x 20.5 x 21.5 - Green.jpg', 'Quantity', 'RECV', 'jkoll', '2026-04-21 16:15:22', 'jkoll', '2026-04-24 15:34:16'),
+(43, 'Blue Jarkies', 1, '{\"Customer\": \"Lennox\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Metal Dunnage-Blue Jarkies.jpg\"}', 'Parts/Metal Dunnage-Blue Jarkies.jpg', 'Jarkies', 'Door 13', 'jkoll', '2026-04-24 15:19:10', 'jkoll', '2026-05-07 11:00:27'),
+(45, 'RCK34', 2, '{\"Depth\": 34, \"Width\": 45, \"Length\": 48, \"Customer\": \"John Deere\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-RCK34.jpg\"}', 'Parts/Plastic Dunnage-RCK34.jpg', 'Crates', 'Outside Receiving Docks', 'jkoll', '2026-04-28 14:55:28', 'jkoll', '2026-04-28 14:56:23'),
+(46, 'RCG34', 2, '{\"Depth\": 34, \"Width\": 30, \"Length\": 32, \"Customer\": \"John Deere\"}', NULL, 'Crates', 'Outside Receiving Docks', 'jkoll', '2026-04-28 14:57:38', 'jkoll', '2026-04-28 15:02:05'),
+(47, 'RCG25', 2, '{\"Depth\": 25, \"Width\": 30, \"Length\": 32, \"Customer\": \"John Deere\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-RCG25.jpg\"}', 'Parts/Plastic Dunnage-RCG25.jpg', 'Crates', 'Outside Receiving Docks', 'jkoll', '2026-04-28 14:58:16', 'jkoll', '2026-04-28 15:02:23'),
+(48, 'DuraKlean', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-DuraKlean.jpg\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-DuraKlean.jpg', 'Gallons', 'U-A0-00', 'jkoll', '2026-04-30 14:37:59', NULL, NULL),
+(49, 'Paper Towels', 16, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Janitor Closet-Paper Towels.jpg\"}', 'Parts/Janitor Closet-Paper Towels.jpg', 'Boxes', 'Janitor\'s Closet', 'jkoll', '2026-05-01 07:39:46', NULL, NULL),
+(50, 'Fireball Cleaner', 16, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Janitor Closet-Fireball Cleaner.jpg\"}', 'Parts/Janitor Closet-Fireball Cleaner.jpg', 'Boxes', 'Janitor\'s Closet', 'jkoll', '2026-05-01 07:47:31', NULL, NULL),
+(51, 'Sparkle Cleaner', 16, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Janitor Closet-Sparkle Cleaner.jpg\"}', 'Parts/Janitor Closet-Sparkle Cleaner.jpg', 'Boxes', 'Janitor\'s Closet', 'jkoll', '2026-05-01 07:47:57', NULL, NULL),
+(52, '47 x 52', 6, '{\"Width\": 47, \"Length\": 52, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Cardboard-47 x 52.jpg\"}', 'Parts/Cardboard-47 x 52.jpg', 'Sheets', 'R Bay', 'jkoll', '2026-05-01 15:29:18', 'jkoll', '2026-05-01 15:30:06'),
+(53, 'Short K Crates - Damaged', 3, '{\"Size\": \"Short\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Wooden Dunnage-Short K Crates - Damaged.png\"}', 'Parts/Wooden Dunnage-Short K Crates - Damaged.png', 'Quantity', 'U-A0-00', 'jkoll', '2026-05-06 11:31:08', NULL, NULL),
+(54, 'DuraDraw 6802', 11, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\expo drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Oils & Lubricants-DuraDraw 6802.jpg\", \"Quantity Type\": \"Gallons\", \"Quantity Amount\": 55}', 'Parts/Oils & Lubricants-DuraDraw 6802.jpg', 'Gallons', 'U-A0-00', 'jkoll', '2026-05-08 14:29:02', NULL, NULL),
+(55, 'U-LINE FREE ITEM', 16, '{}', NULL, 'Quantity', 'FRONT OFFICE SUPPLY CLOSET', 'traddatz', '2026-05-13 16:39:59', NULL, NULL),
+(56, 'RCA05', 2, '{\"Depth\": 5, \"Width\": 10, \"Length\": 6, \"Customer\": \"JD\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-RCA05.jpeg\"}', 'Parts/Plastic Dunnage-RCA05.jpeg', 'Totes', 'RECV-VITS', 'traddatz', '2026-05-14 08:11:28', 'jkoll', '2026-05-15 07:28:19'),
+(57, 'Long A Totes', 2, '{\"Depth\": 9, \"Width\": 11, \"Length\": 23, \"Customer\": \"GM5312\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-Long A Totes.jpg\"}', 'Parts/Plastic Dunnage-Long A Totes.jpg', 'Quantity', 'RECV-VITS', 'jkoll', '2026-05-15 08:32:44', NULL, NULL),
+(58, '74 x 40 Heat Treated', 14, '{\"Width\": 40, \"Length\": 74, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Skids-74 x 40 Heat Treated.jpg\"}', 'Parts/Skids-74 x 40 Heat Treated.jpg', 'Skids', '', 'jkoll', '2026-05-19 08:47:50', NULL, NULL),
+(59, '42 x 54 Heat Treated', 14, '{\"Width\": 42, \"Length\": 54, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Skids-42 x 54 Heat Treated.jpg\"}', 'Parts/Skids-42 x 54 Heat Treated.jpg', 'Skids', '', 'jkoll', '2026-05-19 08:49:03', NULL, NULL),
+(60, 'Blue Racks', 1, '{\"Customer\": \"Daimler\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Metal Dunnage-Blue Racks.jpg\", \"Returnable ID\": {\"type\": \"Text\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Text\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}, \"Trailer Number\": {\"type\": \"Text\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Text\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}}', 'Parts/Metal Dunnage-Blue Racks.jpg', 'Racks', '', 'jkoll', '2026-05-19 09:08:50', NULL, NULL),
+(61, 'Z Totes', 2, '{\"Depth\": 9, \"Width\": 12, \"Length\": 15, \"Customer\": \"ZF Transmissions\", \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Plastic Dunnage-ZF Totes.jpg\"}', 'Parts/Plastic Dunnage-ZF Totes.jpg', 'Totes', 'RECV-VITS', 'jkoll', '2026-05-19 13:07:44', 'jkoll', '2026-05-19 13:17:48'),
+(62, '12 x 12 x 12 - Single Walled', 7, '{\"Width\": 12, \"Height\": 12, \"Length\": 12, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Boxes-12 X 12 X 12.jpg\", \"Wall Thickness\": \"Single Walled\"}', 'Parts/Boxes-12 X 12 X 12.jpg', 'Boxes', '', 'jkoll', '2026-05-19 15:19:32', 'jkoll', '2026-05-19 15:23:43'),
+(63, 'Used 40 x 48', 6, '{\"Width\": 40, \"Length\": 48, \"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Cardboard-Used 40 x 48.png\"}', 'Parts/Cardboard-Used 40 x 48.png', 'Sheets', '', 'jkoll', '2026-05-20 09:57:33', NULL, NULL),
+(64, '6 x 4 Thermal Labels', 15, '{\"image_path\": \"\\\\\\\\mtmanu-fs01\\\\Expo Drive\\\\Software Development\\\\Live Applications\\\\Shared\\\\Images\\\\Dunnage\\\\Parts\\\\Office Supplies-6 x 4 Thermal Labels.jpg\"}', 'Parts/Office Supplies-6 x 4 Thermal Labels.jpg', 'Rolls', '', 'jkoll', '2026-05-22 10:37:34', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_quantity_types`
+--
+
+CREATE TABLE `dunnage_quantity_types` (
+  `id` int(11) NOT NULL COMMENT 'Unique identifier for a reusable dunnage quantity label header',
+  `quantity_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Display label used for quantity on dunnage labels, for example Weight or Pieces',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'SYSTEM' COMMENT 'User who first saved this reusable quantity type',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the quantity type was created'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Reusable quantity label headers for Dunnage part setup';
+
+--
+-- Dumping data for table `dunnage_quantity_types`
+--
+
+INSERT INTO `dunnage_quantity_types` (`id`, `quantity_type`, `created_by`, `created_date`) VALUES
+(1, 'Weight', 'SYSTEM', '2026-04-22 10:32:34'),
+(2, 'Gallons', 'SYSTEM', '2026-04-22 10:32:34'),
+(3, 'Boxes', 'SYSTEM', '2026-04-22 10:32:34'),
+(4, 'Sheets', 'SYSTEM', '2026-04-22 10:32:34'),
+(5, 'Bags', 'SYSTEM', '2026-04-22 10:32:34'),
+(6, 'Pieces', 'SYSTEM', '2026-04-22 10:32:34'),
+(13, 'Jarkies', 'jkoll', '2026-04-24 15:19:13'),
+(14, 'Racks', 'jkoll', '2026-04-24 15:19:49'),
+(15, 'Totes', 'jkoll', '2026-04-24 15:32:35'),
+(16, 'Crates', 'jkoll', '2026-04-28 14:55:29'),
+(17, 'Skids', 'jkoll', '2026-05-19 08:47:53'),
+(18, 'Rolls', 'jkoll', '2026-05-22 10:37:36');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_requires_inventory`
+--
+
+CREATE TABLE `dunnage_requires_inventory` (
+  `id` int(11) NOT NULL COMMENT 'Unique identifier for inventoried dunnage record',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Reference to dunnage part requiring inventory tracking',
+  `inventory_method` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Method used for Visual ERP inventory notification (e.g., manual, automatic)',
+  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional notes about inventory handling or special requirements',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username who created the record',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when record was created',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username who last modified the record',
+  `modified_date` datetime DEFAULT NULL COMMENT 'Timestamp when record was last modified'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Dunnage parts requiring Visual ERP inventory notification and tracking';
+
+--
+-- Dumping data for table `dunnage_requires_inventory`
+--
+
+INSERT INTO `dunnage_requires_inventory` (`id`, `part_id`, `inventory_method`, `notes`, `created_by`, `created_date`, `modified_by`, `modified_date`) VALUES
+(1, 'RCK34', 'Adjust In', NULL, 'jkoll', '2026-04-28 14:55:28', 'jkoll', '2026-04-28 14:56:23'),
+(2, 'RCK25', 'Adjust In', NULL, 'jkoll', '2026-04-28 14:56:02', NULL, NULL),
+(3, 'RCG34', 'Adjust In', NULL, 'jkoll', '2026-04-28 14:57:38', 'jkoll', '2026-04-28 15:02:05'),
+(4, 'RCG25', 'Adjust In', NULL, 'jkoll', '2026-04-28 14:58:16', 'jkoll', '2026-04-28 15:02:23'),
+(5, 'RCA05', 'Adjust In', NULL, 'jkoll', '2026-05-15 07:28:19', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_specs`
+--
+
+CREATE TABLE `dunnage_specs` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for dunnage specifications',
+  `type_id` int(11) NOT NULL COMMENT 'Foreign key to dunnage_types table',
+  `spec_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Specification attribute name (e.g., length, width, material)',
+  `spec_value` json DEFAULT NULL COMMENT 'JSON value for the specification (supports flexible data types)',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username who created this record',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when record was created',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username who last modified this record',
+  `modified_date` datetime DEFAULT NULL COMMENT 'Timestamp when record was last modified'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Dynamic specifications and attributes for each dunnage type';
+
+--
+-- Dumping data for table `dunnage_specs`
+--
+
+INSERT INTO `dunnage_specs` (`id`, `type_id`, `spec_key`, `spec_value`, `created_by`, `created_date`, `modified_by`, `modified_date`) VALUES
+(1, 1, 'Customer', '{\"type\": \"Text\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Text\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:15:30', 'jkoll', '2026-04-24 15:14:46'),
+(2, 2, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:24:20', 'jkoll', '2026-04-24 15:15:00'),
+(3, 2, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:24:20', 'jkoll', '2026-04-24 15:15:00'),
+(4, 2, 'Depth', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:24:20', 'jkoll', '2026-04-24 15:15:00'),
+(5, 2, 'Customer', '{\"type\": \"Text\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Text\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:24:20', 'jkoll', '2026-04-24 15:15:00'),
+(6, 3, 'Size', '{\"type\": \"Choices\", \"unit\": \"\", \"choices\": [\"Short\", \"Tall\"], \"dataType\": \"Choices\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:43:40', 'jkoll', '2026-04-24 15:15:11'),
+(7, 4, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:50:52', 'jkoll', '2026-04-24 09:06:56'),
+(8, 4, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:50:52', 'jkoll', '2026-04-24 09:06:56'),
+(9, 4, 'Depth', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-01 12:50:52', 'jkoll', '2026-04-24 09:06:56'),
+(14, 6, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-02 13:38:08', 'jkoll', '2026-04-21 07:24:07'),
+(15, 6, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-02 13:38:08', 'jkoll', '2026-04-21 07:24:07'),
+(16, 7, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-03 10:40:54', 'jkoll', '2026-05-04 11:23:10'),
+(17, 7, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-03 10:40:54', 'jkoll', '2026-05-04 11:23:10'),
+(19, 7, 'Wall Thickness', '{\"type\": \"Choices\", \"unit\": \"\", \"choices\": [\"Single Walled\", \"Double Walled\"], \"dataType\": \"Choices\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-03 10:41:35', 'jkoll', '2026-05-04 11:23:10'),
+(20, 7, 'Height', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-03 10:43:19', 'jkoll', '2026-05-04 11:23:10'),
+(21, 8, 'Customer', '{\"type\": \"Text\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Text\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-07 08:37:30', 'jkoll', '2026-04-24 15:20:25'),
+(22, 9, 'Size', '{\"type\": \"Choices\", \"unit\": \"\", \"choices\": [\"Short\", \"Tall\", \"Mixed\"], \"dataType\": \"Choices\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-08 14:15:59', 'jkoll', '2026-04-08 14:18:35'),
+(23, 10, 'Type', '{\"type\": \"Choices\", \"unit\": \"\", \"choices\": [\"Nylon\", \"3/4 Inch\", \"1 1/4 Inch\"], \"dataType\": \"Choices\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-09 07:18:03', 'jkoll', '2026-04-21 08:13:06'),
+(24, 11, 'Quantity Type', '{\"type\": \"Choices\", \"unit\": \"\", \"choices\": [\"Gallons\", \"Pounds\"], \"dataType\": \"Choices\", \"maxValue\": null, \"minValue\": null, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-09 11:02:51', 'jkoll', '2026-04-21 07:52:05'),
+(25, 12, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-09 12:22:47', 'jkoll', '2026-04-21 08:24:52'),
+(26, 12, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-09 12:22:51', 'jkoll', '2026-04-21 08:24:52'),
+(27, 12, 'Height', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-09 12:22:51', 'jkoll', '2026-04-21 08:24:52'),
+(28, 14, 'Length', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-14 12:39:00', 'jkoll', '2026-04-21 07:24:24'),
+(29, 14, 'Width', '{\"type\": \"Number\", \"unit\": \"Inches\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-14 12:39:00', 'jkoll', '2026-04-21 07:24:24'),
+(30, 11, 'Quantity Amount', '{\"type\": \"Number\", \"unit\": \"\", \"choices\": [], \"dataType\": \"Number\", \"maxValue\": 999, \"minValue\": 1, \"required\": true, \"defaultValue\": \"\"}', 'jkoll', '2026-04-16 08:26:14', 'jkoll', '2026-04-21 07:52:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dunnage_types`
+--
+
+CREATE TABLE `dunnage_types` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for dunnage type',
+  `type_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Display name of dunnage type (e.g., Box, Pallet, Container)',
+  `icon` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PackageVariantClosed' COMMENT 'MaterialIconKind name for UI display (e.g., PackageVariantClosed, Folder)',
+  `image_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Relative PNG path for app-managed type imagery stored in local app data',
+  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username of user who created this record',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when record was created',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of user who last modified this record',
+  `modified_date` datetime DEFAULT NULL COMMENT 'Timestamp when record was last modified'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Type categorization for dunnage items';
+
+--
+-- Dumping data for table `dunnage_types`
+--
+
+INSERT INTO `dunnage_types` (`id`, `type_name`, `icon`, `image_path`, `created_by`, `created_date`, `modified_by`, `modified_date`) VALUES
+(1, 'Metal Dunnage', 'TrainCarContainer', NULL, 'jkoll', '2026-04-01 12:15:30', 'jkoll', '2026-04-24 15:14:46'),
+(2, 'Plastic Dunnage', 'WindowOpenVariant', NULL, 'jkoll', '2026-04-01 12:24:20', 'jkoll', '2026-04-24 15:15:00'),
+(3, 'Wooden Dunnage', 'PackageVariantClosed', NULL, 'jkoll', '2026-04-01 12:43:40', 'jkoll', '2026-04-24 15:15:11'),
+(4, 'K - Totes', 'PackageVariantClosed', 'Types/DunnageType-Kawasaki Totes.jpg', 'jkoll', '2026-04-01 12:50:52', 'jkoll', '2026-04-24 09:06:56'),
+(6, 'Cardboard', 'ShippingPallet', 'Types/DunnageType-Cardboard.png', 'jkoll', '2026-04-02 13:38:08', 'jkoll', '2026-04-21 07:24:07'),
+(7, 'Boxes', 'PackageVariantClosed', 'Types/DunnageType-Boxes.jpg', 'jkoll', '2026-04-03 10:40:54', 'jkoll', '2026-05-04 11:23:10'),
+(8, 'Wire Baskets', 'PackageVariantClosed', NULL, 'jkoll', '2026-04-07 08:37:30', 'jkoll', '2026-04-24 15:20:25'),
+(9, 'Gaylords', 'PackageVariantClosed', NULL, 'jkoll', '2026-04-08 14:15:59', 'jkoll', '2026-04-08 14:18:35'),
+(10, 'Banding', 'PackageVariantClosed', 'Types/DunnageType-Banding.png', 'jkoll', '2026-04-09 07:18:02', 'jkoll', '2026-04-21 08:13:06'),
+(11, 'Oils & Lubricants', 'PackageVariantClosed', 'Types/DunnageType-Oils & Lubricants.png', 'jkoll', '2026-04-09 10:59:06', 'jkoll', '2026-04-21 07:52:05'),
+(12, 'Bags', 'PackageVariantClosed', 'Types/DunnageType-Bags.png', 'jkoll', '2026-04-09 12:22:44', 'jkoll', '2026-04-21 08:24:51'),
+(13, 'Shrink Wrap', 'PackageVariantClosed', 'Types/DunnageType-Shrink Wrap.jpg', 'jkoll', '2026-04-09 12:24:37', 'jkoll', '2026-04-21 08:16:10'),
+(14, 'Skids', 'PackageVariantClosed', 'Types/DunnageType-Skids.png', 'jkoll', '2026-04-14 12:39:00', 'jkoll', '2026-04-21 07:24:24'),
+(15, 'Office Supplies', 'PackageVariantClosed', 'Types/DunnageType-Office Supplies.png', 'jkoll', '2026-04-14 13:43:20', 'jkoll', '2026-04-21 08:19:17'),
+(16, 'Janitor Closet', 'PackageVariantClosed', 'Types/DunnageType-Janitor Closet.png', 'jkoll', '2026-05-01 07:39:05', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `outside_service_request`
+--
+
+CREATE TABLE `outside_service_request` (
+  `outside_service_request_id` int(11) NOT NULL COMMENT 'Primary key for outside service request header',
+  `request_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Human-readable request number in the OS-000001 format',
+  `created_by_user` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Windows username of the request creator',
+  `created_by_display` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Display name of the request creator',
+  `created_utc` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC timestamp when the request was created',
+  `request_notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Request-level notes for Shipping'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Outside Service request headers';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `outside_service_request_line`
+--
+
+CREATE TABLE `outside_service_request_line` (
+  `outside_service_request_line_id` int(11) NOT NULL COMMENT 'Primary key for outside service request line',
+  `outside_service_request_id` int(11) NOT NULL COMMENT 'FK to outside_service_request.outside_service_request_id',
+  `line_number` int(11) NOT NULL COMMENT 'Line number within the request',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Infor Visual part identifier',
+  `package_count` int(11) NOT NULL COMMENT 'Number of physical packages for this line',
+  `package_summary` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Cached slash-delimited package summary for quick display',
+  `line_phase` enum('Initialize','Setup','Complete') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Initialize' COMMENT 'Current line lifecycle phase',
+  `setup_vendor_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Infor Visual vendor identifier when sourced from history',
+  `setup_vendor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Selected or custom vendor name',
+  `setup_vendor_source` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Values: suggested or custom',
+  `bol_number` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Shipping-owned bill of lading number',
+  `scheduled_ship_utc` datetime DEFAULT NULL COMMENT 'Scheduled ship timestamp captured during setup',
+  `shipping_contact` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Shipping contact or handoff owner',
+  `setup_notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Shipping setup notes',
+  `completed_utc` datetime DEFAULT NULL COMMENT 'UTC timestamp when the line was completed',
+  `completion_notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Completion notes captured when the line is marked complete'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Outside Service request lines';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `outside_service_request_package`
+--
+
+CREATE TABLE `outside_service_request_package` (
+  `outside_service_request_package_id` int(11) NOT NULL COMMENT 'Primary key for outside service package row',
+  `outside_service_request_line_id` int(11) NOT NULL COMMENT 'FK to outside_service_request_line.outside_service_request_line_id',
+  `package_sequence` int(11) NOT NULL COMMENT '1-based package sequence number',
+  `package_quantity` decimal(18,4) NOT NULL COMMENT 'Quantity in the physical package'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Outside Service per-package quantities';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_history`
+--
+
+CREATE TABLE `receiving_history` (
+  `id` int(11) NOT NULL COMMENT 'Auto-incrementing unique identifier',
+  `load_guid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'GUID identifier for app-generated records; NULL for imported historical records',
+  `quantity` int(11) NOT NULL COMMENT 'Quantity of parts received on this label/skid',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part identifier from Infor Visual',
+  `po_number` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order number (VARCHAR to support formats like PO-066914 and PO-064489B)',
+  `po_line_number` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order line number from Infor Visual',
+  `employee_number` int(11) NOT NULL DEFAULT '0' COMMENT 'Employee ID who processed the receiving',
+  `heat` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Heat/lot number for material traceability (optional)',
+  `transaction_date` date NOT NULL COMMENT 'Date the receiving transaction occurred',
+  `initial_location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Initial warehouse location for received parts (optional)',
+  `coils_on_skid` int(11) DEFAULT NULL COMMENT 'Number of coils on the skid (for coil materials, optional)',
+  `label_number` int(11) DEFAULT '1' COMMENT 'Sequential label number when splitting quantities (default: 1)',
+  `load_number` int(11) DEFAULT NULL COMMENT 'Sequential load number within the receiving session',
+  `vendor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vendor/supplier name (optional, for reference)',
+  `part_description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part description from Infor Visual (optional, for reference)',
+  `po_status` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO status snapshot',
+  `po_due_date` date DEFAULT NULL COMMENT 'PO due date snapshot selected for receiving history',
+  `qty_ordered` decimal(18,2) DEFAULT NULL COMMENT 'Ordered quantity snapshot',
+  `unit_of_measure` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Unit of measure snapshot',
+  `remaining_quantity` int(11) DEFAULT NULL COMMENT 'Remaining PO quantity snapshot',
+  `user_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Windows user / app user id snapshot',
+  `packages_per_load` int(11) DEFAULT NULL COMMENT 'Number of packages per load/skid',
+  `package_type_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Package type description (Skid, Box, Coil, etc.)',
+  `weight_per_package` decimal(18,2) DEFAULT NULL COMMENT 'Weight of each individual package',
+  `is_non_po_item` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Non-PO item flag: 1 when part not found in Infor Visual and no PO number',
+  `is_quality_hold_required` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when the part requires a quality hold acknowledgment',
+  `is_quality_hold_acknowledged` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when quality hold has been formally acknowledged',
+  `quality_hold_restriction_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Restriction type code from the quality hold check',
+  `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for the same part in the saved batch',
+  `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for the same part in the saved batch',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Receiving history - stores all receiving transactions matching receiving_label_data structure';
+
+--
+-- Dumping data for table `receiving_history`
+--
+
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(8, 'feed9255-ab98-4204-9cfb-e827b66dd469', 100, '78835831', '068026', NULL, 6229, '96788', '2026-03-25', 'TRL-02', 0, 0, NULL, 'Atlantic Gasket Corporation', 'Seal Cover Plate Firewall', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 04:40:08'),
+(9, 'a7ce1466-b4b9-4aff-a52a-320e0023a731', 2000, '23-10721-100', '067868', NULL, 6229, 'C63731', '2026-03-25', 'V-N1-02', NULL, 0, NULL, 'Buckeye Fasteners, Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.00\" Lg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 04:40:08'),
+(10, '8025d177-1393-43aa-b0b9-c90456073141', 1, 'MMF0000250', '068694', NULL, 6229, 'None', '2026-03-25', 'V-N1-09', NULL, 0, NULL, 'McMaster-Carr Supply Co', 'Blank, .250 X 15.000 X 15.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 04:40:08'),
+(11, '4e405b1d-5585-40b2-aaf4-b4a2b21fbe5f', 144, 'RCA05', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 12.00 x 7.00 x 5.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 1, 2, '2026-03-26 04:40:08'),
+(12, '3c3a82d4-01f2-4e7c-bc89-e60ad78fb75c', 144, 'RCA05', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 12.00 x 7.00 x 5.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 2, 2, '2026-03-26 04:40:08'),
+(13, '27bdc81d-427d-4998-92a1-5abd734203f6', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 1, 24, '2026-03-26 04:40:08'),
+(14, 'd2751919-e905-425c-b934-634eadfc6dec', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 2, 24, '2026-03-26 04:40:08'),
+(15, 'c9122700-ff97-453d-b7b7-c154257ebadc', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 3, 24, '2026-03-26 04:40:08'),
+(16, '26b8bf32-cfa6-4e0a-a433-3e08c2924462', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 4, 24, '2026-03-26 04:40:08'),
+(17, '956324d3-eb8a-4c07-acd9-ba5fbb4b4c70', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 5, 24, '2026-03-26 04:40:08'),
+(18, '281d4f53-ef9a-4c06-9600-8b3ec4e64d17', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 6, 24, '2026-03-26 04:40:08'),
+(19, 'c00fde17-80ac-429f-82a8-146e2b63bd09', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 7, 24, '2026-03-26 04:40:08'),
+(20, '69fd860f-70fc-45c3-8066-109ede227ec4', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 8, 24, '2026-03-26 04:40:08'),
+(21, '1e36f7a7-3edc-4233-9981-e6bef087852b', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 9, 24, '2026-03-26 04:40:08'),
+(22, '8bdeb7aa-5738-48df-973a-5d8936c07d22', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 10, 24, '2026-03-26 04:40:08'),
+(23, '72f0dcaf-02e8-4856-82cf-af57f1ebc97f', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 11, 24, '2026-03-26 04:40:08'),
+(24, '94cd31d7-43ab-42bc-9f4a-45d3eae1579b', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 12, 24, '2026-03-26 04:40:08'),
+(25, '3c1ea186-8d2a-4fb3-93ea-6718236019ac', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 13, 24, '2026-03-26 04:40:08'),
+(26, '453548e4-c4e3-452e-b258-97e0436f8ab4', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 14, 24, '2026-03-26 04:40:08'),
+(27, 'd54f517a-bf64-4ba6-acef-eca159c95b61', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 15, 24, '2026-03-26 04:40:08'),
+(28, 'b5d60ddd-a673-4ba0-bb88-b88650829dd3', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 16, 24, '2026-03-26 04:40:08'),
+(29, '8edf6865-925d-4dd7-af3f-6277f3bef26a', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 17, 24, '2026-03-26 04:40:08'),
+(30, 'b3770ddb-45b9-4602-9aea-819d4d1bc124', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 18, 24, '2026-03-26 04:40:08'),
+(31, 'ed873b40-5338-4abb-9f00-1859236a2dd6', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 19, 24, '2026-03-26 04:40:08'),
+(32, '74b53ce3-d867-46d0-81ae-53d979c99b11', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 20, 24, '2026-03-26 04:40:08'),
+(33, '5af400ce-e370-4a94-9f78-44580fd366db', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 21, 24, '2026-03-26 04:40:08'),
+(34, 'a34a553f-5a40-42c8-9c2a-f432951f75e9', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 22, 24, '2026-03-26 04:40:08'),
+(35, 'f137191c-440c-411e-afce-5d33d3aacf39', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 23, 24, '2026-03-26 04:40:08'),
+(36, 'f8a01015-7926-46f1-863e-397e33d97e0e', 1, 'RCG25', NULL, NULL, 6229, 'N/A', '2026-03-25', 'RECV', NULL, 0, NULL, NULL, 'Tote (Pool) - 32.00 x 30.00 x 25.00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, NULL, 24, 24, '2026-03-26 04:40:08'),
+(37, '365f54ff-766d-4c57-af01-508d7453b95c', 6750, '23-14200-045', '067306', NULL, 6229, 'Assorted', '2026-03-25', 'RECV', NULL, 0, NULL, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 3, '2026-03-26 04:40:08'),
+(38, '48a94d28-d1f6-4289-9058-66c541f7b17d', 6750, '23-14200-045', '067306', NULL, 6229, 'Assorted', '2026-03-25', 'RECV', NULL, 0, NULL, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 3, '2026-03-26 04:40:08'),
+(39, '6d08e531-b1d0-4f3c-afd2-993d7b759df2', 6500, '23-14200-045', '067306', NULL, 6229, 'Assorted', '2026-03-25', 'V-B2-29', NULL, 0, NULL, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 3, '2026-03-26 04:40:08'),
+(40, '2fb7acaf-fbfb-4688-b1d5-9e56dd306872', 6000, '23-12742-005', '066285', NULL, 6229, 'N2502K0011', '2026-03-25', 'V-B2-04', NULL, 0, NULL, 'Facil North America Inc', 'Nut, Clinch, Lkg, M5 x 0.8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 3, '2026-03-26 04:40:08'),
+(41, 'e23060d3-e5d7-4c97-9d79-38723f220eab', 6000, '23-12742-005', '066285', NULL, 6229, 'N2502K0011', '2026-03-25', 'V-N1-03', NULL, 0, NULL, 'Facil North America Inc', 'Nut, Clinch, Lkg, M5 x 0.8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 3, '2026-03-26 04:40:08'),
+(42, '0e2a9275-db20-486d-852c-75e2225c03ce', 6000, '23-12742-005', '066285', NULL, 6229, 'N2502K0011', '2026-03-25', 'V-B2-04', NULL, 0, NULL, 'Facil North America Inc', 'Nut, Clinch, Lkg, M5 x 0.8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 3, '2026-03-26 04:40:08'),
+(43, 'b6023859-ba6d-4aef-b2d6-24b36c846b52', 2500, '23-10721-125', '067306', NULL, 6229, 'FI29982', '2026-03-25', 'V-N1-03', NULL, 0, NULL, 'Facil North America Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.25\" Lg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-26 04:40:08'),
+(44, '8af3bf26-3a7e-4a60-bd13-dfe9fcd6cb75', 200, '23-10721-125', '067306', NULL, 6229, 'FI29982', '2026-03-25', 'V-N1-03', NULL, 0, NULL, 'Facil North America Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.25\" Lg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-26 04:40:08'),
+(71, '81c285f7-8afe-4bd7-a48e-66fb4bd6a383', 2452, 'MMF0005416', '068539', NULL, 6229, '831P03550', '2026-03-26', 'RECV', NULL, 0, NULL, 'Horizon Steel Company', 'Sheet, 16Ga (.059) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 22:11:21'),
+(72, '921a6b35-9ded-41a5-8b9b-b0f599e41c2b', 4170, 'MMC0000388', '066865', NULL, 6229, '42603010', '2026-03-26', 'V-E0-07', NULL, 0, NULL, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 4, '2026-03-26 22:11:21'),
+(73, '03e7a83d-de74-4ae5-803b-003fb876e23b', 4160, 'MMC0000388', '066865', NULL, 6229, '42603010', '2026-03-26', 'V-D0-01', NULL, 0, NULL, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 4, '2026-03-26 22:11:21'),
+(74, '2cc91186-c690-4b19-9ef5-f79b0b6f7755', 4120, 'MMC0000388', '066865', NULL, 6229, '42603010', '2026-03-26', 'V-D0-01', NULL, 0, NULL, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 4, '2026-03-26 22:11:21'),
+(75, '3d026d00-0800-44cc-a3cc-568eabe9ca8d', 4170, 'MMC0000388', '066865', NULL, 6229, '42603010', '2026-03-26', 'V-E0-07', NULL, 0, NULL, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 4, '2026-03-26 22:11:21'),
+(76, 'c46417f4-8d5b-4bf6-ad34-76a4f6ac37c1', 500, '32155-7900', '067244', NULL, 6229, 'Nothing Entered', '2026-03-26', 'W-F2-02', NULL, 0, NULL, 'National Metalwares, L.P.', 'Pipe', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-26 22:11:21'),
+(77, 'b5b880dd-2f10-484d-bf12-e3e67264efc1', 520, '32155-7900', '067244', NULL, 6229, 'Nothing Entered', '2026-03-26', 'W-F2-01', NULL, 0, NULL, 'National Metalwares, L.P.', 'Pipe', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-26 22:11:21'),
+(78, '68c43bbc-a75b-4a43-b7ad-a5cd3fdaae8d', 1000, '32155-7959', '067244', NULL, 6229, 'Nothing Entered', '2026-03-26', 'W-F3-02', NULL, 0, NULL, 'National Metalwares, L.P.', 'Pipe', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 22:11:21'),
+(79, 'ef70fe68-882e-4cdb-9df4-62157b0d3a42', 1000, '32155-7960', '067244', NULL, 6229, 'Nothing Entered', '2026-03-26', 'W-F3-01', NULL, 0, NULL, 'National Metalwares, L.P.', 'Pipe', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 22:11:21'),
+(80, '1910eabc-34db-4046-96fd-74e2a291054e', 5630, 'MMC0000650', '068241', NULL, 6229, '33608', '2026-03-26', 'V-E0-01', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 6, '2026-03-26 22:11:21'),
+(81, '0af87d77-ad9b-447e-bc88-978cdb596e5f', 4186, 'MMC0000650', '068241', NULL, 6229, '33607', '2026-03-26', 'NCM', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 6, '2026-03-26 22:11:21'),
+(82, '67ef9768-3805-4202-ac7f-3222a6297106', 4350, 'MMC0000650', '068241', NULL, 6229, '33607', '2026-03-26', 'V-E0-01', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 6, '2026-03-26 22:11:21'),
+(83, '1bfe64bc-cdc9-448e-a491-db8d7c8651cc', 3850, 'MMC0000650', '068241', NULL, 6229, '33607', '2026-03-26', 'V-F0-04', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 6, '2026-03-26 22:11:21'),
+(84, 'a650a94f-4467-46f9-8e77-3fdd3edb4286', 4064, 'MMC0000650', '068241', NULL, 6229, '33607', '2026-03-26', 'V-F0-04', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 5, 6, '2026-03-26 22:11:21'),
+(85, '951d318f-9d15-404f-a339-672b99dc9cf2', 4346, 'MMC0000650', '068241', NULL, 6229, '33607', '2026-03-26', 'V-E0-02', NULL, 0, NULL, 'Skana Aluminum Company', 'Coil, .054 X 40.237', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 6, 6, '2026-03-26 22:11:21'),
+(86, '91970534-0128-41a0-816a-f93455bcd1e7', 200, '975569', '068575', NULL, 6229, 'NOTHING ENTERED', '2026-03-26', 'WC', NULL, 0, NULL, 'Buckeye Fasteners, Inc', 'Weld Screw M6 x 16', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 22:11:21'),
+(87, '8a1271f3-fdf1-4f97-8203-6ef95610361b', 1500, '963094', '067273', NULL, 6229, '192357', '2026-03-26', 'V-N1-02', NULL, 0, NULL, 'Screw Industries ', 'Nut, Weld M10 * 7.9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-26 22:11:21'),
+(88, '6efbe54a-0f70-4c2b-a5f1-d63c8699a7b6', 700, '963094', '067273', NULL, 6229, '192357', '2026-03-26', 'V-N1-10', NULL, 0, NULL, 'Screw Industries ', 'Nut, Weld M10 * 7.9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-26 22:11:21'),
+(102, 'ac225dba-332d-44b2-96c6-188eb1c699f2', 5230, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 8, '2026-03-26 23:43:33'),
+(103, '781034e3-44d6-43a5-b26b-53612072aa15', 5270, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 8, '2026-03-26 23:43:33'),
+(104, 'f6ca4065-c078-4cb0-b805-d37e508b3820', 5270, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 8, '2026-03-26 23:43:33'),
+(105, '80b2bbad-8dff-4d2b-a6ab-d216bbd61ecd', 5230, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 8, '2026-03-26 23:43:33'),
+(106, '9a849d17-aefa-428e-b8b8-6fd5f3e7d624', 5190, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 5, 8, '2026-03-26 23:43:33'),
+(107, '21151874-e686-4220-83ae-4041fd0eba76', 5190, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 6, 8, '2026-03-26 23:43:33'),
+(108, '29b8cf3d-4d4e-4cf8-bf41-f85d671cf1cb', 5240, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 7, 8, '2026-03-26 23:43:33'),
+(109, '534cf062-2e24-4a75-b671-a90ce6b47ffc', 5240, 'MMC0000565', '066710', NULL, 6229, '559329', '2026-03-26', 'RECV', NULL, 0, NULL, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 8, 8, '2026-03-26 23:43:33'),
+(110, '55c56538-5ae4-45c5-932c-bca8ebe1a492', 5445, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 6, '2026-03-26 23:43:33'),
+(111, '4c21cc5a-5f57-4370-a77b-4332a692d7b2', 5115, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'RECV', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 6, '2026-03-26 23:43:33'),
+(112, 'e14a9039-9686-4384-a76c-eff37787bf52', 5120, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 6, '2026-03-26 23:43:33'),
+(113, 'aee95e70-ddb0-42ab-843b-bf64f983e1de', 5130, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 6, '2026-03-26 23:43:33'),
+(114, 'adc57c11-1b28-4d4a-80cf-05f332165a12', 5130, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 5, 6, '2026-03-26 23:43:33'),
+(115, '84e686f1-6216-446c-b10d-3d6828d6077b', 8425, 'MMC0000880', '068533', NULL, 6229, 'A2552140', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 6, 6, '2026-03-26 23:43:33'),
+(116, '982ac18c-44f8-45c0-b3d6-94e2d3545f06', 8825, 'MMC0000880', '068533', NULL, 6229, 'A2552140', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 6, '2026-03-26 23:43:33'),
+(117, 'ff2b235e-65cb-4cf8-9cce-31db0ba6ee4d', 8845, 'MMC0000880', '068533', NULL, 6229, 'A2552140', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 6, '2026-03-26 23:43:33'),
+(118, 'e81aa4b9-d9f6-4c50-8d53-d99312ebebb1', 8860, 'MMC0000880', '068533', NULL, 6229, 'A2552140', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 6, '2026-03-26 23:43:33'),
+(119, '396f3305-17bc-41fe-91e4-ad74691d02b1', 5445, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 6, '2026-03-26 23:43:33'),
+(120, '2a29887d-23ed-403d-a5f5-469631bdeebc', 5445, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 5, 6, '2026-03-26 23:43:33'),
+(121, 'd7c25d4b-340e-499d-82a2-1df7daa6a9db', 5450, 'MMC0000880', '068533', NULL, 6229, '335974', '2026-03-26', 'V-D0-08', NULL, 0, NULL, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 6, 6, '2026-03-26 23:43:33'),
+(122, '9b6a7882-a1c8-4dbd-8383-57f0fc063aa9', 2350, 'MMC0000570', '068494', NULL, 6229, 'F00844', '2026-03-26', 'V-E0-02', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 18Ga X 8.880', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(123, '75dc3f19-1896-4d01-a63d-70eb834ae346', 1320, 'MMC0000541', '068355', NULL, 6229, '833S63500', '2026-03-26', 'V-E0-03', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 11Ga X 6.750', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(124, '172ad364-ec92-423a-b042-de7cb3a0d04d', 5080, 'MMC0000594', '068355', NULL, 6229, '832N37330', '2026-03-26', 'V-D0-07', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 10Ga X 17.820', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-26 23:43:33'),
+(125, '0006fc54-1de5-4f04-b4aa-e902ef496738', 5460, 'MMC0000594', '068355', NULL, 6229, '336111', '2026-03-26', 'V-D0-07', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 10Ga X 17.820', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-26 23:43:33'),
+(126, '7fce2ae9-c573-4733-8e86-dd2e3ab77f0a', 5370, 'MMC0000782', '068577', NULL, 6229, '336111', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 10Ga X 5.900', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(127, '9ce5c7f9-d4bf-458a-8e55-cb7b42873370', 7280, 'MMC0000777', '068601', NULL, 6229, '335886', '2026-03-26', 'V-D0-07', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 7Ga X 12.375', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-26 23:43:33'),
+(128, '8afb3a38-01ff-4f21-974c-9364e17cd075', 7280, 'MMC0000777', '068601', NULL, 6229, '335886', '2026-03-26', 'V-D0-07', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 7Ga X 12.375', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-26 23:43:33'),
+(129, 'ab567359-da67-4065-868a-71906bfdce7a', 1580, 'MMC0000678', '068601', NULL, 6229, '333250', '2026-03-26', 'V-E0-02', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 11Ga X 5.400', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(130, '8af8bde4-5b69-48af-9fda-7dcac2865347', 2030, 'MMC0000674', '068601', NULL, 6229, '330237', '2026-03-26', 'V-E0-03', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 11Ga X 7.875', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(131, '352a501f-c340-4c48-8c8a-f2a4f85c7830', 4330, 'MMC0000172', '068629', NULL, 6229, '599135', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 22Ga X 14.130', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-26 23:43:33'),
+(133, 'd77f4f0f-fe8d-400c-8d32-fc9bc6a4eae0', 1585, 'MMF0005514', '068601', NULL, 6229, '332389', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.075) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(134, 'e87baf80-a504-4a79-943e-b2bd15f10d07', 1880, 'MMC0000427', '068557', NULL, 6229, '568953', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 16Ga X 9.250', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(135, 'cac8538f-2e93-4f17-abac-0fec2e3d11db', 3036, 'MMF0005510', '068612', NULL, 6229, '337189', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(136, 'd810ae31-fb8f-486e-949a-d416edbf7360', 2400, 'MMC0000733', '068629', NULL, 6229, '335428', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, .187 X 11.400', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(137, 'dba3e255-b361-4a82-8127-d202fc50473c', 6700, 'MMC0000655', '068504', NULL, 6229, '669511', '2026-03-26', 'V-C0-01', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 18Ga X 30.880', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-27 02:39:39'),
+(138, 'fed0a144-82e2-4a1f-ad59-ebbe1a66d888', 6870, 'MMC0000655', '068504', NULL, 6229, '669511', '2026-03-26', 'V-C0-05', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 18Ga X 30.880', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-27 02:39:39'),
+(139, '9768d70f-f4f1-4f24-b2c6-c620253a1cc2', 2968, 'MMF0005507', '068676', NULL, 6229, '335606', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-27 02:39:39'),
+(140, 'c4db6b53-c6e1-4768-8b72-ed8f1e75c123', 2968, 'MMF0005507', '068676', NULL, 6229, '335606', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-27 02:39:39'),
+(141, '2d6b2258-e9d8-4255-9888-44b285410b46', 1700, 'MMC0000092', '068579', NULL, 6229, '327309', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 10Ga X 1.575', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(142, 'bdc6d441-2a36-4635-a962-44f37178721d', 1525, 'MMF0009014', '068703', NULL, 6229, '842Z38490', '2026-03-26', 'WC', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.074) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(143, 'a4a46059-80ed-4c13-bcf3-9149d6e3e557', 3120, 'MMC0000597', '068612', NULL, 6229, '334723', '2026-03-26', 'V-E0-04', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Coil, 10Ga X 6.125', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(144, '2cfec9a1-15e9-4bef-a6a2-f38d3fd38cdf', 968, 'MMF0005511', '068755', NULL, 6229, '335598', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, 11Ga (.119) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, '2026-03-27 02:39:39'),
+(145, '2e1fa2ba-83be-4724-a53c-db2bb3e3ff62', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 10, '2026-03-27 02:39:39'),
+(146, '785cb84a-e939-4517-8c3d-1376d6b6f859', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 10, '2026-03-27 02:39:39'),
+(147, 'dda7eeca-2c09-46ac-b2ae-6dc12aa1a3e5', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 3, 10, '2026-03-27 02:39:39'),
+(148, '6110bcc1-53a6-4196-9a52-1a35e860d2c8', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 4, 10, '2026-03-27 02:39:39'),
+(149, 'a6feecea-ffc1-4679-8178-3030c485575d', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 5, 10, '2026-03-27 02:39:39'),
+(150, 'd2e446ce-35a4-4bfb-97f1-29fbd7557b88', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 6, 10, '2026-03-27 02:39:39'),
+(151, 'c3cae23a-7f58-47e0-a6bf-82b12476b38b', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 7, 10, '2026-03-27 02:39:39'),
+(152, 'ec535431-afae-49df-8f84-2eddb11f6061', 4467, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 8, 10, '2026-03-27 02:39:39'),
+(153, 'bbafdba5-1df7-4566-9197-b731a73d197b', 5110, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 9, 10, '2026-03-27 02:39:39'),
+(154, '20e8ada2-97ca-48d4-852d-a149a581802a', 5110, 'MMF0005531', '068421', NULL, 6229, 'E5542', '2026-03-26', 'S-00', NULL, 0, NULL, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 10, 10, '2026-03-27 02:39:39'),
+(164, '83f36f2e-b910-434d-ae51-e310b755995e', 4062, 'MMC0000014', '068597', NULL, 6229, 'Nothing Entered', '2026-03-26', 'V-B0-21', NULL, 0, NULL, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 1, 2, '2026-03-27 03:25:37'),
+(165, 'a8303d34-e6ac-448f-bff6-42c72d5cdaa6', 1978, 'MMC0000014', '068597', NULL, 6229, 'NOTHING ENTERED', '2026-03-26', 'V-B0-21', NULL, 0, NULL, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, 2, 2, '2026-03-27 03:25:37'),
+(166, 'ffe04ee8-55fe-4778-bee6-8ad81c667d18', 11480, 'MMC0000652', '067236', '4', 6229, '669743', '2026-03-30', 'V-B0-30', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'C', NULL, 110000.00, 'LBS', -8500, 'jkoll', 1, 'Coils', 11480.00, 0, 0, 0, NULL, 1, 4, '2026-03-30 23:09:31'),
+(167, '05063165-937a-4cf0-ae22-c44ec18c0331', 11220, 'MMC0000652', '067236', '4', 6229, '669743', '2026-03-30', 'V-B0-30', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'C', NULL, 110000.00, 'LBS', -8500, 'jkoll', 1, 'Coils', 11220.00, 0, 0, 0, NULL, 2, 4, '2026-03-30 23:09:31'),
+(168, 'c9b2d243-69fd-4d61-929c-c993555c1189', 11200, 'MMC0000652', '067236', '4', 6229, '669743', '2026-03-30', 'V-C0-08', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'C', NULL, 110000.00, 'LBS', -8500, 'jkoll', 1, 'Coils', 11200.00, 0, 0, 0, NULL, 3, 4, '2026-03-30 23:09:31'),
+(169, '6c0079af-11f2-4598-bff7-39fe1b42b29c', 11400, 'MMC0000652', '067236', '4', 6229, '669743', '2026-03-30', 'V-B0-30', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'C', NULL, 110000.00, 'LBS', -8500, 'jkoll', 1, 'Coils', 11400.00, 0, 0, 0, NULL, 4, 4, '2026-03-30 23:09:31'),
+(170, 'd2d861a9-49bf-458f-b2b1-636a3858bc42', 5870, 'MMC0000384', '068580', '1', 6229, '25T11210', '2026-03-30', 'V-C0-10', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', NULL, 5000.00, 'LBS', 5000, 'jkoll', 1, 'Coils', 5870.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:35:52'),
+(171, '506829d4-8958-4b54-906e-7adc7e757d77', 484, 'MMC0000569', '068648', '1', 6229, 'RA25E0239A', '2026-03-30', 'V-B2-02', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .100 X 19.000', 'R', NULL, 1000.00, 'LBS', 1000, 'jkoll', 1, 'Coils', 484.00, 0, 0, 0, NULL, 1, 3, '2026-03-31 01:37:48'),
+(172, '36079eaa-02e8-43b6-b79f-41dd6b3e1dd5', 486, 'MMC0000569', '068648', '1', 6229, 'RA25E0239A', '2026-03-30', 'V-B2-02', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .100 X 19.000', 'R', NULL, 1000.00, 'LBS', 1000, 'jkoll', 1, 'Coils', 486.00, 0, 0, 0, NULL, 2, 3, '2026-03-31 01:37:48'),
+(173, '747f3c08-cdcf-4fed-89b3-d08d7083fc6d', 488, 'MMC0000569', '068648', '1', 6229, 'RA25E0239A', '2026-03-30', 'V-B2-01', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .100 X 19.000', 'R', NULL, 1000.00, 'LBS', 1000, 'jkoll', 1, 'Coils', 488.00, 0, 0, 0, NULL, 3, 3, '2026-03-31 01:37:48'),
+(174, 'f70e220d-8b2e-43cb-b4c6-ea09fb69a704', 2190, 'MMC0000626', '068356', '1', 6229, 'QA158C-E2', '2026-03-30', 'V-A0-05', NULL, 1, 1, 'Tandem Metals, Inc', 'Coil, .084 X 0.984', 'R', NULL, 2550.00, 'LBS', 2550, 'jkoll', 10, 'Coils', 219.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:38:37'),
+(175, '190f5737-275d-45c9-95e9-26e74a1b2007', 3219, 'MMF0005578', '068627', '1', 6229, 'Y09632', '2026-03-30', 'T-00', NULL, 1, 1, 'Steel Warehouse Company', 'Sheet, (.787) 20mm X 60.000 X 96.000', 'F', NULL, 7250.00, 'LBS', 7250, 'jkoll', 2, 'Sheets', 1610.00, 0, 0, 0, NULL, 1, 2, '2026-03-31 01:40:01'),
+(176, 'fe4b2063-795a-4d08-8f55-783d07515984', 3219, 'MMF0005578', '068627', '1', 6229, 'Y09632', '2026-03-30', 'T-00', NULL, 2, 2, 'Steel Warehouse Company', 'Sheet, (.787) 20mm X 60.000 X 96.000', 'F', NULL, 7250.00, 'LBS', 7250, 'jkoll', 2, 'Sheets', 1610.00, 0, 0, 0, NULL, 2, 2, '2026-03-31 01:40:01'),
+(177, '00190a3d-3ab2-420b-8960-03a8c2e38fc9', 1000, 'GENFOAM3', '068543', '3', 6229, 'Nothing Entered', '2026-03-30', 'V-B3-02', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 3.62\" (3.0#)', 'R', NULL, 1000.00, 'EA', 1000, 'jkoll', 2, 'Boxes', 500.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:46:02'),
+(178, 'e345e934-c23e-4534-b287-f4fd6cf8ebae', 192, 'GENFOAM4', '068657', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-N3-14', NULL, 1, 1, 'Styrene Products Inc', '2\" x 5.00\" x 52.00\" (3.0#)', 'R', NULL, 960.00, 'EA', 960, 'jkoll', 4, 'Stacks', 48.00, 0, 0, 0, NULL, 1, 4, '2026-03-31 01:46:54'),
+(179, '7f14392b-00ba-4535-bc06-277190afe8c1', 192, 'GENFOAM4', '068657', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-N4-01', NULL, 2, 2, 'Styrene Products Inc', '2\" x 5.00\" x 52.00\" (3.0#)', 'R', NULL, 960.00, 'EA', 960, 'jkoll', 4, 'Stacks', 48.00, 0, 0, 0, NULL, 2, 4, '2026-03-31 01:46:54'),
+(180, 'd33a2152-a445-4181-af9a-c9baa0bfd96e', 288, 'GENFOAM4', '068657', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-N4-01', NULL, 3, 3, 'Styrene Products Inc', '2\" x 5.00\" x 52.00\" (3.0#)', 'R', NULL, 960.00, 'EA', 960, 'jkoll', 6, 'Stacks', 48.00, 0, 0, 0, NULL, 3, 4, '2026-03-31 01:46:54'),
+(181, '347a89b7-0b1c-4371-ae29-b5b549b242c1', 288, 'GENFOAM4', '068657', '1', 6229, 'Nothing Entered', '2026-03-30', 'R-K4-02', NULL, 4, 4, 'Styrene Products Inc', '2\" x 5.00\" x 52.00\" (3.0#)', 'R', NULL, 960.00, 'EA', 960, 'jkoll', 6, 'Stacks', 48.00, 0, 0, 0, NULL, 4, 4, '2026-03-31 01:46:54'),
+(182, '95e2becf-cd6b-4550-bf5a-a2af28ca8285', 800, 'GENFOAM1', '068543', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-N4-06', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'R', NULL, 1000.00, 'EA', 1000, 'jkoll', 2, 'Skids', 400.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:48:48'),
+(183, 'fa7cbe6e-2006-4ae6-9366-009560389cba', 200, 'GENFOAM1', '068543', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-N4-06', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'R', NULL, 1000.00, 'EA', 1000, 'jkoll', 1, 'Boxes', 200.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:49:50'),
+(184, 'ef4d4688-c76c-46da-9546-b8b205158b76', 1000, 'GENFOAM2', '068543', '2', 6229, 'Nothing Entered', '2026-03-30', 'V-N3-17', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'R', NULL, 1000.00, 'EA', 1000, 'jkoll', 2, 'Boxes', 500.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 01:50:29'),
+(185, '2a2d79bc-680e-4eec-977c-4b31ecc6bf00', 6090, 'MMC0000943', '068240', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-D0-03', NULL, 1, 1, 'Chicago Coil LLC', 'Coil, 16Ga X 3.210', 'C', NULL, 20000.00, 'LBS', -2845, 'jkoll', 4, 'Coils', 1522.00, 0, 0, 0, NULL, 1, 4, '2026-03-31 02:11:38'),
+(186, 'c5d69cb4-7446-4a31-b66a-5efa393ff8d8', 6100, 'MMC0000943', '068240', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-D0-03', NULL, 2, 2, 'Chicago Coil LLC', 'Coil, 16Ga X 3.210', 'C', NULL, 20000.00, 'LBS', -2845, 'jkoll', 4, 'Coils', 1525.00, 0, 0, 0, NULL, 2, 4, '2026-03-31 02:11:38'),
+(187, 'e2b1fb56-ea4d-4f17-ab57-7415e5a2a8e2', 6120, 'MMC0000943', '068240', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-D0-03', NULL, 3, 3, 'Chicago Coil LLC', 'Coil, 16Ga X 3.210', 'C', NULL, 20000.00, 'LBS', -2845, 'jkoll', 4, 'Coils', 1530.00, 0, 0, 0, NULL, 3, 4, '2026-03-31 02:11:38'),
+(188, '2da3b845-90d2-41d7-a04f-708c669c8e7a', 4535, 'MMC0000943', '068240', '1', 6229, 'Nothing Entered', '2026-03-30', 'V-D0-03', NULL, 4, 4, 'Chicago Coil LLC', 'Coil, 16Ga X 3.210', 'C', NULL, 20000.00, 'LBS', -2845, 'jkoll', 3, 'Coils', 1512.00, 0, 0, 0, NULL, 4, 4, '2026-03-31 02:11:38'),
+(189, '121a97b1-fcf5-4599-b642-23cd0c24fd2f', 100, '984870', '068436', '1', 6229, '253178-001', '2026-03-31', 'V-N1-07', NULL, 1, 1, 'OneMonroe', 'Flange Screw, M16 x 120', 'C', NULL, 100.00, 'EA', 0, 'jkoll', 1, 'Boxes', 100.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 05:04:34'),
+(190, '1819cadb-3e77-479b-a29a-a11deb9d4008', 300, '6246802', '068759', '1', 6229, 'Nothing Entered', '2026-03-31', 'DD-I3-12', NULL, 1, 1, 'Prestige Threaded Products', 'Washer  FOR VITS', 'C', NULL, 300.00, 'EA', 0, 'jkoll', 1, 'Boxes', 300.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 05:09:56'),
+(191, 'c481bf14-f0e8-4c27-a89c-9065e49068c0', 300, '23-10721-125', '067306', '1', 6229, 'FI29905', '2026-03-31', 'S-A1-02', NULL, 1, 1, 'Facil North America Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.25\" Lg', 'R', NULL, 3000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 300.00, 0, 0, 0, NULL, 1, 1, '2026-03-31 05:12:47'),
+(192, '3ed0e209-c9f3-44ec-b23c-c5854123e286', 2000, '963093', '066285', '4', 6229, 'Nothing Entered', '2026-03-31', 'S-A1-02', NULL, 1, 1, 'Facil North America Inc', 'Nut, Square Weld M8 x 1.25 * 6.4', 'C', NULL, 8000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 1, 4, '2026-03-31 05:15:13'),
+(193, '86e4cb09-602e-4edd-a0e0-e6fccb6a1433', 2000, '963093', '066285', '4', 6229, 'Nothing Entered', '2026-03-31', 'S-A1-02', NULL, 2, 2, 'Facil North America Inc', 'Nut, Square Weld M8 x 1.25 * 6.4', 'C', NULL, 8000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 2, 4, '2026-03-31 05:15:13'),
+(194, 'b877de75-959d-4d5d-80f4-3edc4f7ce875', 2000, '963093', '066285', '4', 6229, 'Nothing Entered', '2026-03-31', 'S-A1-02', NULL, 3, 3, 'Facil North America Inc', 'Nut, Square Weld M8 x 1.25 * 6.4', 'C', NULL, 8000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 3, 4, '2026-03-31 05:15:13'),
+(195, 'f236fd16-7043-4fba-a3c2-d33396542059', 2000, '963093', '066285', '4', 6229, 'Nothing Entered', '2026-03-31', 'V-N1-06', NULL, 4, 4, 'Facil North America Inc', 'Nut, Square Weld M8 x 1.25 * 6.4', 'C', NULL, 8000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 4, 4, '2026-03-31 05:15:13'),
+(196, 'c29814b6-51af-4598-bb9e-ebe6e2103829', 3582, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3582.00, 0, 0, 0, NULL, 1, 6, '2026-03-31 05:31:16'),
+(197, '88731173-2c8f-4772-9e3b-59627ac27439', 3380, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3380.00, 0, 0, 0, NULL, 2, 6, '2026-03-31 05:31:16'),
+(198, '1dc6f2c5-5247-44ed-b1fb-b05d84407be4', 3490, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3490.00, 0, 0, 0, NULL, 3, 6, '2026-03-31 05:31:16'),
+(199, '22638500-17e1-4eac-afd5-8649112e8f00', 3176, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3176.00, 0, 0, 0, NULL, 4, 6, '2026-03-31 05:31:16'),
+(200, '4fc603ce-e3d8-4fca-8f78-64d1e69684f0', 3632, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3632.00, 0, 0, 0, NULL, 5, 6, '2026-03-31 05:31:16'),
+(201, '3da2c24d-4d94-48ed-b1da-fb90b0438944', 3610, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3610.00, 0, 0, 0, NULL, 6, 6, '2026-03-31 05:31:16'),
+(202, 'b7565e07-1502-4548-9ac0-b30fa064fc52', 3920, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'V-E0-02', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3920.00, 0, 0, 0, NULL, 1, 8, '2026-03-31 05:50:32'),
+(203, '9b6171e5-65d4-4bc0-a570-0912b0cdd663', 4044, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'WC', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4044.00, 0, 0, 0, NULL, 2, 8, '2026-03-31 05:50:32'),
+(204, 'e26f453e-0639-4523-8f9a-0b2f19cc6c0a', 3956, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'WC', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3956.00, 0, 0, 0, NULL, 3, 8, '2026-03-31 05:50:32'),
+(205, '6e041ed2-b408-4c32-94e3-85998eea6b1b', 3946, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'V-E0-02', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3946.00, 0, 0, 0, NULL, 4, 8, '2026-03-31 05:50:32'),
+(206, '3240b6e6-ae73-46fa-83af-8671a66d4cb1', 4028, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'WC', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4028.00, 0, 0, 0, NULL, 5, 8, '2026-03-31 05:50:32'),
+(207, 'f46ee69e-9364-424c-8ad9-38e60b15a7ae', 3926, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'V-E0-02', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3926.00, 0, 0, 0, NULL, 6, 8, '2026-03-31 05:50:32'),
+(208, 'f2696700-4be0-4899-aafd-401c5ec2804f', 3894, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'V-E0-02', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3894.00, 0, 0, 0, NULL, 7, 8, '2026-03-31 05:50:32'),
+(209, 'af32bf2e-a211-4e57-a1ac-95b77b73c31e', 3836, 'MMC0000659', '068135', '1', 6229, '33609', '2026-03-31', 'NCM', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', NULL, 73558.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3836.00, 0, 0, 0, NULL, 8, 8, '2026-03-31 05:50:32'),
+(210, 'a40ac66b-27e8-4fa0-ba87-9942340bfa96', 8800, 'MMC0000928', '068141', '1', 6229, 'AB8887', '2026-03-31', 'V-C0-08', NULL, 1, 1, 'Stern Steel LLC', 'Coil, 11Ga X 36.205', 'R', NULL, 57000.00, 'LBS', 4840, 'jkoll', 1, 'Coils', 8800.00, 0, 0, 0, NULL, 1, 4, '2026-03-31 05:55:44'),
+(211, 'f2c4279c-2957-4521-9ed6-38217d1f98c4', 8600, 'MMC0000928', '068141', '1', 6229, 'AB8887', '2026-03-31', 'V-C0-08', NULL, 2, 2, 'Stern Steel LLC', 'Coil, 11Ga X 36.205', 'R', NULL, 57000.00, 'LBS', 4840, 'jkoll', 1, 'Coils', 8600.00, 0, 0, 0, NULL, 2, 4, '2026-03-31 05:55:44'),
+(212, 'e2dfa49f-4dae-47d5-97ed-b59865d015ff', 7920, 'MMC0000928', '068141', '1', 6229, 'AB8887', '2026-03-31', 'V-C0-08', NULL, 3, 3, 'Stern Steel LLC', 'Coil, 11Ga X 36.205', 'R', NULL, 57000.00, 'LBS', 4840, 'jkoll', 1, 'Coils', 7920.00, 0, 0, 0, NULL, 3, 4, '2026-03-31 05:55:44'),
+(213, 'a17f38e5-6705-4dea-9aaf-117b843e1b59', 8360, 'MMC0000928', '068141', '1', 6229, 'AB8887', '2026-03-31', 'V-C0-08', NULL, 4, 4, 'Stern Steel LLC', 'Coil, 11Ga X 36.205', 'R', NULL, 57000.00, 'LBS', 4840, 'jkoll', 1, 'Coils', 8360.00, 0, 0, 0, NULL, 4, 4, '2026-03-31 05:55:44'),
+(214, '0e8837b3-4de1-4394-8935-c1d9301c91aa', 1148, 'MMF0005501', '068633', '1', 6229, 'E4425', '2026-03-31', 'T-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, (.1875) X 60.000 X 120.000', 'R', NULL, 1147.00, 'LBS', 1147, 'jkoll', 3, 'Sheets', 383.00, 0, 0, 0, NULL, 1, 1, '2026-04-01 00:27:05'),
+(215, 'c4e4e981-3130-4bad-9e54-3d491c8c07ad', 700, '975843-3PRO', '068560', '1', 6229, 'FI33679', '2026-03-31', 'V-N1-08', 0, 1, 1, 'Buckeye Fasteners, Inc', 'Screw, Weld M8*25 - 3 Projections', 'R', NULL, 700.00, 'EA', 700, 'jkoll', 1, 'Boxes', 700.00, 0, 0, 0, '', 1, 1, '2026-03-31 20:17:26'),
+(216, '56768722-0f1e-40a6-ae78-be44a5a19594', 1180, 'MMF0002016', '068486', '1', 6229, '12/11/208U4', '2026-03-31', 'T-00', 0, 1, 1, 'Alro Steel ', 'Sheet, .250 X 48.000 X 120.000', 'C', NULL, 1180.00, 'LBS', 0, 'jkoll', 8, 'Sheets', 148.00, 0, 0, 0, '', 1, 1, '2026-03-31 21:07:55'),
+(217, '4ab57803-391b-456b-a58d-42a301121782', 4948, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 1, 1, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 4948.00, 0, 0, 0, '', 1, 8, '2026-03-31 22:10:15'),
+(218, '863a2076-62ba-4836-a629-d42395283a82', 4948, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 2, 2, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 4948.00, 0, 0, 0, '', 2, 8, '2026-03-31 22:10:15'),
+(219, '1964cee7-303b-4e9d-b7a0-cd6543218366', 4948, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 3, 3, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 4948.00, 0, 0, 0, '', 3, 8, '2026-03-31 22:10:15'),
+(220, 'e635f13a-7b02-441d-85b5-c3d087c4aee9', 4948, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 4, 4, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 4948.00, 0, 0, 0, '', 4, 8, '2026-03-31 22:10:15'),
+(221, '08e7d213-b1b0-4df2-9968-c50a92dd4c11', 5359, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 5, 5, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 5359.00, 0, 0, 0, '', 5, 8, '2026-03-31 22:10:15'),
+(222, '512f92e8-1f18-46c1-aa31-9502c91f0eb1', 5359, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 6, 6, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 5359.00, 0, 0, 0, '', 6, 8, '2026-03-31 22:10:15'),
+(223, 'c8e3ad17-4e0e-4713-b3b8-e6238a267065', 5359, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 7, 7, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 5359.00, 0, 0, 0, '', 7, 8, '2026-03-31 22:10:15'),
+(224, '11f946dc-ffec-4222-be78-515f2ef1eece', 5359, 'MMC0000880', '068533', '1', 6229, '336855', '2026-03-31', 'V-D0-08', 0, 8, 8, 'Thyssenkrupp Materials NA', 'Coil, .250 X 12.500', 'R', NULL, 120000.00, 'LBS', 1537, 'jkoll', 1, 'Coils', 5359.00, 0, 0, 0, '', 8, 8, '2026-03-31 22:10:15'),
+(225, 'c3d6842b-3d90-4af6-b2c5-2aa831bb915a', 326, '9044996', '068433', '1', 6229, 'Nothing Entered', '2026-03-31', 'DC-K1-06', 0, 1, 1, 'EVM Inc', 'Fitting - 1 1/4 NPT  DELIVER TO VITS', 'C', NULL, 300.00, 'EA', -26, 'jkoll', 1, 'Boxes', 326.00, 0, 0, 0, '', 1, 1, '2026-03-31 23:01:14'),
+(226, '8faa87c2-dfba-4db7-bea6-6da13f9e3735', 500, '11057-7396', '068515', '1', 6229, 'ABC', '2026-03-31', 'DC-U0-17', 0, 2, 2, 'Jagemann Plating Co.', 'Bracket', 'C', NULL, 3272.00, 'EA', 2651, 'jkoll', 1, 'Skids', 500.00, 0, 0, 0, '', 2, 5, '2026-04-01 00:07:04'),
+(227, '47a74085-757e-4170-9a8c-2b6e4f02c395', 500, '11057-7396', '068515', '1', 6229, 'ABC', '2026-03-31', 'DC-R0-04', 0, 3, 3, 'Jagemann Plating Co.', 'Bracket', 'C', NULL, 3272.00, 'EA', 2651, 'jkoll', 1, 'Skids', 500.00, 0, 0, 0, '', 3, 5, '2026-04-01 00:07:04'),
+(228, '06c7d5c8-2e54-4f7a-bfdf-7514c2e9ebf4', 500, '11057-7396', '068515', '1', 6229, 'ABC', '2026-03-31', 'DC-DOCK', 0, 4, 4, 'Jagemann Plating Co.', 'Bracket', 'C', NULL, 3272.00, 'EA', 2651, 'jkoll', 1, 'Skids', 500.00, 0, 0, 0, '', 4, 5, '2026-04-01 00:07:04'),
+(229, 'ae84776a-7384-4532-87fd-56b07c21a660', 500, '11057-7396', '068515', '1', 6229, 'ABC', '2026-03-31', 'v-c0-01', 0, 5, 5, 'Jagemann Plating Co.', 'Bracket', 'C', NULL, 3272.00, 'EA', 2651, 'jkoll', 1, 'Skids', 500.00, 0, 0, 0, '', 5, 5, '2026-04-01 00:07:04'),
+(230, '204b5d97-7052-4fa9-b1a6-f63d5161b452', 4000, 'MMC0000412', '068538', '2', 6229, 'R05181', '2026-04-01', 'V-D0-02', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 2, 'Coils', 2000.00, 0, 0, 0, NULL, 1, 4, '2026-04-01 19:54:13');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(231, '6d7f5d36-906a-48aa-b44e-45e3dec1c5c0', 3890, 'MMC0000412', '068538', '2', 6229, 'R05181', '2026-04-01', 'V-D0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 2, 'Coils', 1945.00, 0, 0, 0, NULL, 2, 4, '2026-04-01 19:54:13'),
+(232, 'a0cec475-9d02-41cc-a766-6963cf9aad8a', 3420, 'MMC0000412', '068538', '2', 6229, 'R05181', '2026-04-01', 'V-D0-01', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 2, 'Coils', 1710.00, 0, 0, 0, NULL, 3, 4, '2026-04-01 19:54:13'),
+(233, 'eceb369d-ecd8-4e9c-8f03-665426a71b37', 1900, 'MMC0000412', '068538', '2', 6229, 'R05181', '2026-04-01', 'V-D0-01', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 1900.00, 0, 0, 0, NULL, 4, 4, '2026-04-01 19:54:13'),
+(234, '64e49892-6211-484b-80b5-91adec57f647', 3900, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3900.00, 0, 0, 0, NULL, 1, 6, '2026-04-01 19:55:33'),
+(235, '5a77f261-9b20-4d41-a00d-a6517a81c352', 3970, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-02', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3970.00, 0, 0, 0, NULL, 2, 6, '2026-04-01 19:55:33'),
+(236, '9fcb953b-806b-425e-8373-a6b806bbd6f0', 3970, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-02', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3970.00, 0, 0, 0, NULL, 3, 6, '2026-04-01 19:55:33'),
+(237, '5af83eab-2472-4939-91b0-ecfb1ed5d881', 3970, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-01', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3970.00, 0, 0, 0, NULL, 4, 6, '2026-04-01 19:55:33'),
+(238, '41e6813d-9bac-43d4-9ea2-904ef26d5ba5', 3970, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-01', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3970.00, 0, 0, 0, NULL, 5, 6, '2026-04-01 19:55:33'),
+(239, '9dbf6ebb-50cb-469f-ad2e-b8957a163d63', 3970, 'MMC0000412', '068538', '2', 6229, 'F20820', '2026-04-01', 'V-D0-01', NULL, 6, 6, 'Dalco Metals, Inc.', 'Coil, 13Ga X 8.750', 'R', NULL, 39000.00, 'LBS', 36880, 'jkoll', 1, 'Coils', 3970.00, 0, 0, 0, NULL, 6, 6, '2026-04-01 19:55:33'),
+(240, 'e8ea167d-fcc5-4378-a825-c37cf8b94066', 6660, 'MMC0000092', '068579', '1', 6229, '832N37330', '2026-04-01', 'V-E0-04', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 1.575', 'R', NULL, 8500.00, 'LBS', 6800, 'jkoll', 9, 'Coils', 740.00, 0, 0, 0, NULL, 1, 1, '2026-04-01 19:56:23'),
+(241, '35de3af8-bc86-4264-91ae-9040455b6261', 1045, 'MMF0005350', '068377', '1', 6229, 'EB9454', '2026-04-07', 'T-00', 0, 1, 1, 'Metals USA - Horicon', 'Sheet, .500 X 60.000 X 120.000', 'R', '2026-04-03', 1045.00, 'LBS', 1045, 'jkoll', 1, 'Sheets', 1045.00, 0, 0, 0, '', 1, 1, '2026-04-07 13:43:36'),
+(242, 'cbbb61c6-67c4-47e1-b267-e5873a94f23a', 3150, 'MMF0005801', '068476', '1', 6229, 'SA1C06B', '2026-04-07', 'WC', 0, 1, 1, 'Metals USA - Horicon', 'Sheet, 14Ga X 60.000 x 120.000', 'R', '2026-04-03', 3150.00, 'LBS', 3150, 'jkoll', 25, 'Sheets', 126.00, 0, 0, 0, '', 1, 1, '2026-04-07 13:44:09'),
+(243, '4d0d3536-38c6-4e51-bebd-6909a2b29a92', 7358, 'MMC0000366', '064489', '1', 6229, '25T20908', '2026-04-07', 'W-04', 0, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 2, 'Coils', 3679.00, 0, 0, 0, '', 1, 3, '2026-04-07 13:45:10'),
+(244, '451d4b2c-7b0e-4c31-bded-04dc14fc768d', 7246, 'MMC0000366', '064489', '1', 6229, '25T20747', '2026-04-07', 'V-D0-09', 0, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 2, 'Coils', 3623.00, 0, 0, 0, '', 2, 3, '2026-04-07 13:45:10'),
+(245, '812be88c-2896-4b01-8163-d479cdb7f8d0', 7352, 'MMC0000366', '064489', '1', 6229, '25T20747', '2026-04-07', 'V-D0-09', 0, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 2, 'Coils', 3676.00, 0, 0, 0, '', 3, 3, '2026-04-07 13:45:10'),
+(246, 'f682e56e-1529-4966-8c47-143fbc3fc276', 2050, 'MMC0000540', '068595', '3', 6229, 'D2500334A', '2026-04-07', 'V-D0-01', 0, 1, 1, 'Mandel Metals, Inc', 'Coil, .080 X 3.250', 'R', '2026-04-07', 2000.00, 'LBS', 2000, 'jkoll', 8, 'Coils', 256.00, 0, 0, 0, '', 1, 1, '2026-04-07 13:46:12'),
+(247, '27401e04-5e5c-48fb-9cd9-a929f14ee648', 3387, 'MMC0000726', '067991', '1', 6229, '812H32860', '2026-04-07', 'V-A0-06', 0, 1, 1, 'Triamerica Steel Resources, LLC', 'Coil, 12Ga X 4.463', 'R', '2026-04-10', 2300.00, 'LBS', 2300, 'jkoll', 2, 'Coils', 1694.00, 0, 0, 0, '', 1, 1, '2026-04-07 17:06:30'),
+(248, 'e14e87cb-a347-4ce0-88a1-fbdca9338ec2', 5225, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 1, 1, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5225.00, 0, 0, 0, '', 1, 8, '2026-04-07 17:09:33'),
+(249, 'b54e0938-f36a-4984-b260-bd178d86e4ea', 5225, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 2, 2, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5225.00, 0, 0, 0, '', 2, 8, '2026-04-07 17:09:33'),
+(250, '392e8b1e-6728-408a-bb8a-6be69fa42574', 5225, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 3, 3, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5225.00, 0, 0, 0, '', 3, 8, '2026-04-07 17:09:33'),
+(251, '127051d9-2499-4a7c-81b1-6f6a615f66e1', 5225, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 4, 4, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5225.00, 0, 0, 0, '', 4, 8, '2026-04-07 17:09:33'),
+(252, 'e2901081-295f-4bda-bbd2-4636d71a2a4e', 5225, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 5, 5, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5225.00, 0, 0, 0, '', 5, 8, '2026-04-07 17:09:33'),
+(253, '2dfa8544-e9ed-4a3a-8b76-c4054995bb58', 5275, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 6, 6, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5275.00, 0, 0, 0, '', 6, 8, '2026-04-07 17:09:33'),
+(254, 'ae883d0d-c00c-4950-a7fc-daadb8258c94', 5275, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 7, 7, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5275.00, 0, 0, 0, '', 7, 8, '2026-04-07 17:09:33'),
+(255, '1e3517c9-1675-4939-8abd-1629863406ed', 5275, 'MMC0000880', '068407', '1', 6229, 'A2602140', '2026-04-07', 'V-D0-08', 0, 8, 8, 'Triamerica Steel Resources, LLC', 'Coil, .250 X 12.500', 'R', '2026-04-10', 43000.00, 'LBS', 43000, 'jkoll', 1, 'Coils', 5275.00, 0, 0, 0, '', 8, 8, '2026-04-07 17:09:33'),
+(256, '1afe7933-12f1-41c5-96ef-ded048fd8aac', 8286, 'MMC0001145', '068057', '1', 6229, '331897', '2026-04-07', 'V-D0-01', 0, 1, 1, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-04-03', 33100.00, 'LBS', 33100, 'jkoll', 1, 'Coils', 8286.00, 0, 0, 0, '', 1, 3, '2026-04-07 17:14:50'),
+(257, '103b7c2b-88a2-4ff6-bddf-8afb82509557', 7484, 'MMC0001145', '068057', '1', 6229, '331897', '2026-04-07', 'V-D0-01', 0, 2, 2, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-04-03', 33100.00, 'LBS', 33100, 'jkoll', 1, 'Coils', 7484.00, 0, 0, 0, '', 2, 3, '2026-04-07 17:14:50'),
+(258, 'f3ed140e-fa04-458b-8516-f6a3d45f800d', 8317, 'MMC0001145', '068057', '1', 6229, '331897', '2026-04-07', 'V-D0-01', 0, 3, 3, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-04-03', 33100.00, 'LBS', 33100, 'jkoll', 1, 'Coils', 8317.00, 0, 0, 0, '', 3, 3, '2026-04-07 17:14:50'),
+(259, '16a202f4-cbec-4a5a-8f85-1b87e665f169', 8311, 'MMC0001145', '068057', '1', 6229, '331897', '2026-04-07', 'V-D0-01', 0, 1, 1, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-04-03', 33100.00, 'LBS', 33100, 'jkoll', 1, 'Coils', 8311.00, 0, 0, 0, '', 1, 1, '2026-04-07 18:13:33'),
+(260, '1c902bc7-a4a1-4866-9eec-518a5371f9e5', 4230, 'MMC0000654', '068405', '2', 6229, '650209', '2026-04-08', 'V-C0-09', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 18.600', 'R', '2026-04-06', 30000.00, 'LBS', -100, 'jkoll', 1, 'Coils', 4230.00, 0, 0, 0, NULL, 1, 2, '2026-04-08 12:18:51'),
+(261, 'ba713d1f-9957-4b19-9b09-26f3699c68df', 4210, 'MMC0000654', '068405', '2', 6229, '650209', '2026-04-08', 'V-C0-09', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 18Ga X 18.600', 'R', '2026-04-06', 30000.00, 'LBS', -100, 'jkoll', 1, 'Coils', 4210.00, 0, 0, 0, NULL, 2, 2, '2026-04-08 12:18:51'),
+(262, 'f889e686-e778-4503-809b-b37612901e21', 1600, 'MMC0000885', '068844', '1', 6229, '329289', '2026-04-08', 'V-B0-19', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 2.000', 'R', '2026-04-07', 1600.00, 'LBS', 0, 'jkoll', 4, 'Coils', 400.00, 0, 0, 0, '', 1, 1, '2026-04-08 12:19:33'),
+(263, '5f1f676d-a39d-4077-baf0-091f6a9423ff', 9320, 'MMC0000415', '068808', '2', 6229, 'F05053', '2026-04-08', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.826', 'R', '2026-04-08', 15000.00, 'LBS', 1080, 'jkoll', 2, 'Coils', 4660.00, 0, 0, 0, NULL, 1, 2, '2026-04-08 12:19:58'),
+(264, 'a49a161e-5337-46f1-acee-c6bf35e81464', 4600, 'MMC0000415', '068808', '2', 6229, 'F05053', '2026-04-08', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.826', 'R', '2026-04-08', 15000.00, 'LBS', 1080, 'jkoll', 1, 'Coils', 4600.00, 0, 0, 0, NULL, 2, 2, '2026-04-08 12:19:58'),
+(265, 'bd278374-f728-4055-af65-053c975f48d0', 5180, 'MMC0000418', '068629', '3', 6229, 'F04776', '2026-04-08', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.560', 'R', '2026-04-10', 24000.00, 'LBS', 3590, 'jkoll', 1, 'Coils', 5180.00, 0, 0, 0, NULL, 1, 4, '2026-04-08 12:20:45'),
+(266, '27fa4fd9-64cf-48ea-9e50-3a2f71d50f89', 5060, 'MMC0000418', '068629', '3', 6229, 'F04776', '2026-04-08', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.560', 'R', '2026-04-10', 24000.00, 'LBS', 3590, 'jkoll', 1, 'Coils', 5060.00, 0, 0, 0, NULL, 2, 4, '2026-04-08 12:20:45'),
+(267, '76c59e01-e568-49ca-a198-96830b771aa5', 5060, 'MMC0000418', '068629', '3', 6229, 'F04776', '2026-04-08', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.560', 'R', '2026-04-10', 24000.00, 'LBS', 3590, 'jkoll', 1, 'Coils', 5060.00, 0, 0, 0, NULL, 3, 4, '2026-04-08 12:20:45'),
+(268, '714cf030-d366-4994-a0c9-b0a9b359026a', 5110, 'MMC0000418', '068629', '3', 6229, 'F04776', '2026-04-08', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.560', 'R', '2026-04-10', 24000.00, 'LBS', 3590, 'jkoll', 1, 'Coils', 5110.00, 0, 0, 0, NULL, 4, 4, '2026-04-08 12:20:45'),
+(269, 'b8b7778b-7ab5-40b1-9e91-1aaa7c402d47', 9630, 'MMC0000529', '068811', '1', 6229, '11-507-5249', '2026-04-08', 'W-04', NULL, 1, 1, 'Greenpoint Metals', 'Coil, 10Ga X 10.000', 'R', '2026-04-08', 49000.00, 'LBS', 1995, 'jkoll', 2, 'Coils', 4815.00, 0, 0, 0, NULL, 1, 5, '2026-04-08 13:03:20'),
+(270, '1b93bb06-8a91-48a7-beba-33fa33aec7a7', 9610, 'MMC0000529', '068811', '1', 6229, '11-507-5249', '2026-04-08', 'RECV', NULL, 2, 2, 'Greenpoint Metals', 'Coil, 10Ga X 10.000', 'R', '2026-04-08', 49000.00, 'LBS', 1995, 'jkoll', 2, 'Coils', 4805.00, 0, 0, 0, NULL, 2, 5, '2026-04-08 13:03:20'),
+(271, '830292bb-ef8a-4ecd-8c00-90a15d4d92b9', 9340, 'MMC0000529', '068811', '1', 6229, '11-507-5249', '2026-04-08', 'W-04', NULL, 3, 3, 'Greenpoint Metals', 'Coil, 10Ga X 10.000', 'R', '2026-04-08', 49000.00, 'LBS', 1995, 'jkoll', 2, 'Coils', 4670.00, 0, 0, 0, NULL, 3, 5, '2026-04-08 13:03:20'),
+(272, '7d015150-6515-4446-a3b5-8d6afbc87570', 9240, 'MMC0000529', '068811', '1', 6229, '11-507-5249', '2026-04-08', 'RECV', NULL, 4, 4, 'Greenpoint Metals', 'Coil, 10Ga X 10.000', 'R', '2026-04-08', 49000.00, 'LBS', 1995, 'jkoll', 2, 'Coils', 4620.00, 0, 0, 0, NULL, 4, 5, '2026-04-08 13:03:20'),
+(273, '42d2aa4d-34e5-4abf-9dc1-45421eec6f49', 9185, 'MMC0000529', '068811', '1', 6229, '11-507-5249', '2026-04-08', 'RECV', NULL, 5, 5, 'Greenpoint Metals', 'Coil, 10Ga X 10.000', 'R', '2026-04-08', 49000.00, 'LBS', 1995, 'jkoll', 2, 'Coils', 4592.00, 0, 0, 0, NULL, 5, 5, '2026-04-08 13:03:20'),
+(274, '4a74af12-80d8-41ac-8cb6-72967215a4e6', 6650, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 1, 1, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6650.00, 0, 0, 0, NULL, 1, 6, '2026-04-08 14:11:58'),
+(275, '12f1f719-2197-47b1-9cf5-f280ede141a7', 6910, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 2, 2, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6910.00, 0, 0, 0, NULL, 2, 6, '2026-04-08 14:11:58'),
+(276, '1791f11f-c898-4810-8368-c97a50e32bc5', 6695, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 3, 3, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6695.00, 0, 0, 0, NULL, 3, 6, '2026-04-08 14:11:58'),
+(277, '2ff46fea-fdf2-43da-ae8c-4aadb1e251f3', 6855, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 4, 4, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6855.00, 0, 0, 0, NULL, 4, 6, '2026-04-08 14:11:58'),
+(278, '68e87204-6867-404e-ad19-be632b3e1bc9', 6915, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 5, 5, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6915.00, 0, 0, 0, NULL, 5, 6, '2026-04-08 14:11:58'),
+(279, '1e835e0c-d693-4360-b366-5bf5f9e3aec6', 6645, 'MMC0000850', '068175', '1', 6229, '334903', '2026-04-08', 'RECV', NULL, 6, 6, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-03-31', 110000.00, 'LBS', 68210, 'jkoll', 1, 'Coils', 6645.00, 0, 0, 0, NULL, 6, 6, '2026-04-08 14:11:58'),
+(280, 'c383cdae-271a-4be4-813c-ab167769de70', 250, '7504736', '068719', '1', 6229, 'Nothing Entered', '2026-04-08', 'RECV DESK', NULL, 1, 1, 'Active Wireworks', 'Guide Rod', 'C', '2026-04-08', 500.00, 'EA', 0, 'jkoll', 1, 'Boxes', 250.00, 0, 0, 0, NULL, 1, 2, '2026-04-08 16:19:53'),
+(281, '9878c3e3-d0a2-4e78-a22a-c331dc055c00', 250, '7504736', '068719', '1', 6229, 'Nothing Entered', '2026-04-08', 'RECV DESK', NULL, 2, 2, 'Active Wireworks', 'Guide Rod', 'C', '2026-04-08', 500.00, 'EA', 0, 'jkoll', 1, 'Boxes', 250.00, 0, 0, 0, NULL, 2, 2, '2026-04-08 16:19:53'),
+(282, '9be59cff-2f44-4107-9785-6c68d74c5cee', 3952, 'MMC0000650', '068241', '2', 6229, '33607', '2026-04-09', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3952.00, 0, 0, 0, NULL, 1, 7, '2026-04-09 14:47:14'),
+(283, '79c22390-ed2d-494c-a94a-2d5d3b996350', 4063, 'MMC0000650', '068241', '2', 6229, '33608', '2026-04-09', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4063.00, 0, 0, 0, NULL, 2, 7, '2026-04-09 14:47:14'),
+(284, '89298ed5-81fe-4eb4-a997-05c09e798bad', 4172, 'MMC0000650', '068241', '2', 6229, '33069', '2026-04-09', 'RECV', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4172.00, 0, 0, 0, NULL, 3, 7, '2026-04-09 14:47:14'),
+(285, 'cbd20d42-2284-4ad3-8478-b6cf3ab58776', 4385, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-09', 'RECV', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4385.00, 0, 0, 0, NULL, 4, 7, '2026-04-09 14:47:14'),
+(286, '145fe052-b2d4-44bf-9ac1-41b0d4f0fb01', 4363, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-09', 'RECV', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4363.00, 0, 0, 0, NULL, 5, 7, '2026-04-09 14:47:14'),
+(287, '808dfcfe-33c7-4254-a656-423373fe0c25', 4255, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-09', 'RECV', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4255.00, 0, 0, 0, NULL, 6, 7, '2026-04-09 14:47:14'),
+(288, 'dbaf5252-edd2-4635-bc67-766e1e84febe', 4218, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-09', 'RECV', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4218.00, 0, 0, 0, NULL, 7, 7, '2026-04-09 14:47:14'),
+(289, 'b5626e66-4f03-4201-a21c-59690125d7c0', 10, 'MMF0000138', '068595', '1', 6229, '322035', '2026-04-09', 'V-N1-02', NULL, 1, 1, 'Mandel Metals, Inc', 'Blank, .187 X 8.500 X 15.500', 'C', '2026-03-20', 200.00, 'EA', -26, 'jkoll', 1, 'Boxes', 10.00, 0, 0, 0, NULL, 1, 1, '2026-04-09 14:49:53'),
+(290, 'edf23c8d-397b-4ba0-9d09-95a2849c0081', 3804, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3804.00, 0, 0, 0, NULL, 1, 10, '2026-04-09 16:23:47'),
+(291, '2bf5124c-42ed-42be-9187-a1d3b0b06a4c', 3772, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3772.00, 0, 0, 0, NULL, 2, 10, '2026-04-09 16:23:47'),
+(292, '14953336-7d70-4401-8093-e7db741eb140', 3800, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3800.00, 0, 0, 0, NULL, 3, 10, '2026-04-09 16:23:47'),
+(293, '0058c492-0a0a-4354-950d-95179ff7a22e', 3672, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3672.00, 0, 0, 0, NULL, 4, 10, '2026-04-09 16:23:47'),
+(294, '8f8f6e9b-872e-4862-99d6-665ba03c0f0e', 3870, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3870.00, 0, 0, 0, NULL, 5, 10, '2026-04-09 16:23:47'),
+(295, '1aff0d01-0202-4ab4-870d-13ab237499ba', 3810, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3810.00, 0, 0, 0, NULL, 6, 10, '2026-04-09 16:23:47'),
+(296, '741abdee-a6ad-495d-a7a1-547305f105f6', 3668, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3668.00, 0, 0, 0, NULL, 7, 10, '2026-04-09 16:23:47'),
+(297, '0c870bc9-bb0a-4a58-ac28-d213626403ee', 3760, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3760.00, 0, 0, 0, NULL, 8, 10, '2026-04-09 16:23:47'),
+(298, '7b953456-346a-40e6-a399-e9e80300d6dc', 5636, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 9, 9, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 5636.00, 0, 0, 0, NULL, 9, 10, '2026-04-09 16:23:47'),
+(299, '93ffc774-fe76-48f7-881f-0e2518d2008b', 3774, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-09', 'RECV', NULL, 10, 10, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3774.00, 0, 0, 0, NULL, 10, 10, '2026-04-09 16:23:47'),
+(323, '1d1ccee4-30cd-477c-89e1-3a5fd103e5a2', 400000, 'FHA-M3-15', '067279', '1', 6229, 'Multiple', '2026-04-09', 'RECV', NULL, 1, 1, 'S.W. Anderson Company', 'Stud, PEM M3 x 0.5 x 15', 'R', '2026-04-17', 400000.00, 'EA', 400000, 'jkoll', 27, 'Boxes', 14815.00, 0, 0, 0, NULL, 1, 1, '2026-04-09 17:57:17'),
+(324, '2c94ab0c-e853-4062-864c-2f987ea5070f', 6760, 'MMC0000850', '068175', '1', 6229, '4182460', '2026-04-09', 'RECV', NULL, 1, 1, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-04-08', 110000.00, 'LBS', 27540, 'jkoll', 1, 'Coils', 6760.00, 0, 0, 0, NULL, 1, 4, '2026-04-09 18:20:13'),
+(325, '20100f7c-6662-4a82-a292-45508f47074f', 6795, 'MMC0000850', '068175', '1', 6229, '4182460', '2026-04-09', 'RECV', NULL, 2, 2, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-04-08', 110000.00, 'LBS', 27540, 'jkoll', 1, 'Coils', 6795.00, 0, 0, 0, NULL, 2, 4, '2026-04-09 18:20:13'),
+(326, '83786b2f-d534-4fa8-b8c0-10c49a82f75f', 6655, 'MMC0000850', '068175', '1', 6229, '4182460', '2026-04-09', 'RECV', NULL, 3, 3, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-04-08', 110000.00, 'LBS', 27540, 'jkoll', 1, 'Coils', 6655.00, 0, 0, 0, NULL, 3, 4, '2026-04-09 18:20:13'),
+(327, '711e5efc-f570-4f22-b919-f2a309ca9490', 7345, 'MMC0000850', '068175', '1', 6229, '4182460', '2026-04-09', 'RECV', NULL, 4, 4, 'Metals USA  Germantown', 'Coil, .312 X 14.330', 'R', '2026-04-08', 110000.00, 'LBS', 27540, 'jkoll', 1, 'Coils', 7345.00, 0, 0, 0, NULL, 4, 4, '2026-04-09 18:20:13'),
+(359, '757cd946-d1a4-49ca-a625-4fe02801a117', 250, 'GM93206-1', '068435', '1', 6229, 'Nothing Entered', '2026-04-14', 'V-B4-15', 0, 1, 1, 'Langley Wire Cloth Products, Inc', 'Mesh, Louver Screen (With Hole)', 'C', '2026-04-17', 500.00, 'EA', -12, 'jkoll', 1, 'Skids', 250.00, 0, 0, 0, '', 1, 2, '2026-04-14 12:13:08'),
+(360, 'fbaaa52c-3124-4de7-81d6-649dd7a0a904', 262, 'GM93206-1', '068435', '1', 6229, 'Nothing Entered', '2026-04-14', 'V-B4-09', 0, 2, 2, 'Langley Wire Cloth Products, Inc', 'Mesh, Louver Screen (With Hole)', 'C', '2026-04-17', 500.00, 'EA', -12, 'jkoll', 1, 'Skids', 262.00, 0, 0, 0, '', 2, 2, '2026-04-14 12:13:08'),
+(361, '438020f4-8c8d-4c6f-bc39-3d4829e2de28', 18000, '807217', '068432', '2', 6229, 'Nothing Entered', '2026-04-14', 'T-00', 0, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld .438-20', 'R', '2026-04-09', 20000.00, 'EA', 20000, 'jkoll', 18, 'Boxes', 1000.00, 0, 0, 0, '', 1, 1, '2026-04-14 12:14:08'),
+(362, '5c9e0c40-b5ab-4956-b37a-eab5f138ab9b', 2000, '807217', '068432', '2', 6229, 'Nothing Entered', '2026-04-14', 'T-00', 0, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld .438-20', 'R', '2026-04-09', 20000.00, 'EA', 20000, 'jkoll', 2, 'Boxes', 1000.00, 0, 0, 0, '', 1, 1, '2026-04-14 12:14:46'),
+(363, '80a3c248-ce64-4fa0-81de-4c2017cf5e46', 25000, '23-11669-100', '067258', '2', 6229, 'NOTHING ENTERED', '2026-04-14', 'WC', 0, 1, 1, 'Buckeye Fasteners, Inc', 'Stud, Weld 5/16-18 x 1.000', 'R', '2026-04-08', 25000.00, 'EA', 25000, 'jkoll', 25, 'Boxes', 1000.00, 0, 0, 0, '', 1, 1, '2026-04-14 12:16:11'),
+(364, '3c7d4c63-3569-4432-9e77-718d09303391', 1604, 'MMF0006615', '068594', '1', 6229, '60408007205', '2026-04-14', 'X-05', 0, 1, 1, 'Security Steel Supply Company', 'Strip, .323 X 3.000 X 120.000', 'C', '2026-04-06', 3000.00, 'LBS', -208, 'jkoll', 44, 'Sheets', 36.00, 0, 0, 0, '', 1, 2, '2026-04-14 13:00:40'),
+(365, '5a6679b6-f816-4474-a789-9c7aa0c5a1ea', 1604, 'MMF0006615', '068594', '1', 6229, '60408007205', '2026-04-14', 'X-05', 0, 2, 2, 'Security Steel Supply Company', 'Strip, .323 X 3.000 X 120.000', 'C', '2026-04-06', 3000.00, 'LBS', -208, 'jkoll', 44, 'Sheets', 36.00, 0, 0, 0, '', 2, 2, '2026-04-14 13:00:41'),
+(366, '1422bda3-4a17-4fb8-8bc1-5e55b3c7063e', 3646, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-14', 'V-F0-04', 0, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3646.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:06:30'),
+(367, 'bfb85451-65a8-47c0-b5a4-7168f13ca349', 3670, 'MMC0000659', '067977', '1', 6229, '33606', '2026-04-14', 'V-F0-04', 0, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3670.00, 0, 0, 0, '', 1, 6, '2026-04-14 13:08:28'),
+(368, 'c3207f3c-51c7-49aa-816b-c17ffe962c57', 3714, 'MMC0000659', '067977', '1', 6229, '33610', '2026-04-14', 'V-F0-04', 0, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3714.00, 0, 0, 0, '', 2, 6, '2026-04-14 13:08:28'),
+(369, '43f8c22e-1e4e-4159-8c1a-b4ad15132e37', 3676, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-14', 'V-F0-04', 0, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3676.00, 0, 0, 0, '', 3, 6, '2026-04-14 13:08:28'),
+(370, 'dc3ad1f8-b42d-45cb-b792-6c8b8052d517', 3568, 'MMC0000659', '067977', '1', 6229, '33606', '2026-04-14', 'V-F0-04', 0, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3568.00, 0, 0, 0, '', 4, 6, '2026-04-14 13:08:28'),
+(371, '166b3917-648b-4d9c-bfe2-f20fa1e1e737', 3552, 'MMC0000659', '067977', '1', 6229, '33606', '2026-04-14', 'V-F0-04', 0, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3552.00, 0, 0, 0, '', 5, 6, '2026-04-14 13:08:28'),
+(372, '18744914-b1da-4df4-8833-691b8acda6fa', 3782, 'MMC0000659', '067977', '1', 6229, '33610', '2026-04-14', 'V-F0-04', 0, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-03-28', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3782.00, 0, 0, 0, '', 6, 6, '2026-04-14 13:08:28'),
+(373, '1f673069-3259-4c68-8824-8f89ed7b1a38', 3377, 'MMC0000651', '065383', '5', 6229, '33423', '2026-04-14', 'V-F0-08', 0, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2025-12-30', 126000.00, 'LBS', 116298, 'jkoll', 1, 'Coils', 3377.00, 0, 0, 0, '', 1, 3, '2026-04-14 13:19:57'),
+(374, '708b0c48-e71f-4367-a033-5dffd50ea152', 3289, 'MMC0000651', '065383', '5', 6229, '33431', '2026-04-14', 'V-F0-08', 0, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2025-12-30', 126000.00, 'LBS', 116298, 'jkoll', 1, 'Coils', 3289.00, 0, 0, 0, '', 2, 3, '2026-04-14 13:19:57'),
+(375, '1aeefb65-bb60-44d7-a2eb-060e4067f3c8', 3541, 'MMC0000651', '065383', '5', 6229, '33430', '2026-04-14', 'V-F0-08', 0, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2025-12-30', 126000.00, 'LBS', 116298, 'jkoll', 1, 'Coils', 3541.00, 0, 0, 0, '', 3, 3, '2026-04-14 13:19:57'),
+(376, '22c36b06-0ca3-484f-a5fe-d4a22c902fed', 6369, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 6369.00, 0, 0, 0, '', 1, 7, '2026-04-14 13:21:11'),
+(377, 'd6db3d72-c41b-4517-8af2-5d27f44e9bed', 4277, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 4277.00, 0, 0, 0, '', 2, 7, '2026-04-14 13:21:11'),
+(378, '54a8b7be-6f3a-4732-92b9-5bbfb4481a82', 4257, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 4257.00, 0, 0, 0, '', 3, 7, '2026-04-14 13:21:11'),
+(379, 'b10708a3-360f-4960-868f-dd630332fc90', 4362, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 4362.00, 0, 0, 0, '', 4, 7, '2026-04-14 13:21:11'),
+(380, '81571e2e-8963-4c98-b64b-0109e9512666', 4010, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 4010.00, 0, 0, 0, '', 5, 7, '2026-04-14 13:21:11'),
+(381, '6e04abbd-71c9-4785-91aa-016a0dc64f97', 3842, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 3842.00, 0, 0, 0, '', 6, 7, '2026-04-14 13:21:11'),
+(382, 'a122dab5-a405-492c-9382-81fe490a10e1', 4261, 'MMC0000650', '068396', '1', 6229, '33611', '2026-04-14', 'V-C0-09', 0, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-11', 40000.00, 'LBS', 40000, 'jkoll', 1, 'Coils', 4261.00, 0, 0, 0, '', 7, 7, '2026-04-14 13:21:11'),
+(383, 'cccac8bd-7a1d-4bed-b4f2-f05cb749a1dd', 4123, 'MMC0000367', '064008', '1', 6229, '22518610', '2026-04-14', 'V-D0-06', 0, 1, 1, 'Basic Metals Inc', 'Coil, 16Ga X 10.866  OBSOLETE', 'R', '2026-08-07', 209964.00, 'LBS', 104842, 'jkoll', 1, 'Coils', 4123.00, 0, 0, 0, '', 1, 5, '2026-04-14 13:22:59'),
+(384, '64614536-92cd-4e2d-b9a3-9e1a488d66f1', 4160, 'MMC0000367', '064008', '1', 6229, '22518610', '2026-04-14', 'V-D0-06', 0, 2, 2, 'Basic Metals Inc', 'Coil, 16Ga X 10.866  OBSOLETE', 'R', '2026-08-07', 209964.00, 'LBS', 104842, 'jkoll', 1, 'Coils', 4160.00, 0, 0, 0, '', 2, 5, '2026-04-14 13:22:59'),
+(385, '3771c8a8-c5cd-42c1-9f02-5979c6e4dede', 4171, 'MMC0000367', '064008', '1', 6229, '22518610', '2026-04-14', 'V-D0-06', 0, 3, 3, 'Basic Metals Inc', 'Coil, 16Ga X 10.866  OBSOLETE', 'R', '2026-08-07', 209964.00, 'LBS', 104842, 'jkoll', 1, 'Coils', 4171.00, 0, 0, 0, '', 3, 5, '2026-04-14 13:22:59'),
+(386, '308ccff8-8b7f-41e8-b5cc-d6fa3151c7fe', 4169, 'MMC0000367', '064008', '1', 6229, '22518610', '2026-04-14', 'V-D0-06', 0, 4, 4, 'Basic Metals Inc', 'Coil, 16Ga X 10.866  OBSOLETE', 'R', '2026-08-07', 209964.00, 'LBS', 104842, 'jkoll', 1, 'Coils', 4169.00, 0, 0, 0, '', 4, 5, '2026-04-14 13:22:59'),
+(387, 'f43d2031-f098-4cd2-a0da-6fb7ef960bcd', 4139, 'MMC0000367', '064008', '1', 6229, '22518610', '2026-04-14', 'V-D0-06', 0, 5, 5, 'Basic Metals Inc', 'Coil, 16Ga X 10.866  OBSOLETE', 'R', '2026-08-07', 209964.00, 'LBS', 104842, 'jkoll', 1, 'Coils', 4139.00, 0, 0, 0, '', 5, 5, '2026-04-14 13:22:59'),
+(388, '3ce8835e-b00c-4c2a-9289-38d52047f6b0', 3718, 'MMC0001136', '068868', '1', 6229, '25T11185', '2026-04-14', 'V-D0-05', 0, 1, 1, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1859.00, 0, 0, 0, '', 1, 7, '2026-04-14 13:24:43'),
+(389, 'b2c2b9e3-442f-49d7-aafb-64d73eeb92cd', 3720, 'MMC0001136', '068868', '1', 6229, '25T11185', '2026-04-14', 'V-D0-05', 0, 2, 2, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1860.00, 0, 0, 0, '', 2, 7, '2026-04-14 13:24:43'),
+(390, '366601bc-9882-41a6-891f-548e273544ba', 3758, 'MMC0001136', '068868', '1', 6229, '25T11185', '2026-04-14', 'V-D0-05', 0, 3, 3, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1879.00, 0, 0, 0, '', 3, 7, '2026-04-14 13:24:43'),
+(391, 'cc3b89ce-0f36-4408-8947-44f36c6bdd22', 3762, 'MMC0001136', '068868', '1', 6229, '25T11185', '2026-04-14', 'V-D0-05', 0, 4, 4, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1881.00, 0, 0, 0, '', 4, 7, '2026-04-14 13:24:43'),
+(392, '40a6842d-89b5-4e73-8ffd-128c42efe9a6', 3714, 'MMC0001136', '068868', '1', 6229, '25T11019', '2026-04-14', 'V-D0-05', 0, 5, 5, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1857.00, 0, 0, 0, '', 5, 7, '2026-04-14 13:24:43'),
+(393, '3980ffb8-f932-40ca-86c7-b0c09c7464c0', 3716, 'MMC0001136', '068868', '1', 6229, '25T11019', '2026-04-14', 'V-D0-05', 0, 6, 6, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1858.00, 0, 0, 0, '', 6, 7, '2026-04-14 13:24:43'),
+(394, '308050b4-06fc-420c-aad0-7203e0f63d7a', 3899, 'MMC0001136', '068868', '1', 6229, '25T11019', '2026-04-14', 'V-D0-05', 0, 7, 7, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 29367, 'jkoll', 2, 'Coils', 1950.00, 0, 0, 0, '', 7, 7, '2026-04-14 13:24:43'),
+(395, 'e8f0bdaf-e4ce-44b5-8c1f-e5b4342134fa', 1170, 'MMF0002009', '068722', '1', 6229, '7551150', '2026-04-14', 'S-00', 0, 1, 1, 'TW Metals', 'Sheet, .063 X 36.000 X 120.000', 'R', '2026-04-08', 1168.00, 'LBS', 1168, 'jkoll', 15, 'Sheets', 78.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:26:28'),
+(396, '83882e80-1e61-439a-9f9d-8dd1b8023f7f', 4340, 'MMC0000742', '068828', '1', 6229, '335576', '2026-04-14', 'V-E0-04', 0, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 10.625', 'R', '2026-04-14', 11000.00, 'LBS', 11000, 'jkoll', 1, 'Coils', 4340.00, 0, 0, 0, '', 1, 3, '2026-04-14 13:28:27'),
+(397, 'c70b817d-904a-4b63-a0a7-504b856edc42', 4330, 'MMC0000742', '068828', '1', 6229, '335576', '2026-04-14', 'V-E0-04', 0, 2, 2, 'MST Steel Corporation', 'Coil, .236 X 10.625', 'R', '2026-04-14', 11000.00, 'LBS', 11000, 'jkoll', 1, 'Coils', 4330.00, 0, 0, 0, '', 2, 3, '2026-04-14 13:28:27'),
+(398, 'd88f6352-b926-421c-9fda-ac40642247b1', 4360, 'MMC0000742', '068828', '1', 6229, '335576', '2026-04-14', 'V-E0-04', 0, 3, 3, 'MST Steel Corporation', 'Coil, .236 X 10.625', 'R', '2026-04-14', 11000.00, 'LBS', 11000, 'jkoll', 1, 'Coils', 4360.00, 0, 0, 0, '', 3, 3, '2026-04-14 13:28:27'),
+(399, '8d454782-00d8-4c66-907a-4760a09919a3', 8040, 'MMC0000667', '068059', '2', 6229, '337423', '2026-04-14', 'V-C0-08', 0, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-10', 72000.00, 'LBS', 72000, 'jkoll', 1, 'Coils', 8040.00, 0, 0, 0, '', 1, 4, '2026-04-14 13:29:38'),
+(400, '8fa259cc-8e40-49c5-b193-bba70d375975', 8180, 'MMC0000667', '068059', '2', 6229, '337423', '2026-04-14', 'V-C0-08', 0, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-10', 72000.00, 'LBS', 72000, 'jkoll', 1, 'Coils', 8180.00, 0, 0, 0, '', 2, 4, '2026-04-14 13:29:38'),
+(401, '5b013e71-e7f5-4b68-8734-52f23887b3ef', 7920, 'MMC0000667', '068059', '2', 6229, '337343', '2026-04-14', 'V-C0-08', 0, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-10', 72000.00, 'LBS', 72000, 'jkoll', 1, 'Coils', 7920.00, 0, 0, 0, '', 3, 4, '2026-04-14 13:29:38'),
+(402, 'cd8e27a8-b8e9-4a80-b9e8-78aac6b0cad0', 6820, 'MMC0000667', '068059', '2', 6229, '337343', '2026-04-14', 'V-C0-08', 0, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-10', 72000.00, 'LBS', 72000, 'jkoll', 1, 'Coils', 6820.00, 0, 0, 0, '', 4, 4, '2026-04-14 13:29:38'),
+(403, '00bf3a0a-c9ea-4213-a582-7dd2ca7473b6', 4830, 'MMC0000416', '068890', '1', 6229, 'R06262', '2026-04-14', 'V-E0-07', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-10', 13400.00, 'LBS', 13400, 'jkoll', 1, 'Coils', 4830.00, 0, 0, 0, '', 1, 3, '2026-04-14 13:31:00'),
+(404, 'f029bec6-85d5-402c-a6c0-435fc895a794', 4830, 'MMC0000416', '068890', '1', 6229, 'R06262', '2026-04-14', 'RECV', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-10', 13400.00, 'LBS', 13400, 'jkoll', 1, 'Coils', 4830.00, 0, 0, 0, '', 2, 3, '2026-04-14 13:31:00'),
+(405, '54c462c9-5a6f-45e9-bd8a-7fb4b5c3fea3', 4830, 'MMC0000416', '068890', '1', 6229, 'R06262', '2026-04-14', 'RECV', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-10', 13400.00, 'LBS', 13400, 'jkoll', 1, 'Coils', 4830.00, 0, 0, 0, '', 3, 3, '2026-04-14 13:31:00'),
+(406, '94488562-ca37-4b9d-b460-bbdfb3dec1ae', 4200, 'MMC0000448', '068538', '1', 6229, '330471', '2026-04-14', 'V-E0-06', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 23925, 'jkoll', 2, 'Coils', 2100.00, 0, 0, 0, '', 1, 4, '2026-04-14 13:31:33'),
+(407, '6ba2f9d7-2e26-4a4c-b9b1-c972fed81e0a', 2080, 'MMC0000448', '068538', '1', 6229, '330471', '2026-04-14', 'V-E0-06', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 23925, 'jkoll', 1, 'Coils', 2080.00, 0, 0, 0, '', 2, 4, '2026-04-14 13:31:33'),
+(408, '0f08416d-37bf-4147-b6fa-ecd48f5148c4', 3840, 'MMC0000448', '068538', '1', 6229, '312290', '2026-04-14', 'V-E0-06', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 23925, 'jkoll', 2, 'Coils', 1920.00, 0, 0, 0, '', 3, 4, '2026-04-14 13:31:33'),
+(409, '243ef43e-f74b-44e0-86b7-4383c8497731', 4840, 'MMC0000448', '068538', '1', 6229, '314571', '2026-04-14', 'V-E0-06', 0, 4, 4, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 23925, 'jkoll', 1, 'Coils', 4840.00, 0, 0, 0, '', 4, 4, '2026-04-14 13:31:33'),
+(410, '6af40526-3210-45c5-b2a6-e6da24970e5b', 3420, 'MMC0001131', '068928', '1', 6229, '336111', '2026-04-14', 'V-E0-04', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.750', 'R', '2026-04-13', 3400.00, 'LBS', 3400, 'jkoll', 1, 'Coils', 3420.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:32:13'),
+(411, 'bf021f92-639f-4030-85a8-c80fc8edaa4e', 4840, 'MMC0000402', '068928', '4', 6229, 'F05970', '2026-04-14', 'V-E0-05', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.000', 'R', '2026-04-13', 4800.00, 'LBS', 4800, 'jkoll', 2, 'Coils', 2420.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:32:34'),
+(412, 'ba93ab35-913d-45ce-ad68-0e6a3fa5fe39', 2790, 'MMC0000428', '068757', '6', 6229, '566936', '2026-04-14', 'V-B0-09', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 8.250', 'R', '2026-04-15', 2790.00, 'LBS', 2790, 'jkoll', 1, 'Coils', 2790.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:33:02'),
+(413, '6efc4e02-5d05-49f4-8c63-36533d82ca8c', 3240, 'MMC0000414', '068757', '7', 6229, '821S08740', '2026-04-14', 'WC', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 1.732', 'R', '2026-04-15', 3000.00, 'LBS', 3000, 'jkoll', 4, 'Coils', 810.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:33:41'),
+(414, '01b6d631-f011-4a15-a344-16ec7a013607', 2950, 'MMC0000072', '068984', '4', 6229, '831S00480', '2026-04-14', 'V-D0-05', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 14.125', 'R', '2026-04-15', 2950.00, 'LBS', 2950, 'jkoll', 1, 'Coils', 2950.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:34:05'),
+(415, '97ee3730-e7e6-4b86-b7ec-45b881a14112', 3560, 'MMC0001124', '068844', '3', 6229, '669755', '2026-04-14', 'V-E0-06', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 1.950', 'R', '2026-04-07', 14900.00, 'LBS', 14900, 'jkoll', 4, 'Coils', 890.00, 0, 0, 0, '', 1, 2, '2026-04-14 13:38:24'),
+(416, 'd8dc06ea-14f8-4ce8-86f7-bd2f8d0ae89e', 3560, 'MMC0001124', '068844', '3', 6229, '669755', '2026-04-14', 'V-E0-06', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 1.950', 'R', '2026-04-07', 14900.00, 'LBS', 14900, 'jkoll', 4, 'Coils', 890.00, 0, 0, 0, '', 2, 2, '2026-04-14 13:38:24'),
+(417, 'f2b5c859-b2f0-445d-9f42-71fe4a6d7492', 6930, 'MMC0000980', '068808', '1', 6229, '832P40470', '2026-04-14', 'V-E0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 6Ga X 2.354', 'R', '2026-04-09', 10900.00, 'LBS', 10900, 'jkoll', 7, 'Coils', 990.00, 0, 0, 0, '', 1, 2, '2026-04-14 13:38:52'),
+(418, 'db439df5-12fc-46ac-ae5f-347ccdb4b82f', 3520, 'MMC0000980', '068808', '1', 6229, '843P71480', '2026-04-14', 'V-E0-03', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 6Ga X 2.354', 'R', '2026-04-09', 10900.00, 'LBS', 10900, 'jkoll', 4, 'Coils', 880.00, 0, 0, 0, '', 2, 2, '2026-04-14 13:38:52'),
+(419, '0a988737-3a01-484f-b3f9-dd888b0074c2', 3660, 'MMC0000448', '068538', '1', 6229, '330471', '2026-04-14', 'V-E0-06', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 8965, 'jkoll', 2, 'Coils', 1830.00, 0, 0, 0, '', 1, 3, '2026-04-14 13:39:38'),
+(420, '9318d2cb-c078-429c-aa27-5282aa9b3da3', 1850, 'MMC0000448', '068538', '1', 6229, '330471', '2026-04-14', 'V-E0-06', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 8965, 'jkoll', 1, 'Coils', 1850.00, 0, 0, 0, '', 2, 3, '2026-04-14 13:39:38'),
+(421, '2d83f7c9-4701-42ff-ad6f-e7aa7bb82437', 3700, 'MMC0000448', '068538', '1', 6229, '330471', '2026-04-14', 'V-E0-06', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.250', 'R', '2026-04-10', 23925.00, 'LBS', 8965, 'jkoll', 2, 'Coils', 1850.00, 0, 0, 0, '', 3, 3, '2026-04-14 13:39:38'),
+(422, 'ff385c05-ad13-4705-ba00-70a5adcd90cf', 5110, 'MMC0000418', '068629', '3', 6229, 'F04776', '2026-04-14', 'RECV', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.560', 'R', '2026-04-10', 24000.00, 'LBS', 3590, 'jkoll', 1, 'Coils', 5110.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:40:19'),
+(423, '917062ca-0474-4333-8ecf-f04775255c6b', 520, 'MMC0000884', '068844', '2', 6229, '329289', '2026-04-14', 'V-B1-23', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 1.250', 'R', '2026-04-13', 650.00, 'LBS', 650, 'jkoll', 2, 'Coils', 260.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:40:46'),
+(424, '4e9e4f19-2ca7-40cc-bfcd-475d1319f3ff', 1512, 'MMF0005525', '068928', '5', 6229, '333802', '2026-04-14', 'S-00', 0, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.250) X 60.000 X 120.000', 'R', '2026-04-13', 1500.00, 'LBS', 1500, 'jkoll', 3, 'Sheets', 504.00, 0, 0, 0, '', 1, 1, '2026-04-14 13:41:33'),
+(425, '44692363-4f31-4106-b17a-bfd53716f302', 1550, 'MMC0000973', '068629', '5', 6229, '336028', '2026-04-14', 'V-E0-06', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, .250 X 4.724', 'R', '2026-04-15', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 1550.00, 0, 0, 0, '', 1, 5, '2026-04-14 13:42:08'),
+(426, '4f1ae858-6cbd-4a41-a5a7-4229d518ae57', 2620, 'MMC0000973', '068629', '5', 6229, '333802', '2026-04-14', 'V-E0-06', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, .250 X 4.724', 'R', '2026-04-15', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 2620.00, 0, 0, 0, '', 2, 5, '2026-04-14 13:42:08'),
+(427, 'bcae3868-cd3c-4b79-8754-eb7f6423502f', 3940, 'MMC0000973', '068629', '5', 6229, '336028', '2026-04-14', 'V-E0-06', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, .250 X 4.724', 'R', '2026-04-15', 10000.00, 'LBS', 10000, 'jkoll', 2, 'Coils', 1970.00, 0, 0, 0, '', 3, 5, '2026-04-14 13:42:08'),
+(428, '242ce407-897f-4f64-a128-0c0cf1a16927', 1720, 'MMC0000973', '068629', '5', 6229, '306302', '2026-04-14', 'V-E0-06', 0, 4, 4, 'Dalco Metals, Inc.', 'Coil, .250 X 4.724', 'R', '2026-04-15', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 1720.00, 0, 0, 0, '', 4, 5, '2026-04-14 13:42:08'),
+(429, '47de7724-d531-49a9-9af1-3c8125e84474', 1110, 'MMC0000973', '068629', '5', 6229, '305512', '2026-04-14', 'V-E0-06', 0, 5, 5, 'Dalco Metals, Inc.', 'Coil, .250 X 4.724', 'R', '2026-04-15', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 1110.00, 0, 0, 0, '', 5, 5, '2026-04-14 13:42:08'),
+(430, '27b78c7d-fdcf-4c84-b1e4-ae962e072be9', 11380, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', 0, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 172000, 'jkoll', 1, 'Coils', 11380.00, 0, 0, 0, '', 1, 4, '2026-04-14 13:48:25'),
+(431, 'fe51d519-a34c-49fd-abef-41519a70779f', 11380, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', 0, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 172000, 'jkoll', 1, 'Coils', 11380.00, 0, 0, 0, '', 2, 4, '2026-04-14 13:48:25'),
+(432, 'bce81389-6c74-4c30-acb1-5766485c0954', 11380, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', 0, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 172000, 'jkoll', 1, 'Coils', 11380.00, 0, 0, 0, '', 3, 4, '2026-04-14 13:48:25'),
+(433, '5fc1c387-796d-4e08-a2c2-edae1564b993', 11380, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', 0, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 172000, 'jkoll', 1, 'Coils', 11380.00, 0, 0, 0, '', 4, 4, '2026-04-14 13:48:25'),
+(434, '835421b1-8e06-4212-bce6-79e4b611e9d9', 4030, 'MMC0000376', '068780', '1', 6229, '337522', '2026-04-14', 'WC', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 18.000', 'C', '2026-04-06', 4000.00, 'LBS', -30, 'jkoll', 1, 'Coils', 4030.00, 0, 0, 0, '', 1, 1, '2026-04-14 14:36:26'),
+(435, 'c289f57f-202d-43fc-9397-019ecadfe64e', 3680, 'MMC0000239', '068928', '3', 6229, '650204', '2026-04-14', 'V-E0-04', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 4.180', 'R', '2026-04-13', 3900.00, 'LBS', 220, 'jkoll', 4, 'Coils', 920.00, 0, 0, 0, '', 1, 1, '2026-04-14 14:37:01'),
+(436, 'ba8fb4ec-d7a1-4875-b8bf-2bd9ae376575', 4840, 'MMC0000734', '068928', '6', 6229, '333828', '2026-04-14', 'V-D0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, .187 X 13.250', 'R', '2026-04-13', 20000.00, 'LBS', 40, 'jkoll', 1, 'Coils', 4840.00, 0, 0, 0, '', 1, 4, '2026-04-14 14:37:35'),
+(437, 'ec1d7ed3-b5bb-4928-86f2-cb42cc03dcfc', 4840, 'MMC0000734', '068928', '6', 6229, '333828', '2026-04-14', 'V-D0-03', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, .187 X 13.250', 'R', '2026-04-13', 20000.00, 'LBS', 40, 'jkoll', 1, 'Coils', 4840.00, 0, 0, 0, '', 2, 4, '2026-04-14 14:37:35'),
+(438, '5a1afc0a-2473-4e48-851e-2bcbd7b9219a', 4840, 'MMC0000734', '068928', '6', 6229, '333828', '2026-04-14', 'V-D0-03', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, .187 X 13.250', 'R', '2026-04-13', 20000.00, 'LBS', 40, 'jkoll', 1, 'Coils', 4840.00, 0, 0, 0, '', 3, 4, '2026-04-14 14:37:35'),
+(439, '48444c01-6e7a-4a55-95f5-2e484bdd3e76', 5440, 'MMC0000734', '068928', '6', 6229, '335428', '2026-04-14', 'V-D0-03', 0, 4, 4, 'Dalco Metals, Inc.', 'Coil, .187 X 13.250', 'R', '2026-04-13', 20000.00, 'LBS', 40, 'jkoll', 2, 'Coils', 2720.00, 0, 0, 0, '', 4, 4, '2026-04-14 14:37:35'),
+(440, '91e13b4b-af2f-4d0e-a52d-b8b0fcb8e127', 6960, 'MMC0000785', '068950', '1', 6229, '669284', '2026-04-14', 'V-D0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 15.000', 'R', '2026-04-14', 6100.00, 'LBS', -860, 'jkoll', 1, 'Coils', 6960.00, 0, 0, 0, '', 1, 1, '2026-04-14 14:38:12'),
+(441, '5fc3c5e9-7e81-4ae9-b19b-b72f5986590d', 3250, 'MMC0000157', '068984', '1', 6229, '669287', '2026-04-14', 'V-D0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 6.750', 'R', '2026-04-15', 3000.00, 'LBS', -250, 'jkoll', 1, 'Coils', 3250.00, 0, 0, 0, '', 1, 1, '2026-04-14 14:38:40'),
+(442, 'dfb95366-d086-4ae7-988d-1dc3cfaa1b1b', 1820, 'MMC0000979', '068703', '3', 6229, '332082', '2026-04-14', 'V-D0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, .187 X 5.950', 'R', '2026-04-16', 6000.00, 'LBS', -130, 'jkoll', 1, 'Coils', 1820.00, 0, 0, 0, '', 1, 3, '2026-04-14 14:39:24'),
+(443, 'c2503199-d2cf-4078-99d9-9c4aedb3cdd2', 2390, 'MMC0000979', '068703', '3', 6229, '335606', '2026-04-14', 'V-D0-03', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, .187 X 5.950', 'R', '2026-04-16', 6000.00, 'LBS', -130, 'jkoll', 1, 'Coils', 2390.00, 0, 0, 0, '', 2, 3, '2026-04-14 14:39:24'),
+(444, '29a48173-3bd6-4cec-af0b-6c0ccedbd81e', 1920, 'MMC0000979', '068703', '3', 6229, '335606', '2026-04-14', 'V-D0-03', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, .187 X 5.950', 'R', '2026-04-16', 6000.00, 'LBS', -130, 'jkoll', 1, 'Coils', 1920.00, 0, 0, 0, '', 3, 3, '2026-04-14 14:39:24'),
+(445, 'b724cd45-7b7b-408d-aeb3-9a8f6e0cfc65', 2980, 'MMC0001130', '069014', '1', 6229, '336929', '2026-04-14', 'V-E0-04', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 8.220', 'R', '2026-04-15', 3000.00, 'LBS', 20, 'jkoll', 1, 'Coils', 2980.00, 0, 0, 0, '', 1, 1, '2026-04-14 15:19:30'),
+(446, 'e7d6816d-d900-4af8-87ac-63bd08fb9940', 4260, 'MMC0000758', '068405', '1', 6229, '337380', '2026-04-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-04-13', 22000.00, 'LBS', 22000, 'jkoll', 2, 'Coils', 2130.00, 0, 0, 0, NULL, 1, 5, '2026-04-14 15:27:06'),
+(447, '5e9f270a-288a-48b8-bc89-47138963f4de', 4260, 'MMC0000758', '068405', '1', 6229, '337380', '2026-04-14', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-04-13', 22000.00, 'LBS', 22000, 'jkoll', 2, 'Coils', 2130.00, 0, 0, 0, NULL, 2, 5, '2026-04-14 15:27:06'),
+(448, 'a9e79a0a-b144-4f53-81f4-632e890efdd7', 5040, 'MMC0000758', '068405', '1', 6229, '323791', '2026-04-14', 'W-04', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-04-13', 22000.00, 'LBS', 22000, 'jkoll', 3, 'Coils', 1680.00, 0, 0, 0, NULL, 3, 5, '2026-04-14 15:27:06'),
+(449, '61b53cd5-3df5-4031-aa16-17f486c0a56d', 5040, 'MMC0000758', '068405', '1', 6229, '323791', '2026-04-14', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-04-13', 22000.00, 'LBS', 22000, 'jkoll', 3, 'Coils', 1680.00, 0, 0, 0, NULL, 4, 5, '2026-04-14 15:27:06'),
+(450, '6a284294-6b1f-4482-8121-8453d30a67f5', 3360, 'MMC0000758', '068405', '1', 6229, '323791', '2026-04-14', 'RECV', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-04-13', 22000.00, 'LBS', 22000, 'jkoll', 2, 'Coils', 1680.00, 0, 0, 0, NULL, 5, 5, '2026-04-14 15:27:06'),
+(451, 'c24acf1b-750e-46e4-b1d8-d00bd05bd3f8', 2020, 'MMC0000932', '068928', '2', 6229, '337522', '2026-04-14', 'V-E0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 4.620', 'R', '2026-04-13', 4830.00, 'LBS', 4830, 'jkoll', 2, 'Coils', 1010.00, 0, 0, 0, NULL, 1, 2, '2026-04-14 15:27:51'),
+(452, '8a09ab50-b95b-4cac-ac24-a9d2935bc11f', 3030, 'MMC0000932', '068928', '2', 6229, '337522', '2026-04-14', 'V-E0-05', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 11Ga X 4.620', 'R', '2026-04-13', 4830.00, 'LBS', 4830, 'jkoll', 3, 'Coils', 1010.00, 0, 0, 0, NULL, 2, 2, '2026-04-14 15:27:51');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(453, 'd07984ff-b75a-4156-9d1a-2029f74a5522', 9200, 'MMC0000415', '068950', '2', 6229, 'F05053', '2026-04-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.826', 'R', '2026-04-14', 17900.00, 'LBS', 17900, 'jkoll', 2, 'Coils', 4600.00, 0, 0, 0, NULL, 1, 2, '2026-04-14 15:28:30'),
+(454, '0160b696-ccb8-4a6a-a3d0-0ea15b5030d0', 9300, 'MMC0000415', '068950', '2', 6229, 'F05053', '2026-04-14', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.826', 'R', '2026-04-14', 17900.00, 'LBS', 17900, 'jkoll', 2, 'Coils', 4650.00, 0, 0, 0, NULL, 2, 2, '2026-04-14 15:28:30'),
+(486, '0d8a20f2-ccfa-4df3-ac17-28ed980877e7', 3812, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 3812.00, 0, 0, 0, '', 1, 12, '2026-04-14 17:00:28'),
+(487, 'e0b52524-5799-4a0b-b4fe-7a521bb330e5', 3820, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 3820.00, 0, 0, 0, '', 2, 12, '2026-04-14 17:00:28'),
+(488, '011426c8-9539-4eb8-92a2-7df4b8e5ad95', 2784, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 2784.00, 0, 0, 0, '', 3, 12, '2026-04-14 17:00:28'),
+(489, 'edbe15b2-9d74-4720-8b2b-83233f5968c8', 3808, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 4, 4, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 3808.00, 0, 0, 0, '', 4, 12, '2026-04-14 17:00:28'),
+(490, 'adf9d4e5-f0ee-48cb-ba70-1abe4117ca2a', 4040, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 5, 5, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4040.00, 0, 0, 0, '', 5, 12, '2026-04-14 17:00:28'),
+(491, '1a352d5a-e748-430a-aeca-7f0ef93b66c8', 4042, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 6, 6, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4042.00, 0, 0, 0, '', 6, 12, '2026-04-14 17:00:28'),
+(492, '94660351-1867-4480-b1db-6164bff53243', 4028, 'MMC0000366', '068972', '2', 6229, '25T20757', '2026-04-14', 'V-F0-09', 0, 7, 7, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4028.00, 0, 0, 0, '', 7, 12, '2026-04-14 17:00:28'),
+(493, 'c3d6dd42-dfc3-4512-a5b0-5942b579d34e', 4152, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 8, 8, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4152.00, 0, 0, 0, '', 8, 12, '2026-04-14 17:00:28'),
+(494, '59499186-faed-43f4-8951-bfd4379026cb', 4164, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 9, 9, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4164.00, 0, 0, 0, '', 9, 12, '2026-04-14 17:00:28'),
+(495, '00faefcc-d8bf-4bbd-bc2e-694973f5aa9b', 4142, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 10, 10, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 4142.00, 0, 0, 0, '', 10, 12, '2026-04-14 17:00:28'),
+(496, '79c65be4-9b5c-4549-b585-47d31077c4c8', 2788, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 11, 11, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 2788.00, 0, 0, 0, '', 11, 12, '2026-04-14 17:00:28'),
+(497, '2ecc0711-d6d0-4773-ac44-75d5f0ce1f8b', 2790, 'MMC0000366', '068972', '2', 6229, '25T20934', '2026-04-14', 'V-F0-09', 0, 12, 12, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-14', 41000.00, 'LBS', 41000, 'jkoll', 1, 'Coils', 2790.00, 0, 0, 0, '', 12, 12, '2026-04-14 17:00:28'),
+(501, 'b827cc52-7190-4a73-b77a-037829d472ef', 7739, 'MMC0000056', '065382', '1', 6229, '326672', '2026-04-14', 'V-F0-05', NULL, 1, 1, 'Basic Metals Inc', 'Coil, 16Ga X 13.860  OBSOLETE', 'C', '2026-05-01', 160726.00, 'LBS', 8163, 'jkoll', 2, 'Coils', 3870.00, 0, 0, 0, NULL, 1, 1, '2026-04-14 18:35:00'),
+(502, '34e098c8-a090-40f7-badf-49065b111ca9', 3903, 'MMC0001136', '068868', '1', 6229, '25T11019', '2026-04-14', 'V-D0-05', NULL, 1, 1, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-04-10', 29367.00, 'LBS', 3080, 'jkoll', 2, 'Coils', 1952.00, 0, 0, 0, NULL, 1, 1, '2026-04-14 18:35:34'),
+(503, '437c4319-844a-473e-8ba9-2120556ef580', 11325, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', NULL, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 81180, 'jkoll', 1, 'Coils', 11325.00, 0, 0, 0, NULL, 1, 4, '2026-04-14 19:01:57'),
+(504, '8f00079f-9ee5-4f3b-863b-b7fe32211400', 11325, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', NULL, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 81180, 'jkoll', 1, 'Coils', 11325.00, 0, 0, 0, NULL, 2, 4, '2026-04-14 19:01:57'),
+(505, 'a0e63b22-fe78-49f0-942e-63c0404f1560', 11325, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', NULL, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 81180, 'jkoll', 1, 'Coils', 11325.00, 0, 0, 0, NULL, 3, 4, '2026-04-14 19:01:57'),
+(506, 'd1a093f7-d68c-45b0-9296-63057579147e', 11325, 'MMC0000850', '068202', '1', 6229, '22609160', '2026-04-14', 'V-D0-09', NULL, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-20', 172000.00, 'LBS', 81180, 'jkoll', 1, 'Coils', 11325.00, 0, 0, 0, NULL, 4, 4, '2026-04-14 19:01:57'),
+(507, '042eae8b-6a9a-41ee-b5db-528fb4bd63c3', 8680, 'MMC0000653', '068322', '1', 6229, '0545589', '2026-04-15', 'V-C0-06', NULL, 1, 1, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-04-15', 44920.00, 'LBS', 44920, 'jkoll', 1, 'Coils', 8680.00, 0, 0, 0, NULL, 1, 5, '2026-04-15 16:29:11'),
+(508, 'cef9e5a9-3f5b-43c3-a463-5bb0b931dd91', 8640, 'MMC0000653', '068322', '1', 6229, '0545589', '2026-04-15', 'V-C0-06', NULL, 2, 2, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-04-15', 44920.00, 'LBS', 44920, 'jkoll', 1, 'Coils', 8640.00, 0, 0, 0, NULL, 2, 5, '2026-04-15 16:29:11'),
+(509, 'f4075c07-48b1-49a1-945d-8b03e19f58af', 9600, 'MMC0000653', '068322', '1', 6229, '0646255', '2026-04-15', 'V-C0-06', NULL, 3, 3, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-04-15', 44920.00, 'LBS', 44920, 'jkoll', 1, 'Coils', 9600.00, 0, 0, 0, NULL, 3, 5, '2026-04-15 16:29:11'),
+(510, '50d773ed-8f16-4a30-a3e5-662787b515cd', 9300, 'MMC0000653', '068322', '1', 6229, '0646255', '2026-04-15', 'V-C0-06', NULL, 4, 4, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-04-15', 44920.00, 'LBS', 44920, 'jkoll', 1, 'Coils', 9300.00, 0, 0, 0, NULL, 4, 5, '2026-04-15 16:29:11'),
+(511, '18fd839b-4c83-4999-a173-b3f6ebd66bd4', 9220, 'MMC0000653', '068322', '1', 6229, '0646255', '2026-04-15', 'V-C0-06', NULL, 5, 5, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-04-15', 44920.00, 'LBS', 44920, 'jkoll', 1, 'Coils', 9220.00, 0, 0, 0, NULL, 5, 5, '2026-04-15 16:29:11'),
+(512, 'ff28b683-2894-4195-8fa1-34a9da585959', 3300, 'MMC0000386', '068984', '5', 6229, '650417', '2026-04-16', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-04-15', 11700.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1100.00, 0, 0, 0, NULL, 1, 5, '2026-04-16 12:07:32'),
+(513, 'e87c24cf-122b-4557-aada-d0e729d0426f', 2200, 'MMC0000386', '068984', '5', 6229, '650417', '2026-04-16', 'V-E0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-04-15', 11700.00, 'LBS', 11700, 'jkoll', 2, 'Coils', 1100.00, 0, 0, 0, NULL, 2, 5, '2026-04-16 12:07:32'),
+(514, 'f75c7782-d1e0-4578-bcd6-cc306a08060f', 2200, 'MMC0000386', '068984', '5', 6229, '650417', '2026-04-16', 'V-E0-01', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-04-15', 11700.00, 'LBS', 11700, 'jkoll', 2, 'Coils', 1100.00, 0, 0, 0, NULL, 3, 5, '2026-04-16 12:07:32'),
+(515, 'd81ae001-d174-429e-a770-52792926d427', 1420, 'MMC0000386', '068984', '5', 6229, '650417', '2026-04-16', 'V-E0-01', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-04-15', 11700.00, 'LBS', 11700, 'jkoll', 1, 'Coils', 1420.00, 0, 0, 0, NULL, 4, 5, '2026-04-16 12:07:32'),
+(516, 'e2c87f4e-9633-4c90-88f9-fe09024656d5', 2470, 'MMC0000386', '068984', '5', 6229, '669284', '2026-04-16', 'V-E0-01', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-04-15', 11700.00, 'LBS', 11700, 'jkoll', 1, 'Coils', 2470.00, 0, 0, 0, NULL, 5, 5, '2026-04-16 12:07:32'),
+(517, '1c2305fe-cf1e-4989-808b-123cf3fed8f6', 2780, 'MMF0005010', '069014', '3', 6229, '842N32670', '2026-04-16', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-04-15', 2400.00, 'LBS', 2400, 'jkoll', 10, 'Sheets', 278.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 12:08:36'),
+(518, '955fd5ea-4734-41dd-915e-9e354ecbc21f', 8340, 'MMC0000939', '068738', '2', 6229, '335606', '2026-04-16', 'V-C0-08', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 26.000', 'R', '2026-04-20', 20000.00, 'LBS', 20000, 'jkoll', 1, 'Coils', 8340.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 12:09:35'),
+(519, '207546a1-3b6b-44aa-a438-e94ac34ab2ec', 5160, 'MMC0000580', '068984', '6', 6229, 'EB9893', '2026-04-16', 'V-E0-02', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 8.900', 'R', '2026-04-21', 5200.00, 'LBS', 5200, 'jkoll', 2, 'Coils', 2580.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 12:10:04'),
+(520, '397ec927-1e69-43b5-a4ae-2eaf0ffe128d', 8315, 'MMC0001146', '068058', '1', 6229, 'N39803', '2026-04-16', 'V-E0-02', NULL, 1, 1, 'Siegal Steel Company', 'Pre-Build, Coil, 20Ga X 35.000', 'R', '2026-04-15', 42000.00, 'LBS', 34790, 'jkoll', 1, 'Coils', 8315.00, 0, 0, 0, NULL, 1, 3, '2026-04-16 12:11:48'),
+(521, '20bbf42e-d4f4-4d0f-a88c-f218fbb5bec1', 8295, 'MMC0001146', '068058', '1', 6229, 'N39803', '2026-04-16', 'V-E0-02', NULL, 2, 2, 'Siegal Steel Company', 'Pre-Build, Coil, 20Ga X 35.000', 'R', '2026-04-15', 42000.00, 'LBS', 34790, 'jkoll', 1, 'Coils', 8295.00, 0, 0, 0, NULL, 2, 3, '2026-04-16 12:11:48'),
+(522, '36881fae-e1a7-4dd1-a8a6-ddca6b1f5fa4', 8340, 'MMC0001146', '068058', '1', 6229, 'N39803', '2026-04-16', 'V-E0-02', NULL, 3, 3, 'Siegal Steel Company', 'Pre-Build, Coil, 20Ga X 35.000', 'R', '2026-04-15', 42000.00, 'LBS', 34790, 'jkoll', 1, 'Coils', 8340.00, 0, 0, 0, NULL, 3, 3, '2026-04-16 12:11:48'),
+(538, '4767c087-0878-4531-9c21-a5cf4e7ef549', 7100, 'MMC0001146', '068058', '2', 6229, '566842', '2026-04-16', 'V-E0-01', NULL, 1, 1, 'Siegal Steel Company', 'Pre-Build, Coil, 20Ga X 35.000', 'R', '2026-05-15', 42000.00, 'LBS', 42000, 'jkoll', 1, 'Coils', 7100.00, 0, 0, 0, NULL, 1, 2, '2026-04-16 13:03:55'),
+(539, 'b3a5e914-879b-4aee-a1c6-faff5661e81e', 7125, 'MMC0001146', '068058', '2', 6229, '566842', '2026-04-16', 'V-E0-01', NULL, 2, 2, 'Siegal Steel Company', 'Pre-Build, Coil, 20Ga X 35.000', 'R', '2026-05-15', 42000.00, 'LBS', 42000, 'jkoll', 1, 'Coils', 7125.00, 0, 0, 0, NULL, 2, 2, '2026-04-16 13:03:55'),
+(540, 'f361748e-f4a1-4a1a-a369-b217afb66795', 3058, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 2, 'Coils', 1529.00, 0, 0, 0, NULL, 1, 7, '2026-04-16 14:00:21'),
+(541, 'a7e788db-2fb9-4de2-9ff4-31142d5ac435', 3050, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 2, 'Coils', 1525.00, 0, 0, 0, NULL, 2, 7, '2026-04-16 14:00:21'),
+(542, 'a7e36bc8-1b23-4445-91b3-9d909c94a5d0', 1536, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 1, 'Coils', 1536.00, 0, 0, 0, NULL, 3, 7, '2026-04-16 14:00:21'),
+(543, '71cdc71a-6da7-48bb-acae-64616c19c3e7', 1470, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 4, 4, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 1, 'Coils', 1470.00, 0, 0, 0, NULL, 4, 7, '2026-04-16 14:00:21'),
+(544, '0581e9a8-6c10-4db2-9eaa-31a5fbf6dc36', 3732, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 5, 5, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 2, 'Coils', 1866.00, 0, 0, 0, NULL, 5, 7, '2026-04-16 14:00:21'),
+(545, 'ffa52476-6192-4676-83bd-96fd95cb18de', 3762, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 6, 6, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 2, 'Coils', 1881.00, 0, 0, 0, NULL, 6, 7, '2026-04-16 14:00:21'),
+(546, '8857475e-b80d-4636-9582-8f869e759d5d', 3820, 'MMC0000516', '068648', '2', 6229, 'Nothing Entered', '2026-04-16', 'V-E0-01', NULL, 7, 7, 'Mandel Metals, Inc', 'Coil, .125 X 11.875', 'R', '2026-04-17', 19800.00, 'LBS', 19800, 'jkoll', 1, 'Coils', 3820.00, 0, 0, 0, NULL, 7, 7, '2026-04-16 14:00:21'),
+(547, 'aa138b66-0896-45c1-9610-732df9b467dc', 8047, 'MMC0000848', '067803', '2', 6229, '11-518-0825', '2026-04-16', 'V-E0-01', NULL, 1, 1, 'Greenpoint Metals', 'Coil, 11Ga X 6.750', 'R', '2026-04-17', 21000.00, 'LBS', 21000, 'jkoll', 3, 'Coils', 2682.00, 0, 0, 0, NULL, 1, 3, '2026-04-16 14:01:28'),
+(548, '27872b89-7a78-4c48-aca0-3914a4e73606', 7823, 'MMC0000848', '067803', '2', 6229, '11-518-0837', '2026-04-16', 'V-E0-01', NULL, 2, 2, 'Greenpoint Metals', 'Coil, 11Ga X 6.750', 'R', '2026-04-17', 21000.00, 'LBS', 21000, 'jkoll', 3, 'Coils', 2608.00, 0, 0, 0, NULL, 2, 3, '2026-04-16 14:01:28'),
+(549, '1447f787-67ca-4591-8ea4-50b756dd52f1', 5522, 'MMC0000848', '067803', '2', 6229, '11-518-0837', '2026-04-16', 'V-E0-01', NULL, 3, 3, 'Greenpoint Metals', 'Coil, 11Ga X 6.750', 'R', '2026-04-17', 21000.00, 'LBS', 21000, 'jkoll', 2, 'Coils', 2761.00, 0, 0, 0, NULL, 3, 3, '2026-04-16 14:01:28'),
+(553, '838fc391-6bdb-4cea-a4e6-82999aa29914', 3494, 'MMC0000449', '068462', '2', 6229, 'EE5C', '2026-04-16', 'V-E0-02', NULL, 1, 1, 'Metals USA - Horicon', 'Coil, 11Ga X 19.163', 'F', '2026-04-15', 3150.00, 'LBS', 3150, 'jkoll', 1, 'Coils', 3494.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 15:16:34'),
+(554, 'dc4df928-9a2b-4e9a-acf2-beda5ae0b752', 6442, 'MMC0000364', '064489', '1', 6229, '25T20883', '2026-04-16', 'V-D0-04', NULL, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6442.00, 0, 0, 0, NULL, 1, 5, '2026-04-16 15:17:05'),
+(555, '4ee0eb7b-1fca-4282-a062-29f34f099377', 6916, 'MMC0000364', '064489', '1', 6229, '25T20884', '2026-04-16', 'V-D0-04', NULL, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6916.00, 0, 0, 0, NULL, 2, 5, '2026-04-16 15:17:05'),
+(556, 'f27585c6-c7a3-408b-a178-96063b3f825d', 6922, 'MMC0000364', '064489', '1', 6229, '25T20884', '2026-04-16', 'V-D0-04', NULL, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6922.00, 0, 0, 0, NULL, 3, 5, '2026-04-16 15:17:05'),
+(557, '00e0cd26-aadf-429c-892f-a20841f64350', 7050, 'MMC0000364', '064489', '1', 6229, '25T20748', '2026-04-16', 'V-D0-04', NULL, 4, 4, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7050.00, 0, 0, 0, NULL, 4, 5, '2026-04-16 15:17:05'),
+(558, 'b3c4bd82-edcf-487c-a6f0-a3203c9922d8', 7046, 'MMC0000364', '064489', '1', 6229, '25T20748', '2026-04-16', 'V-D0-04', NULL, 5, 5, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7046.00, 0, 0, 0, NULL, 5, 5, '2026-04-16 15:17:05'),
+(559, 'db25eb56-0bfd-4c54-bbe2-f17acc82c176', 1045, 'MMF0005350', '068980', '1', 6229, 'EB9454', '2026-04-16', 'T-00', NULL, 1, 1, 'Metals USA - Horicon', 'Sheet, .500 X 60.000 X 120.000', 'R', '2026-04-17', 1045.00, 'LBS', 1045, 'jkoll', 1, 'Sheets', 1045.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 15:20:38'),
+(560, '4ae6e449-f4e6-4f8d-8cb8-071addfcf41a', 3768, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3768.00, 0, 0, 0, NULL, 1, 6, '2026-04-16 15:55:09'),
+(561, '22284b40-d85e-45a0-be73-4fb6f06a6e4c', 3574, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3574.00, 0, 0, 0, NULL, 2, 6, '2026-04-16 15:55:10'),
+(562, 'a592c0a0-0ec3-45f1-b363-f698274696ff', 3506, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3506.00, 0, 0, 0, NULL, 3, 6, '2026-04-16 15:55:10'),
+(563, 'b7ef0e1a-a19c-4b95-8620-67da5ddcf927', 3660, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3660.00, 0, 0, 0, NULL, 4, 6, '2026-04-16 15:55:10'),
+(564, '8396f374-b1e4-4746-aa70-41ff3a27287d', 3670, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3670.00, 0, 0, 0, NULL, 5, 6, '2026-04-16 15:55:10'),
+(565, '3ec5f029-fbc6-4ee7-9a82-8850092ed8c3', 3518, 'MMC0000659', '067977', '1', 6229, '33609', '2026-04-16', 'V-F0-04', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-01', 40000.00, 'LBS', 18038, 'jkoll', 1, 'Coils', 3518.00, 0, 0, 0, NULL, 6, 6, '2026-04-16 15:55:10'),
+(566, 'e11ca59c-f433-4a92-bf35-11e3722c55b7', 3418, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-16', 'V-C0-09', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3418.00, 0, 0, 0, NULL, 1, 2, '2026-04-16 15:55:51'),
+(567, 'a794db0e-accf-4e07-b989-d857ae8e7c46', 4150, 'MMC0000650', '068241', '2', 6229, '33611', '2026-04-16', 'WC', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-03-28', 0.00, 'LBS', 0, 'jkoll', 1, 'Coils', 4150.00, 0, 0, 0, NULL, 2, 2, '2026-04-16 15:55:51'),
+(568, 'a9ade9f9-13a6-4f8e-af8b-ec785d958f44', 3830, 'MMC0000659', '068135', '11', 6229, '33610', '2026-04-16', 'V-F0-04', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2020-01-01', 29286.00, 'LBS', 28944, 'jkoll', 1, 'Coils', 3830.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 15:56:24'),
+(569, '227d1cad-912c-4572-83a3-a498839e8ae1', 31700, '25086398', '067138', '5', 6229, '7318.15.2010', '2026-04-16', 'TRL-02', NULL, 1, 1, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-09-30', 93000.00, 'EA', -2000, 'jkoll', 11, 'Boxes', 2882.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 16:16:57'),
+(570, '8d165161-bcaa-4d01-b806-8ab74e9e2f45', 8400, '2446820', '067138', '4', 6229, '7318.22.0000', '2026-04-16', 'DD-I1-12', NULL, 1, 1, 'Prestige Threaded Products', 'Washer, Plain  FOR VITS', 'R', '2026-04-30', 99500.00, 'EA', 74000, 'jkoll', 2, 'Skids', 4200.00, 0, 0, 0, NULL, 1, 1, '2026-04-16 16:17:55'),
+(571, '0387a63d-9d15-4d38-ac01-0f525da20eab', 50, 'MMF0005932', '068758', '1', 6229, 'Nothing Entered', '2026-04-16', 'V-B1-04', 0, 1, 1, 'Mead Metals, Inc', 'Sheet, .032 X 25.000 X 48.000', 'R', '2026-04-17', 50.00, 'LBS', 50, 'jkoll', 4, 'Sheets', 12.00, 0, 0, 0, '', 1, 1, '2026-04-16 16:29:02'),
+(575, '09d41552-9611-475f-ba51-d23062495b29', 8100, 'MMC0000667', '068059', '2', 6229, '337421', '2026-04-17', 'WC', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', 41040, 'jkoll', 1, 'Coils', 8100.00, 0, 0, 0, NULL, 1, 4, '2026-04-17 12:20:48'),
+(576, '4a9970a0-0457-4682-b605-9925319fe50e', 8780, 'MMC0000667', '068059', '2', 6229, '337421', '2026-04-17', 'V-C0-10', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', 41040, 'jkoll', 1, 'Coils', 8780.00, 0, 0, 0, NULL, 2, 4, '2026-04-17 12:20:48'),
+(577, 'e49cfd04-600c-4a0a-9e44-cd018b6c3e10', 8080, 'MMC0000667', '068059', '2', 6229, '337421', '2026-04-17', 'V-C0-10', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', 41040, 'jkoll', 1, 'Coils', 8080.00, 0, 0, 0, NULL, 3, 4, '2026-04-17 12:20:48'),
+(578, '09ec5900-d342-4851-b32d-1dc235d2c3b4', 8080, 'MMC0000667', '068059', '2', 6229, '337421', '2026-04-17', 'V-C0-08', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', 41040, 'jkoll', 1, 'Coils', 8080.00, 0, 0, 0, NULL, 4, 4, '2026-04-17 12:20:48'),
+(579, 'e92b66d3-9b6d-4c73-97c3-e206a681c546', 8820, 'MMC0000667', '068059', '2', 6229, '337423', '2026-04-17', 'V-C0-10', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', -820, 'jkoll', 1, 'Coils', 8820.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 12:25:58'),
+(580, '348ae88b-0763-419a-a9ee-4655c06358f5', 2310, 'MMC0000848', '068059', '5', 6229, 'D42567A', '2026-04-17', 'V-E0-01', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 55000, 'jkoll', 1, 'Coils', 2310.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 12:26:25'),
+(581, '26096318-54b5-45fe-ad2f-f56e16dbb0e4', 3530, 'MMC0000848', '068059', '5', 6229, '335914', '2026-04-17', 'V-E0-01', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1765.00, 0, 0, 0, NULL, 1, 7, '2026-04-17 14:44:37'),
+(582, 'caae0ca6-70d9-4db8-a66b-6d5f17757f05', 3800, 'MMC0000848', '068059', '5', 6229, '335914', '2026-04-17', 'V-E0-01', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1900.00, 0, 0, 0, NULL, 2, 7, '2026-04-17 14:44:37'),
+(583, 'bcfe3578-4a44-4ab2-bd5b-45c880ddfefc', 3600, 'MMC0000848', '068059', '5', 6229, '335914', '2026-04-17', 'V-E0-01', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1800.00, 0, 0, 0, NULL, 3, 7, '2026-04-17 14:44:37'),
+(584, 'cbb936c9-a028-48a7-ae02-7c3e42c09ba1', 2990, 'MMC0000848', '068059', '5', 6229, '337421', '2026-04-17', 'V-E0-01', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1495.00, 0, 0, 0, NULL, 4, 7, '2026-04-17 14:44:37'),
+(585, '72f6765d-d4ec-4e4d-a61f-7e0ea72c06c2', 3070, 'MMC0000848', '068059', '5', 6229, '337421', '2026-04-17', 'V-E0-01', NULL, 5, 5, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1535.00, 0, 0, 0, NULL, 5, 7, '2026-04-17 14:44:37'),
+(586, '35b95639-6a88-4252-bd30-a372a5a98823', 2950, 'MMC0000848', '068059', '5', 6229, '337421', '2026-04-17', 'V-E0-01', NULL, 6, 6, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1475.00, 0, 0, 0, NULL, 6, 7, '2026-04-17 14:44:37'),
+(587, '42c6cd28-0331-444c-9ca1-5c37700b7e58', 3070, 'MMC0000848', '068059', '5', 6229, '337421', '2026-04-17', 'V-E0-01', NULL, 7, 7, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 52690, 'jkoll', 2, 'Coils', 1535.00, 0, 0, 0, NULL, 7, 7, '2026-04-17 14:44:37'),
+(588, '304a9f6f-207e-4fdd-aa57-7437ac20cab2', 7440, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 1, 1, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7440.00, 0, 0, 0, NULL, 1, 6, '2026-04-17 14:49:18'),
+(589, '1b4cf282-fb01-4547-8c0f-7557e9f18f51', 7600, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 2, 2, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7600.00, 0, 0, 0, NULL, 2, 6, '2026-04-17 14:49:18'),
+(590, '1c936bf9-d7d6-49c4-b835-c697e737bfe2', 7600, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 3, 3, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7600.00, 0, 0, 0, NULL, 3, 6, '2026-04-17 14:49:18'),
+(591, 'a682f928-2765-4cb0-b29e-8e14970d419b', 7440, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 4, 4, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7440.00, 0, 0, 0, NULL, 4, 6, '2026-04-17 14:49:18'),
+(592, 'a48f9cbe-1b87-40e3-983e-a4aa3276f1c4', 7600, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 5, 5, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7600.00, 0, 0, 0, NULL, 5, 6, '2026-04-17 14:49:18'),
+(593, '6a6f695f-0067-4d82-8f1c-ea7c2bb24349', 7600, 'MMC0000565', '067287', '1', 6229, '660045', '2026-04-17', 'V-F0-10', NULL, 6, 6, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 56700, 'jkoll', 1, 'Coils', 7600.00, 0, 0, 0, NULL, 6, 6, '2026-04-17 14:49:18'),
+(594, 'c7c2a4a4-570b-45b7-bd7d-fb1d2fa7397f', 5870, 'MMC0000384', '069108', '1', 6229, '25T11210', '2026-04-17', 'V-C0-10', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'F', '2026-04-24', 14500.00, 'LBS', 14500, 'jkoll', 1, 'Coils', 5870.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 14:50:10'),
+(595, '34b648be-ffa5-4989-8c19-690c781bf91e', 8040, 'MMC0000667', '068059', '2', 6229, '337423', '2026-04-17', 'V-C0-10', 0, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 36.250', 'R', '2026-04-17', 72000.00, 'LBS', -820, 'jkoll', 1, 'Coils', 8040.00, 0, 0, 0, '', 1, 1, '2026-04-17 14:57:09'),
+(596, '2dd73661-8591-427f-b15d-51e08d07f19b', 275, 'MMF0005008', '069127', '1', 6229, 'CB3689', '2026-04-17', 'T-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, 8Ga (.164) X 48.000 X 120.000', 'R', '2026-04-17', 275.00, 'LBS', 275, 'jkoll', 1, 'Sheets', 275.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 15:39:36'),
+(597, '23863ee7-a23a-4606-a16b-aed9044893f1', 6130, 'MMC0000939', '068738', '2', 6229, '336471', '2026-04-17', 'V-C0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 26.000', 'R', '2026-04-20', 20000.00, 'LBS', 11660, 'jkoll', 1, 'Coils', 6130.00, 0, 0, 0, NULL, 1, 2, '2026-04-17 17:31:16'),
+(598, 'b55c1921-5f67-4bc2-94f5-d995b2511d55', 6130, 'MMC0000939', '068738', '2', 6229, '336471', '2026-04-17', 'V-C0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 7Ga X 26.000', 'R', '2026-04-20', 20000.00, 'LBS', 11660, 'jkoll', 1, 'Coils', 6130.00, 0, 0, 0, NULL, 2, 2, '2026-04-17 17:31:16'),
+(599, '841fe275-d676-4bbc-b29f-1a92afa36cff', 7170, 'MMC0000730', '068313', '1', 6229, '25T651818', '2026-04-17', 'V-D0-08', NULL, 1, 1, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 47000, 'jkoll', 1, 'Coils', 7170.00, 0, 0, 0, NULL, 1, 5, '2026-04-17 17:58:03'),
+(600, 'dc67b21a-e2ce-4589-a595-c70800e4ef4f', 7170, 'MMC0000730', '068313', '1', 6229, '25T651818', '2026-04-17', 'V-D0-08', NULL, 2, 2, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 47000, 'jkoll', 1, 'Coils', 7170.00, 0, 0, 0, NULL, 2, 5, '2026-04-17 17:58:03'),
+(601, '895c6a21-df04-4a63-ab2f-469047226b27', 7130, 'MMC0000730', '068313', '1', 6229, '25T658550', '2026-04-17', 'V-D0-08', NULL, 3, 3, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 47000, 'jkoll', 1, 'Coils', 7130.00, 0, 0, 0, NULL, 3, 5, '2026-04-17 17:58:03'),
+(602, 'f978fca2-2137-406b-8ade-9fd5dbb1e87c', 7365, 'MMC0000730', '068313', '1', 6229, '25T658550', '2026-04-17', 'V-D0-08', NULL, 4, 4, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 47000, 'jkoll', 1, 'Coils', 7365.00, 0, 0, 0, NULL, 4, 5, '2026-04-17 17:58:03'),
+(603, 'cfb9b0a9-888b-4ff4-b2e8-c2e68e579a2a', 7365, 'MMC0000730', '068313', '1', 6229, '25T658550', '2026-04-17', 'V-D0-08', NULL, 5, 5, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 47000, 'jkoll', 1, 'Coils', 7365.00, 0, 0, 0, NULL, 5, 5, '2026-04-17 17:58:03'),
+(606, '55360a78-77aa-405f-ba33-d13247bd17be', 8260, 'MMC0000697', '067338', '2', 6229, '335914', '2026-04-17', 'V-F0-10', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 33.500', 'R', '2026-04-30', 23000.00, 'LBS', 23000, 'jkoll', 1, 'Coils', 8260.00, 0, 0, 0, NULL, 1, 3, '2026-04-17 18:09:31'),
+(607, '3a1cca6c-5521-4a8b-ad77-646e2340bd7a', 9520, 'MMC0000697', '067338', '2', 6229, '335914', '2026-04-17', 'V-F0-10', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 33.500', 'R', '2026-04-30', 23000.00, 'LBS', 23000, 'jkoll', 1, 'Coils', 9520.00, 0, 0, 0, NULL, 2, 3, '2026-04-17 18:09:31'),
+(608, 'be3e1fad-54e9-4bb4-9e5d-ba32bd736f9c', 9460, 'MMC0000697', '067338', '2', 6229, '335914', '2026-04-17', 'V-F0-10', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 33.500', 'R', '2026-04-30', 23000.00, 'LBS', 23000, 'jkoll', 1, 'Coils', 9460.00, 0, 0, 0, NULL, 3, 3, '2026-04-17 18:09:31'),
+(609, 'd8eb1f0f-71f8-4409-804a-5af93cb4976f', 3130, 'MMC0000848', '068059', '5', 6229, '337423', '2026-04-17', 'V-E0-01', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1565.00, 0, 0, 0, NULL, 1, 6, '2026-04-17 18:10:19'),
+(610, 'c6195901-befd-4cb8-803f-149a3f660bf7', 3000, 'MMC0000848', '068059', '5', 6229, '337423', '2026-04-17', 'V-E0-01', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1500.00, 0, 0, 0, NULL, 2, 6, '2026-04-17 18:10:19'),
+(611, '656de733-289d-4976-b50d-f4ae2a366cc6', 3140, 'MMC0000848', '068059', '5', 6229, '337423', '2026-04-17', 'V-E0-01', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1570.00, 0, 0, 0, NULL, 3, 6, '2026-04-17 18:10:19'),
+(612, 'a6f3a066-0e78-4fd4-a946-690ff2a884cd', 3040, 'MMC0000848', '068059', '5', 6229, '337423', '2026-04-17', 'V-E0-01', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1520.00, 0, 0, 0, NULL, 4, 6, '2026-04-17 18:10:19'),
+(613, '187442fa-7d07-47df-8c80-d871f7b32e9f', 2920, 'MMC0000848', '068059', '5', 6229, '337343', '2026-04-17', 'V-E0-01', NULL, 5, 5, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1460.00, 0, 0, 0, NULL, 5, 6, '2026-04-17 18:10:19'),
+(614, '1c66e749-4d8d-451d-8f85-2e275a997dc8', 3020, 'MMC0000848', '068059', '5', 6229, '337343', '2026-04-17', 'V-E0-01', NULL, 6, 6, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', 21640, 'jkoll', 2, 'Coils', 1510.00, 0, 0, 0, NULL, 6, 6, '2026-04-17 18:10:19'),
+(615, '7b9f74b9-3c44-45d2-9ec0-3463e9d1193c', 7275, 'MMC0000730', '068313', '1', 6229, '25T658552', '2026-04-17', 'V-D0-08', NULL, 1, 1, 'Marubeni-Itochu Steel America (MISA)', 'Coil, 20Ga X 27.125', 'R', '2026-04-23', 47000.00, 'LBS', 3525, 'jkoll', 1, 'Coils', 7275.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 18:22:57'),
+(616, 'ea2fccd3-0355-43e7-a793-586621e0b306', 17000, '963093', '067141', '1', 6229, 'Nothing Entered', '2026-04-17', 'V-B2-18', NULL, 1, 1, 'Facil North America Inc', 'Nut, Square Weld M8 x 1.25 * 6.4', 'R', '2026-04-17', 25000.00, 'EA', 8000, 'jkoll', 17, 'Boxes', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-04-17 19:01:36'),
+(621, '1c71afe5-1ef3-4a45-aeaa-a2e0568590b7', 7155, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'V-D0-01', 0, 1, 1, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 55000, 'jkoll', 1, 'Coils', 7155.00, 0, 0, 0, '', 1, 4, '2026-04-20 12:26:32'),
+(622, '8bfc1ddc-fec3-4add-a012-0b56026e48ed', 7155, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'RECV', 0, 2, 2, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 55000, 'jkoll', 1, 'Coils', 7155.00, 0, 0, 0, '', 2, 4, '2026-04-20 12:26:32'),
+(623, '63d86179-752d-4cb2-bc97-ec9d5570d59f', 7067, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'RECV', 0, 3, 3, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 55000, 'jkoll', 1, 'Coils', 7067.00, 0, 0, 0, '', 3, 4, '2026-04-20 12:26:32'),
+(624, 'a5b029c3-faea-4a0d-89a0-228a0fbbc52b', 7068, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'RECV', 0, 4, 4, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 55000, 'jkoll', 1, 'Coils', 7068.00, 0, 0, 0, '', 4, 4, '2026-04-20 12:26:32'),
+(625, 'f187ffcc-d7df-4ef7-821e-6d9cd39c9089', 7140, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'V-D0-01', NULL, 1, 1, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 26555, 'jkoll', 1, 'Coils', 7140.00, 0, 0, 0, NULL, 1, 4, '2026-04-20 12:59:23'),
+(626, 'e19c3689-0f8f-4077-8dd6-acac56462dc4', 7140, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'V-D0-01', NULL, 2, 2, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 26555, 'jkoll', 1, 'Coils', 7140.00, 0, 0, 0, NULL, 2, 4, '2026-04-20 12:59:23'),
+(627, '735dadfb-ef51-4359-872d-18308fa62499', 6715, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'V-D0-01', NULL, 3, 3, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 26555, 'jkoll', 1, 'Coils', 6715.00, 0, 0, 0, NULL, 3, 4, '2026-04-20 12:59:23'),
+(628, '0b010f18-8da3-4a2e-9917-b84cfc01984f', 6715, 'MMC0000700', '066711', '1', 6229, '960415', '2026-04-20', 'V-D0-01', NULL, 4, 4, 'CLIFFS STEEL INC', 'Coil, 14Ga X 19.875', 'R', '2026-03-30', 55000.00, 'LBS', 26555, 'jkoll', 1, 'Coils', 6715.00, 0, 0, 0, NULL, 4, 4, '2026-04-20 12:59:23'),
+(629, '6de558fc-7d8d-4136-abbf-1c0ddeec72c3', 692, 'MMF0002006', '069016', '1', 6229, '642157B2', '2026-04-20', 'S-00', NULL, 1, 1, 'Yarde Metals ', 'Sheet, .125 X 36.000 X 120.000', 'R', '2026-04-24', 692.00, 'LBS', 692, 'jkoll', 8, 'Sheets', 86.00, 0, 0, 0, NULL, 1, 1, '2026-04-20 16:15:50'),
+(630, 'eb110cc3-20f5-42ee-9699-9093518ae37c', 4084, 'MMF0008050', '068973', '1', 6229, 'D02052', '2026-04-20', 'WC', NULL, 1, 1, 'Lapham-Hickey Steel', 'Sheet, .500 X 60.000 X 120.000', 'C', '2026-04-20', 10210.00, 'LBS', 0, 'jkoll', 4, 'Sheets', 1021.00, 0, 0, 0, NULL, 1, 3, '2026-04-20 16:44:37'),
+(631, 'c0658258-6143-43e9-a51a-e07d3210e424', 4084, 'MMF0008050', '068973', '1', 6229, 'D02052', '2026-04-20', 'WC', NULL, 2, 2, 'Lapham-Hickey Steel', 'Sheet, .500 X 60.000 X 120.000', 'C', '2026-04-20', 10210.00, 'LBS', 0, 'jkoll', 4, 'Sheets', 1021.00, 0, 0, 0, NULL, 2, 3, '2026-04-20 16:44:37'),
+(632, 'd1d82b6f-c89f-4845-b89f-56335b952530', 2042, 'MMF0008050', '068973', '1', 6229, 'D02052', '2026-04-20', 'WC', NULL, 3, 3, 'Lapham-Hickey Steel', 'Sheet, .500 X 60.000 X 120.000', 'C', '2026-04-20', 10210.00, 'LBS', 0, 'jkoll', 2, 'Sheets', 1021.00, 0, 0, 0, NULL, 3, 3, '2026-04-20 16:44:37'),
+(633, '763ef6cb-a8b2-454d-a8fa-b9c9e2568d2d', 4780, 'MMF0005506', '069018', '1', 6229, '334799', '2026-04-21', 'T-00', NULL, 1, 1, 'Metals USA  Germantown', 'Sheet, 6Ga (.194) X 60.000 X 120.000', 'R', '2026-04-21', 4875.00, 'LBS', 4875, 'jkoll', 15, 'Sheets', 319.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:27:03'),
+(634, '8af11ba9-7502-488b-90de-7fbb00e85d47', 4000, 'MMC0001124', '068844', '3', 6229, '559838', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 1.950', 'R', '2026-04-17', 14900.00, 'LBS', 7780, 'jkoll', 8, 'Coils', 500.00, 0, 0, 0, NULL, 1, 2, '2026-04-21 14:29:47'),
+(635, 'b724e6f6-5877-4a6f-b150-fb3c27df46be', 4000, 'MMC0001124', '068844', '3', 6229, '559838', '2026-04-21', 'V-E0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 1.950', 'R', '2026-04-17', 14900.00, 'LBS', 7780, 'jkoll', 8, 'Coils', 500.00, 0, 0, 0, NULL, 2, 2, '2026-04-21 14:29:47'),
+(636, '079f7133-7d12-4585-905e-ad37a26af10f', 1460, 'MMC0001156', '069060', '3', 6229, '337522', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 7.500', 'R', '2026-04-21', 1485.00, 'LBS', 1485, 'jkoll', 1, 'Coils', 1460.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:30:21'),
+(637, '68963c75-1ead-4667-bc94-35179363733b', 3650, 'MMC0001114', '069060', '5', 6229, '334378', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 8Ga X 3.080', 'R', '2026-04-21', 3200.00, 'LBS', 3200, 'jkoll', 5, 'Coils', 730.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:30:55'),
+(638, 'f74726e3-07b7-4469-b928-9e0c2ad4c3ea', 1077, 'MMF0005514', '069079', '1', 6229, '332389', '2026-04-21', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.075) X 60.000 X 120.000', 'R', '2026-04-21', 1000.00, 'LBS', 1000, 'jkoll', 7, 'Sheets', 154.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:31:24'),
+(639, 'b87ff95e-733a-434c-b3b7-f08eb82a3d26', 4085, 'MMFSR05550', '067275', '1', 6229, '335714', '2026-04-21', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.500) X 60.000 X 120.000 INSP ID: 0004287', 'R', '2026-06-30', 46966.00, 'LBS', 46966, 'jkoll', 4, 'Sheets', 1021.00, 0, 1, 1, 'Sheet Material - Quality Hold Required', 1, 1, '2026-04-21 14:33:44'),
+(640, '47765a96-437b-44f1-83e9-56b6a7caf0c0', 3120, 'MMC0000427', '069103', '10', 6229, '566936', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 9.250', 'R', '2026-04-23', 3100.00, 'LBS', 3100, 'jkoll', 1, 'Coils', 3120.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:34:26'),
+(641, '5609a393-2e95-4708-998e-c117473f706f', 1026, 'MMF0005025', '069103', '13', 6229, '812S33430', '2026-04-21', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, .250 X 60.000 X 120.000', 'R', '2026-04-23', 1000.00, 'LBS', 1000, 'jkoll', 2, 'Sheets', 513.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:35:55'),
+(642, '214bf3aa-78dc-464f-8095-ba35674feaaa', 810, 'MMC0000735', '068984', '2', 6229, '636536', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 3.115', 'R', '2026-04-24', 600.00, 'LBS', 600, 'jkoll', 1, 'Coils', 810.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:36:25'),
+(643, '06f706cd-4a98-4c1a-a3c3-ef90e9c7531b', 1264, 'MMF0005511', '068984', '3', 6229, '337512', '2026-04-21', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 11Ga (.119) X 60.000 X 120.000', 'R', '2026-04-24', 1100.00, 'LBS', 1100, 'jkoll', 5, 'Sheets', 253.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:36:52'),
+(644, '0cf50939-b289-4f11-844d-13cc3b2afdcb', 700, 'MMC0000857', '068984', '7', 6229, 'EB9893', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 1.180', 'R', '2026-04-29', 690.00, 'LBS', 690, 'jkoll', 2, 'Coils', 350.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:37:23'),
+(645, 'fa52a90e-d8fb-411a-9ebd-6a148621a9ce', 4180, 'MMC0000416', '069021', '1', 6229, 'F05970', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-30', 14000.00, 'LBS', 14000, 'jkoll', 2, 'Coils', 2090.00, 0, 0, 0, NULL, 1, 3, '2026-04-21 14:37:52'),
+(646, 'd531f13e-d8f9-4ada-ad86-71750341ccad', 4740, 'MMC0000416', '069021', '1', 6229, 'R06262', '2026-04-21', 'V-E0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-30', 14000.00, 'LBS', 14000, 'jkoll', 1, 'Coils', 4740.00, 0, 0, 0, NULL, 2, 3, '2026-04-21 14:37:52'),
+(647, '867935e4-b54c-4e53-bbdf-36aa3e19a161', 4840, 'MMC0000416', '069021', '1', 6229, 'R06262', '2026-04-21', 'V-E0-01', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 20Ga X 10.375', 'R', '2026-04-30', 14000.00, 'LBS', 14000, 'jkoll', 1, 'Coils', 4840.00, 0, 0, 0, NULL, 3, 3, '2026-04-21 14:37:52'),
+(648, '92feb0fd-c154-4876-9e1d-eb5ce3d0551e', 2812, 'MMF0005408', '068979', '1', 6229, '32526710', '2026-04-21', 'WC', NULL, 1, 1, 'Northwest Steel Enterprises, Inc.', 'Sheet, 8Ga (.160) X 60.000 X 96.000', 'R', '2026-04-17', 2812.00, 'LBS', 2812, 'jkoll', 10, 'Sheets', 281.00, 0, 0, 0, NULL, 1, 1, '2026-04-21 14:39:32'),
+(661, '627528fa-6697-410e-9898-2a755deb6f9a', 3630, 'MMC0000366', '069101', '1', 6229, '25T20740', '2026-04-21', 'V-F0-10', NULL, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 1, 9, '2026-04-21 15:19:23'),
+(662, 'f837bccd-b43a-4fe7-a4e8-f17304e2370f', 3630, 'MMC0000366', '069101', '1', 6229, '25T20740', '2026-04-21', 'V-F0-10', NULL, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 2, 9, '2026-04-21 15:19:23'),
+(663, '53e119a2-1eb3-4ebc-9c2d-8b319eaa2518', 3620, 'MMC0000366', '069101', '1', 6229, '25T20740', '2026-04-21', 'V-F0-10', NULL, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3620.00, 0, 0, 0, NULL, 3, 9, '2026-04-21 15:19:23'),
+(664, 'af59f827-7d96-4730-bda0-2ee63dd1501f', 3980, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 4, 4, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3980.00, 0, 0, 0, NULL, 4, 9, '2026-04-21 15:19:23'),
+(665, 'd73b8eab-b473-4ecc-b1ea-01b982f444ef', 3984, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 5, 5, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3984.00, 0, 0, 0, NULL, 5, 9, '2026-04-21 15:19:23'),
+(666, '64bfd94a-402c-4456-973a-e132b5a84336', 3966, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 6, 6, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3966.00, 0, 0, 0, NULL, 6, 9, '2026-04-21 15:19:23'),
+(667, '4c86b346-c88d-4253-a55d-a87b048e8f7b', 3642, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 7, 7, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3642.00, 0, 0, 0, NULL, 7, 9, '2026-04-21 15:19:23'),
+(668, 'e9c2d561-6259-4c04-8ee9-8d1541a8b9a0', 3642, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 8, 8, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3642.00, 0, 0, 0, NULL, 8, 9, '2026-04-21 15:19:23'),
+(669, '890c63a1-3c15-46d8-bc04-aae2f74dbd5b', 3628, 'MMC0000366', '069101', '1', 6229, '25T20885', '2026-04-21', 'V-F0-10', NULL, 9, 9, 'Metals USA - Horicon', 'Coil, .074 X 14.562  ', 'R', '2026-04-22', 32000.00, 'LBS', 32000, 'jkoll', 1, 'Coils', 3628.00, 0, 0, 0, NULL, 9, 9, '2026-04-21 15:19:23'),
+(670, 'e1276aed-dbaf-419a-8e2f-1fe5719b0e64', 200, 'HS3 3816', '069183', '1', 6229, '20978220', '2026-04-21', 'RECV DESK', 0, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld .375-16', 'C', '2026-04-24', 200.00, 'EA', 0, 'jkoll', 1, 'Boxes', 200.00, 0, 0, 0, '', 1, 1, '2026-04-21 17:48:30'),
+(671, '73dd62d3-4ecc-4d02-a799-2716c695dbe2', 7240, 'MMC0000761', '068059', '4', 6229, '337681', '2026-04-21', 'V-D0-09', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-04-22', 47000.00, 'LBS', 15680, 'jkoll', 1, 'Coils', 7240.00, 0, 0, 0, NULL, 1, 4, '2026-04-21 18:44:01'),
+(672, 'f3d9f8a8-93e4-4899-ae99-0c0931381de0', 8040, 'MMC0000761', '068059', '4', 6229, '337681', '2026-04-21', 'V-D0-09', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-04-22', 47000.00, 'LBS', 15680, 'jkoll', 1, 'Coils', 8040.00, 0, 0, 0, NULL, 2, 4, '2026-04-21 18:44:01'),
+(673, '2513cc9e-9d44-4e73-b1d9-24fbb1a6ef9e', 8040, 'MMC0000761', '068059', '4', 6229, '337681', '2026-04-21', 'V-D0-09', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-04-22', 47000.00, 'LBS', 15680, 'jkoll', 1, 'Coils', 8040.00, 0, 0, 0, NULL, 3, 4, '2026-04-21 18:44:01'),
+(674, '0f96c6f9-180f-46a7-953f-9b455b8bd491', 8000, 'MMC0000761', '068059', '4', 6229, '337681', '2026-04-21', 'V-D0-09', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-04-22', 47000.00, 'LBS', 15680, 'jkoll', 1, 'Coils', 8000.00, 0, 0, 0, NULL, 4, 4, '2026-04-21 18:44:01'),
+(675, '79bf17d7-9299-4db4-9656-a851c71adc0d', 3000, 'MMC0000848', '068059', '5', 6229, '337343', '2026-04-21', 'V-E0-01', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', -8610, 'jkoll', 2, 'Coils', 1500.00, 0, 0, 0, NULL, 1, 4, '2026-04-21 18:44:39'),
+(676, 'fb064f26-c136-477d-b350-fbb2b4d8050a', 2520, 'MMC0000848', '068059', '5', 6229, '337343', '2026-04-21', 'V-E0-01', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', -8610, 'jkoll', 2, 'Coils', 1260.00, 0, 0, 0, NULL, 2, 4, '2026-04-21 18:44:40'),
+(677, 'fb8933de-4c0b-48d3-80e4-4ef1efe5d7db', 3240, 'MMC0000848', '068059', '5', 6229, '337681', '2026-04-21', 'V-E0-01', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', -8610, 'jkoll', 2, 'Coils', 1620.00, 0, 0, 0, NULL, 3, 4, '2026-04-21 18:44:40'),
+(678, 'ce899d0a-6c8a-49b1-9d5f-284c5513dbe1', 3240, 'MMC0000848', '068059', '5', 6229, '337681', '2026-04-21', 'V-E0-01', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-04-16', 55000.00, 'LBS', -8610, 'jkoll', 2, 'Coils', 1620.00, 0, 0, 0, NULL, 4, 4, '2026-04-21 18:44:40'),
+(685, '33080bf6-0efe-42d2-b444-8877e9ff6c1f', 5292, 'MMF0005010', '069103', '1', 6229, '842N32670', '2026-04-22', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-04-23', 8500.00, 'LBS', 8500, 'jkoll', 19, 'Sheets', 279.00, 0, 0, 0, NULL, 1, 1, '2026-04-22 12:12:44'),
+(686, '6371437a-da65-4c05-b8f8-f1c017422aa4', 8300, 'MMC0000699', '069103', '2', 6229, '636536', '2026-04-22', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 39.000', 'R', '2026-07-22', 9375.00, 'LBS', 9375, 'jkoll', 1, 'Coils', 8300.00, 0, 0, 0, NULL, 1, 1, '2026-04-22 12:13:16'),
+(687, '77a8e94d-bbd6-4038-8dde-26a05d992eec', 2290, 'MMC0000444', '069103', '9', 6229, '650205', '2026-04-22', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 9.723', 'R', '2026-04-23', 2500.00, 'LBS', 2500, 'jkoll', 1, 'Coils', 2290.00, 0, 0, 0, NULL, 1, 1, '2026-04-22 12:13:41'),
+(688, '9bcd05bc-bd48-41e4-8ca1-ec38651410ad', 10120, 'MMC0000939', '069103', '14', 6229, '337522', '2026-04-22', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 26.000', 'R', '2026-04-23', 20000.00, 'LBS', 20000, 'jkoll', 1, 'Coils', 10120.00, 0, 0, 0, NULL, 1, 2, '2026-04-22 12:14:12'),
+(689, '32719a6c-5ee5-4136-bdb6-931348b2b6d3', 10130, 'MMC0000939', '069103', '14', 6229, '337522', '2026-04-22', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 7Ga X 26.000', 'R', '2026-04-23', 20000.00, 'LBS', 20000, 'jkoll', 1, 'Coils', 10130.00, 0, 0, 0, NULL, 2, 2, '2026-04-22 12:14:12'),
+(690, '81edd385-ff14-4b78-90a3-a79f6a6b05f9', 4096, 'MMF0005525', '069150', '4', 6229, '336028', '2026-04-22', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.250) X 60.000 X 120.000', 'R', '2026-04-24', 12250.00, 'LBS', 12250, 'jkoll', 8, 'Sheets', 512.00, 0, 0, 0, NULL, 1, 4, '2026-04-22 12:14:45'),
+(691, '4422548b-cdd6-45da-8d81-66c2567c6262', 3584, 'MMF0005525', '069150', '4', 6229, '336028', '2026-04-22', 'T-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, (.250) X 60.000 X 120.000', 'R', '2026-04-24', 12250.00, 'LBS', 12250, 'jkoll', 7, 'Sheets', 512.00, 0, 0, 0, NULL, 2, 4, '2026-04-22 12:14:45'),
+(692, 'd19f1c09-16c7-4516-b8ac-d459d1e079a4', 3584, 'MMF0005525', '069150', '4', 6229, '336028', '2026-04-22', 'T-00', NULL, 3, 3, 'Dalco Metals, Inc.', 'Sheet, (.250) X 60.000 X 120.000', 'R', '2026-04-24', 12250.00, 'LBS', 12250, 'jkoll', 7, 'Sheets', 512.00, 0, 0, 0, NULL, 3, 4, '2026-04-22 12:14:45'),
+(693, '618823b0-5fce-4836-8d75-1cbc58589367', 1512, 'MMF0005525', '069150', '4', 6229, '333802', '2026-04-22', 'T-00', NULL, 4, 4, 'Dalco Metals, Inc.', 'Sheet, (.250) X 60.000 X 120.000', 'R', '2026-04-24', 12250.00, 'LBS', 12250, 'jkoll', 3, 'Sheets', 504.00, 0, 0, 0, NULL, 4, 4, '2026-04-22 12:14:45'),
+(694, '0b9861b9-1a88-4609-906e-e25c58004b2f', 65600, '2446820', '067138', '4', 6229, 'C86425', '2026-04-22', 'RECV-VITS', NULL, 1, 1, 'Prestige Threaded Products', 'Washer, Plain  FOR VITS', 'R', '2026-04-30', 99500.00, 'EA', 0, 'jkoll', 11, 'Boxes', 5964.00, 0, 0, 0, NULL, 1, 1, '2026-04-22 15:23:48'),
+(695, 'ff33ba62-ec98-4b59-8fa9-4a3c0478c22b', 250, 'MMF0005011', '069197', '1', 6604, '1350T6', '2026-04-22', 'S-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, 11Ga (.119) X 60.000 X 120.000', 'C', '2026-04-22', 250.00, 'LBS', 0, 'traddatz', 1, 'Sheets', 250.00, 0, 0, 0, NULL, 1, 1, '2026-04-22 21:25:44'),
+(696, '2ee4d061-61c3-4859-a289-7b5ce089e498', 7980, 'MMC0000761', '068493', '2', 6604, '337673', '2026-04-22', 'V-D0-09', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 15500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 7980.00, 0, 0, 0, NULL, 1, 4, '2026-04-22 21:26:42');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(697, 'e41ed85c-db05-48fb-b8d2-421545410a39', 7120, 'MMC0000761', '068493', '2', 6604, '337673', '2026-04-22', 'V-D0-09', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 15500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 7120.00, 0, 0, 0, NULL, 2, 4, '2026-04-22 21:26:42'),
+(698, 'c34f321c-d322-482d-b9b6-3eb62195ec97', 8100, 'MMC0000761', '068493', '2', 6604, '337673', '2026-04-22', 'V-D0-09', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 15500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 8100.00, 0, 0, 0, NULL, 3, 4, '2026-04-22 21:26:42'),
+(699, '63910998-f73e-4fa6-86a8-c91ab81f0d96', 7900, 'MMC0000761', '068493', '2', 6604, '337673', '2026-04-22', 'V-D0-09', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 15500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 7900.00, 0, 0, 0, NULL, 4, 4, '2026-04-22 21:26:42'),
+(700, '2649ece1-a30f-4f17-b018-02eb50a847bf', 6940, 'MMC0001139', '068503', '4', 6604, '276176', '2026-04-22', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 7Ga X 14.510', 'R', '2026-05-01', 8500.00, 'LBS', -5230, 'traddatz', 1, 'Coils', 6940.00, 0, 0, 0, NULL, 1, 2, '2026-04-22 21:28:11'),
+(701, '9a2bbc6f-74aa-4b63-ba9b-b739e4a917e5', 6790, 'MMC0001139', '068503', '4', 6604, '376542', '2026-04-22', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 7Ga X 14.510', 'R', '2026-05-01', 8500.00, 'LBS', -5230, 'traddatz', 1, 'Coils', 6790.00, 0, 0, 0, NULL, 2, 2, '2026-04-22 21:28:11'),
+(709, 'f558925a-4471-497a-8614-9daf01537fba', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-I1-12', NULL, 1, 1, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 1, 10, '2026-04-23 14:16:01'),
+(710, '59edfebb-158f-4222-94b6-5d3b70c3ba7d', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-I1-12', NULL, 2, 2, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 2, 10, '2026-04-23 14:16:01'),
+(711, '9bba5978-0c4d-4f86-a0fc-0ad65133f48a', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-I1-12', NULL, 3, 3, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 3, 10, '2026-04-23 14:16:01'),
+(712, '643f504c-f1ab-44bb-803f-48d214d91beb', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 4, 4, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 4, 10, '2026-04-23 14:16:01'),
+(713, 'b253e89e-6c67-4bbf-9044-ed5c6fea269a', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 5, 5, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 5, 10, '2026-04-23 14:16:01'),
+(714, '4e0d9f2f-af16-41c0-bfd8-7b20fafef010', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 6, 6, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 6, 10, '2026-04-23 14:16:01'),
+(715, '9a5e0a02-b892-4f86-b733-2039a82a1d0a', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 7, 7, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 7, 10, '2026-04-23 14:16:01'),
+(716, '7d1edf89-206c-4e91-8bcd-8369be1a2232', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 8, 8, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 8, 10, '2026-04-23 14:16:01'),
+(717, '1e8f9e28-54df-405c-9dd3-d5a8cefbd466', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 9, 9, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 9, 10, '2026-04-23 14:16:01'),
+(718, 'c275efaf-a784-4f9b-be2e-042bae6163e8', 3000, '25086399', '067138', '3', 6229, '2604221-2', '2026-04-23', 'DD-N4-12', NULL, 10, 10, 'Prestige Threaded Products', 'Thread Forming Screw  FOR VITS', 'R', '2026-04-17', 61000.00, 'EA', 29300, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 10, 10, '2026-04-23 14:16:01'),
+(719, '4f73853b-bb96-4dd5-8c83-d3cadd75fb21', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-I1-12', NULL, 1, 1, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 1, 8, '2026-04-23 14:17:11'),
+(720, '9ea38940-d430-4ef3-b053-927f956f1e55', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 2, 2, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 2, 8, '2026-04-23 14:17:11'),
+(721, '7efcf365-5f19-4b3f-8a8a-59f6a5b977d3', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 3, 3, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 3, 8, '2026-04-23 14:17:11'),
+(722, 'a8b4c2f3-4be7-4794-8422-e7fac3d9a6eb', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 4, 4, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 4, 8, '2026-04-23 14:17:11'),
+(723, '7b25aab0-859b-425d-b7c6-f0b71035b22b', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 5, 5, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 5, 8, '2026-04-23 14:17:11'),
+(724, 'ee4ec5c0-6a27-4ba4-b1f9-d6b9cc815594', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 6, 6, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 6, 8, '2026-04-23 14:17:11'),
+(725, 'ff8471ef-6060-4f05-b589-6bc2ce97e314', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 7, 7, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 7, 8, '2026-04-23 14:17:11'),
+(726, '2c52eebd-f89d-46a1-a0ff-71a1cf444f39', 5000, '2411227', '067138', '6', 6229, '2506041-7', '2026-04-23', 'DD-N4-12', NULL, 8, 8, 'Prestige Threaded Products', 'Spacer  FOR VITS', 'R', '2026-09-30', 70000.00, 'EA', 60000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 8, 8, '2026-04-23 14:17:11'),
+(727, 'e26c3caf-6bbb-44fe-aac8-515e38ffb954', 4082, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 2, 'Coils', 2041.00, 0, 0, 0, NULL, 1, 10, '2026-04-24 13:17:45'),
+(728, '1d03ca2e-acee-4cc2-8446-3cfa5c364de6', 2038, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 1, 'Coils', 2038.00, 0, 0, 0, NULL, 2, 10, '2026-04-24 13:17:45'),
+(729, 'e5ca5389-1628-42a9-8428-ec212f4db3d4', 4124, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 2, 'Coils', 2062.00, 0, 0, 0, NULL, 3, 10, '2026-04-24 13:17:45'),
+(730, 'ebe80f15-a8f5-4d80-8942-6dcb79d9c7e0', 2062, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 4, 4, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 1, 'Coils', 2062.00, 0, 0, 0, NULL, 4, 10, '2026-04-24 13:17:45'),
+(731, '362fb272-531d-4461-80a1-f20f8d123ef4', 4170, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 5, 5, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 2, 'Coils', 2085.00, 0, 0, 0, NULL, 5, 10, '2026-04-24 13:17:45'),
+(732, 'beed544c-6398-4ae0-b57c-8c014dcc58d3', 2086, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 6, 6, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 1, 'Coils', 2086.00, 0, 0, 0, NULL, 6, 10, '2026-04-24 13:17:45'),
+(733, '31c08c61-138a-46e5-be52-e5e0e7788438', 7282, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 7, 7, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 2, 'Coils', 3641.00, 0, 0, 0, NULL, 7, 10, '2026-04-24 13:17:45'),
+(734, '50a95885-9c7b-422c-93fd-3a6914b562cc', 3632, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 8, 8, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 1, 'Coils', 3632.00, 0, 0, 0, NULL, 8, 10, '2026-04-24 13:17:45'),
+(735, 'fdd947b6-7340-4891-a056-e3754fa59a76', 7198, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 9, 9, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 2, 'Coils', 3599.00, 0, 0, 0, NULL, 9, 10, '2026-04-24 13:17:45'),
+(736, '9c8e1f6e-3c9c-4657-8960-0d089a3a1172', 3594, 'MMC0001000', '068171', '1', 6524, 'Nothing Entered', '2026-04-24', 'DD-H0-00', NULL, 10, 10, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 76920, 'gwhitson', 1, 'Coils', 3594.00, 0, 0, 0, NULL, 10, 10, '2026-04-24 13:17:45'),
+(740, 'a6b0ccaf-8229-4977-9de0-7020f28884c0', 450, '23-12742-002', '068434', '3', 6604, '91542979', '2026-04-25', 'V-N1-10', NULL, 1, 1, 'Facil North America Inc', 'Nut-Clinch, Locking Metric, M8 X 1.25', 'R', '2026-04-28', 450.00, 'EA', 0, 'traddatz', 1, 'Box', 450.00, 0, 0, 0, NULL, 1, 1, '2026-04-25 14:00:54'),
+(741, '942d06aa-329f-4cfa-afb5-4b219abd14c8', 5785, 'MMC0000776', '066879', '1', 6229, '9352', '2026-04-28', 'RECV', NULL, 1, 1, 'Superior Steel Supply, LLC', 'Coil, .375 X 12.000', 'C', '2025-12-26', 6100.00, 'LBS', 20, 'jkoll', 1, 'Coils', 5785.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 12:02:21'),
+(742, 'f59ceb9e-ec49-4780-9040-4a345945d362', 4890, 'MMC0001023', '069189', '1', 6229, 'D2500313B', '2026-04-28', 'RECV', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .125 X 27.259', 'R', '2026-04-28', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 4890.00, 0, 0, 0, NULL, 1, 2, '2026-04-28 15:08:30'),
+(743, 'e428efd9-910d-46c0-be2d-7769969c65a9', 4884, 'MMC0001023', '069189', '1', 6229, 'D2500313B', '2026-04-28', 'RECV', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .125 X 27.259', 'R', '2026-04-28', 10000.00, 'LBS', 10000, 'jkoll', 1, 'Coils', 4884.00, 0, 0, 0, NULL, 2, 2, '2026-04-28 15:08:30'),
+(744, '20545d2c-2494-4231-b161-7276ae80eb80', 4410, 'MMC0000777', '069198', '2', 6229, 'SP33345', '2026-04-28', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 12.375', 'R', '2026-04-28', 13300.00, 'LBS', 13300, 'jkoll', 1, 'Coils', 4410.00, 0, 0, 0, NULL, 1, 3, '2026-04-28 15:09:10'),
+(745, '5f4295f2-e44a-4653-a716-cde9421948ad', 4410, 'MMC0000777', '069198', '2', 6229, 'SP33345', '2026-04-28', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 7Ga X 12.375', 'R', '2026-04-28', 13300.00, 'LBS', 13300, 'jkoll', 1, 'Coils', 4410.00, 0, 0, 0, NULL, 2, 3, '2026-04-28 15:09:10'),
+(746, 'dc90839f-f526-49d6-b9da-1051160588ee', 4410, 'MMC0000777', '069198', '2', 6229, 'SP33345', '2026-04-28', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 7Ga X 12.375', 'R', '2026-04-28', 13300.00, 'LBS', 13300, 'jkoll', 1, 'Coils', 4410.00, 0, 0, 0, NULL, 3, 3, '2026-04-28 15:09:10'),
+(747, 'bdc74626-65da-46fa-96eb-9f2f09e5c8ec', 1100, 'MMC0000993', '069235', '4', 6229, '558893', '2026-04-28', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 5.250', 'R', '2026-04-29', 1050.00, 'LBS', 1050, 'jkoll', 1, 'Coils', 1100.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 15:09:36'),
+(748, 'dc6bf3e1-98dc-45d8-a880-414c4eb83d8f', 5380, 'MMC0000869', '069235', '5', 6229, '569143', '2026-04-28', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 16.250', 'R', '2026-04-29', 14213.00, 'LBS', 14213, 'jkoll', 1, 'Coils', 5380.00, 0, 0, 0, NULL, 1, 3, '2026-04-28 15:10:14'),
+(749, '6632b028-57a0-4f43-8b0d-0194070d4dd5', 5480, 'MMC0000869', '069235', '5', 6229, '569143', '2026-04-28', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 16.250', 'R', '2026-04-29', 14213.00, 'LBS', 14213, 'jkoll', 1, 'Coils', 5480.00, 0, 0, 0, NULL, 2, 3, '2026-04-28 15:10:14'),
+(750, '39d970b6-4dfb-407d-92da-78788d57fcfe', 4160, 'MMC0000869', '069235', '5', 6229, '669284', '2026-04-28', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 16.250', 'R', '2026-04-29', 14213.00, 'LBS', 14213, 'jkoll', 1, 'Coils', 4160.00, 0, 0, 0, NULL, 3, 3, '2026-04-28 15:10:14'),
+(751, '3ccf4543-a895-4df9-9097-4e2eeefc7005', 1200, 'MMC0000090', '069270', '3', 6229, '566634', '2026-04-28', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 1.417', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 3, 'Coils', 400.00, 0, 0, 0, NULL, 1, 4, '2026-04-28 15:10:46'),
+(752, 'dcb3a689-d9ff-47fe-9743-a8c82f798de3', 2360, 'MMC0000090', '069270', '3', 6229, '650156', '2026-04-28', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 12Ga X 1.417', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 4, 'Coils', 590.00, 0, 0, 0, NULL, 2, 4, '2026-04-28 15:10:46'),
+(753, '4eab0392-40b0-4b86-b133-187a32f15ff9', 2000, 'MMC0000090', '069270', '3', 6229, '823K68920', '2026-04-28', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 12Ga X 1.417', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 5, 'Coils', 400.00, 0, 0, 0, NULL, 3, 4, '2026-04-28 15:10:46'),
+(754, '55f2c559-6790-4893-add4-af7421c935d1', 2000, 'MMC0000090', '069270', '3', 6229, '823K68920', '2026-04-28', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 12Ga X 1.417', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 5, 'Coils', 400.00, 0, 0, 0, NULL, 4, 4, '2026-04-28 15:10:46'),
+(755, '3d7cb95a-fdac-4d61-a9d8-55bd4214415d', 5640, 'MMC0000089', '069270', '5', 6229, '336929', '2026-04-28', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 2.992', 'R', '2026-04-30', 20000.00, 'LBS', 20000, 'jkoll', 4, 'Coils', 1410.00, 0, 0, 0, NULL, 1, 2, '2026-04-28 15:11:28'),
+(756, '2f90fb0d-a918-48c2-ac2c-dd80f84b8543', 5640, 'MMC0000089', '069270', '5', 6229, '336929', '2026-04-28', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 2.992', 'R', '2026-04-30', 20000.00, 'LBS', 20000, 'jkoll', 4, 'Coils', 1410.00, 0, 0, 0, NULL, 2, 2, '2026-04-28 15:11:28'),
+(757, '495fa0d8-8b44-49cd-bb5f-6857487b3b35', 55, 'UC25546', '067399', '2', 6229, '2602-N142', '2026-04-28', 'WC', NULL, 1, 1, 'Slidematic Precision Components', 'Pin, D-Shape Pin Transport', 'R', '2026-06-08', 24950.00, 'EA', 24950, 'jkoll', 1, 'Boxes', 55.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 16:28:30'),
+(773, 'd86c6757-aa1c-404d-a51f-5e5e684d59d2', 4500, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 1, 10, '2026-04-28 17:18:32'),
+(774, '2ac79f6e-3160-4337-832f-344ab01dec61', 4520, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 2, 10, '2026-04-28 17:18:32'),
+(775, '8307398c-63ec-475d-867f-d42ecc79b21c', 4500, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 3, 3, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 3, 10, '2026-04-28 17:18:32'),
+(776, '117a0b8a-1455-4bf6-ab78-48437c60528e', 4520, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 4, 4, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 4, 10, '2026-04-28 17:18:32'),
+(777, '47d5f0b6-6b7d-4019-bf58-b6a7b2ef9860', 4500, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 5, 5, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 5, 10, '2026-04-28 17:18:32'),
+(778, '46bc1d2d-b4ae-4b4b-bfa6-7122da72aaa3', 4520, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 6, 6, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 6, 10, '2026-04-28 17:18:32'),
+(779, '78a22980-27d0-496d-92d1-d3b703e18842', 4500, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 7, 7, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 7, 10, '2026-04-28 17:18:32'),
+(780, '79a1f3ad-6479-44ec-a4ad-7a95cdc8ce8c', 4520, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 8, 8, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 8, 10, '2026-04-28 17:18:32'),
+(781, '97c3dcc5-9e98-4a89-91a8-e1e9324c9ee3', 4500, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 9, 9, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 9, 10, '2026-04-28 17:18:32'),
+(782, '7e6f803f-c140-49b4-a7f5-70c8d5ed524d', 1900, 'MMF0005531', '068534', '1', 6229, '337098', '2026-04-28', 'T-00', NULL, 10, 10, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-04-30', 47000.00, 'LBS', 4520, 'jkoll', 3, 'Sheets', 633.00, 0, 0, 0, NULL, 10, 10, '2026-04-28 17:18:32'),
+(788, 'eff3edbb-6bc8-4eb3-bb5a-ce2727f0c987', 4076, 'MMF0005010', '069103', '1', 6229, '295786', '2026-04-28', 'S-00', 0, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-04-23', 8500.00, 'LBS', 1308, 'jkoll', 15, 'Sheets', 272.00, 0, 0, 0, '', 1, 1, '2026-04-28 18:17:09'),
+(789, '0f9f2f99-67dd-4fb0-80d7-d89e01e84b1b', 9060, 'MMC0000653', '068322', '2', 6229, '0646255', '2026-04-28', 'RECV', 0, 1, 1, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-05-01', 44600.00, 'LBS', 44600, 'jkoll', 1, 'Coils', 9060.00, 0, 0, 0, '', 1, 5, '2026-04-28 18:18:00'),
+(790, '670c6d24-218e-4668-b053-a1b8cbd12c56', 9580, 'MMC0000653', '068322', '2', 6229, '0646255', '2026-04-28', 'RECV', 0, 2, 2, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-05-01', 44600.00, 'LBS', 44600, 'jkoll', 1, 'Coils', 9580.00, 0, 0, 0, '', 2, 5, '2026-04-28 18:18:00'),
+(791, 'd9cd9249-8792-4b70-97ac-71a0e059b485', 9060, 'MMC0000653', '068322', '2', 6229, '0646255', '2026-04-28', 'RECV', 0, 3, 3, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-05-01', 44600.00, 'LBS', 44600, 'jkoll', 1, 'Coils', 9060.00, 0, 0, 0, '', 3, 5, '2026-04-28 18:18:00'),
+(792, '0c56bb18-7b0e-40e3-9d16-a2f4c97296af', 9120, 'MMC0000653', '068322', '2', 6229, '0646255', '2026-04-28', 'RECV', 0, 4, 4, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-05-01', 44600.00, 'LBS', 44600, 'jkoll', 1, 'Coils', 9120.00, 0, 0, 0, '', 4, 5, '2026-04-28 18:18:00'),
+(793, '3c700927-6fe2-4178-bf2a-60d15570d4c6', 8980, 'MMC0000653', '068322', '2', 6229, '0646255', '2026-04-28', 'RECV', 0, 5, 5, 'Mako Metals', 'Coil, 18Ga X 40.680', 'R', '2026-05-01', 44600.00, 'LBS', 44600, 'jkoll', 1, 'Coils', 8980.00, 0, 0, 0, '', 5, 5, '2026-04-28 18:18:00'),
+(794, '49d1a883-0dff-4579-bbaa-31f034809655', 1535, 'MMF0005004', '068462', '1', 6229, '337593', '2026-04-28', 'S-00', NULL, 1, 1, 'Metals USA - Horicon', 'Sheet, 4Ga (.224) X 60.000 X 120.000', 'R', '2026-04-17', 1300.00, 'LBS', 1300, 'jkoll', 4, 'Sheets', 384.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 18:54:59'),
+(795, '441e9cba-e752-478f-971f-ab1cb350aea1', 5000, '410030073', '069015', '3', 6229, 'IF405999', '2026-04-28', 'RECV DESK', NULL, 1, 1, 'Packer Fastener', 'Washer, Flat MS 15795-808  FOR VITS', 'R', '2026-10-09', 5000.00, 'EA', 5000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 19:16:02'),
+(796, '19aa9028-fad5-4065-b4b8-223b75c45497', 2000, '23-10721-100', '069299', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV DESK', NULL, 1, 1, 'Buckeye Fasteners, Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.00\" Lg', 'R', '2026-04-30', 2000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 1, 1, '2026-04-28 19:27:44'),
+(797, '18bd16e2-bd27-4128-b8c4-b9313abb69e9', 5000, 'S2BA0018A', '069137', '1', 6229, '2604211-1', '2026-04-28', 'RECV DESK', NULL, 1, 1, 'Prestige Threaded Products', 'Screw, NAS 1351 Captive', 'R', '2026-04-30', 18000.00, 'EA', 18000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 1, 4, '2026-04-28 19:28:38'),
+(798, '1f764327-086c-4625-9ba4-a5661da97c05', 5000, 'S2BA0018A', '069137', '1', 6229, '2604211-1', '2026-04-28', 'RECV DESK', NULL, 2, 2, 'Prestige Threaded Products', 'Screw, NAS 1351 Captive', 'R', '2026-04-30', 18000.00, 'EA', 18000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 2, 4, '2026-04-28 19:28:38'),
+(799, 'eb67690a-1c56-4b7d-9a22-d2f14a5fa847', 5000, 'S2BA0018A', '069137', '1', 6229, '2604211-1', '2026-04-28', 'RECV DESK', NULL, 3, 3, 'Prestige Threaded Products', 'Screw, NAS 1351 Captive', 'R', '2026-04-30', 18000.00, 'EA', 18000, 'jkoll', 1, 'Boxes', 5000.00, 0, 0, 0, NULL, 3, 4, '2026-04-28 19:28:38'),
+(800, 'bc76bd21-f205-4d5d-8e67-e5311e60959b', 3000, 'S2BA0018A', '069137', '1', 6229, '2604211-1', '2026-04-28', 'RECV DESK', NULL, 4, 4, 'Prestige Threaded Products', 'Screw, NAS 1351 Captive', 'R', '2026-04-30', 18000.00, 'EA', 18000, 'jkoll', 1, 'Boxes', 3000.00, 0, 0, 0, NULL, 4, 4, '2026-04-28 19:28:38'),
+(801, '51fab495-6e14-4f86-bac4-0eafca48fbb7', 11350, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-28', 'V-C0-09', NULL, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 156000, 'jkoll', 1, 'Coils', 11350.00, 0, 0, 0, NULL, 1, 4, '2026-04-28 19:34:41'),
+(802, 'f8bb8b29-a7b9-4089-aff8-290b5caa3dd5', 11350, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-28', 'V-C0-09', NULL, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 156000, 'jkoll', 1, 'Coils', 11350.00, 0, 0, 0, NULL, 2, 4, '2026-04-28 19:34:41'),
+(803, 'ab873cf9-d0dd-495a-b1cb-37d6d6bae32e', 11350, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-28', 'V-C0-09', NULL, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 156000, 'jkoll', 1, 'Coils', 11350.00, 0, 0, 0, NULL, 3, 4, '2026-04-28 19:34:41'),
+(804, '893ff9e9-2c78-49d2-aaf2-d6ab584ca06f', 11350, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-28', 'V-C0-09', NULL, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 156000, 'jkoll', 1, 'Coils', 11350.00, 0, 0, 0, NULL, 4, 4, '2026-04-28 19:34:41'),
+(819, 'e6888000-a6b7-46f7-8b54-fd8c5b4cf005', 5420, 'MMC0000066', '069261', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 1, 1, 'Chicago Coil LLC', 'Coil, 12Ga X 4.250', 'C', '2026-04-22', 23520.00, 'LBS', 0, 'jkoll', 3, 'Coils', 1807.00, 0, 0, 0, NULL, 1, 5, '2026-04-28 20:53:06'),
+(820, 'a7e370ba-9c58-42f2-8f5d-e64839f3fb38', 3540, 'MMC0000066', '069261', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 2, 2, 'Chicago Coil LLC', 'Coil, 12Ga X 4.250', 'C', '2026-04-22', 23520.00, 'LBS', 0, 'jkoll', 2, 'Coils', 1770.00, 0, 0, 0, NULL, 2, 5, '2026-04-28 20:53:06'),
+(821, '1481049b-f377-4af1-a735-73e72b68812d', 3680, 'MMC0000066', '069261', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 3, 3, 'Chicago Coil LLC', 'Coil, 12Ga X 4.250', 'C', '2026-04-22', 23520.00, 'LBS', 0, 'jkoll', 2, 'Coils', 1840.00, 0, 0, 0, NULL, 3, 5, '2026-04-28 20:53:06'),
+(822, '6ed939f6-1a85-4a10-93f3-727a4cfdc88d', 5560, 'MMC0000066', '069261', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 4, 4, 'Chicago Coil LLC', 'Coil, 12Ga X 4.250', 'C', '2026-04-22', 23520.00, 'LBS', 0, 'jkoll', 3, 'Coils', 1853.00, 0, 0, 0, NULL, 4, 5, '2026-04-28 20:53:06'),
+(823, '2eb71d62-d072-476b-a431-837da1ebbc6d', 5320, 'MMC0000066', '069261', '1', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 5, 5, 'Chicago Coil LLC', 'Coil, 12Ga X 4.250', 'C', '2026-04-22', 23520.00, 'LBS', 0, 'jkoll', 3, 'Coils', 1773.00, 0, 0, 0, NULL, 5, 5, '2026-04-28 20:53:06'),
+(824, 'cde8e4be-3501-4cc8-8dc2-c9cbd3e005c8', 3495, 'MMC0000412', '069261', '2', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 1, 1, 'Chicago Coil LLC', 'Coil, 13Ga X 8.750', 'C', '2026-04-22', 13830.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3495.00, 0, 0, 0, NULL, 1, 4, '2026-04-28 20:53:50'),
+(825, 'fff24bed-8755-4b2c-b58e-6d43e1bf35d3', 3465, 'MMC0000412', '069261', '2', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 2, 2, 'Chicago Coil LLC', 'Coil, 13Ga X 8.750', 'C', '2026-04-22', 13830.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3465.00, 0, 0, 0, NULL, 2, 4, '2026-04-28 20:53:50'),
+(826, 'fd884d80-6c00-465b-a949-d7717177d989', 3400, 'MMC0000412', '069261', '2', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 3, 3, 'Chicago Coil LLC', 'Coil, 13Ga X 8.750', 'C', '2026-04-22', 13830.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3400.00, 0, 0, 0, NULL, 3, 4, '2026-04-28 20:53:50'),
+(827, '35a95734-ceca-41f8-bff5-1f7bd3c796d4', 3470, 'MMC0000412', '069261', '2', 6229, 'Nothing Entered', '2026-04-28', 'RECV', NULL, 4, 4, 'Chicago Coil LLC', 'Coil, 13Ga X 8.750', 'C', '2026-04-22', 13830.00, 'LBS', 0, 'jkoll', 1, 'Coils', 3470.00, 0, 0, 0, NULL, 4, 4, '2026-04-28 20:53:50'),
+(834, 'a6a2458d-2206-4953-90b7-c19cbdf97c6c', 3419, 'MMF0005501', '069012', '1', 6229, '843P72760', '2026-04-29', 'WC', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.1875) X 60.000 X 120.000', 'R', '2026-04-30', 3200.00, 'LBS', 3200, 'jkoll', 9, 'Sheets', 380.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:05:15'),
+(835, '8781c602-7802-4a9d-9e61-fd92e921feb0', 3680, 'MMF0005507', '069103', '15', 6229, '336471', '2026-04-29', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 10, 'Sheets', 368.00, 0, 0, 0, NULL, 1, 2, '2026-04-29 12:05:47'),
+(836, '27fda17c-c937-46ef-a9f8-9723afc896dd', 3680, 'MMF0005507', '069103', '15', 6229, '336471', '2026-04-29', 'S-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', 'R', '2026-04-30', 7000.00, 'LBS', 7000, 'jkoll', 10, 'Sheets', 368.00, 0, 0, 0, NULL, 2, 2, '2026-04-29 12:05:47'),
+(837, '29e13f3a-0781-400e-9c08-fda15f61344d', 1665, 'MMF0005808', '069150', '5', 6229, '548041', '2026-04-29', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 8Ga X 48.000 x 120.000', 'R', '2026-04-24', 1650.00, 'LBS', 1650, 'jkoll', 6, 'Sheets', 278.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:06:18'),
+(838, 'ccc1237e-d3cf-459c-ae27-3380e6837928', 920, 'MMF0009014', '069184', '1', 6229, '337848', '2026-04-29', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.074) X 60.000 X 120.000', 'R', '2026-05-01', 1000.00, 'LBS', 1000, 'jkoll', 10, 'Sheets', 92.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:06:52'),
+(839, '2201f2fb-15a0-4bf0-acc3-165b4231ac57', 4380, 'MMC0000092', '069270', '4', 6229, '336929', '2026-04-29', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 1.575', 'R', '2026-04-30', 8500.00, 'LBS', 8500, 'jkoll', 6, 'Coils', 730.00, 0, 0, 0, NULL, 1, 2, '2026-04-29 12:07:23'),
+(840, '7ed00a54-a144-4c8a-8bdf-2f99e6bd6759', 4380, 'MMC0000092', '069270', '4', 6229, '336929', '2026-04-29', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 1.575', 'R', '2026-04-30', 8500.00, 'LBS', 8500, 'jkoll', 6, 'Coils', 730.00, 0, 0, 0, NULL, 2, 2, '2026-04-29 12:07:23'),
+(841, '84887ed5-6dd5-4551-9bc2-7a22cd85d779', 1260, 'MMC0000668', '069270', '6', 6229, '558893', '2026-04-29', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 6.000', 'R', '2026-04-30', 1200.00, 'LBS', 1200, 'jkoll', 1, 'Coils', 1260.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:08:10'),
+(842, '42499126-576a-44c0-85d5-949b4d30ffe4', 1540, 'MMC0000305', '069270', '7', 6229, '832P31720', '2026-04-29', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 4.750', 'R', '2026-04-30', 1470.00, 'LBS', 1470, 'jkoll', 1, 'Coils', 1540.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:08:39'),
+(843, '9c27fc46-0c9a-4316-9e33-47bb5c7ef530', 7320, 'MMC0000439', '069103', '8', 6229, '569143', '2026-04-29', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 7.332', 'R', '2026-05-01', 14000.00, 'LBS', 14000, 'jkoll', 3, 'Coils', 2440.00, 0, 0, 0, NULL, 1, 2, '2026-04-29 12:09:20'),
+(844, '3ac74559-ab49-4325-a434-25f36b5a9134', 8820, 'MMC0000439', '069103', '8', 6229, '569143', '2026-04-29', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 7.332', 'R', '2026-05-01', 14000.00, 'LBS', 14000, 'jkoll', 3, 'Coils', 2940.00, 0, 0, 0, NULL, 2, 2, '2026-04-29 12:09:20'),
+(845, '94af7e8b-2349-49e5-a06c-b888408f1272', 2730, 'MMF0005510', '069150', '3', 6229, '337848', '2026-04-29', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-04-29', 2500.00, 'LBS', -230, 'jkoll', 10, 'Sheets', 273.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 12:22:29'),
+(849, '2715e4ff-5f46-4654-b4e5-d1365027796a', 2495, 'MMC0000873', '068642', '2', 6229, '190160889', '2026-04-29', 'RECV', NULL, 1, 1, 'Lapham-Hickey Steel', 'Coil, 14Ga X 4.660', 'R', '2026-04-30', 3000.00, 'LBS', 3000, 'jkoll', 1, 'Coils', 2495.00, 0, 0, 0, NULL, 1, 2, '2026-04-29 13:43:17'),
+(850, 'f3e00b28-93a9-42d1-aad4-6227f4a51ebe', 685, 'MMC0000873', '068642', '2', 6229, '190258635', '2026-04-29', 'RECV', NULL, 2, 2, 'Lapham-Hickey Steel', 'Coil, 14Ga X 4.660', 'R', '2026-04-30', 3000.00, 'LBS', 3000, 'jkoll', 1, 'Coils', 685.00, 0, 0, 0, NULL, 2, 2, '2026-04-29 13:43:17'),
+(852, 'b03b7d00-e3dc-4d57-9807-bf30df968856', 638, 'MMF0008031', '069134', '1', 6229, '41481184', '2026-04-29', 'S-00', NULL, 1, 1, 'Ryerson', 'Sheet, .313 X 60.000 X 120.000', 'C', '2026-04-28', 638.00, 'LBS', 0, 'jkoll', 1, 'Sheets', 638.00, 0, 0, 0, NULL, 1, 1, '2026-04-29 15:49:49'),
+(853, '2b12b2ad-8c10-46c0-b4bf-3720ce17015a', 4364, 'MMC0000549', '067896', '2', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 1, 1, 'Chicago Coil LLC', 'Coil, 8Ga X 4.785', 'R', '2026-06-30', 17000.00, 'LBS', 17000, 'jkoll', 2, 'Coils', 2182.00, 0, 0, 0, NULL, 1, 3, '2026-04-29 16:48:19'),
+(854, 'c2f1287d-f3be-43c9-bd81-7fab5bb08b5d', 6546, 'MMC0000549', '067896', '2', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 2, 2, 'Chicago Coil LLC', 'Coil, 8Ga X 4.785', 'R', '2026-06-30', 17000.00, 'LBS', 17000, 'jkoll', 3, 'Coils', 2182.00, 0, 0, 0, NULL, 2, 3, '2026-04-29 16:48:19'),
+(855, 'df4a7dd0-d889-4605-9ba0-b95e2bd0d978', 6546, 'MMC0000549', '067896', '2', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 3, 3, 'Chicago Coil LLC', 'Coil, 8Ga X 4.785', 'R', '2026-06-30', 17000.00, 'LBS', 17000, 'jkoll', 3, 'Coils', 2182.00, 0, 0, 0, NULL, 3, 3, '2026-04-29 16:48:19'),
+(856, '78bb3dab-c843-4dee-8577-04899a888924', 9000, '23-14200-045', '067906', '1', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 1, 1, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', 'R', '2026-04-27', 23000.00, 'EA', 0, 'jkoll', 36, 'Boxes', 250.00, 0, 0, 0, NULL, 1, 3, '2026-04-29 16:58:36'),
+(857, '01d9f8a2-7a48-4d22-997f-95bc44abd8c2', 9000, '23-14200-045', '067906', '1', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 2, 2, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', 'R', '2026-04-27', 23000.00, 'EA', 0, 'jkoll', 36, 'Boxes', 250.00, 0, 0, 0, NULL, 2, 3, '2026-04-29 16:58:36'),
+(858, 'ac7c1fd0-b8c5-4db1-b903-4f94f5ad7d19', 5000, '23-14200-045', '067906', '1', 6229, 'Nothing Entered', '2026-04-29', 'RECV', NULL, 3, 3, 'Facil North America Inc', 'Bolt, Rnd Hd, Rib Neck, M12x45', 'R', '2026-04-27', 23000.00, 'EA', 0, 'jkoll', 20, 'Boxes', 250.00, 0, 0, 0, NULL, 3, 3, '2026-04-29 16:58:36'),
+(859, '7092e661-9457-4627-8f08-d35b568954af', 6978, 'MMC0000364', '064489', '1', 6229, '25T20739', '2026-04-29', 'V-D0-04', NULL, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6978.00, 0, 0, 0, NULL, 1, 6, '2026-04-29 17:38:53'),
+(860, 'ebaad757-f41f-4158-9bf2-f933e4616d64', 6986, 'MMC0000364', '064489', '1', 6229, '25T20739', '2026-04-29', 'V-D0-04', NULL, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6986.00, 0, 0, 0, NULL, 2, 6, '2026-04-29 17:38:53'),
+(861, '5b4884df-104a-4f27-b714-41f482ceb36c', 6790, 'MMC0000364', '064489', '1', 6229, '25T20740', '2026-04-29', 'V-D0-04', NULL, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6790.00, 0, 0, 0, NULL, 3, 6, '2026-04-29 17:38:53'),
+(862, '3df208d5-20ca-4be5-a10f-3e574665604a', 6792, 'MMC0000364', '064489', '1', 6229, '25T20740', '2026-04-29', 'V-D0-04', NULL, 4, 4, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6792.00, 0, 0, 0, NULL, 4, 6, '2026-04-29 17:38:53'),
+(863, 'bf1e6faf-5e82-43c9-96c1-1dc096955ed7', 6804, 'MMC0000364', '064489', '1', 6229, '25T20750', '2026-04-29', 'V-D0-04', NULL, 5, 5, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6804.00, 0, 0, 0, NULL, 5, 6, '2026-04-29 17:38:53'),
+(864, '80a1c7ed-57e6-41c3-a4ae-2738defe77f8', 6798, 'MMC0000364', '064489', '1', 6229, '25T20750', '2026-04-29', 'V-D0-04', NULL, 6, 6, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6798.00, 0, 0, 0, NULL, 6, 6, '2026-04-29 17:38:53'),
+(871, '200530d6-ca65-4659-86c1-bd9a40fed0c8', 5984, 'MMC0000590', '069190', '1', 6229, 'EB5L', '2026-04-29', 'RECV', 0, 1, 1, 'Metals USA  Germantown', 'Coil, 16Ga X 7.884', 'R', '2026-04-28', 6200.00, 'LBS', 216, 'jkoll', 2, 'Coils', 2992.00, 0, 0, 0, '', 1, 1, '2026-04-29 18:25:41'),
+(872, '20e16bcc-3226-4c74-936a-c3ac8a4a2089', 7100, 'MMC0000364', '064489', '1', 6229, '25T20885', '2026-04-29', 'V-D0-04', 0, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7100.00, 0, 0, 0, '', 1, 3, '2026-04-29 18:26:14'),
+(873, '77d752fb-58f6-4df3-b6cc-41d25d9d3847', 7098, 'MMC0000364', '064489', '1', 6229, '25T20885', '2026-04-29', 'V-D0-04', 0, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7098.00, 0, 0, 0, '', 2, 3, '2026-04-29 18:26:14'),
+(874, '6f8cfa7e-8eed-4fb7-a588-6fdadeb0e923', 7046, 'MMC0000364', '064489', '1', 6229, '25T20884', '2026-04-29', 'V-D0-04', 0, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7046.00, 0, 0, 0, '', 3, 3, '2026-04-29 18:26:14'),
+(878, '6c05c6fe-a75d-467c-9148-d00e2cf801c8', 4594, 'MMF0005575', '069152', '1', 6229, 'F0585', '2026-04-29', 'T-00', 0, 1, 1, 'Alro Steel ', 'Sheet, (.750) X 60.000 X 120.000', 'R', '2026-05-04', 14725.00, 'LBS', 14725, 'jkoll', 3, 'Sheets', 1531.00, 0, 0, 0, '', 1, 2, '2026-04-29 20:15:55'),
+(879, 'fc29867b-a33c-4952-9086-e7f390abdfd5', 3063, 'MMF0005575', '069152', '1', 6229, 'F0585', '2026-04-29', 'T-00', 0, 2, 2, 'Alro Steel ', 'Sheet, (.750) X 60.000 X 120.000', 'R', '2026-05-04', 14725.00, 'LBS', 14725, 'jkoll', 2, 'Sheets', 1532.00, 0, 0, 0, '', 2, 2, '2026-04-29 20:15:55'),
+(880, 'edd45d11-df0a-4cba-a0d8-e2cafa21704f', 4594, 'MMF0005575', '069152', '1', 6229, 'F0585', '2026-04-30', 'T-00', 0, 1, 1, 'Alro Steel ', 'Sheet, (.750) X 60.000 X 120.000', 'C', '2026-05-04', 14725.00, 'LBS', -589, 'jkoll', 3, 'Sheets', 1531.00, 0, 0, 0, '', 1, 2, '2026-04-30 15:16:35'),
+(881, '5c4b6c7b-706e-45b9-bbb7-c31e19bc1ce4', 3063, 'MMF0005575', '069152', '1', 6229, 'F0585', '2026-04-30', 'T-00', 0, 2, 2, 'Alro Steel ', 'Sheet, (.750) X 60.000 X 120.000', 'C', '2026-05-04', 14725.00, 'LBS', -589, 'jkoll', 2, 'Sheets', 1532.00, 0, 0, 0, '', 2, 2, '2026-04-30 15:16:35'),
+(882, '299408f9-9eb1-4666-ac1c-ad370d3413f9', 10180, 'MMC0000850', '068202', '1', 6229, '12609220', '2026-04-30', 'V-D0-09', 0, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 172000.00, 'LBS', -9180, 'jkoll', 1, 'Coils', 10180.00, 0, 0, 0, '', 1, 4, '2026-04-30 15:19:06'),
+(883, 'a3e69902-5a58-4c72-9124-7151a5d34c99', 10180, 'MMC0000850', '068202', '1', 6229, '12609220', '2026-04-30', 'V-D0-09', 0, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 172000.00, 'LBS', -9180, 'jkoll', 1, 'Coils', 10180.00, 0, 0, 0, '', 2, 4, '2026-04-30 15:19:06'),
+(884, '455750f7-8032-4a20-b116-63e90f071286', 10180, 'MMC0000850', '068202', '1', 6229, '12609220', '2026-04-30', 'V-D0-09', 0, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 172000.00, 'LBS', -9180, 'jkoll', 1, 'Coils', 10180.00, 0, 0, 0, '', 3, 4, '2026-04-30 15:19:06'),
+(885, '3dfb3010-73f1-4f09-a98d-b3f96ec6538c', 10180, 'MMC0000850', '068202', '1', 6229, '12609220', '2026-04-30', 'V-D0-09', 0, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 172000.00, 'LBS', -9180, 'jkoll', 1, 'Coils', 10180.00, 0, 0, 0, '', 4, 4, '2026-04-30 15:19:06'),
+(886, 'a2d99c53-6f45-4e7a-bf96-d0e36d302cd2', 10000, '2446801', '069287', '2', 6229, '2603171-12', '2026-04-30', 'RECV DESK', 0, 1, 1, 'Prestige Threaded Products', 'Washer, Plain  FOR VITS', 'R', '2026-05-01', 10000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 10000.00, 0, 0, 0, '', 1, 1, '2026-04-30 15:24:43'),
+(887, 'b3bb16ff-4b17-47d9-9d3f-c327907e7fa9', 20000, '962689', '069287', '1', 6229, '2604281-7', '2026-04-30', 'RECV', 0, 1, 1, 'Prestige Threaded Products', 'Nut, Weld M6 * 5.6', 'R', '2026-05-01', 20000.00, 'EA', 0, 'jkoll', 8, 'Boxes', 2500.00, 0, 0, 0, '', 1, 1, '2026-04-30 15:26:03'),
+(888, 'ccbbb529-b6ec-4e38-8660-2ef276928262', 6060, 'MMC0000429', '069103', '7', 6229, '669284', '2026-04-30', 'V-D0-03', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 14.500', 'R', '2026-05-01', 5500.00, 'LBS', -560, 'jkoll', 2, 'Coils', 3030.00, 0, 0, 0, '', 1, 1, '2026-04-30 15:30:46'),
+(889, '920c63fb-47c8-4af7-a27c-9bad42c3eccf', 4220, 'MMC0000758', '069198', '1', 6229, '337380', '2026-04-30', 'V-E0-01', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-05-01', 25000.00, 'LBS', 16560, 'jkoll', 2, 'Coils', 2110.00, 0, 0, 0, '', 1, 2, '2026-04-30 15:31:14'),
+(890, '45a8d499-0e02-48b3-94dd-4f8d59c57c00', 4220, 'MMC0000758', '069198', '1', 6229, '337380', '2026-04-30', 'V-E0-01', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-05-01', 25000.00, 'LBS', 16560, 'jkoll', 2, 'Coils', 2110.00, 0, 0, 0, '', 2, 2, '2026-04-30 15:31:14'),
+(891, '2a9192cd-356d-4453-9e8f-3ccd949a14b1', 1690, 'MMC0000797', '069184', '2', 6229, '337176', '2026-04-30', 'V-E0-01', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 8Ga X 7.190', 'R', '2026-05-01', 23000.00, 'LBS', 100, 'jkoll', 1, 'Coils', 1690.00, 0, 0, 0, '', 1, 5, '2026-04-30 15:31:58'),
+(892, '2309e63d-566c-45f6-9ac9-3b5587315a7d', 6080, 'MMC0000797', '069184', '2', 6229, '843S64740', '2026-04-30', 'V-E0-01', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 8Ga X 7.190', 'R', '2026-05-01', 23000.00, 'LBS', 100, 'jkoll', 2, 'Coils', 3040.00, 0, 0, 0, '', 2, 5, '2026-04-30 15:31:58'),
+(893, '170b2b43-6916-4ea6-ad26-186cd9fe2089', 6080, 'MMC0000797', '069184', '2', 6229, '843S64740', '2026-04-30', 'V-E0-01', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, 8Ga X 7.190', 'R', '2026-05-01', 23000.00, 'LBS', 100, 'jkoll', 2, 'Coils', 3040.00, 0, 0, 0, '', 3, 5, '2026-04-30 15:31:58'),
+(894, '7f1dbf39-cc25-4998-9666-36677c955937', 6050, 'MMC0000797', '069184', '2', 6229, '843S64740', '2026-04-30', 'V-E0-01', 0, 4, 4, 'Dalco Metals, Inc.', 'Coil, 8Ga X 7.190', 'R', '2026-05-01', 23000.00, 'LBS', 100, 'jkoll', 2, 'Coils', 3025.00, 0, 0, 0, '', 4, 5, '2026-04-30 15:31:58'),
+(895, 'f049f3bf-27eb-46d7-a8fb-09cfb6a2b7f6', 3000, 'MMC0000797', '069184', '2', 6229, '843S64740', '2026-04-30', 'V-E0-01', 0, 5, 5, 'Dalco Metals, Inc.', 'Coil, 8Ga X 7.190', 'R', '2026-05-01', 23000.00, 'LBS', 100, 'jkoll', 1, 'Coils', 3000.00, 0, 0, 0, '', 5, 5, '2026-04-30 15:31:58'),
+(896, '7e10e394-4b2d-4b94-ba7c-8f4fb60ab662', 450, 'MMF0005414', '069365', '1', 6229, '650126', '2026-04-30', 'T-00', 0, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.075) X 60.000 X 120.000', 'C', '2026-05-01', 350.00, 'LBS', -100, 'jkoll', 3, 'Sheets', 150.00, 0, 0, 0, '', 1, 1, '2026-04-30 15:33:00'),
+(897, 'b8ff93e0-ebc0-41a1-9617-46d6aad56b37', 4080, 'MMC0000268', '069277', '1', 6229, '650156', '2026-04-30', 'V-E0-01', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 4.875', 'C', '2026-05-01', 7300.00, 'LBS', -620, 'jkoll', 2, 'Coils', 2040.00, 0, 0, 0, '', 1, 2, '2026-04-30 15:33:32'),
+(898, '1579f5d5-f339-47af-a174-e1824b95d3f7', 3840, 'MMC0000268', '069277', '1', 6229, '811P09810', '2026-04-30', 'V-E0-01', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 12Ga X 4.875', 'C', '2026-05-01', 7300.00, 'LBS', -620, 'jkoll', 4, 'Coils', 960.00, 0, 0, 0, '', 2, 2, '2026-04-30 15:33:32'),
+(899, 'd35291c9-99a4-4a27-9f54-761ea4e1b592', 7044, 'MMC0000364', '064489', '1', 6229, '25T20884', '2026-04-30', 'V-D0-04', 0, 1, 1, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 7044.00, 0, 0, 0, '', 1, 5, '2026-04-30 15:37:56'),
+(900, 'd1784cfa-dbc3-4e0d-9be9-f9119da5347a', 6380, 'MMC0000364', '064489', '1', 6229, '25T20727', '2026-04-30', 'V-D0-04', 0, 2, 2, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6380.00, 0, 0, 0, '', 2, 5, '2026-04-30 15:37:56'),
+(901, '53454ea4-9d54-466e-9217-6188949d22d9', 6372, 'MMC0000364', '064489', '1', 6229, '25T20727', '2026-04-30', 'V-D0-04', 0, 3, 3, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6372.00, 0, 0, 0, '', 3, 5, '2026-04-30 15:37:56'),
+(902, '7da7a34b-f52c-4551-a8b6-aa5acb50674a', 6826, 'MMC0000364', '064489', '1', 6229, '25T20885', '2026-04-30', 'V-D0-04', 0, 4, 4, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6826.00, 0, 0, 0, '', 4, 5, '2026-04-30 15:37:56'),
+(903, 'fb0a56ca-ac66-4079-a9c1-0008ab52231f', 6814, 'MMC0000364', '064489', '1', 6229, '25T20885', '2026-04-30', 'V-D0-04', 0, 5, 5, 'Metals USA - Horicon', 'Coil, .074 X 25.612', 'X', '2025-12-31', 1.00, 'LBS', 1, 'jkoll', 1, 'Coils', 6814.00, 0, 0, 0, '', 5, 5, '2026-04-30 15:37:56'),
+(909, '2707b02e-acbf-4825-8f91-34bf70751d56', 11090, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-30', 'V-D0-09', NULL, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 115280, 'jkoll', 1, 'Coils', 11090.00, 0, 0, 0, NULL, 1, 4, '2026-04-30 18:09:21'),
+(910, 'f509d5a2-ba5a-4720-a516-dac5741d5813', 11090, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-30', 'V-D0-09', NULL, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 115280, 'jkoll', 1, 'Coils', 11090.00, 0, 0, 0, NULL, 2, 4, '2026-04-30 18:09:21'),
+(911, 'bd117f48-1e67-49bd-882d-8b1007b9b3bb', 11090, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-30', 'V-D0-09', NULL, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 115280, 'jkoll', 1, 'Coils', 11090.00, 0, 0, 0, NULL, 3, 4, '2026-04-30 18:09:21'),
+(912, '8895b113-b699-49b2-80cd-1beff1fa6745', 11090, 'MMC0000850', '068202', '2', 6229, '12609220', '2026-04-30', 'V-D0-09', NULL, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-04-30', 156000.00, 'LBS', 115280, 'jkoll', 1, 'Coils', 11090.00, 0, 0, 0, NULL, 4, 4, '2026-04-30 18:09:21'),
+(913, '62bdb314-d9ab-469d-8a22-5cb07b3e54a2', 1000, '23-09901-106', '069298', '1', 6229, '2604271-13', '2026-04-30', 'RECV DESK', NULL, 1, 1, 'Prestige Threaded Products', 'Nut, Lock .375-16  FOR VITS', 'C', '2026-04-30', 1000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-04-30 18:25:11'),
+(914, 'a0e98200-76c9-4bc5-a418-016371a0a1a0', 1501, '407150146', '069192', '1', 6229, 'Multiple', '2026-04-30', 'RECV DESK', NULL, 1, 1, 'Prestige Threaded Products', 'Screw, NAS 1189-06T 3B  FOR VITS', 'C', '2026-05-15', 1501.00, 'EA', 0, 'jkoll', 1, 'Boxes', 1501.00, 0, 0, 0, NULL, 1, 1, '2026-04-30 19:34:55'),
+(915, '43f55150-970b-45e1-ae29-d50c9278a7d3', 6320, 'MMC0000384', '069108', '1', 6229, '25T11210', '2026-05-01', 'V-D0-01', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-04-24', 14500.00, 'LBS', 8630, 'jkoll', 1, 'Coils', 6320.00, 0, 0, 0, NULL, 1, 2, '2026-05-01 12:53:34'),
+(916, '262fa90e-93de-4f90-af07-364e550e3c3a', 6320, 'MMC0000384', '069108', '1', 6229, '25T11210', '2026-05-01', 'V-D0-01', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-04-24', 14500.00, 'LBS', 8630, 'jkoll', 1, 'Coils', 6320.00, 0, 0, 0, NULL, 2, 2, '2026-05-01 12:53:34'),
+(917, '5edcc004-6800-421e-9d69-0ffae5d053ba', 56, 'MMF0007081', '069337', '1', 6229, '24101413GC2', '2026-05-01', 'T-00', NULL, 1, 1, 'Mandel Metals, Inc', 'Sheet, .080 X 48.000 X 120.000', 'R', '2026-04-24', 56.00, 'LBS', 56, 'jkoll', 1, 'Sheets', 56.00, 0, 0, 0, NULL, 1, 1, '2026-05-01 12:54:14'),
+(920, 'e313a109-f9a0-41e4-b58e-e5d9af17d31b', 7380, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7380.00, 0, 0, 0, NULL, 1, 6, '2026-05-01 14:28:30'),
+(921, '071c7ae5-b2d9-433b-8f50-b183173e6ba4', 7440, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 2, 2, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7440.00, 0, 0, 0, NULL, 2, 6, '2026-05-01 14:28:30'),
+(922, 'ce38dd00-51c9-4470-a5b6-04f4311d2e34', 7400, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 3, 3, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7400.00, 0, 0, 0, NULL, 3, 6, '2026-05-01 14:28:30'),
+(923, 'e2b3e86a-e4d3-4a26-aaaa-39f9cde874b2', 7340, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 4, 4, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7340.00, 0, 0, 0, NULL, 4, 6, '2026-05-01 14:28:30'),
+(924, 'c8046ce1-9eff-46cf-a516-25e517e60f2d', 7380, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 5, 5, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7380.00, 0, 0, 0, NULL, 5, 6, '2026-05-01 14:28:30'),
+(925, '086dc5bf-0ee5-461f-a384-07c31e3cead7', 7380, 'MMC0000743', '068059', '3', 6229, '338702', '2026-05-01', 'V-E0-02', NULL, 6, 6, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 90000, 'jkoll', 1, 'Coils', 7380.00, 0, 0, 0, NULL, 6, 6, '2026-05-01 14:28:30'),
+(927, 'fdbfa8be-92a4-4246-bab5-4ccd9454a803', 2610, 'MMC0000058', '069235', '1', 6229, '559846', '2026-05-01', 'V-D0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 3.125', 'C', '2026-05-05', 6760.00, 'LBS', -1240, 'jkoll', 3, 'Coils', 870.00, 0, 0, 0, NULL, 1, 3, '2026-05-01 15:03:56'),
+(928, '518e151d-ee73-47d5-b43d-66fa516517e5', 3850, 'MMC0000058', '069235', '1', 6229, '559846', '2026-05-01', 'V-D0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 3.125', 'C', '2026-05-05', 6760.00, 'LBS', -1240, 'jkoll', 5, 'Coils', 770.00, 0, 0, 0, NULL, 2, 3, '2026-05-01 15:03:56'),
+(929, '22a3e3ae-8fc7-490c-9176-cb8dfeaaff3e', 1540, 'MMC0000058', '069235', '1', 6229, '559846', '2026-05-01', 'V-D0-03', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 14Ga X 3.125', 'C', '2026-05-05', 6760.00, 'LBS', -1240, 'jkoll', 2, 'Coils', 770.00, 0, 0, 0, NULL, 3, 3, '2026-05-01 15:03:56'),
+(930, 'b3bb3c5e-78c6-4e24-ade5-c101f8d530ca', 3900, 'MMC0000236', '069388', '1', 6229, '312290', '2026-05-01', 'V-E0-06', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 1.000', 'R', '2026-05-05', 15000.00, 'LBS', 560, 'jkoll', 15, 'Coils', 260.00, 0, 0, 0, NULL, 1, 4, '2026-05-01 15:04:25'),
+(931, '5d941bf7-3105-4cea-9bf0-b1e9f0028bab', 3740, 'MMC0000236', '069388', '1', 6229, '312290', '2026-05-01', 'V-E0-06', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 1.000', 'R', '2026-05-05', 15000.00, 'LBS', 560, 'jkoll', 15, 'Coils', 249.00, 0, 0, 0, NULL, 2, 4, '2026-05-01 15:04:25'),
+(932, '21845979-d5ab-4ce3-80d5-6b8c253ab440', 3400, 'MMC0000236', '069388', '1', 6229, '331083', '2026-05-01', 'V-E0-06', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 14Ga X 1.000', 'R', '2026-05-05', 15000.00, 'LBS', 560, 'jkoll', 10, 'Coils', 340.00, 0, 0, 0, NULL, 3, 4, '2026-05-01 15:04:25');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(933, '3e71e3d8-4612-48a6-9e9b-888843f8a8b3', 3400, 'MMC0000236', '069388', '1', 6229, '331083', '2026-05-01', 'V-E0-06', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 14Ga X 1.000', 'R', '2026-05-05', 15000.00, 'LBS', 560, 'jkoll', 10, 'Coils', 340.00, 0, 0, 0, NULL, 4, 4, '2026-05-01 15:04:25'),
+(934, '1d11c1aa-bac4-4262-bd0d-16eda9fb63be', 6810, 'MMC0000978', '069270', '2', 6229, 'EB9020', '2026-05-01', 'V-D0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 8.250', 'R', '2026-04-30', 10500.00, 'LBS', -850, 'jkoll', 3, 'Coils', 2270.00, 0, 0, 0, NULL, 1, 2, '2026-05-01 15:05:05'),
+(935, '3d3def5c-5aff-405e-87d6-dd82cd7b289a', 4540, 'MMC0000978', '069270', '2', 6229, 'EB9020', '2026-05-01', 'V-D0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 11Ga X 8.250', 'R', '2026-04-30', 10500.00, 'LBS', -850, 'jkoll', 2, 'Coils', 2270.00, 0, 0, 0, NULL, 2, 2, '2026-05-01 15:05:05'),
+(936, '4e69a616-177c-4137-817e-92f0aecd1661', 4400, 'MMC0000089', '069270', '5', 6229, '823P73040', '2026-05-01', 'V-D0-06', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 2.992', 'R', '2026-04-30', 20000.00, 'LBS', -80, 'jkoll', 4, 'Coils', 1100.00, 0, 0, 0, NULL, 1, 2, '2026-05-01 15:05:34'),
+(937, 'ce4ecf78-32e6-4df1-a656-f8fa244804aa', 4400, 'MMC0000089', '069270', '5', 6229, '823P73040', '2026-05-01', 'V-D0-06', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 2.992', 'R', '2026-04-30', 20000.00, 'LBS', -80, 'jkoll', 4, 'Coils', 1100.00, 0, 0, 0, NULL, 2, 2, '2026-05-01 15:05:34'),
+(942, 'c9678c54-8551-41e2-aac0-e5252f423edc', 8103, 'MMC0001145', '068057', '2', 6229, 'A 10171 331897', '2026-05-01', 'V-D0-01', NULL, 1, 1, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-05-01', 33100.00, 'LBS', 1680, 'jkoll', 1, 'Coils', 8103.00, 0, 0, 0, NULL, 1, 4, '2026-05-01 16:06:19'),
+(943, 'ca06dc55-81d6-47cd-9c5e-43ddf2935c22', 7810, 'MMC0001145', '068057', '2', 6229, 'A 10171 331897', '2026-05-01', 'V-D0-01', NULL, 2, 2, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-05-01', 33100.00, 'LBS', 1680, 'jkoll', 1, 'Coils', 7810.00, 0, 0, 0, NULL, 2, 4, '2026-05-01 16:06:19'),
+(944, '1af9d9a6-4e6c-4ce5-bf2d-1100dfd54ff0', 7702, 'MMC0001145', '068057', '2', 6229, 'A 10171 331897', '2026-05-01', 'V-D0-01', NULL, 3, 3, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-05-01', 33100.00, 'LBS', 1680, 'jkoll', 1, 'Coils', 7702.00, 0, 0, 0, NULL, 3, 4, '2026-05-01 16:06:19'),
+(945, '8ee48802-7148-4556-9e10-62dc31866fe2', 7805, 'MMC0001145', '068057', '2', 6229, 'A 10171 331897', '2026-05-01', 'V-D0-01', NULL, 4, 4, 'Harris Steel', 'Pre-Build, Coil, 14Ga X 35.250', 'R', '2026-05-01', 33100.00, 'LBS', 1680, 'jkoll', 1, 'Coils', 7805.00, 0, 0, 0, NULL, 4, 4, '2026-05-01 16:06:19'),
+(949, '80aa41c5-7c9b-4f6f-9382-60513ccd8544', 5082, 'MMC0000125', '067562', '2', 6229, 'R06677', '2026-05-01', 'V-E0-02', NULL, 1, 1, 'Scott Steel LLC', 'Coil, 18Ga X 14.160', 'R', '2026-05-01', 8000.00, 'LBS', 2918, 'jkoll', 1, 'Coils', 5082.00, 0, 0, 0, NULL, 1, 1, '2026-05-01 17:54:19'),
+(950, '8d501a26-52a4-4a9c-a36b-a1b1ee25c6f3', 7365, 'MMC0000410', '068291', '1', 6229, '32543400', '2026-05-01', 'V-E0-02', NULL, 1, 1, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 2, 'Coils', 3682.00, 0, 0, 0, NULL, 1, 1, '2026-05-01 17:54:47'),
+(951, 'c391dfcf-5333-4202-ac49-9376fb6d8810', 3878, 'MMC0000650', '068241', '4', 6229, '33614', '2026-05-01', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-17', 37600.00, 'LBS', 37600, 'jkoll', 1, 'Coils', 3878.00, 0, 0, 0, NULL, 1, 3, '2026-05-01 17:58:36'),
+(952, '563b68f7-c620-4afe-b484-3056e3b3af24', 3748, 'MMC0000650', '068241', '4', 6229, '33614', '2026-05-01', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-17', 37600.00, 'LBS', 37600, 'jkoll', 1, 'Coils', 3748.00, 0, 0, 0, NULL, 2, 3, '2026-05-01 17:58:36'),
+(953, 'd99203fc-cb37-40c3-be01-f4bf614432f8', 4198, 'MMC0000650', '068241', '4', 6229, '33614', '2026-05-01', 'RECV', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 40.237', 'R', '2026-04-17', 37600.00, 'LBS', 37600, 'jkoll', 1, 'Coils', 4198.00, 0, 0, 0, NULL, 3, 3, '2026-05-01 17:58:36'),
+(954, '607083ba-6935-46ae-9f41-184848f002f7', 3428, 'MMC0001136', '069356', '1', 6229, '251019T11B', '2026-05-01', 'V-D0-05', NULL, 1, 1, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-05-01', 14499.00, 'LBS', 14499, 'jkoll', 2, 'Coils', 1714.00, 0, 0, 0, NULL, 1, 4, '2026-05-01 19:22:50'),
+(955, '5a6cf8d9-78f9-4c5e-a828-77fedff80aa5', 3431, 'MMC0001136', '069356', '1', 6229, '251019T11B', '2026-05-01', 'V-D0-05', NULL, 2, 2, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-05-01', 14499.00, 'LBS', 14499, 'jkoll', 2, 'Coils', 1716.00, 0, 0, 0, NULL, 2, 4, '2026-05-01 19:22:50'),
+(956, 'f90cf9fa-8689-423d-8788-144c5179f715', 3867, 'MMC0001136', '069356', '1', 6229, '251019T11B', '2026-05-01', 'V-D0-05', NULL, 3, 3, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-05-01', 14499.00, 'LBS', 14499, 'jkoll', 2, 'Coils', 1934.00, 0, 0, 0, NULL, 3, 4, '2026-05-01 19:22:50'),
+(957, 'c067e0d7-7989-408d-a9a9-40c539a67a56', 3871, 'MMC0001136', '069356', '1', 6229, '251019T11B', '2026-05-01', 'V-D0-05', NULL, 4, 4, 'Basic Metals Inc', 'Coil, .100 X 13.500', 'R', '2026-05-01', 14499.00, 'LBS', 14499, 'jkoll', 2, 'Coils', 1936.00, 0, 0, 0, NULL, 4, 4, '2026-05-01 19:22:50'),
+(958, '4e8e2332-eb85-4610-a14d-4ab06f6b1c57', 20300, '23-12742-000', '067254', '1', 6229, 'Nothing Entered', '2026-05-04', 'RECV', NULL, 1, 1, 'Facil North America Inc', 'Nut, Clinch, Lkg, M12 x 1.5 - FOR VITS', 'C', '2026-05-06', 20000.00, 'EA', -300, 'jkoll', 29, 'Boxes', 700.00, 0, 0, 0, NULL, 1, 1, '2026-05-04 13:32:24'),
+(959, 'f413ae55-f107-439c-b2f7-d077b9feafd7', 4860, 'MMC0000758', '069198', '1', 6229, '337380', '2026-05-04', 'V-E0-02', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-05-01', 25000.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1620.00, 0, 0, 0, NULL, 1, 1, '2026-05-04 13:48:57'),
+(960, '49881de4-371c-4bf5-a579-9c33447429bc', 3060, 'MMC0000417', '069402', '2', 6229, 'F05970', '2026-05-04', 'V-D0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 1, 'Coils', 3060.00, 0, 0, 0, NULL, 1, 6, '2026-05-04 13:49:31'),
+(961, 'a5a90a34-bf36-4cf9-a6cb-68e77baa9232', 6180, 'MMC0000417', '069402', '2', 6229, 'F05970', '2026-05-04', 'V-D0-07', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 2, 'Coils', 3090.00, 0, 0, 0, NULL, 2, 6, '2026-05-04 13:49:31'),
+(962, '96278426-eaa0-4260-84cd-2c0d6fa83fbb', 5140, 'MMC0000417', '069402', '2', 6229, 'R22212', '2026-05-04', 'V-D0-07', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 1, 'Coils', 5140.00, 0, 0, 0, NULL, 3, 6, '2026-05-04 13:49:31'),
+(963, 'b6d0958f-d634-4006-954a-5e9acb74aa78', 5140, 'MMC0000417', '069402', '2', 6229, 'R22212', '2026-05-04', 'V-D0-07', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 1, 'Coils', 5140.00, 0, 0, 0, NULL, 4, 6, '2026-05-04 13:49:31'),
+(964, 'aa34d642-834a-4438-9a2e-efe1e71f5f99', 5100, 'MMC0000417', '069402', '2', 6229, 'R22212', '2026-05-04', 'V-D0-07', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 1, 'Coils', 5100.00, 0, 0, 0, NULL, 5, 6, '2026-05-04 13:49:31'),
+(965, '8f2e3303-d72f-4476-b9db-053dac07e4a7', 5040, 'MMC0000417', '069402', '2', 6229, 'R22212', '2026-05-04', 'V-D0-07', NULL, 6, 6, 'Dalco Metals, Inc.', 'Coil, 20Ga X 12.250', 'R', '2026-05-06', 28800.00, 'LBS', -860, 'jkoll', 1, 'Coils', 5040.00, 0, 0, 0, NULL, 6, 6, '2026-05-04 13:49:31'),
+(966, '2f8f5b18-8260-46c7-8e5e-d3bec99867f8', 5540, 'MMC0000056', '069084', '2', 6229, '669910', '2026-05-04', 'V-F0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-24', 30000.00, 'LBS', 18980, 'jkoll', 1, 'Coils', 5540.00, 0, 0, 0, NULL, 1, 2, '2026-05-04 13:53:08'),
+(967, 'aa896d99-b68a-4e77-b446-fe878fcb1013', 5480, 'MMC0000056', '069084', '2', 6229, '669910', '2026-05-04', 'V-F0-05', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-24', 30000.00, 'LBS', 18980, 'jkoll', 1, 'Coils', 5480.00, 0, 0, 0, NULL, 2, 2, '2026-05-04 13:53:08'),
+(969, '6d03a352-308e-4e97-a157-f51ff610ad03', 4620, 'MMF0005537', '069103', '16', 6229, 'F0741', '2026-05-04', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 770.00, 0, 0, 0, NULL, 1, 9, '2026-05-04 14:18:25'),
+(970, '5697788b-18fb-4117-8f1b-373d6c7867e1', 4620, 'MMF0005537', '069103', '16', 6229, 'F0741', '2026-05-04', 'T-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 770.00, 0, 0, 0, NULL, 2, 9, '2026-05-04 14:18:25'),
+(971, '8e8e4f6e-a7f8-4067-bafa-101f699d2604', 4620, 'MMF0005537', '069103', '16', 6229, 'F0741', '2026-05-04', 'T-00', NULL, 3, 3, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 770.00, 0, 0, 0, NULL, 3, 9, '2026-05-04 14:18:25'),
+(972, 'afb17414-fe89-4386-b22f-7850a23466d3', 4620, 'MMF0005537', '069103', '16', 6229, 'F0741', '2026-05-04', 'T-00', NULL, 4, 4, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 770.00, 0, 0, 0, NULL, 4, 9, '2026-05-04 14:18:25'),
+(973, '15268a60-bb78-4f99-a849-c950d2ca3801', 1540, 'MMF0005537', '069103', '16', 6229, 'F0741', '2026-05-04', 'T-00', NULL, 5, 5, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 2, 'Sheets', 770.00, 0, 0, 0, NULL, 5, 9, '2026-05-04 14:18:25'),
+(974, '1e625aa4-5320-4901-bab7-1f1a9eb49704', 4598, 'MMF0005537', '069103', '16', 6229, '331878', '2026-05-04', 'T-00', NULL, 6, 6, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 766.00, 0, 0, 0, NULL, 6, 9, '2026-05-04 14:18:25'),
+(975, '9ef9d25d-fc49-4a73-b1d6-4e11d702d02c', 4598, 'MMF0005537', '069103', '16', 6229, '331878', '2026-05-04', 'T-00', NULL, 7, 7, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 766.00, 0, 0, 0, NULL, 7, 9, '2026-05-04 14:18:25'),
+(976, '37d54699-290a-4526-a4e8-c0163621c7fd', 4598, 'MMF0005537', '069103', '16', 6229, '331878', '2026-05-04', 'T-00', NULL, 8, 8, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 6, 'Sheets', 766.00, 0, 0, 0, NULL, 8, 9, '2026-05-04 14:18:25'),
+(977, '74d8cb4a-da10-471e-9019-35d985a765b2', 3830, 'MMF0005537', '069103', '16', 6229, '331878', '2026-05-04', 'T-00', NULL, 9, 9, 'Dalco Metals, Inc.', 'Sheet, (.375) X 60.000 X 120.000', 'R', '2026-05-04', 36500.00, 'LBS', 36500, 'jkoll', 5, 'Sheets', 766.00, 0, 0, 0, NULL, 9, 9, '2026-05-04 14:18:25'),
+(978, '5e2f5043-fa14-4416-b53d-5e55cc3eb083', 4860, 'MMC0000758', '069198', '1', 6229, '337380', '2026-05-04', 'V-E0-02', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-05-01', 25000.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1620.00, 0, 0, 0, NULL, 1, 2, '2026-05-04 14:19:31'),
+(979, 'b2ba4fdf-2854-4c3d-b157-c1fdbb47ffe3', 4860, 'MMC0000758', '069198', '1', 6229, '337380', '2026-05-04', 'V-E0-02', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.350', 'R', '2026-05-01', 25000.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1620.00, 0, 0, 0, NULL, 2, 2, '2026-05-04 14:19:31'),
+(980, '9baf802a-7920-4bc3-a2bc-6c935191ec79', 11390, 'MMC0000652', '067973', '1', 6229, '669472', '2026-05-04', 'V-F0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 223970, 'jkoll', 1, 'Coils', 11390.00, 0, 0, 0, NULL, 1, 4, '2026-05-04 15:24:55'),
+(981, 'afe13cca-e6c3-4046-8693-db9527fa98e1', 11820, 'MMC0000652', '067973', '1', 6229, '669472', '2026-05-04', 'V-F0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 223970, 'jkoll', 1, 'Coils', 11820.00, 0, 0, 0, NULL, 2, 4, '2026-05-04 15:24:55'),
+(982, 'ed032763-5221-4923-af1d-a64d0d0cee0d', 11490, 'MMC0000652', '067973', '1', 6229, '669472', '2026-05-04', 'V-F0-01', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 223970, 'jkoll', 1, 'Coils', 11490.00, 0, 0, 0, NULL, 3, 4, '2026-05-04 15:24:55'),
+(983, 'b485cda1-aba6-428c-a59c-a08636f2d0b0', 11330, 'MMC0000652', '067973', '1', 6229, '669473', '2026-05-04', 'V-F0-01', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 223970, 'jkoll', 1, 'Coils', 11330.00, 0, 0, 0, NULL, 4, 4, '2026-05-04 15:24:55'),
+(984, '9d338d4d-a113-4358-9c5d-1ce77a211e28', 636, 'MMC0000687', '069276', '1', 6229, '11-520-4693', '2026-05-04', 'V-E0-04', NULL, 1, 1, 'Greenpoint Metals', 'Coil, 11Ga X .984', 'R', '2026-05-04', 600.00, 'LBS', 600, 'jkoll', 2, 'Coils', 318.00, 0, 0, 0, NULL, 1, 1, '2026-05-04 16:50:35'),
+(985, '5332d112-b215-45bc-b951-a724a6e10a02', 25000, '23-11669-100', '068432', '1', 6229, 'Nothing Entered', '2026-05-04', 'RECV', NULL, 1, 1, 'Buckeye Fasteners, Inc', 'Stud, Weld 5/16-18 x 1.000', 'R', '2026-05-04', 25000.00, 'EA', 25000, 'jkoll', 25, 'Boxes', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-05-04 16:57:05'),
+(1015, '9d76cfd7-511e-476b-82ef-68750228b309', 4246, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4246.00, 0, 0, 0, NULL, 1, 22, '2026-05-05 12:27:02'),
+(1016, 'a2a3cf0f-f823-4f3e-8080-675687de0a7d', 4264, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4264.00, 0, 0, 0, NULL, 2, 22, '2026-05-05 12:27:02'),
+(1017, 'da78b026-2a10-4df1-8fb9-3e7d8fde7feb', 4276, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4276.00, 0, 0, 0, NULL, 3, 22, '2026-05-05 12:27:02'),
+(1018, 'fa54423c-8e14-48b4-afa4-05e387472df3', 4258, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4258.00, 0, 0, 0, NULL, 4, 22, '2026-05-05 12:27:02'),
+(1019, 'e19cb6dd-e06b-404d-97a9-b4e0d08ca84c', 4268, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4268.00, 0, 0, 0, NULL, 5, 22, '2026-05-05 12:27:02'),
+(1020, '9b56b9e8-e4eb-464e-8f34-d23d9b9c1128', 4258, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4258.00, 0, 0, 0, NULL, 6, 22, '2026-05-05 12:27:02'),
+(1021, '9baac6ab-bd90-4c17-b00f-2fcd7e315434', 4264, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 7, 7, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4264.00, 0, 0, 0, NULL, 7, 22, '2026-05-05 12:27:02'),
+(1022, '142b5338-5415-4f7f-ad94-880c4fa3f1ba', 4258, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 8, 8, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4258.00, 0, 0, 0, NULL, 8, 22, '2026-05-05 12:27:02'),
+(1023, '99ee8d27-9c24-442b-8001-6ebd1c64db1a', 4272, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 9, 9, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4272.00, 0, 0, 0, NULL, 9, 22, '2026-05-05 12:27:02'),
+(1024, 'c4601f4d-2bf0-4260-bc7e-b1d072ffe6b5', 4258, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 10, 10, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4258.00, 0, 0, 0, NULL, 10, 22, '2026-05-05 12:27:02'),
+(1025, 'cb33ca4d-b31d-48ec-8767-bb1735dcc94b', 4248, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 11, 11, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4248.00, 0, 0, 0, NULL, 11, 22, '2026-05-05 12:27:02'),
+(1026, 'e53a3e2f-006f-4193-8ec0-5f2253475ee5', 4230, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 12, 12, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4230.00, 0, 0, 0, NULL, 12, 22, '2026-05-05 12:27:02'),
+(1027, '0eb1b823-d1f0-4fb1-a1b8-e17eb65d5b81', 4252, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 13, 13, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4252.00, 0, 0, 0, NULL, 13, 22, '2026-05-05 12:27:02'),
+(1028, 'c8c3fe35-150a-41c9-997c-3e4b101612b2', 4260, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 14, 14, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4260.00, 0, 0, 0, NULL, 14, 22, '2026-05-05 12:27:02'),
+(1029, '39620e70-4557-497b-8867-23f2171d92b6', 4240, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 15, 15, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4240.00, 0, 0, 0, NULL, 15, 22, '2026-05-05 12:27:02'),
+(1030, '45643b50-6565-40c0-a120-9f5f072b4910', 4246, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 16, 16, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4246.00, 0, 0, 0, NULL, 16, 22, '2026-05-05 12:27:02'),
+(1031, '0abd1df0-bc04-489d-96e8-8373239bc3b2', 4234, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 17, 17, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4234.00, 0, 0, 0, NULL, 17, 22, '2026-05-05 12:27:02'),
+(1032, '65376fdd-ea72-4cc6-830b-929a95ea08d9', 4242, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 18, 18, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4242.00, 0, 0, 0, NULL, 18, 22, '2026-05-05 12:27:02'),
+(1033, 'c4474329-2a21-4838-bdf5-83ca585640d4', 4234, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 19, 19, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4234.00, 0, 0, 0, NULL, 19, 22, '2026-05-05 12:27:02'),
+(1034, '78306c52-1d0d-47a3-acdd-da6782cf6036', 4250, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 20, 20, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4250.00, 0, 0, 0, NULL, 20, 22, '2026-05-05 12:27:02'),
+(1035, '3b315eb4-0f4e-4eef-ad35-44f8a1d2e1d1', 4240, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 21, 21, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4240.00, 0, 0, 0, NULL, 21, 22, '2026-05-05 12:27:02'),
+(1036, '4b31f9ac-9f13-48f4-96fa-ec6a5a69fb2b', 4230, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 22, 22, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4230.00, 0, 0, 0, NULL, 22, 22, '2026-05-05 12:27:02'),
+(1046, '6ae104d8-6be7-48d4-ab76-7927bd26ec8b', 4482, 'MMC0000410', '068291', '1', 6229, '832E38730', '2026-05-05', 'RECV', NULL, 1, 1, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4482.00, 0, 0, 0, NULL, 1, 10, '2026-05-05 13:10:26'),
+(1047, '9e2637c8-5c22-45fb-88a8-dc701c8e4ee9', 4525, 'MMC0000410', '068291', '1', 6229, '832E38730', '2026-05-05', 'RECV', NULL, 2, 2, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4525.00, 0, 0, 0, NULL, 2, 10, '2026-05-05 13:10:26'),
+(1048, '1de110ef-ae08-47a4-acfa-6f2f90e2a5b3', 4523, 'MMC0000410', '068291', '1', 6229, '832E38730', '2026-05-05', 'RECV', NULL, 3, 3, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4523.00, 0, 0, 0, NULL, 3, 10, '2026-05-05 13:10:26'),
+(1049, '0116d4ee-4a35-4096-ba28-252907b7ad81', 4518, 'MMC0000410', '068291', '1', 6229, '832E38730', '2026-05-05', 'RECV', NULL, 4, 4, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4518.00, 0, 0, 0, NULL, 4, 10, '2026-05-05 13:10:26'),
+(1050, 'bec3756e-9c91-4c40-9c95-228e0676f966', 4507, 'MMC0000410', '068291', '1', 6229, '832E38730', '2026-05-05', 'RECV', NULL, 5, 5, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4507.00, 0, 0, 0, NULL, 5, 10, '2026-05-05 13:10:26'),
+(1051, '109de0e4-9eae-4443-90e1-b5cf7b68c322', 4323, 'MMC0000410', '068291', '1', 6229, '453959', '2026-05-05', 'RECV', NULL, 6, 6, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4323.00, 0, 0, 0, NULL, 6, 10, '2026-05-05 13:10:26'),
+(1052, '29a97116-0aea-4d9d-bc3e-584150b32195', 4327, 'MMC0000410', '068291', '1', 6229, '453959', '2026-05-05', 'RECV', NULL, 7, 7, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4327.00, 0, 0, 0, NULL, 7, 10, '2026-05-05 13:10:26'),
+(1053, '9f8d1dc6-3f0c-4364-88ef-2350f7c0b3b1', 4333, 'MMC0000410', '068291', '1', 6229, '453959', '2026-05-05', 'RECV', NULL, 8, 8, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4333.00, 0, 0, 0, NULL, 8, 10, '2026-05-05 13:10:26'),
+(1054, '352455c4-648f-4afe-9201-8615e015795d', 4323, 'MMC0000410', '068291', '1', 6229, '453959', '2026-05-05', 'RECV', NULL, 9, 9, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4323.00, 0, 0, 0, NULL, 9, 10, '2026-05-05 13:10:26'),
+(1055, '197a9f99-c92d-454a-a171-b04f7b724299', 4312, 'MMC0000410', '068291', '1', 6229, '453959', '2026-05-05', 'RECV', NULL, 10, 10, 'Scott Steel LLC', 'Coil, 13Ga X 9.000', 'R', '2026-05-04', 45000.00, 'LBS', 37635, 'jkoll', 1, 'Coils', 4312.00, 0, 0, 0, NULL, 10, 10, '2026-05-05 13:10:26'),
+(1061, '38ca876d-6483-4239-bc07-1afbaf671c0b', 4070, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4070.00, 0, 0, 0, NULL, 1, 11, '2026-05-05 13:34:24'),
+(1062, 'b5864b17-7613-42fc-a987-f49b9e59622e', 4088, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4088.00, 0, 0, 0, NULL, 2, 11, '2026-05-05 13:34:24'),
+(1063, '128ed858-adc7-4d3a-acb7-4703a759c4f3', 4102, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4102.00, 0, 0, 0, NULL, 3, 11, '2026-05-05 13:34:24'),
+(1064, 'e7ef7c57-b5a6-4440-966a-be713e4ea57b', 4082, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4082.00, 0, 0, 0, NULL, 4, 11, '2026-05-05 13:34:24'),
+(1065, '98193258-89c6-4b7e-8892-da1195297209', 4090, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4090.00, 0, 0, 0, NULL, 5, 11, '2026-05-05 13:34:24'),
+(1066, 'f4b7c31a-82a3-4161-8d3b-88ad5c2dfa8e', 4078, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4078.00, 0, 0, 0, NULL, 6, 11, '2026-05-05 13:34:24'),
+(1067, '4558672a-f115-4702-ba35-38664062b1c5', 4088, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 7, 7, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4088.00, 0, 0, 0, NULL, 7, 11, '2026-05-05 13:34:24'),
+(1068, 'e48c5eff-00c6-48ea-a383-e2ecee6986cf', 4078, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 8, 8, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4078.00, 0, 0, 0, NULL, 8, 11, '2026-05-05 13:34:24'),
+(1069, 'afa2d389-4a46-4bd6-9bb0-00e598010de4', 4092, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 9, 9, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4092.00, 0, 0, 0, NULL, 9, 11, '2026-05-05 13:34:24'),
+(1070, '1d213781-3179-4a62-aba8-961bf78fe9fb', 4078, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 10, 10, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4078.00, 0, 0, 0, NULL, 10, 11, '2026-05-05 13:34:24'),
+(1071, '82af9725-6e29-40d4-8f69-4f1ae0dffe0b', 4068, 'MMC0000744', '067419', '4', 6229, '2330593', '2026-05-05', 'V-F0-10', NULL, 11, 11, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 510472, 'jkoll', 1, 'Coils', 4068.00, 0, 0, 0, NULL, 11, 11, '2026-05-05 13:34:24'),
+(1072, '7d03bb72-515d-4177-a612-a29af62cb1da', 580, 'MMC0000381', '069271', '1', 6229, 'R70428A', '2026-05-05', 'RECV', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .125 X 0.905', 'R', '2026-05-04', 1000.00, 'LBS', 1000, 'jkoll', 12, 'Coils', 48.00, 0, 0, 0, NULL, 1, 2, '2026-05-05 13:35:11'),
+(1073, '9c0b715a-a406-45b2-9d60-de20c2cb87e7', 600, 'MMC0000381', '069271', '1', 6229, 'R70428A', '2026-05-05', 'RECV', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .125 X 0.905', 'R', '2026-05-04', 1000.00, 'LBS', 1000, 'jkoll', 12, 'Coils', 50.00, 0, 0, 0, NULL, 2, 2, '2026-05-05 13:35:11'),
+(1074, '05366839-2811-4712-a520-ad375c31d155', 3048, 'MMC0001026', '069294', '1', 6229, 'D2500253A', '2026-05-05', 'RECV', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .120 X 6.250', 'R', '2026-05-06', 5600.00, 'LBS', 5600, 'jkoll', 5, 'Coils', 610.00, 0, 0, 0, NULL, 1, 2, '2026-05-05 13:36:07'),
+(1075, 'fac85d26-f50b-461f-b7a9-45c0d70543fc', 2434, 'MMC0001026', '069294', '1', 6229, 'D2500253A', '2026-05-05', 'RECV', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .120 X 6.250', 'R', '2026-05-06', 5600.00, 'LBS', 5600, 'jkoll', 4, 'Coils', 608.00, 0, 0, 0, NULL, 2, 2, '2026-05-05 13:36:07'),
+(1076, '12c2cd25-0b71-486e-8acb-dd17a3b98244', 420, 'MMF0007125', '069201', '1', 6229, 'D2500341A', '2026-05-05', 'WC', NULL, 1, 1, 'Mandel Metals, Inc', 'Sheet, .125 X 48.000 X 120.000', 'R', '2026-05-06', 419.00, 'LBS', 419, 'jkoll', 6, 'Sheets', 70.00, 0, 0, 0, NULL, 1, 1, '2026-05-05 13:36:54'),
+(1092, '617db978-5a61-4874-a21c-b14c9afaf666', 4, 'MMF0004001', '069463', '1', 6229, 'A6C366 D09', '2026-05-05', 'V-E0-08', NULL, 1, 1, 'Alro Steel ', 'Plate, 0.50 X 27.000 X 27.000', 'R', '2026-05-13', 4.00, 'EA', 4, 'jkoll', 4, 'Sheets', 1.00, 0, 0, 0, NULL, 1, 1, '2026-05-05 14:29:21'),
+(1093, '36070aad-7b97-4ce5-a582-549a93c869fe', 1032, 'MMF0002016', '069463', '2', 6229, '05/01/027X3', '2026-05-05', 'T-00', NULL, 1, 1, 'Alro Steel ', 'Sheet, .250 X 48.000 X 120.000', 'R', '2026-05-18', 1033.00, 'LBS', 1033, 'jkoll', 7, 'Sheets', 147.00, 0, 0, 0, NULL, 1, 1, '2026-05-05 14:29:58'),
+(1094, 'c1add895-682a-4d4e-b418-179480565bfd', 4096, 'MMF0005550', '069151', '1', 6229, '9413334', '2026-05-05', 'T-00', NULL, 1, 1, 'Lapham-Hickey Steel', 'Sheet, (.500) X 60.000 X 120.000', 'R', '2026-05-05', 8168.00, 'LBS', 8168, 'jkoll', 4, 'Sheets', 1024.00, 0, 0, 0, NULL, 1, 2, '2026-05-05 14:30:57'),
+(1095, '5b55b4d6-fbf9-4ade-b240-035f37ace88c', 4096, 'MMF0005550', '069151', '1', 6229, '9413334', '2026-05-05', 'T-00', NULL, 2, 2, 'Lapham-Hickey Steel', 'Sheet, (.500) X 60.000 X 120.000', 'R', '2026-05-05', 8168.00, 'LBS', 8168, 'jkoll', 4, 'Sheets', 1024.00, 0, 0, 0, NULL, 2, 2, '2026-05-05 14:30:57'),
+(1096, '71965f2f-4030-406c-9877-0244066e66bb', 4238, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4238.00, 0, 0, 0, NULL, 1, 11, '2026-05-05 15:30:14'),
+(1097, '07c2e033-70c8-486c-88b2-007662f8976b', 4256, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4256.00, 0, 0, 0, NULL, 2, 11, '2026-05-05 15:30:14'),
+(1098, 'a9203d7a-550b-45f7-9e23-ad9f8de2bd6f', 4266, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4266.00, 0, 0, 0, NULL, 3, 11, '2026-05-05 15:30:14'),
+(1099, 'a7211348-4409-407b-ac34-5f920747651e', 4248, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4248.00, 0, 0, 0, NULL, 4, 11, '2026-05-05 15:30:14'),
+(1100, '0da31a95-21d6-4b45-b7d2-218507cc25d6', 4258, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4258.00, 0, 0, 0, NULL, 5, 11, '2026-05-05 15:30:14'),
+(1101, '3f4d77da-6067-4317-aa07-840aa3f01e43', 4248, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4248.00, 0, 0, 0, NULL, 6, 11, '2026-05-05 15:30:14'),
+(1102, '79d70bc8-985d-43c9-8781-67eb39e16fed', 4254, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 7, 7, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4254.00, 0, 0, 0, NULL, 7, 11, '2026-05-05 15:30:14'),
+(1103, '63c5ef65-1734-4014-ac9d-842920711648', 4246, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 8, 8, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4246.00, 0, 0, 0, NULL, 8, 11, '2026-05-05 15:30:14'),
+(1104, '014e989b-2563-45d5-bc97-2fd44c62a70c', 4262, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 9, 9, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4262.00, 0, 0, 0, NULL, 9, 11, '2026-05-05 15:30:14'),
+(1105, '5be94f78-6a19-43eb-8a8d-8a3065b73deb', 4252, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 10, 10, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4252.00, 0, 0, 0, NULL, 10, 11, '2026-05-05 15:30:14'),
+(1106, '1725bcfe-8ca8-4045-ace8-295f863d6c28', 4240, 'MMC0000744', '067419', '4', 6229, '2330764', '2026-05-05', 'V-F0-10', NULL, 11, 11, 'Steel Technologies', 'Coil, .250 X 4.471', 'R', '2026-08-28', 604000.00, 'LBS', 465558, 'jkoll', 1, 'Coils', 4240.00, 0, 0, 0, NULL, 11, 11, '2026-05-05 15:30:14'),
+(1107, 'f0e8c6e0-9027-40bf-81e9-bb58c2674531', 10000, 'M-547050', '069287', '11', 6229, '2604301-6', '2026-05-05', 'TRL-05', NULL, 1, 1, 'Prestige Threaded Products', 'Nut, Lock  FOR VITS', 'R', '2026-05-01', 10000.00, 'EA', 0, 'jkoll', 1, 'Boxes', 10000.00, 0, 0, 0, NULL, 1, 1, '2026-05-05 17:21:01'),
+(1123, '5411390b-d324-4452-a5c3-140bc704baf9', 4500, 'MMF0005531', '068922', '1', 6229, 'D20440', '2026-05-05', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 80000, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 1, 5, '2026-05-05 18:43:01'),
+(1124, 'c938f6af-bf3c-48fe-b22e-94f1fc8d96df', 4520, 'MMF0005531', '068922', '1', 6229, 'D20440', '2026-05-05', 'T-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 80000, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 2, 5, '2026-05-05 18:43:01'),
+(1125, '17914d14-9439-462a-8f3e-6d95fe1c2328', 4500, 'MMF0005531', '068922', '1', 6229, 'D20440', '2026-05-05', 'T-00', NULL, 3, 3, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 80000, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 3, 5, '2026-05-05 18:43:01'),
+(1126, '91c26823-ade1-48c9-b1cb-9377b60ff24a', 4520, 'MMF0005531', '068922', '1', 6229, 'D20440', '2026-05-05', 'T-00', NULL, 4, 4, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 80000, 'jkoll', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 4, 5, '2026-05-05 18:43:01'),
+(1127, '5c644fa0-4c04-4f84-9097-f503f1ec7fca', 4500, 'MMF0005531', '068922', '1', 6229, 'D20440', '2026-05-05', 'T-00', NULL, 5, 5, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 80000, 'jkoll', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 5, 5, '2026-05-05 18:43:01'),
+(1128, '3ccb2516-a8f9-4ed4-b2de-32952a474dc7', 5070, 'MMC0000056', '069084', '1', 6229, '651087', '2026-05-05', 'V-F0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-04-28', 30000.00, 'LBS', -2590, 'jkoll', 1, 'Coils', 5070.00, 0, 0, 0, NULL, 1, 4, '2026-05-05 18:46:29'),
+(1129, '81a8cb7e-78bd-4403-8680-57b8f83581e4', 5070, 'MMC0000056', '069084', '1', 6229, '651087', '2026-05-05', 'V-F0-05', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-04-28', 30000.00, 'LBS', -2590, 'jkoll', 1, 'Coils', 5070.00, 0, 0, 0, NULL, 2, 4, '2026-05-05 18:46:29'),
+(1130, 'fa8bc6b6-f295-4563-b2dc-662ad7df6530', 5070, 'MMC0000056', '069084', '1', 6229, '651087', '2026-05-05', 'V-F0-05', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-04-28', 30000.00, 'LBS', -2590, 'jkoll', 1, 'Coils', 5070.00, 0, 0, 0, NULL, 3, 4, '2026-05-05 18:46:29'),
+(1131, '0b572871-52af-41a6-8f18-3f4dee7e3dae', 5070, 'MMC0000056', '069084', '1', 6229, '651087', '2026-05-05', 'V-F0-05', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-04-28', 30000.00, 'LBS', -2590, 'jkoll', 1, 'Coils', 5070.00, 0, 0, 0, NULL, 4, 4, '2026-05-05 18:46:29'),
+(1138, 'c5102d39-e5f4-4d1b-b583-3c8d3a66943a', 7120, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-05', 'V-E0-02', NULL, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 45680, 'jkoll', 1, 'Coils', 7120.00, 0, 0, 0, NULL, 1, 5, '2026-05-05 19:28:06'),
+(1139, '2353295b-e9c9-49ed-b0ca-1234dbf380b1', 7120, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-05', 'V-E0-02', NULL, 2, 2, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 45680, 'jkoll', 1, 'Coils', 7120.00, 0, 0, 0, NULL, 2, 5, '2026-05-05 19:28:06'),
+(1140, '761a4e1c-a4d0-4d57-ba22-9f5a463e47f7', 7140, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-05', 'V-E0-02', NULL, 3, 3, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 45680, 'jkoll', 1, 'Coils', 7140.00, 0, 0, 0, NULL, 3, 5, '2026-05-05 19:28:06'),
+(1141, '6d8e651a-2c7a-495d-9f08-f33ed3eaae79', 7460, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-05', 'V-E0-02', NULL, 4, 4, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 45680, 'jkoll', 1, 'Coils', 7460.00, 0, 0, 0, NULL, 4, 5, '2026-05-05 19:28:06'),
+(1142, '5212eb84-ee96-4dbc-b12d-c48bc475a912', 7440, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-05', 'V-E0-02', NULL, 5, 5, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-01', 112920.00, 'LBS', 45680, 'jkoll', 1, 'Coils', 7440.00, 0, 0, 0, NULL, 5, 5, '2026-05-05 19:28:06'),
+(1145, 'a3acf924-cade-43ce-80e8-71b80154d309', 7702, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7702.00, 0, 0, 0, NULL, 1, 6, '2026-05-06 12:27:11'),
+(1146, 'd030852e-5c2b-4ea7-9715-60e0727a3af8', 7726, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7726.00, 0, 0, 0, NULL, 2, 6, '2026-05-06 12:27:11'),
+(1147, '79f83256-c3eb-44a8-a034-df289c821aec', 7730, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7730.00, 0, 0, 0, NULL, 3, 6, '2026-05-06 12:27:11'),
+(1148, 'a62947e3-06b0-49bf-acbf-3347b9cd719b', 7718, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7718.00, 0, 0, 0, NULL, 4, 6, '2026-05-06 12:27:11'),
+(1149, '255d1cbd-56b3-42ac-b0c7-70aeacd300b6', 7740, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7740.00, 0, 0, 0, NULL, 5, 6, '2026-05-06 12:27:11'),
+(1150, '8f203748-f03a-4e40-9adf-c9ce6f3d7cdd', 7770, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7770.00, 0, 0, 0, NULL, 6, 6, '2026-05-06 12:27:11'),
+(1151, '211efa77-b432-4969-9288-902dfbde26be', 7830, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7830.00, 0, 0, 0, NULL, 1, 6, '2026-05-06 14:33:51'),
+(1152, 'a564173a-4e2d-44fe-8047-eba51f238a37', 7844, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7844.00, 0, 0, 0, NULL, 2, 6, '2026-05-06 14:33:51'),
+(1153, 'c567e207-e070-47e7-bfff-2ad57b1d3b73', 7842, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7842.00, 0, 0, 0, NULL, 3, 6, '2026-05-06 14:33:51'),
+(1154, '70189f60-3848-4191-8372-8bd83fa5b79c', 7834, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7834.00, 0, 0, 0, NULL, 4, 6, '2026-05-06 14:33:51'),
+(1155, 'ce7d0e87-e6a1-46bb-ae89-ed36fb667d9a', 7852, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7852.00, 0, 0, 0, NULL, 5, 6, '2026-05-06 14:33:51'),
+(1156, 'ccb36a09-fa81-4d62-8449-2d370cb630af', 7826, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7826.00, 0, 0, 0, NULL, 6, 6, '2026-05-06 14:33:51'),
+(1157, 'a51857a7-0dc0-4dfb-9a01-4f4721e99733', 7988, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-B0-29', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7988.00, 0, 0, 0, NULL, 1, 6, '2026-05-06 14:34:24'),
+(1158, '449d5d46-3fa4-4e2a-a72f-37cc0dc176d1', 8006, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 8006.00, 0, 0, 0, NULL, 2, 6, '2026-05-06 14:34:24'),
+(1159, 'f0e4ece8-1f86-4984-9744-4c47f6f8a03c', 8006, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 8006.00, 0, 0, 0, NULL, 3, 6, '2026-05-06 14:34:24'),
+(1160, 'c2f007b4-24b3-45b6-9742-ba914036cf6f', 7996, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'WC', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7996.00, 0, 0, 0, NULL, 4, 6, '2026-05-06 14:34:24'),
+(1161, 'da6f0aa3-629b-4051-9ed4-a9fc981bae6a', 8012, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 8012.00, 0, 0, 0, NULL, 5, 6, '2026-05-06 14:34:24'),
+(1162, '9428f719-ee16-4109-b26d-3a56abd59364', 7976, 'MMC0000746', '067419', '5', 6229, '2330703', '2026-05-06', 'V-F0-10', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 348684, 'jkoll', 1, 'Coils', 7976.00, 0, 0, 0, NULL, 6, 6, '2026-05-06 14:34:24'),
+(1176, 'd3cd26d6-b265-45ea-b5a9-8cd3a5e4828a', 765, 'MMF0005501', '069492', '1', 6229, 'VH351', '2026-05-06', 'T-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, (.1875) X 60.000 X 120.000', 'R', '2026-05-06', 765.00, 'LBS', 765, 'jkoll', 2, 'Sheets', 382.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 16:19:19'),
+(1177, 'ab28d9bb-d1e0-4766-bc9b-5747829857f7', 2838, 'MMC0001113', '068581', '1', 6229, '811M08740', '2026-05-06', 'V-D0-09', NULL, 1, 1, 'Metals USA  Germantown', 'Coil, .250 X 4.153', 'R', '2026-04-24', 2800.00, 'LBS', 2800, 'jkoll', 1, 'Coils', 2838.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 16:20:01'),
+(1178, 'e3547bb7-d6e6-48f4-a6c0-f54e3e8c8b6d', 7892, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 1, 1, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7892.00, 0, 0, 0, NULL, 1, 6, '2026-05-06 16:21:51'),
+(1179, '2c7c1ddf-25b7-4b1a-8e8e-9c1191b69b0e', 7916, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 2, 2, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7916.00, 0, 0, 0, NULL, 2, 6, '2026-05-06 16:21:51'),
+(1180, '06c10d3b-8e9a-4249-bce7-3d69453bc565', 7912, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 3, 3, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7912.00, 0, 0, 0, NULL, 3, 6, '2026-05-06 16:21:51'),
+(1181, '20852391-ba64-47e5-9674-4be7d9313686', 7904, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 4, 4, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7904.00, 0, 0, 0, NULL, 4, 6, '2026-05-06 16:21:51'),
+(1182, '5a8d8b71-c6bf-4ffe-98e9-25e291967b47', 7920, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 5, 5, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7920.00, 0, 0, 0, NULL, 5, 6, '2026-05-06 16:21:51'),
+(1183, '681f7cb5-28c8-45a9-b3c3-06502e8ba795', 7890, 'MMC0000746', '067419', '5', 6229, '2330550', '2026-05-06', 'V-B0-29', NULL, 6, 6, 'Steel Technologies', 'Coil, .250 X 8.581', 'R', '2026-08-28', 395000.00, 'LBS', 253672, 'jkoll', 1, 'Coils', 7890.00, 0, 0, 0, NULL, 6, 6, '2026-05-06 16:21:51'),
+(1184, '881608b9-c250-4aba-a4a7-09f6835d2bda', 1647, 'MMF0000007', '069270', '1', 6229, '559846', '2026-05-06', 'V-E0-08', NULL, 1, 1, 'Dalco Metals, Inc.', 'Blank, 14Ga X 21.750 X 22.250', 'R', '2026-05-06', 4810.00, 'LBS', -100, 'jkoll', 160, 'Sheets', 10.00, 0, 0, 0, NULL, 1, 3, '2026-05-06 16:35:46'),
+(1185, '01ff81de-3f52-4588-a33f-88fd13ea9eae', 1647, 'MMF0000007', '069270', '1', 6229, '559846', '2026-05-06', 'V-E0-08', NULL, 2, 2, 'Dalco Metals, Inc.', 'Blank, 14Ga X 21.750 X 22.250', 'R', '2026-05-06', 4810.00, 'LBS', -100, 'jkoll', 160, 'Sheets', 10.00, 0, 0, 0, NULL, 2, 3, '2026-05-06 16:35:46'),
+(1186, '829ff3e8-ee2d-4ac9-a79d-fbed1d862381', 1616, 'MMF0000007', '069270', '1', 6229, '559846', '2026-05-06', 'V-E0-08', NULL, 3, 3, 'Dalco Metals, Inc.', 'Blank, 14Ga X 21.750 X 22.250', 'R', '2026-05-06', 4810.00, 'LBS', -100, 'jkoll', 157, 'Sheets', 10.00, 0, 0, 0, NULL, 3, 3, '2026-05-06 16:35:46'),
+(1187, 'c2054c17-d146-4161-aa7a-ea89d6da0cff', 5920, 'MMC0000719', '069402', '1', 6229, '333869', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, .187 X 11.000', 'R', '2026-05-06', 26000.00, 'LBS', 110, 'jkoll', 2, 'Coils', 2960.00, 0, 0, 0, NULL, 1, 5, '2026-05-06 16:36:18'),
+(1188, '3cdfb5a4-2506-4ccd-957d-e2a15aa4a3d3', 4860, 'MMC0000719', '069402', '1', 6229, '333869', '2026-05-06', 'V-E0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, .187 X 11.000', 'R', '2026-05-06', 26000.00, 'LBS', 110, 'jkoll', 2, 'Coils', 2430.00, 0, 0, 0, NULL, 2, 5, '2026-05-06 16:36:18'),
+(1189, 'b7008bbc-92e4-41f3-8c8a-c2c1ffb4f375', 4860, 'MMC0000719', '069402', '1', 6229, '333869', '2026-05-06', 'V-E0-03', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, .187 X 11.000', 'R', '2026-05-06', 26000.00, 'LBS', 110, 'jkoll', 2, 'Coils', 2430.00, 0, 0, 0, NULL, 3, 5, '2026-05-06 16:36:18'),
+(1190, '196baad9-5a4d-4ddb-ab84-6a94dfe0eae9', 2430, 'MMC0000719', '069402', '1', 6229, '333869', '2026-05-06', 'V-E0-03', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, .187 X 11.000', 'R', '2026-05-06', 26000.00, 'LBS', 110, 'jkoll', 1, 'Coils', 2430.00, 0, 0, 0, NULL, 4, 5, '2026-05-06 16:36:18'),
+(1191, '287a7dbb-880e-41d3-98ae-0cf93ad16271', 7820, 'MMC0000719', '069402', '1', 6229, '335428', '2026-05-06', 'V-E0-03', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, .187 X 11.000', 'R', '2026-05-06', 26000.00, 'LBS', 110, 'jkoll', 2, 'Coils', 3910.00, 0, 0, 0, NULL, 5, 5, '2026-05-06 16:36:18'),
+(1192, '3f6754c9-07ba-4af0-a619-0412aaf3a82c', 4530, 'MMC0000868', '069417', '1', 6229, '569143', '2026-05-06', 'V-E0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.750', 'R', '2026-05-06', 12000.00, 'LBS', 50, 'jkoll', 1, 'Coils', 4530.00, 0, 0, 0, NULL, 1, 3, '2026-05-06 16:37:09'),
+(1193, '13594b8a-8e14-4a7e-a442-65f67db16dc6', 4620, 'MMC0000868', '069417', '1', 6229, '569143', '2026-05-06', 'V-E0-05', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.750', 'R', '2026-05-06', 12000.00, 'LBS', 50, 'jkoll', 1, 'Coils', 4620.00, 0, 0, 0, NULL, 2, 3, '2026-05-06 16:37:09'),
+(1194, '449b0dc3-460d-47a5-80a7-6d7242b9d90a', 2800, 'MMC0000868', '069417', '1', 6229, '669929', '2026-05-06', 'V-E0-05', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.750', 'R', '2026-05-06', 12000.00, 'LBS', 50, 'jkoll', 1, 'Coils', 2800.00, 0, 0, 0, NULL, 3, 3, '2026-05-06 16:37:09'),
+(1207, '4413872e-0916-4bb0-9a14-2be81ea0f5c0', 2720, 'MMC0000975', '069332', '1', 6229, '4182845', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.245', 'R', '2026-05-04', 2600.00, 'LBS', -120, 'jkoll', 2, 'Coils', 1360.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 17:14:05'),
+(1208, 'd8937434-5a1e-4d74-ba44-6a1bc43e4816', 3400, 'MMC0000522', '069332', '2', 6229, '337522', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 6.297', 'R', '2026-05-04', 6600.00, 'LBS', -200, 'jkoll', 2, 'Coils', 1700.00, 0, 0, 0, NULL, 1, 2, '2026-05-06 17:14:41'),
+(1209, '7551a3a7-79c2-49c3-8fe7-00a79c39d68a', 3400, 'MMC0000522', '069332', '2', 6229, '337522', '2026-05-06', 'V-E0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 11Ga X 6.297', 'R', '2026-05-04', 6600.00, 'LBS', -200, 'jkoll', 2, 'Coils', 1700.00, 0, 0, 0, NULL, 2, 2, '2026-05-06 17:14:41'),
+(1210, '8fe2b4fe-46a2-41f3-b7e8-c24673385aed', 11220, 'MMC0000652', '067973', '1', 6229, '669472', '2026-05-06', 'V-F0-01', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 190410, 'jkoll', 1, 'Coils', 11220.00, 0, 0, 0, NULL, 1, 3, '2026-05-06 17:15:13'),
+(1211, 'ad6fb05d-a220-4d37-80d5-78410919377f', 11130, 'MMC0000652', '067973', '1', 6229, '669473', '2026-05-06', 'V-F0-01', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 190410, 'jkoll', 1, 'Coils', 11130.00, 0, 0, 0, NULL, 2, 3, '2026-05-06 17:15:13');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(1212, '97eea67c-8317-41af-85d0-78d539d81014', 11210, 'MMC0000652', '067973', '1', 6229, '669473', '2026-05-06', 'V-F0-01', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 190410, 'jkoll', 1, 'Coils', 11210.00, 0, 0, 0, NULL, 3, 3, '2026-05-06 17:15:13'),
+(1214, '513d5b8b-035f-4a55-8532-3e0d376bb58d', 2230, 'MMC0000251', '069417', '2', 6229, '568828', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 9.380', 'R', '2026-05-06', 6700.00, 'LBS', 6700, 'jkoll', 1, 'Coils', 2230.00, 0, 0, 0, NULL, 1, 2, '2026-05-06 18:42:58'),
+(1215, 'a97337a0-aa84-42ad-8300-7ff63ad68d09', 4460, 'MMC0000251', '069417', '2', 6229, '568828', '2026-05-06', 'V-E0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 12Ga X 9.380', 'R', '2026-05-06', 6700.00, 'LBS', 6700, 'jkoll', 2, 'Coils', 2230.00, 0, 0, 0, NULL, 2, 2, '2026-05-06 18:42:58'),
+(1216, 'bac19264-8daf-46d0-8f93-1443cd6ab53b', 1650, 'MMC0000228', '069427', '1', 6229, '568869', '2026-05-06', 'V-E0-04', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 8.000', 'R', '2026-05-07', 4075.00, 'LBS', 4075, 'jkoll', 1, 'Coils', 1650.00, 0, 0, 0, NULL, 1, 2, '2026-05-06 18:43:37'),
+(1217, '4da6c294-12ff-4a4d-b6e1-7baf92993aa0', 2700, 'MMC0000228', '069427', '1', 6229, '566839', '2026-05-06', 'V-E0-04', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 8.000', 'R', '2026-05-07', 4075.00, 'LBS', 4075, 'jkoll', 2, 'Coils', 1350.00, 0, 0, 0, NULL, 2, 2, '2026-05-06 18:43:37'),
+(1218, '30c38c3a-f7cc-407f-b85c-a4d513f49d74', 2981, 'MMF0005510', '069427', '2', 6229, '337485', '2026-05-06', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-05-11', 5350.00, 'LBS', 5350, 'jkoll', 11, 'Sheets', 271.00, 0, 0, 0, NULL, 1, 2, '2026-05-06 18:44:21'),
+(1219, 'a935b8cd-8251-4837-bacc-5f7cdbe4a7dc', 2168, 'MMF0005510', '069427', '2', 6229, '337485', '2026-05-06', 'T-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-05-11', 5350.00, 'LBS', 5350, 'jkoll', 8, 'Sheets', 271.00, 0, 0, 0, NULL, 2, 2, '2026-05-06 18:44:21'),
+(1220, '2c42883c-9639-4c4b-8764-c11bd5b1e987', 995, 'MMF0005511', '069427', '3', 6229, '335598', '2026-05-06', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 11Ga (.119) X 60.000 X 120.000', 'R', '2026-05-07', 1000.00, 'LBS', 1000, 'jkoll', 4, 'Sheets', 249.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 18:45:03'),
+(1221, 'b13158d7-6140-4419-a1b4-cc2ef1c4c950', 2470, 'MMC0000386', '069198', '3', 6229, '669284', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-05-08', 11700.00, 'LBS', 11700, 'jkoll', 1, 'Coils', 2470.00, 0, 0, 0, NULL, 1, 4, '2026-05-06 18:45:35'),
+(1222, '0caab754-7efb-4a3f-994c-92c4ea5e13c7', 2560, 'MMC0000386', '069198', '3', 6229, '813P75080', '2026-05-06', 'V-E0-03', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-05-08', 11700.00, 'LBS', 11700, 'jkoll', 2, 'Coils', 1280.00, 0, 0, 0, NULL, 2, 4, '2026-05-06 18:45:35'),
+(1223, '838cc497-e036-42f2-999b-96b1546c4f18', 3090, 'MMC0000386', '069198', '3', 6229, '813P75080', '2026-05-06', 'V-E0-03', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-05-08', 11700.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1030.00, 0, 0, 0, NULL, 3, 4, '2026-05-06 18:45:35'),
+(1224, '4d6d0999-0a57-415c-a209-a086041feed6', 3090, 'MMC0000386', '069198', '3', 6229, '813P75080', '2026-05-06', 'V-E0-03', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 13Ga X 6.125', 'R', '2026-05-08', 11700.00, 'LBS', 11700, 'jkoll', 3, 'Coils', 1030.00, 0, 0, 0, NULL, 4, 4, '2026-05-06 18:45:35'),
+(1225, '8c74027f-e64d-40af-a7ef-426fda926b9b', 2460, 'MMC0001106', '069293', '2', 6229, '334372', '2026-05-06', 'V-E0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 8Ga X 6.722', 'R', '2026-05-08', 2500.00, 'LBS', 2500, 'jkoll', 2, 'Coils', 1230.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 18:46:25'),
+(1226, '6616ec71-ead9-466a-abac-cad0e34cdba0', 2370, 'MMC0000153', '069332', '3', 6229, 'AB9329', '2026-05-06', 'V-E0-04', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 39000, 'jkoll', 3, 'Coils', 790.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 18:46:55'),
+(1227, '50bb0654-e9dd-4006-a7af-f1522dbc8b8c', 2020, 'MMC0000382', '069471', '2', 6229, '323535', '2026-05-06', 'V-E0-03', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 4.300', 'R', '2026-05-08', 1850.00, 'LBS', 1850, 'jkoll', 1, 'Coils', 2020.00, 0, 0, 0, NULL, 1, 1, '2026-05-06 18:47:28'),
+(1228, '4cc55084-d8cb-48e2-93cd-034d005612d5', 2350, 'MMC0000576', '069402', '3', 6229, 'R05213', '2026-05-07', 'V-B0-19', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 2.375', 'R', '2026-05-07', 4150.00, 'LBS', 4150, 'jkoll', 5, 'Coils', 470.00, 0, 0, 0, NULL, 1, 2, '2026-05-07 12:17:59'),
+(1229, '6a8d2994-bdb2-4f85-b52a-5b0f5b760512', 1880, 'MMC0000576', '069402', '3', 6229, 'R05213', '2026-05-07', 'V-B0-19', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 18Ga X 2.375', 'R', '2026-05-07', 4150.00, 'LBS', 4150, 'jkoll', 4, 'Coils', 470.00, 0, 0, 0, NULL, 2, 2, '2026-05-07 12:17:59'),
+(1230, 'bd6580a5-10fe-44fd-bb35-194c2e8f0cc0', 4620, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-20', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 6, 'Coils', 770.00, 0, 0, 0, NULL, 1, 9, '2026-05-07 12:20:44'),
+(1231, '2f5140b3-92b2-43b7-90cf-7ac477fcbea1', 4620, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-21', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 6, 'Coils', 770.00, 0, 0, 0, NULL, 2, 9, '2026-05-07 12:20:44'),
+(1232, '3027e4b8-09c3-48e9-85bb-939c02fa4fcc', 4360, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-19', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 6, 'Coils', 727.00, 0, 0, 0, NULL, 3, 9, '2026-05-07 12:20:44'),
+(1233, '72cb6b80-2914-4c93-82cb-5a509a809548', 4540, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-21', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 6, 'Coils', 757.00, 0, 0, 0, NULL, 4, 9, '2026-05-07 12:20:44'),
+(1234, '10f2475d-97c4-405d-a96d-fb375bc7d49e', 3290, 'MMC0000153', '069332', '3', 6229, 'CB3791', '2026-05-07', 'V-B0-20', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 7, 'Coils', 470.00, 0, 0, 0, NULL, 5, 9, '2026-05-07 12:20:44'),
+(1235, '4eefc093-fd3e-49e3-9c49-ba47b85b04ce', 3430, 'MMC0000153', '069332', '3', 6229, 'CB3791', '2026-05-07', 'V-B0-21', NULL, 6, 6, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 7, 'Coils', 490.00, 0, 0, 0, NULL, 6, 9, '2026-05-07 12:20:44'),
+(1236, '95a8a182-c875-4a8b-82b6-c40a323124b2', 3900, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-20', NULL, 7, 7, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 5, 'Coils', 780.00, 0, 0, 0, NULL, 7, 9, '2026-05-07 12:20:44'),
+(1237, '66f684c9-612a-4eed-8fff-bd07bd75be6c', 3870, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-19', NULL, 8, 8, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 5, 'Coils', 774.00, 0, 0, 0, NULL, 8, 9, '2026-05-07 12:20:44'),
+(1238, 'df7a26bf-e90c-490b-a6d3-3262e534d61e', 3850, 'MMC0000153', '069332', '3', 6229, 'EC0273', '2026-05-07', 'V-B0-21', NULL, 9, 9, 'Dalco Metals, Inc.', 'Coil, 12Ga X 2.158', 'R', '2026-05-27', 39000.00, 'LBS', 36630, 'jkoll', 5, 'Coils', 770.00, 0, 0, 0, NULL, 9, 9, '2026-05-07 12:20:44'),
+(1239, 'b7603a15-335d-4aed-8e19-601cac31e15c', 4608, 'MMF0008037', '069405', '1', 6229, '32604100', '2026-05-07', 'S-00', NULL, 1, 1, 'Lapham-Hickey Steel', 'Sheet, .375 X 60.000 X 120.000', 'R', '2026-05-08', 9360.00, 'LBS', 9360, 'jkoll', 6, 'Sheets', 768.00, 0, 0, 0, NULL, 1, 2, '2026-05-07 12:59:03'),
+(1240, 'd8d609ee-c052-4352-8c43-5b8d4abb2b9f', 4608, 'MMF0008037', '069405', '1', 6229, '32604100', '2026-05-07', 'S-00', NULL, 2, 2, 'Lapham-Hickey Steel', 'Sheet, .375 X 60.000 X 120.000', 'R', '2026-05-08', 9360.00, 'LBS', 9360, 'jkoll', 6, 'Sheets', 768.00, 0, 0, 0, NULL, 2, 2, '2026-05-07 12:59:03'),
+(1243, 'd95d68dd-5d9a-4e89-bed8-bf50620ab45f', 53600, 'GM107144-07', '069287', '9', 6229, 'MULTIPLE', '2026-05-07', 'TRL-01', NULL, 1, 1, 'Prestige Threaded Products', 'Screw, M6 x 1.0 x 10mm Long  FOR VITS', 'R', '2026-05-08', 53600.00, 'EA', 53600, 'jkoll', 15, 'Boxes', 3573.00, 0, 0, 0, NULL, 1, 1, '2026-05-07 15:21:44'),
+(1244, '888ff041-7f66-4177-831d-3657ea89813f', 25000, '807217', '069299', '2', 6229, 'NOTHING ENTERED', '2026-05-07', 'V-B3-04', NULL, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld .438-20', 'C', '2026-05-07', 25000.00, 'EA', 0, 'jkoll', 25, 'Boxes', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-05-07 16:34:57'),
+(1246, '59357e00-1f15-431c-b639-02de078a2d64', 6145, 'MMC0000458', '068846', '1', 6229, '337480', '2026-05-07', 'V-E0-02', NULL, 1, 1, 'Heidtman Steel Products', 'Coil, 5Ga X 6.750', 'R', '2026-05-07', 6500.00, 'LBS', 355, 'jkoll', 2, 'Coils', 3072.00, 0, 0, 0, NULL, 1, 1, '2026-05-07 16:39:48'),
+(1247, '3e86fa13-3565-4a53-a1f7-7679d6600693', 3954, 'MMC0000659', '067977', '3', 6229, '33616', '2026-05-07', 'WC', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-08', 8000.00, 'LBS', 220, 'jkoll', 1, 'Coils', 3954.00, 0, 0, 0, NULL, 1, 2, '2026-05-07 18:52:10'),
+(1248, '8c709ff7-8b2f-42d2-93cb-16ddedd6c365', 3954, 'MMC0000659', '067977', '3', 6229, '33616', '2026-05-07', 'V-E0-02', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-08', 8000.00, 'LBS', 220, 'jkoll', 1, 'Coils', 3954.00, 0, 0, 0, NULL, 2, 2, '2026-05-07 18:52:10'),
+(1254, 'b4c25a15-59aa-4127-8e2e-2d63ef5d9530', 7660, 'MMC0000743', '068503', '2', 6229, '338706', '2026-05-07', 'V-E0-03', 0, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7660.00, 0, 0, 0, '', 1, 5, '2026-05-07 19:00:45'),
+(1255, 'ee9d5f1b-8aa8-4f6b-ba5b-fde40b102355', 7700, 'MMC0000743', '068503', '2', 6229, 'NOTHING ENTERED', '2026-05-07', 'V-E0-03', 0, 2, 2, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7700.00, 0, 0, 0, '', 2, 5, '2026-05-07 19:00:45'),
+(1256, '970f1bda-beb0-4c58-b8af-4f323e36ec66', 7100, 'MMC0000743', '068503', '2', 6229, '338705', '2026-05-07', 'V-E0-03', 0, 3, 3, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7100.00, 0, 0, 0, '', 3, 5, '2026-05-07 19:00:45'),
+(1257, 'f5ea0a5d-0025-40f1-81d9-be5e2bcb0824', 7120, 'MMC0000743', '068503', '2', 6229, 'NOTHING ENTERED', '2026-05-07', 'V-E0-03', 0, 4, 4, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7120.00, 0, 0, 0, '', 4, 5, '2026-05-07 19:00:45'),
+(1258, '88d7ebee-65ce-44f8-89be-6e549727ac2e', 7660, 'MMC0000743', '068503', '2', 6229, '338706', '2026-05-07', 'V-E0-03', 0, 5, 5, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7660.00, 0, 0, 0, '', 5, 5, '2026-05-07 19:00:45'),
+(1259, 'b581ba54-dc50-4ffc-8143-a3d275dc01f0', 7440, 'MMC0000743', '068059', '3', 6229, '338705', '2026-05-07', 'V-E0-03', 0, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-07', 111110.00, 'LBS', 0, 'jkoll', 1, 'Coils', 7440.00, 0, 0, 0, '', 1, 1, '2026-05-07 19:01:32'),
+(1261, '2238e6d0-ec4b-4920-be53-b9d5b6bafc46', 7650, 'MMC0000565', '067287', '1', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 11420, 'jkoll', 1, 'Coils', 7650.00, 0, 0, 0, NULL, 1, 2, '2026-05-08 13:23:35'),
+(1262, 'f4f7aa0f-07b8-499b-bd24-a7bf6436edca', 7650, 'MMC0000565', '067287', '1', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 2, 2, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-04-03', 101500.00, 'LBS', 11420, 'jkoll', 1, 'Coils', 7650.00, 0, 0, 0, NULL, 2, 2, '2026-05-08 13:23:35'),
+(1263, '19c70429-049e-4386-b913-d656e143150a', 7380, 'MMC0000565', '067287', '2', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 101500, 'jkoll', 1, 'Coils', 7380.00, 0, 0, 0, NULL, 1, 4, '2026-05-08 13:24:13'),
+(1264, 'e6cd58d6-4679-4ee5-b532-d53d79c6d9a5', 7380, 'MMC0000565', '067287', '2', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 2, 2, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 101500, 'jkoll', 1, 'Coils', 7380.00, 0, 0, 0, NULL, 2, 4, '2026-05-08 13:24:13'),
+(1265, '5bb13b20-061c-4b00-a85a-7c9e20c556ed', 7540, 'MMC0000565', '067287', '2', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 3, 3, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 101500, 'jkoll', 1, 'Coils', 7540.00, 0, 0, 0, NULL, 3, 4, '2026-05-08 13:24:13'),
+(1266, 'a59dc9dc-3233-4bb5-8c5f-65996516b5e6', 7540, 'MMC0000565', '067287', '2', 6229, '650757', '2026-05-08', 'V-C0-07', NULL, 4, 4, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 101500, 'jkoll', 1, 'Coils', 7540.00, 0, 0, 0, NULL, 4, 4, '2026-05-08 13:24:13'),
+(1267, 'a7c1b715-d6cc-487a-9ca0-b97178d1c828', 4243, 'MMF0005408', '069428', '1', 6229, '22545730', '2026-05-08', 'S-00', NULL, 1, 1, 'Northwest Steel Enterprises, Inc.', 'Sheet, 8Ga (.160) X 60.000 X 96.000', 'C', '2026-05-08', 4243.00, 'LBS', 0, 'jkoll', 13, 'Sheets', 327.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 14:24:28'),
+(1268, '08b13b0f-36da-418d-ac22-ebea9760fdd8', 4620, 'MMC0001140', '069060', '4', 6229, '337485', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 7.820', 'R', '2026-05-08', 4100.00, 'LBS', -520, 'jkoll', 2, 'Coils', 2310.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 14:43:43'),
+(1269, '1f213500-66d7-42d6-9998-d047afd45f02', 7400, 'MMC0000072', '069471', '1', 6229, '295786', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 14.125', 'R', '2026-05-08', 6500.00, 'LBS', -900, 'jkoll', 2, 'Coils', 3700.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 14:44:12'),
+(1270, '8991e54c-ec7f-49ac-9b1f-ef45bde1e91d', 9800, 'MMC0000749', '069471', '3', 6229, '338822', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 15.750', 'R', '2026-05-08', 16000.00, 'LBS', -3600, 'jkoll', 1, 'Coils', 9800.00, 0, 0, 0, NULL, 1, 2, '2026-05-08 14:44:52'),
+(1271, '0440a6d2-a03e-4fb7-a961-bc90ef57821a', 9800, 'MMC0000749', '069471', '3', 6229, '338822', '2026-05-08', 'V-C0-07', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 11Ga X 15.750', 'R', '2026-05-08', 16000.00, 'LBS', -3600, 'jkoll', 1, 'Coils', 9800.00, 0, 0, 0, NULL, 2, 2, '2026-05-08 14:44:52'),
+(1272, '52c29558-4419-4abf-9c05-d4458a023157', 1540, 'MMC0000298', '069471', '5', 6229, '812L33040', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 7.900', 'R', '2026-05-08', 1560.00, 'LBS', 20, 'jkoll', 1, 'Coils', 1540.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 14:45:41'),
+(1273, '7a4f1d1a-00cc-46bf-b0c6-50c351149323', 1640, 'MMC0001158', '069486', '1', 6229, '337848', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Pre-Build, Coil, 11Ga X 9.590', 'C', '2026-05-11', 1600.00, 'LBS', -40, 'jkoll', 1, 'Coils', 1640.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 14:46:15'),
+(1274, 'f547f1d4-ad72-406c-928b-82de6da51eb4', 4560, 'MMC0001134', '069485', '1', 6229, '842S40080', '2026-05-08', 'V-C0-07', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 7Ga X 5.500', 'R', '2026-05-08', 11500.00, 'LBS', 210, 'jkoll', 2, 'Coils', 2280.00, 0, 0, 0, NULL, 1, 2, '2026-05-08 14:46:52'),
+(1275, '6e512647-87a4-44cd-8ea4-1ef9cf8080e8', 6730, 'MMC0001134', '069485', '1', 6229, '842S40080', '2026-05-08', 'V-C0-07', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 7Ga X 5.500', 'R', '2026-05-08', 11500.00, 'LBS', 210, 'jkoll', 3, 'Coils', 2244.00, 0, 0, 0, NULL, 2, 2, '2026-05-08 14:46:52'),
+(1283, 'f8a2565d-bb6a-43c9-be21-0a5f265fd99e', 210, '24361938', '068561', '1', 6604, 'NOTHING ENTERED', '2026-05-08', 'RECV', NULL, 1, 1, 'United Tool, LLC', 'Spacer Bushing', 'C', '2026-04-30', 320.00, 'EA', -23, 'traddatz', 1, 'Box', 210.00, 0, 0, 0, NULL, 1, 2, '2026-05-08 19:26:44'),
+(1284, '23711c41-6b15-4034-bf00-b6365abd1474', 133, '24361938', '068561', '1', 6604, 'NOTHING ENTERED', '2026-05-08', 'RECV', NULL, 2, 2, 'United Tool, LLC', 'Spacer Bushing', 'C', '2026-04-30', 320.00, 'EA', -23, 'traddatz', 1, 'Box', 133.00, 0, 0, 0, NULL, 2, 2, '2026-05-08 19:26:44'),
+(1286, 'ad80fe3f-b079-4be7-bf2e-113a4c6ac2fc', 10, '24764526', '069174', '1', 6229, 'NOTHING ENTERED', '2026-05-08', 'RECV', NULL, 1, 1, 'Technique, Inc.', 'P-Build, Heat Shiel SCR TM13', 'R', '2026-05-08', 10.00, 'EA', 10, 'jkoll', 1, 'Skids', 10.00, 0, 0, 0, NULL, 1, 1, '2026-05-08 19:19:59'),
+(1287, '564a9ac8-dc0e-41d4-aea4-dd670fcf3a3a', 5520, 'MMF0005507', '069471', '6', 6229, '336471', '2026-05-11', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', 'R', '2026-05-08', 8225.00, 'LBS', 8225, 'jkoll', 15, 'Sheets', 368.00, 0, 0, 0, NULL, 1, 2, '2026-05-11 13:32:04'),
+(1288, '92995790-8e57-4623-b652-b563adb2aca2', 2968, 'MMF0005507', '069471', '6', 6229, '337522', '2026-05-11', 'S-00', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, 7Ga (.179) X 60.000 X 120.000', 'R', '2026-05-08', 8225.00, 'LBS', 8225, 'jkoll', 8, 'Sheets', 371.00, 0, 0, 0, NULL, 2, 2, '2026-05-11 13:32:04'),
+(1289, '312ac06a-51b8-40d4-b9cb-b59af81a32e2', 7490, 'MMC0000518', '069103', '12', 6229, '338016', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 15.080', 'R', '2026-05-11', 16000.00, 'LBS', 16000, 'jkoll', 1, 'Coils', 7490.00, 0, 0, 0, NULL, 1, 3, '2026-05-11 13:32:32'),
+(1290, 'a521965c-db9c-4f7b-8eb9-71ab5a3a59ad', 4460, 'MMC0000518', '069103', '12', 6229, '337485', '2026-05-11', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 15.080', 'R', '2026-05-11', 16000.00, 'LBS', 16000, 'jkoll', 1, 'Coils', 4460.00, 0, 0, 0, NULL, 2, 3, '2026-05-11 13:32:32'),
+(1291, '5675c28c-52b7-4314-86f9-e460afd890dc', 4460, 'MMC0000518', '069103', '12', 6229, '337485', '2026-05-11', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 10Ga X 15.080', 'R', '2026-05-11', 16000.00, 'LBS', 16000, 'jkoll', 1, 'Coils', 4460.00, 0, 0, 0, NULL, 3, 3, '2026-05-11 13:32:32'),
+(1292, '807f6a8e-61f7-4a49-af5e-f6522ae2bda6', 3130, 'MMC0001112', '069472', '1', 6229, '312290', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga x 11.500', 'R', '2026-05-12', 2500.00, 'LBS', 2500, 'jkoll', 1, 'Coils', 3130.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 13:33:05'),
+(1293, 'caa19a52-3d4b-430b-965c-e5fcd71d5e5e', 3540, 'MMC0000440', '069516', '2', 6229, '669840', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 5.748', 'R', '2026-05-12', 3500.00, 'LBS', 3500, 'jkoll', 3, 'Coils', 1180.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 13:33:36'),
+(1294, '31b016cf-299c-45c2-8803-308d44a77d7e', 1045, 'MMF0005414', '069516', '8', 6229, '650126', '2026-05-11', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.075) X 60.000 X 120.000', 'R', '2026-05-12', 1000.00, 'LBS', 1000, 'jkoll', 7, 'Sheets', 150.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 13:34:16'),
+(1295, '9cc361bd-cf16-46c8-b0b1-8fe70072b0a7', 310, 'MMC0000296', '069103', '3', 6229, '558893', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 1.462', 'R', '2026-05-13', 300.00, 'LBS', 300, 'jkoll', 1, 'Coils', 310.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 13:34:49'),
+(1296, '7f9c1c27-b3d1-4ad1-a620-6b81ed4fcd3f', 2040, 'MMC0000442', '069175', '5', 6229, '650205', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 14Ga X 10.079', 'R', '2026-05-14', 5540.00, 'LBS', 5540, 'jkoll', 1, 'Coils', 2040.00, 0, 0, 0, NULL, 1, 2, '2026-05-11 13:35:19'),
+(1297, '28657970-017f-4eff-ad9e-b1c3024c764d', 4160, 'MMC0000442', '069175', '5', 6229, '669840', '2026-05-11', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 10.079', 'R', '2026-05-14', 5540.00, 'LBS', 5540, 'jkoll', 2, 'Coils', 2080.00, 0, 0, 0, NULL, 2, 2, '2026-05-11 13:35:19'),
+(1298, '83d53814-4a41-48bb-bf57-5b8e3c4750a4', 1100, 'MMC0000350', '069402', '4', 6229, 'AB9328', '2026-05-11', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 4.000', 'R', '2026-05-14', 3200.00, 'LBS', 3200, 'jkoll', 2, 'Coils', 550.00, 0, 0, 0, NULL, 1, 2, '2026-05-11 13:35:48'),
+(1299, 'd79fa43e-2219-44c0-adad-d135c31dc7e1', 2550, 'MMC0000350', '069402', '4', 6229, 'AB9328', '2026-05-11', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 4.000', 'R', '2026-05-14', 3200.00, 'LBS', 3200, 'jkoll', 3, 'Coils', 850.00, 0, 0, 0, NULL, 2, 2, '2026-05-11 13:35:48'),
+(1300, 'd7ba495a-0b70-4c90-ad29-79f485902745', 7260, 'MMC0000743', '068503', '2', 6229, '338705', '2026-05-11', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7260.00, 0, 0, 0, NULL, 1, 6, '2026-05-11 13:36:21'),
+(1301, '952c355e-4556-493d-ae9f-938a0bb6ef78', 7240, 'MMC0000743', '068503', '2', 6229, '338705', '2026-05-11', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7240.00, 0, 0, 0, NULL, 2, 6, '2026-05-11 13:36:21'),
+(1302, 'c002787f-d9ad-45f9-b336-73ea1be0c175', 6900, 'MMC0000743', '068503', '2', 6229, '338706', '2026-05-11', 'RECV', NULL, 3, 3, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 6900.00, 0, 0, 0, NULL, 3, 6, '2026-05-11 13:36:21'),
+(1303, '45ee4f36-50fd-4e07-880f-fcce046598a2', 6880, 'MMC0000743', '068503', '2', 6229, '338706', '2026-05-11', 'RECV', NULL, 4, 4, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 6880.00, 0, 0, 0, NULL, 4, 6, '2026-05-11 13:36:21'),
+(1304, 'eb3aa41b-079b-4751-80d2-058540f4d76a', 7140, 'MMC0000743', '068503', '2', 6229, '338705', '2026-05-11', 'RECV', NULL, 5, 5, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7140.00, 0, 0, 0, NULL, 5, 6, '2026-05-11 13:36:21'),
+(1305, '7ad93a87-c86f-4f9d-96d7-0acd1fd7aca1', 7300, 'MMC0000743', '068503', '2', 6229, '338705', '2026-05-11', 'RECV', NULL, 6, 6, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 52760, 'jkoll', 1, 'Coils', 7300.00, 0, 0, 0, NULL, 6, 6, '2026-05-11 13:36:21'),
+(1306, '7051b9f8-db62-43d2-a957-42965b6c57db', 3220, 'MMC0000848', '068493', '3', 6229, 'E4448', '2026-05-11', 'V-E0-01', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 55000, 'jkoll', 2, 'Coils', 1610.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 13:37:13'),
+(1307, '45295e22-ab0c-45f4-b845-82f4d5ce652b', 4535, 'MMC0000409', '067981', '1', 6229, '190264548', '2026-05-11', 'RECV', NULL, 1, 1, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 4, 'Coils', 1134.00, 0, 0, 0, NULL, 1, 7, '2026-05-11 13:38:15'),
+(1308, '0dc3f3fb-9ec8-43a6-b1a5-12bf95ff33d9', 4610, 'MMC0000409', '067981', '1', 6229, '190264548', '2026-05-11', 'RECV', NULL, 2, 2, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 4, 'Coils', 1153.00, 0, 0, 0, NULL, 2, 7, '2026-05-11 13:38:15'),
+(1309, 'c0dc0811-3862-4b00-9da0-cf39f4b95890', 2335, 'MMC0000409', '067981', '1', 6229, '190264549', '2026-05-11', 'RECV', NULL, 3, 3, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 2, 'Coils', 1168.00, 0, 0, 0, NULL, 3, 7, '2026-05-11 13:38:15'),
+(1310, 'dce9b5cd-50b4-4e2c-bf8f-a11c0b77d9a1', 1930, 'MMC0000409', '067981', '1', 6229, '190264549', '2026-05-11', 'RECV', NULL, 4, 4, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 2, 'Coils', 965.00, 0, 0, 0, NULL, 4, 7, '2026-05-11 13:38:15'),
+(1311, 'acd0bbb7-e9e5-4a52-a880-030910a40d60', 2155, 'MMC0000409', '067981', '1', 6229, '190264549', '2026-05-11', 'RECV', NULL, 5, 5, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 2, 'Coils', 1078.00, 0, 0, 0, NULL, 5, 7, '2026-05-11 13:38:15'),
+(1312, '204fb52b-8f66-4acb-8d4b-7102e73c2fff', 6945, 'MMC0000409', '067981', '1', 6229, '190264548', '2026-05-11', 'RECV', NULL, 6, 6, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 3, 'Coils', 2315.00, 0, 0, 0, NULL, 6, 7, '2026-05-11 13:38:15'),
+(1313, '17af03c6-e997-4b22-b472-3b8ed21c493e', 6990, 'MMC0000409', '067981', '1', 6229, '190264548', '2026-05-11', 'RECV', NULL, 7, 7, 'Lapham-Hickey Steel', 'Coil, 16Ga X 5.150', 'R', '2026-05-01', 30500.00, 'LBS', 30500, 'jkoll', 3, 'Coils', 2330.00, 0, 0, 0, NULL, 7, 7, '2026-05-11 13:38:15'),
+(1314, '7a0c3232-8306-489a-90c0-7272b3eca6f1', 500, 'MMF0005011', '069581', '1', 6229, '813S73970', '2026-05-11', 'T-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, 11Ga (.119) X 60.000 X 120.000', 'C', '2026-05-11', 500.00, 'LBS', 0, 'jkoll', 2, 'Sheets', 250.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 15:45:49'),
+(1315, 'b3a74a04-2d2d-4bf9-bd96-382861577302', 312, 'MMF0005014', '069614', '1', 6229, '822S39660 & AB9384', '2026-05-11', 'T-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, 14Ga (.075) X 60.000 X 120.000', 'C', '2026-05-11', 312.00, 'LBS', 0, 'jkoll', 2, 'Sheets', 156.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 15:46:20'),
+(1318, '2f364a21-b616-4dd0-9bb7-245c200ae53b', 442, 'MMF0002016', '069616', '1', 6229, '05/01/027X3', '2026-05-11', 'T-00', NULL, 1, 1, 'Alro Steel ', 'Sheet, .250 X 48.000 X 120.000', 'R', '2026-05-12', 442.00, 'LBS', 442, 'jkoll', 3, 'Sheets', 148.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 16:03:47'),
+(1319, 'ce6042d6-2851-4290-8b07-7e575f345df0', 49500, 'CH420-10DPGM', '068273', '1', 6229, 'MULTIPLE', '2026-05-11', 'RECV', NULL, 1, 1, 'Endries, Inc.', 'Stud, Clinch Flush Head 1/4-20', 'R', '2026-05-15', 50000.00, 'EA', 50000, 'jkoll', 20, 'Boxes', 2475.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 18:16:56'),
+(1320, '405b0496-b082-4d59-86a0-cdf4cf3ec41c', 50000, 'C420-1-GM', '068273', '2', 6229, '453819', '2026-05-11', 'RECV', NULL, 1, 1, 'Endries, Inc.', 'Nut, Clinch 1/4-20', 'R', '2026-05-15', 50000.00, 'EA', 50000, 'jkoll', 10, 'Boxes', 5000.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 18:21:56'),
+(1322, '5d44d16e-fc9a-48f8-8a74-23a2532f3a2d', 4, '17409649', '069441', '1', 6604, '1T96862493', '2026-05-11', 'RECV DESK', NULL, 1, 1, 'Newark', 'Adapter, Black', 'C', '2026-05-08', 4.00, 'EA', 0, 'traddatz', 1, 'Box', 4.00, 0, 0, 0, NULL, 1, 1, '2026-05-11 16:42:45'),
+(1323, '79c3789d-2e7b-49dc-bd1a-dc0ee5b1c588', 7000, 'SS-M5-2ZI', '069611', '1', 6604, '3320983', '2026-05-12', 'RECV DESK', NULL, 1, 1, 'S.W. Anderson Company', 'Nut, Self Clinching PEM M5 x 0.8', 'C', '2026-05-15', 7000.00, 'EA', 0, 'traddatz', 1, 'Box', 7000.00, 0, 0, 0, NULL, 1, 1, '2026-05-12 14:33:09'),
+(1324, 'bd0f42af-4e09-4be5-97ab-f23dab96e98b', 100, '965499', '067504', '1', 6604, '194109', '2026-05-12', 'RECV DESK', NULL, 1, 1, 'Screw Industries ', 'Press Stud, M6-1 x 35mm', 'R', '2026-05-01', 5000.00, 'EA', 4850, 'traddatz', 1, 'Box', 100.00, 0, 0, 0, NULL, 1, 1, '2026-05-12 15:08:27'),
+(1325, '92b28944-ea8d-4ccb-8927-59d41d1dfe63', 4145, 'MMC0000741', '068930', '1', 6604, '49045001B', '2026-05-12', 'V-D0-04', NULL, 1, 1, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4145.00, 0, 0, 0, NULL, 1, 6, '2026-05-12 17:44:25'),
+(1326, 'bf2d5bfc-ea4e-4cb5-a687-e014f1cfa354', 4145, 'MMC0000741', '068930', '1', 6604, '49045001B', '2026-05-12', 'V-D0-04', NULL, 2, 2, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4145.00, 0, 0, 0, NULL, 2, 6, '2026-05-12 17:44:25'),
+(1327, '1ffaf9a2-dd82-4677-b90d-3fe4be565a65', 4435, 'MMC0000741', '068930', '1', 6604, '49081001A', '2026-05-12', 'V-D0-04', NULL, 3, 3, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4435.00, 0, 0, 0, NULL, 3, 6, '2026-05-12 17:44:25'),
+(1328, 'cb1ec573-abf7-4c94-9f7d-4da18dbc5dee', 4770, 'MMC0000741', '068930', '1', 6604, '49081001C', '2026-05-12', 'V-D0-04', NULL, 4, 4, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4770.00, 0, 0, 0, NULL, 4, 6, '2026-05-12 17:44:25'),
+(1329, 'bf9fe355-10fa-4c7d-8967-9331ea891c43', 4435, 'MMC0000741', '068930', '1', 6604, '49081001A', '2026-05-12', 'V-D0-04', NULL, 5, 5, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4435.00, 0, 0, 0, NULL, 5, 6, '2026-05-12 17:44:25'),
+(1330, '32cb72c1-8589-40cf-bef5-fc93655c7a85', 4360, 'MMC0000741', '068930', '1', 6604, '49081001C', '2026-05-12', 'V-D0-04', NULL, 6, 6, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'R', '2026-05-17', 50000.00, 'LBS', 23710, 'traddatz', 1, 'Coils', 4360.00, 0, 0, 0, NULL, 6, 6, '2026-05-12 17:44:25'),
+(1331, '435de029-c1c3-4cb4-af16-e4b750f98018', 1745, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1745.00, 0, 0, 0, NULL, 1, 8, '2026-05-12 19:22:26'),
+(1332, 'bb1315ae-5667-471c-8bdc-22051e66f5ec', 1779, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1779.00, 0, 0, 0, NULL, 2, 8, '2026-05-12 19:22:26'),
+(1333, 'be34b1a5-ef6f-46c6-84e7-1d325b04ec9a', 1752, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1752.00, 0, 0, 0, NULL, 3, 8, '2026-05-12 19:22:26'),
+(1334, 'd3347a3e-b504-460a-816f-bac28f2845ec', 1780, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1780.00, 0, 0, 0, NULL, 4, 8, '2026-05-12 19:22:26'),
+(1335, '0f5c7437-6c51-4039-b4f0-ffc713a9d738', 1841, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1841.00, 0, 0, 0, NULL, 5, 8, '2026-05-12 19:22:26'),
+(1336, '90875412-3dc8-4388-9e88-cc537b05cb3b', 1825, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1825.00, 0, 0, 0, NULL, 6, 8, '2026-05-12 19:22:26'),
+(1337, '50526cfb-50b5-41c5-8dac-54d4330ef137', 1679, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1679.00, 0, 0, 0, NULL, 7, 8, '2026-05-12 19:22:26'),
+(1338, '50e6b9bb-df77-4c03-8b0c-b49fd570112b', 1672, 'MMC0000659', '067737', '1', 6604, '33615', '2026-05-12', 'V-C0-10', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-11', 203782.00, 'LBS', 5297, 'traddatz', 1, 'Coils', 1672.00, 0, 0, 0, NULL, 8, 8, '2026-05-12 19:22:26'),
+(1339, '96de41f3-0803-4900-8964-6f19ef52841c', 1141, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1141.00, 0, 0, 0, NULL, 1, 10, '2026-05-12 19:24:00'),
+(1340, 'da1779ea-67f3-4c93-b50a-d4e6df738666', 1883, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1883.00, 0, 0, 0, NULL, 2, 10, '2026-05-12 19:24:00'),
+(1341, '7448b086-8332-4c7b-b7e4-717852d21651', 1729, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1729.00, 0, 0, 0, NULL, 3, 10, '2026-05-12 19:24:00'),
+(1342, '511a29c8-d6c9-400d-889d-05f5776ed5d8', 1901, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1901.00, 0, 0, 0, NULL, 4, 10, '2026-05-12 19:24:00'),
+(1343, '86290957-e51b-4ab7-a021-520b4e60ce88', 1888, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1888.00, 0, 0, 0, NULL, 5, 10, '2026-05-12 19:24:00'),
+(1344, '161e1e93-e27c-4b10-924c-5868d96bfb8a', 1783, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1783.00, 0, 0, 0, NULL, 6, 10, '2026-05-12 19:24:00'),
+(1345, '5d704755-be4b-4787-a398-a506ebd73e86', 1876, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1876.00, 0, 0, 0, NULL, 7, 10, '2026-05-12 19:24:00'),
+(1346, 'b207a782-ee10-408c-b936-751897027de6', 1919, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1919.00, 0, 0, 0, NULL, 8, 10, '2026-05-12 19:24:00'),
+(1347, '173c052e-1299-4659-846c-781a48abcaa5', 1793, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 9, 9, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1793.00, 0, 0, 0, NULL, 9, 10, '2026-05-12 19:24:00'),
+(1348, '83818058-dfab-48b2-9e81-6c1b73f93cd2', 1900, 'MMC0000659', '067977', '4', 6604, '33617', '2026-05-12', 'V-C0-10', NULL, 10, 10, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-15', 20000.00, 'LBS', 2187, 'traddatz', 1, 'Coils', 1900.00, 0, 0, 0, NULL, 10, 10, '2026-05-12 19:24:00'),
+(1354, '6f251ca8-f497-4fd8-aff6-c7073e7da4ab', 3264, 'MMF0005010', '069527', '2', 6604, '295786', '2026-05-12', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 10Ga (.134) X 60.000 X 120.000', 'R', '2026-05-13', 3100.00, 'LBS', -164, 'traddatz', 12, 'Sheets', 272.00, 0, 0, 0, NULL, 1, 1, '2026-05-12 19:54:05'),
+(1355, '4452630a-0de8-4a9e-a6d8-411516e9d3bf', 2800, 'MMC0001131', '069555', '1', 6604, '295786', '2026-05-12', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.750', 'R', '2026-05-14', 7800.00, 'LBS', 10, 'traddatz', 1, 'Coils', 2800.00, 0, 0, 0, NULL, 1, 2, '2026-05-12 20:06:36'),
+(1356, '0d173432-96ac-4cdf-adf3-7e9e1f0ba6ac', 4990, 'MMC0001131', '069555', '1', 6604, 'SP33287', '2026-05-12', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.750', 'R', '2026-05-14', 7800.00, 'LBS', 10, 'traddatz', 1, 'Coils', 4990.00, 0, 0, 0, NULL, 2, 2, '2026-05-12 20:06:36'),
+(1357, 'a0d5c00f-c87b-44b5-97eb-d1b7bea06fd7', 3780, 'MMC0001130', '069555', '4', 6604, 'SP33287', '2026-05-12', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 8.220', 'R', '2026-05-14', 3800.00, 'LBS', 20, 'traddatz', 1, 'Coils', 3780.00, 0, 0, 0, NULL, 1, 1, '2026-05-12 20:08:03'),
+(1358, '65e6cdcd-86df-4c42-a63d-908b3d735256', 885, 'MMF0003014', '069555', '3', 6604, '5425660', '2026-05-12', 'T-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 14Ga (.074) X 60.000 X 120.000', 'R', '2026-05-14', 1000.00, 'LBS', 115, 'traddatz', 6, 'Sheets', 148.00, 0, 0, 0, NULL, 1, 1, '2026-05-12 20:09:05'),
+(1359, 'd5d3aa81-6c7f-4283-8199-fe8fef721109', 11120, 'MMC0000652', '067973', '1', 6604, '669472', '2026-05-12', 'V-C0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 156950, 'traddatz', 1, 'Coils', 11120.00, 0, 0, 0, NULL, 1, 3, '2026-05-12 20:11:03'),
+(1360, 'ea095e8a-fb41-4bd6-aa81-4b8427ad9c78', 11160, 'MMC0000652', '067973', '1', 6604, '669472', '2026-05-12', 'V-C0-05', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 156950, 'traddatz', 1, 'Coils', 11160.00, 0, 0, 0, NULL, 2, 3, '2026-05-12 20:11:03'),
+(1361, 'b3aae095-f7be-4a18-9060-071a7508a078', 11180, 'MMC0000652', '067973', '1', 6604, '669472', '2026-05-12', 'V-C0-05', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 156950, 'traddatz', 1, 'Coils', 11180.00, 0, 0, 0, NULL, 3, 3, '2026-05-12 20:11:03'),
+(1369, '2d73d5cb-43b2-487a-8865-99b9a7d2aceb', 12190, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-13', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 110020, 'traddatz', 1, 'Coils', 12190.00, 0, 0, 0, NULL, 1, 4, '2026-05-13 09:28:56'),
+(1370, 'bfa94299-3e84-4541-8a2b-e7fca21dba7e', 11340, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-13', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 110020, 'traddatz', 1, 'Coils', 11340.00, 0, 0, 0, NULL, 2, 4, '2026-05-13 09:28:56'),
+(1371, 'bd33713d-89e5-40bb-82a5-57597e65b075', 11420, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-13', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 110020, 'traddatz', 1, 'Coils', 11420.00, 0, 0, 0, NULL, 3, 4, '2026-05-13 09:28:56'),
+(1372, '004af349-0b43-4258-ba6b-0c2319e90a63', 11980, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-13', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 110020, 'traddatz', 1, 'Coils', 11980.00, 0, 0, 0, NULL, 4, 4, '2026-05-13 09:28:56'),
+(1373, '2f0da35c-5b56-42eb-9fad-cd21cbbe24fc', 2500, 'MMC0000014', '069278', '1', 6604, 'NOTHING ENTERED', '2026-05-13', 'RECV', NULL, 1, 1, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', 'C', '2026-05-13', 4000.00, 'LBS', -40000700, 'traddatz', 5, 'Coils', 500.00, 0, 0, 0, NULL, 1, 2, '2026-05-13 09:39:52'),
+(1374, '74e6728a-22f8-4c7e-956b-667679c9250d', 2200, 'MMC0000014', '069278', '1', 6604, 'NOTHING ENTERED', '2026-05-13', 'RECV', NULL, 2, 2, 'Mead Metals, Inc', 'Coil, 14Ga X 2.250', 'C', '2026-05-13', 4000.00, 'LBS', -40000700, 'traddatz', 5, 'Coils', 440.00, 0, 0, 0, NULL, 2, 2, '2026-05-13 09:39:52'),
+(1376, '21f3a54f-36cd-450f-a327-727850d0518e', 41, 'MMF0007037', 'PO-069629', '1', 6604, 'NA', '2026-05-13', 'RECV', 0, 1, 1, 'McMaster-Carr Supply Co', 'Sheet, .375  X 48.000 X 120.000', 'C', '2026-05-12', 41.00, 'LBS', 0, 'traddatz', 1, 'Sheets', 41.00, 0, 0, 0, '', 1, 1, '2026-05-13 15:10:31'),
+(1377, 'cfbb6f57-d8d4-4750-9e47-bf08b24bad96', 4084, 'MMF0008050', 'PO-069200', '1', 6604, 'A6C144', '2026-05-13', 'T-00', 0, 1, 1, 'Lapham-Hickey Steel', 'Sheet, .500 X 60.000 X 120.000', 'C', '2026-05-13', 4084.00, 'LBS', 0, 'traddatz', 4, 'Sheets', 1021.00, 0, 0, 0, '', 1, 1, '2026-05-13 15:24:46'),
+(1378, '474ba91e-a0bc-48f9-8e53-fd0e10b7c2ce', 4620, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 1, 1, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4620.00, 0, 0, 0, '', 1, 10, '2026-05-13 16:14:00'),
+(1379, 'e9c0c925-7603-4fb6-a452-3a0aca819ab5', 4320, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 2, 2, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4320.00, 0, 0, 0, '', 2, 10, '2026-05-13 16:14:00'),
+(1380, '00726c86-48f8-45b3-a46d-190ffef2ba7a', 4700, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 3, 3, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4700.00, 0, 0, 0, '', 3, 10, '2026-05-13 16:14:00'),
+(1381, '03340471-4844-430e-aabf-7e8fde7e3c99', 4320, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 4, 4, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4320.00, 0, 0, 0, '', 4, 10, '2026-05-13 16:14:00'),
+(1382, '8eb0446e-c044-4acd-873e-7a41701386c5', 4300, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 5, 5, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4300.00, 0, 0, 0, '', 5, 10, '2026-05-13 16:14:00'),
+(1383, 'b1edab1a-ae42-434c-a053-d10ce29eea5f', 4740, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 6, 6, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4740.00, 0, 0, 0, '', 6, 10, '2026-05-13 16:14:00'),
+(1384, '417decce-f28b-4639-89df-3c9b57937620', 4740, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 7, 7, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4740.00, 0, 0, 0, '', 7, 10, '2026-05-13 16:14:00'),
+(1385, '652ae48e-56a4-4229-beec-cfff592ae37e', 4720, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 8, 8, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4720.00, 0, 0, 0, '', 8, 10, '2026-05-13 16:14:00'),
+(1386, '45c7a75c-6926-4cd7-a558-59ca2430e8de', 4300, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 9, 9, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4300.00, 0, 0, 0, '', 9, 10, '2026-05-13 16:14:00'),
+(1387, '3726f40c-400f-441c-89ba-43acc7ec3bb9', 4700, 'MMC0000388', 'PO-068503', '1', 6604, '32615810', '2026-05-13', 'RECV', 0, 10, 10, 'MST Steel Corporation', 'Coil, 12Ga X 11.750', 'R', '2026-06-30', 45460.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4700.00, 0, 0, 0, '', 10, 10, '2026-05-13 16:14:00'),
+(1388, '0a21dcc5-6629-47d1-a57f-6627c6c53427', 12000, 'MMC0000652', 'PO-067973', '1', 6604, '669473', '2026-05-13', 'RECV', 0, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 63200, 'traddatz', 1, 'Coils', 12000.00, 0, 0, 0, '', 1, 4, '2026-05-13 19:35:13'),
+(1389, '3bd33c9e-d21a-4d31-9799-49036f405305', 11400, 'MMC0000652', 'PO-067973', '1', 6604, '669473', '2026-05-13', 'RECV', 0, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 63200, 'traddatz', 1, 'Coils', 11400.00, 0, 0, 0, '', 2, 4, '2026-05-13 19:35:13'),
+(1390, '84b6677c-6a8e-42db-a953-63e6dc41d17a', 11620, 'MMC0000652', 'PO-067973', '1', 6604, '669473', '2026-05-13', 'RECV', 0, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 63200, 'traddatz', 1, 'Coils', 11620.00, 0, 0, 0, '', 3, 4, '2026-05-13 19:35:13'),
+(1391, '9a788737-2594-4078-8a97-995d66381470', 11800, 'MMC0000652', 'PO-067973', '1', 6604, '669473', '2026-05-13', 'RECV', 0, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 63200, 'traddatz', 1, 'Coils', 11800.00, 0, 0, 0, '', 4, 4, '2026-05-13 19:35:13'),
+(1392, '9eff6496-cba1-49aa-bf54-3fa1b715bfd4', 7365, 'MMC0000799', '069104', '1', 6604, '7844152H', '2026-05-13', 'RECV', NULL, 1, 1, 'Hascall Steel Company', 'Coil, 14Ga X 9.050', 'C', '2026-05-15', 7365.00, 'LBS', 0, 'traddatz', 2, 'Coils', 3683.00, 0, 0, 0, NULL, 1, 1, '2026-05-13 19:41:20'),
+(1407, '721daacf-c193-427d-890f-81b5c0345691', 7642, 'MMC0001000', 'PO-068171', '1', 6229, '26T10359', '2026-05-12', 'DD-H0-00', 0, 1, 1, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3821.00, 0, 0, 0, '', 1, 6, '2026-05-12 13:38:38'),
+(1408, 'ff4a99f2-6141-4026-a821-b78fc88f983b', 3820, 'MMC0001000', 'PO-068171', '1', 6229, '26T10359', '2026-05-12', 'DD-H0-00', 0, 2, 2, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 1, 'Coils', 3820.00, 0, 0, 0, '', 2, 6, '2026-05-12 13:38:38'),
+(1409, 'd06ade50-4f9a-4ea0-b477-ca277ec5ab2b', 7746, 'MMC0001000', 'PO-068171', '1', 6229, '26T10362', '2026-05-12', 'DD-H0-00', 0, 3, 3, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3873.00, 0, 0, 0, '', 3, 6, '2026-05-12 13:38:38'),
+(1410, 'bcb86b23-a28b-48d8-8002-f9ce96c67b81', 7748, 'MMC0001000', 'PO-068171', '1', 6229, '26T10362', '2026-05-12', 'DD-H0-00', 0, 4, 4, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3874.00, 0, 0, 0, '', 4, 6, '2026-05-12 13:38:38'),
+(1411, '6fc4faf5-05e7-43bd-8529-1cbd79055e30', 7890, 'MMC0001000', 'PO-068171', '1', 6229, '26T10360', '2026-05-12', 'DD-H0-00', 0, 5, 5, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3945.00, 0, 0, 0, '', 5, 6, '2026-05-12 13:38:38'),
+(1412, '28d69453-1dd6-4c84-bcd8-226cc9c72394', 7884, 'MMC0001000', 'PO-068171', '1', 6229, '26T10360', '2026-05-12', 'DD-H0-00', 0, 6, 6, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3942.00, 0, 0, 0, '', 6, 6, '2026-05-12 13:38:38'),
+(1413, '3503fa9b-01ea-4e43-b4c0-134de39acce0', 12000, '23-12631-791', '067256', '2', 6229, '2601121-4', '2026-05-13', 'RECV-VITS', NULL, 1, 1, 'Prestige Threaded Products', 'Nut, Insert, M8 x 1.25 - FOR VITS', 'C', '2026-05-14', 12000.00, 'EA', 0, 'jkoll', 8, 'Boxes', 1500.00, 0, 0, 0, NULL, 1, 1, '2026-05-13 20:06:57'),
+(1414, '8c61a54d-e820-47fb-8b95-dff06b99b909', 4775, 'MMC0000741', '068930', '1', 6604, '49081001B', '2026-05-13', 'RECV', NULL, 1, 1, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'C', '2026-05-17', 50000.00, 'LBS', -330, 'traddatz', 1, 'Coils', 4775.00, 0, 0, 0, NULL, 1, 5, '2026-05-13 19:53:37'),
+(1415, '77e7f377-e0e4-49c3-b56f-eb70dca7d3f4', 4945, 'MMC0000741', '068930', '1', 6604, '49081001B', '2026-05-13', 'RECV', NULL, 2, 2, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'C', '2026-05-17', 50000.00, 'LBS', -330, 'traddatz', 1, 'Coils', 4945.00, 0, 0, 0, NULL, 2, 5, '2026-05-13 19:53:37'),
+(1416, '02de8e05-9b54-4c2c-bfd2-3299937bdada', 4770, 'MMC0000741', '068930', '1', 6604, '49081001C', '2026-05-13', 'RECV', NULL, 3, 3, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'C', '2026-05-17', 50000.00, 'LBS', -330, 'traddatz', 1, 'Coils', 4770.00, 0, 0, 0, NULL, 3, 5, '2026-05-13 19:53:37'),
+(1417, '23d3b07b-d812-4858-9bf8-edd5257f58da', 4775, 'MMC0000741', '068930', '1', 6604, '49081001A', '2026-05-13', 'RECV', NULL, 4, 4, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'C', '2026-05-17', 50000.00, 'LBS', -330, 'traddatz', 1, 'Coils', 4775.00, 0, 0, 0, NULL, 4, 5, '2026-05-13 19:53:37'),
+(1418, '084564d5-1a91-41dc-89f2-5366181dcfc2', 4775, 'MMC0000741', '068930', '1', 6604, '49081001A', '2026-05-13', 'RECV', NULL, 5, 5, 'Ken-Mac Metals', 'Coil, .160 X 32.920', 'C', '2026-05-17', 50000.00, 'LBS', -330, 'traddatz', 1, 'Coils', 4775.00, 0, 0, 0, NULL, 5, 5, '2026-05-13 19:53:37'),
+(1419, '135ada5b-a898-4a1b-b741-0d030f6ffe55', 4950, 'MMC0000287', '069404', '1', 6604, '11-514-4681', '2026-05-13', 'RECV', NULL, 1, 1, 'Greenpoint Metals', 'Coil, 18Ga X 14.000', 'R', '2026-05-13', 15000.00, 'LBS', 180, 'traddatz', 1, 'Coils', 4950.00, 0, 0, 0, NULL, 1, 3, '2026-05-13 20:42:35'),
+(1420, 'a8697265-8c92-4903-b569-c8953bfcee2b', 4940, 'MMC0000287', '069404', '1', 6604, '11-514-4681', '2026-05-13', 'RECV', NULL, 2, 2, 'Greenpoint Metals', 'Coil, 18Ga X 14.000', 'R', '2026-05-13', 15000.00, 'LBS', 180, 'traddatz', 1, 'Coils', 4940.00, 0, 0, 0, NULL, 2, 3, '2026-05-13 20:42:35'),
+(1421, '315fc29f-96c8-4ea6-8796-edb8253be836', 4930, 'MMC0000287', '069404', '1', 6604, '11-514-4681', '2026-05-13', 'RECV', NULL, 3, 3, 'Greenpoint Metals', 'Coil, 18Ga X 14.000', 'R', '2026-05-13', 15000.00, 'LBS', 180, 'traddatz', 1, 'Coils', 4930.00, 0, 0, 0, NULL, 3, 3, '2026-05-13 20:42:35'),
+(1429, 'ac871e9f-7271-4935-9cea-a819f7f4f333', 1377, 'HFHS-M8-20', '069648', '1', 6604, '2627972', '2026-05-14', 'RECV DESK', NULL, 1, 1, 'S.W. Anderson Company', 'Stud, PEM M8 x 1.25 x 20mm Long', 'R', '2026-05-12', 1377.00, 'EA', 0, 'traddatz', 1, 'Box', 1377.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 11:39:16'),
+(1430, '5e6c092d-e367-4b34-995d-397a0b2401e8', 144, 'RCA05', 'Customer Supplied', 'N/A', 6604, 'NOTHING ENTERED', '2026-05-14', 'V-WC', NULL, 1, 1, NULL, 'Tote (Pool) - 12.00 x 7.00 x 5.00', NULL, NULL, 0.00, 'EA', 0, 'traddatz', 1, 'totes', 144.00, 1, 0, 0, NULL, 1, 1, '2026-05-14 13:06:38'),
+(1431, '2cb052a3-955c-4db8-affd-6bf338e8c602', 1300, 'MMC0000698', '069598', '4', 6604, '650448', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 18Ga X 3.000', 'R', '2026-05-18', 1300.00, 'LBS', 0, 'traddatz', 1, 'Coils', 1300.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 15:32:00');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(1432, 'edd84e99-40ee-44a9-bd9d-3df631a26187', 3760, 'MMC0000013', '069516', '1', 6604, '823S74170', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 4.750', 'R', '2026-05-19', 3300.00, 'LBS', -460, 'traddatz', 1, 'Coils', 3760.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 15:32:42'),
+(1433, '8fc11b37-8350-4436-a9aa-8b143aa7ad35', 2720, 'MMCSR00009', '069577', '1', 6604, '316661', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, .236 X 11.980', 'C', '2026-05-22', 2500.00, 'LBS', -220, 'traddatz', 1, 'Coils', 2720.00, 0, 1, 1, 'Coil Material - Quality Hold Required', 1, 1, '2026-05-14 15:35:37'),
+(1434, '50b6afc0-1f35-4c00-8c24-0c2896ad55b1', 4700, 'MMC0000411', '069618', '2', 6604, '811S08700', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 5.563', 'R', '2026-05-26', 4700.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4700.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 15:36:24'),
+(1435, '386d3829-9f6b-479f-948a-709c2f87b05f', 4085, 'MMFSR05550', '067275', '2', 6604, '335714', '2026-05-14', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.472) X 60.000 X 120.000 INSP ID: 0004287', 'C', '2026-06-30', 46966.00, 'LBS', 0, 'traddatz', 4, 'Sheets', 1022.00, 0, 1, 1, 'Sheet Material - Quality Hold Required', 1, 1, '2026-05-14 15:37:35'),
+(1436, 'af290588-8f87-4d49-aa07-4b51e95274ba', 950, 'MMF0003011', '069555', '2', 6604, 'EC0273', '2026-05-14', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 11Ga (.074) X 60.000 X 120.000', 'R', '2026-05-14', 1000.00, 'LBS', 50, 'traddatz', 4, 'Sheets', 238.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 15:38:36'),
+(1437, '43b3ef87-f76e-4aa8-ad4d-3b45a7593ab9', 6480, 'UC25546', '067399', '2', 6604, '2602-N142', '2026-05-14', 'RECV', NULL, 1, 1, 'Slidematic Precision Components', 'Pin, D-Shape Pin Transport', 'R', '2026-05-15', 25020.00, 'EA', 0, 'traddatz', 36, 'Boxes', 180.00, 0, 0, 0, NULL, 1, 4, '2026-05-14 15:57:57'),
+(1438, '0d973ced-b4ab-4724-b52e-684faa594e21', 6480, 'UC25546', '067399', '2', 6604, '2602-N142', '2026-05-14', 'RECV', NULL, 2, 2, 'Slidematic Precision Components', 'Pin, D-Shape Pin Transport', 'R', '2026-05-15', 25020.00, 'EA', 0, 'traddatz', 36, 'Boxes', 180.00, 0, 0, 0, NULL, 2, 4, '2026-05-14 15:57:57'),
+(1439, '2b973e9b-87d7-490c-995c-77a2469b49c0', 6480, 'UC25546', '067399', '2', 6604, '2602-N142', '2026-05-14', 'RECV', NULL, 3, 3, 'Slidematic Precision Components', 'Pin, D-Shape Pin Transport', 'R', '2026-05-15', 25020.00, 'EA', 0, 'traddatz', 36, 'Boxes', 180.00, 0, 0, 0, NULL, 3, 4, '2026-05-14 15:57:57'),
+(1440, '25dc7a30-360e-4d3b-a083-08d6a3cdb04f', 5580, 'UC25546', '067399', '2', 6604, '2602-N142', '2026-05-14', 'RECV', NULL, 4, 4, 'Slidematic Precision Components', 'Pin, D-Shape Pin Transport', 'R', '2026-05-15', 25020.00, 'EA', 0, 'traddatz', 31, 'Boxes', 180.00, 0, 0, 0, NULL, 4, 4, '2026-05-14 15:57:57'),
+(1441, '1bab5187-33d5-450c-9f1d-e978c020a4a8', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 1, 13, '2026-05-14 16:17:12'),
+(1442, '5b94b981-3f93-431c-9dd6-fdc554d80bfc', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 2, 2, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 2, 13, '2026-05-14 16:17:12'),
+(1443, 'f88b78e1-e3cf-48eb-93f7-99523a9629b9', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 3, 3, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 3, 13, '2026-05-14 16:17:12'),
+(1444, 'b3479381-9376-49c9-8008-710be6e6050b', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 4, 4, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 4, 13, '2026-05-14 16:17:12'),
+(1445, '3d68ea7b-f997-42f1-bd64-2c663d39e186', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 5, 5, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 5, 13, '2026-05-14 16:17:12'),
+(1446, 'adf55f35-0dfc-4852-beaf-3053fa99ed7f', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 6, 6, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 6, 13, '2026-05-14 16:17:12'),
+(1447, 'f869b9f3-5895-4787-b7f3-5f0760bdf89b', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 7, 7, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 7, 13, '2026-05-14 16:17:12'),
+(1448, 'fe02de81-ae8c-40a2-8c41-505c3b9819a5', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 8, 8, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 8, 13, '2026-05-14 16:17:12'),
+(1449, 'd1b3fa7f-cad1-4694-990c-5ca69b750710', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 9, 9, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 9, 13, '2026-05-14 16:17:12'),
+(1450, '5a2e57e5-528b-4ffc-a1d7-467d3c0baab8', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 10, 10, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 10, 13, '2026-05-14 16:17:12'),
+(1451, 'd65264a7-c8e4-474d-b4ff-2f75953c3f37', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 11, 11, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 11, 13, '2026-05-14 16:17:12'),
+(1452, '2630ccb9-3a18-46ca-966d-2e05c0e00628', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 12, 12, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 12, 13, '2026-05-14 16:17:12'),
+(1453, '8ef6bb8b-a08b-479a-909c-69fd873c8a0a', 400, 'GENFOAM1', '069357', '1', 6604, 'NA', '2026-05-14', 'RECV', NULL, 13, 13, 'Styrene Products Inc', '2\" x 2.69\" x 12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 400.00, 0, 0, 0, NULL, 13, 13, '2026-05-14 16:17:12'),
+(1454, '64fb79fb-2af0-401c-add4-a15866a4af28', 1500, 'HFHS-M8-20', '069648', '2', 6604, '2461981', '2026-05-14', 'RECV DESK', NULL, 1, 1, 'S.W. Anderson Company', 'Stud, PEM M8 x 1.25 x 20mm Long', 'R', '2026-05-15', 2284.00, 'EA', 0, 'traddatz', 1, 'Box', 1500.00, 0, 0, 0, NULL, 1, 2, '2026-05-14 16:34:35'),
+(1455, 'b18da97e-25a5-4baf-b0c2-da39c1acaf6b', 784, 'HFHS-M8-20', '069648', '2', 6604, '2894898', '2026-05-14', 'RECV DESK', NULL, 2, 2, 'S.W. Anderson Company', 'Stud, PEM M8 x 1.25 x 20mm Long', 'R', '2026-05-15', 2284.00, 'EA', 0, 'traddatz', 1, 'Box', 784.00, 0, 0, 0, NULL, 2, 2, '2026-05-14 16:34:35'),
+(1456, '461f71aa-9bca-4795-8268-317f69194979', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 1, 1, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 1, 10, '2026-05-14 17:35:42'),
+(1457, '9919820e-3669-4e7e-8a65-d16a69108535', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 2, 2, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 2, 10, '2026-05-14 17:35:42'),
+(1458, '0d581a44-7301-474b-8bfd-4c953cd87143', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 3, 3, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 3, 10, '2026-05-14 17:35:42'),
+(1459, 'e8972ad1-45c1-4213-9154-f2e67bfa4392', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 4, 4, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 4, 10, '2026-05-14 17:35:42'),
+(1460, '2d26a9fa-be93-4cdb-87e6-f09d3e7d5e1e', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 5, 5, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 5, 10, '2026-05-14 17:35:42'),
+(1461, 'abf129a7-9711-4790-acfe-ea6b420a20a8', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 6, 6, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 6, 10, '2026-05-14 17:35:42'),
+(1462, '678db2e5-38b1-44fa-b024-a94ca336be45', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 7, 7, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 7, 10, '2026-05-14 17:35:42'),
+(1463, 'ff0fb589-dd27-4b6d-bd40-66ea0e3b7299', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 8, 8, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 8, 10, '2026-05-14 17:35:42'),
+(1464, 'fd7f42df-7599-4ed7-bd6a-286369f0a52f', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 9, 9, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 9, 10, '2026-05-14 17:35:42'),
+(1465, 'ecbbb62b-c33a-49de-981d-4b4706320eaf', 500, 'GENFOAM2', '069357', '2', 6604, 'NA', '2026-05-14', 'RECV', NULL, 10, 10, 'Styrene Products Inc', '2\" x 2.69\" x 9.12\" (3.0#)', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Skids', 500.00, 0, 0, 0, NULL, 10, 10, '2026-05-14 17:35:42'),
+(1466, '3b804619-1e94-43b8-b51e-94a5f973aba4', 6160, 'MMC0000791', '069293', '3', 6604, '669840', '2026-05-14', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 14Ga X 24.600', 'R', '2026-05-15', 16000.00, 'LBS', -1780, 'traddatz', 1, 'Coils', 6160.00, 0, 0, 0, NULL, 1, 3, '2026-05-14 17:48:55'),
+(1467, '744cb66e-ca61-49a4-9f5c-1b4394cd0af2', 6720, 'MMC0000791', '069293', '3', 6604, 'CB2834', '2026-05-14', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 14Ga X 24.600', 'R', '2026-05-15', 16000.00, 'LBS', -1780, 'traddatz', 1, 'Coils', 6720.00, 0, 0, 0, NULL, 2, 3, '2026-05-14 17:48:55'),
+(1468, 'b01757a8-6d4e-44d3-b66f-af46a5d78cdc', 4900, 'MMC0000791', '069293', '3', 6604, 'CB2918', '2026-05-14', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 14Ga X 24.600', 'R', '2026-05-15', 16000.00, 'LBS', -1780, 'traddatz', 1, 'Coils', 4900.00, 0, 0, 0, NULL, 3, 3, '2026-05-14 17:48:55'),
+(1469, 'b5fbe429-c152-469c-a3e0-226c9c8709a1', 6740, 'MMC0001031', '069270', '8', 6604, '338107', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 12Ga X 4.875', 'C', '2026-05-14', 6425.00, 'LBS', -315, 'traddatz', 4, 'Coils', 1685.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 17:47:03'),
+(1470, 'b08da19c-580d-400e-ac1d-bcd4865932e2', 1716, 'MMF0005512', '069598', '1', 6604, '337512', '2026-05-14', 'S-00', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 12Ga (.104) X 60.000 X 120.000', 'R', '2026-05-18', 1500.00, 'LBS', -216, 'traddatz', 8, 'Sheets', 215.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 17:52:44'),
+(1471, 'fd19d773-3b66-49ab-ba99-5b0a723a5fc3', 6710, 'MMC0000594', '069175', '2', 6604, '12546220', '2026-05-14', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 17.820', 'R', '2026-05-19', 11000.00, 'LBS', -2420, 'traddatz', 1, 'Coils', 6710.00, 0, 0, 0, NULL, 1, 2, '2026-05-14 18:03:16'),
+(1472, 'f93b4e39-2027-4872-aab0-86985bea696e', 6710, 'MMC0000594', '069175', '2', 6604, '12546220', '2026-05-14', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 17.820', 'R', '2026-05-19', 11000.00, 'LBS', -2420, 'traddatz', 1, 'Coils', 6710.00, 0, 0, 0, NULL, 2, 2, '2026-05-14 18:03:16'),
+(1494, 'e42589f3-7b8d-4c7e-a04b-02d05c139976', 56, 'MMF0007081', '069669', '1', 6604, '26T10218', '2026-05-14', 'RECV', NULL, 1, 1, 'Mandel Metals, Inc', 'Sheet, .080 X 48.000 X 120.000', 'C', '2016-05-15', 56.00, 'LBS', 0, 'traddatz', 1, 'Sheets', 56.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 18:14:12'),
+(1495, '5fd329bd-bd81-4dd9-8765-470ef8dc43ed', 4770, 'MMC0000384', '069525', '1', 6604, '26T10137', '2026-05-14', 'V-C0-08', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-05-13', 18000.00, 'LBS', 60, 'traddatz', 1, 'Coils', 4770.00, 0, 0, 0, NULL, 1, 3, '2026-05-14 18:18:53'),
+(1496, '2950f2a4-74a2-4d43-ad39-ae058b5e315e', 6585, 'MMC0000384', '069525', '1', 6604, '26T10137', '2026-05-14', 'V-C0-08', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-05-13', 18000.00, 'LBS', 60, 'traddatz', 1, 'Coils', 6585.00, 0, 0, 0, NULL, 2, 3, '2026-05-14 18:18:53'),
+(1497, '1c818a8a-feac-49e5-85d6-6b52207c9bfb', 6585, 'MMC0000384', '069525', '1', 6604, '26T10137', '2026-05-14', 'V-C0-08', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-05-13', 18000.00, 'LBS', 60, 'traddatz', 1, 'Coils', 6585.00, 0, 0, 0, NULL, 3, 3, '2026-05-14 18:18:53'),
+(1498, '6833930a-008e-4ac2-881b-2313fddfc330', 8970, 'MMC0000760', '069124', '4', 6604, '327823', '2026-05-14', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 12Ga X 30.750', 'R', '2026-06-07', 12000.00, 'LBS', 3030, 'traddatz', 1, 'Coils', 8970.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 18:31:02'),
+(1499, 'a821eeba-54e6-4558-9f2e-8f8daf57f326', 6060, 'MMC0001135', '069483', '4', 6604, '327014', '2026-05-14', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 7Ga X 12.750', 'R', '2026-08-16', 12600.00, 'LBS', 6540, 'traddatz', 1, 'Coils', 6060.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 18:32:54'),
+(1500, 'a83c345a-93cb-4c47-83a2-077768378c65', 9980, 'MMC0000760', '068503', '3', 6604, '327823', '2026-05-14', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 12Ga X 30.750', 'R', '2026-08-07', 11700.00, 'LBS', -8140, 'traddatz', 1, 'Coils', 9980.00, 0, 0, 0, NULL, 1, 2, '2026-05-14 18:36:08'),
+(1501, 'd74a5ddb-0e6d-42c5-82aa-724ac151c440', 9860, 'MMC0000760', '068503', '3', 6604, '327823', '2026-05-14', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 12Ga X 30.750', 'R', '2026-08-07', 11700.00, 'LBS', -8140, 'traddatz', 1, 'Coils', 9860.00, 0, 0, 0, NULL, 2, 2, '2026-05-14 18:36:08'),
+(1502, '96d9d1cb-7434-4523-9303-2bec44f4d5bb', 3200, 'MMC0000762', '069489', '1', 6604, '20328337', '2026-05-14', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 7Ga X 4.750', 'C', '2026-05-15', 3200.00, 'LBS', 0, 'traddatz', 1, 'Coils', 3200.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 18:41:06'),
+(1503, 'b1d6eeda-7700-4033-9c39-c112529b389c', 6880, 'MMC0000743', '068503', '2', 6604, '338706', '2026-05-14', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, .236 X 17.250', 'R', '2026-05-08', 90000.00, 'LBS', 3160, 'traddatz', 1, 'Coils', 6880.00, 0, 0, 0, NULL, 1, 1, '2026-05-14 19:28:41'),
+(1509, '7b57964c-6919-47d6-a6d3-8a3f8c5c353c', 7872, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 1, 1, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 120, 'Sheets', 66.00, 0, 0, 0, NULL, 1, 6, '2026-05-14 19:36:31'),
+(1510, '020e10c8-527c-4060-8c14-36ae5557afd4', 7872, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 2, 2, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 120, 'Sheets', 66.00, 0, 0, 0, NULL, 2, 6, '2026-05-14 19:36:31'),
+(1511, '03c5c656-2be5-4ba2-a01b-82143f8faea6', 7872, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 3, 3, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 120, 'Sheets', 66.00, 0, 0, 0, NULL, 3, 6, '2026-05-14 19:36:31'),
+(1512, 'fda13996-e168-4a6c-8473-45df58f06062', 7872, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 4, 4, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 120, 'Sheets', 66.00, 0, 0, 0, NULL, 4, 6, '2026-05-14 19:36:31'),
+(1513, '33d83a4d-30e4-4f3d-a666-578b6d61d1e8', 7872, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 5, 5, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 120, 'Sheets', 66.00, 0, 0, 0, NULL, 5, 6, '2026-05-14 19:36:31'),
+(1514, '10852457-2689-4994-a970-bc3d161eb8f6', 3608, 'MMF0006614', '069153', '1', 6604, 'NA', '2026-05-14', 'R-04', NULL, 6, 6, 'Security Steel Supply Company', 'Strip, .312 X 2.756 X 264.000', 'C', '2026-05-11', 40000.00, 'LBS', -2968, 'traddatz', 55, 'Sheets', 66.00, 0, 0, 0, NULL, 6, 6, '2026-05-14 19:36:31'),
+(1516, '4def9b21-876a-4135-903c-43f6b96e97f0', 25200, '23-12729-008', '066875', '1', 6604, '2605131-1', '2026-05-15', 'RECV', NULL, 1, 1, 'Prestige Threaded Products', 'Nut, Clinch M8 x 1.25', 'C', '2026-04-14', 50000.00, 'EA', 50000, 'traddatz', 18, 'Box', 1400.00, 0, 0, 0, NULL, 1, 3, '2026-05-15 10:19:08'),
+(1517, 'dbdddff3-7ad7-4b82-bbbd-26aab16c6cb7', 46200, '23-12729-008', '066875', '1', 6604, '2605131-1', '2026-05-15', 'RECV', NULL, 2, 2, 'Prestige Threaded Products', 'Nut, Clinch M8 x 1.25', 'C', '2026-04-14', 50000.00, 'EA', 50000, 'traddatz', 33, 'Box', 1400.00, 0, 0, 0, NULL, 2, 3, '2026-05-15 10:19:08'),
+(1518, '2c0d5f38-04b6-4a5d-a7aa-a188189f2457', 29400, '23-12729-008', '066875', '1', 6604, '2605131-1', '2026-05-15', 'RECV', NULL, 3, 3, 'Prestige Threaded Products', 'Nut, Clinch M8 x 1.25', 'C', '2026-04-14', 50000.00, 'EA', 50000, 'traddatz', 21, 'Box', 1400.00, 0, 0, 0, NULL, 3, 3, '2026-05-15 10:19:08'),
+(1519, 'b1bb86bb-aa54-45ba-bcef-1c36d3fd4d37', 1000, 'RN3316', '069670', '1', 6604, 'FI29386', '2026-05-15', 'RECV DESK', NULL, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld 3/8-16', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Box', 1000.00, 0, 0, 0, NULL, 1, 3, '2026-05-15 10:36:20'),
+(1520, '47c1c218-c7db-48af-b1ea-652bc4f4471c', 2000, 'RN3316', '069670', '1', 6604, 'FI29386', '2026-05-15', 'RECV DESK', NULL, 2, 2, 'Buckeye Fasteners, Inc', 'Nut, Weld 3/8-16', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Box', 2000.00, 0, 0, 0, NULL, 2, 3, '2026-05-15 10:36:20'),
+(1521, 'e0476caa-5435-4028-b203-a54e537e7834', 2000, 'RN3316', '069670', '1', 6604, 'FI33312', '2026-05-15', 'RECV DESK', NULL, 3, 3, 'Buckeye Fasteners, Inc', 'Nut, Weld 3/8-16', 'C', '2026-05-14', 5000.00, 'EA', 0, 'traddatz', 1, 'Box', 2000.00, 0, 0, 0, NULL, 3, 3, '2026-05-15 10:36:20'),
+(1522, 'f2e1de85-4026-4d2d-a618-7cc8c33c44b0', 250, '23-12742-002', '069300', '2', 6604, '49052', '2026-05-15', 'RECV DESK', NULL, 1, 1, 'Facil North America Inc', 'Nut-Clinch, Locking Metric, M8 X 1.25', 'R', '2026-05-19', 250.00, 'EA', 0, 'traddatz', 1, 'Box', 250.00, 0, 0, 0, NULL, 1, 1, '2026-05-15 11:29:35'),
+(1523, 'daaedb27-1fdd-4711-86a7-edb8d966ae5b', 500, '23-10721-125', '068434', '1', 6604, 'FI29905', '2026-05-15', 'RECV DESK', NULL, 1, 1, 'Facil North America Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.25\" Lg', 'R', '2026-05-25', 3000.00, 'EA', 0, 'traddatz', 1, 'Box', 500.00, 0, 0, 0, NULL, 1, 2, '2026-05-15 11:31:10'),
+(1524, '9e9a1d5a-181a-47a1-ba55-513d742de0cf', 2500, '23-10721-125', '068434', '1', 6604, 'FI29905', '2026-05-15', 'RECV DESK', NULL, 2, 2, 'Facil North America Inc', 'Stud-Pjtn Weld, 1/4-20 Thd 1.25\" Lg', 'R', '2026-05-25', 3000.00, 'EA', 0, 'traddatz', 1, 'Box', 2500.00, 0, 0, 0, NULL, 2, 2, '2026-05-15 11:31:10'),
+(1531, '68b9a94d-68f7-4dc4-ac93-9c43ff9d7dbb', 3860, 'MMC0000848', '068493', '3', 6604, '337678', '2026-05-15', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1930.00, 0, 0, 0, NULL, 1, 9, '2026-05-15 11:54:01'),
+(1532, '62651378-48fb-4164-95c2-a883abca34c5', 3820, 'MMC0000848', '068493', '3', 6604, '337678', '2026-05-15', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1910.00, 0, 0, 0, NULL, 2, 9, '2026-05-15 11:54:01'),
+(1533, 'a94f6953-910e-48ee-9678-9252d600e727', 3760, 'MMC0000848', '068493', '3', 6604, '337678', '2026-05-15', 'RECV', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1880.00, 0, 0, 0, NULL, 3, 9, '2026-05-15 11:54:01'),
+(1534, '5cda98f6-9c72-4ed8-bdfa-848cfb268a13', 2920, 'MMC0000848', '068493', '3', 6604, '337681', '2026-05-15', 'RECV', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1460.00, 0, 0, 0, NULL, 4, 9, '2026-05-15 11:54:01'),
+(1535, '530802f6-7237-490c-8601-f95a936e3a39', 3110, 'MMC0000848', '068493', '3', 6604, '338747', '2026-05-15', 'RECV', NULL, 5, 5, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1555.00, 0, 0, 0, NULL, 5, 9, '2026-05-15 11:54:01'),
+(1536, 'fd38d5d1-1b83-4256-8a5c-30c786e023b3', 3260, 'MMC0000848', '068493', '3', 6604, '337673', '2026-05-15', 'RECV', NULL, 6, 6, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1630.00, 0, 0, 0, NULL, 6, 9, '2026-05-15 11:54:01'),
+(1537, '15565c84-2460-47ec-b7c5-8b9f568a6661', 3160, 'MMC0000848', '068493', '3', 6604, '337673', '2026-05-15', 'RECV', NULL, 7, 7, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1580.00, 0, 0, 0, NULL, 7, 9, '2026-05-15 11:54:01'),
+(1538, '239c9bc8-4c62-49cd-91dd-ceacf817ce5a', 3200, 'MMC0000848', '068493', '3', 6604, '337673', '2026-05-15', 'RECV', NULL, 8, 8, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1600.00, 0, 0, 0, NULL, 8, 9, '2026-05-15 11:54:01'),
+(1539, 'd72cb65b-4516-4ce8-a05d-2ff7a8beedd8', 2880, 'MMC0000848', '068493', '3', 6604, '337673', '2026-05-15', 'RECV', NULL, 9, 9, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 21810, 'traddatz', 2, 'Coils', 1440.00, 0, 0, 0, NULL, 9, 9, '2026-05-15 11:54:01'),
+(1540, '2fab22f9-1932-4560-83f8-2432715335ab', 7790, 'MMC0000761', '069124', '1', 6604, '338747', '2026-05-15', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 16500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 7790.00, 0, 0, 0, NULL, 1, 2, '2026-05-15 11:58:06'),
+(1541, 'a433a164-a709-47e9-b18b-553e50c7b716', 8310, 'MMC0000761', '069124', '1', 6604, '338747', '2026-05-15', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 33.300', 'R', '2026-05-15', 16500.00, 'LBS', 400, 'traddatz', 1, 'Coils', 8310.00, 0, 0, 0, NULL, 2, 2, '2026-05-15 11:58:06'),
+(1546, '6c4ee408-cb12-4747-a4e8-5d2ad03bf39a', 1658, 'RMSAEB1S0125-023', '069274', '1', 6229, '108127', '2026-05-14', 'RECV-VITS', NULL, 1, 1, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 219, 'Blanks', 8.00, 0, 0, 0, NULL, 1, 22, '2026-05-14 19:42:08'),
+(1547, '36df3783-c492-4ee4-bf50-755669067db0', 1651, 'RMSAEB1S0125-023', '069274', '1', 6229, '108126', '2026-05-14', 'RECV-VITS', NULL, 2, 2, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 218, 'Blanks', 8.00, 0, 0, 0, NULL, 2, 22, '2026-05-14 19:42:08'),
+(1548, 'e489a222-4d58-4ba2-82b7-a757e61e748d', 1651, 'RMSAEB1S0125-023', '069274', '1', 6229, '108126', '2026-05-14', 'RECV-VITS', NULL, 3, 3, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 218, 'Blanks', 8.00, 0, 0, 0, NULL, 3, 22, '2026-05-14 19:42:08'),
+(1549, '73cfd449-8625-4127-a01b-f21a8400c453', 1651, 'RMSAEB1S0125-023', '069274', '1', 6229, '108127', '2026-05-14', 'RECV-VITS', NULL, 4, 4, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 218, 'Blanks', 8.00, 0, 0, 0, NULL, 4, 22, '2026-05-14 19:42:08'),
+(1550, '267033f9-bcb1-4389-ac65-16124c1c1d03', 1643, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 5, 5, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 218, 'Blanks', 8.00, 0, 0, 0, NULL, 5, 22, '2026-05-14 19:42:08'),
+(1551, 'e5f04519-a7fc-4d67-85b8-c26ce2210cef', 1643, 'RMSAEB1S0125-023', '069274', '1', 6229, '108127', '2026-05-14', 'RECV-VITS', NULL, 6, 6, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 6, 22, '2026-05-14 19:42:08'),
+(1552, '4c12810f-05c2-4d6d-9166-a5ebf2946397', 1643, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 7, 7, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 7, 22, '2026-05-14 19:42:08'),
+(1553, '4faf2387-94b4-4dee-88f8-a0effcee363b', 1643, 'RMSAEB1S0125-023', '069274', '1', 6229, '112166', '2026-05-14', 'RECV-VITS', NULL, 8, 8, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 8, 22, '2026-05-14 19:42:08'),
+(1554, '48e33a3a-aca1-48d9-be4f-9dcff4d7f3e1', 1643, 'RMSAEB1S0125-023', '069274', '1', 6229, '112165', '2026-05-14', 'RECV-VITS', NULL, 9, 9, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 9, 22, '2026-05-14 19:42:08'),
+(1555, '0f3d5124-44e7-4de2-a5c0-3655e837be26', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '112165', '2026-05-14', 'RECV-VITS', NULL, 10, 10, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 10, 22, '2026-05-14 19:42:08'),
+(1556, '03e7002b-0b97-4531-8f3f-be0fffa9975c', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 11, 11, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 11, 22, '2026-05-14 19:42:08'),
+(1557, 'c9e77b39-511b-4d12-af7a-28698239551e', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 12, 12, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 12, 22, '2026-05-14 19:42:08'),
+(1558, 'ad5ae2ce-dbca-455b-8d46-254766d3fca4', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104618', '2026-05-14', 'RECV-VITS', NULL, 13, 13, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 13, 22, '2026-05-14 19:42:08'),
+(1559, '22d74833-addf-4aa1-8055-30548871bb25', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104618', '2026-05-14', 'RECV-VITS', NULL, 14, 14, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 14, 22, '2026-05-14 19:42:08'),
+(1560, 'a5650ccc-fa12-4a95-a6bd-27cb5f23adf3', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '112165', '2026-05-14', 'RECV-VITS', NULL, 15, 15, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 15, 22, '2026-05-14 19:42:08'),
+(1561, '733f1fb7-a392-45ce-b683-4dd381e64ad2', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 16, 16, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 16, 22, '2026-05-14 19:42:08'),
+(1562, '5945dad6-b5a8-450e-9485-b9706544ae6e', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 17, 17, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 17, 22, '2026-05-14 19:42:08'),
+(1563, '05ea200c-9cf6-406e-b5c2-346bdd42960b', 1636, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 18, 18, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 18, 22, '2026-05-14 19:42:08'),
+(1564, 'fcfefb46-5899-4f61-9927-e50da000469f', 1628, 'RMSAEB1S0125-023', '069274', '1', 6229, '104618', '2026-05-14', 'RECV-VITS', NULL, 19, 19, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 19, 22, '2026-05-14 19:42:08'),
+(1565, '64a24c33-8fc0-4fbc-a188-d3e8bf778574', 1628, 'RMSAEB1S0125-023', '069274', '1', 6229, '104617', '2026-05-14', 'RECV-VITS', NULL, 20, 20, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 215, 'Blanks', 8.00, 0, 0, 0, NULL, 20, 22, '2026-05-14 19:42:08'),
+(1566, '52d71482-8fd0-4076-a1f4-5d9985001143', 1628, 'RMSAEB1S0125-023', '069274', '1', 6229, '104618', '2026-05-14', 'RECV-VITS', NULL, 21, 21, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 215, 'Blanks', 8.00, 0, 0, 0, NULL, 21, 22, '2026-05-14 19:42:08'),
+(1567, 'f651b871-9021-4e18-80fa-9cac2ab25738', 1613, 'RMSAEB1S0125-023', '069274', '1', 6229, '108127', '2026-05-14', 'RECV-VITS', NULL, 22, 22, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-10', 36000.00, 'LBS', 36000, 'jkoll', 215, 'Blanks', 8.00, 0, 0, 0, NULL, 22, 22, '2026-05-14 19:42:08'),
+(1577, 'f3fbd48b-61a4-486d-91aa-3d1f5b599f7f', 1000, '990941', '069656', '1', 6604, '210359795', '2026-05-15', 'RECV DESK', NULL, 1, 1, 'Fastenal Company', 'Flange Nut, M10*10  FOR VITS', 'C', '2026-05-13', 1000.00, 'EA', 0, 'traddatz', 1, 'Box', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-05-15 12:25:11'),
+(1578, '11483920-3257-48ee-ad06-3a2bc81c4dc9', 7270, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 1, 1, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7270.00, 0, 0, 0, NULL, 1, 6, '2026-05-15 12:40:54'),
+(1579, 'a006c162-481a-4f05-89f7-3f7ca9a3f5fc', 7290, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 2, 2, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7290.00, 0, 0, 0, NULL, 2, 6, '2026-05-15 12:40:54'),
+(1580, 'f1f8a05c-35c5-4167-8e96-98dc3ee5a17a', 7270, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 3, 3, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7270.00, 0, 0, 0, NULL, 3, 6, '2026-05-15 12:40:54'),
+(1581, 'f8477b92-8b22-49e8-a901-19dcb1dbe38f', 7290, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 4, 4, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7290.00, 0, 0, 0, NULL, 4, 6, '2026-05-15 12:40:54'),
+(1582, 'e4da88ee-b8d6-4a14-b8fd-b88ef20c1168', 7340, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 5, 5, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7340.00, 0, 0, 0, NULL, 5, 6, '2026-05-15 12:40:54'),
+(1583, '2926ae2f-7d47-428c-b857-bf46255c7eb8', 7340, 'MMC0000565', '067287', '2', 6604, '650757', '2026-05-15', 'RECV', NULL, 6, 6, 'Arlington Metals Corporation', 'Coil, 18Ga X 23.270', 'R', '2026-05-01', 101500.00, 'LBS', 27860, 'traddatz', 1, 'Coils', 7340.00, 0, 0, 0, NULL, 6, 6, '2026-05-15 12:40:54'),
+(1584, '46ac7f28-a6a1-4907-bc78-288f6085ac79', 1350, 'MMC0001132', '069573', '1', 6604, '25T11353', '2026-05-15', 'RECV', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .100 X 3.000 ', 'C', '2026-05-12', 5500.00, 'LBS', -694, 'traddatz', 4, 'Coils', 338.00, 0, 0, 0, NULL, 1, 3, '2026-05-15 13:23:43'),
+(1585, 'd114679d-f756-4fdc-b574-c2d44b64e59e', 2654, 'MMC0001132', '069573', '1', 6604, '25T11353', '2026-05-15', 'RECV', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .100 X 3.000 ', 'C', '2026-05-12', 5500.00, 'LBS', -694, 'traddatz', 6, 'Coils', 443.00, 0, 0, 0, NULL, 2, 3, '2026-05-15 13:23:43'),
+(1586, '1f7348ee-735c-408f-b0b4-a837a00eef03', 2190, 'MMC0001132', '069573', '1', 6604, '25T11353', '2026-05-15', 'RECV', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .100 X 3.000 ', 'C', '2026-05-12', 5500.00, 'LBS', -694, 'traddatz', 4, 'Coils', 548.00, 0, 0, 0, NULL, 3, 3, '2026-05-15 13:23:43'),
+(1587, '4e48a839-eb02-4219-8afa-a90e00524017', 1650, 'MMF0005008', '069199', '1', 6604, 'CB3689', '2026-05-18', 'S-00', NULL, 1, 1, 'McNeilus Steel, Inc.', 'Sheet, 8Ga (.164) X 48.000 X 120.000', 'C', '2026-05-18', 1650.00, 'LBS', 0, 'traddatz', 6, 'Sheets', 275.00, 0, 0, 0, NULL, 1, 1, '2026-05-18 16:35:26'),
+(1588, '00ee1c67-8668-48ff-8f75-f77c8e5a67ac', 16000, '807217', '069654', '2', 6604, 'B053025', '2026-05-18', 'RECV', NULL, 1, 1, 'Buckeye Fasteners, Inc', 'Nut, Weld .438-20', 'C', '2026-05-18', 16000.00, 'EA', 0, 'traddatz', 16, 'Boxes', 1000.00, 0, 0, 0, NULL, 1, 1, '2026-05-18 16:38:53'),
+(1590, '09e27b17-03fa-44df-9433-fa1d90184c87', 4200, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 1, 1, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4200.00, 0, 0, 0, NULL, 1, 10, '2026-05-18 17:39:37'),
+(1591, 'f9993b03-8a85-4a7e-abad-9621d44e1330', 4235, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 2, 2, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4235.00, 0, 0, 0, NULL, 2, 10, '2026-05-18 17:39:37'),
+(1592, 'fb9c21c2-2a6e-42de-b237-fc6d9b87266e', 4230, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 3, 3, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4230.00, 0, 0, 0, NULL, 3, 10, '2026-05-18 17:39:37'),
+(1593, 'a290d316-826c-49cd-a2bd-fd8d814a0e34', 4235, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 4, 4, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4235.00, 0, 0, 0, NULL, 4, 10, '2026-05-18 17:39:37'),
+(1594, '1853dc00-3000-4ed5-b8cb-8c1d85a88785', 4200, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 5, 5, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4200.00, 0, 0, 0, NULL, 5, 10, '2026-05-18 17:39:37'),
+(1595, 'fc0060be-da6a-4f88-968f-597384bd4534', 4185, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 6, 6, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4185.00, 0, 0, 0, NULL, 6, 10, '2026-05-18 17:39:37'),
+(1596, 'd4c43225-650c-4f5e-8140-c32a88678400', 4195, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 7, 7, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4195.00, 0, 0, 0, NULL, 7, 10, '2026-05-18 17:39:37'),
+(1597, '379fdb6e-1774-4ee4-b931-55e04e54f783', 4190, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 8, 8, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4190.00, 0, 0, 0, NULL, 8, 10, '2026-05-18 17:39:37'),
+(1598, '9503d8e7-b789-4b09-951c-7a2e0c89d78e', 4195, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 9, 9, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4195.00, 0, 0, 0, NULL, 9, 10, '2026-05-18 17:39:37'),
+(1599, 'c332d306-afa2-465b-bdc9-3e018d9bd8c9', 4175, 'MMC0000007', '069519', '1', 6604, 'D03989', '2026-05-18', 'RECV', NULL, 10, 10, 'Coilplus Illinois Inc.', 'Coil, 14Ga X 11.125', 'C', '2026-05-14', 42040.00, 'LBS', 0, 'traddatz', 1, 'Coils', 4175.00, 0, 0, 0, NULL, 10, 10, '2026-05-18 17:39:37'),
+(1600, 'a247ec78-5f2a-42f6-bedd-6283180a4066', 5696, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 1, 1, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5696.00, 0, 0, 0, NULL, 1, 8, '2026-05-19 12:10:14'),
+(1601, '50d87b06-9781-479e-bef7-b0e99200da4f', 5702, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 2, 2, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5702.00, 0, 0, 0, NULL, 2, 8, '2026-05-19 12:10:14'),
+(1602, 'da3bdf2b-f4f3-4f48-84cb-5b1d73234a4c', 5668, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 3, 3, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5668.00, 0, 0, 0, NULL, 3, 8, '2026-05-19 12:10:14'),
+(1603, 'd563e7f4-63a2-458c-8ed7-e4a01aba2320', 5538, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 4, 4, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5538.00, 0, 0, 0, NULL, 4, 8, '2026-05-19 12:10:14'),
+(1604, '5546cc76-2955-4591-b2b0-042984b30837', 5582, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 5, 5, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5582.00, 0, 0, 0, NULL, 5, 8, '2026-05-19 12:10:14'),
+(1605, '9ca9968b-f2b7-467d-a1e5-ade6f2817930', 5590, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 6, 6, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5590.00, 0, 0, 0, NULL, 6, 8, '2026-05-19 12:10:14'),
+(1606, '5f102464-a51a-4f86-9308-c65ae49a8a80', 5566, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 7, 7, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5566.00, 0, 0, 0, NULL, 7, 8, '2026-05-19 12:10:14'),
+(1607, '3617cda4-0cb0-486d-ade8-a6aed966a5be', 5640, 'MMC0000731', '069272', '1', 6604, '2730903', '2026-05-19', 'RECV', NULL, 8, 8, 'Steel Summit Holdings, Inc', 'Coil, 24Ga X 12.837 - DO NOT ORDER', 'C', '2026-05-19', 40000.00, 'LBS', -4982, 'traddatz', 1, 'Coils', 5640.00, 0, 0, 0, NULL, 8, 8, '2026-05-19 12:10:14'),
+(1621, '74e2d799-ecac-4079-8726-5deb690d3180', 7360, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 3680.00, 0, 0, 0, NULL, 1, 6, '2026-05-19 14:31:22'),
+(1622, 'c466cc75-6106-4ea7-94ab-5eda2cb64037', 7360, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 3680.00, 0, 0, 0, NULL, 2, 6, '2026-05-19 14:31:22'),
+(1623, 'b4bd1cbf-ce23-47b0-99d7-6f2f4394442b', 7300, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 3650.00, 0, 0, 0, NULL, 3, 6, '2026-05-19 14:31:22'),
+(1624, 'd8750471-fbd3-49ec-8ee3-8fb6911bb88a', 5120, 'MMC0000529', '069632', '1', 6604, '333866', '2026-05-19', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 2560.00, 0, 0, 0, NULL, 4, 6, '2026-05-19 14:31:22'),
+(1625, '7a8e1e22-8a8b-4eb2-b39b-6b13ecc98adb', 5120, 'MMC0000529', '069632', '1', 6604, '333866', '2026-05-19', 'RECV', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 2560.00, 0, 0, 0, NULL, 5, 6, '2026-05-19 14:31:22'),
+(1626, '2d4ac176-2c00-4a4c-8db9-ebef30d19539', 5120, 'MMC0000529', '069632', '1', 6604, '333866', '2026-05-19', 'RECV', NULL, 6, 6, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 22620, 'traddatz', 2, 'Coils', 2560.00, 0, 0, 0, NULL, 6, 6, '2026-05-19 14:31:22'),
+(1627, '87d9236b-7214-4d41-88c0-19e20ebb56bb', 3990, 'MMC0000339', '069687', '2', 6604, '338016', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga X 6.000', 'R', '2026-05-20', 6000.00, 'LBS', -650, 'traddatz', 3, 'Coils', 1330.00, 0, 0, 0, NULL, 1, 2, '2026-05-19 14:34:13'),
+(1628, '21c19514-b103-4603-a382-4a2f57aa10ce', 2660, 'MMC0000339', '069687', '2', 6604, '338016', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 11Ga X 6.000', 'R', '2026-05-20', 6000.00, 'LBS', -650, 'traddatz', 2, 'Coils', 1330.00, 0, 0, 0, NULL, 2, 2, '2026-05-19 14:34:13'),
+(1636, 'd9a16c50-a64c-4c0b-8fa7-d37978e91910', 6570, 'MMC0000436', '069471', '4', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.604', 'R', '2026-05-29', 26150.00, 'LBS', -70, 'traddatz', 1, 'Coils', 6570.00, 0, 0, 0, NULL, 1, 4, '2026-05-19 15:33:32'),
+(1637, '4e46c7dc-a1aa-4700-aeb4-a3af40650132', 6570, 'MMC0000436', '069471', '4', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.604', 'R', '2026-05-29', 26150.00, 'LBS', -70, 'traddatz', 1, 'Coils', 6570.00, 0, 0, 0, NULL, 2, 4, '2026-05-19 15:33:32'),
+(1638, '9423e8ad-9663-40b9-a6b3-7bbf9a1e7425', 6540, 'MMC0000436', '069471', '4', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.604', 'R', '2026-05-29', 26150.00, 'LBS', -70, 'traddatz', 1, 'Coils', 6540.00, 0, 0, 0, NULL, 3, 4, '2026-05-19 15:33:32'),
+(1639, '01fabab7-0c68-4d82-abc9-0fb2e88b6a5b', 6540, 'MMC0000436', '069471', '4', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.604', 'R', '2026-05-29', 26150.00, 'LBS', -70, 'traddatz', 1, 'Coils', 6540.00, 0, 0, 0, NULL, 4, 4, '2026-05-19 15:33:32'),
+(1640, 'd048c889-1951-4f0d-a0c6-b6b71b3f78c8', 7380, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 480, 'traddatz', 2, 'Coils', 3690.00, 0, 0, 0, NULL, 1, 3, '2026-05-19 15:34:46'),
+(1641, '94b5df61-9c92-4089-9269-6a6e1c996193', 7380, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 480, 'traddatz', 2, 'Coils', 3690.00, 0, 0, 0, NULL, 2, 3, '2026-05-19 15:34:46'),
+(1642, '79ac4d1d-a487-4d2e-88da-f9b13c7b39cd', 7380, 'MMC0000529', '069632', '1', 6604, '337150', '2026-05-19', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 10Ga X 10.000', 'R', '2026-05-20', 60000.00, 'LBS', 480, 'traddatz', 2, 'Coils', 3690.00, 0, 0, 0, NULL, 3, 3, '2026-05-19 15:34:46'),
+(1643, 'e8de3a36-4fa4-4311-b5ed-9afe40ba3eeb', 2600, 'MMCSR00008', '069505', '2', 6604, '337691', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 8Ga (.157) X 11.9375', 'R', '2026-05-22', 2500.00, 'LBS', -100, 'traddatz', 1, 'Coils', 2600.00, 0, 1, 1, 'Coil Material - Quality Hold Required', 1, 1, '2026-05-19 15:52:19'),
+(1644, '20a70bba-8955-4c35-834e-3f2ee760efca', 4520, 'MMF0005531', '068922', '1', 6604, 'D20440', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 40080, 'traddatz', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 1, 4, '2026-05-19 15:58:25'),
+(1645, 'd087cdfc-7d39-42a8-9605-43dd3c597a83', 4500, 'MMF0005531', '068922', '1', 6604, 'D20440', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 40080, 'traddatz', 7, 'Sheets', 643.00, 0, 0, 0, NULL, 2, 4, '2026-05-19 15:58:25'),
+(1646, '591cc44e-1b2a-4e1f-b107-297e7da23fc3', 4520, 'MMF0005531', '068922', '1', 6604, 'D20440', '2026-05-19', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 40080, 'traddatz', 7, 'Sheets', 646.00, 0, 0, 0, NULL, 3, 4, '2026-05-19 15:58:25'),
+(1647, '39a1d9c1-c3c8-4114-9ed5-c543ab4e78c3', 3840, 'MMF0005531', '068922', '1', 6604, 'D20440', '2026-05-19', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Sheet, (.312) X 60.000 X 120.000', 'R', '2026-07-31', 80000.00, 'LBS', 40080, 'traddatz', 6, 'Sheets', 640.00, 0, 0, 0, NULL, 4, 4, '2026-05-19 15:58:25'),
+(1648, '12c9f0e2-127c-4de1-80dd-561f1a8e7f32', 2200, 'MMC0001114', '069516', '7', 6604, '334372', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 8Ga X 3.080', 'R', '2026-05-19', 3000.00, 'LBS', 70, 'traddatz', 4, 'Coils', 550.00, 0, 0, 0, NULL, 1, 2, '2026-05-19 16:05:21'),
+(1649, 'a3bdd5f1-4fb3-42e2-863a-c3ae2fd270b6', 730, 'MMC0001114', '069516', '7', 6604, '334378', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 8Ga X 3.080', 'R', '2026-05-19', 3000.00, 'LBS', 70, 'traddatz', 1, 'Coils', 730.00, 0, 0, 0, NULL, 2, 2, '2026-05-19 16:05:21'),
+(1650, 'f84057b3-d4bf-4566-9728-de94b49b34b8', 3054, 'MMF0005325', '069258', '2', 6604, '339197', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, .250 X 60.000 X 120.000', 'R', '2026-05-22', 2765.00, 'LBS', -289, 'traddatz', 6, 'Sheets', 509.00, 0, 0, 0, NULL, 1, 1, '2026-05-19 16:21:48'),
+(1651, 'eb48c454-510c-4a32-b1e5-42fb66da960a', 1665, 'MMF0005808', '069150', '6', 6604, '548041', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 8Ga X 48.000 x 120.000', 'R', '2026-06-19', 1650.00, 'LBS', -15, 'traddatz', 6, 'Sheets', 278.00, 0, 0, 0, NULL, 1, 1, '2026-05-19 16:23:56'),
+(1658, 'b4cc17f4-424e-42e7-aef6-e35dc4da1419', 7700, 'MMC0001000', '068171', '1', 6229, '26T10375', '2026-05-18', 'DD-H0-00', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3850.00, 0, 0, 0, NULL, 1, 5, '2026-05-18 13:11:27'),
+(1659, '974049df-d976-45b3-aa98-0ee0922c1797', 7838, 'MMC0001000', '068171', '1', 6229, '26T10375', '2026-05-18', 'DD-H0-00', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3919.00, 0, 0, 0, NULL, 2, 5, '2026-05-18 13:11:27'),
+(1660, '52c474fd-fcab-4b39-9620-a17cfe6144e8', 7842, 'MMC0001000', '068171', '1', 6229, '26T10375', '2026-05-18', 'DD-H0-00', NULL, 3, 3, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3921.00, 0, 0, 0, NULL, 3, 5, '2026-05-18 13:11:27'),
+(1661, '2c02d4f3-cce8-45db-8042-3c013776dcf4', 6812, 'MMC0001000', '068171', '1', 6229, '26T10376', '2026-05-18', 'DD-H0-00', NULL, 4, 4, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3406.00, 0, 0, 0, NULL, 4, 5, '2026-05-18 13:11:27'),
+(1662, '83198287-8d13-4ac9-90cc-a962d5964f19', 6826, 'MMC0001000', '068171', '1', 6229, '26T10376', '2026-05-18', 'DD-H0-00', NULL, 5, 5, 'Mandel Metals, Inc', 'Coil, .100 X 10.956  FOR  VITS', 'R', '2026-12-31', 200000.00, 'LBS', 34190, 'jkoll', 2, 'Coils', 3413.00, 0, 0, 0, NULL, 5, 5, '2026-05-18 13:11:27'),
+(1663, '8e15e2ad-06a3-4fa3-99cd-7d6f83af7bd7', 1651, 'RMSAEB1S0125-023', '067980', '1', 6229, '108126', '2026-05-18', 'DD-H0-00', NULL, 1, 1, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 218, 'Blanks', 8.00, 0, 0, 0, NULL, 1, 12, '2026-05-18 17:11:21'),
+(1664, 'cd2df9fd-91bd-4463-9440-25e72de7565d', 1643, 'RMSAEB1S0125-023', '067980', '1', 6229, '108128', '2026-05-18', 'DD-H0-00', NULL, 2, 2, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 2, 12, '2026-05-18 17:11:21'),
+(1665, 'fa9401bf-606a-45c4-9577-d0e3af503993', 1643, 'RMSAEB1S0125-023', '067980', '1', 6229, '108127', '2026-05-18', 'DD-H0-00', NULL, 3, 3, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 3, 12, '2026-05-18 17:11:21');
+INSERT INTO `receiving_history` (`id`, `load_guid`, `quantity`, `part_id`, `po_number`, `po_line_number`, `employee_number`, `heat`, `transaction_date`, `initial_location`, `coils_on_skid`, `label_number`, `load_number`, `vendor_name`, `part_description`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `user_id`, `packages_per_load`, `package_type_name`, `weight_per_package`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `part_skid_sequence`, `part_skid_total`, `created_at`) VALUES
+(1666, '695a38af-0068-47f1-919e-8d62df2514a6', 1643, 'RMSAEB1S0125-023', '067980', '1', 6229, '108128', '2026-05-18', 'DD-H0-00', NULL, 4, 4, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 217, 'Blanks', 8.00, 0, 0, 0, NULL, 4, 12, '2026-05-18 17:11:21'),
+(1667, 'a396be81-4cbd-475b-9b19-61fc61533356', 1636, 'RMSAEB1S0125-023', '067980', '1', 6229, 'NOTHING ENTERED', '2026-05-18', 'DD-H0-00', NULL, 5, 5, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 216, 'Blanks', 8.00, 0, 0, 0, NULL, 5, 12, '2026-05-18 17:11:21'),
+(1668, 'd83e27e2-2577-4e44-9b24-baa8e609f896', 1552, 'RMSAEB1S0125-023', '067980', '1', 6229, '113904', '2026-05-18', 'DD-H0-00', NULL, 6, 6, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 205, 'Blanks', 8.00, 0, 0, 0, NULL, 6, 12, '2026-05-18 17:11:21'),
+(1669, '41d0dcde-e66d-4f3a-b895-63b6f26a9d7c', 1552, 'RMSAEB1S0125-023', '067980', '1', 6229, '104617', '2026-05-18', 'DD-H0-00', NULL, 7, 7, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 205, 'Blanks', 8.00, 0, 0, 0, NULL, 7, 12, '2026-05-18 17:11:21'),
+(1670, '789a242f-9690-4cbb-94d9-77ed8d87c63a', 1537, 'RMSAEB1S0125-023', '067980', '1', 6229, '104618', '2026-05-18', 'DD-H0-00', NULL, 8, 8, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 203, 'Blanks', 8.00, 0, 0, 0, NULL, 8, 12, '2026-05-18 17:11:21'),
+(1671, '99ed1ffa-b24b-4c1d-a3ff-fbedaed77219', 1325, 'RMSAEB1S0125-023', '067980', '1', 6229, '108126', '2026-05-18', 'DD-H0-00', NULL, 9, 9, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 175, 'Blanks', 8.00, 0, 0, 0, NULL, 9, 12, '2026-05-18 17:11:21'),
+(1672, 'fc8a6b14-eab1-4e7e-aaed-da61b9787505', 1045, 'RMSAEB1S0125-023', '067980', '1', 6229, '112165', '2026-05-18', 'DD-H0-00', NULL, 10, 10, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 138, 'Blanks', 8.00, 0, 0, 0, NULL, 10, 12, '2026-05-18 17:11:21'),
+(1673, '6b70dbe9-1fc0-4414-9a67-3a0323af0dd8', 1000, 'RMSAEB1S0125-023', '067980', '1', 6229, '104617', '2026-05-18', 'DD-H0-00', NULL, 11, 11, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 132, 'Blanks', 8.00, 0, 0, 0, NULL, 11, 12, '2026-05-18 17:11:21'),
+(1674, 'de658df4-dc00-492f-a969-13c2bc14f98e', 364, 'RMSAEB1S0125-023', '067980', '1', 6229, '112167', '2026-05-18', 'DD-H0-00', NULL, 12, 12, 'Ryerson - Charlotte', 'Circle Blank, .125 X 28.200  FOR VITS', 'R', '2026-05-11', 30000.00, 'LBS', 30000, 'jkoll', 48, 'Blanks', 8.00, 0, 0, 0, NULL, 12, 12, '2026-05-18 17:11:21'),
+(1675, '72b8d31b-69b6-4248-91a8-815eb088636a', 2000, '08037424001', '069606', '1', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-12', NULL, 1, 1, 'Veritiv Packaging ', 'Bag, 4\" x 6\" 4 Mil VCI Yellow FOR VITS', 'R', '2026-05-19', 10000.00, 'EA', 10000, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 1, 5, '2026-05-19 13:53:50'),
+(1676, '4cc4684e-5913-40bf-bb38-aa842ec258a0', 2000, '08037424001', '069606', '1', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-12', NULL, 2, 2, 'Veritiv Packaging ', 'Bag, 4\" x 6\" 4 Mil VCI Yellow FOR VITS', 'R', '2026-05-19', 10000.00, 'EA', 10000, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 2, 5, '2026-05-19 13:53:50'),
+(1677, '858a7bf2-a67b-4cd0-a4b5-69af1ef6e303', 2000, '08037424001', '069606', '1', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-12', NULL, 3, 3, 'Veritiv Packaging ', 'Bag, 4\" x 6\" 4 Mil VCI Yellow FOR VITS', 'R', '2026-05-19', 10000.00, 'EA', 10000, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 3, 5, '2026-05-19 13:53:50'),
+(1678, '5ce5e62d-b39e-469e-bb8b-94ab3824adda', 2000, '08037424001', '069606', '1', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-12', NULL, 4, 4, 'Veritiv Packaging ', 'Bag, 4\" x 6\" 4 Mil VCI Yellow FOR VITS', 'R', '2026-05-19', 10000.00, 'EA', 10000, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 4, 5, '2026-05-19 13:53:50'),
+(1679, '30d0ba74-d4d5-4f16-8ca8-96b685cb46f1', 2000, '08037424001', '069606', '1', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-12', NULL, 5, 5, 'Veritiv Packaging ', 'Bag, 4\" x 6\" 4 Mil VCI Yellow FOR VITS', 'R', '2026-05-19', 10000.00, 'EA', 10000, 'jkoll', 1, 'Boxes', 2000.00, 0, 0, 0, NULL, 5, 5, '2026-05-19 13:53:50'),
+(1680, '62c369b8-e1eb-46b5-8386-df11aca8944e', 7400, 'GM107144-07', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I5-11', NULL, 1, 1, NULL, 'Screw, M6 x 1.0 x 10mm Long  FOR VITS', NULL, NULL, 0.00, 'EA', 0, 'jkoll', 2, 'Boxes', 3700.00, 1, 0, 0, NULL, 1, 1, '2026-05-19 16:31:50'),
+(1681, '89cbc7f2-64f2-421e-94ef-4974e00de4ce', 8675, 'GM107144-08', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I5-11', NULL, 1, 1, NULL, 'Rivet, .185 x .490  FOR VITS', NULL, NULL, 0.00, 'EA', 0, 'jkoll', 1, 'Boxes', 8675.00, 1, 0, 0, NULL, 1, 1, '2026-05-19 16:34:43'),
+(1682, '034a7c05-48ab-4872-98b5-3653bf309db7', 38000, 'GM107144-05', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I5-11', NULL, 1, 1, NULL, 'Rivet, .185 x .320  FOR VITS', NULL, NULL, 0.00, 'EA', 0, 'jkoll', 1, 'Boxes', 38000.00, 1, 0, 0, NULL, 1, 1, '2026-05-19 16:36:08'),
+(1683, '170a6057-7b23-412b-89a2-20fd35db8d94', 12500, '2408903', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'DD-I2-08', NULL, 1, 1, NULL, 'Spring, Return  FOR VITS', NULL, NULL, 0.00, 'EA', 0, 'jkoll', 5, 'Boxes', 2500.00, 1, 0, 0, NULL, 1, 1, '2026-05-19 16:46:42'),
+(1689, 'a4509801-aca2-41b4-b53f-618f7a3d832a', 9950, 'HFHS-M8-20', '069648', '3', 6604, '2894898', '2026-05-19', 'RECV', NULL, 1, 1, 'S.W. Anderson Company', 'Stud, PEM M8 x 1.25 x 20mm Long', 'R', '2026-05-22', 9950.00, 'EA', 0, 'traddatz', 7, 'Box', 1422.00, 0, 0, 0, NULL, 1, 1, '2026-05-19 16:32:59'),
+(1690, 'b24fc45d-c434-4746-a9a8-31e8b3bb9630', 3190, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 1, 1, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1595.00, 0, 0, 0, NULL, 1, 7, '2026-05-19 17:19:24'),
+(1691, 'd420ec0e-9727-44f3-8b9c-6afb294a0cf5', 1406, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 2, 2, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 1, 'Coils', 1406.00, 0, 0, 0, NULL, 2, 7, '2026-05-19 17:19:24'),
+(1692, '6e859372-b0a4-4429-93fa-fef2d768fc80', 2812, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 3, 3, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1406.00, 0, 0, 0, NULL, 3, 7, '2026-05-19 17:19:24'),
+(1693, '3cb6358e-c11e-4e89-8c4a-09a1561b25b7', 2812, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 4, 4, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1406.00, 0, 0, 0, NULL, 4, 7, '2026-05-19 17:19:24'),
+(1694, 'd9ec0274-e7f1-452b-a01f-852d52c943ef', 3320, 'MMC0001025', '067982', '1', 6604, '49182001A', '2026-05-19', 'RECV', NULL, 5, 5, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1660.00, 0, 0, 0, NULL, 5, 7, '2026-05-19 17:19:24'),
+(1695, '3249e921-4d1d-43ef-836a-2fdbd7f2a7ea', 3304, 'MMC0001025', '067982', '1', 6604, '49182001A', '2026-05-19', 'RECV', NULL, 6, 6, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1652.00, 0, 0, 0, NULL, 6, 7, '2026-05-19 17:19:24'),
+(1696, '647565e3-7d89-41a1-bca6-f36dc8695e2c', 3304, 'MMC0001025', '067982', '1', 6604, '49182001A', '2026-05-19', 'RECV', NULL, 7, 7, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1652.00, 0, 0, 0, NULL, 7, 7, '2026-05-19 17:19:24'),
+(1697, '0d46611b-1bb7-4bc3-9c12-9214e96222fa', 1368, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 1, 1, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 1, 'Coils', 1368.00, 0, 0, 0, NULL, 1, 8, '2026-05-19 17:23:57'),
+(1698, 'e229b9ef-4c3d-42b4-9165-2000390f7f4b', 3200, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 2, 2, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1600.00, 0, 0, 0, NULL, 2, 8, '2026-05-19 17:23:57'),
+(1699, '6ede797b-4f06-495f-a7bc-b2260eca0cce', 3184, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 3, 3, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1592.00, 0, 0, 0, NULL, 3, 8, '2026-05-19 17:23:57'),
+(1700, '2639c337-7aaa-4440-8b74-c1785d249fa0', 3192, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 4, 4, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1596.00, 0, 0, 0, NULL, 4, 8, '2026-05-19 17:23:57'),
+(1701, '91c08352-7405-4995-932e-1691272b0901', 1592, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 5, 5, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 1, 'Coils', 1592.00, 0, 0, 0, NULL, 5, 8, '2026-05-19 17:23:57'),
+(1702, '41fdf12b-eb34-48ac-8b38-f82a3ad25728', 2736, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 6, 6, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1368.00, 0, 0, 0, NULL, 6, 8, '2026-05-19 17:23:57'),
+(1703, '6809c060-312c-4540-9360-ba8eac433f87', 2736, 'MMC0001025', '067982', '1', 6604, '49143501B', '2026-05-19', 'RECV', NULL, 7, 7, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 2, 'Coils', 1368.00, 0, 0, 0, NULL, 7, 8, '2026-05-19 17:23:57'),
+(1704, '41c70634-233b-4ebd-ae07-e7a815b5b723', 1600, 'MMC0001025', '067982', '1', 6604, '49143501A', '2026-05-19', 'RECV', NULL, 8, 8, 'Ken-Mac Metals', 'Coil, .100 X 9.395     VITS', 'R', '2026-05-21', 40000.00, 'LBS', 244, 'traddatz', 1, 'Coils', 1600.00, 0, 0, 0, NULL, 8, 8, '2026-05-19 17:23:57'),
+(1720, '36a8c25b-8ae4-4154-acef-3c7a42a08858', 8130, 'MMC0000434', '069516', '3', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.460', 'R', '2026-05-22', 16000.00, 'LBS', -260, 'traddatz', 1, 'Coils', 8130.00, 0, 0, 0, NULL, 1, 2, '2026-05-19 17:52:56'),
+(1721, 'c9c06973-3448-4190-a5dc-605c6b602361', 8130, 'MMC0000434', '069516', '3', 6604, 'R06476', '2026-05-19', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 24.460', 'R', '2026-05-22', 16000.00, 'LBS', -260, 'traddatz', 1, 'Coils', 8130.00, 0, 0, 0, NULL, 2, 2, '2026-05-19 17:52:56'),
+(1722, '3d295787-58ba-4b0c-98a0-be3da6f1b9b7', 11250, 'MMC0000850', '068202', '2', 6604, '42616530', '2026-05-20', 'RECV', NULL, 1, 1, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-05-22', 156000.00, 'LBS', 25920, 'traddatz', 1, 'Coils', 11250.00, 0, 0, 0, NULL, 1, 4, '2026-05-20 13:26:30'),
+(1723, '8f530c22-fa6c-46cf-8ea2-55172953601e', 11250, 'MMC0000850', '068202', '2', 6604, '42616530', '2026-05-20', 'RECV', NULL, 2, 2, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-05-22', 156000.00, 'LBS', 25920, 'traddatz', 1, 'Coils', 11250.00, 0, 0, 0, NULL, 2, 4, '2026-05-20 13:26:30'),
+(1724, 'c8451e7b-394b-4f07-8b52-31cceb890c47', 11250, 'MMC0000850', '068202', '2', 6604, '42616530', '2026-05-20', 'RECV', NULL, 3, 3, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-05-22', 156000.00, 'LBS', 25920, 'traddatz', 1, 'Coils', 11250.00, 0, 0, 0, NULL, 3, 4, '2026-05-20 13:26:30'),
+(1725, '4626c335-6673-4836-b1a4-4678d4f0649c', 11250, 'MMC0000850', '068202', '2', 6604, '42616530', '2026-05-20', 'RECV', NULL, 4, 4, 'Stern Steel LLC', 'Coil, .312 X 14.330', 'R', '2026-05-22', 156000.00, 'LBS', 25920, 'traddatz', 1, 'Coils', 11250.00, 0, 0, 0, NULL, 4, 4, '2026-05-20 13:26:30'),
+(1726, 'b844585a-1f24-4834-8265-4a92b14ee2c5', 3630, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 1, 10, '2026-05-20 14:25:11'),
+(1727, '7476c6d3-6583-4a37-9370-0f20a47f487e', 3650, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3650.00, 0, 0, 0, NULL, 2, 10, '2026-05-20 14:25:11'),
+(1728, 'd7042708-bc27-4e9e-bb0a-de3fcb945f19', 3630, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 3, 10, '2026-05-20 14:25:11'),
+(1729, '31ce9a5e-1f92-472b-8feb-46e922566ac5', 3630, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 4, 4, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 4, 10, '2026-05-20 14:25:11'),
+(1730, '442de0f0-a0f2-4bff-9324-be8b301df0a2', 3630, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 5, 5, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 5, 10, '2026-05-20 14:25:11'),
+(1731, '81e902a0-ff00-44e6-a8cf-03a30849857c', 3630, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 6, 6, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3630.00, 0, 0, 0, NULL, 6, 10, '2026-05-20 14:25:11'),
+(1732, '8452d06f-0351-423c-8279-31838fac1a5f', 3650, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 7, 7, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3650.00, 0, 0, 0, NULL, 7, 10, '2026-05-20 14:25:11'),
+(1733, 'f93fa567-eb1c-4171-bfce-3561d99f50a4', 3650, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 8, 8, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3650.00, 0, 0, 0, NULL, 8, 10, '2026-05-20 14:25:11'),
+(1734, 'ed8c7d16-3199-4bcd-a65e-ede379af423f', 3650, 'MMC0000056', '069297', '1', 6604, '669473', '2026-05-20', 'RECV', NULL, 9, 9, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 3650.00, 0, 0, 0, NULL, 9, 10, '2026-05-20 14:25:11'),
+(1735, 'b6fb755e-f4ab-4342-87d5-e4f280904068', 6150, 'MMC0000056', '069297', '1', 6604, '559896', '2026-05-20', 'RECV', NULL, 10, 10, 'Dalco Metals, Inc.', 'Coil, 16Ga X 13.860 ', 'R', '2026-05-29', 38000.00, 'LBS', -900, 'traddatz', 1, 'Coils', 6150.00, 0, 0, 0, NULL, 10, 10, '2026-05-20 14:25:11'),
+(1736, 'b1a191f6-0fd0-4a33-8529-fbe649be5309', 1720, 'MMC0000431', '069516', '4', 6604, '650221', '2026-05-20', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 3.937', 'R', '2026-05-22', 1250.00, 'LBS', -470, 'traddatz', 2, 'Coils', 860.00, 0, 0, 0, NULL, 1, 1, '2026-05-20 14:28:35'),
+(1737, 'e97b47d2-f9ef-446e-bdee-30fa5ea878d3', 1800, 'MMC0000428', '069516', '6', 6604, '650221', '2026-05-20', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 8.250', 'R', '2026-05-22', 1650.00, 'LBS', -150, 'traddatz', 1, 'Coils', 1800.00, 0, 0, 0, NULL, 1, 1, '2026-05-20 14:29:20'),
+(1738, 'e9a628fb-ed35-492f-bed6-cdeadfee4e24', 2090, 'MMCSR00005', '069505', '1', 6604, '338016', '2026-05-20', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 11Ga (.118) X 9.500', 'C', '2026-05-22', 2000.00, 'LBS', -90, 'traddatz', 1, 'Coils', 2090.00, 0, 1, 1, 'Coil Material - Quality Hold Required', 1, 1, '2026-05-20 14:43:55'),
+(1739, '7fad6c23-8e02-4c82-9651-72df2c8e79c9', 78, 'MMC0000210', '069105', '1', 6604, 'RAR1EA', '2026-05-20', 'RECV', NULL, 1, 1, 'Copper & Brass Sales', 'Coil, .032 X .750', 'C', '2026-06-12', 70.00, 'LBS', -8, 'traddatz', 1, 'Coils', 78.00, 0, 0, 0, NULL, 1, 1, '2026-05-20 14:46:30'),
+(1751, '4eb2f5b7-942b-456b-b3be-f0646945b57e', 1916, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1916.00, 0, 0, 0, NULL, 1, 17, '2026-05-20 19:15:48'),
+(1752, '8c311809-cf83-48f8-b63d-eb8fbd4bdcf5', 1873, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1873.00, 0, 0, 0, NULL, 2, 17, '2026-05-20 19:15:48'),
+(1753, 'c2c44c46-b8e9-4a72-9d75-0623b73d1de5', 1833, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1833.00, 0, 0, 0, NULL, 3, 17, '2026-05-20 19:15:48'),
+(1754, 'aef44254-e74a-4324-af1d-cf23cbde900f', 1871, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1871.00, 0, 0, 0, NULL, 4, 17, '2026-05-20 19:15:48'),
+(1755, 'f4583664-13c4-4859-bd81-6e4d0e5931e7', 1888, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1888.00, 0, 0, 0, NULL, 5, 17, '2026-05-20 19:15:48'),
+(1756, '8ffaa1c7-de28-451d-8302-74e44b84ce76', 1995, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1995.00, 0, 0, 0, NULL, 6, 17, '2026-05-20 19:15:48'),
+(1757, '06e9da35-aa3d-428f-94b1-a9df2e4cc3f7', 1812, 'MMC0000659', '069419', '5', 6604, '33614', '2026-05-20', 'RECV', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1812.00, 0, 0, 0, NULL, 7, 17, '2026-05-20 19:15:48'),
+(1758, 'facd136e-370d-49fd-8b42-a8e4a1446060', 1984, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1984.00, 0, 0, 0, NULL, 8, 17, '2026-05-20 19:15:48'),
+(1759, 'e218533b-be11-4b69-a86b-39ff01a2dc0a', 1916, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 9, 9, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1916.00, 0, 0, 0, NULL, 9, 17, '2026-05-20 19:15:48'),
+(1760, '9229385e-3ade-4fbf-b398-551c82dc802e', 2012, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 10, 10, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 2012.00, 0, 0, 0, NULL, 10, 17, '2026-05-20 19:15:48'),
+(1761, 'f7d22b1c-611f-4367-b922-73db3625c280', 1894, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 11, 11, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1894.00, 0, 0, 0, NULL, 11, 17, '2026-05-20 19:15:48'),
+(1762, '6b9327d4-5ab1-49d1-93fa-19ee0b51f1c6', 1959, 'MMC0000659', '069419', '5', 6604, '33614', '2026-05-20', 'RECV', NULL, 12, 12, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1959.00, 0, 0, 0, NULL, 12, 17, '2026-05-20 19:15:48'),
+(1763, 'a4a9fc96-23a5-49ed-837b-450c63a833bd', 1933, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 13, 13, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1933.00, 0, 0, 0, NULL, 13, 17, '2026-05-20 19:15:48'),
+(1764, 'eed630fa-d7e1-46b1-8f11-7718d1b3b89c', 1904, 'MMC0000659', '069419', '5', 6604, '33618', '2026-05-20', 'RECV', NULL, 14, 14, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 1904.00, 0, 0, 0, NULL, 14, 17, '2026-05-20 19:15:48'),
+(1765, 'dafbe8a1-628f-4c81-a242-9c7f0de1fb24', 3232, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 15, 15, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 3232.00, 0, 0, 0, NULL, 15, 17, '2026-05-20 19:15:48'),
+(1766, '4a6f045d-8cc8-49a4-9281-6a3f920136aa', 3093, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 16, 16, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 3093.00, 0, 0, 0, NULL, 16, 17, '2026-05-20 19:15:48'),
+(1767, '28d987bd-7e3b-4a8f-94fe-ed7656353eff', 3683, 'MMC0000659', '069419', '5', 6604, '33617', '2026-05-20', 'RECV', NULL, 17, 17, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-06-30', 300000.00, 'LBS', 263202, 'traddatz', 1, 'Coils', 3683.00, 0, 0, 0, NULL, 17, 17, '2026-05-20 19:15:48'),
+(1782, '50f61df9-035a-4f8c-ab2c-ad57692844de', 11180, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-21', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 29380, 'traddatz', 1, 'Coils', 11180.00, 0, 0, 0, NULL, 1, 3, '2026-05-21 10:05:16'),
+(1783, '8d15d097-ebf8-4b6e-910b-fbc03782e461', 11360, 'MMC0000652', '067973', '1', 6604, '669473', '2026-05-21', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 29380, 'traddatz', 1, 'Coils', 11360.00, 0, 0, 0, NULL, 2, 3, '2026-05-21 10:05:16'),
+(1784, '59726c6b-78d5-439f-8b82-5178448bdfb3', 11280, 'MMC0000652', '067973', '1', 6604, '669477', '2026-05-21', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 29380, 'traddatz', 1, 'Coils', 11280.00, 0, 0, 0, NULL, 3, 3, '2026-05-21 10:05:16'),
+(1785, '6d0911c5-0df9-4c28-886e-78884e12f755', 1614, 'MMC0000366', '069419', '4', 6604, '33617', '2026-05-21', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 35203, 'traddatz', 1, 'Coils', 1614.00, 0, 0, 0, NULL, 1, 2, '2026-05-21 10:07:50'),
+(1786, 'f2bdde9a-429a-48e3-93d7-87fd0be2ae4d', 3183, 'MMC0000366', '069419', '4', 6604, '33617', '2026-05-21', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 35203, 'traddatz', 2, 'Coils', 1592.00, 0, 0, 0, NULL, 2, 2, '2026-05-21 10:07:50'),
+(1787, 'd5d40afe-89df-4775-b74a-9977a27d6863', 2817, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2817.00, 0, 0, 0, NULL, 1, 13, '2026-05-21 10:09:33'),
+(1788, 'eaa2bd8d-52e9-489d-bd7f-0f077bcb1eb4', 2785, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2785.00, 0, 0, 0, NULL, 2, 13, '2026-05-21 10:09:33'),
+(1789, '953c1e6a-d01a-46c0-aaa9-3cf28a8e4021', 2699, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2699.00, 0, 0, 0, NULL, 3, 13, '2026-05-21 10:09:33'),
+(1790, '769eae6b-1603-432c-8933-0e2dafe090c1', 2918, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2918.00, 0, 0, 0, NULL, 4, 13, '2026-05-21 10:09:33'),
+(1791, 'c35a49b9-576e-4431-9d76-b4f019544e06', 2764, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2764.00, 0, 0, 0, NULL, 5, 13, '2026-05-21 10:09:33'),
+(1792, '5f098cce-46bd-4d86-b481-184c22255e1a', 3047, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 3047.00, 0, 0, 0, NULL, 6, 13, '2026-05-21 10:09:33'),
+(1793, 'd6a2bd2f-613b-469d-a7f4-3f1d69e7a450', 2933, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2933.00, 0, 0, 0, NULL, 7, 13, '2026-05-21 10:09:33'),
+(1794, '4722953a-ef1f-402d-b173-0690d6f7ad49', 2907, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 8, 8, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2907.00, 0, 0, 0, NULL, 8, 13, '2026-05-21 10:09:33'),
+(1795, '9776d2a6-8d47-4409-8038-43fef37d7b00', 2815, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 9, 9, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2815.00, 0, 0, 0, NULL, 9, 13, '2026-05-21 10:09:33'),
+(1796, 'da49f3e9-9156-416e-a4b1-09d01b02729b', 2862, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 10, 10, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2862.00, 0, 0, 0, NULL, 10, 13, '2026-05-21 10:09:33'),
+(1797, '1b31f1a1-6f7c-417d-8330-0a882b0813a3', 2834, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 11, 11, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2834.00, 0, 0, 0, NULL, 11, 13, '2026-05-21 10:09:33'),
+(1798, '094fbcaf-844a-41b4-8f4b-4a17a8f4f70c', 2761, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 12, 12, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2761.00, 0, 0, 0, NULL, 12, 13, '2026-05-21 10:09:33'),
+(1799, '202aff7e-4b58-4636-a362-60595b800348', 2793, 'MMC0000364', '069419', '1', 6604, '33617', '2026-05-21', 'RECV', NULL, 13, 13, 'Skana Aluminum Company', 'Coil, .074 X 25.612', 'R', '2026-06-06', 60000.00, 'LBS', 23065, 'traddatz', 1, 'Coils', 2793.00, 0, 0, 0, NULL, 13, 13, '2026-05-21 10:09:33'),
+(1800, '32c1ceab-35ea-42c1-a658-eaeb4a5feebb', 7850, 'MMC0000659', '068394', '1', 6604, '25T21328', '2026-05-21', 'RECV', NULL, 1, 1, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-05-15', 16350.00, 'LBS', 0, 'traddatz', 1, 'Coils', 7850.00, 0, 0, 0, NULL, 1, 2, '2026-05-21 10:14:14'),
+(1801, '39771213-3fcd-442b-800a-b9657e8ecf06', 8500, 'MMC0000659', '068394', '1', 6604, '25T21328', '2026-05-21', 'RECV', NULL, 2, 2, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-05-15', 16350.00, 'LBS', 0, 'traddatz', 1, 'Coils', 8500.00, 0, 0, 0, NULL, 2, 2, '2026-05-21 10:14:14'),
+(1802, 'eb701ee0-99bc-4e78-8c18-fa937ccbbd67', 6970, 'MMC0000659', '068394', '2', 6604, '26T20332', '2026-05-21', 'RECV', NULL, 1, 1, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-06-12', 27550.00, 'LBS', -30, 'traddatz', 1, 'Coils', 6970.00, 0, 0, 0, NULL, 1, 3, '2026-05-21 10:24:26'),
+(1803, '6786bfc0-4782-4749-8b84-df6f33d02562', 6640, 'MMC0000659', '068394', '2', 6604, '26T20332', '2026-05-21', 'RECV', NULL, 2, 2, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-06-12', 27550.00, 'LBS', -30, 'traddatz', 1, 'Coils', 6640.00, 0, 0, 0, NULL, 2, 3, '2026-05-21 10:24:26'),
+(1804, '55d31a6a-d540-448e-b608-f52939dcd7db', 6970, 'MMC0000659', '068394', '2', 6604, '26T20332', '2026-05-21', 'RECV', NULL, 3, 3, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-06-12', 27550.00, 'LBS', -30, 'traddatz', 1, 'Coils', 6970.00, 0, 0, 0, NULL, 3, 3, '2026-05-21 10:24:26'),
+(1805, '76c175d0-6aac-47fb-9330-0aae267c9f28', 6970, 'MMC0000659', '068394', '2', 6604, '26T20332', '2026-05-21', 'RECV', NULL, 1, 1, 'Basic Metals Inc', 'Coil, .054 X 34.000', 'C', '2026-06-12', 27550.00, 'LBS', 0, 'traddatz', 1, 'Coils', 6970.00, 0, 0, 0, NULL, 1, 1, '2026-05-21 10:50:00'),
+(1813, 'ef64f63e-5da0-4b1f-9340-87a090faebfb', 9, '24764526', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'V-WC', 0, 1, 1, '', 'P-Build, Heat Shiel SCR TM13', '', NULL, 0.00, 'EA', 0, 'jkoll', 1, 'Skids', 9.00, 1, 0, 0, '', 1, 1, '2026-05-19 18:25:00'),
+(1814, '4f94b156-033b-471a-a577-c93441e79bb1', 61, 'RCA05', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-19', 'V-WC', 0, 1, 1, '', 'Tote (Pool) - 12.00 x 7.00 x 5.00', '', NULL, 0.00, 'EA', 0, 'jkoll', 1, 'Totes', 61.00, 1, 0, 0, '', 1, 1, '2026-05-19 20:35:58'),
+(1815, 'bf819334-2fe0-425e-980e-471fb83d17cb', 193, 'RMSAEB1S0125-023', 'Return to Inventory', 'N/A', 6229, 'NOTHING ENTERED', '2026-05-21', 'DD-H0-00', NULL, 1, 1, NULL, 'Circle Blank, .125 X 28.200  FOR VITS', NULL, NULL, 0.00, 'LBS', 0, 'jkoll', 27, 'Blanks', 8.00, 1, 0, 0, NULL, 1, 1, '2026-05-21 13:21:07'),
+(1816, '61fb8f89-bcea-4fb0-a126-eef6ce5a086f', 3820, 'MMC0000848', '068493', '3', 6604, '337670', '2026-05-21', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 3680, 'traddatz', 2, 'Coils', 1910.00, 0, 0, 0, NULL, 1, 5, '2026-05-21 17:45:17'),
+(1817, 'fc7dad7a-7497-458e-9264-49ab383a6850', 3770, 'MMC0000848', '068493', '3', 6604, '337670', '2026-05-21', 'RECV', NULL, 2, 2, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 3680, 'traddatz', 2, 'Coils', 1885.00, 0, 0, 0, NULL, 2, 5, '2026-05-21 17:45:17'),
+(1818, '8b1a3550-33d9-4ea7-b44e-939c5afa330f', 3760, 'MMC0000848', '068493', '3', 6604, '337670', '2026-05-21', 'RECV', NULL, 3, 3, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 3680, 'traddatz', 2, 'Coils', 1880.00, 0, 0, 0, NULL, 3, 5, '2026-05-21 17:45:17'),
+(1819, '73705524-64b2-4d41-b5c9-4818e2c50091', 3400, 'MMC0000848', '068493', '3', 6604, '338747', '2026-05-21', 'RECV', NULL, 4, 4, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 3680, 'traddatz', 2, 'Coils', 1700.00, 0, 0, 0, NULL, 4, 5, '2026-05-21 17:45:17'),
+(1820, '68ba85b3-ec03-4e10-abd1-a26d5fd5d32a', 3380, 'MMC0000848', '068493', '3', 6604, '338747', '2026-05-21', 'RECV', NULL, 5, 5, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 3680, 'traddatz', 2, 'Coils', 1690.00, 0, 0, 0, NULL, 5, 5, '2026-05-21 17:45:17'),
+(1821, '47888c64-360a-4979-a558-e6dbc5d42764', 3340, 'MMC0000848', '068493', '3', 6604, '338747', '2026-05-21', 'RECV', NULL, 1, 1, 'MST Steel Corporation', 'Coil, 11Ga X 6.750', 'R', '2026-05-25', 55000.00, 'LBS', 340, 'traddatz', 2, 'Coils', 1670.00, 0, 0, 0, NULL, 1, 1, '2026-05-21 19:18:23'),
+(1822, 'eafcd4f5-7179-4800-a72b-9565a4f6cb68', 7320, 'MMC0000887', '068927', '1', 6604, 'SQ5213', '2026-05-22', 'RECV', NULL, 1, 1, 'Jemison Metals LLC', 'Coil, .375 X 10.394', 'R', '2026-12-30', 167000.00, 'LBS', 130400, 'traddatz', 1, 'Coils', 7320.00, 0, 0, 0, NULL, 1, 5, '2026-05-22 12:18:58'),
+(1823, 'dc7a38a7-4460-41fa-888e-d926edd4ec92', 7320, 'MMC0000887', '068927', '1', 6604, 'SQ5213', '2026-05-22', 'RECV', NULL, 2, 2, 'Jemison Metals LLC', 'Coil, .375 X 10.394', 'R', '2026-12-30', 167000.00, 'LBS', 130400, 'traddatz', 1, 'Coils', 7320.00, 0, 0, 0, NULL, 2, 5, '2026-05-22 12:18:58'),
+(1824, 'd04eb5d5-3622-4514-9150-3e213322817d', 7320, 'MMC0000887', '068927', '1', 6604, 'SQ5213', '2026-05-22', 'RECV', NULL, 3, 3, 'Jemison Metals LLC', 'Coil, .375 X 10.394', 'R', '2026-12-30', 167000.00, 'LBS', 130400, 'traddatz', 1, 'Coils', 7320.00, 0, 0, 0, NULL, 3, 5, '2026-05-22 12:18:58'),
+(1825, 'ea303a2a-40e5-432d-9e52-0b028f0ed316', 7320, 'MMC0000887', '068927', '1', 6604, 'SQ5213', '2026-05-22', 'RECV', NULL, 4, 4, 'Jemison Metals LLC', 'Coil, .375 X 10.394', 'R', '2026-12-30', 167000.00, 'LBS', 130400, 'traddatz', 1, 'Coils', 7320.00, 0, 0, 0, NULL, 4, 5, '2026-05-22 12:18:58'),
+(1826, '005f862a-83e7-4275-888f-1c7b3a7ad05b', 7320, 'MMC0000887', '068927', '1', 6604, 'SQ5213', '2026-05-22', 'RECV', NULL, 5, 5, 'Jemison Metals LLC', 'Coil, .375 X 10.394', 'R', '2026-12-30', 167000.00, 'LBS', 130400, 'traddatz', 1, 'Coils', 7320.00, 0, 0, 0, NULL, 5, 5, '2026-05-22 12:18:58'),
+(1827, '1e50e036-3b2c-456c-bc34-e39a8e9e5c4b', 3194, 'MMC0000366', '069419', '4', 6604, '33617', '2026-05-22', 'V-D0-08', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 18982, 'traddatz', 2, 'Coils', 1597.00, 0, 0, 0, NULL, 1, 5, '2026-05-22 13:44:40'),
+(1828, 'cc58ad02-0534-4507-8c46-d066cbe7ce18', 3260, 'MMC0000366', '069419', '4', 6604, 'NOTHING ENTERED', '2026-05-22', 'V-D0-08', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 18982, 'traddatz', 2, 'Coils', 1630.00, 0, 0, 0, NULL, 2, 5, '2026-05-22 13:44:40'),
+(1829, '37484036-1846-4630-8c40-70318658c0bb', 3251, 'MMC0000366', '069419', '4', 6604, 'NOTHING ENTERED', '2026-05-22', 'V-D0-08', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 18982, 'traddatz', 2, 'Coils', 1626.00, 0, 0, 0, NULL, 3, 5, '2026-05-22 13:44:40'),
+(1830, '8b8d5263-7dae-4c3f-9990-be493af7976a', 3128, 'MMC0000366', '069419', '4', 6604, 'NOTHING ENTERED', '2026-05-22', 'V-D0-08', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 18982, 'traddatz', 2, 'Coils', 1564.00, 0, 0, 0, NULL, 4, 5, '2026-05-22 13:44:40'),
+(1831, 'ac29ec34-4258-4bde-baef-bd48cafdccb5', 3388, 'MMC0000366', '069419', '4', 6604, 'NOTHING ENTERED', '2026-05-22', 'V-D0-08', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .074 X 14.562  ', 'R', '2026-06-20', 40000.00, 'LBS', 18982, 'traddatz', 2, 'Coils', 1694.00, 0, 0, 0, NULL, 5, 5, '2026-05-22 13:44:40'),
+(1837, 'f5f6dc70-5614-4d52-9e45-0af0fd242c10', 8870, 'MMC0000384', '069528', '1', 6229, '24301424GC0', '2026-05-22', 'DD-H0-00', NULL, 1, 1, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-05-22', 18000.00, 'LBS', 18000, 'jkoll', 1, 'Coils', 8870.00, 0, 0, 0, NULL, 1, 2, '2026-05-22 15:29:19'),
+(1838, '5816ee3c-9f05-471d-96ca-3c742aac1337', 8870, 'MMC0000384', '069528', '1', 6229, '24301424GC0', '2026-05-22', 'DD-H0-00', NULL, 2, 2, 'Mandel Metals, Inc', 'Coil, .250 X 23.250 - FOR VITS', 'R', '2026-05-22', 18000.00, 'LBS', 18000, 'jkoll', 1, 'Coils', 8870.00, 0, 0, 0, NULL, 2, 2, '2026-05-22 15:29:19'),
+(1840, '6bfe515e-baac-4e1c-b0ad-b63f64490504', 3282, 'MMC0000659', '067737', '1', 6604, '33616', '2026-05-22', 'RECV', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 34.000', 'R', '2026-05-22', 203782.00, 'LBS', 2015, 'traddatz', 1, 'Coils', 3282.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 13:50:31'),
+(1841, '3fb4cd29-0c93-4a98-89eb-3328c040f86d', 3078, 'MMC0000651', '065383', '8', 6604, '33618', '2026-05-22', 'V-F0-01', NULL, 1, 1, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 3078.00, 0, 0, 0, NULL, 1, 7, '2026-05-22 14:16:20'),
+(1842, '5234c60f-9680-49b8-b3ba-5b94e8215541', 2864, 'MMC0000651', '065383', '8', 6604, '33617', '2026-05-22', 'V-F0-01', NULL, 2, 2, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 2864.00, 0, 0, 0, NULL, 2, 7, '2026-05-22 14:16:20'),
+(1843, '481d89a7-3c77-49c8-aa91-f6e2e8c03dc6', 2866, 'MMC0000651', '065383', '8', 6604, '33618', '2026-05-22', 'V-F0-01', NULL, 3, 3, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 2866.00, 0, 0, 0, NULL, 3, 7, '2026-05-22 14:16:20'),
+(1844, 'ace66f0f-a69d-45fc-b9cb-ef58be56ca33', 2786, 'MMC0000651', '065383', '8', 6604, '33618', '2026-05-22', 'V-F0-01', NULL, 4, 4, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 2786.00, 0, 0, 0, NULL, 4, 7, '2026-05-22 14:16:20'),
+(1845, 'afcf94be-98bb-4f45-8d02-424689c3b111', 3210, 'MMC0000651', '065383', '8', 6604, '33618', '2026-05-22', 'V-F0-01', NULL, 5, 5, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 3210.00, 0, 0, 0, NULL, 5, 7, '2026-05-22 14:16:20'),
+(1846, '4c6ca897-5291-4502-9f39-56aa168c0519', 3186, 'MMC0000651', '065383', '8', 6604, '33617', '2026-05-22', 'V-F0-01', NULL, 6, 6, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 3186.00, 0, 0, 0, NULL, 6, 7, '2026-05-22 14:16:20'),
+(1847, '3c63244b-0371-4db8-ae1f-a694fe166697', 3132, 'MMC0000651', '065383', '8', 6604, '33618', '2026-05-22', 'V-F0-01', NULL, 7, 7, 'Skana Aluminum Company', 'Coil, .054 X 28.650', 'R', '2026-05-14', 30000.00, 'LBS', 8878, 'traddatz', 1, 'Coils', 3132.00, 0, 0, 0, NULL, 7, 7, '2026-05-22 14:16:20'),
+(1855, '746e85f5-820f-4a06-a38e-48aca8b61cf0', 4466, 'MMF0008031', '069546', '1', 6604, 'AB9344', '2026-05-22', 'T-00', NULL, 1, 1, 'Ryerson', 'Sheet, .313 X 60.000 X 120.000', 'R', '2026-05-22', 9570.00, 'LBS', 5104, 'traddatz', 7, 'Sheets', 638.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 16:40:38'),
+(1856, '72d352e7-43dd-4712-a74e-471b759ccfbd', 2552, 'MMF0008031', '069546', '1', 6604, 'AB9344', '2026-05-22', 'T-00', NULL, 1, 1, 'Ryerson', 'Sheet, .313 X 60.000 X 120.000', 'R', '2026-05-22', 9570.00, 'LBS', 2552, 'traddatz', 4, 'Sheets', 638.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 16:42:48'),
+(1857, '2af23f63-dedc-4b4d-b2f0-a793045d8b17', 2552, 'MMF0008031', '069546', '1', 6604, 'AB9344', '2026-05-22', 'T-00', NULL, 1, 1, 'Ryerson', 'Sheet, .313 X 60.000 X 120.000', 'C', '2026-05-22', 9570.00, 'LBS', 0, 'traddatz', 4, 'Sheets', 638.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 16:44:17'),
+(1858, '0cc515d2-8d42-426b-9879-6fabb589abcf', 11420, 'MMC0000652', '067973', '1', 6604, '669477', '2026-05-22', 'V-C0-02', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 6560, 'traddatz', 1, 'Coils', 11420.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 18:01:08'),
+(1859, 'c7e99f30-651b-48da-8d7f-81440afab129', 11400, 'MMC0000652', '067973', '1', 6604, '669477', '2026-05-22', 'V-C0-05', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 48.200', 'R', '2026-05-29', 270000.00, 'LBS', 6560, 'traddatz', 1, 'Coils', 11400.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 18:02:36'),
+(1860, 'db573567-e85a-4667-b6a3-91e23a275cd1', 1665, 'MMF0005808', '069719', '1', 6604, '548041', '2026-05-22', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Sheet, 8Ga X 48.000 x 120.000', 'C', '2026-05-21', 1500.00, 'LBS', -165, 'traddatz', 6, 'Sheets', 278.00, 0, 0, 0, NULL, 1, 1, '2026-05-22 18:07:44'),
+(1861, 'e90d382e-f785-4bf9-a566-d131adaa0d8d', 6220, 'MMC0000430', '069516', '5', 6604, '650221', '2026-05-22', 'RECV', NULL, 1, 1, 'Dalco Metals, Inc.', 'Coil, 16Ga X 10.185', 'R', '2026-05-22', 16250.00, 'LBS', -390, 'traddatz', 2, 'Coils', 3110.00, 0, 0, 0, NULL, 1, 3, '2026-05-22 18:10:13'),
+(1862, 'f416db83-050f-4d7e-8809-4147764c6d12', 5960, 'MMC0000430', '069516', '5', 6604, '650221', '2026-05-22', 'RECV', NULL, 2, 2, 'Dalco Metals, Inc.', 'Coil, 16Ga X 10.185', 'R', '2026-05-22', 16250.00, 'LBS', -390, 'traddatz', 2, 'Coils', 2980.00, 0, 0, 0, NULL, 2, 3, '2026-05-22 18:10:13'),
+(1863, '8e2dbd42-ba0f-4203-8ebb-0a2602424248', 4460, 'MMC0000430', '069516', '5', 6604, '650221', '2026-05-22', 'RECV', NULL, 3, 3, 'Dalco Metals, Inc.', 'Coil, 16Ga X 10.185', 'R', '2026-05-22', 16250.00, 'LBS', -390, 'traddatz', 2, 'Coils', 2230.00, 0, 0, 0, NULL, 3, 3, '2026-05-22 18:10:13');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_label_data`
+--
+
+CREATE TABLE `receiving_label_data` (
+  `id` int(11) NOT NULL COMMENT 'Auto-incrementing unique identifier',
+  `load_id` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'GUID from the ReceivingLoad session object; NULL until the workflow completes',
+  `load_number` int(11) DEFAULT NULL COMMENT 'Sequential load number within the session',
+  `quantity` int(11) NOT NULL COMMENT 'Integer quantity of parts received (rounded from weight/qty)',
+  `weight_quantity` decimal(18,2) DEFAULT NULL COMMENT 'Raw weight or quantity value entered by the operator',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part identifier from Infor Visual',
+  `part_description` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part description sourced from Infor Visual',
+  `part_type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Part type classification (Standard, Coil, etc.)',
+  `po_number` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order number (string-safe for all PO formats)',
+  `po_line_number` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO line number from Infor Visual',
+  `po_vendor` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vendor name from the PO in Infor Visual',
+  `po_status` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'PO status from Infor Visual (Open, Closed, etc.)',
+  `po_due_date` date DEFAULT NULL COMMENT 'PO due date from Infor Visual',
+  `qty_ordered` decimal(18,2) DEFAULT NULL COMMENT 'Quantity ordered on the PO line',
+  `unit_of_measure` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Unit of measure (EA, LB, FT, etc.)',
+  `remaining_quantity` int(11) DEFAULT NULL COMMENT 'Remaining open quantity on the PO line',
+  `employee_number` int(11) NOT NULL DEFAULT '0' COMMENT 'Employee ID who processed the receiving',
+  `user_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Application user identifier',
+  `heat` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Heat/lot number for material traceability',
+  `received_date` datetime DEFAULT NULL COMMENT 'Full timestamp when the record was received',
+  `transaction_date` date NOT NULL COMMENT 'Date portion of the receiving transaction',
+  `initial_location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Initial warehouse location for received parts',
+  `packages_per_load` int(11) DEFAULT NULL COMMENT 'Number of packages per load/skid',
+  `package_type_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Package type description (Skid, Box, Coil, etc.)',
+  `weight_per_package` decimal(18,2) DEFAULT NULL COMMENT 'Weight of each individual package',
+  `coils_on_skid` int(11) DEFAULT NULL COMMENT 'Number of coils on the skid (coil materials only)',
+  `label_number` int(11) NOT NULL DEFAULT '1' COMMENT 'Sequential label number when splitting quantities',
+  `vendor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Vendor name (mirrors po_vendor; used for non-PO items)',
+  `is_non_po_item` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when the part has no PO or was not found in Infor Visual',
+  `is_quality_hold_required` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when the part requires a quality hold acknowledgment',
+  `is_quality_hold_acknowledged` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 when quality hold has been formally acknowledged',
+  `quality_hold_restriction_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Restriction type code from the quality hold check',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
+  `part_skid_sequence` int(11) DEFAULT NULL COMMENT 'Position of this skid among all skids for this part_id in the save batch (e.g. 2)',
+  `part_skid_total` int(11) DEFAULT NULL COMMENT 'Total skids for this part_id in the save batch (e.g. 6 → label reads "N of 6")'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Active receiving label queue - rows are moved to receiving_history when the workflow completes (see sp_Receiving_LabelData_ClearToHistory).';
+
+--
+-- Dumping data for table `receiving_label_data`
+--
+
+INSERT INTO `receiving_label_data` (`id`, `load_id`, `load_number`, `quantity`, `weight_quantity`, `part_id`, `part_description`, `part_type`, `po_number`, `po_line_number`, `po_vendor`, `po_status`, `po_due_date`, `qty_ordered`, `unit_of_measure`, `remaining_quantity`, `employee_number`, `user_id`, `heat`, `received_date`, `transaction_date`, `initial_location`, `packages_per_load`, `package_type_name`, `weight_per_package`, `coils_on_skid`, `label_number`, `vendor_name`, `is_non_po_item`, `is_quality_hold_required`, `is_quality_hold_acknowledged`, `quality_hold_restriction_type`, `created_at`, `part_skid_sequence`, `part_skid_total`) VALUES
+(299, 'f2fdaeab-2daf-442b-8bd0-949ba4ec4ddb', 1, 3628, 3628.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:57:08', '2026-05-22', 'V-F0-03', 1, 'Coils', 3628.00, NULL, 1, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:57:48', 1, 4),
+(300, '0bae2867-14db-439f-a311-0461418571d0', 2, 4260, 4260.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:57:08', '2026-05-22', 'V-F0-03', 1, 'Coils', 4260.00, NULL, 2, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:57:48', 2, 4),
+(301, 'e95f9205-2a7f-4f9b-9c16-d5a7d05f4346', 3, 4152, 4152.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:57:08', '2026-05-22', 'V-F0-03', 1, 'Coils', 4152.00, NULL, 3, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:57:48', 3, 4),
+(302, 'c33c6a16-5795-4461-bf6e-a5bc727fd327', 4, 4144, 4144.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:57:08', '2026-05-22', 'V-F0-03', 1, 'Coils', 4144.00, NULL, 4, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:57:48', 4, 4),
+(303, 'e351a324-0f6a-403c-aca7-85a69e89909f', 1, 3554, 3554.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:58:08', '2026-05-22', 'V-F0-08', 1, 'Coils', 3554.00, NULL, 1, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:58:34', 1, 4),
+(304, 'bbc72f8a-5262-4b33-b597-b5afe113168f', 2, 4100, 4100.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:58:08', '2026-05-22', 'V-F0-08', 1, 'Coils', 4100.00, NULL, 2, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:58:34', 2, 4),
+(305, '4464e54a-9fd2-47a8-a327-6939477c401c', 3, 3572, 3572.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:58:08', '2026-05-22', 'V-F0-08', 1, 'Coils', 3572.00, NULL, 3, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:58:34', 3, 4),
+(306, '32c2bdca-2443-46bc-bb18-215d0324fb4c', 4, 3874, 3874.00, 'MMC0000650', 'Coil, .054 X 40.237', 'Coil', '068842', '1', 'Skana Aluminum Company', 'R', '2026-05-16', 48000.00, 'LBS', 16716, 6604, 'traddatz', '33617', '2026-05-22 14:58:08', '2026-05-22', 'V-F0-08', 1, 'Coils', 3874.00, NULL, 4, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 19:58:34', 4, 4),
+(307, '90820df7-f72c-4de3-a0a4-2570fddf7c5c', 1, 3320, 3320.00, 'MMC0000651', 'Coil, .054 X 28.650', 'Coil', '065383', '8', 'Skana Aluminum Company', 'R', '2026-05-14', 30000.00, 'LBS', 5558, 6604, 'traddatz', '33617', '2026-05-22 15:03:27', '2026-05-22', 'V-F0-10', 1, 'Coils', 3320.00, NULL, 1, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:03:43', 1, 1),
+(308, 'bbc604b5-1512-46d5-9252-7f6c72742ec2', 1, 2031, 2031.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 2031.00, NULL, 1, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 1, 19),
+(309, '68ec6c5a-630e-49b3-8192-6e269b604760', 2, 1994, 1994.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1994.00, NULL, 2, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 2, 19),
+(310, '32ce24c7-2cae-4cae-a020-95c1dbab9f5d', 3, 1907, 1907.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1907.00, NULL, 3, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 3, 19),
+(311, '16fbee5a-7add-41c6-9593-0ff0d0a1d655', 4, 1741, 1741.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1741.00, NULL, 4, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 4, 19),
+(312, '863096a6-7016-4474-88d9-3a2ec3e6d0ab', 5, 1853, 1853.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1853.00, NULL, 5, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 5, 19),
+(313, '5346ceee-d69c-4cf4-97bb-86ae58172c2b', 6, 1762, 1762.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1762.00, NULL, 6, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 6, 19),
+(314, 'e0c2691b-2b31-4ad4-9ce8-e928a81a3188', 7, 1926, 1926.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1926.00, NULL, 7, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 7, 19),
+(315, '0c340b4e-4ae7-4353-84a4-9871cc337800', 8, 1934, 1934.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1934.00, NULL, 8, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 8, 19),
+(316, '0c90aa1b-fc04-47f8-b4cd-a67228a012c8', 9, 1982, 1982.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1982.00, NULL, 9, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 9, 19),
+(317, 'a748543b-b77e-4d2b-9434-9553d72fda40', 10, 2095, 2095.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 2095.00, NULL, 10, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 10, 19),
+(318, 'aada33d5-0131-4164-aaf8-d9358b3631d3', 11, 2037, 2037.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 2037.00, NULL, 11, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 11, 19),
+(319, 'b0004624-dc8c-432a-b998-a661c5b4fdf1', 12, 2004, 2004.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 2004.00, NULL, 12, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 12, 19),
+(320, '847fc599-cdd3-4dd8-a504-5854c9a78fa5', 13, 1986, 1986.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1986.00, NULL, 13, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 13, 19),
+(321, '24b33c1e-f4ae-44f2-b53d-93e7f66a05c5', 14, 1963, 1963.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1963.00, NULL, 14, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 14, 19),
+(322, 'd2ffc706-6d82-4dec-8d37-4dd6c336ba3b', 15, 1881, 1881.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1881.00, NULL, 15, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 15, 19),
+(323, 'b348f3aa-f884-49cc-851f-49e88265ea64', 16, 2005, 2005.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 2005.00, NULL, 16, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 16, 19),
+(324, 'd01e2c84-6f64-4553-aa8e-122c42137015', 17, 1902, 1902.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1902.00, NULL, 17, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 17, 19),
+(325, '79057f18-087d-48ff-95e1-8b2558a7fb2b', 18, 1964, 1964.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1964.00, NULL, 18, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 18, 19),
+(326, '87d865a4-485b-4d5a-a429-64ddbddecd11', 19, 1928, 1928.00, 'MMC0000659', 'Coil, .054 X 34.000', 'Coil', '069419', '5', 'Skana Aluminum Company', 'R', '2026-06-30', 300000.00, 'LBS', 226307, 6604, 'traddatz', '33617', '2026-05-22 15:08:09', '2026-05-22', 'RECV', 1, 'Coils', 1928.00, NULL, 19, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:09:37', 19, 19),
+(327, '52d56e5f-c812-4861-b832-0dc6b71ca82d', 1, 3220, 3220.00, 'MMC0000651', 'Coil, .054 X 28.650', 'Coil', '065383', '8', 'Skana Aluminum Company', 'R', '2026-05-14', 30000.00, 'LBS', -904, 6604, 'traddatz', '33615', '2026-05-22 15:24:50', '2026-05-22', 'V-F0-10', 1, 'Coils', 3220.00, NULL, 1, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:25:16', 1, 2),
+(328, '6e600409-7efb-4d43-bb93-b374aa2dbdad', 2, 3242, 3242.00, 'MMC0000651', 'Coil, .054 X 28.650', 'Coil', '065383', '8', 'Skana Aluminum Company', 'R', '2026-05-14', 30000.00, 'LBS', -904, 6604, 'traddatz', '33615', '2026-05-22 15:24:50', '2026-05-22', 'V-F0-10', 1, 'Coils', 3242.00, NULL, 2, 'Skana Aluminum Company', 0, 0, 0, NULL, '2026-05-22 20:25:16', 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_non_po_entries`
+--
+
+CREATE TABLE `receiving_non_po_entries` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `use_count` int(10) UNSIGNED NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Saved non-PO reference reasons for receiving';
+
+--
+-- Dumping data for table `receiving_non_po_entries`
+--
+
+INSERT INTO `receiving_non_po_entries` (`id`, `value`, `created_by`, `created_at`, `use_count`) VALUES
+(1, 'Customer Supplied', 'jkoll', '2026-04-29 15:09:52', 5),
+(2, 'Return to Inventory', 'jkoll', '2026-05-19 11:33:54', 8);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_non_po_part_defaults`
+--
+
+CREATE TABLE `receiving_non_po_part_defaults` (
+  `part_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Per-part default non-PO references for receiving';
+
+--
+-- Dumping data for table `receiving_non_po_part_defaults`
+--
+
+INSERT INTO `receiving_non_po_part_defaults` (`part_id`, `value`, `updated_by`, `updated_at`) VALUES
+('2408903', 'Return to Inventory', 'jkoll', '2026-05-19 11:47:17'),
+('24764526', 'Return to Inventory', 'jkoll', '2026-05-19 13:25:16'),
+('GM107144-05', 'Return to Inventory', 'jkoll', '2026-05-19 11:36:28'),
+('GM107144-07', 'Return to Inventory', 'jkoll', '2026-05-19 11:33:54'),
+('GM107144-08', 'Return to Inventory', 'jkoll', '2026-05-19 11:35:09'),
+('RCA05', 'Customer Supplied', 'traddatz', '2026-05-14 08:07:25'),
+('RCG25', 'Customer Supplied', 'jkoll', '2026-04-29 15:13:46'),
+('RCK34', 'Customer Supplied', 'jkoll', '2026-04-29 15:13:16'),
+('RMSAEB1S0125-023', 'Return to Inventory', 'jkoll', '2026-05-21 08:21:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_package_types`
+--
+
+CREATE TABLE `receiving_package_types` (
+  `PreferenceID` int(11) NOT NULL COMMENT 'Unique identifier for each package type preference',
+  `PartID` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part identifier from Infor Visual (unique constraint ensures one preference per part)',
+  `PackageTypeName` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Selected package type (Box, Pallet, Custom, etc.)',
+  `CustomTypeName` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User-defined custom package type name when PackageTypeName is "Custom"',
+  `LastModified` datetime NOT NULL COMMENT 'Timestamp of last preference update'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User-defined package type preferences mapped to part IDs for receiving workflow';
+
+--
+-- Dumping data for table `receiving_package_types`
+--
+
+INSERT INTO `receiving_package_types` (`PreferenceID`, `PartID`, `PackageTypeName`, `CustomTypeName`, `LastModified`) VALUES
+(1, '7504736', 'Boxes', 'Boxes', '2026-04-08 11:20:16'),
+(2, 'MMF0000138', 'Boxes', 'Boxes', '2026-04-09 09:50:06'),
+(10, 'FHA-M3-15', 'Boxes', 'Boxes', '2026-04-09 12:59:02'),
+(12, '23-11669-100', 'Boxes', 'Boxes', '2026-04-14 07:16:24'),
+(13, '25086398', 'Boxes', 'Boxes', '2026-04-16 11:17:26'),
+(19, '963093', 'Boxes', 'Boxes', '2026-04-17 14:02:05'),
+(20, 'HS3 3816', 'Boxes', 'Boxes', '2026-04-21 12:49:17'),
+(21, '2446820', 'Boxes', 'Boxes', '2026-04-22 10:24:23'),
+(22, '25086399', 'Boxes', 'Boxes', '2026-04-23 09:16:44'),
+(23, '2411227', 'Boxes', 'Boxes', '2026-04-23 09:17:43'),
+(26, 'UC25546', 'Boxes', 'Boxes', '2026-04-28 11:28:51'),
+(27, '410030073', 'Boxes', 'Boxes', '2026-04-28 14:16:31'),
+(33, '23-10721-100', 'Boxes', 'Boxes', '2026-04-28 14:27:53'),
+(34, 'S2BA0018A', 'Boxes', 'Boxes', '2026-04-28 14:29:22'),
+(35, '23-14200-045', 'Boxes', 'Boxes', '2026-04-29 11:58:59'),
+(38, 'RCK34', 'Crates', 'Crates', '2026-04-29 15:13:12'),
+(39, '2446801', 'Boxes', 'Boxes', '2026-04-30 10:25:27'),
+(41, '23-09901-106', 'Boxes', 'Boxes', '2026-04-30 13:25:34'),
+(48, '407150146', 'Boxes', 'Boxes', '2026-04-30 14:35:16'),
+(49, '23-12742-000', 'Boxes', 'Boxes', '2026-05-04 08:32:39'),
+(50, 'M-547050', 'Boxes', 'Boxes', '2026-05-05 12:21:16'),
+(51, 'MMC0000576', 'Coils', NULL, '2026-05-07 07:19:08'),
+(52, 'MMC0000153', 'Coils', NULL, '2026-05-07 07:23:08'),
+(53, 'GM107144-07', 'Boxes', 'Boxes', '2026-05-07 10:22:06'),
+(54, '807217', 'Boxes', 'Boxes', '2026-05-07 11:35:46'),
+(55, '24361938', 'Box', 'Box', '2026-05-08 14:27:39'),
+(56, '17409649', 'Box', 'Box', '2026-05-11 11:43:39'),
+(58, 'CH420-10DPGM', 'Boxes', 'Boxes', '2026-05-11 13:17:15'),
+(60, 'C420-1-GM', 'Boxes', 'Boxes', '2026-05-11 13:22:11'),
+(61, 'SS-M5-2ZI', 'Box', 'Box', '2026-05-12 09:36:13'),
+(62, '965499', 'Box', 'Box', '2026-05-12 10:08:59'),
+(63, '23-12631-791', 'Boxes', 'Boxes', '2026-05-13 15:07:23'),
+(64, 'HFHS-M8-20', 'Box', 'Box', '2026-05-14 06:39:47'),
+(65, 'RCA05', 'Totes', 'Totes', '2026-05-19 15:36:21'),
+(66, 'RMSAEB1S0125-023', 'Blanks', 'Blanks', '2026-05-14 14:45:23'),
+(77, '23-12729-008', 'Box', 'Box', '2026-05-15 05:21:15'),
+(78, 'RN3316', 'Box', 'Box', '2026-05-15 05:38:37'),
+(79, '23-12742-002', 'Box', 'Box', '2026-05-15 06:30:04'),
+(80, '23-10721-125', 'Box', 'Box', '2026-05-15 06:31:49'),
+(81, '990941', 'Box', 'Box', '2026-05-15 07:25:36'),
+(82, '08037424001', 'Boxes', 'Boxes', '2026-05-19 08:54:30'),
+(83, 'GM107144-08', 'Boxes', 'Boxes', '2026-05-19 11:35:02'),
+(84, 'GM107144-05', 'Boxes', 'Boxes', '2026-05-19 11:36:25'),
+(85, '2408903', 'Boxes', 'Boxes', '2026-05-19 11:47:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_package_type_mapping`
+--
+
+CREATE TABLE `receiving_package_type_mapping` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for mapping record',
+  `part_prefix` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part number prefix (e.g., MCC, MMF)',
+  `package_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Package type label (e.g., Coils, Sheets, Skids)',
+  `is_default` tinyint(1) DEFAULT '0' COMMENT 'If true, used when no prefix matches (fallback)',
+  `display_order` int(11) DEFAULT '0' COMMENT 'Sort order for display and selection precedence',
+  `is_active` tinyint(1) DEFAULT '1' COMMENT 'Whether this mapping is active (soft-delete flag)',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when record was last updated',
+  `created_by` int(11) DEFAULT NULL COMMENT 'FK toauth_users table (nullable)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Part prefix to package type mappings for receiving workflow';
+
+--
+-- Dumping data for table `receiving_package_type_mapping`
+--
+
+INSERT INTO `receiving_package_type_mapping` (`id`, `part_prefix`, `package_type`, `is_default`, `display_order`, `is_active`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 'MCC', 'Coils', 0, 1, 1, '2026-04-07 07:12:00', '2026-04-07 07:12:00', NULL),
+(2, 'MMF', 'Sheets', 0, 2, 1, '2026-04-07 07:12:00', '2026-04-07 07:12:00', NULL),
+(3, 'DEFAULT', 'Skids', 1, 99, 1, '2026-04-07 07:12:00', '2026-04-07 07:12:00', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `receiving_quality_holds`
+--
+
+CREATE TABLE `receiving_quality_holds` (
+  `quality_hold_id` int(11) NOT NULL COMMENT 'Unique quality hold identifier',
+  `load_id` int(11) NOT NULL COMMENT 'Reference to receiving load',
+  `part_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Restricted part number (e.g., MMFSR05645)',
+  `restriction_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Type of restriction (MMFSR, MMCSR)',
+  `quality_acknowledged_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Quality person who acknowledged the hold',
+  `quality_acknowledged_at` datetime DEFAULT NULL COMMENT 'Timestamp when quality acknowledged',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tracks quality holds for restricted part numbers requiring immediate quality review';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reporting_scheduled_reports`
+--
+
+CREATE TABLE `reporting_scheduled_reports` (
+  `id` int(11) NOT NULL COMMENT 'Primary key: unique scheduled report identifier',
+  `report_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Report name/type',
+  `schedule` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Schedule string (e.g., Daily at 8:00 AM)',
+  `email_recipients` text COLLATE utf8mb4_unicode_ci COMMENT 'Comma-separated email list of recipients',
+  `is_active` tinyint(1) DEFAULT '1' COMMENT 'Whether this scheduled report is active/enabled',
+  `next_run_date` datetime DEFAULT NULL COMMENT 'Calculated next run time for the schedule',
+  `last_run_date` datetime DEFAULT NULL COMMENT 'Last execution timestamp of the report',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record last updated timestamp',
+  `created_by` int(11) DEFAULT NULL COMMENT 'FK toauth_users table who created this schedule'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Scheduled report configurations for reporting module';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_activity`
+--
+
+CREATE TABLE `settings_activity` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for the audit record',
+  `scope` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Setting scope: System or User',
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Settings category (matches settings_universal.category)',
+  `setting_key` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Setting key (matches settings_universal.setting_key)',
+  `old_value` text COLLATE utf8mb4_unicode_ci COMMENT 'Previous value before the change',
+  `new_value` text COLLATE utf8mb4_unicode_ci COMMENT 'New value after the change',
+  `change_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'update' COMMENT 'Nature of the change: create, update, delete, lock, unlock, reset, DefaultApplied',
+  `user_id` int(11) DEFAULT NULL COMMENT 'ID of the user who performed the change (0 or NULL for system actions)',
+  `changed_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username of the user or system account that made the change',
+  `changed_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'When the change occurred',
+  `ip_address` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'IP address of the client performing the change',
+  `workstation` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Client workstation or host name where change originated'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Audit trail for all settings changes';
+
+--
+-- Dumping data for table `settings_activity`
+--
+
+INSERT INTO `settings_activity` (`id`, `scope`, `category`, `setting_key`, `old_value`, `new_value`, `change_type`, `user_id`, `changed_by`, `changed_at`, `ip_address`, `workstation`) VALUES
+(1, 'User', 'User', 'Core.UI.CompactMode', '', 'false', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:05', '', 'MTMFG-101'),
+(2, 'User', 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', '', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:05', '', 'MTMFG-101'),
+(3, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'true', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:05', '', 'MTMFG-101'),
+(4, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'false', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:05', '', 'MTMFG-101'),
+(5, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'false', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:06', '', 'MTMFG-101'),
+(6, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:06', '', 'MTMFG-101'),
+(7, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 07:34:06', '', 'MTMFG-101'),
+(8, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'ModeSelection', 'Set', 0, 'jkoll', '2026-04-07 07:35:46', '', 'MTMFG-101'),
+(9, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'True', 'Set', 6229, 'jkoll', '2026-04-07 07:35:46', '', 'MTMFG-101'),
+(10, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'False', 'Set', 6229, 'jkoll', '2026-04-07 07:35:46', '', 'MTMFG-101'),
+(11, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-04-07 07:35:46', '', 'MTMFG-101'),
+(12, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-07 07:41:34', '', 'MTMFG-101'),
+(13, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'True', 'Set', 6229, 'jkoll', '2026-04-07 07:41:34', '', 'MTMFG-101'),
+(14, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-07 07:41:35', '', 'MTMFG-101'),
+(15, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-07 07:41:35', '', 'MTMFG-101'),
+(16, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-07 08:32:04', '', 'MTMFG-101'),
+(17, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-04-07 08:32:04', '', 'MTMFG-101'),
+(18, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-07 08:32:04', '', 'MTMFG-101'),
+(19, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-07 08:32:04', '', 'MTMFG-101'),
+(20, 'User', 'User', 'Core.UI.CompactMode', '', 'false', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:29', '', 'MTMFG-FORK-20'),
+(21, 'User', 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', '', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:33', '', 'MTMFG-FORK-20'),
+(22, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'true', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:34', '', 'MTMFG-FORK-20'),
+(23, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'false', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:34', '', 'MTMFG-FORK-20'),
+(24, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'false', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:35', '', 'MTMFG-FORK-20'),
+(25, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:35', '', 'MTMFG-FORK-20'),
+(26, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'DefaultApplied', 6604, 'traddatz', '2026-04-07 10:27:35', '', 'MTMFG-FORK-20'),
+(27, 'User', 'Receiving', 'Receiving.Workflow.DefaultMode', '', 'guided', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 10:58:23', '', 'MTMFG-101'),
+(28, 'User', 'Dunnage', 'Dunnage.Workflow.DefaultMode', '', 'guided', 'DefaultApplied', 6229, 'jkoll', '2026-04-07 10:58:23', '', 'MTMFG-101'),
+(29, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-07 12:05:02', '', 'MTMFG-101'),
+(30, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'True', 'Set', 6229, 'jkoll', '2026-04-07 12:05:02', '', 'MTMFG-101'),
+(31, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-07 12:05:02', '', 'MTMFG-101'),
+(32, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-07 12:05:02', '', 'MTMFG-101'),
+(33, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'Set', 6229, 'jkoll', '2026-04-08 11:57:19', '', 'MTMFG-101'),
+(34, 'System', 'Receiving', 'Receiving.UiText.HeatLot.LoadPrefix', '', 'Load #{0}', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(35, 'System', 'Receiving', 'Receiving.UiText.PoEntry.SwitchToNonPo', '', 'Switch to Non-PO', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(36, 'System', 'Receiving', 'Receiving.UiText.PackageType.SaveAsDefault', '', 'Save as default for this part', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(37, 'System', 'Receiving', 'Receiving.UiText.ModeSelection.ManualDescription', '', 'Customizable grid for bulk data entry and editing.', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(38, 'System', 'Receiving', 'Receiving.UiText.ManualEntry.AutoFill', '', 'Auto-Fill', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(39, 'System', 'Receiving', 'Receiving.UiText.Workflow.ModeSelection', '', 'Mode Selection', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(40, 'System', 'Receiving', 'Receiving.UiText.EditMode.History', '', 'History', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(41, 'System', 'Receiving', 'Receiving.UiText.Review.PurchaseOrderNumber', '', 'Purchase Order Number', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:48:59', '', 'MTMFG-101'),
+(42, 'System', 'Receiving', 'Receiving.UiText.ManualEntry.RemoveRow', '', 'Remove Row', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:07', '', 'MTMFG-101'),
+(43, 'System', 'Receiving', 'Receiving.UiText.PackageType.CustomHeader', '', 'Custom Name', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(44, 'System', 'Receiving', 'Receiving.UiText.PoEntry.LoadPo', '', 'Load PO', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(45, 'System', 'Receiving', 'Receiving.UiText.Review.LoadNumber', '', 'Load Number', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(46, 'System', 'Receiving', 'Receiving.UiText.EditMode.CurrentLabels', '', 'Current Labels', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(47, 'System', 'Receiving', 'Receiving.Accessibility.WeightQuantity.Input', '', 'Weight Quantity', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(48, 'System', 'Receiving', 'Receiving.Accessibility.LoadEntry.NumberOfLoads', '', 'Number of Loads', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(49, 'System', 'Receiving', 'Receiving.UiText.ModeSelection.ManualTitle', '', 'Manual Entry', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(50, 'System', 'Receiving', 'Receiving.UiText.HeatLot.AutoFillTooltip', '', 'Fill blank heat numbers from rows above', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(51, 'System', 'Receiving', 'Receiving.UiText.Workflow.Next', '', 'Next', 'DefaultApplied', 0, 'jkoll', '2026-04-08 16:49:08', '', 'MTMFG-101'),
+(52, 'System', 'Receiving', 'Receiving.UiText.Review.LoadNumber', '', 'Load Number', 'DefaultApplied', 0, 'jkoll', '2026-04-09 22:15:29', '', 'MTMFG-101'),
+(53, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.UiVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'DefaultApplied', 0, 'jkoll', '2026-04-14 22:17:00', '', 'V-MTMFG-5'),
+(54, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'DefaultApplied', 0, 'jkoll', '2026-04-14 22:17:00', '', 'V-MTMFG-5'),
+(55, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', '', 'true', 'DefaultApplied', 0, 'jkoll', '2026-04-14 22:17:00', '', 'V-MTMFG-5'),
+(56, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.UiVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-15 00:03:24', '', 'V-MTMFG-5'),
+(57, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-15 00:03:24', '', 'V-MTMFG-5'),
+(58, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', '', 'true', 'Set', 0, 'jkoll', '2026-04-15 00:03:24', '', 'V-MTMFG-5'),
+(59, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'Set', 6604, 'traddatz', '2026-04-15 07:53:34', '', 'MTMFG-84'),
+(60, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'Set', 6604, 'traddatz', '2026-04-15 07:53:35', '', 'MTMFG-84'),
+(61, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', '', 'DefaultApplied', 0, 'jkoll', '2026-04-15 11:10:37', '', 'MTMFG-101'),
+(62, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.UiVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:35:18', '', 'MTMFG-101'),
+(63, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:35:18', '', 'MTMFG-101'),
+(64, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', '', 'true', 'Set', 0, 'jkoll', '2026-04-16 14:35:18', '', 'MTMFG-101'),
+(65, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.UiVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:35:45', '', 'MTMFG-101'),
+(66, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:35:45', '', 'MTMFG-101'),
+(67, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', '', 'true', 'Set', 0, 'jkoll', '2026-04-16 14:35:45', '', 'MTMFG-101'),
+(68, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.UiVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:36:40', '', 'MTMFG-101'),
+(69, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', '', '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', 'Set', 0, 'jkoll', '2026-04-16 14:36:40', '', 'MTMFG-101'),
+(70, 'System', 'ShipRecTools', 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', '', 'true', 'Set', 0, 'jkoll', '2026-04-16 14:36:40', '', 'MTMFG-101'),
+(71, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-16 15:02:30', '', 'MTMFG-101'),
+(72, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-04-16 15:02:30', '', 'MTMFG-101'),
+(73, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-16 15:02:30', '', 'MTMFG-101'),
+(74, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-16 15:02:30', '', 'MTMFG-101'),
+(75, 'User', 'User', 'ui_theme', '', 'Default', 'DefaultApplied', 6229, 'jkoll', '2026-04-17 12:41:04', '', 'MTMFG-101'),
+(76, 'System', 'Receiving', 'Receiving.Defaults.DefaultLocation', '', 'RECV-VITS', 'Set', 0, 'jkoll', '2026-04-17 12:41:42', '', 'MTMFG-101'),
+(77, 'User', 'User', 'ui_theme', '', 'Dark', 'Set', 6229, 'jkoll', '2026-04-17 12:42:22', '', 'MTMFG-101'),
+(78, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'ModeSelection', 'Set', 0, 'jkoll', '2026-04-17 12:42:35', '', 'MTMFG-101'),
+(79, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'True', 'Set', 6229, 'jkoll', '2026-04-17 12:42:35', '', 'MTMFG-101'),
+(80, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'True', 'Set', 6229, 'jkoll', '2026-04-17 12:42:35', '', 'MTMFG-101'),
+(81, 'User', 'User', 'ui_theme', '', 'Default', 'DefaultApplied', 6604, 'traddatz', '2026-04-17 13:33:54', '', 'MTMFG-84'),
+(82, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', 'Set', 0, 'jkoll', '2026-04-17 13:56:21', '', 'MTMFG-101'),
+(83, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', 'Set', 0, 'jkoll', '2026-04-17 13:56:24', '', 'MTMFG-101'),
+(84, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', 'Set', 0, 'jkoll', '2026-04-17 13:56:25', '', 'MTMFG-101'),
+(85, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', 'Set', 0, 'jkoll', '2026-04-17 13:56:25', '', 'MTMFG-101'),
+(86, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-20 07:25:01', '', 'MTMFG-101'),
+(87, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'True', 'Set', 6229, 'jkoll', '2026-04-20 07:25:01', '', 'MTMFG-101'),
+(88, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-20 07:25:01', '', 'MTMFG-101'),
+(89, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-20 07:25:01', '', 'MTMFG-101'),
+(90, 'System', 'Dunnage', 'Dunnage.Application.DefaultImageLocation', '', 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', 'Set', 0, 'jkoll', '2026-04-21 07:21:57', '', 'MTMFG-101'),
+(91, 'User', 'User', 'ui_theme', '', 'Light', 'Set', 6229, 'jkoll', '2026-04-21 08:45:19', '', 'MTMFG-101'),
+(92, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'ModeSelection', 'Set', 0, 'jkoll', '2026-04-21 12:49:51', '', 'MTMFG-101'),
+(93, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'True', 'Set', 6229, 'jkoll', '2026-04-21 12:49:51', '', 'MTMFG-101'),
+(94, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'False', 'Set', 6229, 'jkoll', '2026-04-21 12:49:51', '', 'MTMFG-101'),
+(95, 'System', 'Receiving', 'Receiving.Defaults.DefaultLocation', '', 'RECV', 'Set', 0, 'jkoll', '2026-04-21 12:50:41', '', 'MTMFG-101'),
+(96, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-04-21 16:46:48', '', 'MTMFG-101'),
+(97, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-04-21 16:46:48', '', 'MTMFG-101'),
+(98, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-04-21 16:46:48', '', 'MTMFG-101'),
+(99, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-04-21 16:46:48', '', 'MTMFG-101'),
+(100, 'User', 'User', 'ui_theme', '', 'Default', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:16', '', 'V-MTMFG-10'),
+(101, 'User', 'User', 'Core.UI.CompactMode', '', 'false', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:26', '', 'V-MTMFG-10'),
+(102, 'User', 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', '', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:28', '', 'V-MTMFG-10'),
+(103, 'User', 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', '', 'true', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:29', '', 'V-MTMFG-10'),
+(104, 'User', 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', '', 'false', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:29', '', 'V-MTMFG-10'),
+(105, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'false', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:29', '', 'V-MTMFG-10'),
+(106, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:29', '', 'V-MTMFG-10'),
+(107, 'User', 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', '', 'RECV', 'DefaultApplied', 6524, 'gwhitson', '2026-04-22 08:00:29', '', 'V-MTMFG-10'),
+(108, 'User', 'Receiving', 'Receiving.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:00', '', 'MTMFG-101'),
+(109, 'User', 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:00', '', 'MTMFG-101'),
+(110, 'User', 'Receiving', 'Receiving.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:00', '', 'MTMFG-101'),
+(111, 'User', 'Receiving', 'Receiving.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(112, 'User', 'Receiving', 'Receiving.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(113, 'User', 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(114, 'User', 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(115, 'User', 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(116, 'User', 'Dunnage', 'Dunnage.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(117, 'User', 'Dunnage', 'Dunnage.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(118, 'User', 'Dunnage', 'Dunnage.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(119, 'User', 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6229, 'jkoll', '2026-04-28 11:27:01', '', 'MTMFG-101'),
+(120, 'System', 'System', 'Core.LabelView.ExecutablePath', '', 'C:\\Program Files (x86)\\Teklynx\\LABELVIEW 2022\\LV.exe', 'DefaultApplied', 0, 'jkoll', '2026-04-29 10:45:20', '', 'MTMFG-101'),
+(121, 'System', 'Dunnage', 'Dunnage.Labels.DunnageLabelPath', '', '', 'DefaultApplied', 0, 'jkoll', '2026-04-29 10:45:20', '', 'MTMFG-101'),
+(122, 'System', 'Volvo', 'Volvo.Labels.VolvoLabelPath', '', '', 'DefaultApplied', 0, 'jkoll', '2026-04-29 10:45:20', '', 'MTMFG-101'),
+(123, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '', 'DefaultApplied', 0, 'jkoll', '2026-04-29 10:45:20', '', 'MTMFG-101'),
+(124, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '', 'DefaultApplied', 0, 'jkoll', '2026-04-29 10:45:20', '', 'MTMFG-101'),
+(125, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'Set', 0, 'jkoll', '2026-04-29 10:48:13', '', 'MTMFG-101'),
+(126, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'Set', 0, 'jkoll', '2026-04-29 10:48:13', '', 'MTMFG-101'),
+(127, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'Set', 0, 'jkoll', '2026-04-29 10:48:23', '', 'MTMFG-101'),
+(128, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'Set', 0, 'jkoll', '2026-04-29 10:48:23', '', 'MTMFG-101'),
+(129, 'System', 'Dunnage', 'Dunnage.Labels.DunnageLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', 'Set', 0, 'jkoll', '2026-04-29 12:35:20', '', 'MTMFG-101'),
+(130, 'System', 'Volvo', 'Volvo.Labels.VolvoLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', 'Set', 0, 'jkoll', '2026-04-29 12:36:22', '', 'MTMFG-101'),
+(131, 'User', 'Receiving', 'Receiving.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(132, 'User', 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(133, 'User', 'Receiving', 'Receiving.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(134, 'User', 'Receiving', 'Receiving.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(135, 'User', 'Receiving', 'Receiving.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(136, 'User', 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(137, 'User', 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(138, 'User', 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(139, 'User', 'Dunnage', 'Dunnage.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(140, 'User', 'Dunnage', 'Dunnage.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(141, 'User', 'Dunnage', 'Dunnage.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(142, 'User', 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6524, 'gwhitson', '2026-04-29 14:21:54', '', 'V-MTMFG-10'),
+(143, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '', 'Set', 0, 'jkoll', '2026-04-29 14:59:38', '', 'MTMFG-101'),
+(144, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '', 'Set', 0, 'jkoll', '2026-04-29 14:59:38', '', 'MTMFG-101'),
+(145, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'Set', 0, 'jkoll', '2026-04-29 15:00:33', '', 'MTMFG-101'),
+(146, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'Set', 0, 'jkoll', '2026-04-29 15:00:33', '', 'MTMFG-101'),
+(147, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'Set', 0, 'jkoll', '2026-04-29 15:00:45', '', 'MTMFG-101'),
+(148, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'Set', 0, 'jkoll', '2026-04-29 15:00:45', '', 'MTMFG-101'),
+(149, 'User', 'Receiving', 'Receiving.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(150, 'User', 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(151, 'User', 'Receiving', 'Receiving.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(152, 'User', 'Receiving', 'Receiving.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(153, 'User', 'Receiving', 'Receiving.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(154, 'User', 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(155, 'User', 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(156, 'User', 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(157, 'User', 'Dunnage', 'Dunnage.Shortcuts.NextStep', '', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(158, 'User', 'Dunnage', 'Dunnage.Shortcuts.BackStep', '', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(159, 'User', 'Dunnage', 'Dunnage.Shortcuts.Help', '', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:09', '', 'MTMFG-FORK-20'),
+(160, 'User', 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', '', 'true', 'DefaultApplied', 6604, 'traddatz', '2026-04-30 05:22:10', '', 'MTMFG-FORK-20'),
+(161, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-07 05:09:05', '', 'MTMFG-84'),
+(162, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-07 08:03:47', '', 'MTMFG-84'),
+(163, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'jkoll', '2026-05-07 09:43:23', '', 'MTMFG-101'),
+(164, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'ModeSelection', 'Set', 0, 'jkoll', '2026-05-07 09:43:27', '', 'MTMFG-101'),
+(165, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-05-07 15:16:22', '', 'MTMFG-101'),
+(166, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'True', 'Set', 6229, 'jkoll', '2026-05-07 15:16:22', '', 'MTMFG-101'),
+(167, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-05-07 15:16:22', '', 'MTMFG-101'),
+(168, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-05-07 15:16:22', '', 'MTMFG-101'),
+(169, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-05-07 15:41:05', '', 'MTMFG-101'),
+(170, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-05-07 15:41:06', '', 'MTMFG-101'),
+(171, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-05-07 15:41:06', '', 'MTMFG-101'),
+(172, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-05-07 15:41:06', '', 'MTMFG-101'),
+(173, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-05-08 13:12:53', '', 'V-MTMFG-5'),
+(174, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'True', 'Set', 6229, 'jkoll', '2026-05-08 13:12:53', '', 'V-MTMFG-5'),
+(175, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-05-08 13:12:54', '', 'V-MTMFG-5'),
+(176, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-05-08 13:12:54', '', 'V-MTMFG-5'),
+(177, 'System', 'Receiving', 'Receiving.PartNumberPadding.Enabled', '', 'True', 'Set', 0, 'jkoll', '2026-05-08 13:15:28', '', 'V-MTMFG-5'),
+(178, 'User', 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', '', 'False', 'Set', 6229, 'jkoll', '2026-05-08 13:15:28', '', 'V-MTMFG-5'),
+(179, 'System', 'Receiving', 'Receiving.PartNumberPadding.RulesJson', '', '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', 'Set', 0, 'jkoll', '2026-05-08 13:15:28', '', 'V-MTMFG-5'),
+(180, 'User', 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '', '[]', 'Set', 6229, 'jkoll', '2026-05-08 13:15:28', '', 'V-MTMFG-5'),
+(181, 'System', 'Receiving', 'Receiving.Labels.ReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'Set', 0, 'gwhitson', '2026-05-12 07:26:53', '', 'V-MTMFG-10');
+INSERT INTO `settings_activity` (`id`, `scope`, `category`, `setting_key`, `old_value`, `new_value`, `change_type`, `user_id`, `changed_by`, `changed_at`, `ip_address`, `workstation`) VALUES
+(182, 'System', 'Receiving', 'Receiving.Labels.MiniReceivingLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'Set', 0, 'gwhitson', '2026-05-12 07:26:53', '', 'V-MTMFG-10'),
+(183, 'System', 'Volvo', 'Volvo.Labels.VolvoLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', 'Set', 0, 'gwhitson', '2026-05-12 07:31:36', '', 'V-MTMFG-10'),
+(184, 'System', 'Dunnage', 'Dunnage.Labels.DunnageLabelPath', '', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', 'Set', 0, 'gwhitson', '2026-05-12 07:33:21', '', 'V-MTMFG-10'),
+(185, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-12 14:23:30', '', 'MTMFG-84'),
+(186, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-12 15:05:13', '', 'MTMFG-84'),
+(187, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-13 04:39:28', '', 'MTMFG-84'),
+(188, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-13 10:24:32', '', 'MTMFG-84'),
+(189, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-13 14:36:48', '', 'MTMFG-84'),
+(190, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-13 16:14:41', '', 'MTMFG-84'),
+(191, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-14 08:08:36', '', 'MTMFG-84'),
+(192, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-14 10:32:22', '', 'MTMFG-84'),
+(193, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-14 11:15:32', '', 'MTMFG-84'),
+(194, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-14 12:46:34', '', 'MTMFG-84'),
+(195, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-14 14:36:08', '', 'MTMFG-84'),
+(196, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-15 05:36:00', '', 'MTMFG-84'),
+(197, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-18 11:38:16', '', 'MTMFG-84'),
+(198, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-19 06:02:40', '', 'MTMFG-84'),
+(199, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-19 09:33:46', '', 'MTMFG-84'),
+(200, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-19 10:34:09', '', 'MTMFG-84'),
+(201, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-19 10:58:04', '', 'MTMFG-84'),
+(202, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-19 12:22:33', '', 'MTMFG-84'),
+(203, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-20 09:28:15', '', 'MTMFG-84'),
+(204, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-21 05:07:17', '', 'MTMFG-84'),
+(205, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-21 11:50:52', '', 'MTMFG-84'),
+(206, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-22 08:50:06', '', 'MTMFG-84'),
+(207, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-22 11:42:34', '', 'MTMFG-84'),
+(208, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-22 13:01:51', '', 'MTMFG-84'),
+(209, 'System', 'Receiving', 'Receiving.BusinessRules.DefaultModeOnStartup', '', 'Guided', 'Set', 0, 'traddatz', '2026-05-22 14:57:50', '', 'MTMFG-84');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_dunnage_personal`
+--
+
+CREATE TABLE `settings_dunnage_personal` (
+  `ID` int(11) NOT NULL COMMENT 'Unique identifier for each preference record',
+  `UserId` varchar(50) NOT NULL COMMENT 'Windows username or employee number',
+  `PreferenceKey` varchar(100) NOT NULL COMMENT 'Preference identifier (e.g., icon_usage_history, pagination_size)',
+  `PreferenceValue` text NOT NULL COMMENT 'JSON value for the preference',
+  `LastUpdated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last update'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Per-user UI preferences for icon picker, pagination, etc.';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_module_volvo`
+--
+
+CREATE TABLE `settings_module_volvo` (
+  `setting_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Unique key identifier for the setting (e.g., AutoPrintEnabled)',
+  `setting_value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Stored value as text; interpretation depends on setting_type',
+  `setting_type` enum('String','Integer','Boolean','Path','Enum') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Data type used to interpret setting_value',
+  `category` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Logical grouping for settings (e.g., Printing, Integration)',
+  `description` text COLLATE utf8mb4_unicode_ci COMMENT 'Human-readable description/documentation for the setting',
+  `default_value` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Default value as text used when no explicit value is set',
+  `min_value` int(11) DEFAULT NULL COMMENT 'Minimum allowed numeric value (applies when setting_type = Integer)',
+  `max_value` int(11) DEFAULT NULL COMMENT 'Maximum allowed numeric value (applies when setting_type = Integer)',
+  `modified_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of last modification',
+  `modified_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User identifier who last modified the setting'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo module configurable settings';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_personal`
+--
+
+CREATE TABLE `settings_personal` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for the settings_personal table',
+  `user_id` int(11) NOT NULL COMMENT 'FK to users.id - identifies the user owning this setting',
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Settings category (matches settings_universal.category)',
+  `setting_key` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Setting key (matches settings_universal.setting_key)',
+  `setting_value` text COLLATE utf8mb4_unicode_ci COMMENT 'User-specific value for this setting',
+  `data_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'String' COMMENT 'Data type hint: String, Int, Bool, Json, etc.',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the record was created',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when the record was last updated',
+  `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of the user who last updated the setting'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User-specific application settings';
+
+--
+-- Dumping data for table `settings_personal`
+--
+
+INSERT INTO `settings_personal` (`id`, `user_id`, `category`, `setting_key`, `setting_value`, `data_type`, `created_at`, `updated_at`, `updated_by`) VALUES
+(1, 6229, 'User', 'Core.UI.CompactMode', 'false', 'Bool', '2026-04-07 07:34:05', '2026-04-07 07:34:05', 'jkoll'),
+(2, 6229, 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', 'String', '2026-04-07 07:34:05', '2026-04-07 07:34:05', 'jkoll'),
+(3, 6229, 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', 'True', 'Bool', '2026-04-07 07:34:05', '2026-04-21 12:49:51', 'jkoll'),
+(4, 6229, 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', 'False', 'Bool', '2026-04-07 07:34:05', '2026-04-21 12:49:51', 'jkoll'),
+(5, 6229, 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', 'False', 'Bool', '2026-04-07 07:34:06', '2026-05-08 13:15:28', 'jkoll'),
+(6, 6229, 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '[]', 'String', '2026-04-07 07:34:06', '2026-05-08 13:15:28', 'jkoll'),
+(7, 6229, 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', 'RECV', 'String', '2026-04-07 07:34:06', '2026-04-08 11:57:19', 'jkoll'),
+(15, 6604, 'User', 'Core.UI.CompactMode', 'false', 'Bool', '2026-04-07 10:27:29', '2026-04-07 10:27:29', 'traddatz'),
+(16, 6604, 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', 'String', '2026-04-07 10:27:33', '2026-04-07 10:27:33', 'traddatz'),
+(17, 6604, 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', 'true', 'Bool', '2026-04-07 10:27:34', '2026-04-07 10:27:34', 'traddatz'),
+(18, 6604, 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', 'false', 'Bool', '2026-04-07 10:27:34', '2026-04-07 10:27:34', 'traddatz'),
+(19, 6604, 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', 'false', 'Bool', '2026-04-07 10:27:35', '2026-04-07 10:27:35', 'traddatz'),
+(20, 6604, 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '[]', 'String', '2026-04-07 10:27:35', '2026-04-07 10:27:35', 'traddatz'),
+(21, 6604, 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', 'RECV', 'String', '2026-04-07 10:27:35', '2026-04-15 07:53:35', 'traddatz'),
+(22, 6229, 'Receiving', 'Receiving.Workflow.DefaultMode', 'guided', 'String', '2026-04-07 10:58:23', '2026-04-07 10:58:23', 'jkoll'),
+(23, 6229, 'Dunnage', 'Dunnage.Workflow.DefaultMode', 'guided', 'String', '2026-04-07 10:58:23', '2026-04-07 10:58:23', 'jkoll'),
+(28, 6229, 'User', 'ui_theme', 'Light', 'String', '2026-04-17 12:41:04', '2026-04-21 08:45:19', 'jkoll'),
+(32, 6604, 'User', 'ui_theme', 'Default', 'String', '2026-04-17 13:33:54', '2026-04-17 13:33:54', 'traddatz'),
+(37, 6524, 'User', 'ui_theme', 'Default', 'String', '2026-04-22 08:00:16', '2026-04-22 08:00:16', 'gwhitson'),
+(38, 6524, 'User', 'Core.UI.CompactMode', 'false', 'Bool', '2026-04-22 08:00:26', '2026-04-22 08:00:26', 'gwhitson'),
+(39, 6524, 'Receiving', 'Receiving.Defaults.CsvSaveLocation', '', 'String', '2026-04-22 08:00:28', '2026-04-22 08:00:28', 'gwhitson'),
+(40, 6524, 'Receiving', 'Receiving.BusinessRules.ConfirmModeChange', 'true', 'Bool', '2026-04-22 08:00:29', '2026-04-22 08:00:29', 'gwhitson'),
+(41, 6524, 'Receiving', 'Receiving.BusinessRules.ShowReviewTableByDefault', 'false', 'Bool', '2026-04-22 08:00:29', '2026-04-22 08:00:29', 'gwhitson'),
+(42, 6524, 'Receiving', 'Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation', 'false', 'Bool', '2026-04-22 08:00:29', '2026-04-22 08:00:29', 'gwhitson'),
+(43, 6524, 'Receiving', 'Receiving.UserPreferences.IgnoredReconciliationLocationsJson', '[]', 'String', '2026-04-22 08:00:29', '2026-04-22 08:00:29', 'gwhitson'),
+(44, 6524, 'Dunnage', 'Dunnage.UserPreferences.DefaultLocation', 'RECV', 'String', '2026-04-22 08:00:29', '2026-04-22 08:00:29', 'gwhitson'),
+(45, 6229, 'Receiving', 'Receiving.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:00', '2026-04-28 11:27:00', 'jkoll'),
+(46, 6229, 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:00', '2026-04-28 11:27:00', 'jkoll'),
+(47, 6229, 'Receiving', 'Receiving.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:00', '2026-04-28 11:27:00', 'jkoll'),
+(48, 6229, 'Receiving', 'Receiving.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:00', '2026-04-28 11:27:00', 'jkoll'),
+(49, 6229, 'Receiving', 'Receiving.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(50, 6229, 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(51, 6229, 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(52, 6229, 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(53, 6229, 'Dunnage', 'Dunnage.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(54, 6229, 'Dunnage', 'Dunnage.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(55, 6229, 'Dunnage', 'Dunnage.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(56, 6229, 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-28 11:27:01', '2026-04-28 11:27:01', 'jkoll'),
+(57, 6524, 'Receiving', 'Receiving.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(58, 6524, 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(59, 6524, 'Receiving', 'Receiving.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(60, 6524, 'Receiving', 'Receiving.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(61, 6524, 'Receiving', 'Receiving.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(62, 6524, 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(63, 6524, 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(64, 6524, 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(65, 6524, 'Dunnage', 'Dunnage.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(66, 6524, 'Dunnage', 'Dunnage.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(67, 6524, 'Dunnage', 'Dunnage.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(68, 6524, 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-29 14:21:54', '2026-04-29 14:21:54', 'gwhitson'),
+(69, 6604, 'Receiving', 'Receiving.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(70, 6604, 'Receiving', 'Receiving.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(71, 6604, 'Receiving', 'Receiving.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(72, 6604, 'Receiving', 'Receiving.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(73, 6604, 'Receiving', 'Receiving.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(74, 6604, 'Receiving', 'Receiving.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(75, 6604, 'Dunnage', 'Dunnage.Shortcuts.ModeSelection', '{\"Key\":\"M\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(76, 6604, 'Dunnage', 'Dunnage.Shortcuts.ClearLabelData', '{\"Key\":\"C\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(77, 6604, 'Dunnage', 'Dunnage.Shortcuts.NextStep', '{\"Key\":\"Right\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(78, 6604, 'Dunnage', 'Dunnage.Shortcuts.BackStep', '{\"Key\":\"Left\",\"IsCtrlEnabled\":true,\"IsShiftEnabled\":false,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(79, 6604, 'Dunnage', 'Dunnage.Shortcuts.Help', '{\"Key\":\"Slash\",\"IsCtrlEnabled\":false,\"IsShiftEnabled\":true,\"IsAltEnabled\":false,\"IsWindowsEnabled\":false}', 'String', '2026-04-30 05:22:09', '2026-04-30 05:22:09', 'traddatz'),
+(80, 6604, 'Dunnage', 'Dunnage.Shortcuts.IsToggleSimpleNavigationEnabled', 'true', 'Bool', '2026-04-30 05:22:10', '2026-04-30 05:22:10', 'traddatz'),
+(89, 6229, 'Receiving.UserLabels', 'ReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(90, 6229, 'Receiving.UserLabels', 'MiniReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(95, 6229, 'Dunnage.UserLabels', 'DunnageLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', 'string', '2026-05-12 15:21:16', '2026-05-12 15:21:16', 'jkoll'),
+(96, 6229, 'Volvo.UserLabels', 'VolvoLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', 'string', '2026-05-12 15:21:41', '2026-05-12 15:21:41', 'jkoll'),
+(97, 6604, 'Receiving.UserLabels', 'ReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Tim Raddatz\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(99, 6604, 'Receiving.UserLabels', 'MiniReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Tim Raddatz\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(100, 6604, 'Dunnage.UserLabels', 'DunnageLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Tim Raddatz\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', 'string', '2026-05-12 15:21:16', '2026-05-12 15:21:16', 'jkoll'),
+(101, 6604, 'Volvo.UserLabels', 'VolvoLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Tim Raddatz\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', 'string', '2026-05-12 15:21:41', '2026-05-12 15:21:41', 'jkoll'),
+(102, 6524, 'Receiving.UserLabels', 'ReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(103, 6524, 'Receiving.UserLabels', 'MiniReceivingLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', 'string', '2026-05-12 15:15:06', '2026-05-12 15:18:39', 'jkoll'),
+(104, 6524, 'Dunnage.UserLabels', 'DunnageLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', 'string', '2026-05-12 15:21:16', '2026-05-12 15:21:16', 'jkoll'),
+(105, 6524, 'Volvo.UserLabels', 'VolvoLabelPath', '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', 'string', '2026-05-12 15:21:41', '2026-05-12 15:21:41', 'jkoll');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_personal_activity_log`
+--
+
+CREATE TABLE `settings_personal_activity_log` (
+  `log_id` int(11) NOT NULL COMMENT 'Unique identifier for each log entry',
+  `event_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Type of event (e.g., Login, Logout, Failed_Login, Password_Change)',
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username associated with the event (NULL for system events)',
+  `workstation_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Name of the workstation where the event occurred',
+  `event_timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the event occurred',
+  `details` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional JSON or text details about the event'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Audit trail for authentication events and user actions';
+
+--
+-- Dumping data for table `settings_personal_activity_log`
+--
+
+INSERT INTO `settings_personal_activity_log` (`log_id`, `event_type`, `username`, `workstation_name`, `event_timestamp`, `details`) VALUES
+(1, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 07:34:04', 'Windows authentication successful'),
+(2, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 07:35:49', 'Session ended. Duration: 1.7 minutes'),
+(3, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 07:35:55', 'Windows authentication successful'),
+(4, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 07:37:01', 'Session ended. Duration: 1.1 minutes'),
+(5, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 07:40:11', 'Windows authentication successful'),
+(6, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 07:41:38', 'Session ended. Duration: 1.4 minutes'),
+(7, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 07:41:46', 'Windows authentication successful'),
+(8, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 07:43:12', 'Session ended. Duration: 1.4 minutes'),
+(9, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 07:43:44', 'Windows authentication successful'),
+(10, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 07:45:22', 'Session ended. Duration: 1.6 minutes'),
+(11, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 08:02:35', 'Windows authentication successful'),
+(12, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 08:06:03', 'Session ended. Duration: 3.5 minutes'),
+(13, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 08:27:58', 'Windows authentication successful'),
+(14, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-07 09:27:00', 'Session ended. Duration: 59.0 minutes'),
+(15, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-07 10:27:28', 'Windows authentication successful'),
+(16, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 10:54:56', 'Windows authentication successful'),
+(17, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 10:56:51', 'Session ended. Duration: 1.9 minutes'),
+(18, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 10:58:22', 'Windows authentication successful'),
+(19, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-07 11:26:29', 'Session ended. Duration: 59.0 minutes'),
+(20, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 12:03:47', 'Windows authentication successful'),
+(21, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-07 12:33:36', 'Windows authentication successful'),
+(22, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-07 12:45:48', 'Session ended. Duration: 42.0 minutes'),
+(23, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 13:02:25', 'Windows authentication successful'),
+(24, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-07 13:23:37', 'Session ended. Duration: 50.0 minutes'),
+(25, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 13:27:05', 'Session ended. Duration: 24.7 minutes'),
+(26, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-07 16:00:52', 'Windows authentication successful'),
+(27, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-07 16:05:56', 'Session ended. Duration: 5.1 minutes'),
+(28, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-08 06:21:00', 'Windows authentication successful'),
+(29, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-08 06:55:01', 'Session ended. Duration: 34.0 minutes'),
+(30, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 07:09:14', 'Windows authentication successful'),
+(31, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-08 08:36:15', 'Session ended. Duration: 87.0 minutes'),
+(32, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 09:08:19', 'Windows authentication successful'),
+(33, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 09:34:03', 'Session ended. Duration: 25.7 minutes'),
+(34, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 10:03:17', 'Windows authentication successful'),
+(35, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 10:09:27', 'Session ended. Duration: 6.2 minutes'),
+(36, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 10:21:09', 'Windows authentication successful'),
+(37, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 10:50:03', 'Session ended. Duration: 28.9 minutes'),
+(38, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 11:17:05', 'Windows authentication successful'),
+(39, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 11:27:37', 'Session ended. Duration: 10.5 minutes'),
+(40, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 11:39:59', 'Windows authentication successful'),
+(41, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 11:57:25', 'Session ended. Duration: 17.4 minutes'),
+(42, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 11:57:39', 'Windows authentication successful'),
+(43, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-08 12:02:44', 'Windows authentication successful'),
+(44, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 12:06:24', 'Session ended. Duration: 8.7 minutes'),
+(45, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 12:08:34', 'Windows authentication successful'),
+(46, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-08 12:38:45', 'Session ended. Duration: 36.0 minutes'),
+(47, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 13:09:06', 'Session ended. Duration: 60.5 minutes'),
+(48, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 14:14:19', 'Windows authentication successful'),
+(49, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 15:13:32', 'Session ended. Duration: 59.2 minutes'),
+(50, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 16:49:33', 'Windows authentication successful'),
+(51, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 16:49:41', 'Session ended. Duration: 0.1 minutes'),
+(52, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-08 16:49:47', 'Windows authentication successful'),
+(53, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-08 16:49:54', 'Session ended. Duration: 0.1 minutes'),
+(54, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 05:25:59', 'Windows authentication successful'),
+(55, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 05:25:59', 'Windows authentication successful'),
+(56, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 05:57:22', 'Session ended. Duration: 31.0 minutes'),
+(57, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 05:57:23', 'Session ended. Duration: 31.0 minutes'),
+(58, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 06:27:49', 'Windows authentication successful'),
+(59, 'manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-04-09 06:38:11', 'Session ended. Duration: 9.6 minutes'),
+(60, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 07:08:07', 'Windows authentication successful'),
+(61, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 07:22:39', 'Session ended. Duration: 14.5 minutes'),
+(62, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 07:22:51', 'Windows authentication successful'),
+(63, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-09 08:11:19', 'Session ended. Duration: 48.4 minutes'),
+(64, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 09:04:57', 'Windows authentication successful'),
+(65, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 09:46:49', 'Windows authentication successful'),
+(66, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 09:52:55', 'Session ended. Duration: 6.1 minutes'),
+(67, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 10:32:40', 'Windows authentication successful'),
+(68, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-09 11:56:00', 'Session ended. Duration: 83.0 minutes'),
+(69, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 12:12:49', 'Windows authentication successful'),
+(70, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 12:35:45', 'Session ended. Duration: 22.8 minutes'),
+(71, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 12:36:01', 'Windows authentication successful'),
+(72, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 12:47:47', 'Session ended. Duration: 11.2 minutes'),
+(73, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 12:48:27', 'Windows authentication successful'),
+(74, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 12:54:50', 'Windows authentication successful'),
+(75, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 13:19:22', 'Session ended. Duration: 24.4 minutes'),
+(76, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 13:19:35', 'Windows authentication successful'),
+(77, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 14:14:27', 'Windows authentication successful'),
+(78, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 14:21:31', 'Windows authentication successful'),
+(79, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 15:03:20', 'Windows authentication successful'),
+(80, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 15:07:09', 'Session ended. Duration: 3.3 minutes'),
+(81, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 15:23:11', 'Windows authentication successful'),
+(82, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 15:32:11', 'Windows authentication successful'),
+(83, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-09 15:54:45', 'Windows authentication successful'),
+(84, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 15:57:51', 'Session ended. Duration: 2.8 minutes'),
+(85, 'splash_manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 20:48:41', 'Session ended. Duration: 0.0 minutes'),
+(86, 'startup_failure', 'jkoll', 'MTMFG-101', '2026-04-09 22:15:30', 'Session ended. Duration: 480.5 minutes'),
+(87, 'splash_manual_close', 'jkoll', 'MTMFG-101', '2026-04-09 22:22:14', 'Session ended. Duration: 0.1 minutes'),
+(88, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 07:04:30', 'Windows authentication successful'),
+(89, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-10 07:09:42', 'Session ended. Duration: 5.0 minutes'),
+(90, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 08:08:01', 'Windows authentication successful'),
+(91, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-10 09:03:26', 'Session ended. Duration: 55.0 minutes'),
+(92, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 10:02:39', 'Windows authentication successful'),
+(93, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 10:22:11', 'Windows authentication successful'),
+(94, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-10 10:34:07', 'Session ended. Duration: 11.3 minutes'),
+(95, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 10:34:15', 'Windows authentication successful'),
+(96, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 11:57:41', 'Windows authentication successful'),
+(97, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 14:06:16', 'Windows authentication successful'),
+(98, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-10 14:09:00', 'Session ended. Duration: 2.2 minutes'),
+(99, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-10 15:10:20', 'Windows authentication successful'),
+(100, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-10 15:10:52', 'Session ended. Duration: 0.5 minutes'),
+(101, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-14 05:26:25', 'Windows authentication successful'),
+(102, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-14 06:29:26', 'Session ended. Duration: 63.0 minutes'),
+(103, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 07:06:05', 'Windows authentication successful'),
+(104, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 07:09:39', 'Windows authentication successful'),
+(105, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-14 09:19:40', 'Session ended. Duration: 130.0 minutes'),
+(106, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 09:36:15', 'Windows authentication successful'),
+(107, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 09:44:56', 'Session ended. Duration: 8.7 minutes'),
+(108, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 10:19:02', 'Windows authentication successful'),
+(109, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-14 10:59:03', 'Session ended. Duration: 40.0 minutes'),
+(110, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 11:55:14', 'Windows authentication successful'),
+(111, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 11:57:35', 'Session ended. Duration: 2.3 minutes'),
+(112, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 11:57:41', 'Windows authentication successful'),
+(113, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-14 13:16:42', 'Session ended. Duration: 79.0 minutes'),
+(114, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 13:34:34', 'Windows authentication successful'),
+(115, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 13:51:30', 'Session ended. Duration: 16.9 minutes'),
+(116, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 13:51:39', 'Windows authentication successful'),
+(117, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 13:53:05', 'Session ended. Duration: 1.4 minutes'),
+(118, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 14:01:41', 'Windows authentication successful'),
+(119, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 14:21:07', 'Session ended. Duration: 19.4 minutes'),
+(120, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 15:22:18', 'Windows authentication successful'),
+(121, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-14 16:00:19', 'Session ended. Duration: 38.0 minutes'),
+(122, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 16:28:25', 'Windows authentication successful'),
+(123, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 16:35:49', 'Session ended. Duration: 7.4 minutes'),
+(124, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 16:36:42', 'Windows authentication successful'),
+(125, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 16:46:06', 'Session ended. Duration: 9.4 minutes'),
+(126, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-14 16:49:01', 'Windows authentication successful'),
+(127, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-14 16:54:52', 'Session ended. Duration: 5.8 minutes'),
+(128, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 17:37:36', 'Windows authentication successful'),
+(129, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-14 17:44:34', 'Session ended. Duration: 7.0 minutes'),
+(130, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 17:47:28', 'Windows authentication successful'),
+(131, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-14 17:50:16', 'Session ended. Duration: 2.8 minutes'),
+(132, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 18:04:41', 'Windows authentication successful'),
+(133, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-14 18:22:19', 'Session ended. Duration: 17.6 minutes'),
+(134, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 18:57:40', 'Windows authentication successful'),
+(135, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-14 19:32:16', 'Session ended. Duration: 34.6 minutes'),
+(136, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 22:16:59', 'Windows authentication successful'),
+(137, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 22:18:00', 'Windows authentication successful'),
+(138, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 23:44:54', 'Windows authentication successful'),
+(139, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-14 23:59:20', 'Windows authentication successful'),
+(140, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-15 00:06:50', 'Session ended. Duration: 7.5 minutes'),
+(141, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 05:25:54', 'Windows authentication successful'),
+(142, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 06:01:55', 'Session ended. Duration: 36.0 minutes'),
+(143, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 06:06:43', 'Windows authentication successful'),
+(144, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-15 06:27:07', 'Windows authentication successful'),
+(145, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-15 06:32:02', 'Session ended. Duration: 4.9 minutes'),
+(146, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 07:01:44', 'Session ended. Duration: 55.0 minutes'),
+(147, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 07:09:41', 'Windows authentication successful'),
+(148, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-15 07:44:54', 'Windows authentication successful'),
+(149, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-15 07:53:39', 'Session ended. Duration: 8.7 minutes'),
+(150, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-15 07:53:47', 'Windows authentication successful'),
+(151, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-15 07:56:35', 'Session ended. Duration: 2.8 minutes'),
+(152, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-15 08:10:19', 'Session ended. Duration: 60.6 minutes'),
+(153, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-15 08:17:38', 'Windows authentication successful'),
+(154, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-15 08:19:02', 'Session ended. Duration: 1.4 minutes'),
+(155, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 09:05:54', 'Windows authentication successful'),
+(156, 'manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-04-15 09:23:57', 'Session ended. Duration: 18.0 minutes'),
+(157, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 09:47:44', 'Windows authentication successful'),
+(158, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-15 10:14:49', 'Session ended. Duration: 27.1 minutes'),
+(159, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 11:10:39', 'Windows authentication successful'),
+(160, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-15 12:01:40', 'Session ended. Duration: 51.0 minutes'),
+(161, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 12:08:11', 'Windows authentication successful'),
+(162, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-15 12:13:50', 'Session ended. Duration: 5.7 minutes'),
+(163, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 12:17:34', 'Windows authentication successful'),
+(164, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-15 12:19:44', 'Session ended. Duration: 2.2 minutes'),
+(165, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 12:25:40', 'Windows authentication successful'),
+(166, 'login_success', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 14:50:05', 'Windows authentication successful'),
+(167, 'manual_close', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 14:50:19', 'Session ended. Duration: 0.2 minutes'),
+(168, 'login_success', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 14:53:36', 'Windows authentication successful'),
+(169, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 15:43:31', 'Windows authentication successful'),
+(170, 'session_timeout', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 16:23:38', 'Session ended. Duration: 90.0 minutes'),
+(171, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-15 16:48:32', 'Session ended. Duration: 65.0 minutes'),
+(172, 'login_success', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 18:38:02', 'Windows authentication successful'),
+(173, 'manual_close', 'jkoll', 'MTMFG-FORK-19', '2026-04-15 18:43:35', 'Session ended. Duration: 5.5 minutes'),
+(174, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-15 18:45:56', 'Windows authentication successful'),
+(175, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-15 18:46:35', 'Session ended. Duration: 0.6 minutes'),
+(176, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-16 05:23:49', 'Windows authentication successful'),
+(177, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-16 05:55:50', 'Session ended. Duration: 32.0 minutes'),
+(178, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 07:04:33', 'Windows authentication successful'),
+(179, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-16 07:18:20', 'Session ended. Duration: 13.8 minutes'),
+(180, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 08:03:34', 'Windows authentication successful'),
+(181, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-16 08:14:37', 'Session ended. Duration: 11.0 minutes'),
+(182, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 08:21:21', 'Windows authentication successful'),
+(183, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-16 09:34:22', 'Session ended. Duration: 73.0 minutes'),
+(184, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 10:14:28', 'Windows authentication successful'),
+(185, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-16 12:34:22', 'Session ended. Duration: 139.9 minutes'),
+(186, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 12:37:37', 'Windows authentication successful'),
+(187, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-16 13:40:38', 'Session ended. Duration: 63.0 minutes'),
+(188, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 14:15:18', 'Windows authentication successful'),
+(189, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 14:41:47', 'Windows authentication successful'),
+(190, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 14:42:59', 'Windows authentication successful'),
+(191, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-16 14:57:28', 'Session ended. Duration: 14.5 minutes'),
+(192, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-16 14:58:40', 'Windows authentication successful'),
+(193, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-16 15:24:08', 'Session ended. Duration: 25.5 minutes'),
+(194, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-17 05:20:03', 'Windows authentication successful'),
+(195, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-17 05:20:25', 'Windows authentication successful'),
+(196, 'splash_manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-04-17 05:20:39', 'Session ended. Duration: 0.2 minutes'),
+(197, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-17 06:18:04', 'Session ended. Duration: 58.0 minutes'),
+(198, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 07:20:22', 'Windows authentication successful'),
+(199, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-17 08:28:23', 'Session ended. Duration: 68.0 minutes'),
+(200, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 08:51:04', 'Windows authentication successful'),
+(201, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-17 10:29:06', 'Session ended. Duration: 98.0 minutes'),
+(202, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 10:38:19', 'Windows authentication successful'),
+(203, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-17 11:12:19', 'Session ended. Duration: 34.0 minutes'),
+(204, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 12:30:58', 'Windows authentication successful'),
+(205, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 12:40:19', 'Session ended. Duration: 9.3 minutes'),
+(206, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 12:41:03', 'Windows authentication successful'),
+(207, 'user_requested_logout', 'jkoll', 'MTMFG-101', '2026-04-17 12:47:29', 'Session ended. Duration: 6.4 minutes'),
+(208, 'login_failed', 'admin', 'MTMFG-101', '2026-04-17 12:47:34', 'Invalid credentials for user: admin'),
+(209, 'login_failed', 'admin', 'MTMFG-101', '2026-04-17 12:47:38', 'Invalid credentials for user: admin'),
+(210, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 12:47:51', 'Windows authentication successful'),
+(211, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 12:50:27', 'Session ended. Duration: 2.6 minutes'),
+(212, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 12:51:22', 'Windows authentication successful'),
+(213, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 13:00:39', 'Session ended. Duration: 9.3 minutes'),
+(214, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 13:09:12', 'Windows authentication successful'),
+(215, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 13:11:16', 'Session ended. Duration: 2.1 minutes'),
+(216, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 13:22:38', 'Windows authentication successful'),
+(217, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-17 13:33:53', 'Windows authentication successful'),
+(218, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-17 13:34:17', 'Session ended. Duration: 0.4 minutes'),
+(219, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-17 13:36:44', 'Windows authentication successful'),
+(220, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-17 13:39:14', 'Session ended. Duration: 2.5 minutes'),
+(221, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 13:58:26', 'Session ended. Duration: 35.8 minutes'),
+(222, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 14:01:20', 'Windows authentication successful'),
+(223, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 14:22:27', 'Session ended. Duration: 21.1 minutes'),
+(224, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 14:32:15', 'Windows authentication successful'),
+(225, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 14:43:03', 'Session ended. Duration: 10.8 minutes'),
+(226, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 14:43:50', 'Windows authentication successful'),
+(227, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 14:48:09', 'Session ended. Duration: 4.3 minutes'),
+(228, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 14:48:14', 'Windows authentication successful'),
+(229, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 14:48:43', 'Session ended. Duration: 0.5 minutes'),
+(230, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-17 14:49:33', 'Windows authentication successful'),
+(231, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-17 14:51:58', 'Session ended. Duration: 2.4 minutes'),
+(232, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-20 05:55:12', 'Windows authentication successful'),
+(233, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-20 06:29:13', 'Session ended. Duration: 34.0 minutes'),
+(234, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-20 07:22:11', 'Windows authentication successful'),
+(235, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-20 08:30:13', 'Session ended. Duration: 68.0 minutes'),
+(236, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-20 10:16:38', 'Windows authentication successful'),
+(237, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-20 10:19:31', 'Session ended. Duration: 2.9 minutes'),
+(238, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-20 11:15:31', 'Windows authentication successful'),
+(239, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-20 13:09:32', 'Session ended. Duration: 114.0 minutes'),
+(240, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-20 13:32:19', 'Windows authentication successful'),
+(241, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-20 13:42:20', 'Session ended. Duration: 10.0 minutes'),
+(242, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 07:21:40', 'Windows authentication successful'),
+(243, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 07:49:56', 'Windows authentication successful'),
+(244, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-21 08:19:21', 'Session ended. Duration: 29.4 minutes'),
+(245, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 08:19:33', 'Windows authentication successful'),
+(246, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-21 08:28:23', 'Session ended. Duration: 8.8 minutes'),
+(247, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 08:30:58', 'Windows authentication successful'),
+(248, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 08:39:51', 'Windows authentication successful'),
+(249, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-21 09:00:49', 'Session ended. Duration: 21.0 minutes'),
+(250, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 09:04:07', 'Windows authentication successful'),
+(251, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-21 10:14:08', 'Session ended. Duration: 70.0 minutes'),
+(252, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 10:18:59', 'Windows authentication successful'),
+(253, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-21 10:51:00', 'Session ended. Duration: 32.0 minutes'),
+(254, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 11:15:43', 'Windows authentication successful'),
+(255, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-21 12:01:43', 'Session ended. Duration: 46.0 minutes'),
+(256, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 12:45:16', 'Windows authentication successful'),
+(257, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-21 13:10:34', 'Windows authentication successful'),
+(258, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-21 13:11:13', 'Session ended. Duration: 0.7 minutes'),
+(259, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-21 13:12:22', 'Windows authentication successful'),
+(260, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-21 13:16:20', 'Session ended. Duration: 4.0 minutes'),
+(261, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-21 13:23:38', 'Windows authentication successful'),
+(262, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-21 13:52:33', 'Session ended. Duration: 28.9 minutes'),
+(263, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-21 14:17:18', 'Session ended. Duration: 92.0 minutes'),
+(264, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 16:00:01', 'Windows authentication successful'),
+(265, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-21 17:07:43', 'Session ended. Duration: 67.7 minutes'),
+(266, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-21 17:12:54', 'Windows authentication successful'),
+(267, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-21 17:23:35', 'Session ended. Duration: 10.7 minutes'),
+(268, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-22 07:11:18', 'Windows authentication successful'),
+(269, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-22 07:19:44', 'Session ended. Duration: 8.4 minutes'),
+(270, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-22 07:24:09', 'Windows authentication successful'),
+(271, 'user_requested_logout', 'jkoll', 'MTMFG-101', '2026-04-22 07:24:14', 'Session ended. Duration: 0.1 minutes'),
+(272, 'login_failed', 'tradditz', 'MTMFG-101', '2026-04-22 07:24:22', 'Invalid credentials for user: tradditz'),
+(273, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-22 07:24:43', 'Windows authentication successful'),
+(274, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-22 07:24:56', 'Session ended. Duration: 0.2 minutes'),
+(275, 'user_created', 'gwhitson', 'V-MTMFG-10', '2026-04-22 08:00:13', 'New user created: Greg Whitson (Emp #6524) by gwhitson'),
+(276, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-22 08:00:25', 'Windows authentication successful'),
+(277, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-04-22 08:05:26', 'Session ended. Duration: 5.0 minutes'),
+(278, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-22 08:09:23', 'Windows authentication successful'),
+(279, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-04-22 08:25:23', 'Session ended. Duration: 16.0 minutes'),
+(280, 'login_success', 'jkoll', 'MTMFG-FORK-19', '2026-04-22 09:06:42', 'Windows authentication successful'),
+(281, 'session_timeout', 'jkoll', 'MTMFG-FORK-19', '2026-04-22 10:12:43', 'Session ended. Duration: 66.0 minutes'),
+(282, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-22 10:21:47', 'Windows authentication successful'),
+(283, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-22 10:27:51', 'Session ended. Duration: 6.0 minutes'),
+(284, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-22 10:41:23', 'Windows authentication successful'),
+(285, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-04-22 11:12:24', 'Session ended. Duration: 31.0 minutes'),
+(286, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-22 16:20:29', 'Windows authentication successful'),
+(287, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-22 16:52:51', 'Session ended. Duration: 32.4 minutes'),
+(288, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-23 05:35:44', 'Windows authentication successful'),
+(289, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-23 06:38:45', 'Session ended. Duration: 63.0 minutes'),
+(290, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-23 09:15:25', 'Windows authentication successful'),
+(291, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-23 09:53:25', 'Session ended. Duration: 38.0 minutes'),
+(292, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-24 06:07:24', 'Windows authentication successful'),
+(293, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-04-24 06:07:31', 'Session ended. Duration: 0.1 minutes'),
+(294, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-24 07:12:50', 'Windows authentication successful'),
+(295, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-04-24 07:44:51', 'Session ended. Duration: 32.0 minutes'),
+(296, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-24 08:16:35', 'Windows authentication successful'),
+(297, 'user_requested_logout', 'gwhitson', 'V-MTMFG-10', '2026-04-24 08:27:40', 'Session ended. Duration: 11.1 minutes'),
+(298, 'login_failed', 'jkoll', 'V-MTMFG-10', '2026-04-24 08:27:45', 'Invalid credentials for user: jkoll'),
+(299, 'login_failed', 'JKOLL', 'V-MTMFG-10', '2026-04-24 08:27:53', 'Invalid credentials for user: JKOLL'),
+(300, 'login_failed', 'JOHNK', 'V-MTMFG-10', '2026-04-24 08:28:03', 'Invalid credentials for user: JOHNK'),
+(301, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-24 08:29:01', 'Windows authentication successful'),
+(302, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-24 09:06:19', 'Windows authentication successful'),
+(303, 'session_timeout', 'gwhitson', 'V-MTMFG-10', '2026-04-24 09:09:02', 'Session ended. Duration: 40.0 minutes'),
+(304, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-04-24 09:41:20', 'Session ended. Duration: 35.0 minutes'),
+(305, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-04-24 15:13:23', 'Windows authentication successful'),
+(306, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-04-24 16:10:25', 'Session ended. Duration: 57.0 minutes'),
+(307, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-25 07:58:04', 'Windows authentication successful'),
+(308, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-25 07:59:08', 'Session ended. Duration: 1.1 minutes'),
+(309, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-25 08:59:56', 'Windows authentication successful'),
+(310, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-04-25 09:46:57', 'Session ended. Duration: 47.0 minutes'),
+(311, 'login_success', 'traddatz', 'MTMFG-84', '2026-04-25 11:32:25', 'Windows authentication successful'),
+(312, 'manual_close', 'traddatz', 'MTMFG-84', '2026-04-25 12:12:45', 'Session ended. Duration: 40.3 minutes'),
+(313, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-27 05:20:27', 'Windows authentication successful'),
+(314, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-27 06:03:27', 'Session ended. Duration: 43.0 minutes'),
+(315, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-28 05:17:33', 'Windows authentication successful'),
+(316, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-28 05:48:34', 'Session ended. Duration: 31.0 minutes'),
+(317, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 07:01:59', 'Windows authentication successful'),
+(318, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-28 07:06:47', 'Session ended. Duration: 4.8 minutes'),
+(319, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 10:08:20', 'Windows authentication successful'),
+(320, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-28 10:46:58', 'Session ended. Duration: 38.6 minutes'),
+(321, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 11:26:57', 'Windows authentication successful'),
+(322, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-28 11:35:16', 'Session ended. Duration: 8.3 minutes'),
+(323, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 12:13:58', 'Windows authentication successful'),
+(324, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-28 12:55:59', 'Session ended. Duration: 42.0 minutes'),
+(325, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 13:15:11', 'Windows authentication successful'),
+(326, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 14:53:32', 'Windows authentication successful'),
+(327, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-28 15:21:37', 'Session ended. Duration: 28.1 minutes'),
+(328, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-28 15:52:08', 'Windows authentication successful'),
+(329, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-28 15:55:12', 'Session ended. Duration: 3.1 minutes'),
+(330, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 07:02:54', 'Windows authentication successful'),
+(331, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-29 07:52:55', 'Session ended. Duration: 50.0 minutes'),
+(332, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 08:12:39', 'Windows authentication successful'),
+(333, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 08:19:28', 'Session ended. Duration: 6.8 minutes'),
+(334, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 08:19:46', 'Windows authentication successful'),
+(335, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 08:20:12', 'Session ended. Duration: 0.4 minutes'),
+(336, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 08:21:40', 'Windows authentication successful'),
+(337, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-29 09:17:41', 'Session ended. Duration: 56.0 minutes'),
+(338, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 09:28:02', 'Windows authentication successful'),
+(339, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 10:23:42', 'Session ended. Duration: 55.7 minutes'),
+(340, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 10:43:38', 'Windows authentication successful'),
+(341, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-04-29 10:43:48', 'Session ended. Duration: 0.2 minutes'),
+(342, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 10:45:19', 'Windows authentication successful'),
+(343, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 10:58:14', 'Session ended. Duration: 12.9 minutes'),
+(344, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 11:45:10', 'Windows authentication successful'),
+(345, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 11:49:23', 'Session ended. Duration: 4.2 minutes'),
+(346, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 11:54:39', 'Windows authentication successful'),
+(347, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-04-29 11:54:51', 'Session ended. Duration: 0.2 minutes'),
+(348, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 11:58:11', 'Windows authentication successful'),
+(349, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-04-29 12:18:19', 'Session ended. Duration: 20.1 minutes'),
+(350, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 12:32:47', 'Windows authentication successful'),
+(351, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 12:36:24', 'Session ended. Duration: 3.6 minutes'),
+(352, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 12:36:42', 'Windows authentication successful'),
+(353, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 13:08:43', 'Session ended. Duration: 32.0 minutes'),
+(354, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 13:23:44', 'Windows authentication successful'),
+(355, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-29 13:56:45', 'Session ended. Duration: 33.0 minutes'),
+(356, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:21:53', 'Windows authentication successful'),
+(357, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:22:55', 'Session ended. Duration: 1.0 minutes'),
+(358, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:23:22', 'Windows authentication successful'),
+(359, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:24:25', 'Session ended. Duration: 1.0 minutes'),
+(360, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:27:33', 'Windows authentication successful'),
+(361, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:28:35', 'Session ended. Duration: 1.0 minutes'),
+(362, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:28:53', 'Windows authentication successful'),
+(363, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:29:11', 'Session ended. Duration: 0.3 minutes'),
+(364, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:30:00', 'Windows authentication successful'),
+(365, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-29 14:30:30', 'Windows authentication successful'),
+(366, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-04-29 14:45:28', 'Session ended. Duration: 15.4 minutes'),
+(367, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-29 15:35:10', 'Session ended. Duration: 64.7 minutes'),
+(368, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-30 05:14:46', 'Windows authentication successful'),
+(369, 'software_version_mismatch', 'traddatz', 'MTMFG-FORK-20', '2026-04-30 05:15:06', 'Session ended. Duration: 0.3 minutes'),
+(370, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-04-30 05:22:04', 'Windows authentication successful'),
+(371, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-04-30 06:39:05', 'Session ended. Duration: 77.0 minutes'),
+(372, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-04-30 07:44:47', 'Windows authentication successful'),
+(373, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-04-30 08:00:38', 'Session ended. Duration: 15.8 minutes'),
+(374, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-30 09:55:12', 'Windows authentication successful'),
+(375, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-30 11:23:13', 'Session ended. Duration: 88.0 minutes'),
+(376, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-30 13:08:13', 'Windows authentication successful'),
+(377, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-04-30 13:57:14', 'Session ended. Duration: 49.0 minutes'),
+(378, 'login_success', 'jkoll', 'MTMFG-101', '2026-04-30 14:34:31', 'Windows authentication successful'),
+(379, 'manual_close', 'jkoll', 'MTMFG-101', '2026-04-30 15:02:01', 'Session ended. Duration: 27.5 minutes'),
+(380, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-01 05:23:32', 'Windows authentication successful'),
+(381, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-01 05:54:33', 'Session ended. Duration: 31.0 minutes'),
+(382, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-01 05:55:10', 'Windows authentication successful'),
+(383, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-01 06:26:10', 'Session ended. Duration: 31.0 minutes'),
+(384, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-01 06:31:24', 'Windows authentication successful'),
+(385, 'session_timeout', 'gwhitson', 'V-MTMFG-10', '2026-05-01 07:04:25', 'Session ended. Duration: 33.0 minutes'),
+(386, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-01 07:35:41', 'Windows authentication successful'),
+(387, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-01 08:27:42', 'Session ended. Duration: 52.0 minutes'),
+(388, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-01 09:25:29', 'Windows authentication successful'),
+(389, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-01 12:27:32', 'Session ended. Duration: 182.0 minutes'),
+(390, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-01 12:54:00', 'Windows authentication successful'),
+(391, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-01 14:55:02', 'Session ended. Duration: 121.0 minutes'),
+(392, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-01 15:25:38', 'Windows authentication successful'),
+(393, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-01 15:31:21', 'Session ended. Duration: 5.7 minutes'),
+(394, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-01 15:41:20', 'Windows authentication successful'),
+(395, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-01 15:47:14', 'Session ended. Duration: 5.9 minutes'),
+(396, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-04 05:18:58', 'Windows authentication successful'),
+(397, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 07:52:45', 'Windows authentication successful'),
+(398, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-05-04 07:52:50', 'Session ended. Duration: 0.1 minutes'),
+(399, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 07:53:20', 'Windows authentication successful'),
+(400, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-05-04 07:54:23', 'Session ended. Duration: 1.0 minutes'),
+(401, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 08:25:11', 'Windows authentication successful'),
+(402, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-04 08:26:23', 'Session ended. Duration: 1.2 minutes'),
+(403, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 08:28:03', 'Windows authentication successful'),
+(404, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-04 08:28:23', 'Session ended. Duration: 0.3 minutes'),
+(405, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 08:32:05', 'Windows authentication successful'),
+(406, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-04 09:50:06', 'Session ended. Duration: 78.0 minutes'),
+(407, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 10:23:28', 'Windows authentication successful'),
+(408, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-04 11:43:30', 'Session ended. Duration: 80.0 minutes'),
+(409, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-04 11:50:00', 'Windows authentication successful'),
+(410, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-04 13:03:02', 'Session ended. Duration: 73.0 minutes'),
+(411, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-05 05:03:32', 'Windows authentication successful'),
+(412, 'software_version_mismatch', 'gwhitson', 'V-MTMFG-10', '2026-05-05 05:03:47', 'Session ended. Duration: 0.2 minutes'),
+(413, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 05:17:09', 'Windows authentication successful'),
+(414, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 06:23:10', 'Session ended. Duration: 66.0 minutes'),
+(415, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 06:38:00', 'Windows authentication successful'),
+(416, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 07:16:32', 'Windows authentication successful'),
+(417, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 08:02:01', 'Session ended. Duration: 84.0 minutes'),
+(418, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-05 08:02:33', 'Session ended. Duration: 46.0 minutes'),
+(419, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 08:09:52', 'Windows authentication successful'),
+(420, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-05 09:11:53', 'Session ended. Duration: 62.0 minutes'),
+(421, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 09:29:01', 'Windows authentication successful'),
+(422, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-05 12:26:02', 'Session ended. Duration: 177.0 minutes'),
+(423, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 12:47:26', 'Windows authentication successful'),
+(424, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 12:57:00', 'Windows authentication successful'),
+(425, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-05 13:18:27', 'Session ended. Duration: 31.0 minutes'),
+(426, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-05 14:20:01', 'Session ended. Duration: 83.0 minutes'),
+(427, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 14:27:43', 'Windows authentication successful'),
+(428, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-05 14:58:44', 'Session ended. Duration: 31.0 minutes'),
+(429, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-05 18:25:46', 'Windows authentication successful'),
+(430, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-05 18:35:08', 'Session ended. Duration: 9.4 minutes'),
+(431, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 05:11:55', 'Windows authentication successful'),
+(432, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 06:32:55', 'Session ended. Duration: 81.0 minutes'),
+(433, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 07:26:48', 'Windows authentication successful'),
+(434, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 08:11:50', 'Session ended. Duration: 45.0 minutes'),
+(435, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 09:33:33', 'Windows authentication successful'),
+(436, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 10:08:10', 'Windows authentication successful'),
+(437, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 10:08:34', 'Session ended. Duration: 35.0 minutes'),
+(438, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 10:26:14', 'Windows authentication successful'),
+(439, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 10:58:15', 'Session ended. Duration: 32.0 minutes'),
+(440, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 11:03:11', 'Session ended. Duration: 55.0 minutes'),
+(441, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 11:18:50', 'Windows authentication successful'),
+(442, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 12:07:51', 'Session ended. Duration: 49.0 minutes'),
+(443, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 12:11:14', 'Windows authentication successful'),
+(444, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 12:47:16', 'Session ended. Duration: 36.0 minutes'),
+(445, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 12:54:52', 'Windows authentication successful'),
+(446, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 13:22:32', 'Windows authentication successful'),
+(447, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-06 13:53:33', 'Session ended. Duration: 31.0 minutes'),
+(448, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-06 14:18:54', 'Session ended. Duration: 84.0 minutes'),
+(449, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-06 15:50:47', 'Windows authentication successful'),
+(450, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-06 16:25:55', 'Session ended. Duration: 35.1 minutes'),
+(451, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-07 05:08:32', 'Windows authentication successful'),
+(452, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-07 05:09:27', 'Session ended. Duration: 0.9 minutes'),
+(453, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-07 05:26:45', 'Windows authentication successful'),
+(454, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-07 05:59:46', 'Session ended. Duration: 33.0 minutes'),
+(455, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-07 07:08:47', 'Windows authentication successful'),
+(456, 'software_version_mismatch', 'jkoll', 'V-MTMFG-5', '2026-05-07 07:08:51', 'Session ended. Duration: 0.1 minutes'),
+(457, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-07 07:09:27', 'Windows authentication successful'),
+(458, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-07 07:09:38', 'Session ended. Duration: 0.2 minutes'),
+(459, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 07:11:50', 'Windows authentication successful'),
+(460, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 07:12:44', 'Session ended. Duration: 0.9 minutes'),
+(461, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 07:13:28', 'Windows authentication successful'),
+(462, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 07:14:53', 'Session ended. Duration: 1.4 minutes'),
+(463, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 07:15:28', 'Windows authentication successful'),
+(464, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 07:42:21', 'Session ended. Duration: 26.9 minutes');
+INSERT INTO `settings_personal_activity_log` (`log_id`, `event_type`, `username`, `workstation_name`, `event_timestamp`, `details`) VALUES
+(465, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 07:58:14', 'Windows authentication successful'),
+(466, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-07 08:03:30', 'Windows authentication successful'),
+(467, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-07 08:08:11', 'Session ended. Duration: 4.7 minutes'),
+(468, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-07 08:31:15', 'Session ended. Duration: 33.0 minutes'),
+(469, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 09:39:49', 'Windows authentication successful'),
+(470, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 10:16:31', 'Session ended. Duration: 36.7 minutes'),
+(471, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 10:21:06', 'Windows authentication successful'),
+(472, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 11:00:34', 'Session ended. Duration: 39.5 minutes'),
+(473, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 11:13:12', 'Windows authentication successful'),
+(474, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 12:00:39', 'Session ended. Duration: 47.5 minutes'),
+(475, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 12:21:42', 'Windows authentication successful'),
+(476, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-07 13:30:43', 'Session ended. Duration: 69.0 minutes'),
+(477, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 13:51:39', 'Windows authentication successful'),
+(478, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 14:39:15', 'Session ended. Duration: 47.6 minutes'),
+(479, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 14:39:30', 'Windows authentication successful'),
+(480, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 14:51:12', 'Session ended. Duration: 11.7 minutes'),
+(481, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 15:13:42', 'Windows authentication successful'),
+(482, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 15:29:44', 'Session ended. Duration: 16.0 minutes'),
+(483, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 15:38:02', 'Windows authentication successful'),
+(484, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-05-07 15:38:07', 'Session ended. Duration: 0.1 minutes'),
+(485, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 15:40:38', 'Windows authentication successful'),
+(486, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 15:41:14', 'Session ended. Duration: 0.6 minutes'),
+(487, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-07 15:41:24', 'Windows authentication successful'),
+(488, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-07 16:18:24', 'Session ended. Duration: 37.0 minutes'),
+(489, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-08 05:30:54', 'Windows authentication successful'),
+(490, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-08 06:46:55', 'Session ended. Duration: 76.0 minutes'),
+(491, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 07:15:12', 'Windows authentication successful'),
+(492, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-08 08:10:47', 'Session ended. Duration: 55.6 minutes'),
+(493, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 08:21:34', 'Windows authentication successful'),
+(494, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-08 08:55:34', 'Session ended. Duration: 34.0 minutes'),
+(495, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 09:24:14', 'Windows authentication successful'),
+(496, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-08 10:45:16', 'Session ended. Duration: 81.0 minutes'),
+(497, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 12:26:51', 'Windows authentication successful'),
+(498, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-08 12:37:59', 'Windows authentication successful'),
+(499, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-08 12:39:12', 'Session ended. Duration: 1.2 minutes'),
+(500, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-08 12:44:03', 'Windows authentication successful'),
+(501, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-08 12:55:53', 'Session ended. Duration: 11.8 minutes'),
+(502, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-08 12:57:24', 'Session ended. Duration: 30.5 minutes'),
+(503, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-08 12:59:16', 'Windows authentication successful'),
+(504, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-08 13:07:24', 'Session ended. Duration: 8.1 minutes'),
+(505, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-08 13:08:08', 'Windows authentication successful'),
+(506, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-08 13:15:38', 'Session ended. Duration: 7.5 minutes'),
+(507, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 14:19:41', 'Windows authentication successful'),
+(508, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-08 14:23:06', 'Windows authentication successful'),
+(509, 'software_version_mismatch', 'traddatz', 'MTMFG-84', '2026-05-08 14:23:16', 'Session ended. Duration: 0.2 minutes'),
+(510, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-08 14:25:30', 'Windows authentication successful'),
+(511, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-08 14:38:03', 'Session ended. Duration: 12.6 minutes'),
+(512, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-08 14:38:55', 'Windows authentication successful'),
+(513, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-08 14:45:38', 'Session ended. Duration: 25.9 minutes'),
+(514, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-08 14:48:52', 'Session ended. Duration: 10.0 minutes'),
+(515, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 15:00:15', 'Windows authentication successful'),
+(516, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-08 15:00:37', 'Session ended. Duration: 0.3 minutes'),
+(517, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-08 15:01:31', 'Windows authentication successful'),
+(518, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-08 15:07:59', 'Session ended. Duration: 6.5 minutes'),
+(519, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-11 05:09:14', 'Windows authentication successful'),
+(520, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-11 05:26:43', 'Windows authentication successful'),
+(521, 'session_timeout', 'gwhitson', 'V-MTMFG-10', '2026-05-11 06:16:16', 'Session ended. Duration: 67.0 minutes'),
+(522, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-11 06:23:44', 'Session ended. Duration: 57.0 minutes'),
+(523, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-11 07:04:31', 'Windows authentication successful'),
+(524, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-11 07:09:14', 'Session ended. Duration: 4.7 minutes'),
+(525, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-11 08:31:37', 'Windows authentication successful'),
+(526, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-11 09:10:38', 'Session ended. Duration: 39.0 minutes'),
+(527, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-11 10:02:44', 'Windows authentication successful'),
+(528, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-11 10:38:45', 'Session ended. Duration: 36.0 minutes'),
+(529, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-11 10:45:32', 'Windows authentication successful'),
+(530, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-11 11:39:45', 'Windows authentication successful'),
+(531, 'software_version_mismatch', 'traddatz', 'MTMFG-84', '2026-05-11 11:39:48', 'Session ended. Duration: 0.1 minutes'),
+(532, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-11 11:42:03', 'Windows authentication successful'),
+(533, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-11 12:14:04', 'Session ended. Duration: 32.0 minutes'),
+(534, 'session_timeout', 'jkoll', 'MTMFG-101', '2026-05-11 12:14:33', 'Session ended. Duration: 89.0 minutes'),
+(535, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-11 12:43:18', 'Windows authentication successful'),
+(536, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-11 12:44:33', 'Windows authentication successful'),
+(537, 'manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-05-11 12:54:06', 'Session ended. Duration: 10.8 minutes'),
+(538, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-11 13:36:33', 'Session ended. Duration: 52.0 minutes'),
+(539, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-12 05:11:32', 'Windows authentication successful'),
+(540, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-12 05:57:33', 'Session ended. Duration: 46.0 minutes'),
+(541, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-12 06:13:59', 'Windows authentication successful'),
+(542, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-12 06:44:59', 'Session ended. Duration: 31.0 minutes'),
+(543, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-12 07:18:02', 'Windows authentication successful'),
+(544, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-05-12 07:33:37', 'Session ended. Duration: 15.6 minutes'),
+(545, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-12 07:34:04', 'Windows authentication successful'),
+(546, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-05-12 07:59:49', 'Session ended. Duration: 25.7 minutes'),
+(547, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-12 08:01:14', 'Windows authentication successful'),
+(548, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-05-12 08:10:52', 'Session ended. Duration: 9.6 minutes'),
+(549, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-12 08:34:11', 'Windows authentication successful'),
+(550, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-12 08:34:48', 'Session ended. Duration: 0.6 minutes'),
+(551, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-12 08:37:12', 'Windows authentication successful'),
+(552, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-12 08:54:39', 'Session ended. Duration: 17.4 minutes'),
+(553, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 09:32:13', 'Windows authentication successful'),
+(554, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-12 09:39:31', 'Windows authentication successful'),
+(555, 'software_version_mismatch', 'jkoll', 'MTMFG-101', '2026-05-12 10:00:34', 'Session ended. Duration: 21.1 minutes'),
+(556, 'software_version_mismatch', 'traddatz', 'MTMFG-84', '2026-05-12 10:03:20', 'Session ended. Duration: 31.1 minutes'),
+(557, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 10:04:51', 'Windows authentication successful'),
+(558, 'software_version_mismatch', 'traddatz', 'MTMFG-84', '2026-05-12 10:05:09', 'Session ended. Duration: 0.3 minutes'),
+(559, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 10:07:59', 'Windows authentication successful'),
+(560, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-12 10:43:00', 'Session ended. Duration: 35.0 minutes'),
+(561, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 12:43:27', 'Windows authentication successful'),
+(562, 'login_success', 'jkoll', 'MTMFG-101', '2026-05-12 12:48:46', 'Windows authentication successful'),
+(563, 'manual_close', 'jkoll', 'MTMFG-101', '2026-05-12 12:52:08', 'Session ended. Duration: 3.4 minutes'),
+(564, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-12 13:24:28', 'Session ended. Duration: 41.0 minutes'),
+(565, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 14:21:49', 'Windows authentication successful'),
+(566, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-12 14:30:14', 'Session ended. Duration: 8.4 minutes'),
+(567, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-12 14:53:38', 'Windows authentication successful'),
+(568, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-12 15:11:37', 'Windows authentication successful'),
+(569, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-12 15:13:39', 'Session ended. Duration: 20.0 minutes'),
+(570, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-12 15:23:10', 'Session ended. Duration: 11.5 minutes'),
+(571, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-12 15:30:05', 'Windows authentication successful'),
+(572, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-12 15:30:32', 'Session ended. Duration: 0.4 minutes'),
+(573, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 04:24:44', 'Windows authentication successful'),
+(574, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-13 04:44:32', 'Session ended. Duration: 19.8 minutes'),
+(575, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-13 05:18:55', 'Windows authentication successful'),
+(576, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-13 06:07:56', 'Session ended. Duration: 49.0 minutes'),
+(577, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-13 07:00:45', 'Windows authentication successful'),
+(578, 'manual_close', 'gwhitson', 'V-MTMFG-10', '2026-05-13 07:01:42', 'Session ended. Duration: 0.9 minutes'),
+(579, 'login_success', 'gwhitson', 'V-MTMFG-10', '2026-05-13 07:11:10', 'Windows authentication successful'),
+(580, 'session_timeout', 'gwhitson', 'V-MTMFG-10', '2026-05-13 07:47:10', 'Session ended. Duration: 36.0 minutes'),
+(581, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 07:49:10', 'Windows authentication successful'),
+(582, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-13 08:42:14', 'Session ended. Duration: 53.0 minutes'),
+(583, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 08:55:24', 'Windows authentication successful'),
+(584, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-13 08:55:39', 'Windows authentication successful'),
+(585, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-13 10:12:41', 'Session ended. Duration: 77.0 minutes'),
+(586, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-13 10:56:25', 'Session ended. Duration: 121.0 minutes'),
+(587, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 11:12:21', 'Windows authentication successful'),
+(588, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-13 11:50:21', 'Session ended. Duration: 38.0 minutes'),
+(589, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-13 12:53:24', 'Windows authentication successful'),
+(590, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-13 13:29:25', 'Session ended. Duration: 36.0 minutes'),
+(591, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 14:34:45', 'Windows authentication successful'),
+(592, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-13 14:59:46', 'Windows authentication successful'),
+(593, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-13 15:12:27', 'Session ended. Duration: 12.7 minutes'),
+(594, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-13 15:29:46', 'Session ended. Duration: 55.0 minutes'),
+(595, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 15:42:12', 'Windows authentication successful'),
+(596, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-13 16:11:19', 'Session ended. Duration: 29.1 minutes'),
+(597, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 16:11:25', 'Windows authentication successful'),
+(598, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-13 16:11:35', 'Session ended. Duration: 0.2 minutes'),
+(599, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-13 16:14:28', 'Windows authentication successful'),
+(600, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-13 16:50:46', 'Session ended. Duration: 36.3 minutes'),
+(601, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-14 05:04:11', 'Windows authentication successful'),
+(602, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-14 05:56:11', 'Session ended. Duration: 52.0 minutes'),
+(603, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 06:38:50', 'Windows authentication successful'),
+(604, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-14 07:11:51', 'Session ended. Duration: 33.0 minutes'),
+(605, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 08:05:26', 'Windows authentication successful'),
+(606, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-14 08:58:27', 'Session ended. Duration: 53.0 minutes'),
+(607, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 10:31:29', 'Windows authentication successful'),
+(608, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-14 10:45:19', 'Session ended. Duration: 13.8 minutes'),
+(609, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 10:57:17', 'Windows authentication successful'),
+(610, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-14 12:07:18', 'Session ended. Duration: 70.0 minutes'),
+(611, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 12:30:10', 'Windows authentication successful'),
+(612, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-14 14:14:11', 'Session ended. Duration: 104.0 minutes'),
+(613, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 14:27:35', 'Windows authentication successful'),
+(614, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-14 14:34:00', 'Windows authentication successful'),
+(615, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-14 14:48:07', 'Session ended. Duration: 14.1 minutes'),
+(616, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-14 15:15:36', 'Session ended. Duration: 48.0 minutes'),
+(617, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-14 15:41:26', 'Windows authentication successful'),
+(618, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-14 15:51:44', 'Session ended. Duration: 10.3 minutes'),
+(619, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-15 05:18:30', 'Windows authentication successful'),
+(620, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-15 07:25:20', 'Windows authentication successful'),
+(621, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-15 07:31:26', 'Session ended. Duration: 6.1 minutes'),
+(622, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-15 08:12:32', 'Session ended. Duration: 174.0 minutes'),
+(623, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-15 08:22:18', 'Windows authentication successful'),
+(624, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-15 08:26:29', 'Windows authentication successful'),
+(625, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-15 09:02:19', 'Session ended. Duration: 40.0 minutes'),
+(626, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-15 09:07:30', 'Session ended. Duration: 41.0 minutes'),
+(627, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-15 12:49:03', 'Windows authentication successful'),
+(628, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-15 14:03:04', 'Session ended. Duration: 74.0 minutes'),
+(629, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-15 14:10:41', 'Windows authentication successful'),
+(630, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-15 14:48:42', 'Session ended. Duration: 38.0 minutes'),
+(631, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-18 05:06:42', 'Windows authentication successful'),
+(632, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-18 08:09:19', 'Windows authentication successful'),
+(633, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-18 08:43:20', 'Session ended. Duration: 34.0 minutes'),
+(634, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-18 09:24:48', 'Windows authentication successful'),
+(635, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-18 09:56:49', 'Session ended. Duration: 32.0 minutes'),
+(636, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-18 10:51:02', 'Windows authentication successful'),
+(637, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-18 10:53:41', 'Session ended. Duration: 2.6 minutes'),
+(638, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-18 11:35:00', 'Windows authentication successful'),
+(639, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-18 11:51:43', 'Session ended. Duration: 16.7 minutes'),
+(640, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-18 12:09:23', 'Windows authentication successful'),
+(641, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-18 12:38:56', 'Windows authentication successful'),
+(642, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-18 12:45:24', 'Session ended. Duration: 36.0 minutes'),
+(643, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-18 12:46:55', 'Session ended. Duration: 8.0 minutes'),
+(644, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-19 05:32:12', 'Windows authentication successful'),
+(645, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 06:02:23', 'Windows authentication successful'),
+(646, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-19 06:11:55', 'Session ended. Duration: 9.5 minutes'),
+(647, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-19 06:15:13', 'Session ended. Duration: 43.0 minutes'),
+(648, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-19 06:31:51', 'Windows authentication successful'),
+(649, 'manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-05-19 06:56:20', 'Session ended. Duration: 24.5 minutes'),
+(650, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 07:08:54', 'Windows authentication successful'),
+(651, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-19 07:13:46', 'Session ended. Duration: 4.9 minutes'),
+(652, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 08:29:31', 'Windows authentication successful'),
+(653, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 08:50:06', 'Windows authentication successful'),
+(654, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 09:10:51', 'Windows authentication successful'),
+(655, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 09:12:15', 'Windows authentication successful'),
+(656, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-19 09:13:18', 'Session ended. Duration: 1.0 minutes'),
+(657, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 09:29:43', 'Windows authentication successful'),
+(658, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-19 09:35:14', 'Session ended. Duration: 5.5 minutes'),
+(659, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 10:32:47', 'Windows authentication successful'),
+(660, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-19 10:50:11', 'Session ended. Duration: 17.4 minutes'),
+(661, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 10:50:18', 'Windows authentication successful'),
+(662, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-19 11:26:27', 'Session ended. Duration: 36.1 minutes'),
+(663, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 11:30:42', 'Windows authentication successful'),
+(664, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 11:31:36', 'Windows authentication successful'),
+(665, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-19 12:12:37', 'Session ended. Duration: 41.0 minutes'),
+(666, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-19 12:18:43', 'Session ended. Duration: 48.0 minutes'),
+(667, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-19 12:18:45', 'Windows authentication successful'),
+(668, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 12:37:57', 'Windows authentication successful'),
+(669, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-19 13:30:46', 'Session ended. Duration: 72.0 minutes'),
+(670, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-19 14:16:58', 'Session ended. Duration: 99.0 minutes'),
+(671, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 15:15:18', 'Windows authentication successful'),
+(672, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-19 15:35:30', 'Windows authentication successful'),
+(673, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-19 15:40:08', 'Session ended. Duration: 4.6 minutes'),
+(674, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-20 05:04:32', 'Windows authentication successful'),
+(675, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-20 05:46:33', 'Session ended. Duration: 42.0 minutes'),
+(676, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-20 06:32:11', 'Windows authentication successful'),
+(677, 'manual_close', 'traddatz', 'MTMFG-FORK-20', '2026-05-20 06:32:57', 'Session ended. Duration: 0.8 minutes'),
+(678, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-20 07:26:06', 'Windows authentication successful'),
+(679, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-20 08:00:07', 'Session ended. Duration: 34.0 minutes'),
+(680, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-20 08:24:39', 'Windows authentication successful'),
+(681, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-20 09:03:40', 'Session ended. Duration: 39.0 minutes'),
+(682, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-20 09:24:40', 'Windows authentication successful'),
+(683, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-20 09:54:24', 'Windows authentication successful'),
+(684, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-20 10:18:40', 'Session ended. Duration: 54.0 minutes'),
+(685, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-20 10:30:25', 'Session ended. Duration: 36.0 minutes'),
+(686, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-20 12:51:04', 'Windows authentication successful'),
+(687, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-20 13:39:05', 'Session ended. Duration: 48.0 minutes'),
+(688, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-20 14:14:33', 'Windows authentication successful'),
+(689, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-20 14:45:03', 'Session ended. Duration: 30.5 minutes'),
+(690, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-20 14:45:10', 'Windows authentication successful'),
+(691, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-20 14:45:27', 'Session ended. Duration: 0.3 minutes'),
+(692, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-21 04:52:34', 'Windows authentication successful'),
+(693, 'manual_close', 'traddatz', 'MTMFG-84', '2026-05-21 05:54:03', 'Session ended. Duration: 61.5 minutes'),
+(694, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-21 08:12:32', 'Windows authentication successful'),
+(695, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-21 08:53:33', 'Session ended. Duration: 41.0 minutes'),
+(696, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-21 11:50:03', 'Windows authentication successful'),
+(697, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-21 12:22:04', 'Session ended. Duration: 32.0 minutes'),
+(698, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-21 12:44:48', 'Windows authentication successful'),
+(699, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-21 13:16:49', 'Session ended. Duration: 32.0 minutes'),
+(700, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-21 13:55:02', 'Windows authentication successful'),
+(701, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-21 14:57:03', 'Session ended. Duration: 62.0 minutes'),
+(702, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-22 05:27:36', 'Windows authentication successful'),
+(703, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-22 06:00:37', 'Session ended. Duration: 33.0 minutes'),
+(704, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-22 07:18:22', 'Windows authentication successful'),
+(705, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 07:35:34', 'Windows authentication successful'),
+(706, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-22 07:37:08', 'Session ended. Duration: 1.6 minutes'),
+(707, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 07:37:32', 'Windows authentication successful'),
+(708, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-22 07:38:08', 'Session ended. Duration: 0.6 minutes'),
+(709, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 07:38:53', 'Windows authentication successful'),
+(710, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-22 07:50:22', 'Session ended. Duration: 32.0 minutes'),
+(711, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-22 08:19:54', 'Session ended. Duration: 41.0 minutes'),
+(712, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-22 08:37:13', 'Windows authentication successful'),
+(713, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 09:18:07', 'Windows authentication successful'),
+(714, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-22 09:48:14', 'Session ended. Duration: 71.0 minutes'),
+(715, 'session_timeout', 'jkoll', 'V-MTMFG-5', '2026-05-22 09:53:08', 'Session ended. Duration: 35.0 minutes'),
+(716, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 10:27:59', 'Windows authentication successful'),
+(717, 'login_success', 'jkoll', 'V-MTMFG-5', '2026-05-22 10:36:41', 'Windows authentication successful'),
+(718, 'manual_close', 'jkoll', 'V-MTMFG-5', '2026-05-22 10:43:50', 'Session ended. Duration: 7.1 minutes'),
+(719, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-22 11:36:37', 'Windows authentication successful'),
+(720, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-22 12:18:38', 'Session ended. Duration: 42.0 minutes'),
+(721, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-22 12:51:47', 'Windows authentication successful'),
+(722, 'session_timeout', 'traddatz', 'MTMFG-84', '2026-05-22 13:58:48', 'Session ended. Duration: 67.0 minutes'),
+(723, 'login_success', 'traddatz', 'MTMFG-84', '2026-05-22 14:54:26', 'Windows authentication successful'),
+(724, 'login_success', 'traddatz', 'MTMFG-FORK-20', '2026-05-26 05:29:16', 'Windows authentication successful'),
+(725, 'session_timeout', 'traddatz', 'MTMFG-FORK-20', '2026-05-26 06:03:16', 'Session ended. Duration: 34.0 minutes');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_reporting_recipients`
+--
+
+CREATE TABLE `settings_reporting_recipients` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for the Reporting recipient row',
+  `first_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Recipient first name',
+  `last_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Recipient last name',
+  `recipient_type` enum('To','CC') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Outlook recipient bucket',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Full email address saved exactly as entered'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Reporting preview recipients copied from the reporting preview surface';
+
+--
+-- Dumping data for table `settings_reporting_recipients`
+--
+
+INSERT INTO `settings_reporting_recipients` (`id`, `first_name`, `last_name`, `recipient_type`, `email`) VALUES
+(1, 'Michelle', 'Laurin', 'To', 'mlaurin@mantoolmfg.com'),
+(2, 'Charles', 'Ehlenbeck', 'To', 'CEhlenbeck@mantoolmfg.com'),
+(3, 'Debra', 'Alexander', 'To', 'dalexander@mantoolmfg.com'),
+(4, 'Material', 'Handlers', 'To', 'mhandler@mantoolmfg.com'),
+(5, 'Valerie', 'Kingsbury', 'To', 'VKingsbury@mantoolmfg.com'),
+(6, 'Scott', 'Carbon', 'To', 'scarbon@mantoolmfg.com'),
+(7, 'Nick', 'Wunsch', 'To', 'NWunsch@mantoolmfg.com'),
+(8, 'Shawn', 'Snyder', 'To', 'ssnyder@mantoolmfg.com'),
+(9, 'Production', 'lead', 'To', 'Productionlead@mantoolmfg.com'),
+(10, 'Bill', 'Schmidt', 'To', 'BSchmidt@mantoolmfg.com'),
+(11, 'Angela', 'Beeman', 'To', 'abeeman@mantoolmfg.com'),
+(12, 'Amanda', 'Groelle', 'To', 'agroelle@mantoolmfg.com'),
+(13, 'Sandy', 'Miller', 'To', 'smiller@mantoolmfg.com'),
+(14, 'Cristofer', 'Muchowski', 'To', 'CMuchowski@mantoolmfg.com'),
+(15, 'Steph', 'Wittmus', 'To', 'swittmus@mantoolmfg.com'),
+(16, 'Jose', 'Rosas', 'To', 'jrosas@mantoolmfg.com'),
+(17, 'Tim', 'Raddatz', 'To', 'traddatz@mantoolmfg.com'),
+(18, 'Material Handler', 'Lead', 'To', 'mhlead@mantoolmfg.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_roles`
+--
+
+CREATE TABLE `settings_roles` (
+  `id` int(11) NOT NULL,
+  `role_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `settings_roles`
+--
+
+INSERT INTO `settings_roles` (`id`, `role_name`, `description`, `created_at`) VALUES
+(1, 'User', 'Basic user role - can modify own settings', '2026-04-07 07:12:56'),
+(2, 'Supervisor', 'Supervisor role - can manage user settings', '2026-04-07 07:12:56'),
+(3, 'Admin', 'Administrator role - full access to all settings', '2026-04-07 07:12:56'),
+(4, 'Developer', 'Developer role - unrestricted access for development', '2026-04-07 07:12:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_universal`
+--
+
+CREATE TABLE `settings_universal` (
+  `id` int(11) NOT NULL COMMENT 'Auto-incrementing primary key for the setting record',
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Settings category (System, Security, Receiving, Dunnage, Volvo, Reporting, ERP, UserDefaults)',
+  `sub_category` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Optional sub-category for hierarchical organization',
+  `setting_key` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Unique key for the setting (machine identifier, used in code)',
+  `setting_name` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Human-readable display name shown in UI (optional)',
+  `description` text COLLATE utf8mb4_unicode_ci COMMENT 'Detailed description / help text shown to users or administrators',
+  `setting_value` text COLLATE utf8mb4_unicode_ci COMMENT 'Current value (store JSON for complex types; plain text for simple types)',
+  `default_value` text COLLATE utf8mb4_unicode_ci COMMENT 'Factory default value to fall back to when no user value is provided',
+  `data_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'String' COMMENT 'Data type hint: String, Int, Bool, Json, Path, Password, Email',
+  `scope` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'system' COMMENT 'Determines if the setting is system-wide or can be overridden per user',
+  `permission_level` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin' COMMENT 'Minimum permission level required to view/modify this setting',
+  `is_locked` tinyint(1) DEFAULT '0' COMMENT 'If true, prevents modification even by higher-permission users (administrative lock)',
+  `is_sensitive` tinyint(1) DEFAULT '0' COMMENT 'If true, value should be treated as sensitive: encrypted at rest and masked in the UI',
+  `validation_rules` json DEFAULT NULL COMMENT 'JSON object containing validation metadata (min, max, pattern, allowed_values, etc.)',
+  `ui_control_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'textbox' COMMENT 'Preferred UI control type: textbox, numberbox, toggleswitch, combobox, passwordbox, folderpicker, datagrid',
+  `ui_order` int(11) DEFAULT '0' COMMENT 'Display order within category (lower values shown first)',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record last updated timestamp',
+  `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Username of the user who last updated the setting'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='System-wide application settings';
+
+--
+-- Dumping data for table `settings_universal`
+--
+
+INSERT INTO `settings_universal` (`id`, `category`, `sub_category`, `setting_key`, `setting_name`, `description`, `setting_value`, `default_value`, `data_type`, `scope`, `permission_level`, `is_locked`, `is_sensitive`, `validation_rules`, `ui_control_type`, `ui_order`, `created_at`, `updated_at`, `updated_by`) VALUES
+(1, 'System', NULL, 'Core.Theme', NULL, NULL, 'System', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:20', '2026-04-01 10:41:20', 'jkoll'),
+(2, 'System', NULL, 'Core.Logging.Level', NULL, NULL, 'Information', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(3, 'System', NULL, 'Core.Database.StoredProcedureMaxRetries', NULL, NULL, '3', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(4, 'System', NULL, 'Core.SharedPaths.ExportRoot', NULL, NULL, 'C:/MTM/Exports', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(5, 'System', NULL, 'Core.Database.ConnectionSecret', NULL, NULL, 'OoC3IwcCxSZCx9gw/cUE3FtqZM9ShMEMR3aO/PZ707g=', NULL, 'String', 'system', 'admin', 0, 1, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(6, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.GuidedTitle', NULL, NULL, 'Guided Wizard', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(7, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.GuidedDescription', NULL, NULL, 'Step-by-step process for standard receiving workflow.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(8, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.ManualTitle', NULL, NULL, 'Manual Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-08 16:48:59', 'jkoll'),
+(9, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.ManualDescription', NULL, NULL, 'Customizable grid for bulk data entry and editing.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(10, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.EditTitle', NULL, NULL, 'Edit Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(11, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.EditDescription', NULL, NULL, 'Edit existing loads without adding new ones.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(12, 'Receiving', NULL, 'Receiving.UiText.ModeSelection.SetDefault', NULL, NULL, 'Set as default mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(13, 'Receiving', NULL, 'Receiving.UiText.Workflow.Help', NULL, NULL, 'Help', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:21', '2026-04-01 10:41:21', 'jkoll'),
+(14, 'Receiving', NULL, 'Receiving.UiText.Workflow.Back', NULL, NULL, 'Back', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(15, 'Receiving', NULL, 'Receiving.UiText.Workflow.Next', NULL, NULL, 'Next', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-08 16:48:59', 'jkoll'),
+(16, 'Receiving', NULL, 'Receiving.UiText.Workflow.ModeSelection', NULL, NULL, 'Mode Selection', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(17, 'Receiving', NULL, 'Receiving.UiText.Workflow.ResetLabelTable', NULL, NULL, 'Reset Label Table', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(18, 'Receiving', NULL, 'Receiving.UiText.Completion.SuccessTitle', NULL, NULL, 'Success!', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(19, 'Receiving', NULL, 'Receiving.UiText.Completion.FailureTitle', NULL, NULL, 'Save Failed', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(20, 'Receiving', NULL, 'Receiving.UiText.Completion.LoadsSavedSuffix', NULL, NULL, ' loads saved successfully.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(21, 'Receiving', NULL, 'Receiving.UiText.Completion.SaveDetailsTitle', NULL, NULL, 'Save Details:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(22, 'Receiving', NULL, 'Receiving.UiText.Completion.LocalLabelTableLabel', NULL, NULL, 'Local Label Table:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(23, 'Receiving', NULL, 'Receiving.UiText.Completion.NetworkLabelTableLabel', NULL, NULL, 'Network Label Table:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(24, 'Receiving', NULL, 'Receiving.UiText.Completion.DatabaseLabel', NULL, NULL, 'Database:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(25, 'Receiving', NULL, 'Receiving.UiText.Completion.Saved', NULL, NULL, 'Saved', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(26, 'Receiving', NULL, 'Receiving.UiText.Completion.Failed', NULL, NULL, 'Failed', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(27, 'Receiving', NULL, 'Receiving.UiText.Completion.StartNewEntry', NULL, NULL, 'Start New Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(28, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.AddRow', NULL, NULL, 'Add Row', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(29, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.AddMultiple', NULL, NULL, 'Add Multiple', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(30, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.RemoveRow', NULL, NULL, 'Remove Row', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-08 16:48:59', 'jkoll'),
+(31, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.AutoFill', NULL, NULL, 'Auto-Fill', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(32, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.SaveAndFinish', NULL, NULL, 'Save & Finish', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(33, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.LoadNumber', NULL, NULL, 'Load #', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(34, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.PartId', NULL, NULL, 'Part ID', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(35, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.WeightQty', NULL, NULL, 'Weight/Qty', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(36, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.HeatLot', NULL, NULL, 'Heat/Lot', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(37, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.PkgType', NULL, NULL, 'Pkg Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(38, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.PkgsPerLoad', NULL, NULL, 'Pkgs/Load', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(39, 'Receiving', NULL, 'Receiving.UiText.ManualEntry.Column.WtPerPkg', NULL, NULL, 'Wt/Pkg', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(40, 'Receiving', NULL, 'Receiving.UiText.EditMode.LoadDataFrom', NULL, NULL, 'Load Data From:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(41, 'Receiving', NULL, 'Receiving.UiText.EditMode.CurrentMemory', NULL, NULL, 'Current Memory', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-01 10:41:22', 'jkoll'),
+(42, 'Receiving', NULL, 'Receiving.UiText.EditMode.CurrentLabels', NULL, NULL, 'Current Labels', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:22', '2026-04-08 16:48:59', 'jkoll'),
+(43, 'Receiving', NULL, 'Receiving.UiText.EditMode.History', NULL, NULL, 'History', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(44, 'Receiving', NULL, 'Receiving.UiText.EditMode.FilterDate', NULL, NULL, 'Filter Date:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(45, 'Receiving', NULL, 'Receiving.UiText.EditMode.To', NULL, NULL, 'to', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(46, 'Receiving', NULL, 'Receiving.UiText.EditMode.LastWeek', NULL, NULL, 'Last Week', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(47, 'Receiving', NULL, 'Receiving.UiText.EditMode.Today', NULL, NULL, 'Today', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(48, 'Receiving', NULL, 'Receiving.UiText.EditMode.ThisWeek', NULL, NULL, 'This Week', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(49, 'Receiving', NULL, 'Receiving.UiText.EditMode.ShowAll', NULL, NULL, 'Show All', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(50, 'Receiving', NULL, 'Receiving.UiText.EditMode.Page', NULL, NULL, 'Page', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(51, 'Receiving', NULL, 'Receiving.UiText.EditMode.Of', NULL, NULL, 'of', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(52, 'Receiving', NULL, 'Receiving.UiText.EditMode.Go', NULL, NULL, 'Go', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(53, 'Receiving', NULL, 'Receiving.UiText.EditMode.SaveAndFinish', NULL, NULL, 'Save & Finish', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(54, 'Receiving', NULL, 'Receiving.UiText.EditMode.RemoveRow', NULL, NULL, 'Remove Row', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(55, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.LoadNumber', NULL, NULL, 'Load #', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(56, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.PartId', NULL, NULL, 'Part ID', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(57, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.WeightQty', NULL, NULL, 'Weight/Qty', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(58, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.HeatLot', NULL, NULL, 'Heat/Lot', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(59, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.PkgType', NULL, NULL, 'Pkg Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(60, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.PkgsPerLoad', NULL, NULL, 'Pkgs/Load', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(61, 'Receiving', NULL, 'Receiving.UiText.EditMode.Column.WtPerPkg', NULL, NULL, 'Wt/Pkg', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(62, 'Receiving', NULL, 'Receiving.UiText.PoEntry.PurchaseOrderNumber', NULL, NULL, 'Purchase Order Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(63, 'Receiving', NULL, 'Receiving.UiText.PoEntry.StatusLabel', NULL, NULL, 'Status:', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(64, 'Receiving', NULL, 'Receiving.UiText.PoEntry.LoadPo', NULL, NULL, 'Load PO', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-08 16:48:59', 'jkoll'),
+(65, 'Receiving', NULL, 'Receiving.UiText.PoEntry.SwitchToNonPo', NULL, NULL, 'Switch to Non-PO', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(66, 'Receiving', NULL, 'Receiving.UiText.PoEntry.PartIdentifier', NULL, NULL, 'Part Identifier', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(67, 'Receiving', NULL, 'Receiving.UiText.PoEntry.PackageTypeAuto', NULL, NULL, 'Package Type (Auto-detected)', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(68, 'Receiving', NULL, 'Receiving.UiText.PoEntry.LookupPart', NULL, NULL, 'Look Up Part', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(69, 'Receiving', NULL, 'Receiving.UiText.PoEntry.SwitchToPo', NULL, NULL, 'Switch to PO Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(70, 'Receiving', NULL, 'Receiving.UiText.PoEntry.AvailableParts', NULL, NULL, 'Available Parts', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(71, 'Receiving', NULL, 'Receiving.UiText.PoEntry.Column.PartId', NULL, NULL, 'Part ID', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(72, 'Receiving', NULL, 'Receiving.UiText.PoEntry.Column.Description', NULL, NULL, 'Description', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(73, 'Receiving', NULL, 'Receiving.UiText.PoEntry.Column.RemainingQty', NULL, NULL, 'Remaining Qty', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(74, 'Receiving', NULL, 'Receiving.UiText.PoEntry.Column.QtyOrdered', NULL, NULL, 'Qty Ordered', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(75, 'Receiving', NULL, 'Receiving.UiText.PoEntry.Column.LineNumber', NULL, NULL, 'Line #', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(76, 'Receiving', NULL, 'Receiving.UiText.LoadEntry.Header', NULL, NULL, 'Number of Loads (1-99)', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(77, 'Receiving', NULL, 'Receiving.UiText.LoadEntry.Instruction', NULL, NULL, 'Enter the total number of skids/loads for this part.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(78, 'Receiving', NULL, 'Receiving.UiText.WeightQuantity.Header', NULL, NULL, 'Weight/Quantity', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:23', '2026-04-01 10:41:23', 'jkoll'),
+(79, 'Receiving', NULL, 'Receiving.UiText.WeightQuantity.Placeholder', NULL, NULL, 'Enter whole number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(80, 'Receiving', NULL, 'Receiving.UiText.HeatLot.Header', NULL, NULL, 'Load Entries', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(81, 'Receiving', NULL, 'Receiving.UiText.HeatLot.AutoFill', NULL, NULL, 'Auto-Fill', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(82, 'Receiving', NULL, 'Receiving.UiText.HeatLot.AutoFillTooltip', NULL, NULL, 'Fill blank heat numbers from rows above', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-08 16:48:59', 'jkoll'),
+(83, 'Receiving', NULL, 'Receiving.UiText.HeatLot.LoadPrefix', NULL, NULL, 'Load #{0}', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(84, 'Receiving', NULL, 'Receiving.UiText.HeatLot.FieldHeader', NULL, NULL, 'Heat/Lot Number (Optional)', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(85, 'Receiving', NULL, 'Receiving.UiText.HeatLot.FieldPlaceholder', NULL, NULL, 'Enter heat/lot number or leave blank', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(86, 'Receiving', NULL, 'Receiving.UiText.PackageType.Header', NULL, NULL, 'Package Type (Applied to all loads)', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(87, 'Receiving', NULL, 'Receiving.UiText.PackageType.ComboHeader', NULL, NULL, 'Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(88, 'Receiving', NULL, 'Receiving.UiText.PackageType.CustomHeader', NULL, NULL, 'Custom Name', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-08 16:48:59', 'jkoll'),
+(89, 'Receiving', NULL, 'Receiving.UiText.PackageType.SaveAsDefault', NULL, NULL, 'Save as default for this part', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(90, 'Receiving', NULL, 'Receiving.UiText.PackageType.LoadNumberPrefix', NULL, NULL, '#{0}', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(91, 'Receiving', NULL, 'Receiving.UiText.PackageType.PackagesPerLoad', NULL, NULL, 'Packages per Load', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(92, 'Receiving', NULL, 'Receiving.UiText.PackageType.WeightPerPackage', NULL, NULL, 'Weight per Package', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(93, 'Receiving', NULL, 'Receiving.UiText.Review.EntryLabel', NULL, NULL, 'Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(94, 'Receiving', NULL, 'Receiving.UiText.Review.OfLabel', NULL, NULL, 'of', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(95, 'Receiving', NULL, 'Receiving.UiText.Review.LoadNumber', NULL, NULL, 'Load Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-09 22:15:27', 'jkoll'),
+(96, 'Receiving', NULL, 'Receiving.UiText.Review.PurchaseOrderNumber', NULL, NULL, 'Purchase Order Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(97, 'Receiving', NULL, 'Receiving.UiText.Review.PartId', NULL, NULL, 'Part ID', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(98, 'Receiving', NULL, 'Receiving.UiText.Review.RemainingQuantity', NULL, NULL, 'Remaining Quantity', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(99, 'Receiving', NULL, 'Receiving.UiText.Review.WeightQuantity', NULL, NULL, 'Weight/Quantity', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(100, 'Receiving', NULL, 'Receiving.UiText.Review.HeatLotNumber', NULL, NULL, 'Heat/Lot Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(101, 'Receiving', NULL, 'Receiving.UiText.Review.PackagesPerLoad', NULL, NULL, 'Packages Per Load', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(102, 'Receiving', NULL, 'Receiving.UiText.Review.PackageType', NULL, NULL, 'Package Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(103, 'Receiving', NULL, 'Receiving.UiText.Review.PreviousLabel', NULL, NULL, 'Previous', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(104, 'Receiving', NULL, 'Receiving.UiText.Review.NextLabel', NULL, NULL, 'Next', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(105, 'Receiving', NULL, 'Receiving.UiText.Review.TableViewLabel', NULL, NULL, 'Table View', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(106, 'Receiving', NULL, 'Receiving.UiText.Review.SingleViewLabel', NULL, NULL, 'Single View', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(107, 'Receiving', NULL, 'Receiving.UiText.Review.AddAnother', NULL, NULL, 'Add Another Part/PO', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(108, 'Receiving', NULL, 'Receiving.UiText.Review.SaveToDatabase', NULL, NULL, 'Save to Database', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(109, 'Receiving', NULL, 'Receiving.UiText.Review.Column.LoadNumber', NULL, NULL, 'Load #', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(110, 'Receiving', NULL, 'Receiving.UiText.Review.Column.PoNumber', NULL, NULL, 'PO Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(111, 'Receiving', NULL, 'Receiving.UiText.Review.Column.PartId', NULL, NULL, 'Part ID', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(112, 'Receiving', NULL, 'Receiving.UiText.Review.Column.RemainingQty', NULL, NULL, 'Remaining Qty', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:24', '2026-04-01 10:41:24', 'jkoll'),
+(113, 'Receiving', NULL, 'Receiving.UiText.Review.Column.WeightQty', NULL, NULL, 'Weight/Qty', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(114, 'Receiving', NULL, 'Receiving.UiText.Review.Column.HeatLot', NULL, NULL, 'Heat/Lot #', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(115, 'Receiving', NULL, 'Receiving.UiText.Review.Column.Pkgs', NULL, NULL, 'Pkgs', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(116, 'Receiving', NULL, 'Receiving.UiText.Review.Column.PkgType', NULL, NULL, 'Pkg Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(117, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.ModeSelection', NULL, NULL, 'Receiving - Mode Selection', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(118, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.ManualEntry', NULL, NULL, 'Receiving - Manual Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(119, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.EditMode', NULL, NULL, 'Receiving - Edit Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(120, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.PoEntry', NULL, NULL, 'Receiving - Enter PO Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(121, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.PartSelection', NULL, NULL, 'Receiving - Select Part', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(122, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.LoadEntry', NULL, NULL, 'Receiving - Enter Number of Loads', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(123, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.WeightQuantity', NULL, NULL, 'Receiving - Enter Weight/Quantity', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(124, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.HeatLot', NULL, NULL, 'Receiving - Enter Heat/Lot Numbers', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(125, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.PackageType', NULL, NULL, 'Receiving - Select Package Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(126, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.ReviewAndSave', NULL, NULL, 'Receiving - Review & Save', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(127, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.Saving', NULL, NULL, 'Receiving - Saving...', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(128, 'Receiving', NULL, 'Receiving.Workflow.StepTitle.Complete', NULL, NULL, 'Receiving - Complete', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(129, 'Receiving', NULL, 'Receiving.Workflow.SaveProgress.Initializing', NULL, NULL, 'Initializing...', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(130, 'Receiving', NULL, 'Receiving.Workflow.SaveProgress.SavingLabelTable', NULL, NULL, 'Saving to local and network label table...', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(131, 'Receiving', NULL, 'Receiving.Workflow.Dialog.ResetLabelTable.Title', NULL, NULL, 'Reset Label Table Files', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(132, 'Receiving', NULL, 'Receiving.Workflow.Dialog.ResetLabelTable.Content', NULL, NULL, 'Are you sure you want to delete the local and network label table files? This action cannot be undone.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(133, 'Receiving', NULL, 'Receiving.Workflow.Dialog.ResetLabelTable.Delete', NULL, NULL, 'Delete', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(134, 'Receiving', NULL, 'Receiving.Workflow.Dialog.ResetLabelTable.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(135, 'Receiving', NULL, 'Receiving.Workflow.Dialog.DbSaveFailed.Title', NULL, NULL, 'Database Save Failed', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(136, 'Receiving', NULL, 'Receiving.Workflow.Dialog.DbSaveFailed.DeleteAnyway', NULL, NULL, 'Delete Anyway', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(137, 'Receiving', NULL, 'Receiving.Workflow.Dialog.DbSaveFailed.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(138, 'Receiving', NULL, 'Receiving.Workflow.Status.LabelTableDeletedSuccess', NULL, NULL, 'Label table files deleted successfully.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(139, 'Receiving', NULL, 'Receiving.Workflow.Status.LabelTableDeletedFailed', NULL, NULL, 'Failed to delete label table files or files not found.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(140, 'Receiving', NULL, 'Receiving.Workflow.Status.WorkflowCleared', NULL, NULL, 'Workflow cleared. Please select a mode.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:25', '2026-04-01 10:41:25', 'jkoll'),
+(141, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmModeSelection.Title', NULL, NULL, 'Confirm Mode Selection', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(142, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmModeSelection.Content', NULL, NULL, 'Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(143, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmModeSelection.Continue', NULL, NULL, 'Continue', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(144, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmModeSelection.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(145, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmChangeMode.Title', NULL, NULL, 'Change Mode?', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(146, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmChangeMode.Content', NULL, NULL, 'Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(147, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmChangeMode.Confirm', NULL, NULL, 'Yes, Change Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(148, 'Receiving', NULL, 'Receiving.Dialogs.ConfirmChangeMode.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(149, 'Receiving', NULL, 'Receiving.Dialogs.ManualEntry.AddMultiple.Title', NULL, NULL, 'Add Multiple Rows', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(150, 'Receiving', NULL, 'Receiving.Dialogs.ManualEntry.AddMultiple.Add', NULL, NULL, 'Add', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(151, 'Receiving', NULL, 'Receiving.Dialogs.ManualEntry.AddMultiple.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(152, 'Receiving', NULL, 'Receiving.Dialogs.Review.AddAnother.Title', NULL, NULL, 'Add Another Part/PO', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(153, 'Receiving', NULL, 'Receiving.Dialogs.Review.AddAnother.Content', NULL, NULL, 'Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(154, 'Receiving', NULL, 'Receiving.Dialogs.Review.AddAnother.Continue', NULL, NULL, 'Continue', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(155, 'Receiving', NULL, 'Receiving.Dialogs.Review.AddAnother.Cancel', NULL, NULL, 'Cancel', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(156, 'Receiving', NULL, 'Receiving.Messages.Error.UnableToDisplayDialog', NULL, NULL, 'Unable to display dialog', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(157, 'Receiving', NULL, 'Receiving.Messages.Error.PoRequired', NULL, NULL, 'Please enter a PO number.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(158, 'Receiving', NULL, 'Receiving.Messages.Error.PartIdRequired', NULL, NULL, 'Please enter a Part ID.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(159, 'Receiving', NULL, 'Receiving.Messages.Error.PoNotFound', NULL, NULL, 'PO not found or contains no parts.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(160, 'Receiving', NULL, 'Receiving.Messages.Error.PartNotFound', NULL, NULL, 'Part not found.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(161, 'Receiving', NULL, 'Receiving.Messages.Info.PoLoadedWithParts', NULL, NULL, 'Purchase Order {0} loaded with {1} parts.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(162, 'Receiving', NULL, 'Receiving.Messages.Info.PartFound', NULL, NULL, 'Part {0} found.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(163, 'Receiving', NULL, 'Receiving.Messages.Warning.SameDayReceiving', NULL, NULL, 'Warning: {0:N2} of this part has already been received today on this PO.', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(164, 'Receiving', NULL, 'Receiving.Messages.Warning.ExceedsOrdered', NULL, NULL, 'Warning: Total quantity ({0:N2}) exceeds PO ordered amount ({1:N2}).', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(165, 'Receiving', NULL, 'Receiving.Messages.Info.NonPoItem', NULL, NULL, 'Non-PO Item', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(166, 'Receiving', NULL, 'Receiving.Accessibility.ModeSelection.GuidedButton', NULL, NULL, 'Guided Wizard Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(167, 'Receiving', NULL, 'Receiving.Accessibility.ModeSelection.ManualButton', NULL, NULL, 'Manual Entry Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(168, 'Receiving', NULL, 'Receiving.Accessibility.ModeSelection.EditButton', NULL, NULL, 'Edit Mode', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(169, 'Receiving', NULL, 'Receiving.Accessibility.PoEntry.PONumber', NULL, NULL, 'Purchase Order Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(170, 'Receiving', NULL, 'Receiving.Accessibility.PoEntry.LoadPo', NULL, NULL, 'Load Purchase Order', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:26', '2026-04-01 10:41:26', 'jkoll'),
+(171, 'Receiving', NULL, 'Receiving.Accessibility.PoEntry.PartId', NULL, NULL, 'Part Identifier', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(172, 'Receiving', NULL, 'Receiving.Accessibility.PoEntry.LookupPart', NULL, NULL, 'Look Up Part', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(173, 'Receiving', NULL, 'Receiving.Accessibility.PoEntry.PartsList', NULL, NULL, 'Parts List', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(174, 'Receiving', NULL, 'Receiving.Accessibility.LoadEntry.NumberOfLoads', NULL, NULL, 'Number of Loads', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-08 16:48:59', 'jkoll'),
+(175, 'Receiving', NULL, 'Receiving.Accessibility.WeightQuantity.Input', NULL, NULL, 'Weight Quantity', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-08 16:48:59', 'jkoll'),
+(176, 'Receiving', NULL, 'Receiving.Accessibility.HeatLot.Number', NULL, NULL, 'Heat Lot Number', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(177, 'Receiving', NULL, 'Receiving.Accessibility.PackageType.Combo', NULL, NULL, 'Package Type', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(178, 'Receiving', NULL, 'Receiving.Accessibility.PackageType.CustomName', NULL, NULL, 'Custom Package Name', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(179, 'Receiving', NULL, 'Receiving.Accessibility.PackageType.PackagesPerLoad', NULL, NULL, 'Packages per Load', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(180, 'Receiving', NULL, 'Receiving.Accessibility.Review.PreviousEntry', NULL, NULL, 'Previous Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(181, 'Receiving', NULL, 'Receiving.Accessibility.Review.NextEntry', NULL, NULL, 'Next Entry', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(182, 'Receiving', NULL, 'Receiving.Accessibility.Review.SwitchToTable', NULL, NULL, 'Switch to Table View', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(183, 'Receiving', NULL, 'Receiving.Accessibility.Review.SwitchToSingle', NULL, NULL, 'Switch to Single View', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(184, 'Receiving', NULL, 'Receiving.Accessibility.Review.EntriesTable', NULL, NULL, 'Receiving Entries Table', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(185, 'Receiving', NULL, 'Receiving.Accessibility.Review.AddAnother', NULL, NULL, 'Add Another Part or PO', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(186, 'Receiving', NULL, 'Receiving.Accessibility.Review.SaveToDatabase', NULL, NULL, 'Save to Database', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(187, 'Receiving', NULL, 'Receiving.Validation.RequirePoNumber', NULL, NULL, 'false', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(188, 'Receiving', NULL, 'Receiving.Validation.RequireQuantity', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(189, 'Receiving', NULL, 'Receiving.Validation.RequireHeatLot', NULL, NULL, 'false', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(190, 'Receiving', NULL, 'Receiving.Validation.AllowNegativeQuantity', NULL, NULL, 'false', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(191, 'Receiving', NULL, 'Receiving.Validation.ValidatePoExists', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(192, 'Receiving', NULL, 'Receiving.Validation.ValidatePartExists', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(193, 'Receiving', NULL, 'Receiving.Validation.WarnOnQuantityExceedsPo', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(194, 'Receiving', NULL, 'Receiving.Validation.WarnOnSameDayReceiving', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(195, 'Receiving', NULL, 'Receiving.Validation.MinLoadCount', NULL, NULL, '1', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(196, 'Receiving', NULL, 'Receiving.Validation.MaxLoadCount', NULL, NULL, '99', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(197, 'Receiving', NULL, 'Receiving.Validation.MinQuantity', NULL, NULL, '0', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(198, 'Receiving', NULL, 'Receiving.Validation.MaxQuantity', NULL, NULL, '999999', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:27', '2026-04-01 10:41:27', 'jkoll'),
+(199, 'Receiving', NULL, 'Receiving.BusinessRules.DefaultModeOnStartup', NULL, NULL, 'Guided', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-05-22 14:57:49', 'traddatz'),
+(200, 'Receiving', NULL, 'Receiving.Defaults.DefaultPackageType', NULL, NULL, 'Pallet', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(201, 'Receiving', NULL, 'Receiving.Defaults.DefaultPackagesPerLoad', NULL, NULL, '1', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(202, 'Receiving', NULL, 'Receiving.Defaults.DefaultWeightPerPackage', NULL, NULL, '0', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(203, 'Receiving', NULL, 'Receiving.Defaults.DefaultUnitOfMeasure', NULL, NULL, 'LBS', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(204, 'Receiving', NULL, 'Receiving.Defaults.DefaultLocation', NULL, NULL, 'RECV', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-21 12:50:41', 'jkoll'),
+(205, 'Receiving', NULL, 'Receiving.Defaults.DefaultLoadNumberPrefix', NULL, NULL, 'L', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(206, 'Receiving', NULL, 'Receiving.Integrations.ErpSyncEnabled', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(207, 'Receiving', NULL, 'Receiving.Integrations.AutoPullPoDataEnabled', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(208, 'Receiving', NULL, 'Receiving.Integrations.AutoPullPartDataEnabled', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(209, 'Receiving', NULL, 'Receiving.Integrations.SyncToInforVisual', NULL, NULL, 'false', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(210, 'Receiving', NULL, 'Receiving.Integrations.ErpConnectionTimeout', NULL, NULL, '30', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(211, 'Receiving', NULL, 'Receiving.Integrations.RetryFailedSyncs', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(212, 'Receiving', NULL, 'Receiving.Integrations.MaxSyncRetries', NULL, NULL, '3', NULL, 'Int', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-04-01 10:41:28', 'jkoll'),
+(213, 'Receiving', NULL, 'Receiving.PartNumberPadding.Enabled', NULL, NULL, 'True', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-05-08 13:15:28', 'jkoll'),
+(214, 'Receiving', NULL, 'Receiving.PartNumberPadding.RulesJson', NULL, NULL, '[{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Customer Supplied\",\"Prefix\":\"MMCCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Coil - Special Request\",\"Prefix\":\"MMCSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Customer Supplied\",\"Prefix\":\"MMFCS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Flat Stock - Special Request\",\"Prefix\":\"MMFSR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Tube / Rod\",\"Prefix\":\"MMR\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},{\"StatusColor\":\"#10893E\",\"StatusTooltip\":\"Enabled\",\"Name\":\"Shape\",\"Prefix\":\"MMS\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-01 10:41:28', '2026-05-08 13:15:28', 'jkoll'),
+(215, 'ShipRecTools', NULL, 'MaterialAvailability.WorkOrderFields.UiVisibleIds', NULL, NULL, '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', NULL, 'Json', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-14 22:17:00', '2026-04-16 14:36:40', 'jkoll'),
+(216, 'ShipRecTools', NULL, 'MaterialAvailability.WorkOrderFields.PrintVisibleIds', NULL, NULL, '[\"work-order-display\",\"work-order-status\",\"parent-part-number\",\"parent-part-description\",\"next-due-to-run-date\",\"next-due-date-source\",\"required-date\",\"work-order-status-effective-date\",\"component-part-number\",\"operation-sequence\",\"operation-type\",\"resource-work-center\",\"service-id\",\"setup-run-hours\",\"dimensions-text-expression\",\"length-width-height\",\"drawing-revision\"]', NULL, 'Json', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-14 22:17:00', '2026-04-16 14:36:40', 'jkoll'),
+(217, 'ShipRecTools', NULL, 'MaterialAvailability.WorkOrderFields.AllowShowAllChip', NULL, NULL, 'true', NULL, 'Bool', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-14 22:17:00', '2026-04-16 14:36:40', 'jkoll'),
+(218, 'Dunnage', NULL, 'Dunnage.Application.DefaultImageLocation', NULL, NULL, 'X:\\Software Development\\Live Applications\\Shared\\Images\\Dunnage', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-15 11:10:37', '2026-04-21 07:21:57', 'jkoll'),
+(219, 'System', NULL, 'Core.LabelView.ExecutablePath', NULL, NULL, 'C:\\Program Files (x86)\\Teklynx\\LABELVIEW 2022\\LV.exe', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-29 10:45:20', '2026-04-29 10:45:20', 'jkoll'),
+(220, 'Dunnage', NULL, 'Dunnage.Labels.DunnageLabelPath', NULL, NULL, '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Dunnage Label App ver. 1.0.lbl', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-29 10:45:20', '2026-05-12 07:33:21', 'gwhitson');
+INSERT INTO `settings_universal` (`id`, `category`, `sub_category`, `setting_key`, `setting_name`, `description`, `setting_value`, `default_value`, `data_type`, `scope`, `permission_level`, `is_locked`, `is_sensitive`, `validation_rules`, `ui_control_type`, `ui_order`, `created_at`, `updated_at`, `updated_by`) VALUES
+(221, 'Volvo', NULL, 'Volvo.Labels.VolvoLabelPath', NULL, NULL, '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Volvo Label App ver 1.1.lbl', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-29 10:45:20', '2026-05-12 07:31:36', 'gwhitson'),
+(222, 'Receiving', NULL, 'Receiving.Labels.ReceivingLabelPath', NULL, NULL, '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\Greg Whitson\\Receiving\\Expo\\Expo - Receiving Label App ver 1.1.lbl', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-29 10:45:20', '2026-05-12 07:26:53', 'gwhitson'),
+(223, 'Receiving', NULL, 'Receiving.Labels.MiniReceivingLabelPath', NULL, NULL, '\\\\MTMANU-FS01\\Expo Drive\\Shipping\\Labels - Labelview\\Employee Folder\\John Koll\\Receiving\\Expo\\Expo - Mini RECV Label - App ver. 1.0.lbl', NULL, 'String', 'system', 'admin', 0, 0, NULL, 'textbox', 0, '2026-04-29 10:45:20', '2026-05-12 07:26:53', 'gwhitson');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_user_roles`
+--
+
+CREATE TABLE `settings_user_roles` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `assigned_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `settings_user_roles`
+--
+
+INSERT INTO `settings_user_roles` (`id`, `user_id`, `role_id`, `assigned_at`) VALUES
+(1, 1, 3, '2026-04-01 10:25:09'),
+(2, 2, 4, '2026-04-01 10:25:09'),
+(3, 6229, 4, '2026-04-01 10:41:20'),
+(4, 6604, 3, '2026-04-02 06:34:24'),
+(5, 6524, 1, '2026-04-22 08:00:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings_volvo_recipents`
+--
+
+CREATE TABLE `settings_volvo_recipents` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for the Volvo recipient row',
+  `first_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Recipient first name',
+  `last_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Recipient last name',
+  `recipient_type` enum('To','CC') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Outlook recipient bucket',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Full email address saved exactly as entered'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo email recipients used in the shipment-entry email preview';
+
+--
+-- Dumping data for table `settings_volvo_recipents`
+--
+
+INSERT INTO `settings_volvo_recipents` (`id`, `first_name`, `last_name`, `recipient_type`, `email`) VALUES
+(1, 'Jose', 'Rosas', 'To', 'jrosas@mantoolmfg.com'),
+(2, 'Sandy', 'Miller', 'To', 'smiller@mantoolmfg.com'),
+(3, 'Steph', 'Wittmus', 'To', 'swittmus@mantoolmfg.com'),
+(4, 'Debra', 'Alexander', 'CC', 'dalexander@mantoolmfg.com'),
+(5, 'Michelle', 'Laurin', 'CC', 'mlaurin@mantoolmfg.com'),
+(6, 'Amanda', 'Groelle', 'CC', 'agroelle@mantoolmfg.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `software_version`
+--
+
+CREATE TABLE `software_version` (
+  `id` tinyint(4) NOT NULL COMMENT 'Singleton row identifier; always 1',
+  `required_version` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Required semantic application version',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the row was created',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when the row was last updated',
+  `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Actor that last changed the required version'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Singleton table storing the required MTM application version';
+
+--
+-- Dumping data for table `software_version`
+--
+
+INSERT INTO `software_version` (`id`, `required_version`, `created_at`, `updated_at`, `updated_by`) VALUES
+(1, '2.6.0', '2026-05-04 06:43:30', '2026-05-12 09:59:04', 'seed');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_dunnage_history`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_dunnage_history` (
+`id` char(36)
+,`po_number` varchar(20)
+,`dunnage_type` varchar(100)
+,`part_number` varchar(50)
+,`specs_combined` text
+,`quantity` decimal(10,2)
+,`created_date` date
+,`employee_number` varchar(20)
+,`created_by_username` varchar(50)
+,`location` varchar(100)
+,`notes` varchar(255)
+,`source_module` varchar(7)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_receiving_history`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_receiving_history` (
+`id` int(11)
+,`po_number` varchar(20)
+,`po_line_number` varchar(10)
+,`part_id` varchar(50)
+,`part_description` varchar(500)
+,`quantity` int(11)
+,`weight_lbs` decimal(18,2)
+,`heat` varchar(100)
+,`transaction_date` date
+,`created_at` datetime
+,`employee_number` int(11)
+,`user_id` varchar(100)
+,`load_number` int(11)
+,`initial_location` varchar(50)
+,`packages_per_load` int(11)
+,`package_type_name` varchar(50)
+,`weight_per_package` decimal(18,2)
+,`coils_on_skid` int(11)
+,`label_number` int(11)
+,`vendor_name` varchar(255)
+,`po_status` varchar(100)
+,`po_due_date` date
+,`qty_ordered` decimal(18,2)
+,`unit_of_measure` varchar(20)
+,`remaining_quantity` int(11)
+,`is_non_po_item` tinyint(4)
+,`is_quality_hold_required` tinyint(4)
+,`is_quality_hold_acknowledged` tinyint(4)
+,`quality_hold_restriction_type` varchar(255)
+,`part_skid_total` int(11)
+,`notes` binary(0)
+,`source_module` varchar(9)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_volvo_history`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_volvo_history` (
+`id` varchar(20)
+,`po_number` varchar(50)
+,`part_number` varchar(20)
+,`quantity` decimal(10,2)
+,`created_date` date
+,`employee_number` varchar(20)
+,`notes` mediumtext
+,`shipment_number` int(11)
+,`receiver_number` varchar(50)
+,`status` varchar(20)
+,`part_count` bigint(20)
+,`location` varchar(50)
+,`quantity_per_skid` int(11)
+,`received_skid_count` int(11)
+,`source_module` varchar(5)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `view_volvo_label_data_history`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_volvo_label_data_history` (
+`shipment_id` int(11)
+,`shipment_date` date
+,`shipment_number` int(11)
+,`po_number` varchar(50)
+,`receiver_number` varchar(50)
+,`status` varchar(20)
+,`part_number` varchar(20)
+,`location` varchar(50)
+,`received_skid_count` int(11)
+,`calculated_piece_count` int(11)
+,`has_discrepancy` tinyint(4)
+,`expected_skid_count` int(11)
+,`discrepancy_note` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_generated_label_data`
+--
+
+CREATE TABLE `volvo_generated_label_data` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate primary key for one generated Volvo label row',
+  `shipment_id` int(11) NOT NULL COMMENT 'Original Volvo shipment header identifier used when this label row was generated',
+  `shipment_number` int(11) NOT NULL COMMENT 'Shipment number snapshot for ordering and troubleshooting',
+  `shipment_date` date NOT NULL COMMENT 'Shipment date snapshot for ordering and troubleshooting',
+  `part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Volvo part number printed on the label',
+  `quantity` int(11) NOT NULL COMMENT 'Quantity printed on the label for this skid; this is quantity per skid, not calculated piece count',
+  `skid_number` int(11) NOT NULL COMMENT '1-based skid sequence for this part within the shipment',
+  `total_skids` int(11) NOT NULL COMMENT 'Total skid count for this part within the shipment',
+  `part_description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part description resolved for the label at generation time',
+  `employee_number` int(11) DEFAULT NULL COMMENT '4-digit employee identifier for the user whose shipment generated this label row',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was written',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was last refreshed'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Active Volvo label rows queued for LabelView generation';
+
+--
+-- Dumping data for table `volvo_generated_label_data`
+--
+
+INSERT INTO `volvo_generated_label_data` (`id`, `shipment_id`, `shipment_number`, `shipment_date`, `part_number`, `quantity`, `skid_number`, `total_skids`, `part_description`, `employee_number`, `created_at`, `updated_at`) VALUES
+(1316, 3, 1, '2026-05-22', 'V-EMB-26', 32, 1, 1, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1317, 3, 1, '2026-05-22', 'V-EMB-21', 50, 1, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1318, 3, 1, '2026-05-22', 'V-EMB-21', 50, 2, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1319, 3, 1, '2026-05-22', 'V-EMB-21', 50, 3, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1320, 3, 1, '2026-05-22', 'V-EMB-21', 50, 4, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1321, 3, 1, '2026-05-22', 'V-EMB-21', 50, 5, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1322, 3, 1, '2026-05-22', 'V-EMB-21', 50, 6, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1323, 3, 1, '2026-05-22', 'V-EMB-21', 50, 7, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1324, 3, 1, '2026-05-22', 'V-EMB-21', 50, 8, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1325, 3, 1, '2026-05-22', 'V-EMB-21', 50, 9, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1326, 3, 1, '2026-05-22', 'V-EMB-21', 50, 10, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1327, 3, 1, '2026-05-22', 'V-EMB-21', 50, 11, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1328, 3, 1, '2026-05-22', 'V-EMB-21', 50, 12, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1329, 3, 1, '2026-05-22', 'V-EMB-21', 50, 13, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1330, 3, 1, '2026-05-22', 'V-EMB-21', 50, 14, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1331, 3, 1, '2026-05-22', 'V-EMB-21', 50, 15, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1332, 3, 1, '2026-05-22', 'V-EMB-21', 50, 16, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1333, 3, 1, '2026-05-22', 'V-EMB-21', 50, 17, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1334, 3, 1, '2026-05-22', 'V-EMB-21', 50, 18, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1335, 3, 1, '2026-05-22', 'V-EMB-21', 50, 19, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1336, 3, 1, '2026-05-22', 'V-EMB-21', 50, 20, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1337, 3, 1, '2026-05-22', 'V-EMB-21', 50, 21, 21, 'Frame', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1338, 3, 1, '2026-05-22', 'V-EMB-61', 120, 1, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1339, 3, 1, '2026-05-22', 'V-EMB-61', 120, 2, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1340, 3, 1, '2026-05-22', 'V-EMB-61', 120, 3, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1341, 3, 1, '2026-05-22', 'V-EMB-61', 120, 4, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1342, 3, 1, '2026-05-22', 'V-EMB-61', 120, 5, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1343, 3, 1, '2026-05-22', 'V-EMB-61', 120, 6, 6, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1344, 3, 1, '2026-05-22', 'V-EMB-71', 25, 1, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1345, 3, 1, '2026-05-22', 'V-EMB-71', 25, 2, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1346, 3, 1, '2026-05-22', 'V-EMB-71', 25, 3, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1347, 3, 1, '2026-05-22', 'V-EMB-71', 25, 4, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1348, 3, 1, '2026-05-22', 'V-EMB-71', 25, 5, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1349, 3, 1, '2026-05-22', 'V-EMB-71', 25, 6, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1350, 3, 1, '2026-05-22', 'V-EMB-71', 25, 7, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1351, 3, 1, '2026-05-22', 'V-EMB-71', 25, 8, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1352, 3, 1, '2026-05-22', 'V-EMB-71', 25, 9, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1353, 3, 1, '2026-05-22', 'V-EMB-71', 25, 10, 10, 'Lid', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1354, 3, 1, '2026-05-22', 'V-EMB-91', 25, 1, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1355, 3, 1, '2026-05-22', 'V-EMB-91', 25, 2, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1356, 3, 1, '2026-05-22', 'V-EMB-91', 25, 3, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1357, 3, 1, '2026-05-22', 'V-EMB-91', 25, 4, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1358, 3, 1, '2026-05-22', 'V-EMB-116', 150, 1, 2, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1359, 3, 1, '2026-05-22', 'V-EMB-116', 150, 2, 2, 'Spacer', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1360, 3, 1, '2026-05-22', 'V-EMB-500', 88, 1, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1361, 3, 1, '2026-05-22', 'V-EMB-500', 88, 2, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1362, 3, 1, '2026-05-22', 'V-EMB-500', 88, 3, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1363, 3, 1, '2026-05-22', 'V-EMB-500', 88, 4, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1364, 3, 1, '2026-05-22', 'V-EMB-500', 88, 5, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1365, 3, 1, '2026-05-22', 'V-EMB-750', 80, 1, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1366, 3, 1, '2026-05-22', 'V-EMB-750', 80, 2, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1367, 3, 1, '2026-05-22', 'V-EMB-750', 80, 3, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1368, 3, 1, '2026-05-22', 'V-EMB-750', 80, 4, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1369, 3, 1, '2026-05-22', 'V-EMB-750', 80, 5, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1370, 3, 1, '2026-05-22', 'V-EMB-750', 80, 6, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1371, 3, 1, '2026-05-22', 'V-EMB-750', 80, 7, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1372, 3, 1, '2026-05-22', 'V-EMB-750', 80, 8, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1373, 3, 1, '2026-05-22', 'V-EMB-750', 80, 9, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1374, 3, 1, '2026-05-22', 'V-EMB-750', 80, 10, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1375, 3, 1, '2026-05-22', 'V-EMB-750', 80, 11, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1376, 3, 1, '2026-05-22', 'V-EMB-750', 80, 12, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1377, 3, 1, '2026-05-22', 'V-EMB-750', 80, 13, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1378, 3, 1, '2026-05-22', 'V-EMB-750', 80, 14, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1379, 3, 1, '2026-05-22', 'V-EMB-750', 80, 15, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1380, 3, 1, '2026-05-22', 'V-EMB-780', 40, 1, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1381, 3, 1, '2026-05-22', 'V-EMB-780', 40, 2, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1382, 3, 1, '2026-05-22', 'V-EMB-780', 40, 3, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1383, 3, 1, '2026-05-22', 'V-EMB-780', 40, 4, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1384, 3, 1, '2026-05-22', 'V-EMB-780', 40, 5, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1385, 3, 1, '2026-05-22', 'V-EMB-780', 40, 6, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1386, 3, 1, '2026-05-22', 'V-EMB-780', 40, 7, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1387, 3, 1, '2026-05-22', 'V-EMB-780', 40, 8, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1388, 3, 1, '2026-05-22', 'V-EMB-780', 40, 9, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1389, 3, 1, '2026-05-22', 'V-EMB-780', 40, 10, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1390, 3, 1, '2026-05-22', 'V-EMB-780', 40, 11, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1391, 3, 1, '2026-05-22', 'V-EMB-780', 40, 12, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1392, 3, 1, '2026-05-22', 'V-EMB-780', 40, 13, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1393, 3, 1, '2026-05-22', 'V-EMB-780', 40, 14, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1394, 3, 1, '2026-05-22', 'V-EMB-780', 40, 15, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1395, 3, 1, '2026-05-22', 'V-EMB-800', 40, 1, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1396, 3, 1, '2026-05-22', 'V-EMB-800', 40, 2, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1397, 3, 1, '2026-05-22', 'V-EMB-800', 40, 3, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1398, 3, 1, '2026-05-22', 'V-EMB-800', 40, 4, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1399, 3, 1, '2026-05-22', 'V-EMB-800', 40, 5, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1400, 3, 1, '2026-05-22', 'V-EMB-800', 40, 6, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49'),
+(1401, 3, 1, '2026-05-22', 'V-EMB-800', 40, 7, 7, 'Tote -', 6229, '2026-05-22 09:20:49', '2026-05-22 09:20:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_generated_label_history`
+--
+
+CREATE TABLE `volvo_generated_label_history` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate primary key for one archived generated Volvo label row',
+  `original_id` int(11) NOT NULL COMMENT 'Original volvo_generated_label_data.id value before archival',
+  `shipment_id` int(11) NOT NULL COMMENT 'Original Volvo shipment header identifier used when this label row was generated',
+  `shipment_number` int(11) NOT NULL COMMENT 'Shipment number snapshot preserved from the active label row',
+  `shipment_date` date NOT NULL COMMENT 'Shipment date snapshot preserved from the active label row',
+  `part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Volvo part number printed on the label',
+  `quantity` int(11) NOT NULL COMMENT 'Quantity printed on the label for this skid; this is quantity per skid, not calculated piece count',
+  `skid_number` int(11) NOT NULL COMMENT '1-based skid sequence for this part within the shipment',
+  `total_skids` int(11) NOT NULL COMMENT 'Total skid count for this part within the shipment',
+  `part_description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Part description snapshot preserved from the active label row',
+  `employee_number` int(11) DEFAULT NULL COMMENT '4-digit employee identifier preserved from the active generated label row',
+  `source_created_at` datetime NOT NULL COMMENT 'Original created_at value from the active queue row',
+  `source_updated_at` datetime NOT NULL COMMENT 'Original updated_at value from the active queue row',
+  `archived_at` datetime NOT NULL COMMENT 'Timestamp when this label row was moved to history',
+  `archived_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee or workstation identity that archived the generated label rows',
+  `archive_batch_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID shared by all generated label rows moved in the same archive operation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Archived Volvo generated label rows cleared from the active queue';
+
+--
+-- Dumping data for table `volvo_generated_label_history`
+--
+
+INSERT INTO `volvo_generated_label_history` (`id`, `original_id`, `shipment_id`, `shipment_number`, `shipment_date`, `part_number`, `quantity`, `skid_number`, `total_skids`, `part_description`, `employee_number`, `source_created_at`, `source_updated_at`, `archived_at`, `archived_by`, `archive_batch_id`) VALUES
+(1, 16, 2, 1, '2026-05-12', 'V-EMB-92', 25, 1, 4, 'Lid - 9900000092', 6229, '2026-05-15 13:19:06', '2026-05-15 13:19:06', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(2, 17, 2, 1, '2026-05-12', 'V-EMB-92', 25, 2, 4, 'Lid - 9900000092', 6229, '2026-05-15 13:19:06', '2026-05-15 13:19:06', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(3, 18, 2, 1, '2026-05-12', 'V-EMB-92', 25, 3, 4, 'Lid - 9900000092', 6229, '2026-05-15 13:19:06', '2026-05-15 13:19:06', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(4, 19, 2, 1, '2026-05-12', 'V-EMB-92', 25, 4, 4, 'Lid - 9900000092', 6229, '2026-05-15 13:19:06', '2026-05-15 13:19:06', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(5, 50, 1, 1, '2026-05-19', 'V-EMB-71', 25, 1, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(6, 51, 1, 1, '2026-05-19', 'V-EMB-71', 25, 2, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(7, 52, 1, 1, '2026-05-19', 'V-EMB-71', 25, 3, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(8, 53, 1, 1, '2026-05-19', 'V-EMB-71', 25, 4, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(9, 54, 1, 1, '2026-05-19', 'V-EMB-71', 25, 5, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(10, 55, 1, 1, '2026-05-19', 'V-EMB-71', 25, 6, 6, 'Lid', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(11, 56, 1, 1, '2026-05-19', 'V-EMB-92', 25, 1, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(12, 57, 1, 1, '2026-05-19', 'V-EMB-92', 25, 2, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(13, 58, 1, 1, '2026-05-19', 'V-EMB-92', 25, 3, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(14, 59, 1, 1, '2026-05-19', 'V-EMB-92', 25, 4, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(15, 60, 1, 1, '2026-05-19', 'V-EMB-92', 25, 5, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(16, 61, 1, 1, '2026-05-19', 'V-EMB-92', 25, 6, 6, 'Lid - 9900000092', 6229, '2026-05-19 12:41:08', '2026-05-19 12:41:08', '2026-05-19 12:41:11', 'jkoll', 'ed6e173a-53a9-11f1-9147-005056bbe55b'),
+(32, 62, 1, 1, '2026-05-19', 'V-EMB-71', 25, 1, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(33, 63, 1, 1, '2026-05-19', 'V-EMB-71', 25, 2, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(34, 64, 1, 1, '2026-05-19', 'V-EMB-71', 25, 3, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(35, 65, 1, 1, '2026-05-19', 'V-EMB-71', 25, 4, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(36, 66, 1, 1, '2026-05-19', 'V-EMB-71', 25, 5, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(37, 67, 1, 1, '2026-05-19', 'V-EMB-71', 25, 6, 6, 'Lid', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(38, 68, 1, 1, '2026-05-19', 'V-EMB-92', 25, 1, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(39, 69, 1, 1, '2026-05-19', 'V-EMB-92', 25, 2, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(40, 70, 1, 1, '2026-05-19', 'V-EMB-92', 25, 3, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(41, 71, 1, 1, '2026-05-19', 'V-EMB-92', 25, 4, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(42, 72, 1, 1, '2026-05-19', 'V-EMB-92', 25, 5, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(43, 73, 1, 1, '2026-05-19', 'V-EMB-92', 25, 6, 6, 'Lid - 9900000092', 6229, '2026-05-20 07:26:16', '2026-05-20 07:26:16', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(44, 354, 2, 1, '2026-05-20', 'V-EMB-1', 10, 1, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(45, 355, 2, 1, '2026-05-20', 'V-EMB-1', 10, 2, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(46, 356, 2, 1, '2026-05-20', 'V-EMB-1', 10, 3, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(47, 357, 2, 1, '2026-05-20', 'V-EMB-1', 10, 4, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(48, 358, 2, 1, '2026-05-20', 'V-EMB-1', 10, 5, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(49, 359, 2, 1, '2026-05-20', 'V-EMB-1', 10, 6, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(50, 360, 2, 1, '2026-05-20', 'V-EMB-1', 10, 7, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(51, 361, 2, 1, '2026-05-20', 'V-EMB-1', 10, 8, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(52, 362, 2, 1, '2026-05-20', 'V-EMB-1', 10, 9, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(53, 363, 2, 1, '2026-05-20', 'V-EMB-1', 10, 10, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(54, 364, 2, 1, '2026-05-20', 'V-EMB-1', 10, 11, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(55, 365, 2, 1, '2026-05-20', 'V-EMB-1', 10, 12, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(56, 366, 2, 1, '2026-05-20', 'V-EMB-1', 10, 13, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(57, 367, 2, 1, '2026-05-20', 'V-EMB-1', 10, 14, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(58, 368, 2, 1, '2026-05-20', 'V-EMB-1', 10, 15, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(59, 369, 2, 1, '2026-05-20', 'V-EMB-1', 10, 16, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(60, 370, 2, 1, '2026-05-20', 'V-EMB-1', 10, 17, 17, 'Pallet - 9900000001', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(61, 371, 2, 1, '2026-05-20', 'V-EMB-21', 50, 1, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(62, 372, 2, 1, '2026-05-20', 'V-EMB-21', 50, 2, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(63, 373, 2, 1, '2026-05-20', 'V-EMB-21', 50, 3, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(64, 374, 2, 1, '2026-05-20', 'V-EMB-21', 50, 4, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(65, 375, 2, 1, '2026-05-20', 'V-EMB-21', 50, 5, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(66, 376, 2, 1, '2026-05-20', 'V-EMB-21', 50, 6, 6, 'Frame', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(67, 377, 2, 1, '2026-05-20', 'V-EMB-61', 120, 1, 2, 'Spacer', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(68, 378, 2, 1, '2026-05-20', 'V-EMB-61', 120, 2, 2, 'Spacer', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(69, 379, 2, 1, '2026-05-20', 'V-EMB-500', 88, 1, 5, 'Tote - 9900000500', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(70, 380, 2, 1, '2026-05-20', 'V-EMB-500', 88, 2, 5, 'Tote - 9900000500', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(71, 381, 2, 1, '2026-05-20', 'V-EMB-500', 88, 3, 5, 'Tote - 9900000500', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(72, 382, 2, 1, '2026-05-20', 'V-EMB-500', 88, 4, 5, 'Tote - 9900000500', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(73, 383, 2, 1, '2026-05-20', 'V-EMB-500', 88, 5, 5, 'Tote - 9900000500', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(74, 384, 2, 1, '2026-05-20', 'V-EMB-750', 80, 1, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(75, 385, 2, 1, '2026-05-20', 'V-EMB-750', 80, 2, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(76, 386, 2, 1, '2026-05-20', 'V-EMB-750', 80, 3, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(77, 387, 2, 1, '2026-05-20', 'V-EMB-750', 80, 4, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(78, 388, 2, 1, '2026-05-20', 'V-EMB-750', 80, 5, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(79, 389, 2, 1, '2026-05-20', 'V-EMB-750', 80, 6, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(80, 390, 2, 1, '2026-05-20', 'V-EMB-780', 40, 1, 2, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(81, 391, 2, 1, '2026-05-20', 'V-EMB-780', 40, 2, 2, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-20 13:08:08', '2026-05-20 13:08:08', '2026-05-20 13:08:10', 'jkoll', 'ddd1334d-5476-11f1-9147-005056bbe55b'),
+(82, 544, 2, 1, '2026-05-20', 'V-EMB-1', 10, 1, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(83, 545, 2, 1, '2026-05-20', 'V-EMB-1', 10, 2, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(84, 546, 2, 1, '2026-05-20', 'V-EMB-1', 10, 3, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(85, 547, 2, 1, '2026-05-20', 'V-EMB-1', 10, 4, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(86, 548, 2, 1, '2026-05-20', 'V-EMB-1', 10, 5, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(87, 549, 2, 1, '2026-05-20', 'V-EMB-1', 10, 6, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(88, 550, 2, 1, '2026-05-20', 'V-EMB-1', 10, 7, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(89, 551, 2, 1, '2026-05-20', 'V-EMB-1', 10, 8, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(90, 552, 2, 1, '2026-05-20', 'V-EMB-1', 10, 9, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(91, 553, 2, 1, '2026-05-20', 'V-EMB-1', 10, 10, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(92, 554, 2, 1, '2026-05-20', 'V-EMB-1', 10, 11, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(93, 555, 2, 1, '2026-05-20', 'V-EMB-1', 10, 12, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(94, 556, 2, 1, '2026-05-20', 'V-EMB-1', 10, 13, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(95, 557, 2, 1, '2026-05-20', 'V-EMB-1', 10, 14, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(96, 558, 2, 1, '2026-05-20', 'V-EMB-1', 10, 15, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(97, 559, 2, 1, '2026-05-20', 'V-EMB-1', 10, 16, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(98, 560, 2, 1, '2026-05-20', 'V-EMB-1', 10, 17, 17, 'Pallet - 9900000001', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(99, 561, 2, 1, '2026-05-20', 'V-EMB-21', 50, 1, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(100, 562, 2, 1, '2026-05-20', 'V-EMB-21', 50, 2, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(101, 563, 2, 1, '2026-05-20', 'V-EMB-21', 50, 3, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(102, 564, 2, 1, '2026-05-20', 'V-EMB-21', 50, 4, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(103, 565, 2, 1, '2026-05-20', 'V-EMB-21', 50, 5, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(104, 566, 2, 1, '2026-05-20', 'V-EMB-21', 50, 6, 6, 'Frame', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(105, 567, 2, 1, '2026-05-20', 'V-EMB-61', 120, 1, 2, 'Spacer', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(106, 568, 2, 1, '2026-05-20', 'V-EMB-61', 120, 2, 2, 'Spacer', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(107, 569, 2, 1, '2026-05-20', 'V-EMB-500', 88, 1, 5, 'Tote - 9900000500', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(108, 570, 2, 1, '2026-05-20', 'V-EMB-500', 88, 2, 5, 'Tote - 9900000500', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(109, 571, 2, 1, '2026-05-20', 'V-EMB-500', 88, 3, 5, 'Tote - 9900000500', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(110, 572, 2, 1, '2026-05-20', 'V-EMB-500', 88, 4, 5, 'Tote - 9900000500', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(111, 573, 2, 1, '2026-05-20', 'V-EMB-500', 88, 5, 5, 'Tote - 9900000500', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(112, 574, 2, 1, '2026-05-20', 'V-EMB-750', 80, 1, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(113, 575, 2, 1, '2026-05-20', 'V-EMB-750', 80, 2, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(114, 576, 2, 1, '2026-05-20', 'V-EMB-750', 80, 3, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(115, 577, 2, 1, '2026-05-20', 'V-EMB-750', 80, 4, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(116, 578, 2, 1, '2026-05-20', 'V-EMB-750', 80, 5, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(117, 579, 2, 1, '2026-05-20', 'V-EMB-750', 80, 6, 6, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(118, 580, 2, 1, '2026-05-20', 'V-EMB-780', 40, 1, 2, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(119, 581, 2, 1, '2026-05-20', 'V-EMB-780', 40, 2, 2, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 07:41:56', '2026-05-22 07:41:56', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(120, 1057, 3, 1, '2026-05-22', 'V-EMB-26', 32, 1, 1, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(121, 1058, 3, 1, '2026-05-22', 'V-EMB-21', 50, 1, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(122, 1059, 3, 1, '2026-05-22', 'V-EMB-21', 50, 2, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(123, 1060, 3, 1, '2026-05-22', 'V-EMB-21', 50, 3, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(124, 1061, 3, 1, '2026-05-22', 'V-EMB-21', 50, 4, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(125, 1062, 3, 1, '2026-05-22', 'V-EMB-21', 50, 5, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(126, 1063, 3, 1, '2026-05-22', 'V-EMB-21', 50, 6, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(127, 1064, 3, 1, '2026-05-22', 'V-EMB-21', 50, 7, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(128, 1065, 3, 1, '2026-05-22', 'V-EMB-21', 50, 8, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(129, 1066, 3, 1, '2026-05-22', 'V-EMB-21', 50, 9, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(130, 1067, 3, 1, '2026-05-22', 'V-EMB-21', 50, 10, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(131, 1068, 3, 1, '2026-05-22', 'V-EMB-21', 50, 11, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(132, 1069, 3, 1, '2026-05-22', 'V-EMB-21', 50, 12, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(133, 1070, 3, 1, '2026-05-22', 'V-EMB-21', 50, 13, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(134, 1071, 3, 1, '2026-05-22', 'V-EMB-21', 50, 14, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(135, 1072, 3, 1, '2026-05-22', 'V-EMB-21', 50, 15, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(136, 1073, 3, 1, '2026-05-22', 'V-EMB-21', 50, 16, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(137, 1074, 3, 1, '2026-05-22', 'V-EMB-21', 50, 17, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(138, 1075, 3, 1, '2026-05-22', 'V-EMB-21', 50, 18, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(139, 1076, 3, 1, '2026-05-22', 'V-EMB-21', 50, 19, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(140, 1077, 3, 1, '2026-05-22', 'V-EMB-21', 50, 20, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(141, 1078, 3, 1, '2026-05-22', 'V-EMB-21', 50, 21, 21, 'Frame', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(142, 1079, 3, 1, '2026-05-22', 'V-EMB-61', 120, 1, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(143, 1080, 3, 1, '2026-05-22', 'V-EMB-61', 120, 2, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(144, 1081, 3, 1, '2026-05-22', 'V-EMB-61', 120, 3, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(145, 1082, 3, 1, '2026-05-22', 'V-EMB-61', 120, 4, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(146, 1083, 3, 1, '2026-05-22', 'V-EMB-61', 120, 5, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(147, 1084, 3, 1, '2026-05-22', 'V-EMB-61', 120, 6, 6, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(148, 1085, 3, 1, '2026-05-22', 'V-EMB-71', 25, 1, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(149, 1086, 3, 1, '2026-05-22', 'V-EMB-71', 25, 2, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(150, 1087, 3, 1, '2026-05-22', 'V-EMB-71', 25, 3, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(151, 1088, 3, 1, '2026-05-22', 'V-EMB-71', 25, 4, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(152, 1089, 3, 1, '2026-05-22', 'V-EMB-71', 25, 5, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(153, 1090, 3, 1, '2026-05-22', 'V-EMB-71', 25, 6, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(154, 1091, 3, 1, '2026-05-22', 'V-EMB-71', 25, 7, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(155, 1092, 3, 1, '2026-05-22', 'V-EMB-71', 25, 8, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(156, 1093, 3, 1, '2026-05-22', 'V-EMB-71', 25, 9, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(157, 1094, 3, 1, '2026-05-22', 'V-EMB-71', 25, 10, 10, 'Lid', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(158, 1095, 3, 1, '2026-05-22', 'V-EMB-91', 25, 1, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(159, 1096, 3, 1, '2026-05-22', 'V-EMB-91', 25, 2, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(160, 1097, 3, 1, '2026-05-22', 'V-EMB-91', 25, 3, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(161, 1098, 3, 1, '2026-05-22', 'V-EMB-91', 25, 4, 4, 'Lid - 9900000091', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(162, 1099, 3, 1, '2026-05-22', 'V-EMB-116', 150, 1, 2, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(163, 1100, 3, 1, '2026-05-22', 'V-EMB-116', 150, 2, 2, 'Spacer', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(164, 1101, 3, 1, '2026-05-22', 'V-EMB-500', 88, 1, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(165, 1102, 3, 1, '2026-05-22', 'V-EMB-500', 88, 2, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(166, 1103, 3, 1, '2026-05-22', 'V-EMB-500', 88, 3, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(167, 1104, 3, 1, '2026-05-22', 'V-EMB-500', 88, 4, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(168, 1105, 3, 1, '2026-05-22', 'V-EMB-500', 88, 5, 5, 'Tote - 9900000500', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(169, 1106, 3, 1, '2026-05-22', 'V-EMB-750', 80, 1, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(170, 1107, 3, 1, '2026-05-22', 'V-EMB-750', 80, 2, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(171, 1108, 3, 1, '2026-05-22', 'V-EMB-750', 80, 3, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(172, 1109, 3, 1, '2026-05-22', 'V-EMB-750', 80, 4, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(173, 1110, 3, 1, '2026-05-22', 'V-EMB-750', 80, 5, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(174, 1111, 3, 1, '2026-05-22', 'V-EMB-750', 80, 6, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(175, 1112, 3, 1, '2026-05-22', 'V-EMB-750', 80, 7, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(176, 1113, 3, 1, '2026-05-22', 'V-EMB-750', 80, 8, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(177, 1114, 3, 1, '2026-05-22', 'V-EMB-750', 80, 9, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(178, 1115, 3, 1, '2026-05-22', 'V-EMB-750', 80, 10, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(179, 1116, 3, 1, '2026-05-22', 'V-EMB-750', 80, 11, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(180, 1117, 3, 1, '2026-05-22', 'V-EMB-750', 80, 12, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(181, 1118, 3, 1, '2026-05-22', 'V-EMB-750', 80, 13, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(182, 1119, 3, 1, '2026-05-22', 'V-EMB-750', 80, 14, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(183, 1120, 3, 1, '2026-05-22', 'V-EMB-750', 80, 15, 15, 'Tote - 9900020750  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(184, 1121, 3, 1, '2026-05-22', 'V-EMB-780', 40, 1, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(185, 1122, 3, 1, '2026-05-22', 'V-EMB-780', 40, 2, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(186, 1123, 3, 1, '2026-05-22', 'V-EMB-780', 40, 3, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(187, 1124, 3, 1, '2026-05-22', 'V-EMB-780', 40, 4, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(188, 1125, 3, 1, '2026-05-22', 'V-EMB-780', 40, 5, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(189, 1126, 3, 1, '2026-05-22', 'V-EMB-780', 40, 6, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(190, 1127, 3, 1, '2026-05-22', 'V-EMB-780', 40, 7, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(191, 1128, 3, 1, '2026-05-22', 'V-EMB-780', 40, 8, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(192, 1129, 3, 1, '2026-05-22', 'V-EMB-780', 40, 9, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(193, 1130, 3, 1, '2026-05-22', 'V-EMB-780', 40, 10, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(194, 1131, 3, 1, '2026-05-22', 'V-EMB-780', 40, 11, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(195, 1132, 3, 1, '2026-05-22', 'V-EMB-780', 40, 12, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(196, 1133, 3, 1, '2026-05-22', 'V-EMB-780', 40, 13, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(197, 1134, 3, 1, '2026-05-22', 'V-EMB-780', 40, 14, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(198, 1135, 3, 1, '2026-05-22', 'V-EMB-780', 40, 15, 15, 'Tote - 9900020780  80/BUNDLE', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(199, 1136, 3, 1, '2026-05-22', 'V-EMB-800', 40, 1, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(200, 1137, 3, 1, '2026-05-22', 'V-EMB-800', 40, 2, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(201, 1138, 3, 1, '2026-05-22', 'V-EMB-800', 40, 3, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(202, 1139, 3, 1, '2026-05-22', 'V-EMB-800', 40, 4, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(203, 1140, 3, 1, '2026-05-22', 'V-EMB-800', 40, 5, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(204, 1141, 3, 1, '2026-05-22', 'V-EMB-800', 40, 6, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b'),
+(205, 1142, 3, 1, '2026-05-22', 'V-EMB-800', 40, 7, 7, 'Tote -', 6229, '2026-05-22 09:20:31', '2026-05-22 09:20:31', '2026-05-22 09:20:40', 'jkoll', '69247c0d-55e9-11f1-a4f4-005056bbe55b');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_label_data`
+--
+
+CREATE TABLE `volvo_label_data` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate primary key for shipment record',
+  `shipment_date` date NOT NULL COMMENT 'Date of the shipment (local business date)',
+  `shipment_number` int(11) NOT NULL COMMENT 'Auto-increment within same day, resets daily; sequence number for shipment_date',
+  `po_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order number provided by Purchasing (nullable until PO created)',
+  `receiver_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Received package/receiver number populated after Infor Visual receiving',
+  `employee_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee identifier from authentication context who created/owns the shipment',
+  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Optional free-text notes about the shipment',
+  `status` enum('pending_po','completed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending_po' COMMENT 'Current lifecycle status of the shipment',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
+  `modified_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when record was last modified',
+  `is_archived` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Soft-delete flag; 0 = active, 1 = archived'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo dunnage shipment headers';
+
+--
+-- Dumping data for table `volvo_label_data`
+--
+
+INSERT INTO `volvo_label_data` (`id`, `shipment_date`, `shipment_number`, `po_number`, `receiver_number`, `employee_number`, `notes`, `status`, `created_date`, `modified_date`, `is_archived`) VALUES
+(3, '2026-05-22', 1, NULL, NULL, '6229', '', 'pending_po', '2026-05-22 09:18:36', '2026-05-22 09:20:47', 0);
+
+--
+-- Triggers `volvo_label_data`
+--
+DELIMITER $$
+CREATE TRIGGER `trigger_volvo_shipment_prevent_duplicate_pending` BEFORE INSERT ON `volvo_label_data` FOR EACH ROW BEGIN
+    DECLARE pending_count INT;
+
+    IF NEW.status = 'pending_po'
+        AND NEW.is_archived = 0 THEN
+        SELECT
+            COUNT(*) INTO pending_count
+        FROM
+            volvo_label_data
+        WHERE
+            status = 'pending_po'
+            AND is_archived = 0;
+
+        IF pending_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Only one pending shipment allowed at a time. Complete existing pending shipment first.';
+        END IF;
+
+    END IF;
+
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trigger_volvo_shipment_prevent_duplicate_pending_update` BEFORE UPDATE ON `volvo_label_data` FOR EACH ROW BEGIN
+    DECLARE pending_count INT;
+
+    IF NEW.status = 'pending_po'
+        AND NEW.is_archived = 0
+        AND (
+            OLD.status != 'pending_po'
+            OR OLD.is_archived = 1
+        ) THEN
+        SELECT
+            COUNT(*) INTO pending_count
+        FROM
+            volvo_label_data
+        WHERE
+            status = 'pending_po'
+            AND is_archived = 0
+            AND id != NEW.id;
+
+        IF pending_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Only one pending shipment allowed at a time. Complete existing pending shipment first.';
+        END IF;
+
+    END IF;
+
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_label_history`
+--
+
+CREATE TABLE `volvo_label_history` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate PK for this history record',
+  `original_id` int(11) NOT NULL COMMENT 'Preserved PK from volvo_label_data at time of archive',
+  `shipment_date` date NOT NULL COMMENT 'Date of the original shipment (local business date)',
+  `shipment_number` int(11) NOT NULL COMMENT 'Auto-increment shipment number (within same day)',
+  `po_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Purchase order number (populated when shipment was completed)',
+  `receiver_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Receiver number from Infor Visual',
+  `employee_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee identifier who created/owned the shipment',
+  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Free-text notes about the shipment',
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Lifecycle status at time of archive (completed)',
+  `created_date` datetime NOT NULL COMMENT 'Timestamp when original active record was created',
+  `modified_date` datetime NOT NULL COMMENT 'Timestamp of last modification before archive',
+  `archived_at` datetime NOT NULL COMMENT 'Timestamp when record was moved to history by Clear Label Data',
+  `archived_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee number who triggered Clear Label Data',
+  `archive_batch_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID shared by all records moved in the same Clear Label Data operation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Archive of completed Volvo shipment headers cleared from the active queue';
+
+--
+-- Dumping data for table `volvo_label_history`
+--
+
+INSERT INTO `volvo_label_history` (`id`, `original_id`, `shipment_date`, `shipment_number`, `po_number`, `receiver_number`, `employee_number`, `notes`, `status`, `created_date`, `modified_date`, `archived_at`, `archived_by`, `archive_batch_id`) VALUES
+(2, 3, '2026-04-21', 1, 'PO-069151', '134953', '6229', '', 'completed', '2026-04-21 08:48:25', '2026-04-21 09:14:51', '2026-04-21 09:14:51', '6229', '7a007dfc-3d8c-11f1-aee7-005056bbe55b'),
+(3, 1, '2026-04-22', 1, 'PO-065151', '134659', '6524', '', 'completed', '2026-04-22 08:15:14', '2026-04-22 08:15:56', '2026-04-22 08:15:56', '6524', '660dd1ac-3e4d-11f1-b854-005056bbe55b'),
+(4, 2, '2026-05-12', 1, 'PO-069755', '151334', '6229', '', 'completed', '2026-05-15 12:49:27', '2026-05-15 13:19:23', '2026-05-15 13:19:23', '6229', '99fc7eeb-508a-11f1-9eb9-005056bbe55b'),
+(5, 1, '2026-05-19', 1, 'PO-069800', '151503', '6229', '', 'completed', '2026-05-19 12:38:21', '2026-05-20 07:26:53', '2026-05-20 07:26:53', '6229', '300eb98b-5447-11f1-9147-005056bbe55b'),
+(6, 2, '2026-05-20', 1, 'PO-069834', '151582', '6229', '', 'completed', '2026-05-20 12:51:27', '2026-05-22 07:42:19', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_line_data`
+--
+
+CREATE TABLE `volvo_line_data` (
+  `id` int(11) NOT NULL COMMENT 'Primary key for volvo_line_data',
+  `shipment_id` int(11) NOT NULL COMMENT 'FK to volvo_label_data.id (shipment header)',
+  `part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'From volvo_masterdata',
+  `po_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending' COMMENT 'Card status: Pending or Received',
+  `location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Warehouse location for this shipment line',
+  `quantity_per_skid` int(11) NOT NULL DEFAULT '0' COMMENT 'Cached quantity per skid from master data at time of shipment',
+  `received_skid_count` int(11) NOT NULL COMMENT 'User-entered actual skid count',
+  `calculated_piece_count` int(11) NOT NULL COMMENT 'Stored snapshot of calculated piece count from component explosion',
+  `has_discrepancy` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag indicating mismatch between expected and received counts (0=false,1=true)',
+  `expected_skid_count` int(11) DEFAULT NULL COMMENT 'Volvo packlist quantity if discrepancy exists (nullable)',
+  `discrepancy_note` text COLLATE utf8mb4_unicode_ci COMMENT 'Optional note describing discrepancy or resolution steps'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo shipment line items';
+
+--
+-- Dumping data for table `volvo_line_data`
+--
+
+INSERT INTO `volvo_line_data` (`id`, `shipment_id`, `part_number`, `po_status`, `location`, `quantity_per_skid`, `received_skid_count`, `calculated_piece_count`, `has_discrepancy`, `expected_skid_count`, `discrepancy_note`) VALUES
+(133, 3, 'V-EMB-26', 'Pending', 'V-WC', 32, 1, 32, 0, NULL, ''),
+(134, 3, 'V-EMB-21', 'Pending', 'V-WC', 50, 21, 1050, 1, 19, ''),
+(135, 3, 'V-EMB-61', 'Pending', 'V-WC', 120, 6, 720, 0, NULL, ''),
+(136, 3, 'V-EMB-71', 'Pending', 'V-WC', 25, 10, 250, 0, NULL, ''),
+(137, 3, 'V-EMB-91', 'Pending', 'V-WC', 25, 4, 100, 0, NULL, ''),
+(138, 3, 'V-EMB-116', 'Pending', 'V-WC', 150, 2, 300, 0, NULL, ''),
+(139, 3, 'V-EMB-500', 'Pending', 'V-WC', 88, 5, 440, 0, NULL, ''),
+(140, 3, 'V-EMB-750', 'Pending', 'V-WC', 80, 15, 1200, 0, NULL, ''),
+(141, 3, 'V-EMB-780', 'Pending', 'V-WC', 40, 15, 600, 0, NULL, ''),
+(142, 3, 'V-EMB-800', 'Pending', 'V-WC', 40, 7, 280, 0, NULL, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_line_history`
+--
+
+CREATE TABLE `volvo_line_history` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate PK for this history record',
+  `original_id` int(11) NOT NULL COMMENT 'Preserved PK from volvo_line_data at time of archive',
+  `shipment_history_id` int(11) NOT NULL COMMENT 'FK to volvo_label_history.id (archived header)',
+  `original_shipment_id` int(11) NOT NULL COMMENT 'Preserved FK from volvo_line_data.shipment_id (original active header ID)',
+  `part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Volvo part number (from volvo_masterdata at time of entry)',
+  `po_status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Received' COMMENT 'Final card status after completion/archive',
+  `location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Warehouse location for this shipment line',
+  `quantity_per_skid` int(11) NOT NULL DEFAULT '0' COMMENT 'Cached quantity per skid from master data at time of shipment',
+  `received_skid_count` int(11) NOT NULL COMMENT 'User-entered actual skid count',
+  `calculated_piece_count` int(11) NOT NULL COMMENT 'Snapshot of calculated piece count',
+  `has_discrepancy` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=no discrepancy, 1=discrepancy noted',
+  `expected_skid_count` int(11) DEFAULT NULL COMMENT 'Packlist quantity if discrepancy existed (nullable)',
+  `discrepancy_note` text COLLATE utf8mb4_unicode_ci COMMENT 'Note describing discrepancy or resolution',
+  `archived_at` datetime NOT NULL COMMENT 'Timestamp when record was moved to history',
+  `archived_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Employee number who triggered Clear Label Data',
+  `archive_batch_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID shared by all records moved in the same Clear operation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Archive of Volvo shipment line items cleared from the active queue';
+
+--
+-- Dumping data for table `volvo_line_history`
+--
+
+INSERT INTO `volvo_line_history` (`id`, `original_id`, `shipment_history_id`, `original_shipment_id`, `part_number`, `po_status`, `location`, `quantity_per_skid`, `received_skid_count`, `calculated_piece_count`, `has_discrepancy`, `expected_skid_count`, `discrepancy_note`, `archived_at`, `archived_by`, `archive_batch_id`) VALUES
+(4, 12, 2, 3, 'V-EMB-780', 'Received', 'V-WC', 40, 3, 120, 0, NULL, '', '2026-04-21 09:14:51', '6229', '7a007dfc-3d8c-11f1-aee7-005056bbe55b'),
+(5, 13, 2, 3, 'V-EMB-71', 'Received', 'V-WC', 25, 5, 125, 0, NULL, '', '2026-04-21 09:14:51', '6229', '7a007dfc-3d8c-11f1-aee7-005056bbe55b'),
+(6, 3, 3, 1, 'V-EMB-1', 'Received', 'V-WC', 10, 5, 50, 1, 10, '', '2026-04-22 08:15:56', '6524', '660dd1ac-3e4d-11f1-b854-005056bbe55b'),
+(7, 3, 4, 2, 'V-EMB-92', 'Received', 'V-WC', 25, 4, 100, 0, NULL, '', '2026-05-15 13:19:23', '6229', '99fc7eeb-508a-11f1-9eb9-005056bbe55b'),
+(8, 6, 5, 1, 'V-EMB-71', 'Received', 'V-WC', 25, 6, 150, 0, NULL, '', '2026-05-20 07:26:53', '6229', '300eb98b-5447-11f1-9147-005056bbe55b'),
+(9, 7, 5, 1, 'V-EMB-92', 'Received', 'V-WC', 25, 6, 150, 1, 4, '2 More than packing list states', '2026-05-20 07:26:53', '6229', '300eb98b-5447-11f1-9147-005056bbe55b'),
+(10, 60, 6, 2, 'V-EMB-1', 'Received', 'V-WC', 10, 17, 170, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b'),
+(11, 61, 6, 2, 'V-EMB-21', 'Received', 'V-WC', 50, 6, 300, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b'),
+(12, 62, 6, 2, 'V-EMB-61', 'Received', 'V-WC', 120, 2, 240, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b'),
+(13, 63, 6, 2, 'V-EMB-500', 'Received', 'V-WC', 88, 5, 440, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b'),
+(14, 64, 6, 2, 'V-EMB-750', 'Received', 'V-WC', 80, 6, 480, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b'),
+(15, 65, 6, 2, 'V-EMB-780', 'Received', 'V-WC', 40, 2, 80, 0, NULL, '', '2026-05-22 07:42:19', '6229', 'abe67aee-55db-11f1-a4f4-005056bbe55b');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_masterdata`
+--
+
+CREATE TABLE `volvo_masterdata` (
+  `part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Volvo part identifier (primary key)',
+  `quantity_per_skid` int(11) NOT NULL COMMENT 'Pieces per skid for this part (from DataSheet.csv)',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=deactivated, hidden from dropdowns',
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
+  `modified_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record last modified timestamp'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Volvo parts catalog (from DataSheet.csv)';
+
+--
+-- Dumping data for table `volvo_masterdata`
+--
+
+INSERT INTO `volvo_masterdata` (`part_number`, `quantity_per_skid`, `is_active`, `created_date`, `modified_date`) VALUES
+('V-EMB-1', 10, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-116', 150, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-2', 20, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-21', 50, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-22', 50, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-26', 32, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-29', 32, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-500', 88, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-6', 10, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-600', 44, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-61', 120, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-62', 120, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-66', 100, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-69', 100, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-701', 10, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-702', 20, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-706', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-71', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-72', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-750', 80, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-757', 80, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-76', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-780', 40, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-787', 40, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-79', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-800', 40, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-840', 20, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-9', 10, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-91', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07'),
+('V-EMB-92', 25, 1, '2026-04-07 07:13:07', '2026-04-07 07:13:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `volvo_part_components`
+--
+
+CREATE TABLE `volvo_part_components` (
+  `id` int(11) NOT NULL COMMENT 'Surrogate primary key for this table',
+  `parent_part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Parent part number (references volvo_masterdata.part_number)',
+  `component_part_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Component part number (references volvo_masterdata.part_number)',
+  `quantity` int(11) NOT NULL COMMENT 'How many of this component per parent skid'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Component explosion for Volvo parts';
+
+--
+-- Dumping data for table `volvo_part_components`
+--
+
+INSERT INTO `volvo_part_components` (`id`, `parent_part_number`, `component_part_number`, `quantity`) VALUES
+(1, 'V-EMB-116', 'V-EMB-1', 1),
+(2, 'V-EMB-116', 'V-EMB-71', 1),
+(3, 'V-EMB-116', 'V-EMB-26', 3),
+(4, 'V-EMB-21', 'V-EMB-1', 2),
+(5, 'V-EMB-22', 'V-EMB-2', 2),
+(6, 'V-EMB-500', 'V-EMB-2', 1),
+(7, 'V-EMB-500', 'V-EMB-92', 1),
+(8, 'V-EMB-600', 'V-EMB-2', 1),
+(9, 'V-EMB-600', 'V-EMB-92', 1),
+(10, 'V-EMB-61', 'V-EMB-1', 1),
+(11, 'V-EMB-61', 'V-EMB-71', 1),
+(12, 'V-EMB-61', 'V-EMB-21', 2),
+(13, 'V-EMB-62', 'V-EMB-2', 1),
+(14, 'V-EMB-62', 'V-EMB-72', 1),
+(15, 'V-EMB-62', 'V-EMB-22', 2),
+(16, 'V-EMB-66', 'V-EMB-6', 1),
+(17, 'V-EMB-66', 'V-EMB-76', 1),
+(18, 'V-EMB-66', 'V-EMB-26', 2),
+(19, 'V-EMB-69', 'V-EMB-9', 1),
+(20, 'V-EMB-69', 'V-EMB-79', 1),
+(21, 'V-EMB-69', 'V-EMB-29', 2),
+(22, 'V-EMB-702', 'V-EMB-701', 1),
+(23, 'V-EMB-706', 'V-EMB-701', 1),
+(24, 'V-EMB-71', 'V-EMB-1', 1),
+(25, 'V-EMB-72', 'V-EMB-2', 1),
+(26, 'V-EMB-750', 'V-EMB-1', 1),
+(27, 'V-EMB-750', 'V-EMB-91', 1),
+(28, 'V-EMB-76', 'V-EMB-6', 1),
+(29, 'V-EMB-780', 'V-EMB-1', 1),
+(30, 'V-EMB-780', 'V-EMB-71', 1),
+(31, 'V-EMB-79', 'V-EMB-9', 1),
+(32, 'V-EMB-800', 'V-EMB-1', 1),
+(33, 'V-EMB-800', 'V-EMB-91', 1),
+(34, 'V-EMB-91', 'V-EMB-1', 1),
+(35, 'V-EMB-92', 'V-EMB-2', 1),
+(36, 'V-EMB-26', 'V-EMB-6', 1),
+(37, 'V-EMB-29', 'V-EMB-9', 1),
+(38, 'V-EMB-787', 'V-EMB-1', 1),
+(39, 'V-EMB-787', 'V-EMB-91', 1),
+(40, 'V-EMB-757', 'V-EMB-1', 1),
+(41, 'V-EMB-757', 'V-EMB-91', 1),
+(42, 'V-EMB-840', 'V-EMB-1', 1),
+(43, 'V-EMB-840', 'V-EMB-71', 1);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `auth_users`
+--
+ALTER TABLE `auth_users`
+  ADD PRIMARY KEY (`employee_number`),
+  ADD UNIQUE KEY `windows_username` (`windows_username`),
+  ADD KEY `idx_users_windows_username` (`windows_username`) COMMENT 'Index for fast Windows authentication lookups',
+  ADD KEY `idx_users_pin` (`pin`) COMMENT 'Index for fast PIN authentication lookups',
+  ADD KEY `idx_users_active` (`is_active`) COMMENT 'Index for filtering active users';
+
+--
+-- Indexes for table `auth_workstation_config`
+--
+ALTER TABLE `auth_workstation_config`
+  ADD PRIMARY KEY (`config_id`),
+  ADD UNIQUE KEY `workstation_name` (`workstation_name`),
+  ADD KEY `idx_workstation_name` (`workstation_name`) COMMENT 'Index for fast lookup by workstation name',
+  ADD KEY `idx_workstation_active` (`is_active`) COMMENT 'Index for filtering active workstations';
+
+--
+-- Indexes for table `departments`
+--
+ALTER TABLE `departments`
+  ADD PRIMARY KEY (`department_id`),
+  ADD UNIQUE KEY `department_name` (`department_name`),
+  ADD KEY `idx_departments_active` (`is_active`) COMMENT 'Fast filtering of active departments',
+  ADD KEY `idx_departments_sort` (`sort_order`) COMMENT 'Optimized sorting for dropdown display';
+
+--
+-- Indexes for table `dunnage_custom_fields`
+--
+ALTER TABLE `dunnage_custom_fields`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `IDX_CUSTOM_002` (`DunnageTypeID`,`DatabaseColumnName`) COMMENT 'Prevent duplicate columns per type',
+  ADD KEY `IDX_CUSTOM_001` (`DunnageTypeID`) COMMENT 'FK lookup performance';
+
+--
+-- Indexes for table `dunnage_history`
+--
+ALTER TABLE `dunnage_history`
+  ADD PRIMARY KEY (`load_uuid`),
+  ADD KEY `IDX_LOADS_DATE` (`received_date`) COMMENT 'Edit Mode date range filtering',
+  ADD KEY `IDX_LOADS_USER` (`created_by`) COMMENT 'Edit Mode user filtering',
+  ADD KEY `IDX_LOADS_EMPLOYEE` (`employee_number`) COMMENT 'Edit Mode employee filtering',
+  ADD KEY `IDX_HISTORY_ARCHIVE_BATCH` (`archive_batch_id`) COMMENT 'Clear Label Data archive batch lookups',
+  ADD KEY `IDX_HISTORY_PO_NUMBER` (`po_number`) COMMENT 'PO-based dunnage history queries',
+  ADD KEY `FK_dunnage_history_part_id` (`part_id`);
+
+--
+-- Indexes for table `dunnage_label_data`
+--
+ALTER TABLE `dunnage_label_data`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_load_uuid` (`load_uuid`) COMMENT 'Lookup by workflow session GUID',
+  ADD KEY `idx_part_id` (`part_id`) COMMENT 'Part-based queue queries',
+  ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'User-scoped clear queue filtering',
+  ADD KEY `idx_received_date` (`received_date`) COMMENT 'Date range filtering for queue consumers';
+
+--
+-- Indexes for table `dunnage_non_po_entries`
+--
+ALTER TABLE `dunnage_non_po_entries`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_dunnage_non_po_value` (`value`);
+
+--
+-- Indexes for table `dunnage_non_po_part_defaults`
+--
+ALTER TABLE `dunnage_non_po_part_defaults`
+  ADD PRIMARY KEY (`part_id`);
+
+--
+-- Indexes for table `dunnage_parts`
+--
+ALTER TABLE `dunnage_parts`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `part_id` (`part_id`),
+  ADD KEY `FK_dunnage_parts_type_id` (`type_id`);
+
+--
+-- Indexes for table `dunnage_quantity_types`
+--
+ALTER TABLE `dunnage_quantity_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `quantity_type` (`quantity_type`);
+
+--
+-- Indexes for table `dunnage_requires_inventory`
+--
+ALTER TABLE `dunnage_requires_inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_dunnage_requires_inventory_part_id` (`part_id`);
+
+--
+-- Indexes for table `dunnage_specs`
+--
+ALTER TABLE `dunnage_specs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UK_dunnage_specs_type_key` (`type_id`,`spec_key`);
+
+--
+-- Indexes for table `dunnage_types`
+--
+ALTER TABLE `dunnage_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `type_name` (`type_name`);
+
+--
+-- Indexes for table `outside_service_request`
+--
+ALTER TABLE `outside_service_request`
+  ADD PRIMARY KEY (`outside_service_request_id`),
+  ADD UNIQUE KEY `uq_outside_service_request_number` (`request_number`),
+  ADD KEY `idx_outside_service_request_created_utc` (`created_utc`);
+
+--
+-- Indexes for table `outside_service_request_line`
+--
+ALTER TABLE `outside_service_request_line`
+  ADD PRIMARY KEY (`outside_service_request_line_id`),
+  ADD UNIQUE KEY `uq_outside_service_request_line` (`outside_service_request_id`,`line_number`),
+  ADD KEY `idx_outside_service_request_line_request` (`outside_service_request_id`),
+  ADD KEY `idx_outside_service_request_line_phase` (`line_phase`),
+  ADD KEY `idx_outside_service_request_line_part` (`part_id`),
+  ADD KEY `idx_outside_service_request_line_vendor` (`setup_vendor_name`);
+
+--
+-- Indexes for table `outside_service_request_package`
+--
+ALTER TABLE `outside_service_request_package`
+  ADD PRIMARY KEY (`outside_service_request_package_id`),
+  ADD UNIQUE KEY `uq_outside_service_request_package_line_sequence` (`outside_service_request_line_id`,`package_sequence`),
+  ADD KEY `idx_outside_service_request_package_line` (`outside_service_request_line_id`);
+
+--
+-- Indexes for table `receiving_history`
+--
+ALTER TABLE `receiving_history`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_load_guid` (`load_guid`) COMMENT 'Unique index for app GUID lookups (allows NULLs for imported records)',
+  ADD KEY `idx_part_id` (`part_id`) COMMENT 'Index for part lookup queries',
+  ADD KEY `idx_po_number` (`po_number`) COMMENT 'Index for PO-based queries',
+  ADD KEY `idx_po_line_number` (`po_line_number`) COMMENT 'Index for PO line lookups',
+  ADD KEY `idx_transaction_date` (`transaction_date`) COMMENT 'Index for date range queries',
+  ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'Index for employee activity queries',
+  ADD KEY `idx_user_id` (`user_id`) COMMENT 'Index for user-based history queries',
+  ADD KEY `idx_po_due_date` (`po_due_date`);
+
+--
+-- Indexes for table `receiving_label_data`
+--
+ALTER TABLE `receiving_label_data`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_receiving_label_data_load_id` (`load_id`),
+  ADD KEY `idx_part_id` (`part_id`) COMMENT 'Index for part lookup queries',
+  ADD KEY `idx_po_number` (`po_number`) COMMENT 'Index for PO-based queries',
+  ADD KEY `idx_transaction_date` (`transaction_date`) COMMENT 'Index for date range queries',
+  ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'Index for employee activity queries',
+  ADD KEY `idx_received_date` (`received_date`),
+  ADD KEY `idx_user_id` (`user_id`);
+
+--
+-- Indexes for table `receiving_non_po_entries`
+--
+ALTER TABLE `receiving_non_po_entries`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_receiving_non_po_value` (`value`);
+
+--
+-- Indexes for table `receiving_non_po_part_defaults`
+--
+ALTER TABLE `receiving_non_po_part_defaults`
+  ADD PRIMARY KEY (`part_id`);
+
+--
+-- Indexes for table `receiving_package_types`
+--
+ALTER TABLE `receiving_package_types`
+  ADD PRIMARY KEY (`PreferenceID`),
+  ADD UNIQUE KEY `PartID` (`PartID`),
+  ADD KEY `idx_partid` (`PartID`) COMMENT 'Fast lookup index for retrieving preferences by part ID';
+
+--
+-- Indexes for table `receiving_package_type_mapping`
+--
+ALTER TABLE `receiving_package_type_mapping`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_prefix` (`part_prefix`),
+  ADD KEY `idx_active` (`is_active`);
+
+--
+-- Indexes for table `receiving_quality_holds`
+--
+ALTER TABLE `receiving_quality_holds`
+  ADD PRIMARY KEY (`quality_hold_id`),
+  ADD KEY `idx_load_id` (`load_id`) COMMENT 'Fast lookup by load',
+  ADD KEY `idx_part_id` (`part_id`) COMMENT 'Fast lookup by part number',
+  ADD KEY `idx_restriction_type` (`restriction_type`) COMMENT 'Filter by restriction type',
+  ADD KEY `idx_acknowledged_at` (`quality_acknowledged_at`) COMMENT 'Find unacknowledged holds';
+
+--
+-- Indexes for table `reporting_scheduled_reports`
+--
+ALTER TABLE `reporting_scheduled_reports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_next_run` (`next_run_date`),
+  ADD KEY `idx_active` (`is_active`),
+  ADD KEY `idx_report_type` (`report_type`);
+
+--
+-- Indexes for table `settings_activity`
+--
+ALTER TABLE `settings_activity`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_category_key` (`category`,`setting_key`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_changed_by` (`changed_by`),
+  ADD KEY `idx_timestamp` (`changed_at`);
+
+--
+-- Indexes for table `settings_dunnage_personal`
+--
+ALTER TABLE `settings_dunnage_personal`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `IDX_PREF_001` (`UserId`,`PreferenceKey`) COMMENT 'One value per user per key';
+
+--
+-- Indexes for table `settings_module_volvo`
+--
+ALTER TABLE `settings_module_volvo`
+  ADD PRIMARY KEY (`setting_key`),
+  ADD KEY `idx_category` (`category`);
+
+--
+-- Indexes for table `settings_personal`
+--
+ALTER TABLE `settings_personal`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_setting` (`user_id`,`category`,`setting_key`) COMMENT 'Ensures a single override per user per setting',
+  ADD KEY `idx_user` (`user_id`) COMMENT 'Index to speed lookups by user_id',
+  ADD KEY `idx_category` (`category`);
+
+--
+-- Indexes for table `settings_personal_activity_log`
+--
+ALTER TABLE `settings_personal_activity_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `idx_log_timestamp` (`event_timestamp`) COMMENT 'Index for querying logs by timestamp',
+  ADD KEY `idx_log_username` (`username`) COMMENT 'Index for querying logs by username',
+  ADD KEY `idx_log_event_type` (`event_type`) COMMENT 'Index for querying logs by event type';
+
+--
+-- Indexes for table `settings_reporting_recipients`
+--
+ALTER TABLE `settings_reporting_recipients`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_settings_reporting_recipients_type_email` (`recipient_type`,`email`);
+
+--
+-- Indexes for table `settings_roles`
+--
+ALTER TABLE `settings_roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `role_name` (`role_name`);
+
+--
+-- Indexes for table `settings_universal`
+--
+ALTER TABLE `settings_universal`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_setting` (`category`,`setting_key`),
+  ADD KEY `idx_category` (`category`),
+  ADD KEY `idx_scope` (`scope`),
+  ADD KEY `idx_permission` (`permission_level`);
+
+--
+-- Indexes for table `settings_user_roles`
+--
+ALTER TABLE `settings_user_roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_settings_user_roles` (`user_id`,`role_id`);
+
+--
+-- Indexes for table `settings_volvo_recipents`
+--
+ALTER TABLE `settings_volvo_recipents`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_settings_volvo_recipents_type_email` (`recipient_type`,`email`);
+
+--
+-- Indexes for table `software_version`
+--
+ALTER TABLE `software_version`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `volvo_generated_label_data`
+--
+ALTER TABLE `volvo_generated_label_data`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_volvo_generated_label_shipment_id` (`shipment_id`),
+  ADD KEY `idx_volvo_generated_label_shipment_number` (`shipment_number`),
+  ADD KEY `idx_volvo_generated_label_part_number` (`part_number`),
+  ADD KEY `idx_volvo_generated_label_employee_number` (`employee_number`),
+  ADD KEY `idx_volvo_generated_label_created_at` (`created_at`);
+
+--
+-- Indexes for table `volvo_generated_label_history`
+--
+ALTER TABLE `volvo_generated_label_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_volvo_generated_label_history_original_id` (`original_id`),
+  ADD KEY `idx_volvo_generated_label_history_batch_id` (`archive_batch_id`),
+  ADD KEY `idx_volvo_generated_label_history_shipment_id` (`shipment_id`),
+  ADD KEY `idx_volvo_generated_label_history_part_number` (`part_number`),
+  ADD KEY `idx_volvo_generated_label_history_employee_number` (`employee_number`),
+  ADD KEY `idx_volvo_generated_label_history_archived_at` (`archived_at`);
+
+--
+-- Indexes for table `volvo_label_data`
+--
+ALTER TABLE `volvo_label_data`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_shipment_per_day` (`shipment_date`,`shipment_number`) COMMENT 'Ensures shipment_number is unique per shipment_date',
+  ADD KEY `idx_status` (`status`) COMMENT 'Index to speed queries filtered by status',
+  ADD KEY `idx_shipment_date` (`shipment_date`) COMMENT 'Index to speed queries by shipment_date',
+  ADD KEY `idx_po_number` (`po_number`) COMMENT 'Index to speed lookups by PO number';
+
+--
+-- Indexes for table `volvo_label_history`
+--
+ALTER TABLE `volvo_label_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_original_id` (`original_id`) COMMENT 'Look up history by original active-table ID',
+  ADD KEY `idx_archive_batch_id` (`archive_batch_id`) COMMENT 'Retrieve all records moved in the same Clear operation',
+  ADD KEY `idx_shipment_date` (`shipment_date`) COMMENT 'Filter history by shipment date',
+  ADD KEY `idx_employee_number` (`employee_number`) COMMENT 'Filter history by employee';
+
+--
+-- Indexes for table `volvo_line_data`
+--
+ALTER TABLE `volvo_line_data`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_shipment_id` (`shipment_id`) COMMENT 'Index for lookup by shipment_id',
+  ADD KEY `idx_part_number` (`part_number`) COMMENT 'Index for lookup by part_number',
+  ADD KEY `idx_po_status` (`po_status`) COMMENT 'Index for lookup by Pending/Received state';
+
+--
+-- Indexes for table `volvo_line_history`
+--
+ALTER TABLE `volvo_line_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_shipment_history_id` (`shipment_history_id`) COMMENT 'Look up lines by archived header ID',
+  ADD KEY `idx_original_shipment_id` (`original_shipment_id`) COMMENT 'Look up lines by original active shipment ID',
+  ADD KEY `idx_archive_batch_id` (`archive_batch_id`) COMMENT 'Retrieve all records moved in the same Clear operation',
+  ADD KEY `idx_part_number` (`part_number`) COMMENT 'Filter history by part number';
+
+--
+-- Indexes for table `volvo_masterdata`
+--
+ALTER TABLE `volvo_masterdata`
+  ADD PRIMARY KEY (`part_number`);
+
+--
+-- Indexes for table `volvo_part_components`
+--
+ALTER TABLE `volvo_part_components`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_parent_component` (`parent_part_number`,`component_part_number`) COMMENT 'Ensures each parent/component pair is unique',
+  ADD KEY `idx_parent` (`parent_part_number`) COMMENT 'Index to speed parent part lookups',
+  ADD KEY `idx_component` (`component_part_number`) COMMENT 'Index to speed component part lookups';
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `auth_users`
+--
+ALTER TABLE `auth_users`
+  MODIFY `employee_number` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for each employee', AUTO_INCREMENT=6605;
+
+--
+-- AUTO_INCREMENT for table `auth_workstation_config`
+--
+ALTER TABLE `auth_workstation_config`
+  MODIFY `config_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for workstation configuration', AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT for table `departments`
+--
+ALTER TABLE `departments`
+  MODIFY `department_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for department', AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `dunnage_custom_fields`
+--
+ALTER TABLE `dunnage_custom_fields`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for each custom field';
+
+--
+-- AUTO_INCREMENT for table `dunnage_label_data`
+--
+ALTER TABLE `dunnage_label_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto-incrementing unique identifier', AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `dunnage_non_po_entries`
+--
+ALTER TABLE `dunnage_non_po_entries`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `dunnage_parts`
+--
+ALTER TABLE `dunnage_parts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for dunnage part', AUTO_INCREMENT=65;
+
+--
+-- AUTO_INCREMENT for table `dunnage_quantity_types`
+--
+ALTER TABLE `dunnage_quantity_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for a reusable dunnage quantity label header', AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `dunnage_requires_inventory`
+--
+ALTER TABLE `dunnage_requires_inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for inventoried dunnage record', AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `dunnage_specs`
+--
+ALTER TABLE `dunnage_specs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for dunnage specifications', AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `dunnage_types`
+--
+ALTER TABLE `dunnage_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for dunnage type', AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `outside_service_request`
+--
+ALTER TABLE `outside_service_request`
+  MODIFY `outside_service_request_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for outside service request header';
+
+--
+-- AUTO_INCREMENT for table `outside_service_request_line`
+--
+ALTER TABLE `outside_service_request_line`
+  MODIFY `outside_service_request_line_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for outside service request line';
+
+--
+-- AUTO_INCREMENT for table `outside_service_request_package`
+--
+ALTER TABLE `outside_service_request_package`
+  MODIFY `outside_service_request_package_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for outside service package row';
+
+--
+-- AUTO_INCREMENT for table `receiving_history`
+--
+ALTER TABLE `receiving_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto-incrementing unique identifier', AUTO_INCREMENT=1870;
+
+--
+-- AUTO_INCREMENT for table `receiving_label_data`
+--
+ALTER TABLE `receiving_label_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto-incrementing unique identifier', AUTO_INCREMENT=329;
+
+--
+-- AUTO_INCREMENT for table `receiving_non_po_entries`
+--
+ALTER TABLE `receiving_non_po_entries`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `receiving_package_types`
+--
+ALTER TABLE `receiving_package_types`
+  MODIFY `PreferenceID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for each package type preference', AUTO_INCREMENT=86;
+
+--
+-- AUTO_INCREMENT for table `receiving_package_type_mapping`
+--
+ALTER TABLE `receiving_package_type_mapping`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for mapping record', AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `receiving_quality_holds`
+--
+ALTER TABLE `receiving_quality_holds`
+  MODIFY `quality_hold_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique quality hold identifier';
+
+--
+-- AUTO_INCREMENT for table `reporting_scheduled_reports`
+--
+ALTER TABLE `reporting_scheduled_reports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key: unique scheduled report identifier';
+
+--
+-- AUTO_INCREMENT for table `settings_activity`
+--
+ALTER TABLE `settings_activity`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the audit record', AUTO_INCREMENT=210;
+
+--
+-- AUTO_INCREMENT for table `settings_dunnage_personal`
+--
+ALTER TABLE `settings_dunnage_personal`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for each preference record';
+
+--
+-- AUTO_INCREMENT for table `settings_personal`
+--
+ALTER TABLE `settings_personal`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the settings_personal table', AUTO_INCREMENT=106;
+
+--
+-- AUTO_INCREMENT for table `settings_personal_activity_log`
+--
+ALTER TABLE `settings_personal_activity_log`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for each log entry', AUTO_INCREMENT=726;
+
+--
+-- AUTO_INCREMENT for table `settings_reporting_recipients`
+--
+ALTER TABLE `settings_reporting_recipients`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the Reporting recipient row', AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `settings_roles`
+--
+ALTER TABLE `settings_roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `settings_universal`
+--
+ALTER TABLE `settings_universal`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Auto-incrementing primary key for the setting record', AUTO_INCREMENT=228;
+
+--
+-- AUTO_INCREMENT for table `settings_user_roles`
+--
+ALTER TABLE `settings_user_roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `settings_volvo_recipents`
+--
+ALTER TABLE `settings_volvo_recipents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the Volvo recipient row', AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `volvo_generated_label_data`
+--
+ALTER TABLE `volvo_generated_label_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for one generated Volvo label row', AUTO_INCREMENT=1402;
+
+--
+-- AUTO_INCREMENT for table `volvo_generated_label_history`
+--
+ALTER TABLE `volvo_generated_label_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for one archived generated Volvo label row', AUTO_INCREMENT=209;
+
+--
+-- AUTO_INCREMENT for table `volvo_label_data`
+--
+ALTER TABLE `volvo_label_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for shipment record', AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `volvo_label_history`
+--
+ALTER TABLE `volvo_label_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate PK for this history record', AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `volvo_line_data`
+--
+ALTER TABLE `volvo_line_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Primary key for volvo_line_data', AUTO_INCREMENT=143;
+
+--
+-- AUTO_INCREMENT for table `volvo_line_history`
+--
+ALTER TABLE `volvo_line_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate PK for this history record', AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `volvo_part_components`
+--
+ALTER TABLE `volvo_part_components`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for this table', AUTO_INCREMENT=44;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_dunnage_history`
+--
+DROP TABLE IF EXISTS `view_dunnage_history`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_dunnage_history`  AS SELECT `dl`.`load_uuid` AS `id`, cast(NULL as char(20) charset utf8mb4) AS `po_number`, `dt`.`type_name` AS `dunnage_type`, `dp`.`part_id` AS `part_number`, group_concat(concat(`ds`.`spec_key`,':',coalesce(json_unquote(`ds`.`spec_value`),'')) order by `ds`.`spec_key` ASC separator ', ') AS `specs_combined`, `dl`.`quantity` AS `quantity`, cast(`dl`.`received_date` as date) AS `created_date`, cast(`au`.`employee_number` as char(20) charset utf8mb4) AS `employee_number`, `dl`.`created_by` AS `created_by_username`, `dp`.`home_location` AS `location`, cast(NULL as char(255) charset utf8mb4) AS `notes`, 'Dunnage' AS `source_module` FROM ((((`dunnage_history` `dl` join `dunnage_parts` `dp` on((`dl`.`part_id` = `dp`.`part_id`))) join `dunnage_types` `dt` on((`dp`.`type_id` = `dt`.`id`))) left join `dunnage_specs` `ds` on((`dp`.`type_id` = `ds`.`type_id`))) left join `auth_users` `au` on(((`au`.`windows_username` = `dl`.`created_by`) and (`au`.`is_active` = TRUE)))) GROUP BY `dl`.`load_uuid`, `dt`.`type_name`, `dp`.`part_id`, `dl`.`quantity`, `dl`.`received_date`, `dl`.`created_by`, `dp`.`home_location`, `au`.`employee_number` ORDER BY `dl`.`received_date` DESC ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_receiving_history`
+--
+DROP TABLE IF EXISTS `view_receiving_history`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_receiving_history`  AS SELECT `receiving_history`.`id` AS `id`, `receiving_history`.`po_number` AS `po_number`, `receiving_history`.`po_line_number` AS `po_line_number`, `receiving_history`.`part_id` AS `part_id`, `receiving_history`.`part_description` AS `part_description`, `receiving_history`.`quantity` AS `quantity`, cast(NULL as decimal(18,2)) AS `weight_lbs`, `receiving_history`.`heat` AS `heat`, `receiving_history`.`transaction_date` AS `transaction_date`, `receiving_history`.`created_at` AS `created_at`, `receiving_history`.`employee_number` AS `employee_number`, `receiving_history`.`user_id` AS `user_id`, `receiving_history`.`load_number` AS `load_number`, `receiving_history`.`initial_location` AS `initial_location`, `receiving_history`.`packages_per_load` AS `packages_per_load`, `receiving_history`.`package_type_name` AS `package_type_name`, `receiving_history`.`weight_per_package` AS `weight_per_package`, `receiving_history`.`coils_on_skid` AS `coils_on_skid`, `receiving_history`.`label_number` AS `label_number`, `receiving_history`.`vendor_name` AS `vendor_name`, `receiving_history`.`po_status` AS `po_status`, `receiving_history`.`po_due_date` AS `po_due_date`, `receiving_history`.`qty_ordered` AS `qty_ordered`, `receiving_history`.`unit_of_measure` AS `unit_of_measure`, `receiving_history`.`remaining_quantity` AS `remaining_quantity`, `receiving_history`.`is_non_po_item` AS `is_non_po_item`, `receiving_history`.`is_quality_hold_required` AS `is_quality_hold_required`, `receiving_history`.`is_quality_hold_acknowledged` AS `is_quality_hold_acknowledged`, `receiving_history`.`quality_hold_restriction_type` AS `quality_hold_restriction_type`, `receiving_history`.`part_skid_total` AS `part_skid_total`, NULL AS `notes`, 'Receiving' AS `source_module` FROM `receiving_history`union all select `receiving_label_data`.`id` AS `id`,`receiving_label_data`.`po_number` AS `po_number`,`receiving_label_data`.`po_line_number` AS `po_line_number`,`receiving_label_data`.`part_id` AS `part_id`,`receiving_label_data`.`part_description` AS `part_description`,`receiving_label_data`.`quantity` AS `quantity`,`receiving_label_data`.`weight_quantity` AS `weight_lbs`,`receiving_label_data`.`heat` AS `heat`,`receiving_label_data`.`transaction_date` AS `transaction_date`,coalesce(`receiving_label_data`.`received_date`,`receiving_label_data`.`created_at`) AS `created_at`,`receiving_label_data`.`employee_number` AS `employee_number`,`receiving_label_data`.`user_id` AS `user_id`,`receiving_label_data`.`load_number` AS `load_number`,`receiving_label_data`.`initial_location` AS `initial_location`,`receiving_label_data`.`packages_per_load` AS `packages_per_load`,`receiving_label_data`.`package_type_name` AS `package_type_name`,`receiving_label_data`.`weight_per_package` AS `weight_per_package`,`receiving_label_data`.`coils_on_skid` AS `coils_on_skid`,`receiving_label_data`.`label_number` AS `label_number`,`receiving_label_data`.`vendor_name` AS `vendor_name`,`receiving_label_data`.`po_status` AS `po_status`,`receiving_label_data`.`po_due_date` AS `po_due_date`,`receiving_label_data`.`qty_ordered` AS `qty_ordered`,`receiving_label_data`.`unit_of_measure` AS `unit_of_measure`,`receiving_label_data`.`remaining_quantity` AS `remaining_quantity`,`receiving_label_data`.`is_non_po_item` AS `is_non_po_item`,`receiving_label_data`.`is_quality_hold_required` AS `is_quality_hold_required`,`receiving_label_data`.`is_quality_hold_acknowledged` AS `is_quality_hold_acknowledged`,`receiving_label_data`.`quality_hold_restriction_type` AS `quality_hold_restriction_type`,`receiving_label_data`.`part_skid_total` AS `part_skid_total`,NULL AS `notes`,'Receiving' AS `source_module` from `receiving_label_data` order by `created_at` desc,`id` desc  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_volvo_history`
+--
+DROP TABLE IF EXISTS `view_volvo_history`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_volvo_history`  AS SELECT cast(`vsl`.`id` as char(20) charset utf8mb4) AS `id`, `vs`.`po_number` AS `po_number`, `vsl`.`part_number` AS `part_number`, cast(`vsl`.`calculated_piece_count` as decimal(10,2)) AS `quantity`, cast(`vs`.`created_date` as date) AS `created_date`, `vs`.`employee_number` AS `employee_number`, coalesce(`vsl`.`discrepancy_note`,`vs`.`notes`) AS `notes`, `vs`.`shipment_number` AS `shipment_number`, `vs`.`receiver_number` AS `receiver_number`, `vs`.`status` AS `status`, 1 AS `part_count`, `vsl`.`location` AS `location`, `vsl`.`quantity_per_skid` AS `quantity_per_skid`, `vsl`.`received_skid_count` AS `received_skid_count`, 'Volvo' AS `source_module` FROM (`volvo_label_data` `vs` join `volvo_line_data` `vsl` on((`vs`.`id` = `vsl`.`shipment_id`)))union all select cast(`vlnh`.`id` as char(20) charset utf8mb4) AS `id`,`vlh`.`po_number` AS `po_number`,`vlnh`.`part_number` AS `part_number`,cast(`vlnh`.`calculated_piece_count` as decimal(10,2)) AS `quantity`,cast(`vlh`.`created_date` as date) AS `created_date`,`vlh`.`employee_number` AS `employee_number`,coalesce(`vlnh`.`discrepancy_note`,`vlh`.`notes`) AS `notes`,`vlh`.`shipment_number` AS `shipment_number`,`vlh`.`receiver_number` AS `receiver_number`,`vlh`.`status` AS `status`,1 AS `part_count`,`vlnh`.`location` AS `location`,`vlnh`.`quantity_per_skid` AS `quantity_per_skid`,`vlnh`.`received_skid_count` AS `received_skid_count`,'Volvo' AS `source_module` from (`volvo_label_history` `vlh` join `volvo_line_history` `vlnh` on((`vlh`.`id` = `vlnh`.`shipment_history_id`))) order by `created_date` desc  ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `view_volvo_label_data_history`
+--
+DROP TABLE IF EXISTS `view_volvo_label_data_history`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_volvo_label_data_history`  AS SELECT `s`.`id` AS `shipment_id`, `s`.`shipment_date` AS `shipment_date`, `s`.`shipment_number` AS `shipment_number`, `s`.`po_number` AS `po_number`, `s`.`receiver_number` AS `receiver_number`, `s`.`status` AS `status`, `l`.`part_number` AS `part_number`, `l`.`location` AS `location`, `l`.`received_skid_count` AS `received_skid_count`, `l`.`calculated_piece_count` AS `calculated_piece_count`, `l`.`has_discrepancy` AS `has_discrepancy`, `l`.`expected_skid_count` AS `expected_skid_count`, `l`.`discrepancy_note` AS `discrepancy_note` FROM (`volvo_label_data` `s` left join `volvo_line_data` `l` on((`s`.`id` = `l`.`shipment_id`)))union all select `vlh`.`id` AS `shipment_id`,`vlh`.`shipment_date` AS `shipment_date`,`vlh`.`shipment_number` AS `shipment_number`,`vlh`.`po_number` AS `po_number`,`vlh`.`receiver_number` AS `receiver_number`,`vlh`.`status` AS `status`,`vlnh`.`part_number` AS `part_number`,`vlnh`.`location` AS `location`,`vlnh`.`received_skid_count` AS `received_skid_count`,`vlnh`.`calculated_piece_count` AS `calculated_piece_count`,`vlnh`.`has_discrepancy` AS `has_discrepancy`,`vlnh`.`expected_skid_count` AS `expected_skid_count`,`vlnh`.`discrepancy_note` AS `discrepancy_note` from (`volvo_label_history` `vlh` left join `volvo_line_history` `vlnh` on((`vlh`.`id` = `vlnh`.`shipment_history_id`))) order by `shipment_date` desc,`shipment_number` desc  ;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `dunnage_custom_fields`
+--
+ALTER TABLE `dunnage_custom_fields`
+  ADD CONSTRAINT `dunnage_custom_fields_ibfk_1` FOREIGN KEY (`DunnageTypeID`) REFERENCES `dunnage_types` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dunnage_history`
+--
+ALTER TABLE `dunnage_history`
+  ADD CONSTRAINT `FK_dunnage_history_part_id` FOREIGN KEY (`part_id`) REFERENCES `dunnage_parts` (`part_id`);
+
+--
+-- Constraints for table `dunnage_parts`
+--
+ALTER TABLE `dunnage_parts`
+  ADD CONSTRAINT `FK_dunnage_parts_type_id` FOREIGN KEY (`type_id`) REFERENCES `dunnage_types` (`id`);
+
+--
+-- Constraints for table `dunnage_requires_inventory`
+--
+ALTER TABLE `dunnage_requires_inventory`
+  ADD CONSTRAINT `FK_dunnage_requires_inventory_part_id` FOREIGN KEY (`part_id`) REFERENCES `dunnage_parts` (`part_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dunnage_specs`
+--
+ALTER TABLE `dunnage_specs`
+  ADD CONSTRAINT `FK_dunnage_specs_type_id` FOREIGN KEY (`type_id`) REFERENCES `dunnage_types` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `outside_service_request_line`
+--
+ALTER TABLE `outside_service_request_line`
+  ADD CONSTRAINT `fk_outside_service_request_line_request` FOREIGN KEY (`outside_service_request_id`) REFERENCES `outside_service_request` (`outside_service_request_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `outside_service_request_package`
+--
+ALTER TABLE `outside_service_request_package`
+  ADD CONSTRAINT `fk_outside_service_request_package_line` FOREIGN KEY (`outside_service_request_line_id`) REFERENCES `outside_service_request_line` (`outside_service_request_line_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `receiving_quality_holds`
+--
+ALTER TABLE `receiving_quality_holds`
+  ADD CONSTRAINT `fk_quality_holds_load` FOREIGN KEY (`load_id`) REFERENCES `receiving_loads` (`load_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `volvo_line_data`
+--
+ALTER TABLE `volvo_line_data`
+  ADD CONSTRAINT `volvo_line_data_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `volvo_label_data` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `volvo_line_data_ibfk_2` FOREIGN KEY (`part_number`) REFERENCES `volvo_masterdata` (`part_number`);
+
+--
+-- Constraints for table `volvo_line_history`
+--
+ALTER TABLE `volvo_line_history`
+  ADD CONSTRAINT `fk_volvo_line_history_header` FOREIGN KEY (`shipment_history_id`) REFERENCES `volvo_label_history` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `volvo_part_components`
+--
+ALTER TABLE `volvo_part_components`
+  ADD CONSTRAINT `fk_volvo_part_components_component` FOREIGN KEY (`component_part_number`) REFERENCES `volvo_masterdata` (`part_number`),
+  ADD CONSTRAINT `fk_volvo_part_components_parent` FOREIGN KEY (`parent_part_number`) REFERENCES `volvo_masterdata` (`part_number`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

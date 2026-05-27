@@ -36,6 +36,8 @@ public sealed class Model_CustomerPullPack_CrystalReportGroup
 
     public bool HasServiceNote => string.IsNullOrWhiteSpace(ServiceNote) is false;
 
+    public bool HasSelectedRequestLine => RequestLines.Any(static line => line.IsSelected);
+
     public decimal TotalSubPartsOnHand => SubPartLocations.Sum(static item => item.OnHandQuantity);
 
     public Brush QuantityToPackBackgroundBrush =>
@@ -58,6 +60,8 @@ public sealed class Model_CustomerPullPack_CrystalReportGroup
 /// </summary>
 public sealed class Model_CustomerPullPack_CrystalRequestLine
 {
+    public string SourceLineKey { get; set; } = string.Empty;
+
     public string CustomerOrderId { get; set; } = string.Empty;
 
     public string ParentPartId { get; set; } = string.Empty;
@@ -72,24 +76,30 @@ public sealed class Model_CustomerPullPack_CrystalRequestLine
 
     public bool IsSelected { get; set; }
 
-    public string StatusBadgeText { get; set; } = string.Empty;
+    public string StatusNoteText { get; set; } = string.Empty;
 
     public Brush RowBackgroundBrush =>
         IsSelected
             ? new SolidColorBrush(ColorHelper.FromArgb(32, 47, 88, 128))
             : new SolidColorBrush(Colors.Transparent);
 
-    public bool HasStatusBadge => string.IsNullOrWhiteSpace(StatusBadgeText) is false;
+    public bool HasStatusNote => string.IsNullOrWhiteSpace(StatusNoteText) is false;
 
-    public Brush StatusBadgeBackgroundBrush =>
-        StatusBadgeText == "Problem"
-            ? new SolidColorBrush(ColorHelper.FromArgb(255, 223, 232, 242))
-            : new SolidColorBrush(ColorHelper.FromArgb(255, 238, 228, 200));
+    public Brush StatusNoteBackgroundBrush =>
+        StatusNoteText switch
+        {
+            "Shortage" => new SolidColorBrush(Colors.IndianRed),
+            "Late Order" => new SolidColorBrush(ColorHelper.FromArgb(255, 244, 223, 125)),
+            "Waitlist" => new SolidColorBrush(ColorHelper.FromArgb(255, 223, 232, 242)),
+            _ => new SolidColorBrush(ColorHelper.FromArgb(255, 240, 240, 240)),
+        };
 
-    public Brush StatusBadgeForegroundBrush =>
-        StatusBadgeText == "Problem"
-            ? new SolidColorBrush(ColorHelper.FromArgb(255, 47, 88, 128))
-            : new SolidColorBrush(ColorHelper.FromArgb(255, 161, 119, 46));
+    public Brush StatusNoteForegroundBrush =>
+        StatusNoteText switch
+        {
+            "Shortage" => new SolidColorBrush(Colors.White),
+            _ => new SolidColorBrush(ColorHelper.FromArgb(255, 47, 88, 128)),
+        };
 }
 
 /// <summary>
@@ -97,7 +107,13 @@ public sealed class Model_CustomerPullPack_CrystalRequestLine
 /// </summary>
 public sealed class Model_CustomerPullPack_CrystalSubPartLocation
 {
+    public string PartId { get; set; } = string.Empty;
+
+    public string LocationId { get; set; } = string.Empty;
+
     public string PartLocationId { get; set; } = string.Empty;
+
+    public string SeparatorText => "•";
 
     public decimal OnHandQuantity { get; set; }
 

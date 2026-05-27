@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -21,6 +22,16 @@ public class Model_CustomerPullPack_WaitlistEntry
     public decimal RequestedQuantity { get; set; }
 
     public List<string> SelectedLocations { get; set; } = [];
+
+    public string SelectedLocationsDisplay =>
+        SelectedLocations.Count == 0
+            ? "No locations selected"
+            : string.Join(
+                ", ",
+                SelectedLocations.Where(static location =>
+                    string.IsNullOrWhiteSpace(location) is false
+                )
+            );
 
     public string RequestedByUserId { get; set; } = string.Empty;
 

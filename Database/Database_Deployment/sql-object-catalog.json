@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-27T11:41:14.1854072-05:00",
+  "generatedAt": "2026-05-26T07:55:59.6385928-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -490,6 +490,605 @@
         {
           "alias": "__system__:tables",
           "object": "__system__:tables"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/08_Migration_label_queue_employee_scoping.sql",
+      "category": "migration_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_mig44_add_column_if_missing",
+      "procedureCount": 3,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_table_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_column_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_ddl",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "__system__:columns",
+        "__system__:statistics"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "sp_Dunnage_LabelData_Insert",
+          "resolvedObject": "sp_Dunnage_LabelData_Insert",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Dunnage_LabelData_Update",
+          "resolvedObject": "sp_Dunnage_LabelData_Update",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Dunnage_LabelData_GetAll",
+          "resolvedObject": "sp_Dunnage_LabelData_GetAll",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Dunnage_LabelData_ClearToHistory",
+          "resolvedObject": "sp_Dunnage_LabelData_ClearToHistory",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Receiving_LabelData_ClearToHistory",
+          "resolvedObject": "sp_Receiving_LabelData_ClearToHistory",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_Insert",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_Insert",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_GetAll",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_GetAll",
+          "column": "sql"
+        },
+        {
+          "qualifier": "sp_Volvo_GeneratedLabelData_ClearToHistory",
+          "resolvedObject": "sp_Volvo_GeneratedLabelData_ClearToHistory",
+          "column": "sql"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [
+        "sp_mig44_add_column_if_missing",
+        "sp_mig44_add_index_if_missing",
+        "sp_mig44_apply"
+      ],
+      "parameterTokensUsed": [
+        "p_table_name",
+        "p_column_name",
+        "p_ddl",
+        "p_index_name"
+      ],
+      "variableTokensUsed": [
+        "v_exists"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:columns",
+          "object": "__system__:columns"
+        },
+        {
+          "alias": "__system__:statistics",
+          "object": "__system__:statistics"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/09_Migration_receiving_reprint_flag.sql",
+      "category": "migration_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_mig09_add_column_if_missing",
+      "procedureCount": 5,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_table_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_column_name",
+          "sqlType": "VARCHAR(64)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_ddl",
+          "sqlType": "TEXT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_rows_to_move",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        },
+        {
+          "name": "v_already_queued",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "__system__:columns",
+        "receiving_label_data",
+        "receiving_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "load_id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_line_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "heat"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "received_date"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "created_at"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "initial_location"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "load_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "packages_per_load"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "package_type_name"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "weight_per_package"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "coils_on_skid"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "vendor_name"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_vendor"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_status"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "po_due_date"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "qty_ordered"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "unit_of_measure"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "remaining_quantity"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_non_po_item"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_quality_hold_required"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_quality_hold_acknowledged"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "quality_hold_restriction_type"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "part_skid_total"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_reprint"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_guid"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_line_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "vendor_name"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_status"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_due_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "qty_ordered"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "unit_of_measure"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "remaining_quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "heat"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "created_at"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "initial_location"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "packages_per_load"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "package_type_name"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "weight_per_package"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "coils_on_skid"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_non_po_item"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_quality_hold_required"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_quality_hold_acknowledged"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "quality_hold_restriction_type"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "receiving_history",
+          "columns": [
+            "load_guid",
+            "quantity",
+            "part_id",
+            "part_description",
+            "po_number",
+            "po_line_number",
+            "employee_number",
+            "heat",
+            "transaction_date",
+            "created_at",
+            "initial_location",
+            "load_number",
+            "packages_per_load",
+            "package_type_name",
+            "weight_per_package",
+            "coils_on_skid",
+            "label_number",
+            "vendor_name",
+            "po_status",
+            "po_due_date",
+            "qty_ordered",
+            "unit_of_measure",
+            "remaining_quantity",
+            "user_id",
+            "is_non_po_item",
+            "is_quality_hold_required",
+            "is_quality_hold_acknowledged",
+            "quality_hold_restriction_type",
+            "part_skid_sequence",
+            "part_skid_total"
+          ]
+        },
+        {
+          "table": "receiving_label_data",
+          "columns": [
+            "load_id",
+            "load_number",
+            "quantity",
+            "weight_quantity",
+            "part_id",
+            "part_description",
+            "part_type",
+            "po_number",
+            "po_line_number",
+            "po_vendor",
+            "po_status",
+            "po_due_date",
+            "qty_ordered",
+            "unit_of_measure",
+            "remaining_quantity",
+            "employee_number",
+            "user_id",
+            "heat",
+            "received_date",
+            "transaction_date",
+            "initial_location",
+            "packages_per_load",
+            "package_type_name",
+            "weight_per_package",
+            "coils_on_skid",
+            "label_number",
+            "vendor_name",
+            "is_non_po_item",
+            "is_quality_hold_required",
+            "is_quality_hold_acknowledged",
+            "is_reprint",
+            "quality_hold_restriction_type"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "receiving_label_data"
+        }
+      ],
+      "calledRoutines": [
+        "sp_mig09_add_column_if_missing",
+        "sp_mig09_apply"
+      ],
+      "parameterTokensUsed": [
+        "p_table_name",
+        "p_column_name",
+        "p_ddl",
+        "p_archived_by",
+        "p_employee_number",
+        "p_clear_all",
+        "p_rows_moved",
+        "p_archive_batch_id",
+        "p_status",
+        "p_error_message",
+        "p_history_id",
+        "p_queued_by"
+      ],
+      "variableTokensUsed": [
+        "v_exists",
+        "v_rows_to_move",
+        "v_already_queued"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:columns",
+          "object": "__system__:columns"
+        },
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
         }
       ]
     },
@@ -1380,6 +1979,69 @@
       "category": "schema_file",
       "objectType": "table",
       "objectName": "receiving_non_po_part_defaults",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/44_Table_shiprec_customer_pull_pack_waitlist.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "customer_pull_pack_waitlist",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/45_Table_shiprec_customer_pull_pack_waitlist_location.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "customer_pull_pack_waitlist_location",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/46_Table_shiprec_customer_pull_pack_user_defaults.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "customer_pull_pack_user_defaults",
       "procedureCount": 0,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
@@ -3639,6 +4301,16 @@
           "sqlType": "VARCHAR(100)"
         },
         {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_clear_all",
+          "sqlType": "TINYINT(1)"
+        },
+        {
           "direction": "OUT",
           "name": "p_rows_moved",
           "sqlType": "INT"
@@ -3706,6 +4378,11 @@
         {
           "qualifier": "dld",
           "resolvedObject": "dunnage_label_data",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
           "column": "po_number"
         },
         {
@@ -3759,6 +4436,7 @@
             "quantity_type",
             "received_date",
             "created_by",
+            "employee_number",
             "created_date",
             "po_number",
             "type_id",
@@ -3784,6 +4462,8 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_archived_by",
+        "p_employee_number",
+        "p_clear_all",
         "p_rows_moved",
         "p_archive_batch_id",
         "p_status",
@@ -3952,6 +4632,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -3993,6 +4678,7 @@
             "po_number",
             "received_date",
             "user_id",
+            "employee_number",
             "location",
             "label_number",
             "part_skid_sequence",
@@ -4015,6 +4701,7 @@
         "p_po_number",
         "p_received_date",
         "p_user_id",
+        "p_employee_number",
         "p_location",
         "p_label_number",
         "p_part_skid_sequence",
@@ -4232,6 +4919,11 @@
         },
         {
           "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
           "name": "p_location",
           "sqlType": "VARCHAR(100)"
         },
@@ -4281,6 +4973,7 @@
         "p_po_number",
         "p_received_date",
         "p_user_id",
+        "p_employee_number",
         "p_location",
         "p_label_number",
         "p_part_skid_sequence",
@@ -7396,17 +8089,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_Request_GetCompleted",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [],
       "declaredVariables": [],
       "referencedObjects": [
@@ -7557,17 +8242,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_Request_GetOpen",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [],
       "declaredVariables": [],
       "referencedObjects": [
@@ -7718,17 +8395,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_Request_Insert",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "MySqlCommand_Constructor"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -7798,17 +8467,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_RequestLine_Insert",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "MySqlCommand_Constructor"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -7872,17 +8533,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_RequestLine_MarkComplete",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -7923,17 +8576,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_RequestLine_UpdateSetup",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -8054,17 +8699,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_OutsideService_RequestPackage_Insert",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_OutsideService/Data/Dao_OutsideServiceRequest.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -8309,6 +8946,16 @@
           "sqlType": "VARCHAR(100)"
         },
         {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_clear_all",
+          "sqlType": "TINYINT(1)"
+        },
+        {
           "direction": "OUT",
           "name": "p_rows_moved",
           "sqlType": "INT"
@@ -8502,6 +9149,11 @@
           "qualifier": "rld",
           "resolvedObject": "receiving_label_data",
           "column": "part_skid_total"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_reprint"
         }
       ],
       "insertTargets": [
@@ -8550,6 +9202,8 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_archived_by",
+        "p_employee_number",
+        "p_clear_all",
         "p_rows_moved",
         "p_archive_batch_id",
         "p_status",
@@ -8898,6 +9552,277 @@
       "variableTokensUsed": [],
       "temporaryTables": [],
       "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_InsertFromHistory.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_LabelData_InsertFromHistory",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_history_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_queued_by",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_already_queued",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "receiving_label_data",
+        "receiving_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_guid"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "load_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_reprint"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_line_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "vendor_name"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_status"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_due_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "qty_ordered"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "unit_of_measure"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "remaining_quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "user_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "heat"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "created_at"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "initial_location"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "packages_per_load"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "package_type_name"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "weight_per_package"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "coils_on_skid"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "label_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_non_po_item"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_quality_hold_required"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "is_quality_hold_acknowledged"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "quality_hold_restriction_type"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "receiving_label_data",
+          "columns": [
+            "load_id",
+            "load_number",
+            "quantity",
+            "weight_quantity",
+            "part_id",
+            "part_description",
+            "part_type",
+            "po_number",
+            "po_line_number",
+            "po_vendor",
+            "po_status",
+            "po_due_date",
+            "qty_ordered",
+            "unit_of_measure",
+            "remaining_quantity",
+            "employee_number",
+            "user_id",
+            "heat",
+            "received_date",
+            "transaction_date",
+            "initial_location",
+            "packages_per_load",
+            "package_type_name",
+            "weight_per_package",
+            "coils_on_skid",
+            "label_number",
+            "vendor_name",
+            "is_non_po_item",
+            "is_quality_hold_required",
+            "is_quality_hold_acknowledged",
+            "is_reprint",
+            "quality_hold_restriction_type"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_history_id",
+        "p_queued_by",
+        "p_employee_number"
+      ],
+      "variableTokensUsed": [
+        "v_already_queued"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        }
+      ]
     },
     {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_Update.sql",
@@ -12222,6 +13147,813 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_UserDefaults_GetByUser.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_CustomerPullPack_UserDefaults_GetByUser",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackUserDefaults.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_user_id",
+          "sqlType": "VARCHAR(100)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "customer_pull_pack_user_defaults"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_user_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "LastGoodDateFrom",
+          "object": "AS"
+        },
+        {
+          "alias": "customer_pull_pack_user_defaults",
+          "object": "customer_pull_pack_user_defaults"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_UserDefaults_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_CustomerPullPack_UserDefaults_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackUserDefaults.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_customer_id",
+          "sqlType": "VARCHAR(15)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_favorite_customer_ids_json",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_good_date_range_type",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_good_date_from",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_good_date_to",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_sort_mode",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_shortages_only",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_unpulled_only",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_late_orders_only",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_waitlist_status_set_json",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_default_print_preset",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_updated_by_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_status",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_error_message",
+          "sqlType": "VARCHAR(500)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_default_sort_mode",
+          "sqlType": "VARCHAR(30) DEFAULT"
+        },
+        {
+          "name": "v_default_print_preset",
+          "sqlType": "VARCHAR(30) DEFAULT"
+        },
+        {
+          "name": "v_favorite_customer_ids_json",
+          "sqlType": "TEXT DEFAULT"
+        },
+        {
+          "name": "v_default_waitlist_status_set_json",
+          "sqlType": "TEXT DEFAULT"
+        }
+      ],
+      "referencedObjects": [
+        "DATETIME"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "customer_pull_pack_user_defaults",
+          "columns": [
+            "user_id",
+            "default_customer_id",
+            "favorite_customer_ids_json",
+            "last_good_date_range_type",
+            "last_good_date_from",
+            "last_good_date_to",
+            "default_sort_mode",
+            "default_shortages_only",
+            "default_unpulled_only",
+            "default_late_orders_only",
+            "default_waitlist_status_set_json",
+            "default_print_preset",
+            "last_updated_by_user_id"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_user_id",
+        "p_default_customer_id",
+        "p_favorite_customer_ids_json",
+        "p_last_good_date_range_type",
+        "p_last_good_date_from",
+        "p_last_good_date_to",
+        "p_default_sort_mode",
+        "p_default_shortages_only",
+        "p_default_unpulled_only",
+        "p_default_late_orders_only",
+        "p_default_waitlist_status_set_json",
+        "p_default_print_preset",
+        "p_last_updated_by_user_id",
+        "p_status",
+        "p_error_message"
+      ],
+      "variableTokensUsed": [
+        "v_default_sort_mode",
+        "v_default_print_preset",
+        "v_favorite_customer_ids_json",
+        "v_default_waitlist_status_set_json"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "DATETIME",
+          "object": "DATETIME"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_Waitlist_GetQueue.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_CustomerPullPack_Waitlist_GetQueue",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackWaitlist.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_waitlist_id",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_customer_id",
+          "sqlType": "VARCHAR(15)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_requester_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_current_owner_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_location_id",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_status_set_json",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_use_default_open_work",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_max_results",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_status_filter_json",
+          "sqlType": "TEXT DEFAULT NULL"
+        },
+        {
+          "name": "v_use_default_open_work",
+          "sqlType": "TINYINT(1) DEFAULT 1"
+        },
+        {
+          "name": "v_max_results",
+          "sqlType": "INT DEFAULT 250"
+        }
+      ],
+      "referencedObjects": [
+        "customer_pull_pack_waitlist",
+        "customer_pull_pack_waitlist_location"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "waitlist_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "source_line_key"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "customer_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "customer_name"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "customer_order_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "parent_part_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "requested_quantity"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "requested_by_user_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "requested_by_display_name"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "requester_context_note"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "current_status"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "current_owner_user_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "current_owner_display_name"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "location_review_flag"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "problem_reason"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "handler_note"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "completion_user_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "completion_timestamp"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "last_updated_by_user_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "last_updated_timestamp"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "request_timestamp"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "recheck_indicator"
+        },
+        {
+          "qualifier": "loc",
+          "resolvedObject": "loc",
+          "column": "SelectedLocationCount"
+        },
+        {
+          "qualifier": "loc",
+          "resolvedObject": "loc",
+          "column": "PrimarySelectedLocationId"
+        },
+        {
+          "qualifier": "wl",
+          "resolvedObject": "customer_pull_pack_waitlist_location",
+          "column": "waitlist_id"
+        },
+        {
+          "qualifier": "wl",
+          "resolvedObject": "customer_pull_pack_waitlist_location",
+          "column": "location_id"
+        },
+        {
+          "qualifier": "wl",
+          "resolvedObject": "customer_pull_pack_waitlist_location",
+          "column": "selection_order"
+        },
+        {
+          "qualifier": "loc",
+          "resolvedObject": "loc",
+          "column": "WaitlistId"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_waitlist_id",
+        "p_customer_id",
+        "p_requester_user_id",
+        "p_current_owner_user_id",
+        "p_location_id",
+        "p_status_set_json",
+        "p_use_default_open_work",
+        "p_max_results"
+      ],
+      "variableTokensUsed": [
+        "v_status_filter_json",
+        "v_use_default_open_work",
+        "v_max_results"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "customer_pull_pack_waitlist",
+          "object": "customer_pull_pack_waitlist"
+        },
+        {
+          "alias": "w",
+          "object": "customer_pull_pack_waitlist"
+        },
+        {
+          "alias": "customer_pull_pack_waitlist_location",
+          "object": "customer_pull_pack_waitlist_location"
+        },
+        {
+          "alias": "wl",
+          "object": "customer_pull_pack_waitlist_location"
+        },
+        {
+          "alias": "location_filter",
+          "object": "customer_pull_pack_waitlist_location"
+        },
+        {
+          "alias": "SelectedLocationsPipe",
+          "object": "__derived__:SelectedLocationsPipe"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_Waitlist_Upsert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_CustomerPullPack_Waitlist_Upsert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackWaitlist.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "INOUT",
+          "name": "p_waitlist_id",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_source_line_key",
+          "sqlType": "VARCHAR(150)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_customer_id",
+          "sqlType": "VARCHAR(15)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_customer_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_customer_order_id",
+          "sqlType": "VARCHAR(15)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_parent_part_id",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_requested_quantity",
+          "sqlType": "DECIMAL(20"
+        },
+        {
+          "direction": "IN",
+          "name": "p_requested_by_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_requested_by_display_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_requester_context_note",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_current_status",
+          "sqlType": "VARCHAR(20)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_current_owner_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_current_owner_display_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_location_review_flag",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_problem_reason",
+          "sqlType": "VARCHAR(30)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_handler_note",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_completion_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_completion_timestamp",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_last_updated_by_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_recheck_indicator",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_selected_locations_json",
+          "sqlType": "TEXT"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_duplicate_existing_waitlist_id",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_status",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "OUT",
+          "name": "p_error_message",
+          "sqlType": "VARCHAR(1000)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_existing_waitlist_id",
+          "sqlType": "CHAR(36) DEFAULT NULL"
+        },
+        {
+          "name": "v_selected_location_count",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_selected_location_index",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_selected_location_id",
+          "sqlType": "VARCHAR(30) DEFAULT NULL"
+        },
+        {
+          "name": "v_current_status",
+          "sqlType": "VARCHAR(20) DEFAULT"
+        },
+        {
+          "name": "v_problem_reason",
+          "sqlType": "VARCHAR(30) DEFAULT"
+        },
+        {
+          "name": "v_effective_location_review_flag",
+          "sqlType": "TINYINT(1) DEFAULT 0"
+        },
+        {
+          "name": "v_effective_completion_timestamp",
+          "sqlType": "DATETIME DEFAULT NULL"
+        },
+        {
+          "name": "v_effective_completion_user_id",
+          "sqlType": "VARCHAR(100) DEFAULT NULL"
+        },
+        {
+          "name": "v_is_create",
+          "sqlType": "TINYINT(1) DEFAULT 0"
+        },
+        {
+          "name": "v_waitlist_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "EXIT",
+          "sqlType": "HANDLER FOR SQLEXCEPTION"
+        }
+      ],
+      "referencedObjects": [
+        "customer_pull_pack_waitlist",
+        "customer_pull_pack_waitlist_location"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "waitlist_id"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "source_line_key"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "current_status"
+        },
+        {
+          "qualifier": "w",
+          "resolvedObject": "customer_pull_pack_waitlist",
+          "column": "request_timestamp"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "customer_pull_pack_waitlist",
+          "columns": [
+            "waitlist_id",
+            "source_line_key",
+            "customer_id",
+            "customer_name",
+            "customer_order_id",
+            "parent_part_id",
+            "requested_quantity",
+            "requested_by_user_id",
+            "requested_by_display_name",
+            "requester_context_note",
+            "current_status",
+            "current_owner_user_id",
+            "current_owner_display_name",
+            "location_review_flag",
+            "problem_reason",
+            "handler_note",
+            "completion_user_id",
+            "completion_timestamp",
+            "last_updated_by_user_id",
+            "request_timestamp",
+            "recheck_indicator"
+          ]
+        },
+        {
+          "table": "customer_pull_pack_waitlist_location",
+          "columns": [
+            "waitlist_id",
+            "selection_order",
+            "location_id",
+            "selected_by_user_id",
+            "selected_at"
+          ]
+        }
+      ],
+      "updateTargets": [
+        {
+          "table": "customer_pull_pack_waitlist",
+          "columns": [
+            "source_line_key"
+          ]
+        }
+      ],
+      "deleteTargets": [
+        {
+          "table": "customer_pull_pack_waitlist_location"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_waitlist_id",
+        "p_source_line_key",
+        "p_customer_id",
+        "p_customer_name",
+        "p_customer_order_id",
+        "p_parent_part_id",
+        "p_requested_quantity",
+        "p_requested_by_user_id",
+        "p_requested_by_display_name",
+        "p_requester_context_note",
+        "p_current_status",
+        "p_current_owner_user_id",
+        "p_current_owner_display_name",
+        "p_location_review_flag",
+        "p_problem_reason",
+        "p_handler_note",
+        "p_completion_user_id",
+        "p_completion_timestamp",
+        "p_last_updated_by_user_id",
+        "p_recheck_indicator",
+        "p_selected_locations_json",
+        "p_duplicate_existing_waitlist_id",
+        "p_status",
+        "p_error_message"
+      ],
+      "variableTokensUsed": [
+        "v_existing_waitlist_id",
+        "v_selected_location_count",
+        "v_selected_location_index",
+        "v_selected_location_id",
+        "v_current_status",
+        "v_problem_reason",
+        "v_effective_location_review_flag",
+        "v_effective_completion_timestamp",
+        "v_effective_completion_user_id",
+        "v_is_create",
+        "v_waitlist_exists"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "customer_pull_pack_waitlist",
+          "object": "customer_pull_pack_waitlist"
+        },
+        {
+          "alias": "w",
+          "object": "customer_pull_pack_waitlist"
+        },
+        {
+          "alias": "customer_pull_pack_waitlist_location",
+          "object": "customer_pull_pack_waitlist_location"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_ClearToHistory.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -12243,6 +13975,16 @@
           "direction": "IN",
           "name": "p_archived_by",
           "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_clear_all",
+          "sqlType": "TINYINT(1)"
         },
         {
           "direction": "OUT",
@@ -12327,6 +14069,11 @@
         {
           "qualifier": "vgl",
           "resolvedObject": "volvo_generated_label_data",
+          "column": "employee_number"
+        },
+        {
+          "qualifier": "vgl",
+          "resolvedObject": "volvo_generated_label_data",
           "column": "created_at"
         },
         {
@@ -12348,6 +14095,7 @@
             "skid_number",
             "total_skids",
             "part_description",
+            "employee_number",
             "source_created_at",
             "source_updated_at",
             "archived_at",
@@ -12365,6 +14113,8 @@
       "calledRoutines": [],
       "parameterTokensUsed": [
         "p_archived_by",
+        "p_employee_number",
+        "p_clear_all",
         "p_rows_moved",
         "p_archive_batch_id",
         "p_status",
@@ -12528,6 +14278,11 @@
           "direction": "IN",
           "name": "p_part_description",
           "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
         }
       ],
       "declaredVariables": [],
@@ -12544,7 +14299,8 @@
             "quantity",
             "skid_number",
             "total_skids",
-            "part_description"
+            "part_description",
+            "employee_number"
           ]
         }
       ],
@@ -12559,7 +14315,8 @@
         "p_quantity",
         "p_skid_number",
         "p_total_skids",
-        "p_part_description"
+        "p_part_description",
+        "p_employee_number"
       ],
       "variableTokensUsed": [],
       "temporaryTables": [],

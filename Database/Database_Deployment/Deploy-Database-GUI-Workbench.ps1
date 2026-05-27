@@ -366,8 +366,12 @@ $xaml = @"
                         Width="140" Height="35"
                         Background="#2196F3" Foreground="White"
                         BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+                <Button Name="MigrateButton" Content="Migrate Existing"
+                    Width="140" Height="35" Margin="10,0,0,0"
+                    Background="#2E7D32" Foreground="White"
+                    BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
                 <Button Name="CloseButton" Content="Close"
-                        Width="100" Height="35" Margin="10,0,0,0"
+                    Width="100" Height="35" Margin="10,0,0,0"
                         Background="#9E9E9E" Foreground="White"
                         BorderThickness="0" Cursor="Hand"/>
             </StackPanel>
@@ -421,6 +425,7 @@ $runValidationCheckBox = $window.FindName("RunValidationCheckBox")
 $swapHostsButton = $window.FindName("SwapHostsButton")
 $modeSwitchButton = $window.FindName("ModeSwitchButton")
 $deployButton = $window.FindName("DeployButton")
+$migrateButton = $window.FindName("MigrateButton")
 $closeButton = $window.FindName("CloseButton")
 
 if ($null -ne $swapHostsButton) {
@@ -1888,6 +1893,50 @@ function Reset-DeploymentProgressUi {
     $currentFileText.Text = ''
 }
 
+function Test-CanIgnoreMigrationSqlError {
+    param(
+        [ValidateSet('schema', 'migration', 'seed')]
+        [string]$Stage,
+
+        [string]$ErrorMessage
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ErrorMessage)) {
+        return $false
+    }
+
+    $normalizedError = $ErrorMessage.ToLowerInvariant()
+    $sharedPatterns = @(
+        'already exists',
+        'duplicate column name',
+        'duplicate key name'
+    )
+
+    foreach ($pattern in $sharedPatterns) {
+        if ($normalizedError.Contains($pattern)) {
+            return $true
+        }
+    }
+
+    if ($Stage -eq 'seed' -or $Stage -eq 'migration') {
+        return $normalizedError.Contains('duplicate entry')
+    }
+
+    return $false
+}
+
+function Set-DeploymentButtonsEnabled {
+    param(
+        [bool]$IsEnabled
+    )
+
+    $deployButton.IsEnabled = $IsEnabled
+
+    if ($null -ne $migrateButton) {
+        $migrateButton.IsEnabled = $IsEnabled -and $script:CurrentMode -eq 'deployment'
+    }
+}
+
 function Run-ObjectCatalog {
     $errorBorder.Visibility = 'Collapsed'
     $summaryBorder.Visibility = 'Collapsed'
@@ -1921,6 +1970,360 @@ function Run-ObjectCatalog {
     }
 }
 
+function Start-DatabaseExecution {
+    param(
+        [ValidateSet('deployment', 'migration')]
+        [string]$ExecutionMode
+    )
+
+    if ($script:CurrentMode -eq 'catalog') {
+        Run-ObjectCatalog
+        return
+    }
+
+    try {
+        $errorBorder.Visibility = 'Collapsed'
+        $summaryBorder.Visibility = 'Collapsed'
+        Reset-DeploymentProgressUi
+        Clear-SharedMySqlDefaultsFile
+        Set-DeploymentButtonsEnabled -IsEnabled $false
+        $script:CurrentExecutionMode = $ExecutionMode
+        $overallStatusText.Text = if ($ExecutionMode -eq 'migration') { 'Migrating existing database...' } else { 'Deploying database...' }
+
+        $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+        $secretSetup = Ensure-AuthSecretConfigured
+        Write-Host "DEBUG: Auth secret scope = $($secretSetup.Scope), path = $($secretSetup.SecretPath)" -ForegroundColor Cyan
+
+        if (-not (Test-Path $script:DatabaseRoot)) {
+            throw "SQL deployment folder not found at: $script:DatabaseRoot"
+        }
+
+        $script:SchemaCountTotal = 0
+        $script:MigrationCountTotal = 0
+        $script:ViewCountTotal = 0
+        $script:StoredProcCountTotal = 0
+        $script:TriggerCountTotal = 0
+        $script:SeedDataCountTotal = 0
+
+        $script:timer = New-Object System.Windows.Threading.DispatcherTimer
+        $script:timer.Interval = [TimeSpan]::FromMilliseconds(1)
+
+        $script:step = if ($ExecutionMode -eq 'migration') { 1 } else { 0 }
+        $script:currentFiles = @()
+        $script:currentIndex = 0
+
+        $script:timer.Add_Tick({
+                try {
+                    Write-Host "DEBUG: Timer tick - Step $script:step ($script:CurrentExecutionMode)" -ForegroundColor Green
+
+                    if ($script:step -eq 0) {
+                        Write-Host "DEBUG: Dropping and recreating database: $Database" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Recreating database...'
+                        $currentFileText.Text = 'Dropping existing database...'
+                        Execute-SqlCommand -SqlCommand "DROP DATABASE IF EXISTS ``$Database``;" -NoDatabase
+                        $currentFileText.Text = 'Creating new database...'
+                        Execute-SqlCommand -SqlCommand "CREATE DATABASE ``$Database`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" -NoDatabase
+                        Write-Host 'DEBUG: Database recreated successfully' -ForegroundColor Green
+                        $script:step = 1
+                    }
+                    elseif ($script:step -eq 1) {
+                        $schemasPath = Join-Path $script:DatabaseRoot 'Schemas'
+                        Write-Host "DEBUG: Checking schemas path: $schemasPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = if ($script:CurrentExecutionMode -eq 'migration') { 'Checking base schemas...' } else { 'Deploying schemas...' }
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $schemasPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) schema files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 3 } else { 2 }
+                    }
+                    elseif ($script:step -eq 2) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying schema: $($file.Name)" -ForegroundColor Yellow
+                            $schemaProgress.Value = $pct
+                            $schemaCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+
+                            try {
+                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
+                                $script:SchemaCountTotal++
+                            }
+                            catch {
+                                if (
+                                    $script:CurrentExecutionMode -eq 'migration' -and
+                                    (Test-CanIgnoreMigrationSqlError -Stage 'schema' -ErrorMessage $_.Exception.Message)
+                                ) {
+                                    Write-Host "DEBUG: Schema already present during migration, continuing: $($file.Name)" -ForegroundColor DarkYellow
+                                    $currentFileText.Text = "Skipping existing schema: $($file.Name)"
+                                    $script:SchemaCountTotal++
+                                }
+                                else {
+                                    throw
+                                }
+                            }
+
+                            $script:currentIndex++
+                        }
+                        else {
+                            Write-Host 'DEBUG: Schema deployment complete, moving to step 3' -ForegroundColor Green
+                            $script:currentFiles = @()
+                            $script:currentIndex = 0
+                            $script:step = 3
+                        }
+                    }
+                    elseif ($script:step -eq 3) {
+                        $migPath = Join-Path $script:DatabaseRoot 'Migrations'
+                        Write-Host "DEBUG: Checking migrations path: $migPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Applying migrations...'
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $migPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 5 } else { 4 }
+                    }
+                    elseif ($script:step -eq 4) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying migration: $($file.Name)" -ForegroundColor Yellow
+                            $migrationProgress.Value = $pct
+                            $migrationCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+                            try {
+                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
+                                $script:MigrationCountTotal++
+                            }
+                            catch {
+                                Write-Host "DEBUG: Migration warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
+                            }
+                            $script:currentIndex++
+                        }
+                        else {
+                            Write-Host 'DEBUG: Migration deployment complete, moving to step 5' -ForegroundColor Green
+                            $script:currentFiles = @()
+                            $script:currentIndex = 0
+                            $script:step = 5
+                        }
+                    }
+                    elseif ($script:step -eq 5) {
+                        $viewPath = Join-Path $script:DatabaseRoot 'Views'
+                        Write-Host "DEBUG: Checking views path: $viewPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Deploying views...'
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $viewPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) view files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 7 } else { 6 }
+                    }
+                    elseif ($script:step -eq 6) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying view: $($file.Name)" -ForegroundColor Yellow
+                            $viewProgress.Value = $pct
+                            $viewCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+                            Execute-SqlFile -FilePath $file.FullName
+                            $script:ViewCountTotal++
+                            $script:currentIndex++
+                        }
+                        else {
+                            Write-Host 'DEBUG: View deployment complete, moving to step 7' -ForegroundColor Green
+                            $script:currentFiles = @()
+                            $script:currentIndex = 0
+                            $script:step = 7
+                        }
+                    }
+                    elseif ($script:step -eq 7) {
+                        $spPath = Join-Path $script:DatabaseRoot 'StoredProcedures'
+                        Write-Host "DEBUG: Checking stored procedures path: $spPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Deploying stored procedures...'
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $spPath -ExcludedPatterns $script:ExcludePatterns -Recurse | Sort-Object FullName)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 9 } else { 8 }
+                    }
+                    elseif ($script:step -eq 8) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying SP: $($file.Name)" -ForegroundColor Yellow
+                            $storedProcProgress.Value = $pct
+                            $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+                            Execute-SqlFile -FilePath $file.FullName
+                            $script:StoredProcCountTotal++
+                            $script:currentIndex++
+                        }
+                        else {
+                            Write-Host 'DEBUG: Stored procedure deployment complete, moving to step 9' -ForegroundColor Green
+                            $script:currentFiles = @()
+                            $script:currentIndex = 0
+                            $script:step = 9
+                        }
+                    }
+                    elseif ($script:step -eq 9) {
+                        $triggerPath = Join-Path $script:DatabaseRoot 'Triggers'
+                        Write-Host "DEBUG: Checking triggers path: $triggerPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Deploying triggers...'
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $triggerPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) trigger files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 11 } else { 10 }
+                    }
+                    elseif ($script:step -eq 10) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying trigger: $($file.Name)" -ForegroundColor Yellow
+                            $triggerProgress.Value = $pct
+                            $triggerCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+                            Execute-SqlFile -FilePath $file.FullName
+                            $script:TriggerCountTotal++
+                            $script:currentIndex++
+                        }
+                        else {
+                            Write-Host 'DEBUG: Trigger deployment complete, moving to step 11' -ForegroundColor Green
+                            $script:currentFiles = @()
+                            $script:currentIndex = 0
+                            $script:step = 11
+                        }
+                    }
+                    elseif ($script:step -eq 11) {
+                        $tdPath = Join-Path $script:DatabaseRoot 'SeedData'
+                        Write-Host "DEBUG: Checking seed data path: $tdPath" -ForegroundColor Yellow
+                        $overallStatusText.Text = 'Loading seed data...'
+                        $script:currentFiles = @(Get-SqlFiles -BasePath $tdPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
+                        Write-Host "DEBUG: Found $($script:currentFiles.Count) seed data files" -ForegroundColor Yellow
+                        $script:currentIndex = 0
+                        $script:step = if ($script:currentFiles.Count -eq 0) { 13 } else { 12 }
+                    }
+                    elseif ($script:step -eq 12) {
+                        if ($script:currentIndex -lt $script:currentFiles.Count) {
+                            $file = $script:currentFiles[$script:currentIndex]
+                            $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
+                            Write-Host "DEBUG: Deploying seed data: $($file.Name)" -ForegroundColor Yellow
+                            $seedDataProgress.Value = $pct
+                            $seedDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
+                            $currentFileText.Text = "Deploying: $($file.Name)"
+                            try {
+                                Execute-SqlFile -FilePath $file.FullName
+                                $script:SeedDataCountTotal++
+                            }
+                            catch {
+                                if (
+                                    $script:CurrentExecutionMode -eq 'migration' -and
+                                    (Test-CanIgnoreMigrationSqlError -Stage 'seed' -ErrorMessage $_.Exception.Message)
+                                ) {
+                                    Write-Host "DEBUG: Seed data already present during migration, continuing: $($file.Name)" -ForegroundColor DarkYellow
+                                    $currentFileText.Text = "Skipping duplicate seed data: $($file.Name)"
+                                    $script:SeedDataCountTotal++
+                                }
+                                else {
+                                    Write-Host "DEBUG: Seed data warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
+                                }
+                            }
+                            $script:currentIndex++
+                        }
+                        else {
+                            $script:step = 13
+                        }
+                    }
+                    elseif ($script:step -eq 13) {
+                        $finalStatusMessage = 'SQL object catalog and validation report skipped.'
+
+                        if ($runValidationCheckBox.IsChecked) {
+                            Write-Host 'DEBUG: Building SQL object catalog and validation report' -ForegroundColor Green
+                            $overallStatusText.Text = 'Validating deployed SQL objects...'
+                            $currentFileText.Text = 'Refreshing SQL object catalog...'
+
+                            $reportPaths = New-ValidationOutputPaths -OutputsDirectory $script:ValidationOutputsPath
+
+                            try {
+                                $catalog = Save-SqlObjectCatalog -RepoRoot $script:ProjectRoot -DatabaseRoot $script:DatabaseRoot -OutputPath $script:CatalogPath
+                                $currentFileText.Text = 'Writing validation report...'
+                                $validationResult = Test-SqlObjectCatalogAgainstDatabase -Catalog $catalog -MySqlExe (Find-MySqlExe) -Server $Server -Port $Port -Database $Database -User $User -Password $Password
+                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                            }
+                            catch {
+                                $validationResult = [ordered]@{
+                                    generatedAt = (Get-Date).ToString('o')
+                                    database    = $Database
+                                    resultCount = 1
+                                    results     = @(
+                                        [ordered]@{
+                                            relativePath = 'validation'
+                                            objectType   = 'validation'
+                                            objectName   = 'catalog'
+                                            issueCount   = 1
+                                            issues       = @(
+                                                [ordered]@{
+                                                    severity = 'error'
+                                                    code     = 'VALIDATION_FAILURE'
+                                                    message  = $_.Exception.Message
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                                Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
+                            }
+
+                            $finalStatusMessage = "Validation report: $($reportPaths.markdown)"
+                        }
+                        else {
+                            Write-Host 'DEBUG: Skipping optional SQL object catalog and validation report' -ForegroundColor DarkYellow
+                        }
+
+                        Write-Host 'DEBUG: Deployment complete!' -ForegroundColor Green
+                        $script:timer.Stop()
+                        $overallStatusText.Text = if ($script:CurrentExecutionMode -eq 'migration') { 'Migration completed successfully!' } else { 'Deployment completed successfully!' }
+                        $currentFileText.Text = $finalStatusMessage
+                        $summaryBorder.Visibility = 'Visible'
+                        $summarySchemas.Text = "$($script:SchemaCountTotal) file(s)"
+                        $summaryMigrations.Text = "$($script:MigrationCountTotal) file(s)"
+                        $summaryViews.Text = "$($script:ViewCountTotal) file(s)"
+                        $summaryStoredProcs.Text = "$($script:StoredProcCountTotal) procedure(s)"
+                        $summaryTriggers.Text = "$($script:TriggerCountTotal) file(s)"
+                        $summarySeedData.Text = "$($script:SeedDataCountTotal) file(s)"
+                        Set-DeploymentButtonsEnabled -IsEnabled $true
+                        Clear-SharedMySqlDefaultsFile
+                    }
+                }
+                catch {
+                    Write-Host 'DEBUG: Timer tick error!' -ForegroundColor Red
+                    Write-Host "DEBUG: Error message: $($_.Exception.Message)" -ForegroundColor Red
+                    Write-Host "DEBUG: Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
+                    $script:timer.Stop()
+                    $overallStatusText.Text = if ($script:CurrentExecutionMode -eq 'migration') { 'Migration failed!' } else { 'Deployment failed!' }
+                    $errorBorder.Visibility = 'Visible'
+                    $filePath = if ($null -ne $file) { $file.FullName } else { 'n/a' }
+                    $errorText.Text = "Error in step $($script:step)`n`nMessage: $($_.Exception.Message)`n`nFile: $filePath`n`nStack:`n$($_.ScriptStackTrace)"
+                    Set-DeploymentButtonsEnabled -IsEnabled $true
+                    Clear-SharedMySqlDefaultsFile
+                }
+            })
+
+        Write-Host "DEBUG: PSScriptRoot = $PSScriptRoot" -ForegroundColor Cyan
+        Write-Host "DEBUG: ProjectRoot = $script:ProjectRoot" -ForegroundColor Cyan
+        Write-Host "DEBUG: DatabaseRoot = $script:DatabaseRoot" -ForegroundColor Cyan
+        Write-Host "DEBUG: DatabaseRoot exists = $(Test-Path $script:DatabaseRoot)" -ForegroundColor Cyan
+        Write-Host "DEBUG: Starting timer in $ExecutionMode mode..." -ForegroundColor Cyan
+        $script:timer.Start()
+        Write-Host 'DEBUG: Timer started successfully' -ForegroundColor Cyan
+    }
+    catch {
+        Write-Host 'CRITICAL ERROR in click handler:' -ForegroundColor Red
+        Write-Host "Message: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Stack: $($_.ScriptStackTrace)" -ForegroundColor Red
+        $overallStatusText.Text = if ($ExecutionMode -eq 'migration') { 'Migration failed!' } else { 'Deployment failed!' }
+        $errorBorder.Visibility = 'Visible'
+        $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
+        Set-DeploymentButtonsEnabled -IsEnabled $true
+        Clear-SharedMySqlDefaultsFile
+    }
+}
+
 function Set-UIMode {
     param(
         [ValidateSet('deployment', 'catalog')]
@@ -1935,6 +2338,8 @@ function Set-UIMode {
         $summaryBorder.Visibility = 'Collapsed'
         $modeSwitchButton.Content = 'Deployment Mode'
         $deployButton.Content = 'Refresh Catalog'
+        $migrateButton.Visibility = 'Collapsed'
+        $migrateButton.IsEnabled = $false
         Run-ObjectCatalog
     }
     else {
@@ -1942,6 +2347,9 @@ function Set-UIMode {
         $deploymentPanel.Visibility = 'Visible'
         $modeSwitchButton.Content = 'Object Catalog Mode'
         $deployButton.Content = 'Start Deployment'
+        $migrateButton.Visibility = 'Visible'
+        $migrateButton.Content = 'Migrate Existing'
+        $migrateButton.IsEnabled = $true
         $errorBorder.Visibility = 'Collapsed'
     }
 }
@@ -1949,325 +2357,11 @@ function Set-UIMode {
 Set-ProviderState -Provider (Get-InitialProvider)
 
 $deployButton.Add_Click({
-        if ($script:CurrentMode -eq 'catalog') {
-            Run-ObjectCatalog
-            return
-        }
+        Start-DatabaseExecution -ExecutionMode 'deployment'
+    })
 
-        try {
-            $errorBorder.Visibility = "Collapsed"
-            $summaryBorder.Visibility = "Collapsed"
-            Reset-DeploymentProgressUi
-            Clear-SharedMySqlDefaultsFile
-            $deployButton.IsEnabled = $false
-            $overallStatusText.Text = "Deploying database..."
-
-            $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-
-            $secretSetup = Ensure-AuthSecretConfigured
-            Write-Host "DEBUG: Auth secret scope = $($secretSetup.Scope), path = $($secretSetup.SecretPath)" -ForegroundColor Cyan
-
-            if (-not (Test-Path $script:DatabaseRoot)) {
-                throw "SQL deployment folder not found at: $script:DatabaseRoot"
-            }
-
-            $script:SchemaCountTotal = 0
-            $script:MigrationCountTotal = 0
-            $script:ViewCountTotal = 0
-            $script:StoredProcCountTotal = 0
-            $script:TriggerCountTotal = 0
-            $script:SeedDataCountTotal = 0
-
-            $script:timer = New-Object System.Windows.Threading.DispatcherTimer
-            $script:timer.Interval = [TimeSpan]::FromMilliseconds(1)
-
-            $script:step = 0
-            $script:currentFiles = @()
-            $script:currentIndex = 0
-
-            $script:timer.Add_Tick({
-                    try {
-                        Write-Host "DEBUG: Timer tick - Step $script:step" -ForegroundColor Green
-
-                        if ($script:step -eq 0) {
-                            Write-Host "DEBUG: Dropping and recreating database: $Database" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Recreating database..."
-                            $currentFileText.Text = "Dropping existing database..."
-                            Execute-SqlCommand -SqlCommand "DROP DATABASE IF EXISTS ``$Database``;" -NoDatabase
-                            $currentFileText.Text = "Creating new database..."
-                            Execute-SqlCommand -SqlCommand "CREATE DATABASE ``$Database`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" -NoDatabase
-                            Write-Host "DEBUG: Database recreated successfully" -ForegroundColor Green
-                            $script:step = 1
-                        }
-                        elseif ($script:step -eq 1) {
-                            $schemasPath = Join-Path $script:DatabaseRoot "Schemas"
-                            Write-Host "DEBUG: Checking schemas path: $schemasPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Deploying schemas..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $schemasPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) schema files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 3 } else { 2 }
-                        }
-                        elseif ($script:step -eq 2) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying schema: $($file.Name)" -ForegroundColor Yellow
-                                $schemaProgress.Value = $pct
-                                $schemaCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
-                                $script:SchemaCountTotal++
-                                $script:currentIndex++
-                            }
-                            else {
-                                Write-Host "DEBUG: Schema deployment complete, moving to step 3" -ForegroundColor Green
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                                $script:step = 3
-                            }
-                        }
-                        elseif ($script:step -eq 3) {
-                            $migPath = Join-Path $script:DatabaseRoot "Migrations"
-                            Write-Host "DEBUG: Checking migrations path: $migPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Applying migrations..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $migPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) migration files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 5 } else { 4 }
-                        }
-                        elseif ($script:step -eq 4) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying migration: $($file.Name)" -ForegroundColor Yellow
-                                $migrationProgress.Value = $pct
-                                $migrationCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                try {
-                                    Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
-                                    $script:MigrationCountTotal++
-                                }
-                                catch {
-                                    Write-Host "DEBUG: Migration warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
-                                }
-                                $script:currentIndex++
-                            }
-                            else {
-                                Write-Host "DEBUG: Migration deployment complete, moving to step 5" -ForegroundColor Green
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                                $script:step = 5
-                            }
-                        }
-                        elseif ($script:step -eq 5) {
-                            $viewPath = Join-Path $script:DatabaseRoot "Views"
-                            Write-Host "DEBUG: Checking views path: $viewPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Deploying views..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $viewPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) view files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 7 } else { 6 }
-                        }
-                        elseif ($script:step -eq 6) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying view: $($file.Name)" -ForegroundColor Yellow
-                                $viewProgress.Value = $pct
-                                $viewCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                Execute-SqlFile -FilePath $file.FullName
-                                $script:ViewCountTotal++
-                                $script:currentIndex++
-                            }
-                            else {
-                                Write-Host "DEBUG: View deployment complete, moving to step 7" -ForegroundColor Green
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                                $script:step = 7
-                            }
-                        }
-                        elseif ($script:step -eq 7) {
-                            $spPath = Join-Path $script:DatabaseRoot "StoredProcedures"
-                            Write-Host "DEBUG: Checking stored procedures path: $spPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Deploying stored procedures..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $spPath -ExcludedPatterns $script:ExcludePatterns -Recurse | Sort-Object FullName)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) stored procedure files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 9 } else { 8 }
-                        }
-                        elseif ($script:step -eq 8) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying SP: $($file.Name)" -ForegroundColor Yellow
-                                $storedProcProgress.Value = $pct
-                                $storedProcCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                Execute-SqlFile -FilePath $file.FullName
-                                $script:StoredProcCountTotal++
-                                $script:currentIndex++
-                            }
-                            else {
-                                Write-Host "DEBUG: Stored procedure deployment complete, moving to step 9" -ForegroundColor Green
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                                $script:step = 9
-                            }
-                        }
-                        elseif ($script:step -eq 9) {
-                            $triggerPath = Join-Path $script:DatabaseRoot "Triggers"
-                            Write-Host "DEBUG: Checking triggers path: $triggerPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Deploying triggers..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $triggerPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) trigger files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 11 } else { 10 }
-                        }
-                        elseif ($script:step -eq 10) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying trigger: $($file.Name)" -ForegroundColor Yellow
-                                $triggerProgress.Value = $pct
-                                $triggerCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                Execute-SqlFile -FilePath $file.FullName
-                                $script:TriggerCountTotal++
-                                $script:currentIndex++
-                            }
-                            else {
-                                Write-Host "DEBUG: Trigger deployment complete, moving to step 11" -ForegroundColor Green
-                                $script:currentFiles = @()
-                                $script:currentIndex = 0
-                                $script:step = 11
-                            }
-                        }
-                        elseif ($script:step -eq 11) {
-                            $tdPath = Join-Path $script:DatabaseRoot "SeedData"
-                            Write-Host "DEBUG: Checking seed data path: $tdPath" -ForegroundColor Yellow
-                            $overallStatusText.Text = "Loading seed data..."
-                            $script:currentFiles = @(Get-SqlFiles -BasePath $tdPath -ExcludedPatterns $script:ExcludePatterns | Sort-Object Name)
-                            Write-Host "DEBUG: Found $($script:currentFiles.Count) seed data files" -ForegroundColor Yellow
-                            $script:currentIndex = 0
-                            $script:step = if ($script:currentFiles.Count -eq 0) { 13 } else { 12 }
-                        }
-                        elseif ($script:step -eq 12) {
-                            if ($script:currentIndex -lt $script:currentFiles.Count) {
-                                $file = $script:currentFiles[$script:currentIndex]
-                                $pct = [int]((($script:currentIndex + 1) / $script:currentFiles.Count) * 100)
-                                Write-Host "DEBUG: Deploying seed data: $($file.Name)" -ForegroundColor Yellow
-                                $seedDataProgress.Value = $pct
-                                $seedDataCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
-                                $currentFileText.Text = "Deploying: $($file.Name)"
-                                try {
-                                    Execute-SqlFile -FilePath $file.FullName
-                                    $script:SeedDataCountTotal++
-                                }
-                                catch {
-                                    Write-Host "DEBUG: Seed data warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
-                                }
-                                $script:currentIndex++
-                            }
-                            else {
-                                $script:step = 13
-                            }
-                        }
-                        elseif ($script:step -eq 13) {
-                            $finalStatusMessage = 'SQL object catalog and validation report skipped.'
-
-                            if ($runValidationCheckBox.IsChecked) {
-                                Write-Host "DEBUG: Building SQL object catalog and validation report" -ForegroundColor Green
-                                $overallStatusText.Text = "Validating deployed SQL objects..."
-                                $currentFileText.Text = "Refreshing SQL object catalog..."
-
-                                $reportPaths = New-ValidationOutputPaths -OutputsDirectory $script:ValidationOutputsPath
-
-                                try {
-                                    $catalog = Save-SqlObjectCatalog -RepoRoot $script:ProjectRoot -DatabaseRoot $script:DatabaseRoot -OutputPath $script:CatalogPath
-                                    $currentFileText.Text = "Writing validation report..."
-                                    $validationResult = Test-SqlObjectCatalogAgainstDatabase -Catalog $catalog -MySqlExe (Find-MySqlExe) -Server $Server -Port $Port -Database $Database -User $User -Password $Password
-                                    Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
-                                }
-                                catch {
-                                    $validationResult = [ordered]@{
-                                        generatedAt = (Get-Date).ToString('o')
-                                        database    = $Database
-                                        resultCount = 1
-                                        results     = @(
-                                            [ordered]@{
-                                                relativePath = 'validation'
-                                                objectType   = 'validation'
-                                                objectName   = 'catalog'
-                                                issueCount   = 1
-                                                issues       = @(
-                                                    [ordered]@{
-                                                        severity = 'error'
-                                                        code     = 'VALIDATION_FAILURE'
-                                                        message  = $_.Exception.Message
-                                                    }
-                                                )
-                                            }
-                                        )
-                                    }
-                                    Save-SqlValidationReport -ValidationResult $validationResult -MarkdownPath $reportPaths.markdown -JsonPath $reportPaths.json
-                                }
-
-                                $finalStatusMessage = "Validation report: $($reportPaths.markdown)"
-                            }
-                            else {
-                                Write-Host "DEBUG: Skipping optional SQL object catalog and validation report" -ForegroundColor DarkYellow
-                            }
-
-                            Write-Host "DEBUG: Deployment complete!" -ForegroundColor Green
-                            $script:timer.Stop()
-                            $overallStatusText.Text = "Deployment completed successfully!"
-                            $currentFileText.Text = $finalStatusMessage
-                            $summaryBorder.Visibility = "Visible"
-                            $summarySchemas.Text = "$($script:SchemaCountTotal) file(s)"
-                            $summaryMigrations.Text = "$($script:MigrationCountTotal) file(s)"
-                            $summaryViews.Text = "$($script:ViewCountTotal) file(s)"
-                            $summaryStoredProcs.Text = "$($script:StoredProcCountTotal) procedure(s)"
-                            $summaryTriggers.Text = "$($script:TriggerCountTotal) file(s)"
-                            $summarySeedData.Text = "$($script:SeedDataCountTotal) file(s)"
-                            $deployButton.Content = "Deploy Again"
-                            $deployButton.IsEnabled = $true
-                            Clear-SharedMySqlDefaultsFile
-                        }
-                    }
-                    catch {
-                        Write-Host "DEBUG: Timer tick error!" -ForegroundColor Red
-                        Write-Host "DEBUG: Error message: $($_.Exception.Message)" -ForegroundColor Red
-                        Write-Host "DEBUG: Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
-                        $script:timer.Stop()
-                        $overallStatusText.Text = "Deployment failed!"
-                        $errorBorder.Visibility = "Visible"
-                        $errorText.Text = "Error in step $($script:step)`n`nMessage: $($_.Exception.Message)`n`nFile: $($file.FullName)`n`nStack:`n$($_.ScriptStackTrace)"
-                        $deployButton.Content = "Retry"
-                        $deployButton.IsEnabled = $true
-                        Clear-SharedMySqlDefaultsFile
-                    }
-                })
-
-            Write-Host "DEBUG: PSScriptRoot = $PSScriptRoot" -ForegroundColor Cyan
-            Write-Host "DEBUG: ProjectRoot = $script:ProjectRoot" -ForegroundColor Cyan
-            Write-Host "DEBUG: DatabaseRoot = $script:DatabaseRoot" -ForegroundColor Cyan
-            Write-Host "DEBUG: DatabaseRoot exists = $(Test-Path $script:DatabaseRoot)" -ForegroundColor Cyan
-            Write-Host "DEBUG: Starting timer..." -ForegroundColor Cyan
-            $script:timer.Start()
-            Write-Host "DEBUG: Timer started successfully" -ForegroundColor Cyan
-        }
-        catch {
-            Write-Host "CRITICAL ERROR in click handler:" -ForegroundColor Red
-            Write-Host "Message: $($_.Exception.Message)" -ForegroundColor Red
-            Write-Host "Stack: $($_.ScriptStackTrace)" -ForegroundColor Red
-            $overallStatusText.Text = "Deployment failed!"
-            $errorBorder.Visibility = "Visible"
-            $errorText.Text = "Setup error: $($_.Exception.Message)`n`n$($_.ScriptStackTrace)"
-            $deployButton.IsEnabled = $true
-            Clear-SharedMySqlDefaultsFile
-        }
+$migrateButton.Add_Click({
+        Start-DatabaseExecution -ExecutionMode 'migration'
     })
 
 $swapHostsButton.Add_Click({
@@ -2275,7 +2369,7 @@ $swapHostsButton.Add_Click({
             $errorBorder.Visibility = 'Collapsed'
             $swapHostsButton.IsEnabled = $false
             $providerToggleButton.IsEnabled = $false
-            $deployButton.IsEnabled = $false
+            Set-DeploymentButtonsEnabled -IsEnabled $false
             $modeSwitchButton.IsEnabled = $false
             $overallStatusText.Text = 'Swapping host references across repository...'
             Show-ProviderSwitchProgress -StatusText 'Preparing repository host swap...' -ProgressValue 0
@@ -2295,7 +2389,7 @@ $swapHostsButton.Add_Click({
             Hide-ProviderSwitchProgress
             $swapHostsButton.IsEnabled = $true
             $providerToggleButton.IsEnabled = $true
-            $deployButton.IsEnabled = $true
+            Set-DeploymentButtonsEnabled -IsEnabled $true
             $modeSwitchButton.IsEnabled = $true
         }
     })
@@ -2307,7 +2401,7 @@ $providerToggleButton.Add_Click({
         try {
             $errorBorder.Visibility = 'Collapsed'
             $providerToggleButton.IsEnabled = $false
-            $deployButton.IsEnabled = $false
+            Set-DeploymentButtonsEnabled -IsEnabled $false
             $modeSwitchButton.IsEnabled = $false
             Switch-ProviderEnvironment -TargetProvider $targetProvider
         }
@@ -2320,7 +2414,7 @@ $providerToggleButton.Add_Click({
         finally {
             Hide-ProviderSwitchProgress
             $providerToggleButton.IsEnabled = $true
-            $deployButton.IsEnabled = $true
+            Set-DeploymentButtonsEnabled -IsEnabled $true
             $modeSwitchButton.IsEnabled = $true
         }
     })
