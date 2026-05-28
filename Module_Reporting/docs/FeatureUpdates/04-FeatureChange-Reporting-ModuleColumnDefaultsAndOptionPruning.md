@@ -65,11 +65,11 @@ and every remaining visible module column option defaults to included.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Remove the requested Receiving option list.
-- [ ] Remove the requested Dunnage option list.
-- [ ] Remove the requested Volvo option list.
-- [ ] Default all remaining visible options to on.
-- [ ] Update tests for the new per-module option inventories.
+- [x] Remove the requested Receiving option list.
+- [x] Remove the requested Dunnage option list.
+- [x] Remove the requested Volvo option list.
+- [x] Default all remaining visible options to on.
+- [x] Update tests for the new per-module option inventories.
 </task_checklist>
 
 <validation>

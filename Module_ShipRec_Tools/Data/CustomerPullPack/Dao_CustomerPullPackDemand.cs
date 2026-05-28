@@ -107,6 +107,7 @@ public class Dao_CustomerPullPackDemand
                     SourceLocationId = ReadString(reader, "SourceLocationId"),
                     ShipQuantity = ReadDecimal(reader, "ShipQuantity"),
                     PullDate = ReadDateTime(reader, "PullDate"),
+                    OldestAdded = ReadNullableDateTime(reader, "CustomerOrderCreateDate"),
                     QuantityToPack = ReadDecimal(reader, "QtyToPack"),
                     FgOnHandQuantity = ReadDecimal(reader, "FgOnHandQuantity"),
                     FgLocationId = ReadString(reader, "FgLocationId"),
@@ -407,5 +408,11 @@ public class Dao_CustomerPullPackDemand
     {
         var value = reader[columnName];
         return value == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(value);
+    }
+
+    private static DateTime? ReadNullableDateTime(SqlDataReader reader, string columnName)
+    {
+        var value = reader[columnName];
+        return value == DBNull.Value ? null : Convert.ToDateTime(value);
     }
 }

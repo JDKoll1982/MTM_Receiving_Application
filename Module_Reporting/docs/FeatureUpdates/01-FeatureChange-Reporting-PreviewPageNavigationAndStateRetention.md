@@ -88,12 +88,12 @@ selection state alive when the user moves between the report setup page and the 
 </implementation_steps>
 
 <task_checklist>
-- [ ] Add a reporting preview page.
-- [ ] Replace dialog launch with page navigation.
-- [ ] Preserve reporting entry selections when navigating back.
-- [ ] Keep preview state bound to a durable state owner.
-- [ ] Remove duplicate header UI from the preview page.
-- [ ] Update focused reporting viewmodel/navigation tests.
+- [x] Add a reporting preview page.
+- [x] Replace dialog launch with page navigation.
+- [x] Preserve reporting entry selections when navigating back.
+- [x] Keep preview state bound to a durable state owner.
+- [x] Remove duplicate header UI from the preview page.
+- [x] Update focused reporting viewmodel/navigation tests.
 </task_checklist>
 
 <validation>

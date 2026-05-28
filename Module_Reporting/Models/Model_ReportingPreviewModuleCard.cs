@@ -65,6 +65,12 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
 
     public bool HasDetailSectionNote => !string.IsNullOrWhiteSpace(DetailSectionNote);
 
+    public bool ShowsSummaryTable =>
+        ModuleName.Equals("Receiving", StringComparison.OrdinalIgnoreCase);
+
+    public Visibility SummaryVisibility =>
+        ShowsSummaryTable ? Visibility.Visible : Visibility.Collapsed;
+
     public bool HasIncludedColumns => IncludedColumns.Count > 0;
 
     public string DetailSectionTitle => GetDetailSectionTitle();
@@ -379,26 +385,26 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
         {
             nameof(Model_ReportRow.CreatedDate) => CompareNullableDateTime(
                 GetMinimumDateTime(
-                    left.Rows.Select(
-                        row => row.CreatedDate == default ? (DateTime?)null : row.CreatedDate.Date
+                    left.Rows.Select(row =>
+                        row.CreatedDate == default ? (DateTime?)null : row.CreatedDate.Date
                     )
                 ),
                 GetMinimumDateTime(
-                    right.Rows.Select(
-                        row => row.CreatedDate == default ? (DateTime?)null : row.CreatedDate.Date
+                    right.Rows.Select(row =>
+                        row.CreatedDate == default ? (DateTime?)null : row.CreatedDate.Date
                     )
                 )
             ),
             nameof(Model_ReportRow.CreatedAt) or nameof(Model_ReportRow.DisplayCreatedAt) =>
                 CompareNullableDateTime(
                     GetMinimumDateTime(
-                        left.Rows.Select(
-                            row => row.CreatedAt ?? (row.CreatedDate == default ? null : row.CreatedDate)
+                        left.Rows.Select(row =>
+                            row.CreatedAt ?? (row.CreatedDate == default ? null : row.CreatedDate)
                         )
                     ),
                     GetMinimumDateTime(
-                        right.Rows.Select(
-                            row => row.CreatedAt ?? (row.CreatedDate == default ? null : row.CreatedDate)
+                        right.Rows.Select(row =>
+                            row.CreatedAt ?? (row.CreatedDate == default ? null : row.CreatedDate)
                         )
                     )
                 ),
@@ -491,12 +497,27 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
         return columnKey switch
         {
             nameof(Model_ReportRow.Id) => string.Empty,
-            nameof(Model_ReportRow.PartNumber) => previewRowSource.PartNumber,
-            nameof(Model_ReportRow.DisplayPartOrDunnage) => previewRowSource.PartNumber,
-            nameof(Model_ReportRow.HeatLotNumber) => previewRowSource.LotNumber,
-            nameof(Model_ReportRow.CreatedDate) => previewRowSource.CreatedDate.HasValue
-                ? FormatDate(previewRowSource.CreatedDate.Value)
-                : GetCommonTextValue(previewRowSource.Rows.Select(row => row.DisplayCreatedDate)),
+            nameof(Model_ReportRow.PartNumber) => ResolveGroupedTextValue(
+                previewRowSource,
+                columnKey,
+                previewRowSource.Rows.Select(row => row.PartNumber)
+            ),
+            nameof(Model_ReportRow.DisplayPartOrDunnage) => ResolveGroupedTextValue(
+                previewRowSource,
+                columnKey,
+                previewRowSource.Rows.Select(row => row.DisplayPartOrDunnage)
+            ),
+            nameof(Model_ReportRow.HeatLotNumber) => ResolveGroupedTextValue(
+                previewRowSource,
+                columnKey,
+                previewRowSource.Rows.Select(row => row.HeatLotNumber)
+            ),
+            nameof(Model_ReportRow.CreatedDate) => ResolveGroupedDateValue(
+                previewRowSource.Rows.Select(row =>
+                    row.CreatedDate == default ? (DateTime?)null : row.CreatedDate.Date
+                ),
+                includeTime: false
+            ),
             nameof(Model_ReportRow.Quantity) or nameof(Model_ReportRow.DisplayQuantity) =>
                 FormatDecimal(previewRowSource.Rows.Sum(row => row.Quantity ?? 0m)),
             nameof(Model_ReportRow.WeightLbs) => FormatDecimal(
@@ -518,27 +539,46 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
                 previewRowSource.Rows.Sum(row => row.ReceivedSkidCount ?? 0)
             ),
             nameof(Model_ReportRow.DisplayLoadsOrSkids) => GetDisplayLoadsOrSkids(previewRowSource),
-            nameof(Model_ReportRow.IsNonPOItem) => GetUniformBooleanValue(
+            nameof(Model_ReportRow.IsNonPOItem) => ResolveGroupedBooleanValue(
+                previewRowSource,
+                columnKey,
                 previewRowSource.Rows.Select(row => row.IsNonPOItem)
             ),
-            nameof(Model_ReportRow.IsQualityHoldRequired) => GetUniformBooleanValue(
+            nameof(Model_ReportRow.IsQualityHoldRequired) => ResolveGroupedBooleanValue(
+                previewRowSource,
+                columnKey,
                 previewRowSource.Rows.Select(row => row.IsQualityHoldRequired)
             ),
-            nameof(Model_ReportRow.IsQualityHoldAcknowledged) => GetUniformBooleanValue(
+            nameof(Model_ReportRow.IsQualityHoldAcknowledged) => ResolveGroupedBooleanValue(
+                previewRowSource,
+                columnKey,
                 previewRowSource.Rows.Select(row => row.IsQualityHoldAcknowledged)
             ),
             nameof(Model_ReportRow.DisplayTransactionDate)
-            or nameof(Model_ReportRow.TransactionDate) => GetCommonTextValue(
-                previewRowSource.Rows.Select(row => row.DisplayTransactionDate)
+            or nameof(Model_ReportRow.TransactionDate) => ResolveGroupedDateValue(
+                previewRowSource.Rows.Select(row => row.TransactionDate?.Date),
+                includeTime: false
             ),
             nameof(Model_ReportRow.DisplayCreatedAt) or nameof(Model_ReportRow.CreatedAt) =>
-                GetCommonTextValue(previewRowSource.Rows.Select(row => row.DisplayCreatedAt)),
+                ResolveGroupedDateValue(
+                    previewRowSource.Rows.Select(row =>
+                        row.CreatedAt ?? (row.CreatedDate == default ? null : row.CreatedDate)
+                    ),
+                    includeTime: true
+                ),
             nameof(Model_ReportRow.DisplayPoDueDate) or nameof(Model_ReportRow.PoDueDate) =>
-                GetCommonTextValue(previewRowSource.Rows.Select(row => row.DisplayPoDueDate)),
-            nameof(Model_ReportRow.DisplayUnitsPerSkid) => GetCommonTextValue(
+                ResolveGroupedDateValue(
+                    previewRowSource.Rows.Select(row => row.PoDueDate?.Date),
+                    includeTime: false
+                ),
+            nameof(Model_ReportRow.DisplayUnitsPerSkid) => ResolveGroupedTextValue(
+                previewRowSource,
+                columnKey,
                 previewRowSource.Rows.Select(row => row.DisplayUnitsPerSkid)
             ),
-            _ => GetCommonTextValue(
+            _ => ResolveGroupedTextValue(
+                previewRowSource,
+                columnKey,
                 previewRowSource.Rows.Select(row => row.GetColumnValue(columnKey))
             ),
         };
@@ -641,7 +681,139 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+        return distinctValues.Count switch
+        {
+            0 => string.Empty,
+            1 => distinctValues[0],
+            _ => string.Empty,
+        };
+    }
+
+    private static string GetCommonDateTextValue(IEnumerable<string?> values)
+    {
+        var distinctValues = values
+            .Select(value => value?.Trim() ?? string.Empty)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
         return distinctValues.Count == 1 ? distinctValues[0] : string.Empty;
+    }
+
+    private string ResolveGroupedTextValue(
+        PreviewRowSource previewRowSource,
+        string columnKey,
+        IEnumerable<string?> values
+    )
+    {
+        var commonValue = GetCommonTextValue(values);
+        if (!string.IsNullOrWhiteSpace(commonValue))
+        {
+            return commonValue;
+        }
+
+        var hasMixedValues = values
+            .Select(value => value?.Trim() ?? string.Empty)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Skip(1)
+            .Any();
+
+        return hasMixedValues
+            ? GetMixedValuePlaceholder(columnKey, previewRowSource)
+            : string.Empty;
+    }
+
+    private string ResolveGroupedBooleanValue(
+        PreviewRowSource previewRowSource,
+        string columnKey,
+        IEnumerable<bool> values
+    )
+    {
+        var distinctValues = values.Distinct().ToList();
+        if (distinctValues.Count == 1)
+        {
+            return distinctValues[0] ? "Yes" : "No";
+        }
+
+        return GetMixedValuePlaceholder(columnKey, previewRowSource);
+    }
+
+    private static string ResolveGroupedDateValue(IEnumerable<DateTime?> values, bool includeTime)
+    {
+        var distinctValues = values
+            .Where(value => value.HasValue)
+            .Select(value => value!.Value)
+            .Distinct()
+            .OrderBy(value => value)
+            .ToList();
+
+        return distinctValues.Count switch
+        {
+            0 => string.Empty,
+            1 => FormatDateValue(distinctValues[0], includeTime),
+            _ =>
+                $"{FormatDateValue(distinctValues[0], includeTime)} - {FormatDateValue(distinctValues[^1], includeTime)}",
+        };
+    }
+
+    private static string FormatDateValue(DateTime value, bool includeTime)
+    {
+        return includeTime
+            ? value.ToString("M/d/yyyy h:mm tt", CultureInfo.InvariantCulture)
+            : value.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+    }
+
+    private static string GetMixedValuePlaceholder(
+        string columnKey,
+        PreviewRowSource previewRowSource
+    )
+    {
+        var sourceModule = GetCommonTextValue(
+            previewRowSource.Rows.Select(row => row.SourceModule)
+        );
+
+        return columnKey switch
+        {
+            nameof(Model_ReportRow.PONumber) or nameof(Model_ReportRow.DisplayPo) => "Multiple POs",
+            nameof(Model_ReportRow.POLineNumber) => "Multiple PO Lines",
+            nameof(Model_ReportRow.PartNumber) => "Multiple Part Numbers",
+            nameof(Model_ReportRow.DisplayPartOrDunnage)
+                when sourceModule.Equals("Dunnage", StringComparison.OrdinalIgnoreCase) =>
+                "Multiple Part / Dunnage Values",
+            nameof(Model_ReportRow.DisplayPartOrDunnage) => "Multiple Parts",
+            nameof(Model_ReportRow.PartDescription) => "Multiple Part Descriptions",
+            nameof(Model_ReportRow.HeatLotNumber) => "Multiple Lots",
+            nameof(Model_ReportRow.EmployeeNumber) => "Multiple Employees",
+            nameof(Model_ReportRow.CreatedByUsername) or nameof(Model_ReportRow.UserId) =>
+                "Multiple Users",
+            nameof(Model_ReportRow.DunnageType) => "Multiple Dunnage Types",
+            nameof(Model_ReportRow.SpecsCombined) => "Multiple Specs",
+            nameof(Model_ReportRow.ShipmentNumber) => "Multiple Shipments",
+            nameof(Model_ReportRow.ReceiverNumber) => "Multiple Receivers",
+            nameof(Model_ReportRow.Status) or nameof(Model_ReportRow.PoStatus) =>
+                "Multiple Statuses",
+            nameof(Model_ReportRow.Location) or nameof(Model_ReportRow.DisplayLocation) =>
+                "Multiple Locations",
+            nameof(Model_ReportRow.VendorName) => "Multiple Vendors",
+            nameof(Model_ReportRow.Notes) or nameof(Model_ReportRow.DisplayNotes) =>
+                "Multiple Notes",
+            nameof(Model_ReportRow.LoadNumber) => "Multiple Loads",
+            nameof(Model_ReportRow.LabelNumber) => "Multiple Labels",
+            nameof(Model_ReportRow.PackagesPerLoad) => "Multiple Package Counts",
+            nameof(Model_ReportRow.PackageTypeName) => "Multiple Package Types",
+            nameof(Model_ReportRow.UnitOfMeasure) => "Multiple Units",
+            nameof(Model_ReportRow.DisplayLoadsOrSkids) => "Multiple Loads / Skids Values",
+            nameof(Model_ReportRow.DisplayUnitsPerSkid) => "Multiple Units / Skid Values",
+            nameof(Model_ReportRow.QualityHoldRestrictionType) =>
+                "Multiple Quality Hold Restrictions",
+            nameof(Model_ReportRow.IsNonPOItem) => "Mixed Non-PO Values",
+            nameof(Model_ReportRow.IsQualityHoldRequired) => "Mixed Quality Hold Requirements",
+            nameof(Model_ReportRow.IsQualityHoldAcknowledged) =>
+                "Mixed Quality Hold Acknowledgements",
+            nameof(Model_ReportRow.SourceModule) => "Multiple Modules",
+            _ => "Multiple Values",
+        };
     }
 
     private static string GetDisplayLoadsOrSkids(PreviewRowSource previewRowSource)
@@ -667,17 +839,6 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
         }
 
         return GetCommonTextValue(previewRowSource.Rows.Select(row => row.DisplayLoadsOrSkids));
-    }
-
-    private static string GetUniformBooleanValue(IEnumerable<bool> values)
-    {
-        var distinctValues = values.Distinct().ToList();
-        if (distinctValues.Count != 1)
-        {
-            return string.Empty;
-        }
-
-        return distinctValues[0] ? "Yes" : "No";
     }
 
     private static string NormalizeGroupValue(string? value, string emptyLabel)

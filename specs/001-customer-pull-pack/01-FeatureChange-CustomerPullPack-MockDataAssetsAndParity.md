@@ -96,15 +96,15 @@ catalog files.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Create the module-owned Customer Pull n' Pack mock-data folder.
-- [ ] Add dedicated static and runtime JSON files for Customer Pull n' Pack.
-- [ ] Add a module-scoped mock-data catalog model.
-- [ ] Add a module-scoped mock-data catalog interface.
-- [ ] Add a module-scoped mock-data catalog service implementation.
-- [ ] Preserve demand-row and location-row raw-field parity with the current live/mock projection contract.
-- [ ] Migrate the existing Customer Pull n' Pack JSON data out of the shared Infor Visual mock JSON files.
-- [ ] Remove the migrated Customer Pull n' Pack sections from the shared JSON files.
-- [ ] Add unit tests covering static plus runtime merge behavior and row normalization.
+- [x] Create the module-owned Customer Pull n' Pack mock-data folder.
+- [x] Add dedicated static and runtime JSON files for Customer Pull n' Pack.
+- [x] Add a module-scoped mock-data catalog model.
+- [x] Add a module-scoped mock-data catalog interface.
+- [x] Add a module-scoped mock-data catalog service implementation.
+- [x] Preserve demand-row and location-row raw-field parity with the current live/mock projection contract.
+- [x] Migrate the existing Customer Pull n' Pack JSON data out of the shared Infor Visual mock JSON files.
+- [x] Remove the migrated Customer Pull n' Pack sections from the shared JSON files.
+- [x] Add unit tests covering static plus runtime merge behavior and row normalization.
 </task_checklist>
 
 <validation>

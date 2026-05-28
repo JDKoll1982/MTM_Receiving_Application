@@ -9,6 +9,7 @@ using MediatR;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
@@ -22,6 +23,7 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Base
 {
     private readonly IMediator _mediator;
+    private readonly IService_CustomerPullPackDemandSource _demandSource;
     private readonly IService_UserSessionManager _sessionManager;
 
     [ObservableProperty]
@@ -31,6 +33,13 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
     [NotifyPropertyChangedFor(nameof(CanUnassignOwner))]
     [NotifyPropertyChangedFor(nameof(HasSelectedQueueItem))]
     private Model_CustomerPullPack_WaitlistEntry? _selectedQueueItem;
+
+    [ObservableProperty]
+    private ObservableCollection<Model_CustomerPullPack_QueueLocationDetail> _selectedQueueLocationDetails =
+    [];
+
+    [ObservableProperty]
+    private Model_CustomerPullPack_QueueLocationDetail? _selectedQueueLocationDetail;
 
     [ObservableProperty]
     private string _customerFilter = string.Empty;
@@ -94,6 +103,8 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
 
     public bool HasSelectedQueueItem => SelectedQueueItem is not null;
 
+    public bool HasSelectedQueueLocationDetails => SelectedQueueLocationDetails.Count > 0;
+
     public bool IsProblemSelected => SelectedStatus == Enum_CustomerPullPackWaitlistStatus.Problem;
 
     public bool CanUnassignOwner =>
@@ -113,6 +124,7 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
 
     public ViewModel_Tool_CustomerPullPackQueue(
         IMediator mediator,
+        IService_CustomerPullPackDemandSource demandSource,
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -121,7 +133,80 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
         : base(errorHandler, logger, notificationService)
     {
         _mediator = mediator;
+        _demandSource = demandSource;
         _sessionManager = sessionManager;
+    }
+
+    public async Task RefreshSelectedQueueLocationDetailsAsync()
+    {
+        if (SelectedQueueItem is null)
+        {
+            SelectedQueueLocationDetails = [];
+            SelectedQueueLocationDetail = null;
+            return;
+        }
+
+        var filter = new Model_CustomerPullPack_DemandFilter
+        {
+            CustomerId = SelectedQueueItem.CustomerId,
+            DateFrom = SelectedQueueItem.RequestTimestamp.Date.AddYears(-1),
+            DateTo = SelectedQueueItem.RequestTimestamp.Date.AddYears(1),
+            SortMode = Enum_CustomerPullPackSortMode.PullDate,
+        };
+
+        var demandResult = await _demandSource.GetDemandAsync(filter);
+        IEnumerable<Model_CustomerPullPack_QueueLocationDetail> details = [];
+
+        if (demandResult.IsSuccess && demandResult.Data is not null)
+        {
+            details = demandResult
+                .Data.Where(line =>
+                    string.Equals(
+                        line.CustomerOrderId,
+                        SelectedQueueItem.CustomerOrderId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && string.Equals(
+                        line.ParentPartId,
+                        SelectedQueueItem.ParentPartId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                .SelectMany(static line => line.LocationOptions)
+                .GroupBy(static option => option.LocationId, StringComparer.OrdinalIgnoreCase)
+                .Select(group =>
+                {
+                    var firstOption = group.First();
+                    return new Model_CustomerPullPack_QueueLocationDetail
+                    {
+                        ParentPartId = firstOption.ParentPartId,
+                        LocationId = firstOption.LocationId,
+                        OnHandQuantity = group.Max(static option => option.OnHandQuantity),
+                    };
+                });
+        }
+
+        if (!details.Any())
+        {
+            details = SelectedQueueItem.SelectedLocations.Select(
+                locationId => new Model_CustomerPullPack_QueueLocationDetail
+                {
+                    ParentPartId = SelectedQueueItem.ParentPartId,
+                    LocationId = locationId,
+                    OnHandQuantity = 0,
+                }
+            );
+        }
+
+        SelectedQueueLocationDetails =
+            new ObservableCollection<Model_CustomerPullPack_QueueLocationDetail>(
+                details.OrderBy(
+                    static detail => detail.LocationId,
+                    StringComparer.OrdinalIgnoreCase
+                )
+            );
+        SelectedQueueLocationDetail = SelectedQueueLocationDetails.FirstOrDefault();
+        OnPropertyChanged(nameof(HasSelectedQueueLocationDetails));
     }
 
     public async Task ActivateViewAsync()
@@ -374,6 +459,9 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
             HandlerNote = string.Empty;
             SelectedProblemReason = Enum_CustomerPullPackProblemReason.None;
             SelectedStatus = Enum_CustomerPullPackWaitlistStatus.Accepted;
+            SelectedQueueLocationDetails = [];
+            SelectedQueueLocationDetail = null;
+            OnPropertyChanged(nameof(HasSelectedQueueLocationDetails));
             return;
         }
 

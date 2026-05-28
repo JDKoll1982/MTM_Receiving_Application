@@ -182,4 +182,169 @@ public sealed class Service_ReportingFormattingTests
         partBIndex.Should().BeGreaterThan(partCIndex);
         partAIndex.Should().BeGreaterThan(partBIndex);
     }
+
+    [Fact]
+    public async Task FormatForEmailAsync_DunnagePreview_DoesNotIncludeSummarySection()
+    {
+        var service = new Service_Reporting(
+            new Dao_Reporting("Server=test;Database=test;"),
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ReceivingSettings>().Object
+        );
+
+        var previewModuleCard = new Model_ReportingPreviewModuleCard
+        {
+            ModuleName = "Dunnage",
+            CardTitle = "Dunnage Report",
+            DetailSection = new Model_ReportSection
+            {
+                ModuleName = "Dunnage",
+                Rows = new ObservableCollection<Model_ReportRow>([
+                    new Model_ReportRow
+                    {
+                        PartNumber = "DUN-A",
+                        Quantity = 4m,
+                        CreatedDate = new(2026, 3, 20),
+                        SourceModule = "Dunnage",
+                    },
+                ]),
+            },
+            SummaryTable = new Model_ReportSummaryTable
+            {
+                ModuleName = "Dunnage",
+                Columns =
+                [
+                    new Model_ReportSummaryColumn { Header = "Date", Width = 120d },
+                    new Model_ReportSummaryColumn { Header = "Other (Qty)", Width = 132d },
+                ],
+                Rows =
+                [
+                    new Model_ReportSummaryTableRow
+                    {
+                        Cells =
+                        [
+                            new Model_ReportSummaryTableCell { Value = "3/20/2026", Width = 120d },
+                            new Model_ReportSummaryTableCell { Value = "4", Width = 132d },
+                        ],
+                    },
+                ],
+            },
+        };
+
+        previewModuleCard.InitializeColumns([
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.PartNumber),
+                Header = "Part Number",
+                Width = 170d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayQuantity),
+                Header = "Quantity",
+                Width = 110d,
+                IsNumeric = true,
+                IsIncluded = true,
+            },
+        ]);
+
+        var result = await service.FormatForEmailAsync([previewModuleCard], "Preview Title");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.PlainText.Should().NotContain("Summary");
+        result.Data.PlainText.Should().Contain("Detailed Activity");
+        result.Data.PlainText.Should().Contain("DUN-A\t4");
+    }
+
+    [Fact]
+    public async Task FormatForEmailAsync_GroupedMixedValues_UsesDateRangesAndExplicitPlaceholdersInCopiedOutput()
+    {
+        var service = new Service_Reporting(
+            new Dao_Reporting("Server=test;Database=test;"),
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ReceivingSettings>().Object
+        );
+
+        var previewModuleCard = new Model_ReportingPreviewModuleCard
+        {
+            ModuleName = "Receiving",
+            CardTitle = "Receiving Report",
+            DetailSection = new Model_ReportSection
+            {
+                ModuleName = "Receiving",
+                Rows = new ObservableCollection<Model_ReportRow>([
+                    new Model_ReportRow
+                    {
+                        PartNumber = "PART-A",
+                        HeatLotNumber = "LOT-1",
+                        ReceiverNumber = "RCV-1",
+                        TransactionDate = new(2026, 3, 21),
+                        Quantity = 1m,
+                        CreatedDate = new(2026, 3, 20),
+                        SourceModule = "Receiving",
+                    },
+                    new Model_ReportRow
+                    {
+                        PartNumber = "PART-A",
+                        HeatLotNumber = "LOT-2",
+                        ReceiverNumber = "RCV-2",
+                        TransactionDate = new(2026, 3, 22),
+                        Quantity = 2m,
+                        CreatedDate = new(2026, 3, 21),
+                        SourceModule = "Receiving",
+                    },
+                ]),
+            },
+            SummaryTable = new Model_ReportSummaryTable
+            {
+                ModuleName = "Receiving",
+                Columns = [],
+                Rows = [],
+            },
+        };
+
+        previewModuleCard.InitializeColumns([
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.PartNumber),
+                Header = "Part Number",
+                Width = 170d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.ReceiverNumber),
+                Header = "Receiver",
+                Width = 140d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayTransactionDate),
+                Header = "Transaction Date",
+                Width = 160d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayQuantity),
+                Header = "Quantity",
+                Width = 110d,
+                IsNumeric = true,
+                IsIncluded = true,
+            },
+        ]);
+        previewModuleCard.RowDisplayMode =
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+
+        var result = await service.FormatForEmailAsync([previewModuleCard], "Preview Title");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result
+            .Data!.PlainText.Should()
+            .Contain("PART-A\tMultiple Receivers\t3/21/2026 - 3/22/2026\t3");
+    }
 }

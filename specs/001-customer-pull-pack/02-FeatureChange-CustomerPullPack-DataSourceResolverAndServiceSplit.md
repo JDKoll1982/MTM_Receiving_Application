@@ -100,16 +100,16 @@ shared contract, with the active source resolved once when the workflow is activ
 </implementation_steps>
 
 <task_checklist>
-- [ ] Add a workflow-scoped Customer Pull n' Pack source resolver.
-- [ ] Add separate feature contracts for demand and waitlist behavior.
-- [ ] Make `Dao_CustomerPullPackDemand` live-only.
-- [ ] Make `Dao_CustomerPullPackWaitlist` live-only for MTM persistence.
-- [ ] Add mock demand and waitlist service implementations.
-- [ ] Update query handlers to depend on the feature contracts.
-- [ ] Remove viewmodel-level source branching from the report viewmodel.
-- [ ] Update the ShipRec Tools host to establish the shared source mode for all Customer Pull n' Pack screens.
-- [ ] Update DI registrations to use the resolver-driven split.
-- [ ] Update focused unit tests to reflect the new contract boundaries.
+- [x] Add a workflow-scoped Customer Pull n' Pack source resolver.
+- [x] Add separate feature contracts for demand and waitlist behavior.
+- [x] Make `Dao_CustomerPullPackDemand` live-only.
+- [x] Make `Dao_CustomerPullPackWaitlist` live-only for MTM persistence.
+- [x] Add mock demand and waitlist service implementations.
+- [x] Update query handlers to depend on the feature contracts.
+- [x] Remove viewmodel-level source branching from the report viewmodel.
+- [x] Update the ShipRec Tools host to establish the shared source mode for all Customer Pull n' Pack screens.
+- [x] Update DI registrations to use the resolver-driven split.
+- [x] Update focused unit tests to reflect the new contract boundaries.
 </task_checklist>
 
 <validation>

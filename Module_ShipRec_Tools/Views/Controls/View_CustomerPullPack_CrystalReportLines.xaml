@@ -437,10 +437,7 @@
                                                                     Style="{StaticResource CaptionTextBlockStyle}"
                                                                     Text="{x:Bind PullDateDisplay, Mode=OneTime}"
                                                                     TextTrimming="CharacterEllipsis" />
-                                                                <StackPanel
-                                                                    Grid.Column="6"
-                                                                    Orientation="Horizontal"
-                                                                    Spacing="8">
+                                                                <StackPanel Grid.Column="6" Spacing="4">
                                                                     <Border
                                                                         Padding="10,4"
                                                                         Background="{x:Bind StatusNoteBackgroundBrush, Mode=OneTime}"
@@ -453,6 +450,13 @@
                                                                             Text="{x:Bind StatusNoteText, Mode=OneTime}"
                                                                             TextTrimming="CharacterEllipsis" />
                                                                     </Border>
+                                                                    <TextBlock
+                                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                        MaxLines="2"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind FulfillmentDetailText, Mode=OneTime}"
+                                                                        TextWrapping="WrapWholeWords"
+                                                                        Visibility="{x:Bind HasFulfillmentDetail, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </DataTemplate>

@@ -70,12 +70,12 @@ for the selected display mode.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Replace the current overlay options presentation.
-- [ ] Add collapsible settings cards.
-- [ ] Default the row-display card to collapsed.
-- [ ] Replace radio buttons with a dropdown.
-- [ ] Add explanation text that updates with the selected display mode.
-- [ ] Update focused viewmodel tests for the new row-display selection shape.
+- [x] Replace the current overlay options presentation.
+- [x] Add collapsible settings cards.
+- [x] Default the row-display card to collapsed.
+- [x] Replace radio buttons with a dropdown.
+- [x] Add explanation text that updates with the selected display mode.
+- [x] Update focused viewmodel tests for the new row-display selection shape.
 </task_checklist>
 
 <validation>

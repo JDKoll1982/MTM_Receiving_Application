@@ -359,6 +359,50 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
     }
 
     [Fact]
+    public async void RefreshReportAsync_ShouldProjectFulfillmentDetailsIntoCrystalReportLines()
+    {
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock
+            .Setup(mediator =>
+                mediator.Send(
+                    It.IsAny<Query_CustomerPullPackReport>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomerPullPack_DemandLine>
+                    {
+                        new()
+                        {
+                            SourceLineKey = "LINE-1",
+                            CustomerId = "VOLVO",
+                            CustomerName = "Volvo Group",
+                            CustomerOrderId = "CO-1001",
+                            ParentPartId = "PART-100",
+                            PullDate = new DateTime(2026, 5, 27),
+                            OldestAdded = new DateTime(2026, 5, 20),
+                            QuantityToPack = 24,
+                            ShipQuantity = 24,
+                            QtySatisfied = 12,
+                            FulfillmentStatusDisplay = "Partially Filled",
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(mediatorMock);
+        viewModel.CustomerSearchText = "VOLVO - Volvo Group";
+
+        await viewModel.RefreshReportCommand.ExecuteAsync(null);
+
+        var requestLine = viewModel.CrystalReportGroups.Single().RequestLines.Single();
+        requestLine.StatusNoteText.Should().Be("Partially Filled");
+        requestLine.FulfillmentDetailText.Should().Contain("Qty Satisfied: 12");
+        requestLine.FulfillmentDetailText.Should().Contain("Oldest Added: 05/20/2026");
+    }
+
+    [Fact]
     public async void ApplyCrystalRequestLineSelection_ShouldUpdateSingleDemandRowAndProjection()
     {
         var mediatorMock = new Mock<IMediator>();
@@ -415,6 +459,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
             .DemandLines.Single(line => line.SourceLineKey == "LINE-1")
             .IsSelected.Should()
             .BeFalse();
+        viewModel.SelectedDemandLines.Should().ContainSingle();
+        viewModel.SelectedDemandLines[0].SourceLineKey.Should().Be("LINE-2");
         viewModel.SelectedDemandLine.Should().NotBeNull();
         viewModel.SelectedDemandLine!.SourceLineKey.Should().Be("LINE-2");
         viewModel.CrystalReportGroups.Should().OnlyContain(group => group.QuantitySelected == 0);
@@ -869,6 +915,12 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
         viewModel.ApplyCrystalLocationSelection("CO-1002", ["SUB-02"]);
 
+        viewModel.SelectedDemandLines.Should().HaveCount(2);
+        viewModel
+            .SelectedDemandLines.Select(line => line.SourceLineKey)
+            .Should()
+            .BeEquivalentTo(["LINE-1", "LINE-2"]);
+
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
         capturedEntries.Should().NotBeNull();
@@ -877,6 +929,104 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
             .Select(entry => entry.SourceLineKey)
             .Should()
             .BeEquivalentTo(["LINE-1", "LINE-2"]);
+    }
+
+    [Fact]
+    public async void CreateOrUpdateWaitlistAsync_ShouldBuildOneBatchEntryPerUniqueParentPart()
+    {
+        var mediatorMock = new Mock<IMediator>();
+        mediatorMock
+            .Setup(mediator =>
+                mediator.Send(
+                    It.IsAny<Query_CustomerPullPackReport>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomerPullPack_DemandLine>
+                    {
+                        new()
+                        {
+                            SourceLineKey = "LINE-1",
+                            CustomerId = "VOLVO",
+                            CustomerName = "Volvo Group",
+                            CustomerOrderId = "CO-1001",
+                            ParentPartId = "PART-100",
+                            PullDate = new DateTime(2026, 5, 27),
+                            QuantityToPack = 24,
+                            ShipQuantity = 24,
+                            LocationOptions =
+                            [
+                                new Model_CustomerPullPack_LocationOption
+                                {
+                                    LocationKey = "LOC-1",
+                                    LocationId = "SUB-01",
+                                    DisplayLabel = "SUB-01",
+                                    OnHandQuantity = 12,
+                                },
+                            ],
+                        },
+                        new()
+                        {
+                            SourceLineKey = "LINE-2",
+                            CustomerId = "VOLVO",
+                            CustomerName = "Volvo Group",
+                            CustomerOrderId = "CO-1001",
+                            ParentPartId = "PART-100",
+                            PullDate = new DateTime(2026, 5, 28),
+                            QuantityToPack = 10,
+                            ShipQuantity = 10,
+                            LocationOptions =
+                            [
+                                new Model_CustomerPullPack_LocationOption
+                                {
+                                    LocationKey = "LOC-2",
+                                    LocationId = "SUB-02",
+                                    DisplayLabel = "SUB-02",
+                                    OnHandQuantity = 8,
+                                },
+                            ],
+                        },
+                    }
+                )
+            );
+
+        IReadOnlyList<Model_CustomerPullPack_WaitlistEntry>? capturedEntries = null;
+        mediatorMock
+            .Setup(mediator =>
+                mediator.Send(
+                    It.IsAny<Command_CustomerPullPackBatchUpsert>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns<Command_CustomerPullPackBatchUpsert, CancellationToken>(
+                (request, _) =>
+                {
+                    capturedEntries = request.Entries;
+                    return Task.FromResult(
+                        Model_Dao_Result_Factory.Success(
+                            new List<Model_CustomerPullPack_WaitlistEntry>()
+                        )
+                    );
+                }
+            );
+
+        var viewModel = CreateViewModel(mediatorMock);
+        viewModel.CustomerSearchText = "VOLVO - Volvo Group";
+        viewModel.ShowWaitlistEditorAsync = _ => Task.FromResult(true);
+
+        await viewModel.RefreshReportCommand.ExecuteAsync(null);
+        viewModel.ApplyCrystalRequestLineSelection(["LINE-1", "LINE-2"]);
+        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
+
+        await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
+
+        capturedEntries.Should().NotBeNull();
+        capturedEntries.Should().ContainSingle();
+        capturedEntries![0].ParentPartId.Should().Be("PART-100");
+        capturedEntries[0].RequestedQuantity.Should().Be(34);
+        capturedEntries[0].SelectedLocations.Should().BeEquivalentTo(["SUB-01", "SUB-02"]);
     }
 
     [Fact]

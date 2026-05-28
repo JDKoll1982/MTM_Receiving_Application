@@ -88,6 +88,69 @@ public sealed class ViewModel_Dialog_CustomerPullPackWaitlistEditorTests
         entries[0].RequesterContextNote.Should().Be("Requester update");
     }
 
+    [Fact]
+    public void BuildBatchEntries_ShouldCollapseSelectedLinesIntoOneEntryPerUniqueParentPart()
+    {
+        var firstLine = new Model_CustomerPullPack_DemandLine
+        {
+            SourceLineKey = "LINE-1",
+            CustomerId = "VOLVO",
+            CustomerName = "Volvo Group",
+            CustomerOrderId = "CO-1001",
+            ParentPartId = "PART-100",
+            QuantityToPack = 12,
+            LocationOptions =
+            [
+                new Model_CustomerPullPack_LocationOption
+                {
+                    LocationKey = "LINE-1|SUB-01",
+                    SourceLineKey = "LINE-1",
+                    LocationId = "SUB-01",
+                    DisplayLabel = "SUB-01",
+                    Selected = true,
+                },
+            ],
+        };
+
+        var secondLine = new Model_CustomerPullPack_DemandLine
+        {
+            SourceLineKey = "LINE-2",
+            CustomerId = "VOLVO",
+            CustomerName = "Volvo Group",
+            CustomerOrderId = "CO-1001",
+            ParentPartId = "PART-100",
+            QuantityToPack = 8,
+            LocationOptions =
+            [
+                new Model_CustomerPullPack_LocationOption
+                {
+                    LocationKey = "LINE-2|SUB-02",
+                    SourceLineKey = "LINE-2",
+                    LocationId = "SUB-02",
+                    DisplayLabel = "SUB-02",
+                    Selected = true,
+                },
+            ],
+        };
+
+        var viewModel = new ViewModel_Dialog_CustomerPullPackWaitlistEditor(
+            [firstLine, secondLine],
+            null,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        var entries = viewModel.BuildBatchEntries("jkoll", "John Koll");
+
+        entries.Should().ContainSingle();
+        entries[0].ParentPartId.Should().Be("PART-100");
+        entries[0].CustomerOrderId.Should().Be("CO-1001");
+        entries[0].RequestedQuantity.Should().Be(20);
+        entries[0].SelectedLocations.Should().BeEquivalentTo(["SUB-01", "SUB-02"]);
+        entries[0].SourceLineKey.Should().Be("GROUP|CO-1001|PART-100");
+    }
+
     private static ViewModel_Dialog_CustomerPullPackWaitlistEditor CreateViewModel(
         Model_CustomerPullPack_DemandLine selectedLine,
         Model_CustomerPullPack_WaitlistEntry? existingEntry = null

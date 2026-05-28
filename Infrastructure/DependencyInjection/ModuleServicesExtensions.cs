@@ -324,11 +324,12 @@ public static class ModuleServicesExtensions
             Service_ReportingRecipientSettings
         >();
 
-        // ViewModels (Transient)
-        services.AddTransient<ViewModel_Reporting_Main>();
+        // ViewModels (Singleton - Preserve report selection state across preview navigation)
+        services.AddSingleton<ViewModel_Reporting_Main>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Reporting.Views.View_Reporting_Main>();
+        services.AddTransient<Module_Reporting.Views.View_Reporting_PreviewPage>();
 
         return services;
     }

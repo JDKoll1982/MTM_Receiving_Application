@@ -216,6 +216,98 @@ public sealed class Query_CustomerPullPackReportHandlerTests
         result.Data![0].RecheckIndicator.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task Handle_ShouldAllocateQtySatisfiedOldestFirstPerParentPartGroup()
+    {
+        var filter = CreateFilter();
+        var demandLines = new List<Model_CustomerPullPack_DemandLine>
+        {
+            new()
+            {
+                SourceLineKey = "LINE-1",
+                CustomerId = "CUST-100",
+                CustomerOrderId = "CO-1001",
+                ParentPartId = "PART-100",
+                ShipQuantity = 10,
+                QuantityToPack = 10,
+                FgOnHandQuantity = 15,
+                OldestAdded = new DateTime(2026, 5, 20),
+            },
+            new()
+            {
+                SourceLineKey = "LINE-2",
+                CustomerId = "CUST-100",
+                CustomerOrderId = "CO-1002",
+                ParentPartId = "PART-100",
+                ShipQuantity = 10,
+                QuantityToPack = 10,
+                FgOnHandQuantity = 15,
+                OldestAdded = new DateTime(2026, 5, 21),
+            },
+            new()
+            {
+                SourceLineKey = "LINE-3",
+                CustomerId = "CUST-100",
+                CustomerOrderId = "CO-1003",
+                ParentPartId = "PART-100",
+                ShipQuantity = 10,
+                QuantityToPack = 10,
+                FgOnHandQuantity = 15,
+                OldestAdded = new DateTime(2026, 5, 22),
+            },
+            new()
+            {
+                SourceLineKey = "LINE-4",
+                CustomerId = "CUST-100",
+                CustomerOrderId = "CO-2001",
+                ParentPartId = "PART-200",
+                ShipQuantity = 8,
+                QuantityToPack = 8,
+                FgOnHandQuantity = 8,
+                OldestAdded = new DateTime(2026, 5, 20),
+            },
+        };
+
+        var demandSourceMock = new Mock<IService_CustomerPullPackDemandSource>();
+        demandSourceMock
+            .Setup(service => service.GetDemandAsync(filter))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(demandLines, demandLines.Count));
+
+        var handler = new Query_CustomerPullPackReportHandler(
+            demandSourceMock.Object,
+            new Mock<IService_CustomerPullPackWaitlistSource>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await handler.Handle(
+            new Query_CustomerPullPackReport(filter),
+            CancellationToken.None
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Single(line => line.SourceLineKey == "LINE-1").QtySatisfied.Should().Be(10);
+        result
+            .Data.Single(line => line.SourceLineKey == "LINE-1")
+            .FulfillmentStatusDisplay.Should()
+            .Be("Complete");
+        result.Data.Single(line => line.SourceLineKey == "LINE-2").QtySatisfied.Should().Be(5);
+        result
+            .Data.Single(line => line.SourceLineKey == "LINE-2")
+            .FulfillmentStatusDisplay.Should()
+            .Be("Partially Filled");
+        result.Data.Single(line => line.SourceLineKey == "LINE-3").QtySatisfied.Should().Be(0);
+        result
+            .Data.Single(line => line.SourceLineKey == "LINE-3")
+            .FulfillmentStatusDisplay.Should()
+            .BeEmpty();
+        result.Data.Single(line => line.SourceLineKey == "LINE-4").QtySatisfied.Should().Be(8);
+        result
+            .Data.Single(line => line.SourceLineKey == "LINE-4")
+            .FulfillmentStatusDisplay.Should()
+            .Be("Complete");
+    }
+
     private static Model_CustomerPullPack_DemandFilter CreateFilter()
     {
         return new Model_CustomerPullPack_DemandFilter

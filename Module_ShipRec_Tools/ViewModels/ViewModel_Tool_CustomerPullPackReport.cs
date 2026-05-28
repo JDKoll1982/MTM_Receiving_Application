@@ -66,6 +66,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     private Model_CustomerPullPack_DemandLine? _selectedDemandLine;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSelectionVisible))]
+    private ObservableCollection<Model_CustomerPullPack_DemandLine> _selectedDemandLines = [];
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmptyStateVisible))]
     private bool _hasAttemptedLoad;
 
@@ -140,7 +144,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     public bool IsEmptyStateVisible =>
         HasAttemptedLoad && IsBusy is false && HasDemandLines is false;
 
-    public bool IsSelectionVisible => SelectedDemandLine is not null;
+    public bool IsSelectionVisible => SelectedDemandLines.Count > 0;
+
+    public Model_CustomerPullPack_DemandLine? PrimarySelectedDemandLine =>
+        SelectedDemandLines.FirstOrDefault();
 
     public string CurrentCustomerDisplay =>
         string.IsNullOrWhiteSpace(ActiveCustomerId) ? "Select a customer and refresh the report."
@@ -180,32 +187,48 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
     public string CrystalReportTimeDisplay => DateTime.Now.ToString("h:mm:ss tt");
 
-    public string SelectedParentPartId => SelectedDemandLine?.ParentPartId ?? string.Empty;
+    public string SelectedParentPartId =>
+        string.Join(
+            ", ",
+            SelectedDemandLines
+                .Select(static line => line.ParentPartId)
+                .Where(static partId => string.IsNullOrWhiteSpace(partId) is false)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
 
-    public string SelectedCustomerOrderId => SelectedDemandLine?.CustomerOrderId ?? string.Empty;
+    public string SelectedCustomerOrderId =>
+        string.Join(
+            ", ",
+            SelectedDemandLines
+                .Select(static line => line.CustomerOrderId)
+                .Where(static customerOrderId =>
+                    string.IsNullOrWhiteSpace(customerOrderId) is false
+                )
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
 
-    public string SelectedCustomerName => SelectedDemandLine?.CustomerName ?? string.Empty;
+    public string SelectedCustomerName => PrimarySelectedDemandLine?.CustomerName ?? string.Empty;
 
     public string SelectedPullDateDisplay =>
-        SelectedDemandLine is null
+        PrimarySelectedDemandLine is null
             ? string.Empty
-            : SelectedDemandLine.PullDate.ToString("MM/dd/yyyy");
+            : PrimarySelectedDemandLine.PullDate.ToString("MM/dd/yyyy");
 
-    public string SelectedFgLocationId => SelectedDemandLine?.FgLocationId ?? string.Empty;
+    public string SelectedFgLocationId => PrimarySelectedDemandLine?.FgLocationId ?? string.Empty;
 
     public string SelectedSubPartAvailabilitySummary =>
-        SelectedDemandLine?.SubPartAvailabilitySummary ?? string.Empty;
+        PrimarySelectedDemandLine?.SubPartAvailabilitySummary ?? string.Empty;
 
-    public string SelectedRequesterNote => SelectedDemandLine?.RequesterNote ?? string.Empty;
+    public string SelectedRequesterNote => PrimarySelectedDemandLine?.RequesterNote ?? string.Empty;
 
     public IReadOnlyList<Model_CustomerPullPack_LocationOption> SelectedDemandLineLocationOptions =>
-        SelectedDemandLine?.LocationOptions ?? [];
+        PrimarySelectedDemandLine?.LocationOptions ?? [];
 
     public bool SelectedDemandLineHasSelectableLocations =>
         SelectedDemandLineLocationOptions.Count > 0;
 
     public string SelectedDemandLineLocationSummary =>
-        SelectedDemandLine is null
+        PrimarySelectedDemandLine is null
             ? string.Empty
             : string.Join(
                 ", ",
@@ -588,14 +611,28 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             return;
         }
 
-        var matchingLine = DemandLines.FirstOrDefault(line =>
-            string.Equals(
-                line.SourceLineKey,
-                linkedWaitlistResult.Data.SourceLineKey,
-                StringComparison.OrdinalIgnoreCase
+        var matchingLines = DemandLines
+            .Where(line =>
+                string.Equals(
+                    line.SourceLineKey,
+                    linkedWaitlistResult.Data.SourceLineKey,
+                    StringComparison.OrdinalIgnoreCase
+                )
+                || (
+                    string.Equals(
+                        line.CustomerOrderId,
+                        linkedWaitlistResult.Data.CustomerOrderId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && string.Equals(
+                        line.ParentPartId,
+                        linkedWaitlistResult.Data.ParentPartId,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
             )
-        );
-        if (matchingLine is null)
+            .ToList();
+        if (matchingLines.Count == 0)
         {
             ShowStatus(
                 "The existing waitlist item was found, but its report line is not visible in the current report filters.",
@@ -604,18 +641,21 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             return;
         }
 
+        var matchingLine = matchingLines[0];
         foreach (var line in DemandLines)
         {
-            line.IsSelected = string.Equals(
-                line.SourceLineKey,
-                matchingLine.SourceLineKey,
-                StringComparison.OrdinalIgnoreCase
+            line.IsSelected = matchingLines.Any(match =>
+                string.Equals(
+                    match.SourceLineKey,
+                    line.SourceLineKey,
+                    StringComparison.OrdinalIgnoreCase
+                )
             );
         }
 
         RefreshDemandLinesSnapshot();
         ClearDuplicateNotice();
-        await OpenWaitlistEditorForLinesAsync([matchingLine]);
+        await OpenWaitlistEditorForLinesAsync(matchingLines);
     }
 
     [RelayCommand]
@@ -633,6 +673,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     {
         var orderedLines = lines.ToList();
         DemandLines = new ObservableCollection<Model_CustomerPullPack_DemandLine>(orderedLines);
+        SelectedDemandLines = [];
         SelectedDemandLine = null;
         ShortageLineCount = orderedLines.Count(static line => line.ShortageFlag);
         LateOrderLineCount = orderedLines.Count(static line => line.LateOrderFlag);
@@ -665,6 +706,25 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         OnPropertyChanged(nameof(SelectedDemandLineLocationOptions));
         OnPropertyChanged(nameof(SelectedDemandLineHasSelectableLocations));
         OnPropertyChanged(nameof(SelectedDemandLineLocationSummary));
+    }
+
+    partial void OnSelectedDemandLinesChanged(
+        ObservableCollection<Model_CustomerPullPack_DemandLine> value
+    )
+    {
+        _ = value;
+        OnPropertyChanged(nameof(PrimarySelectedDemandLine));
+        OnPropertyChanged(nameof(SelectedParentPartId));
+        OnPropertyChanged(nameof(SelectedCustomerOrderId));
+        OnPropertyChanged(nameof(SelectedCustomerName));
+        OnPropertyChanged(nameof(SelectedPullDateDisplay));
+        OnPropertyChanged(nameof(SelectedFgLocationId));
+        OnPropertyChanged(nameof(SelectedSubPartAvailabilitySummary));
+        OnPropertyChanged(nameof(SelectedRequesterNote));
+        OnPropertyChanged(nameof(SelectedDemandLineLocationOptions));
+        OnPropertyChanged(nameof(SelectedDemandLineHasSelectableLocations));
+        OnPropertyChanged(nameof(SelectedDemandLineLocationSummary));
+        OnPropertyChanged(nameof(SelectionSummary));
     }
 
     partial void OnSelectedFavoriteCustomerIdChanged(string value)
@@ -819,7 +879,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         var selectedLine = selectedLines[0];
         var existingEntry =
             selectedLines.Count == 1 ? await LoadExistingEntryAsync(selectedLine) : null;
-        ApplySelectionContext(selectedLine, existingEntry);
+        ApplySelectionContext(selectedLines, existingEntry);
 
         var editorLines = selectedLines.Select(CloneDemandLineForDialog).ToList();
 
@@ -931,7 +991,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     }
 
     private void ApplySelectionContext(
-        Model_CustomerPullPack_DemandLine selectedLine,
+        IReadOnlyList<Model_CustomerPullPack_DemandLine> selectedLines,
         Model_CustomerPullPack_WaitlistEntry? existingEntry
     )
     {
@@ -941,51 +1001,18 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             return;
         }
 
-        selectedLine.RequesterNote = existingEntry.RequesterContextNote;
-        selectedLine.HasLinkedWaitlist = true;
-        selectedLine.LinkedWaitlistId = existingEntry.WaitlistId;
-        selectedLine.WaitlistStateDisplay = string.IsNullOrWhiteSpace(existingEntry.WaitlistId)
-            ? existingEntry.CurrentStatus.ToString()
-            : $"{existingEntry.CurrentStatus} ({existingEntry.WaitlistId})";
-
-        foreach (var locationOption in selectedLine.LocationOptions)
+        foreach (var selectedLine in selectedLines)
         {
-            locationOption.Selected = existingEntry.SelectedLocations.Contains(
-                locationOption.LocationId,
-                StringComparer.OrdinalIgnoreCase
-            );
-        }
+            selectedLine.RequesterNote = existingEntry.RequesterContextNote;
+            selectedLine.HasLinkedWaitlist = true;
+            selectedLine.LinkedWaitlistId = existingEntry.WaitlistId;
+            selectedLine.WaitlistStateDisplay = string.IsNullOrWhiteSpace(existingEntry.WaitlistId)
+                ? existingEntry.CurrentStatus.ToString()
+                : $"{existingEntry.CurrentStatus} ({existingEntry.WaitlistId})";
 
-        RefreshDemandLinesSnapshot();
-    }
-
-    private void ApplySavedEntries(IReadOnlyList<Model_CustomerPullPack_WaitlistEntry> savedEntries)
-    {
-        foreach (var savedEntry in savedEntries)
-        {
-            var matchingLine = DemandLines.FirstOrDefault(line =>
-                string.Equals(
-                    line.SourceLineKey,
-                    savedEntry.SourceLineKey,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
-            if (matchingLine is null)
+            foreach (var locationOption in selectedLine.LocationOptions)
             {
-                continue;
-            }
-
-            matchingLine.IsSelected = false;
-            matchingLine.HasLinkedWaitlist = true;
-            matchingLine.LinkedWaitlistId = savedEntry.WaitlistId;
-            matchingLine.RequesterNote = savedEntry.RequesterContextNote;
-            matchingLine.WaitlistStateDisplay = string.IsNullOrWhiteSpace(savedEntry.WaitlistId)
-                ? savedEntry.CurrentStatus.ToString()
-                : $"{savedEntry.CurrentStatus} ({savedEntry.WaitlistId})";
-
-            foreach (var locationOption in matchingLine.LocationOptions)
-            {
-                locationOption.Selected = savedEntry.SelectedLocations.Contains(
+                locationOption.Selected = existingEntry.SelectedLocations.Contains(
                     locationOption.LocationId,
                     StringComparer.OrdinalIgnoreCase
                 );
@@ -995,11 +1022,69 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         RefreshDemandLinesSnapshot();
     }
 
+    private void ApplySavedEntries(IReadOnlyList<Model_CustomerPullPack_WaitlistEntry> savedEntries)
+    {
+        foreach (var savedEntry in savedEntries)
+        {
+            var matchingLines = DemandLines
+                .Where(line =>
+                    string.Equals(
+                        line.SourceLineKey,
+                        savedEntry.SourceLineKey,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    || (
+                        string.Equals(
+                            line.CustomerOrderId,
+                            savedEntry.CustomerOrderId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                        && string.Equals(
+                            line.ParentPartId,
+                            savedEntry.ParentPartId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                )
+                .ToList();
+            if (matchingLines.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var matchingLine in matchingLines)
+            {
+                matchingLine.IsSelected = false;
+                matchingLine.HasLinkedWaitlist = true;
+                matchingLine.LinkedWaitlistId = savedEntry.WaitlistId;
+                matchingLine.RequesterNote = savedEntry.RequesterContextNote;
+                matchingLine.WaitlistStateDisplay = string.IsNullOrWhiteSpace(savedEntry.WaitlistId)
+                    ? savedEntry.CurrentStatus.ToString()
+                    : $"{savedEntry.CurrentStatus} ({savedEntry.WaitlistId})";
+
+                foreach (var locationOption in matchingLine.LocationOptions)
+                {
+                    locationOption.Selected = savedEntry.SelectedLocations.Any(locationId =>
+                        string.Equals(
+                            locationId,
+                            locationOption.LocationId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+                }
+            }
+        }
+
+        RefreshDemandLinesSnapshot();
+    }
+
     private void RefreshDemandLinesSnapshot()
     {
-        SelectedDemandLine = DemandLines.FirstOrDefault(static line => line.IsSelected);
+        SelectedDemandLines = new ObservableCollection<Model_CustomerPullPack_DemandLine>(
+            DemandLines.Where(static line => line.IsSelected)
+        );
+        SelectedDemandLine = SelectedDemandLines.FirstOrDefault();
         LinkedWaitlistLineCount = DemandLines.Count(static line => line.HasLinkedWaitlist);
-        OnPropertyChanged(nameof(SelectionSummary));
         OnPropertyChanged(nameof(LinkedWaitlistSummary));
         OnPropertyChanged(nameof(DemandLines));
         RefreshCrystalReportGroups();
@@ -1053,6 +1138,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                             : $"{line.CustomerId} - {line.CustomerName}",
                         ShipQuantity = line.ShipQuantity,
                         PullDateDisplay = line.PullDateDisplay,
+                        OldestAddedDisplay = line.OldestAddedDisplay,
+                        QtySatisfied = line.QtySatisfied,
+                        FulfillmentStatusText = line.FulfillmentStatusDisplay,
+                        FulfillmentDetailText = BuildFulfillmentDetailText(line),
                         IsSelected = line.IsSelected,
                         StatusNoteText = GetStatusNoteText(line),
                     })
@@ -1089,6 +1178,11 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
     private static string GetStatusNoteText(Model_CustomerPullPack_DemandLine line)
     {
+        if (string.IsNullOrWhiteSpace(line.FulfillmentStatusDisplay) is false)
+        {
+            return line.FulfillmentStatusDisplay;
+        }
+
         if (line.ShortageFlag)
         {
             return "Shortage";
@@ -1105,6 +1199,19 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         }
 
         return "Normal";
+    }
+
+    private static string BuildFulfillmentDetailText(Model_CustomerPullPack_DemandLine line)
+    {
+        if (string.IsNullOrWhiteSpace(line.FulfillmentStatusDisplay))
+        {
+            return string.Empty;
+        }
+
+        var oldestAdded = string.IsNullOrWhiteSpace(line.OldestAddedDisplay)
+            ? "n/a"
+            : line.OldestAddedDisplay;
+        return $"Qty Satisfied: {line.QtySatisfiedDisplay} | Oldest Added: {oldestAdded}";
     }
 
     private bool HasActiveSelections()
@@ -1190,6 +1297,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             CustomerOrderId = source.CustomerOrderId,
             ParentPartId = source.ParentPartId,
             PullDate = source.PullDate,
+            OldestAdded = source.OldestAdded,
             QuantityToPack = source.QuantityToPack,
             ShipQuantity = source.ShipQuantity,
             FgOnHandQuantity = source.FgOnHandQuantity,
@@ -1197,6 +1305,8 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             ShortageFlag = source.ShortageFlag,
             LateOrderFlag = source.LateOrderFlag,
             RecheckIndicator = source.RecheckIndicator,
+            QtySatisfied = source.QtySatisfied,
+            FulfillmentStatusDisplay = source.FulfillmentStatusDisplay,
             HasLinkedWaitlist = source.HasLinkedWaitlist,
             LinkedWaitlistId = source.LinkedWaitlistId,
             WaitlistStateDisplay = source.WaitlistStateDisplay,

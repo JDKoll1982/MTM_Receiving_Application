@@ -68,8 +68,54 @@ public class Query_CustomerPullPackReportHandler
             return demandResult;
         }
 
+        ApplyFulfillmentAllocation(demandResult.Data);
         await ApplyCompletedLineRecheckIndicatorsAsync(demandResult.Data);
         return demandResult;
+    }
+
+    private static void ApplyFulfillmentAllocation(
+        IReadOnlyList<Model_CustomerPullPack_DemandLine> demandLines
+    )
+    {
+        foreach (
+            var group in demandLines.GroupBy(
+                static line => line.ParentPartId,
+                StringComparer.OrdinalIgnoreCase
+            )
+        )
+        {
+            var orderedLines = group
+                .OrderBy(static line => line.OldestAdded ?? line.PullDate)
+                .ThenBy(static line => line.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(static line => line.SourceLineKey, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            var remainingInventory = Math.Max(group.Max(static line => line.FgOnHandQuantity), 0m);
+
+            foreach (var line in orderedLines)
+            {
+                line.QtySatisfied = 0m;
+                line.FulfillmentStatusDisplay = string.Empty;
+
+                var requestedQuantity =
+                    line.ShipQuantity > 0 ? line.ShipQuantity : line.QuantityToPack;
+                if (requestedQuantity <= 0 || remainingInventory <= 0)
+                {
+                    continue;
+                }
+
+                if (remainingInventory >= requestedQuantity)
+                {
+                    line.QtySatisfied = requestedQuantity;
+                    line.FulfillmentStatusDisplay = "Complete";
+                    remainingInventory -= requestedQuantity;
+                    continue;
+                }
+
+                line.QtySatisfied = remainingInventory;
+                line.FulfillmentStatusDisplay = "Partially Filled";
+                remainingInventory = 0m;
+            }
+        }
     }
 
     private async Task ApplyCompletedLineRecheckIndicatorsAsync(

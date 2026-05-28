@@ -2,6 +2,7 @@ using System.Globalization;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Models;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
@@ -111,6 +112,131 @@ public sealed class ViewModel_Reporting_MainTests
         viewModel.CopyCcRecipientsCommand.CanExecute(null).Should().BeFalse();
     }
 
+    [Fact]
+    public void RowDisplayModeSettings_ShouldBeCollapsedByDefault()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.IsRowDisplayModeSettingsExpanded.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SelectedRowDisplayModeOption_ShouldTrackUnderlyingEnumSelection()
+    {
+        var viewModel = CreateViewModel();
+        var option = viewModel.RowDisplayModeOptions.Single(item =>
+            item.Value == Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay
+        );
+
+        viewModel.SelectedRowDisplayModeOption = option;
+
+        viewModel
+            .SelectedRowDisplayMode.Should()
+            .Be(Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay);
+        viewModel.SelectedRowDisplayModeOption.Should().BeSameAs(option);
+    }
+
+    [Fact]
+    public void SelectedRowDisplayModeExplanation_ShouldDescribeCurrentSelection()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.SelectedRowDisplayMode =
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersEntireDateRange;
+
+        viewModel
+            .SelectedRowDisplayModeExplanation.Should()
+            .Be("Combines rows by part number and lot across the full selected date range.");
+    }
+
+    [Fact]
+    public void CreateDetailColumnOptions_ForReceiving_ShouldRemoveRequestedColumnsAndDefaultRemainingOn()
+    {
+        var columns = InvokeCreateDetailColumnOptions(CreateSection("Receiving"));
+
+        columns
+            .Select(column => column.Header)
+            .Should()
+            .NotContain([
+                "PO / Line",
+                "PO Line #",
+                "Part / Dunnage",
+                "Part Description",
+                "Raw Quantity",
+                "Weight Lbs",
+                "Created At",
+                "Transaction Date",
+                "Created By",
+                "User ID",
+                "Vendor",
+                "Load #",
+                "Label #",
+                "Units Per Skid",
+                "Packages/Load",
+                "Package Type",
+                "Weight/Package",
+                "PO Status",
+                "PO Due Date",
+                "Qty Ordered",
+                "UOM",
+                "Remaining Qty",
+                "Non-PO",
+                "Quality Hold Required",
+                "Quality Hold Ack",
+                "Part Skid Total",
+                "Source Module",
+                "ID",
+            ]);
+        columns.Should().OnlyContain(column => column.IsIncluded);
+    }
+
+    [Fact]
+    public void CreateDetailColumnOptions_ForDunnage_ShouldRemoveRequestedColumnsAndDefaultRemainingOn()
+    {
+        var columns = InvokeCreateDetailColumnOptions(CreateSection("Dunnage"));
+
+        columns
+            .Select(column => column.Header)
+            .Should()
+            .NotContain([
+                "Part / Dunnage",
+                "Raw Quantity",
+                "Created At",
+                "Created By",
+                "Non-PO",
+                "Quality Hold Required",
+                "Quality Hold Ack",
+                "Source Module",
+                "ID",
+            ]);
+        columns.Should().OnlyContain(column => column.IsIncluded);
+    }
+
+    [Fact]
+    public void CreateDetailColumnOptions_ForVolvo_ShouldRemoveRequestedColumnsAndDefaultRemainingOn()
+    {
+        var columns = InvokeCreateDetailColumnOptions(CreateSection("Volvo"));
+
+        columns
+            .Select(column => column.Header)
+            .Should()
+            .NotContain([
+                "PO / Line",
+                "Part / Dunnage",
+                "Raw Quantity",
+                "Created At",
+                "Shipment #",
+                "Units Per Skid",
+                "Non-PO",
+                "Quality Hold Required",
+                "Quality Hold Ack",
+                "Qty/Skid",
+                "Source Module",
+                "ID",
+            ]);
+        columns.Should().OnlyContain(column => column.IsIncluded);
+    }
+
     private static ViewModel_Reporting_Main CreateViewModel()
     {
         return new ViewModel_Reporting_Main(
@@ -121,5 +247,77 @@ public sealed class ViewModel_Reporting_MainTests
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
         );
+    }
+
+    private static List<Model_ReportingPreviewColumnOption> InvokeCreateDetailColumnOptions(
+        Model_ReportSection section
+    )
+    {
+        var method = typeof(ViewModel_Reporting_Main).GetMethod(
+            "CreateDetailColumnOptions",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+
+        var result = method!.Invoke(null, [section]);
+        result.Should().BeOfType<List<Model_ReportingPreviewColumnOption>>();
+        return (List<Model_ReportingPreviewColumnOption>)result!;
+    }
+
+    private static Model_ReportSection CreateSection(string moduleName)
+    {
+        return new Model_ReportSection
+        {
+            ModuleName = moduleName,
+            Rows =
+            [
+                new Model_ReportRow
+                {
+                    SourceModule = moduleName,
+                    Id = "ROW-1",
+                    PONumber = "123456",
+                    POLineNumber = "10",
+                    PartNumber = "PART-1",
+                    PartDescription = "Part Description",
+                    Quantity = 5m,
+                    WeightLbs = 12m,
+                    HeatLotNumber = "LOT-1",
+                    CreatedDate = new DateTime(2026, 3, 20),
+                    CreatedAt = new DateTime(2026, 3, 20, 8, 30, 0),
+                    TransactionDate = new DateTime(2026, 3, 21),
+                    EmployeeNumber = "1001",
+                    CreatedByUsername = "tester",
+                    UserId = "user-1",
+                    DunnageType = "Rack",
+                    SpecsCombined = "Spec-A",
+                    ShipmentNumber = 22,
+                    ReceiverNumber = "REC-99",
+                    Status = "Open",
+                    PartCount = 3,
+                    Location = "A-01",
+                    VendorName = "Vendor A",
+                    Notes = "Notes",
+                    LoadNumber = 7,
+                    LabelNumber = 8,
+                    PackagesPerLoad = 9,
+                    PackageTypeName = "Box",
+                    WeightPerPackage = 1.5m,
+                    PoStatus = "Due",
+                    PoDueDate = new DateTime(2026, 3, 25),
+                    QtyOrdered = 11m,
+                    UnitOfMeasure = "EA",
+                    RemainingQuantity = 4,
+                    IsNonPOItem = true,
+                    IsQualityHoldRequired = true,
+                    IsQualityHoldAcknowledged = true,
+                    QualityHoldRestrictionType = "Restricted",
+                    PartSkidTotal = 6,
+                    CoilsOnSkid = 2,
+                    QuantityPerSkid = 10,
+                    ReceivedSkidCount = 1,
+                },
+            ],
+        };
     }
 }

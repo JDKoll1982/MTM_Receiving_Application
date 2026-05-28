@@ -36,10 +36,10 @@ public sealed class Model_ReportingPreviewModuleCardTests
 
         card.PreviewRows.Should().HaveCount(2);
         card.PreviewRows[0].Cells[0].Value.Should().Be("PART-A");
-        card.PreviewRows[0].Cells[1].Value.Should().BeEmpty();
-        card.PreviewRows[0].Cells[2].Value.Should().BeEmpty();
+        card.PreviewRows[0].Cells[1].Value.Should().Be("Multiple Lots");
+        card.PreviewRows[0].Cells[2].Value.Should().Be("3/20/2026 - 3/21/2026");
         card.PreviewRows[0].Cells[3].Value.Should().Be("3");
-        card.PreviewRows[0].Cells[4].Value.Should().BeEmpty();
+        card.PreviewRows[0].Cells[4].Value.Should().Be("Multiple POs");
         card.DetailSectionTitle.Should()
             .Be("Combined Activity - Unique Part Numbers (Entire Date Range)");
     }
@@ -178,6 +178,121 @@ public sealed class Model_ReportingPreviewModuleCardTests
         card.PreviewRows[0].Cells[1].Value.Should().Be("LOT-1");
         card.PreviewRows[0].Cells[2].Value.Should().Be("3/20/2026");
         card.PreviewRows[0].Cells[3].Value.Should().Be("3");
+    }
+
+    [Fact]
+    public void RefreshPreviewRows_GroupedTextFieldWithDifferentValues_ShouldRenderExplicitPlaceholder()
+    {
+        var firstRow = CreateReportRow("PART-A", "LOT-1", new DateTime(2026, 3, 20), 1m, "PO-1001");
+        firstRow.PONumber = "PO-1001";
+
+        var secondRow = CreateReportRow(
+            "PART-A",
+            "LOT-2",
+            new DateTime(2026, 3, 21),
+            2m,
+            "PO-1002"
+        );
+        secondRow.PONumber = "PO-1002";
+
+        var card = CreateReceivingPreviewCard(firstRow, secondRow);
+        card.RowDisplayMode = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+
+        GetPreviewCellValue(card, 0, nameof(Model_ReportRow.PONumber)).Should().Be("Multiple POs");
+    }
+
+    [Fact]
+    public void RefreshPreviewRows_GroupedDateFieldWithDifferentValues_ShouldRenderDateRange()
+    {
+        var firstRow = CreateReportRow("PART-A", "LOT-1", new DateTime(2026, 3, 20), 1m, "PO-1001");
+        firstRow.TransactionDate = new DateTime(2026, 3, 21);
+
+        var secondRow = CreateReportRow(
+            "PART-A",
+            "LOT-2",
+            new DateTime(2026, 3, 21),
+            2m,
+            "PO-1002"
+        );
+        secondRow.TransactionDate = new DateTime(2026, 3, 22);
+
+        var card = CreateReceivingPreviewCard(firstRow, secondRow);
+        card.InitializeColumns([
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.PartNumber),
+                Header = "Part Number",
+                Width = 170d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayTransactionDate),
+                Header = "Transaction Date",
+                Width = 140d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayQuantity),
+                Header = "Quantity",
+                Width = 110d,
+                IsNumeric = true,
+                IsIncluded = true,
+            },
+        ]);
+        card.RowDisplayMode = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+
+        GetPreviewCellValue(card, 0, nameof(Model_ReportRow.DisplayTransactionDate))
+            .Should()
+            .Be("3/21/2026 - 3/22/2026");
+    }
+
+    [Fact]
+    public void RefreshPreviewRows_GroupedReceiverValues_ShouldRenderExplicitReceiverPlaceholder()
+    {
+        var firstRow = CreateReportRow("PART-A", "LOT-1", new DateTime(2026, 3, 20), 1m, "PO-1001");
+        firstRow.ReceiverNumber = "RCV-1";
+
+        var secondRow = CreateReportRow(
+            "PART-A",
+            "LOT-2",
+            new DateTime(2026, 3, 21),
+            2m,
+            "PO-1002"
+        );
+        secondRow.ReceiverNumber = "RCV-2";
+
+        var card = CreateReceivingPreviewCard(firstRow, secondRow);
+        card.InitializeColumns([
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.PartNumber),
+                Header = "Part Number",
+                Width = 170d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.ReceiverNumber),
+                Header = "Receiver",
+                Width = 140d,
+                IsIncluded = true,
+            },
+            new Model_ReportingPreviewColumnOption
+            {
+                Key = nameof(Model_ReportRow.DisplayQuantity),
+                Header = "Quantity",
+                Width = 110d,
+                IsNumeric = true,
+                IsIncluded = true,
+            },
+        ]);
+        card.RowDisplayMode = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+
+        GetPreviewCellValue(card, 0, nameof(Model_ReportRow.ReceiverNumber))
+            .Should()
+            .Be("Multiple Receivers");
     }
 
     [Fact]

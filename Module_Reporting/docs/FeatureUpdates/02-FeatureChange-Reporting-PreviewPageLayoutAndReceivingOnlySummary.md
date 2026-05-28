@@ -64,11 +64,11 @@ Volvo render only their detail sections.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Restrict summary rendering to Receiving.
-- [ ] Remove Dunnage summary-table rendering.
-- [ ] Remove Volvo summary-table rendering.
-- [ ] Preserve detail-table rendering for all included modules.
-- [ ] Update tests and formatting expectations to match Receiving-only summary output.
+- [x] Restrict summary rendering to Receiving.
+- [x] Remove Dunnage summary-table rendering.
+- [x] Remove Volvo summary-table rendering.
+- [x] Preserve detail-table rendering for all included modules.
+- [x] Update tests and formatting expectations to match Receiving-only summary output.
 </task_checklist>
 
 <validation>

@@ -2,7 +2,7 @@
   "id": "shiprec-tools-catalog",
   "module": "Module_ShipRec_Tools",
   "name": "ShipRec Tool Catalog",
-  "summary": "Ship/Rec tool discovery and launch surface that routes users into registered module tools, including the delivered Customer Pull n' Pack report, waitlist queue, defaults, and print-preview workflow surfaces.",
+  "summary": "Ship/Rec tool discovery and launch surface that routes users into registered module tools, including the delivered Customer Pull n' Pack report with multi-line selection, sub-part waitlist batching, fulfillment projection, dedicated queue detail review, defaults, and print-preview workflow surfaces.",
   "owner": "Shipping / Receiving Team",
   "relatedFiles": [
     "Module_ShipRec_Tools/Enums/Enum_ToolCategory.cs",
@@ -44,8 +44,9 @@
       "Tool discovery",
       "Category grouping",
       "Tool-card selection",
-      "Customer Pull n' Pack report review",
-      "Customer Pull n' Pack waitlist queue",
+      "Customer Pull n' Pack report review and fulfillment projection",
+      "Customer Pull n' Pack sub-part waitlist creation",
+      "Customer Pull n' Pack waitlist queue and location-detail review",
       "Customer Pull n' Pack defaults",
       "Customer Pull n' Pack print preview"
     ],
@@ -83,9 +84,10 @@
       "Tool description",
       "Tool icon",
       "Customer Pull n' Pack filter header actions",
-      "Customer Pull n' Pack grouped demand rows",
+      "Customer Pull n' Pack grouped demand rows with fulfillment detail",
       "SUB PARTS ON HAND row selection",
-      "Waitlist queue list and detail pane",
+      "Waitlist queue list with sub-part, location count, and request time",
+      "Waitlist current-location detail table",
       "Defaults editor",
       "Floor copy preview",
       "Pull list preview"
@@ -93,9 +95,9 @@
     "userActions": [
       "Scan available tools by category",
       "Choose the correct tool card quickly",
-      "Review grouped customer demand",
-      "Create or update waitlist work from report selections",
-      "Open and work the dedicated queue",
+      "Review grouped customer demand and fulfillment status",
+      "Create or update waitlist work by selected sub-part groups",
+      "Open and work the dedicated queue with current location detail",
       "Save defaults",
       "Open print previews"
     ],
@@ -105,7 +107,7 @@
       "Keep whole-collection category reloads updating the Has* visibility flags correctly",
       "Keep Customer Pull n' Pack report actions visible while the filter body is collapsed",
       "Keep the main window resize/restore behavior tied to entering and leaving Customer Pull n' Pack",
-      "Keep report-line and SUB PARTS ON HAND row selection tied to the report-side waitlist workflow",
+      "Keep report-line multi-selection and SUB PARTS ON HAND row selection tied to the report-side waitlist workflow",
       "Keep queue ownership and explicit unassign flows intact"
     ],
     "acceptanceCriteria": [
@@ -113,7 +115,7 @@
       "The Material Availability Board appears under the Analysis Tools section",
       "Selecting a card still raises the expected tool key",
       "Customer Pull n' Pack launches the report surface with the reviewed filter and host behavior",
-      "The waitlist queue can be opened from the Customer Pull n' Pack workflow",
+      "The waitlist queue can be opened from the Customer Pull n' Pack workflow and shows current location detail for the selected sub-part row",
       "Defaults and print preview surfaces can be opened from the delivered workflow"
     ],
     "validationHints": [
@@ -122,6 +124,8 @@
       "Confirm category sections still refresh correctly after whole-collection replacement",
       "Confirm card selection still routes to the intended tool",
       "Confirm the Customer Pull n' Pack report starts with the filter body collapsed and the header actions visible",
+      "Confirm multi-line report selection persists in the selected-lines state and batches waitlist work by unique sub-part",
+      "Confirm the queue shows sub-part, location count, request time, and a selectable current-location detail table",
       "Confirm the shell widens for Customer Pull n' Pack and restores on exit",
       "Confirm queue, defaults, and print preview entry points are reachable from the delivered workflow"
     ]

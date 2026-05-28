@@ -215,7 +215,12 @@ public class Service_Reporting : IService_Reporting
                     $"{section.ModuleName} Report for {GetDateRangeText(section.Title)}"
                 );
 
-                if (summaryTable is not null)
+                if (
+                    previewModuleCard.ModuleName.Equals(
+                        "Receiving",
+                        StringComparison.OrdinalIgnoreCase
+                    ) && summaryTable is not null
+                )
                 {
                     html.AppendLine(
                         "<div style='font-size: 11pt; font-weight: 700; color: #1f2937; margin: 0 0 8px 0;'>Summary</div>"

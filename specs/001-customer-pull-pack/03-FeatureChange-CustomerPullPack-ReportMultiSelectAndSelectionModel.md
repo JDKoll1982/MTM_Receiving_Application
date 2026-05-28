@@ -77,13 +77,13 @@ location behavior and keeping the slice UI-ready for later waitlist batch creati
 </implementation_steps>
 
 <task_checklist>
-- [ ] Convert the report request-line control to true multi-select.
-- [ ] Change the request-line selection event payload from one key to a full selected-key set.
-- [ ] Add selected-lines state to the report viewmodel.
-- [ ] Remove or downgrade single selected-line assumptions where they only existed to support single-select UI.
-- [ ] Update selection summary behavior to reflect selected-line count.
-- [ ] Keep grouped location selection UI functional and UI-ready for the later waitlist slice.
-- [ ] Update or replace single-select report tests with multi-select expectations.
+- [x] Convert the report request-line control to true multi-select.
+- [x] Change the request-line selection event payload from one key to a full selected-key set.
+- [x] Add selected-lines state to the report viewmodel.
+- [x] Remove or downgrade single selected-line assumptions where they only existed to support single-select UI.
+- [x] Update selection summary behavior to reflect selected-line count.
+- [x] Keep grouped location selection UI functional and UI-ready for the later waitlist slice.
+- [x] Update or replace single-select report tests with multi-select expectations.
 </task_checklist>
 
 <validation>

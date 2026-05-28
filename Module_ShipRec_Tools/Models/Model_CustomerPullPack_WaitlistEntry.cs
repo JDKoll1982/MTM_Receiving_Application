@@ -23,6 +23,20 @@ public class Model_CustomerPullPack_WaitlistEntry
 
     public List<string> SelectedLocations { get; set; } = [];
 
+    public int SelectedLocationCount => SelectedLocations.Count;
+
+    public string SelectedLocationCountDisplay =>
+        $"{SelectedLocationCount} location{(SelectedLocationCount == 1 ? string.Empty : "s")}";
+
+    public string PrimarySelectedLocationId => SelectedLocations.FirstOrDefault() ?? string.Empty;
+
+    public string SubPartNumberDisplay => ParentPartId;
+
+    public string RequestTimeDisplay =>
+        RequestTimestamp == default
+            ? string.Empty
+            : RequestTimestamp.ToLocalTime().ToString("M/d/yyyy h:mm tt");
+
     public string SelectedLocationsDisplay =>
         SelectedLocations.Count == 0
             ? "No locations selected"

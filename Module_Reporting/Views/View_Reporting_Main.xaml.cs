@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
+using MTM_Receiving_Application.Module_Reporting.Views;
 
 namespace MTM_Receiving_Application.Module_Reporting.Views;
 
@@ -14,12 +15,29 @@ public sealed partial class View_Reporting_Main : Page
         InitializeComponent();
         DataContext = ViewModel;
         ViewModel.PreviewRequested += OnPreviewRequested;
+        Unloaded += OnUnloaded;
     }
 
     private async void OnPreviewRequested(object? sender, System.EventArgs e)
     {
-        var dialog = new View_Reporting_PreviewDialog(ViewModel) { XamlRoot = XamlRoot };
+        _ = sender;
+        _ = e;
 
-        await dialog.ShowAsync();
+        if (App.MainWindow is not MainWindow mainWindow)
+        {
+            return;
+        }
+
+        var previewPage = App.GetService<View_Reporting_PreviewPage>();
+        mainWindow.SetContentPage(previewPage, string.Empty);
+        await System.Threading.Tasks.Task.CompletedTask;
+    }
+
+    private void OnUnloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+        ViewModel.PreviewRequested -= OnPreviewRequested;
+        Unloaded -= OnUnloaded;
     }
 }

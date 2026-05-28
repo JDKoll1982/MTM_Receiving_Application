@@ -81,12 +81,12 @@ cell value must be validated across the grouped source rows so the UI and copied
 </implementation_steps>
 
 <task_checklist>
-- [ ] Validate grouped values before emitting combined-row cells.
-- [ ] Emit identical values only when all grouped values match.
-- [ ] Emit ranges for meaningful date/date-time differences.
-- [ ] Emit explicit mixed-value placeholder text for differing non-date values.
-- [ ] Apply the rules consistently to Receiving, Dunnage, and Volvo.
-- [ ] Keep preview and copied output aligned.
+- [x] Validate grouped values before emitting combined-row cells.
+- [x] Emit identical values only when all grouped values match.
+- [x] Emit ranges for meaningful date/date-time differences.
+- [x] Emit explicit mixed-value placeholder text for differing non-date values.
+- [x] Apply the rules consistently to Receiving, Dunnage, and Volvo.
+- [x] Keep preview and copied output aligned.
 </task_checklist>
 
 <validation>

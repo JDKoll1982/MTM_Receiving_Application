@@ -92,6 +92,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private bool _isOptionsOpen;
 
     [ObservableProperty]
+    private bool _isRowDisplayModeSettingsExpanded;
+
+    [ObservableProperty]
     private Model_ReportingPreviewModuleCard? _receivingPreviewModuleCard;
 
     [ObservableProperty]
@@ -126,6 +129,32 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         ThisWeekDateRangePreset,
     ];
 
+    public IReadOnlyList<Model_ReportingPreviewRowDisplayModeOption> RowDisplayModeOptions { get; } =
+    [
+        new() { Value = Enum_ReportingPreviewRowDisplayMode.RawRows, Label = "Show Every Row" },
+        new()
+        {
+            Value = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange,
+            Label = "Unique Part Numbers - Entire Date Range",
+        },
+        new()
+        {
+            Value =
+                Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersEntireDateRange,
+            Label = "Unique Part Numbers And Lot Numbers - Entire Date Range",
+        },
+        new()
+        {
+            Value = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay,
+            Label = "Unique Part Numbers - Per Day",
+        },
+        new()
+        {
+            Value = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersPerDay,
+            Label = "Unique Part Numbers And Lot Numbers - Per Day",
+        },
+    ];
+
     public bool HasReceivingPreviewModuleCard => ReceivingPreviewModuleCard is not null;
 
     public bool HasDunnagePreviewModuleCard => DunnagePreviewModuleCard is not null;
@@ -138,6 +167,37 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     public bool HasDunnageIncludedPreviewModuleCard => DunnagePreviewModuleCard?.IsIncluded == true;
 
     public bool HasVolvoIncludedPreviewModuleCard => VolvoPreviewModuleCard?.IsIncluded == true;
+
+    public Model_ReportingPreviewRowDisplayModeOption? SelectedRowDisplayModeOption
+    {
+        get =>
+            RowDisplayModeOptions.FirstOrDefault(option => option.Value == SelectedRowDisplayMode);
+        set
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            SelectedRowDisplayMode = value.Value;
+        }
+    }
+
+    public string SelectedRowDisplayModeExplanation =>
+        SelectedRowDisplayMode switch
+        {
+            Enum_ReportingPreviewRowDisplayMode.RawRows =>
+                "Keeps the current raw transaction-row view for each selected module.",
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange =>
+                "Combines rows by part number across the full selected date range.",
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersEntireDateRange =>
+                "Combines rows by part number and lot across the full selected date range.",
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersPerDay =>
+                "Combines rows by part number inside each created-date bucket.",
+            Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersAndLotNumbersPerDay =>
+                "Combines rows by part number and lot inside each created-date bucket.",
+            _ => string.Empty,
+        };
 
     public bool IsRawRowsMode
     {
@@ -539,7 +599,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Dunnage",
                 "Detailed dunnage activity captured for the selected date range.",
-                () => _reportingService.GetDunnageHistoryAsync(
+                () =>
+                    _reportingService.GetDunnageHistoryAsync(
                         (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
                         (EndDate ?? DateTimeOffset.Now).DateTime
                     )
@@ -551,7 +612,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             yield return new SelectedModuleRequest(
                 "Volvo",
                 "Detailed Volvo activity captured for the selected date range.",
-                () => _reportingService.GetVolvoHistoryAsync(
+                () =>
+                    _reportingService.GetVolvoHistoryAsync(
                         (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
                         (EndDate ?? DateTimeOffset.Now).DateTime
                     )
@@ -825,79 +887,84 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.Id), "ID", 150d));
 
         var sectionRows = section.Rows.ToList();
-        var preferredKeys = GetPreferredPreviewColumnKeys(section.ModuleName);
+        var removedKeys = GetRemovedPreviewColumnKeys(section.ModuleName);
 
         var availableColumns = candidateColumns
             .Where(column => SectionHasDataForColumn(sectionRows, column.Key))
+            .Where(column => !removedKeys.Contains(column.Key))
             .ToList();
 
         foreach (var availableColumn in availableColumns)
         {
-            availableColumn.IsIncluded = preferredKeys.Contains(availableColumn.Key);
-        }
-
-        if (availableColumns.All(column => !column.IsIncluded))
-        {
-            foreach (var availableColumn in availableColumns.Take(6))
-            {
-                availableColumn.IsIncluded = true;
-            }
+            availableColumn.IsIncluded = true;
         }
 
         return availableColumns;
     }
 
-    private static HashSet<string> GetPreferredPreviewColumnKeys(string moduleName)
+    private static HashSet<string> GetRemovedPreviewColumnKeys(string moduleName)
     {
         return moduleName switch
         {
             "Receiving" => new HashSet<string>(StringComparer.Ordinal)
             {
                 nameof(Model_ReportRow.DisplayPo),
+                nameof(Model_ReportRow.POLineNumber),
                 nameof(Model_ReportRow.DisplayPartOrDunnage),
-                nameof(Model_ReportRow.DisplayQuantity),
                 nameof(Model_ReportRow.DisplayCreatedAt),
-                nameof(Model_ReportRow.EmployeeNumber),
-                nameof(Model_ReportRow.DisplayLocation),
-                nameof(Model_ReportRow.DisplayLoadsOrSkids),
+                nameof(Model_ReportRow.DisplayTransactionDate),
+                nameof(Model_ReportRow.PartDescription),
+                nameof(Model_ReportRow.Quantity),
+                nameof(Model_ReportRow.WeightLbs),
+                nameof(Model_ReportRow.CreatedByUsername),
+                nameof(Model_ReportRow.UserId),
+                nameof(Model_ReportRow.VendorName),
+                nameof(Model_ReportRow.LoadNumber),
+                nameof(Model_ReportRow.LabelNumber),
                 nameof(Model_ReportRow.DisplayUnitsPerSkid),
-                nameof(Model_ReportRow.DisplayNotes),
+                nameof(Model_ReportRow.PackagesPerLoad),
+                nameof(Model_ReportRow.PackageTypeName),
+                nameof(Model_ReportRow.WeightPerPackage),
+                nameof(Model_ReportRow.PoStatus),
+                nameof(Model_ReportRow.DisplayPoDueDate),
+                nameof(Model_ReportRow.QtyOrdered),
+                nameof(Model_ReportRow.UnitOfMeasure),
+                nameof(Model_ReportRow.RemainingQuantity),
+                nameof(Model_ReportRow.IsNonPOItem),
+                nameof(Model_ReportRow.IsQualityHoldRequired),
+                nameof(Model_ReportRow.IsQualityHoldAcknowledged),
+                nameof(Model_ReportRow.PartSkidTotal),
+                nameof(Model_ReportRow.SourceModule),
+                nameof(Model_ReportRow.Id),
             },
             "Dunnage" => new HashSet<string>(StringComparer.Ordinal)
             {
-                nameof(Model_ReportRow.PONumber),
                 nameof(Model_ReportRow.DisplayPartOrDunnage),
-                nameof(Model_ReportRow.DisplayQuantity),
-                nameof(Model_ReportRow.CreatedDate),
-                nameof(Model_ReportRow.EmployeeNumber),
+                nameof(Model_ReportRow.Quantity),
+                nameof(Model_ReportRow.DisplayCreatedAt),
                 nameof(Model_ReportRow.CreatedByUsername),
-                nameof(Model_ReportRow.DisplayLocation),
-                nameof(Model_ReportRow.DisplayNotes),
+                nameof(Model_ReportRow.IsNonPOItem),
+                nameof(Model_ReportRow.IsQualityHoldRequired),
+                nameof(Model_ReportRow.IsQualityHoldAcknowledged),
+                nameof(Model_ReportRow.SourceModule),
+                nameof(Model_ReportRow.Id),
             },
             "Volvo" => new HashSet<string>(StringComparer.Ordinal)
             {
-                nameof(Model_ReportRow.PONumber),
-                nameof(Model_ReportRow.PartNumber),
-                nameof(Model_ReportRow.DisplayQuantity),
-                nameof(Model_ReportRow.CreatedDate),
-                nameof(Model_ReportRow.EmployeeNumber),
-                nameof(Model_ReportRow.ShipmentNumber),
-                nameof(Model_ReportRow.ReceiverNumber),
-                nameof(Model_ReportRow.Status),
-                nameof(Model_ReportRow.PartCount),
-                nameof(Model_ReportRow.QuantityPerSkid),
-                nameof(Model_ReportRow.ReceivedSkidCount),
-                nameof(Model_ReportRow.DisplayLocation),
-                nameof(Model_ReportRow.DisplayNotes),
-            },
-            _ => new HashSet<string>(StringComparer.Ordinal)
-            {
-                nameof(Model_ReportRow.CreatedDate),
+                nameof(Model_ReportRow.DisplayPo),
                 nameof(Model_ReportRow.DisplayPartOrDunnage),
-                nameof(Model_ReportRow.DisplayQuantity),
-                nameof(Model_ReportRow.DisplayLocation),
-                nameof(Model_ReportRow.DisplayNotes),
+                nameof(Model_ReportRow.Quantity),
+                nameof(Model_ReportRow.DisplayCreatedAt),
+                nameof(Model_ReportRow.ShipmentNumber),
+                nameof(Model_ReportRow.DisplayUnitsPerSkid),
+                nameof(Model_ReportRow.IsNonPOItem),
+                nameof(Model_ReportRow.IsQualityHoldRequired),
+                nameof(Model_ReportRow.IsQualityHoldAcknowledged),
+                nameof(Model_ReportRow.QuantityPerSkid),
+                nameof(Model_ReportRow.SourceModule),
+                nameof(Model_ReportRow.Id),
             },
+            _ => new HashSet<string>(StringComparer.Ordinal),
         };
     }
 
@@ -929,9 +996,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     {
         var start = StartDate ?? DateTimeOffset.Now.AddDays(-7);
         var end = EndDate ?? DateTimeOffset.Now;
-        return start.Date == end.Date
-            ? $"{start:M/d/yyyy}"
-            : $"{start:M/d/yyyy} - {end:M/d/yyyy}";
+        return start.Date == end.Date ? $"{start:M/d/yyyy}" : $"{start:M/d/yyyy} - {end:M/d/yyyy}";
     }
 
     private void OnPreviewModuleCardPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -1322,6 +1387,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     partial void OnSelectedRowDisplayModeChanged(Enum_ReportingPreviewRowDisplayMode value)
     {
         ApplySelectedRowDisplayModeToPreviewCards();
+        OnPropertyChanged(nameof(SelectedRowDisplayModeOption));
+        OnPropertyChanged(nameof(SelectedRowDisplayModeExplanation));
         OnPropertyChanged(nameof(IsRawRowsMode));
         OnPropertyChanged(nameof(IsUniquePartNumbersEntireDateRangeMode));
         OnPropertyChanged(nameof(IsUniquePartNumbersAndLotNumbersEntireDateRangeMode));

@@ -135,8 +135,6 @@
     <None Include=".github\**\*.json" />
     <None Include=".github\**\*.md" />
     <None Include=".github\**\*.sql" />
-    <!-- Assets -->
-    <None Include="Assets\app-icon.svg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Icons\open-label-dunnage.png" />

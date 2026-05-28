@@ -83,6 +83,16 @@ public sealed class Model_CustomerPullPack_CrystalRequestLine
 
     public string PullDateDisplay { get; set; } = string.Empty;
 
+    public string OldestAddedDisplay { get; set; } = string.Empty;
+
+    public decimal QtySatisfied { get; set; }
+
+    public string QtySatisfiedDisplay => QtySatisfied.ToString("0.##");
+
+    public string FulfillmentStatusText { get; set; } = string.Empty;
+
+    public string FulfillmentDetailText { get; set; } = string.Empty;
+
     public bool IsSelected { get; set; }
 
     public string StatusNoteText { get; set; } = string.Empty;
@@ -94,9 +104,13 @@ public sealed class Model_CustomerPullPack_CrystalRequestLine
 
     public bool HasStatusNote => string.IsNullOrWhiteSpace(StatusNoteText) is false;
 
+    public bool HasFulfillmentDetail => string.IsNullOrWhiteSpace(FulfillmentDetailText) is false;
+
     public Brush StatusNoteBackgroundBrush =>
         StatusNoteText switch
         {
+            "Complete" => new SolidColorBrush(ColorHelper.FromArgb(255, 198, 239, 206)),
+            "Partially Filled" => new SolidColorBrush(ColorHelper.FromArgb(255, 255, 235, 156)),
             "Shortage" => new SolidColorBrush(Colors.IndianRed),
             "Late Order" => new SolidColorBrush(ColorHelper.FromArgb(255, 244, 223, 125)),
             "Waitlist" => new SolidColorBrush(ColorHelper.FromArgb(255, 223, 232, 242)),
@@ -107,6 +121,7 @@ public sealed class Model_CustomerPullPack_CrystalRequestLine
         StatusNoteText switch
         {
             "Shortage" => new SolidColorBrush(Colors.White),
+            "Partially Filled" => new SolidColorBrush(ColorHelper.FromArgb(255, 125, 88, 0)),
             _ => new SolidColorBrush(ColorHelper.FromArgb(255, 47, 88, 128)),
         };
 }

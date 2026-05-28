@@ -101,11 +101,13 @@
                 <ListView
                     ItemsSource="{x:Bind ViewModel.QueueItems, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedQueueItem, Mode=TwoWay}"
+                    SelectionChanged="OnQueueListSelectionChanged"
                     SelectionMode="Single">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="shiprecModels:Model_CustomerPullPack_WaitlistEntry">
                             <Grid Padding="10,8" RowSpacing="4">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
@@ -117,7 +119,7 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind CustomerOrderId, Mode=OneWay}" />
+                                        Text="{x:Bind SubPartNumberDisplay, Mode=OneWay}" />
                                     <TextBlock Grid.Column="1" Text="{x:Bind CurrentStatus, Mode=OneWay}" />
                                 </Grid>
                                 <Grid Grid.Row="1" ColumnSpacing="8">
@@ -128,11 +130,25 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind ParentPartId, Mode=OneWay}" />
+                                        Text="{x:Bind CustomerOrderId, Mode=OneWay}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind RequestTimeDisplay, Mode=OneWay}" />
+                                </Grid>
+                                <Grid Grid.Row="2" ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Text="{x:Bind CurrentOwnerDisplayName, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind SelectedLocationCountDisplay, Mode=OneWay}" />
                                 </Grid>
                             </Grid>
                         </DataTemplate>
@@ -167,19 +183,44 @@
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.SelectedQueueItem.CustomerId, Mode=OneWay}" />
                                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Order" />
                                     <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.CustomerOrderId, Mode=OneWay}" />
-                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Parent Part" />
-                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.ParentPartId, Mode=OneWay}" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Sub-Part" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.SubPartNumberDisplay, Mode=OneWay}" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Request Time" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.RequestTimeDisplay, Mode=OneWay}" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Spacing="4">
                                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Owner" />
                                     <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.CurrentOwnerDisplayName, Mode=OneWay}" />
-                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Selected Locations" />
-                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.SelectedLocationsDisplay, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Total Locations" />
+                                    <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.SelectedLocationCount, Mode=OneWay}" />
                                     <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Requester Note" />
                                     <TextBlock Text="{x:Bind ViewModel.SelectedQueueItem.RequesterContextNote, Mode=OneWay}" TextWrapping="WrapWholeWords" />
                                 </StackPanel>
                             </Grid>
+
+                            <StackPanel Spacing="6">
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Current Locations" />
+                                <ListView
+                                    ItemsSource="{x:Bind ViewModel.SelectedQueueLocationDetails, Mode=OneWay}"
+                                    SelectedItem="{x:Bind ViewModel.SelectedQueueLocationDetail, Mode=TwoWay}"
+                                    SelectionMode="Single">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="shiprecModels:Model_CustomerPullPack_QueueLocationDetail">
+                                            <Grid Padding="8,4" ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{x:Bind LocationId, Mode=OneWay}" />
+                                                <TextBlock Grid.Column="1" Text="{x:Bind ParentPartId, Mode=OneWay}" />
+                                                <TextBlock Grid.Column="2" Text="{x:Bind OnHandQuantity, Mode=OneWay}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
 
                             <ComboBox
                                 Header="New Status"

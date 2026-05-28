@@ -145,26 +145,30 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
             is not null
                 and not Enum_CustomerPullPackWaitlistStatus.Requested;
         return _selectedLines
-            .Select(selectedLine =>
+            .GroupBy(static line => line.ParentPartId, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
             {
-                var selectedLocations = selectedLine
-                    .LocationOptions.Where(static option => option.Selected)
+                var groupLines = group.ToList();
+                var firstLine = groupLines[0];
+                var selectedLocations = groupLines
+                    .SelectMany(static line => line.LocationOptions)
+                    .Where(static option => option.Selected)
                     .Select(static option => option.LocationId)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
                 return new Model_CustomerPullPack_WaitlistEntry
                 {
-                    WaitlistId = _existingEntry?.WaitlistId ?? selectedLine.LinkedWaitlistId,
-                    SourceLineKey = _existingEntry?.SourceLineKey ?? selectedLine.SourceLineKey,
-                    CustomerId = _existingEntry?.CustomerId ?? selectedLine.CustomerId,
-                    CustomerName = _existingEntry?.CustomerName ?? selectedLine.CustomerName,
-                    CustomerOrderId =
-                        _existingEntry?.CustomerOrderId ?? selectedLine.CustomerOrderId,
-                    ParentPartId = _existingEntry?.ParentPartId ?? selectedLine.ParentPartId,
+                    WaitlistId = _existingEntry?.WaitlistId ?? firstLine.LinkedWaitlistId,
+                    SourceLineKey =
+                        _existingEntry?.SourceLineKey ?? BuildGroupedSourceLineKey(groupLines),
+                    CustomerId = _existingEntry?.CustomerId ?? firstLine.CustomerId,
+                    CustomerName = _existingEntry?.CustomerName ?? firstLine.CustomerName,
+                    CustomerOrderId = _existingEntry?.CustomerOrderId ?? firstLine.CustomerOrderId,
+                    ParentPartId = _existingEntry?.ParentPartId ?? firstLine.ParentPartId,
                     RequestedQuantity = isRequesterOnlyEdit
                         ? _existingEntry!.RequestedQuantity
-                        : selectedLine.QuantityToPack,
+                        : groupLines.Sum(static line => line.QuantityToPack),
                     SelectedLocations = isRequesterOnlyEdit
                         ? _existingEntry!.SelectedLocations.ToList()
                         : selectedLocations,
@@ -180,7 +184,7 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
                         _existingEntry?.CurrentOwnerDisplayName ?? string.Empty,
                     LocationReviewFlag = isRequesterOnlyEdit
                         ? _existingEntry!.LocationReviewFlag
-                        : selectedLine.LocationOptions.Count == 0,
+                        : groupLines.All(static line => line.LocationOptions.Count == 0),
                     ProblemReason =
                         _existingEntry?.ProblemReason ?? Enum_CustomerPullPackProblemReason.None,
                     HandlerNote = _existingEntry?.HandlerNote ?? string.Empty,
@@ -190,9 +194,20 @@ public sealed partial class ViewModel_Dialog_CustomerPullPackWaitlistEditor : Vi
                     LastUpdatedTimestamp = utcNow,
                     RequestTimestamp = _existingEntry?.RequestTimestamp ?? utcNow,
                     RecheckIndicator =
-                        _existingEntry?.RecheckIndicator ?? selectedLine.RecheckIndicator,
+                        _existingEntry?.RecheckIndicator
+                        ?? groupLines.Any(static line => line.RecheckIndicator),
                 };
             })
             .ToList();
+    }
+
+    private static string BuildGroupedSourceLineKey(
+        IReadOnlyList<Model_CustomerPullPack_DemandLine> selectedLines
+    )
+    {
+        var firstLine = selectedLines[0];
+        return selectedLines.Count == 1
+            ? firstLine.SourceLineKey
+            : $"GROUP|{firstLine.CustomerOrderId}|{firstLine.ParentPartId}";
     }
 }

@@ -92,15 +92,15 @@ location table UI-ready for future logic.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Change waitlist creation to batch by unique sub-part id from the selected report rows.
-- [ ] Stop treating waitlist creation as a one-line-only operation.
-- [ ] Update queue row projection to show sub-part number, total locations, and request time.
-- [ ] Add rehydrated per-location side-panel detail for the selected queue row.
-- [ ] Sort side-panel locations by location.
-- [ ] Show location, qty, and sub-part id in the side-panel table.
-- [ ] Keep queue row selection single-select.
-- [ ] Make the side-panel table selectable but UI-only for now.
-- [ ] Update focused report and queue tests.
+- [x] Change waitlist creation to batch by unique sub-part id from the selected report rows.
+- [x] Stop treating waitlist creation as a one-line-only operation.
+- [x] Update queue row projection to show sub-part number, total locations, and request time.
+- [x] Add rehydrated per-location side-panel detail for the selected queue row.
+- [x] Sort side-panel locations by location.
+- [x] Show location, qty, and sub-part id in the side-panel table.
+- [x] Keep queue row selection single-select.
+- [x] Make the side-panel table selectable but UI-only for now.
+- [x] Update focused report and queue tests.
 </task_checklist>
 
 <validation>

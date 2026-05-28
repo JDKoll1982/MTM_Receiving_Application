@@ -119,17 +119,17 @@ should do nothing.
 </implementation_steps>
 
 <task_checklist>
-- [ ] Add focus-gain snapshot tracking for the customer textbox.
-- [ ] Add blur handling for the customer textbox.
-- [ ] Skip fuzzy search when blur text is unchanged.
-- [ ] Skip fuzzy search when blur text is blank.
-- [ ] Add shared live customer fuzzy-search candidate retrieval.
-- [ ] Keep mock customer candidate retrieval feature-owned.
-- [ ] Reuse `Model_FuzzySearchResult` and `Dialog_FuzzySearchPicker`.
-- [ ] Auto-accept a single customer candidate.
-- [ ] Normalize confirmed customer text to `ID - Name`.
-- [ ] Preserve the current explicit refresh/report-load workflow.
-- [ ] Add focused tests for blur-trigger and candidate-resolution behavior.
+- [x] Add focus-gain snapshot tracking for the customer textbox.
+- [x] Add blur handling for the customer textbox.
+- [x] Skip fuzzy search when blur text is unchanged.
+- [x] Skip fuzzy search when blur text is blank.
+- [x] Add shared live customer fuzzy-search candidate retrieval.
+- [x] Keep mock customer candidate retrieval feature-owned.
+- [x] Reuse `Model_FuzzySearchResult` and `Dialog_FuzzySearchPicker`.
+- [x] Auto-accept a single customer candidate.
+- [x] Normalize confirmed customer text to `ID - Name`.
+- [x] Preserve the current explicit refresh/report-load workflow.
+- [x] Add focused tests for blur-trigger and candidate-resolution behavior.
 </task_checklist>
 
 <validation>

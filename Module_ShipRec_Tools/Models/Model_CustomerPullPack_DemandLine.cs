@@ -22,6 +22,8 @@ public class Model_CustomerPullPack_DemandLine
 
     public DateTime PullDate { get; set; }
 
+    public DateTime? OldestAdded { get; set; }
+
     public decimal QuantityToPack { get; set; }
 
     public decimal FgOnHandQuantity { get; set; }
@@ -44,6 +46,10 @@ public class Model_CustomerPullPack_DemandLine
 
     public string WaitlistStateDisplay { get; set; } = string.Empty;
 
+    public decimal QtySatisfied { get; set; }
+
+    public string FulfillmentStatusDisplay { get; set; } = string.Empty;
+
     public string SubPartAvailabilitySummary { get; set; } = string.Empty;
 
     public string RequesterNote { get; set; } = string.Empty;
@@ -52,6 +58,11 @@ public class Model_CustomerPullPack_DemandLine
 
     public string PullDateDisplay =>
         PullDate == default ? string.Empty : PullDate.ToString("MM/dd/yyyy");
+
+    public string OldestAddedDisplay =>
+        OldestAdded.HasValue ? OldestAdded.Value.ToString("MM/dd/yyyy") : string.Empty;
+
+    public string QtySatisfiedDisplay => QtySatisfied.ToString("0.##");
 
     public string DemandStatusDisplay =>
         ShortageFlag ? "Shortage"
@@ -71,4 +82,7 @@ public class Model_CustomerPullPack_DemandLine
     public bool HasSelectableLocations => LocationOptions.Count > 0;
 
     public bool HasSelectedLocations => LocationOptions.Any(option => option.Selected);
+
+    public bool HasFulfillmentStatus =>
+        string.IsNullOrWhiteSpace(FulfillmentStatusDisplay) is false;
 }

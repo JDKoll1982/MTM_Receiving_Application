@@ -85,17 +85,17 @@ and derived `Complete` / `Partially Filled` projection state without persisting 
 </implementation_steps>
 
 <task_checklist>
-- [ ] Add `CUSTOMER_ORDER.CREATE_DATE` to the live demand projection.
-- [ ] Add an `Oldest Added` projection field based on `CUSTOMER_ORDER.CREATE_DATE`.
-- [ ] Add `QtySatisfied` to the demand projection.
-- [ ] Add derived fulfillment status to the demand projection.
-- [ ] Run allocation per `ParentPartId` / sub-part group.
-- [ ] Sort allocation by oldest added within each group.
-- [ ] Mark fully covered rows as `Complete`.
-- [ ] Mark only the first partially covered row as `Partially Filled`.
-- [ ] Prevent negative inventory during the allocation pass.
-- [ ] Surface the derived results in the report projection/UI.
-- [ ] Keep all derived values non-persistent.
+- [x] Add `CUSTOMER_ORDER.CREATE_DATE` to the live demand projection.
+- [x] Add an `Oldest Added` projection field based on `CUSTOMER_ORDER.CREATE_DATE`.
+- [x] Add `QtySatisfied` to the demand projection.
+- [x] Add derived fulfillment status to the demand projection.
+- [x] Run allocation per `ParentPartId` / sub-part group.
+- [x] Sort allocation by oldest added within each group.
+- [x] Mark fully covered rows as `Complete`.
+- [x] Mark only the first partially covered row as `Partially Filled`.
+- [x] Prevent negative inventory during the allocation pass.
+- [x] Surface the derived results in the report projection/UI.
+- [x] Keep all derived values non-persistent.
 </task_checklist>
 
 <validation>

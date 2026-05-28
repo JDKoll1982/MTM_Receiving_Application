@@ -23,6 +23,13 @@ public sealed partial class View_Tool_CustomerPullPackQueue : Page
         InitializeComponent();
     }
 
+    private async void OnQueueListSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        _ = sender;
+        _ = e;
+        await ViewModel.RefreshSelectedQueueLocationDetailsAsync();
+    }
+
     private async System.Threading.Tasks.Task ShowPrintPreviewAsync(
         Model_CustomerPullPack_PrintContext printContext
     )

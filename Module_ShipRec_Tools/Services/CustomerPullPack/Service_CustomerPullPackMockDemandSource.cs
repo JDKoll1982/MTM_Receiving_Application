@@ -110,6 +110,7 @@ public sealed class Service_CustomerPullPackMockDemandSource : IService_Customer
             SourceLocationId = row.SourceLocationId,
             ShipQuantity = row.ShipQuantity,
             PullDate = row.PullDate,
+            OldestAdded = row.PullDate,
             QuantityToPack = row.QuantityToPack,
             FgOnHandQuantity = row.FgOnHandQuantity,
             FgLocationId = row.FgLocationId,
