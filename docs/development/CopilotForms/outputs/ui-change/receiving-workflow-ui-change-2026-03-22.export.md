@@ -5,8 +5,8 @@
 - Feature: Receiving Workflow
 - Sub-feature: Manual Entry
 - Module: Module_Receiving
-- Prompt File: .github/prompts/copilotforms-ui-change.prompt.md
-- Instruction File: .github/instructions/copilotforms-ui-change.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-ui-change.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-ui-change.instructions.md
 - Output Folder: docs/CopilotForms/outputs/ui-change
 
 ## Human Summary

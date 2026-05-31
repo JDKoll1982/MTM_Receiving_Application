@@ -5,8 +5,8 @@
 - Feature: Label Data Export
 - Sub-feature: (none selected)
 - Module: Module_Receiving
-- Prompt File: .github/prompts/copilotforms-logic-correction.prompt.md
-- Instruction File: .github/instructions/copilotforms-logic-correction.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-logic-correction.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-logic-correction.instructions.md
 - Output Folder: docs/CopilotForms/outputs/logic-correction
 
 ## Human Summary

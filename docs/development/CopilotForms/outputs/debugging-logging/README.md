@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to investigate and improve logging, link the saved export and use `.github/prompts/copilotforms-debugging-logging.prompt.md`.
+When asking Copilot to investigate and improve logging, link the saved export and use `.github/prompts/copilotforms/copilotforms-debugging-logging.prompt.md`.

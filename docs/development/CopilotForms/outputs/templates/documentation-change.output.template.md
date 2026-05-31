@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-documentation-change.prompt.md
-- Instruction File: .github/instructions/copilotforms-documentation-change.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-documentation-change.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-documentation-change.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/documentation-change
 
 ## Documentation Goal

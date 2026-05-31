@@ -8,7 +8,7 @@ This folder contains browser-based forms that help users produce structured, Cop
 
 The forms are designed for these common request types:
 
-All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `docs/InforVisual/DatabaseCSVFiles/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
+All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
 
 Detailed feature metadata can now be split into module-specific files under `data/module-metadata/` so the main config stays smaller and easier to maintain.
 
@@ -34,7 +34,7 @@ Detailed feature metadata can now be split into module-specific files under `dat
 
 Generated exports now also include an explicit reminder that the CopilotForms metadata for the edited module must be reviewed and updated when needed as part of the same request.
 
-All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `docs/InforVisual/DatabaseCSVFiles/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
+All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
 
 When you use `Save to outputs`, `Download Markdown`, or `Download JSON`, the app now targets the matching request-type folder automatically, such as `docs/CopilotForms/outputs/code-review/` for the code review form. The first save asks you to choose the repo root, the `docs/CopilotForms` folder, or the `outputs` folder so the browser can get permission to write files there.
 

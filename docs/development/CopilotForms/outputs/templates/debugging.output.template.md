@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-debugging.prompt.md
-- Instruction File: .github/instructions/copilotforms-debugging.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-debugging.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-debugging.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/debugging
 
 ## Symptom Summary

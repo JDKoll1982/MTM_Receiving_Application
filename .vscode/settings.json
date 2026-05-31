@@ -44,6 +44,10 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true,
+    ".github/archive": false
+  },
   "chat.promptFilesRecommendations": {
     "speckit.constitution": true,
     "speckit.specify": true,
@@ -54,6 +58,12 @@
   "chat.tools.terminal.autoApprove": {
     ".specify/scripts/bash/": true,
     ".specify/scripts/powershell/": true
+  },
+  "files.exclude": {
+    ".github/archive": true
+  },
+  "search.exclude": {
+    ".github/archive": true
   },
   "htmlPreviewPro.autoReload": true,
   "htmlPreviewPro.enableHotReload": true,

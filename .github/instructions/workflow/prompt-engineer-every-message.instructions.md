@@ -76,6 +76,11 @@ build an enhanced version of their prompt by applying:
   ```
 - Reference tags by name in instructions: "Using only the information in `<context>`..."
 - Use triple backticks for code content, markdown headers for multi-section prompts
+- **EXCEPTION — spec and docs `.md` files:** Do NOT use XML tags when writing or editing any
+  file under `specs/**/*.md` or `Module_*/docs/**/*.md`. Those files are governed by
+  `spec-slice-format.instructions.md`, which requires `##` Markdown headings instead of XML
+  tags. XML breaks Markdown preview and printing. This exception takes precedence over the XML
+  structure guidance above.
 
 **Chain of Thought for Reasoning Tasks (Intermediate Track — Lesson 3)**
 - Add "Think step by step." for: math, multi-step logic, analysis, debugging, planning, decisions

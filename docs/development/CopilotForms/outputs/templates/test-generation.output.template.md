@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-test-generation.prompt.md
-- Instruction File: .github/instructions/copilotforms-test-generation.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-test-generation.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-test-generation.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/test-generation
 
 ## Test Target

@@ -5,8 +5,8 @@
 - Feature: Receiving Workflow
 - Sub-feature: Load Entry
 - Module: Module_Receiving
-- Prompt File: .github/prompts/copilotforms-logic-correction.prompt.md
-- Instruction File: .github/instructions/copilotforms-logic-correction.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-logic-correction.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-logic-correction.instructions.md
 - Output Folder: docs/CopilotForms/outputs/logic-correction
 
 ## Human Summary
@@ -103,17 +103,17 @@ Most of our locations include dashes in them so I want to be able to allow the u
 ### What data or records affect this behavior?
 Infor Visual's Location Tables in the Infor Visual Database.
 CSV Files to assist in schema searching:
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_CheckConstraints.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_ColumnDetails.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_DefaultConstraints.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_FKs.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_Indexes.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_PKs.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_TableRowCounts.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_Tables.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_Triggers.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_UniqueConstraints.csv
-docs\development\InforVisual\DatabaseCSVFiles\MTMFG_Schema_Views.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_CheckConstraints.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_ColumnDetails.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_DefaultConstraints.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_FKs.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_Indexes.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_PKs.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_TableRowCounts.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_Tables.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_Triggers.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_UniqueConstraints.csv
+MTM_Waitlist_Application\Documents\InforVisualRelated\CSV_Documents\MTMFG_Schema_Views.csv
 
 ### Suggested layers or services involved
 - Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs
@@ -197,7 +197,7 @@ It should allow the user to type anything, then when focus is lost, if the locat
       "Step 4: Exists = Yes then Use what they entered",
       "Step 5: Does not Exist = Use Fuzzy Search Dialog using the logic provided above to generate a list of locations that are similar to what the user typed.  If nothing is found state as much."
     ],
-    "relatedData": "Infor Visual's Location Tables in the Infor Visual Database.\nCSV Files to assist in schema searching:\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_CheckConstraints.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_ColumnDetails.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_DefaultConstraints.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_FKs.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Indexes.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_PKs.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_TableRowCounts.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Tables.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Triggers.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_UniqueConstraints.csv\ndocs\\InforVisual\\DatabaseCSVFiles\\MTMFG_Schema_Views.csv",
+    "relatedData": "Infor Visual's Location Tables in the Infor Visual Database.\nCSV Files to assist in schema searching:\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_CheckConstraints.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_ColumnDetails.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_DefaultConstraints.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_FKs.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_Indexes.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_PKs.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_TableRowCounts.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_Tables.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_Triggers.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_UniqueConstraints.csv\nMTM_Waitlist_Application\\Documents\\InforVisualRelated\\CSV_Documents\\MTMFG_Schema_Views.csv",
     "layersInvolved": [
       "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
       "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",

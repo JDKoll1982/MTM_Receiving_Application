@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-logging-refactor.prompt.md
-- Instruction File: .github/instructions/copilotforms-logging-refactor.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-logging-refactor.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-logging-refactor.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/logging-refactor
 
 ## Logging Goal

@@ -387,7 +387,7 @@ The printed output does not need to look exactly like Crystal Reports, and it do
 
 ## 9. Likely Infor Visual Data Sources
 
-Using the CSV exports in `docs/development/InforVisual/DatabaseCSVFiles`, the following sources appear to be the most likely building blocks for the new tool.
+Using the CSV exports in `MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents`, the following sources appear to be the most likely building blocks for the new tool.
 
 ### Open order and schedule detail
 

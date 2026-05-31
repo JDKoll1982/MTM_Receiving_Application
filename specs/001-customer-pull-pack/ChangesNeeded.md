@@ -164,17 +164,17 @@ Determine whether Infor Visual already exposes a usable concept of completed or 
 Use the following schema reference files as the required discovery inputs before implementation:
 
 ```text
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_CheckConstraints.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_ColumnDetails.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_DefaultConstraints.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_FKs.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_Indexes.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_PKs.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_TableRowCounts.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_Tables.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_Triggers.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_UniqueConstraints.csv
-docs/development/InforVisual/DatabaseCSVFiles/MTMFG_Schema_Views.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_CheckConstraints.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_ColumnDetails.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_DefaultConstraints.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_FKs.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_Indexes.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_PKs.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_TableRowCounts.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_Tables.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_Triggers.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_UniqueConstraints.csv
+MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/MTMFG_Schema_Views.csv
 ```
 
 The research output must answer these questions before implementation is finalized:

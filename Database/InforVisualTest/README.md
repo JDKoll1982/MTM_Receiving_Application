@@ -209,7 +209,7 @@ If a query fails in the application:
 - **Service Layer**: See `Services/Database/Service_InforVisual.cs` for business logic using DAOs
 - **Query Loader**: See `Helpers/Database/Helper_SqlQueryLoader.cs` for SQL file loading logic
 - **Constitution**: See `.specify/memory/constitution.md` for data access principles
-- **DAO Pattern**: See `.github/instructions/dao-pattern.instructions.md` for DAO implementation standards
+- **DAO Pattern**: See `.github/instructions/architecture/dao-pattern.instructions.md` for DAO implementation standards
 
 ## Adding New Queries
 

@@ -116,8 +116,6 @@ A requester sees a report line that already has open waitlist work and tries to 
 
 This keeps ownership, status, and queue visibility tied to one open item per source line instead of splitting work across duplicates.
 
-
-
 ---
 
 ## Ownership And Queue Scenarios

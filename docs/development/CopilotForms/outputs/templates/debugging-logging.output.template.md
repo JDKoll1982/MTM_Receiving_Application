@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-debugging-logging.prompt.md
-- Instruction File: .github/instructions/copilotforms-debugging-logging.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-debugging-logging.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-debugging-logging.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/debugging-logging
 
 ## Catalog Context

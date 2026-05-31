@@ -3554,8 +3554,8 @@
         "Describe the result the user should see, not the code you think should change."
       ],
       "outputFolder": "docs/CopilotForms/outputs/ui-change",
-      "promptFile": ".github/prompts/copilotforms-ui-change.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-ui-change.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-ui-change.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-ui-change.instructions.md",
       "fieldGroups": [
         {
           "title": "Request Summary",
@@ -3725,8 +3725,8 @@
         "Paste exact messages instead of paraphrasing them when possible."
       ],
       "outputFolder": "docs/CopilotForms/outputs/debugging",
-      "promptFile": ".github/prompts/copilotforms-debugging.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-debugging.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-debugging.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-debugging.instructions.md",
       "fieldGroups": [
         {
           "title": "Symptom Summary",
@@ -3873,8 +3873,8 @@
         "List what must keep working after the correction."
       ],
       "outputFolder": "docs/CopilotForms/outputs/logic-correction",
-      "promptFile": ".github/prompts/copilotforms-logic-correction.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-logic-correction.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-logic-correction.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-logic-correction.instructions.md",
       "fieldGroups": [
         {
           "title": "Intent Versus Reality",
@@ -4011,8 +4011,8 @@
         "Be explicit about what is in scope versus what should wait."
       ],
       "outputFolder": "docs/CopilotForms/outputs/new-feature-request",
-      "promptFile": ".github/prompts/copilotforms-new-feature-request.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-new-feature-request.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-new-feature-request.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-new-feature-request.instructions.md",
       "fieldGroups": [
         {
           "title": "Feature Goal",
@@ -4150,8 +4150,8 @@
         "If another workflow replaces this one, name that replacement clearly."
       ],
       "outputFolder": "docs/CopilotForms/outputs/feature-removal-request",
-      "promptFile": ".github/prompts/copilotforms-feature-removal-request.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-feature-removal-request.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-feature-removal-request.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-feature-removal-request.instructions.md",
       "fieldGroups": [
         {
           "title": "Removal Goal",
@@ -4282,8 +4282,8 @@
         "Be clear about what acceptable performance would look like."
       ],
       "outputFolder": "docs/CopilotForms/outputs/performance-issue-optimization",
-      "promptFile": ".github/prompts/copilotforms-performance-issue-optimization.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-performance-issue-optimization.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-performance-issue-optimization.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-performance-issue-optimization.instructions.md",
       "fieldGroups": [
         {
           "title": "Performance Symptom",
@@ -4410,8 +4410,8 @@
         "Do not paste secrets; describe the setting source instead."
       ],
       "outputFolder": "docs/CopilotForms/outputs/configuration-environment-issue",
-      "promptFile": ".github/prompts/copilotforms-configuration-environment-issue.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-configuration-environment-issue.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-configuration-environment-issue.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-configuration-environment-issue.instructions.md",
       "fieldGroups": [
         {
           "title": "Environment Context",
@@ -4546,8 +4546,8 @@
         "Be clear about whether this includes code comments, docs, or UI labels too."
       ],
       "outputFolder": "docs/CopilotForms/outputs/naming-consistency-cleanup",
-      "promptFile": ".github/prompts/copilotforms-naming-consistency-cleanup.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-naming-consistency-cleanup.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-naming-consistency-cleanup.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-naming-consistency-cleanup.instructions.md",
       "fieldGroups": [
         {
           "title": "Cleanup Goal",
@@ -4666,8 +4666,8 @@
         "Make the acceptance criteria prove both the screen and the rules changed correctly."
       ],
       "outputFolder": "docs/CopilotForms/outputs/ui-change-logic-change",
-      "promptFile": ".github/prompts/copilotforms-ui-change-logic-change.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-ui-change-logic-change.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-ui-change-logic-change.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-ui-change-logic-change.instructions.md",
       "fieldGroups": [
         {
           "title": "Combined Request Summary",
@@ -4801,8 +4801,8 @@
         "Use the verification section to prove both the fix and the logging quality."
       ],
       "outputFolder": "docs/CopilotForms/outputs/debugging-logging",
-      "promptFile": ".github/prompts/copilotforms-debugging-logging.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-debugging-logging.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-debugging-logging.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-debugging-logging.instructions.md",
       "fieldGroups": [
         {
           "title": "Bug Summary",
@@ -4930,8 +4930,8 @@
         "Make sure the do-not-regress section covers nearby flows that should stay stable."
       ],
       "outputFolder": "docs/CopilotForms/outputs/logic-change-test-generation",
-      "promptFile": ".github/prompts/copilotforms-logic-change-test-generation.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-logic-change-test-generation.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-logic-change-test-generation.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-logic-change-test-generation.instructions.md",
       "fieldGroups": [
         {
           "title": "Behavior Change",
@@ -5060,8 +5060,8 @@
         "Be clear about whether the behavior must stay exactly the same."
       ],
       "outputFolder": "docs/CopilotForms/outputs/improvement-refactor",
-      "promptFile": ".github/prompts/copilotforms-improvement-refactor.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-improvement-refactor.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-improvement-refactor.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-improvement-refactor.instructions.md",
       "fieldGroups": [
         {
           "title": "Refactor Goal",
@@ -5176,8 +5176,8 @@
         "Be explicit about what should stay, go, or change severity."
       ],
       "outputFolder": "docs/CopilotForms/outputs/logging-refactor",
-      "promptFile": ".github/prompts/copilotforms-logging-refactor.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-logging-refactor.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-logging-refactor.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-logging-refactor.instructions.md",
       "fieldGroups": [
         {
           "title": "Logging Goal",
@@ -5292,8 +5292,8 @@
         "Mention any recent changes or unstable areas the reviewer should keep in mind."
       ],
       "outputFolder": "docs/CopilotForms/outputs/code-review",
-      "promptFile": ".github/prompts/copilotforms-code-review.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-code-review.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-code-review.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-code-review.instructions.md",
       "fieldGroups": [
         {
           "title": "Review Scope",
@@ -5382,8 +5382,8 @@
         "Mention constraints like read-only Visual access or stored-procedure-only rules."
       ],
       "outputFolder": "docs/CopilotForms/outputs/database-issue",
-      "promptFile": ".github/prompts/copilotforms-database-issue.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-database-issue.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-database-issue.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-database-issue.instructions.md",
       "fieldGroups": [
         {
           "title": "Database Context",
@@ -5473,8 +5473,8 @@
         "Focus on behaviors that matter more than a coverage number."
       ],
       "outputFolder": "docs/CopilotForms/outputs/test-generation",
-      "promptFile": ".github/prompts/copilotforms-test-generation.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-test-generation.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-test-generation.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-test-generation.instructions.md",
       "fieldGroups": [
         {
           "title": "Test Target",
@@ -5568,8 +5568,8 @@
         "If the docs must match code exactly, say so explicitly."
       ],
       "outputFolder": "docs/CopilotForms/outputs/documentation-change",
-      "promptFile": ".github/prompts/copilotforms-documentation-change.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-documentation-change.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-documentation-change.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-documentation-change.instructions.md",
       "fieldGroups": [
         {
           "title": "Documentation Goal",
@@ -5660,8 +5660,8 @@
         "Mention desktop assumptions if the screen is WinUI-specific."
       ],
       "outputFolder": "docs/CopilotForms/outputs/ui-mockup",
-      "promptFile": ".github/prompts/copilotforms-ui-mockup.prompt.md",
-      "instructionFile": ".github/instructions/copilotforms-ui-mockup.instructions.md",
+      "promptFile": ".github/prompts/copilotforms/copilotforms-ui-mockup.prompt.md",
+      "instructionFile": ".github/instructions/copilotforms/copilotforms-ui-mockup.instructions.md",
       "fieldGroups": [
         {
           "title": "Mockup Goal",

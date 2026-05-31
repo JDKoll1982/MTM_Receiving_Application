@@ -316,7 +316,7 @@ Stored in MySQL `app_settings` table:
 - [LeanKit API Documentation](https://docs.leankit.com/display/LM/LeanKit+API+Documentation)
 - [LeanKit Node Client](https://github.com/LeanKit/leankit-node-client)
 - [MTM Waitlist Application Constitution](../../../../.specify/memories/constitution.md)
-- [Testing Strategy](../../../../.github/instructions/testing-strategy.instructions.md)
+- [Testing Strategy](../../../../.github/instructions/testing/testing-strategy.instructions.md)
 
 ## License
 

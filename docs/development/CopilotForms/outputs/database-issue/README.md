@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to diagnose or fix a database issue, link the saved export and use `.github/prompts/copilotforms-database-issue.prompt.md`.
+When asking Copilot to diagnose or fix a database issue, link the saved export and use `.github/prompts/copilotforms/copilotforms-database-issue.prompt.md`.

@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-database-issue.prompt.md
-- Instruction File: .github/instructions/copilotforms-database-issue.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-database-issue.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-database-issue.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/database-issue
 
 ## Database Context

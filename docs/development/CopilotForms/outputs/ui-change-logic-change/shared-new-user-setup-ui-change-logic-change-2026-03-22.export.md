@@ -5,8 +5,8 @@
 - Feature: New User Setup
 - Sub-feature: (none selected)
 - Module: Module_Shared
-- Prompt File: .github/prompts/copilotforms-ui-change-logic-change.prompt.md
-- Instruction File: .github/instructions/copilotforms-ui-change-logic-change.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-ui-change-logic-change.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-ui-change-logic-change.instructions.md
 - Output Folder: docs/CopilotForms/outputs/ui-change-logic-change
 
 ## Human Summary

@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to improve code quality or structure, link the saved export and use `.github/prompts/copilotforms-improvement-refactor.prompt.md`.
+When asking Copilot to improve code quality or structure, link the saved export and use `.github/prompts/copilotforms/copilotforms-improvement-refactor.prompt.md`.

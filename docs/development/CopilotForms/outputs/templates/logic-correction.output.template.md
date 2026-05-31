@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-logic-correction.prompt.md
-- Instruction File: .github/instructions/copilotforms-logic-correction.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-logic-correction.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-logic-correction.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/logic-correction
 
 ## Intent Versus Reality

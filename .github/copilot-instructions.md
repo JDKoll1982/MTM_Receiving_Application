@@ -1,276 +1,112 @@
 ---
-description: "MTM Receiving Application development guidelines - MVVM architecture, database patterns, naming conventions, and WinUI 3 best practices"
+description: "Core MTM Receiving Application instructions covering architecture, validation, documentation maintenance, and how to use the categorized instruction set."
 applyTo: "**/*.{cs,xaml,csproj,vb,fs,sql,md,txt,ps1,sh,bash,cmd,bat,py,js,ts,jsx,tsx,html,htm,css,scss,json,yaml,yml,xml,config,toml,ini,env,props,targets}"
 ---
 
 # MTM Receiving Application Development Guide
 
-Manufacturing receiving operations desktop application for streamlined label generation, workflow management, and ERP integration.
+This is the repository-level source of truth for how coding agents should behave in this workspace.
+Use this file for global rules. Use category-specific files under `.github/instructions/` for the
+exact language, architecture, testing, database, tooling, or documentation guidance relevant to
+the current change.
 
-## 🚨 CRITICAL ARCHITECTURE RULES - READ FIRST
+## Start Here
 
-### BEFORE GOING FORWARD ALWAYS ATTEMPT TO INITIALIZE THE SERENA AI ASSISTANT AND READ THE MEMORIES IN THE `.serena/memories/` FOLDER, ESPECIALLY `architectural_patterns.md` AND `forbidden_practices.md`. THESE MEMORIES CONTAIN CRUCIAL INFORMATION ABOUT THE PROJECT'S ARCHITECTURE, CODING STANDARDS, AND COMMON PITFALLS TO AVOID. FAILURE TO ADHERE TO THESE GUIDELINES MAY RESULT IN CODE THAT VIOLATES THE MVVM ARCHITECTURE, INTRODUCES TECHNICAL DEBT, OR CAUSES MAINTAINABILITY ISSUES DOWN ...
+- Read `README.md` for the project overview and repository layout.
+- Read `.github/README.md` for the active AI-documentation taxonomy.
+- Read this file for global rules that apply everywhere.
+- Read only the instruction files that match the files you are changing or the task you are doing.
+- Treat `.github/archive/` as historical reference only. Do not use archived guidance as active
+    instruction unless the user explicitly asks for historical comparison.
 
-- YOU ONLY NEED TO DO THIS ONCE PER SERENA SESSION. ONCE YOU HAVE READ THE MEMORIES, YOU CAN REFERENCE THEM IN YOUR PROMPTS TO THE AI TO ENSURE COMPLIANCE WITH THE PROJECT'S STANDARDS.
+## Non-Negotiable Rules
 
-### FORBIDDEN - These Will Break the System
+- Follow the MVVM flow: View → ViewModel → Service → DAO → Database.
+- Do not let ViewModels call DAOs or `Helper_Database_*` classes directly.
+- Use `x:Bind` in XAML. Do not introduce runtime `{Binding}`.
+- Keep DAOs instance-based and return `Model_Dao_Result` or `Model_Dao_Result<T>` instead of
+    throwing for expected operational failures.
+- Use stored procedures for MySQL work. Do not write raw MySQL SQL in C#.
+- Treat the Infor Visual SQL Server connection as read only. No `INSERT`, `UPDATE`, or `DELETE`.
+- Keep business logic out of `.xaml.cs` code-behind.
+- End async methods with `Async`.
+- When rebuilding a full `ObservableCollection`, prefer replacing the collection instance instead
+    of `Clear()` plus repeated `Add()` calls.
 
-**❌ NEVER DO THESE:**
+## Major Assumptions
 
-1. **ViewModels calling DAOs directly** - MUST go through Service layer
-2. **ViewModels accessing `Helper_Database_*` classes** - Use services only
-3. **Static DAO classes** - All DAOs MUST be instance-based
-4. **DAOs throwing exceptions** - Return `Model_Dao_Result` with error details
-5. **Raw SQL in C# for MySQL** - Use stored procedures ONLY
-6. **Write operations to SQL Server/Infor Visual** - READ ONLY (no INSERT/UPDATE/DELETE)
-7. **Runtime `{Binding}` in XAML** - Use compile-time `{x:Bind}` only
-8. **Business logic in `.xaml.cs` code-behind** - Belongs in ViewModel or Service
+If implementation would require a major assumption, pause and ask the user first with the same
+chat-facing `vscode_askQuestions` approval flow described in
+`.github/instructions/workflow/prompt-engineer-every-message.instructions.md`.
 
-### REQUIRED - Every Component Must Follow
+Examples of major assumptions:
 
-**✅ ALWAYS DO THESE:**
+- choosing one of several valid implementations when behavior is ambiguous
+- inferring missing stored procedures, contracts, or schema details
+- deciding ownership between modules, services, or DAOs without direct evidence
+- changing workflow scope, navigation, or validation behavior without explicit direction
 
-1. **MVVM Layer Flow:** View (XAML) → ViewModel → Service → DAO → Database
-2. **ViewModels:** Partial classes inheriting from `ViewModel_Shared_Base`
-3. **Services:** Interface-based with dependency injection
-4. **DAOs:** Instance-based, injected via constructor, return `Model_Dao_Result`
-5. **XAML Bindings:** Use `x:Bind` with explicit `Mode` (OneWay/TwoWay/OneTime)
-6. **Async Methods:** All must end with `Async` suffix
-7. **Error Handling:** DAOs return errors, Services handle them, ViewModels display them
-8. **Database Access:** MySQL via stored procedures, SQL Server READ ONLY (`V_` prefix tables are base tables, not views)
-9. **Collection Reloads:** When rebuilding an entire `ObservableCollection`, prefer replacing the collection instance over `Clear()` plus repeated `Add()` calls to avoid excessive UI notifications
+Do not create an assumption file by default. Use the chat approval flow unless the user asks for a
+file artifact.
 
-### 🛑 ASSUMPTION DOCUMENTATION — REQUIRED BEFORE PROCEEDING
+## Required Workflow
 
-Whenever the AI agent is about to make a **major assumption** during coding or planning, it **MUST** pause and present the assumption to the user using the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/prompt-engineer-every-message.instructions.md`. Do **NOT** proceed until the user has confirmed, corrected, or approved the assumptions.
+1. Read the smallest relevant instruction set for the current task.
+2. Inspect the owning code path before editing.
+3. Make the smallest grounded change that tests the current hypothesis.
+4. Run the narrowest validation available after the first substantive edit.
+5. Update documentation or metadata when the change invalidates an active source-of-truth file.
 
-**This rule applies in ALL modes, including Noob Mode.**
+## Instruction Map
 
-**Examples of major assumptions that require approval:**
+Use the category that matches your task instead of reading the whole instruction tree.
 
-- Inferring missing or ambiguous requirements
-- Choosing one implementation approach when multiple valid ones exist
-- Assuming a stored procedure exists or has specific parameters
-- Guessing at intended behavior when the specification is unclear
-- Assuming a data structure, schema, database table, or API contract
-- Inferring the scope of a refactor, migration, or architectural change
-- Assuming which module, service, or DAO should own a new piece of logic
+- `.github/instructions/architecture/` — MVVM, DAO, CQRS, dialogs, settings, converters, and
+    WinUI design constraints
+- `.github/instructions/database/` — MySQL stored procedures and Infor Visual query rules
+- `.github/instructions/documentation/` — Markdown, spec slices, doc maintenance, and doc updates
+- `.github/instructions/languages/` — C#, PowerShell, Python, shell, and related file-specific
+    conventions
+- `.github/instructions/quality/` — review rules, security, performance, code quality, comments
+- `.github/instructions/testing/` — test strategy and test-writing expectations
+- `.github/instructions/tooling/` — MCP, WinApp, skill authoring, and Serena subfolder guidance
+- `.github/instructions/workflow/` — prompt engineering, research, agent authoring, and process
+- `.github/instructions/copilotforms/` — CopilotForms export-specific workflows and handlers
 
-**Required interaction pattern:**
+Recommended starting points for common work:
 
-- Use `vscode_askQuestions` before continuing.
-- Use the same chat-facing layout, `Enhanced Prompt Ready` approval step, and approval options as `.github/instructions/prompt-engineer-every-message.instructions.md`.
-- Keep the prompt readable and user-facing rather than writing an assumption file.
-- Encode the assumption details into that structure:
-    - `**🎯 Task**` — the work that is blocked by the assumption
-    - `**📋 Key constraints**` — the assumption itself, why it is needed, and the impact if it is wrong
-    - `**➕ What was added vs. your original message**` — the inferred choice and the main alternative interpretations considered
-- Wait for the user to approve, adjust, skip, or regenerate before proceeding.
+- C# or XAML changes: `.github/instructions/languages/csharp.instructions.md`
+- MVVM or service-layer work: `.github/instructions/architecture/mvvm-pattern.instructions.md`
+- DAO changes: `.github/instructions/architecture/dao-pattern.instructions.md`
+- MySQL or Infor Visual work:
+    `.github/instructions/database/sql-sp-generation.instructions.md` and
+    `.github/instructions/database/infor-visual-query-authoring.instructions.md`
+- Tests: `.github/instructions/testing/testing-strategy.instructions.md`
+- Tooling-heavy agent work: `.github/instructions/tooling/mcp-tooling.instructions.md`
 
-**Do not create an assumption file unless the user explicitly asks for one.**
+## Documentation And Metadata Maintenance
 
----
+- If you change active repository guidance, update the matching index or source-of-truth file.
+- If you change `.github` structure, update `.github/README.md` and relevant category READMEs.
+- If code changes affect CopilotForms workflow understanding, update
+    `docs/CopilotForms/data/copilot-forms.config.json` or the split module metadata files.
+- Prefer one authoritative file per topic. Delete, archive, or merge duplicates instead of
+    maintaining parallel guidance.
 
-### Important - Follow These Guidelines
+## Validation Expectations
 
-1. **Reference Relevant Instruction Files:** Follow guidelines in `.github/instructions/` as applicable, making sure that you reference these as if the user had included them in their prompt.
-   - See the "Additional Resources" section below for a list of relevant instruction files.
-   - Reference the specific instruction files for detailed guidance on each topic.
-   - Follow the naming conventions and folder structures outlined in the project governance documents.
-   - If you do not need to reference any instruction files for a specific task, you must explicitly state that no custom instruction files are needed for that task.
-2. **Review Module Metadata After Any Code Change:** At the end of every chat request, if the codebase was changed in any way, review the CopilotForms metadata for each edited module and update it if needed.
-   - Check `docs/CopilotForms/data/copilot-forms.config.json` for inline module metadata.
-   - Check `docs/CopilotForms/data/module-metadata/<ModuleName>/` for split module metadata.
-   - Update metadata when files, workflows, screens, services, ownership, validation hints, prompt defaults, or sub-feature hints changed enough that the metadata is no longer accurate.
+- Use the narrowest executable validation available for the changed slice.
+- Prefer targeted tests or focused build/test tasks over full-solution checks when possible.
+- If no executable validation exists for documentation-only work, validate by checking links,
+    paths, and workspace configuration consistency.
 
-## Technology Stack
+## Related Files
 
-- **Framework:** WinUI 3 (Windows App SDK 1.8+)
-- **Language:** C# 13
-- **Platform:** .NET 10
-- **Architecture:** MVVM with CommunityToolkit.Mvvm
-- **Database:** MySQL 5.7 (READ/WRITE), SQL Server/Infor Visual (READ ONLY)
-- **Testing:** xUnit with FluentAssertions
-- **DI Container:** Microsoft.Extensions.DependencyInjection
-
-## Additional Resources
-
-### Project Governance
-
-- Project Constitution: See `.specify\memory\constitution.md` for immutable architecture rules
-- Agent Definitions: See `AGENTS.md` for specialized AI agents
-
-### Instruction Files
-
-The `.github/instructions/` folder contains specialized guidance for specific scenarios. Reference these when applicable:
-
-**Core Development:**
-
-- `.github/instructions/csharp.instructions.md` - C# language-specific best practices
-- `.github/instructions/dotnet-architecture-good-practices.instructions.md` - .NET architecture patterns
-- `.github/instructions/testing-strategy.instructions.md` - Comprehensive testing guide
-- `.github/instructions/code-review-generic.instructions.md` - Code review guidelines
-
-**Code Quality:**
-
-- `.github/instructions/object-calisthenics.instructions.md` - Code quality rules and patterns
-- `.github/instructions/self-explanatory-code-commenting.instructions.md` - Commenting standards
-- `.github/instructions/security-and-owask.instructions.md` - Security best practices
-
-**Database & SQL:**
-
-- `.github/instructions/sql-sp-generation.instructions.md` - MySQL stored procedure generation guidelines
-- `.github/instructions/infor-visual-database-reference.instructions.md` - Infor Visual (MTMFG) schema CSV reference files
-- `.github/instructions/infor-visual-query-authoring.instructions.md` - Writing new SQL SELECT queries against MTMFG
-
-**Performance & Optimization:**
-
-- `.github/instructions/performance-optimization.instructions.md` - Performance tuning guidance
-
-**Scripting:**
-
-- `.github/instructions/powershell.instructions.md` - PowerShell scripting standards
-- `.github/instructions/powershell-scripting-ai.instructions.md` - AI-assisted PowerShell development
-- `.github/instructions/powershell-pester-5.instructions.md` - PowerShell testing with Pester 5
-- `.github/instructions/shell.instructions.md` - Shell scripting guidelines
-- `.github/instructions/python.instructions.md` - Python development standards
-
-**Workflow & Process:**
-
-- `.github/instructions/spec-driven-workflow-v1.instructions.md` - Specification-driven development
-- `.github/instructions/update-docs-on-code-change.instructions.md` - Documentation update process
-- `.github/instructions/module-doc-maintenance.instructions.md` - Module documentation standards
-
-**AI Agent & Automation:**
-
-- `.github/instructions/comprehensive-research.instructions.md` - Research workflow for documentation/code generation
-- `.github/instructions/agents.instructions.md` - AI agent configuration and usage
-- `.github/instructions/agent-skills.instructions.md` - AI agent capabilities reference
-- `.github/instructions/joyride-workspace-automation.instructions.md` - Workspace automation
-- `.github/instructions/serena-tools.instructions.md` - **Serena index** (start here; links to all Serena detail files)
-  - `serena-01-overview.instructions.md` — What Serena is, when to use it, quick start
-  - `serena-02-tools-reference.instructions.md` — Every tool with parameters and MTM examples
-  - `serena-03-language-support.instructions.md` — C# / Roslyn LSP setup and capabilities
-  - `serena-04-running.instructions.md` — Installation (uv/uvx/Docker), startup options
-  - `serena-05-clients.instructions.md` — VSCode, Claude Code, Claude Desktop configuration
-  - `serena-06-workflow.instructions.md` — Project creation, indexing, activation, onboarding
-  - `serena-07-memories.instructions.md` — Memory system, MTM memory catalog, onboarding
-  - `serena-08-configuration.instructions.md` — serena_config.yml, project.yml, contexts, modes
-  - `serena-09-dashboard-logs-security.instructions.md` — Dashboard, logs, security safeguards
-  - `serena-10-advanced-usage.instructions.md` — Prompting strategies, Agno agents, worktrees
-- `.github/instructions/taming-copilot.instructions.md` - Copilot interaction patterns
-- `.github/instructions/prompt.instructions.md` - Prompt engineering guidelines
-- `.github/instructions/instructions.instructions.md` - Meta-instructions for instruction files
-
-**Specialized:**
-
-- `.github/instructions/dotnet-upgrade.instructions.md` - .NET upgrade procedures
-- `.github/instructions/arrogant-code-review.instructions.md` - Assertive code review mode
-
-## Naming Conventions
-
-**Classes:**
-
-- ViewModels: `ViewModel_<Module>_<Feature>` (e.g., `ViewModel_Receiving_Workflow`)
-- Views: `View_<Module>_<Feature>` (e.g., `View_Receiving_Workflow`)
-- Services: `Service_<Purpose>` with interface `IService_<Purpose>` (e.g., `IService_ReceivingWorkflow`)
-- DAOs: `Dao_<EntityName>` (e.g., `Dao_ReceivingLine`)
-- Models: `Model_<EntityName>` (e.g., `Model_ReceivingLine`)
-- Enums: `Enum_<Category>` (e.g., `Enum_ErrorSeverity`)
-- Helpers: `Helper_<Category>_<Function>` (e.g., `Helper_Database_Variables`)
-
-**Methods:**
-
-- PascalCase for all methods
-- Async methods MUST end with `Async`: `LoadDataAsync()`, `SaveAsync()`
-- DAO methods: `<Action><Entity>Async` (e.g., `InsertReceivingLineAsync`)
-
-**Properties and Fields:**
-
-- PascalCase for public properties
-- `_camelCase` for private fields (with underscore prefix)
-- Observable properties use `[ObservableProperty]` on private field
-
-## Architecture Standards
-
-### MVVM Layer Separation
-
-**REQUIRED:**
-
-- ALL ViewModels MUST inherit from `ViewModel_Shared_Base` or `ObservableObject`
-- ALL ViewModels MUST be `partial` classes
-- ALL data binding MUST use `x:Bind` (compile-time)
-- ALL data access MUST flow through Service layer
-
-**FORBIDDEN:**
-
-- ViewModels SHALL NOT directly call DAOs
-- ViewModels SHALL NOT access `Helper_Database_*` classes
-- ViewModels SHALL NOT use connection strings
-- Business logic in `.xaml.cs` code-behind files
-
-### ViewModel Pattern
-
-```csharp
-// ✅ CORRECT - Complete ViewModel pattern
-public partial class ViewModel_Receiving_Workflow : ViewModel_Shared_Base
-{
-    private readonly IService_ReceivingWorkflow _workflowService;
-
-    [ObservableProperty]
-    private string _currentStepTitle = "Receiving - Mode Selection";
-
-    [ObservableProperty]
-    private ObservableCollection<Model_Item> _items;
-
-    public ViewModel_Receiving_Workflow(
-        IService_ReceivingWorkflow workflowService,
-        IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger,
-        IService_Notification notificationService) : base(errorHandler, logger, notificationService)
-    {
-        _workflowService = workflowService;
-        Items = new ObservableCollection<Model_Item>();
-    }
-
-    [RelayCommand]
-    private async Task LoadDataAsync()
-    {
-        if (IsBusy) return;
-        try
-        {
-            IsBusy = true;
-            StatusMessage = "Loading...";
-
-            var result = await _workflowService.GetDataAsync();
-            if (result.IsSuccess)
-            {
-                Items = new ObservableCollection<Model_Item>(result.Data);
-                StatusMessage = $"Loaded {Items.Count} items";
-            }
-            else
-            {
-                await _errorHandler.ShowUserErrorAsync(
-                    result.ErrorMessage,
-                    "Load Error",
-                    nameof(LoadDataAsync));
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorHandler.HandleException(
-                ex,
-                Enum_ErrorSeverity.Medium,
-                nameof(LoadDataAsync),
-                nameof(ViewModel_Receiving_Workflow));
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-}
-```
+- `README.md` — project overview and onboarding entry point
+- `.github/README.md` — AI customization taxonomy and maintenance map
+- `AGENTS.md` — repository agent contract and execution profile
+- `.github/prompts/README.md` — active prompt taxonomy and usage
+- `.github/instructions/README.md` — active instruction taxonomy and starting points
 
 ```csharp
 // ❌ FORBIDDEN - ViewModel calling DAO directly

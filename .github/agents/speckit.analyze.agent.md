@@ -22,7 +22,7 @@ Identify inconsistencies, duplications, ambiguities, and underspecified items ac
 
 ## Major Assumption Approval
 
-If the analysis would rely on a **major assumption** that could materially change conclusions or recommendations, do not proceed silently and do not create an assumption file by default. Instead, use the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/prompt-engineer-every-message.instructions.md`.
+If the analysis would rely on a **major assumption** that could materially change conclusions or recommendations, do not proceed silently and do not create an assumption file by default. Instead, use the same chat-facing `vscode_askQuestions` approval flow defined in `.github/instructions/workflow/prompt-engineer-every-message.instructions.md`.
 
 - Use the same readable markdown layout, `Enhanced Prompt Ready` approval step, and approval options from that instruction.
 - Put the blocked analysis task in `**🎯 Task**`.

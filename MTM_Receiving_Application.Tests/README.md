@@ -569,8 +569,8 @@ public class DatabaseTests : IClassFixture<DatabaseFixture>
 ### Project Architecture
 
 - **Constitution**: `../.specify/memory/constitution.md`
-- **MVVM Guide**: `../.github/instructions/mvvm-pattern.instructions.md`
-- **DAO Guide**: `../.github/instructions/dao-pattern.instructions.md`
+- **MVVM Guide**: `../.github/instructions/architecture/mvvm-pattern.instructions.md`
+- **DAO Guide**: `../.github/instructions/architecture/dao-pattern.instructions.md`
 - **Main README**: `../README.md`
 
 ### Testing Best Practices

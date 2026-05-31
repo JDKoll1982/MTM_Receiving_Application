@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-code-review.prompt.md
-- Instruction File: .github/instructions/copilotforms-code-review.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-code-review.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-code-review.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/code-review
 
 ## Review Scope

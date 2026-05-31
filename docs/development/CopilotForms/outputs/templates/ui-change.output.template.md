@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-ui-change.prompt.md
-- Instruction File: .github/instructions/copilotforms-ui-change.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-ui-change.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-ui-change.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/ui-change
 
 ## Catalog Context

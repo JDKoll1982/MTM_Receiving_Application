@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-naming-consistency-cleanup.prompt.md
-- Instruction File: .github/instructions/copilotforms-naming-consistency-cleanup.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-naming-consistency-cleanup.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-naming-consistency-cleanup.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/naming-consistency-cleanup
 
 ## Catalog Context

@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to implement the new feature, link the saved export and use `.github/prompts/copilotforms-new-feature-request.prompt.md`.
+When asking Copilot to implement the new feature, link the saved export and use `.github/prompts/copilotforms/copilotforms-new-feature-request.prompt.md`.

@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to diagnose or optimize performance, link the saved export and use `.github/prompts/copilotforms-performance-issue-optimization.prompt.md`.
+When asking Copilot to diagnose or optimize performance, link the saved export and use `.github/prompts/copilotforms/copilotforms-performance-issue-optimization.prompt.md`.

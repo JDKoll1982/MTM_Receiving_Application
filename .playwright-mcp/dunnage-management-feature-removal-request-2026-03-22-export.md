@@ -5,8 +5,8 @@
 - Feature: Dunnage Management
 - Sub-feature: Type Selection
 - Module: Module_Dunnage
-- Prompt File: .github/prompts/copilotforms-feature-removal-request.prompt.md
-- Instruction File: .github/instructions/copilotforms-feature-removal-request.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-feature-removal-request.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-feature-removal-request.instructions.md
 - Output Folder: docs/CopilotForms/outputs/feature-removal-request
 
 ## Human Summary

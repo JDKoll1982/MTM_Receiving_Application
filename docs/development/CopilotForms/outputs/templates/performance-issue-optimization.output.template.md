@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-performance-issue-optimization.prompt.md
-- Instruction File: .github/instructions/copilotforms-performance-issue-optimization.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-performance-issue-optimization.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-performance-issue-optimization.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/performance-issue-optimization
 
 ## Catalog Context

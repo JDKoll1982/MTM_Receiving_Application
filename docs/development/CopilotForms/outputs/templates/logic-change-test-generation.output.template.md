@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-logic-change-test-generation.prompt.md
-- Instruction File: .github/instructions/copilotforms-logic-change-test-generation.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-logic-change-test-generation.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-logic-change-test-generation.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/logic-change-test-generation
 
 ## Catalog Context

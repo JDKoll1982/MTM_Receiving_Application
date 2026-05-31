@@ -9,4 +9,4 @@ Suggested naming:
 - `YYYY-MM-DD-short-name.export.md`
 - `YYYY-MM-DD-short-name.export.json`
 
-When asking Copilot to generate a mockup artifact, link the saved export and use `.github/prompts/copilotforms-ui-mockup.prompt.md`.
+When asking Copilot to generate a mockup artifact, link the saved export and use `.github/prompts/copilotforms/copilotforms-ui-mockup.prompt.md`.

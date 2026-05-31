@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-improvement-refactor.prompt.md
-- Instruction File: .github/instructions/copilotforms-improvement-refactor.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-improvement-refactor.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-improvement-refactor.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/improvement-refactor
 
 ## Refactor Goal

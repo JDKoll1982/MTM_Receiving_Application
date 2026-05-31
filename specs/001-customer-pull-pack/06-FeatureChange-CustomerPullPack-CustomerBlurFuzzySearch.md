@@ -6,29 +6,30 @@ You are a senior C# / WinUI 3 / MVVM engineer working in `MTM_Receiving_Applicat
 Implement only this feature slice. Keep the change set focused, complete it end-to-end, and stop
 only after the targeted validation passes.
 
-<feature_name>
+## Feature
+
 Customer Pull n' Pack customer textbox shared fuzzy-search resolution on blur
-</feature_name>
 
-<implementation_order>
+## Implementation Order
+
 06
-</implementation_order>
 
-<why_this_runs_sixth>
+## Why This Runs Sixth
+
 The core Customer Pull n' Pack report, source-resolution split, multiselect behavior, waitlist
 batching, and fulfillment projection are already in place. This slice is a focused UX refinement
 that should build on the stabilized report view, not compete with the larger workflow changes.
-</why_this_runs_sixth>
 
-<confirmed_decisions>
+## Confirmed Decisions
+
 - The Customer Pull n' Pack customer textbox must reuse the shared fuzzy-search tool pattern already used elsewhere in the repo.
 - The fuzzy-search flow should activate only when the customer textbox loses focus.
 - The blur-triggered search should run only if the textbox text changed from the value captured when focus was gained.
 - If the textbox is blank when focus is lost, do not trigger fuzzy search.
 - The resolved textbox display must continue using the existing `ID - Name` format.
-</confirmed_decisions>
 
-<current_repo_state>
+## Current Repo State
+
 - Current customer input surface:
   - `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml`
   - `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml.cs`
@@ -51,25 +52,25 @@ that should build on the stabilized report view, not compete with the larger wor
 - Current feature-owned mock customer source remains the Customer Pull n' Pack mock catalog:
   - `Module_ShipRec_Tools/Contracts/Services/IService_CustomerPullPackMockDataCatalog.cs`
   - `Module_ShipRec_Tools/Services/CustomerPullPack/Service_CustomerPullPackMockDataCatalog.cs`
-</current_repo_state>
 
-<required_outcome>
+## Required Outcome
+
 When the user edits the Customer Pull n' Pack customer textbox and then tabs or clicks away, the
 feature should resolve the customer through the shared fuzzy-search flow only if the value changed
 since focus was gained and the blurred value is not blank. A single match should normalize the
 textbox automatically; multiple matches should use the shared picker; blank or unchanged blur
 should do nothing.
-</required_outcome>
 
-<primary_change_areas>
+## Primary Change Areas
+
 - Add a blur-trigger seam for the Customer Pull n' Pack customer AutoSuggestBox.
 - Track the textbox value at focus-gain time so blur can compare old versus new values.
 - Add a Customer Pull n' Pack customer-resolution method that follows the shared fuzzy-search UX pattern.
 - Add shared customer fuzzy-search candidate retrieval for live mode.
 - Preserve feature-owned mock customer discovery for mock mode instead of reintroducing shared mock-catalog coupling.
-</primary_change_areas>
 
-<files_that_must_change>
+## Files That Must Change
+
 - `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml`
 - `Module_ShipRec_Tools/Views/View_Tool_CustomerPullPackReport.xaml.cs`
 - `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReport.cs`
@@ -78,15 +79,15 @@ should do nothing.
 - `Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs`
 - `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_CustomerPullPackReportTests.cs`
 - `MTM_Receiving_Application.Tests/Unit/Module_Core/Services/Database/Service_InforVisualConnectTests.cs`
-</files_that_must_change>
 
-<files_to_add>
+## Files to Add
+
 - Add a shared Infor Visual SQL query for fuzzy customer search, for example:
   - `Database/InforVisualScripts/Queries/21_FuzzySearchCustomersByIdOrName.sql`
 - Add focused unit coverage for the new customer fuzzy-search path if existing service tests do not already cover it cleanly.
-</files_to_add>
 
-<recommended_target_shape>
+## Recommended Target Shape
+
 - Keep the existing `AutoSuggestBox` rather than replacing the control type.
 - Capture the customer textbox text on focus-gain in the report view layer.
 - On blur, compare the normalized current text against the focus-gain snapshot.
@@ -98,9 +99,9 @@ should do nothing.
 - Reuse `Model_FuzzySearchResult` and `Dialog_FuzzySearchPicker` for multi-candidate confirmation.
 - If there is exactly one candidate, accept it without showing the picker.
 - After confirmation, normalize the textbox to `ID - Name`.
-</recommended_target_shape>
 
-<implementation_steps>
+## Implementation Steps
+
 1. Add focus-gained and lost-focus handling for the Customer Pull n' Pack customer AutoSuggestBox.
 2. Capture the textbox text when focus is gained.
 3. On blur, normalize the current textbox text and compare it to the focus-gain snapshot.
@@ -116,9 +117,9 @@ should do nothing.
     - cancelled picker => keep the current textbox text unchanged and show a lightweight informational status
 11. Write the confirmed selection back to `CustomerSearchText` using the existing `ID - Name` display shape.
 12. Do not auto-refresh the report on blur in this slice; keep report loading on the existing explicit refresh flow.
-</implementation_steps>
 
-<task_checklist>
+## Task Checklist
+
 - [x] Add focus-gain snapshot tracking for the customer textbox.
 - [x] Add blur handling for the customer textbox.
 - [x] Skip fuzzy search when blur text is unchanged.
@@ -130,9 +131,9 @@ should do nothing.
 - [x] Normalize confirmed customer text to `ID - Name`.
 - [x] Preserve the current explicit refresh/report-load workflow.
 - [x] Add focused tests for blur-trigger and candidate-resolution behavior.
-</task_checklist>
 
-<validation>
+## Validation
+
 - Add report-viewmodel tests covering:
   - changed blur text triggers customer resolution
   - unchanged blur text does not trigger customer resolution
@@ -143,21 +144,20 @@ should do nothing.
 - Add focused shared-service tests covering the new live customer fuzzy-search path.
 - Confirm the customer textbox still compiles as an `AutoSuggestBox` and the blur event wiring builds cleanly.
 - Run the focused Customer Pull n' Pack report tests plus the shared Infor Visual service tests touched by the new fuzzy customer search.
-</validation>
 
-<guardrails>
+## Guardrails
+
 - Do not replace the shared fuzzy picker with a Customer Pull n' Pack-specific dialog.
 - Do not trigger fuzzy search on every keystroke in this slice.
 - Do not trigger fuzzy search on blur when the textbox is blank.
 - Do not trigger fuzzy search on blur when the text did not change during that focus session.
 - Do not auto-refresh the report after fuzzy resolution in this slice.
 - Do not reintroduce mock/live branching directly inside the report page or report viewmodel outside the established Customer Pull n' Pack source seams.
-</guardrails>
 
-<completion_criteria>
+## Completion Criteria
+
 - The Customer Pull n' Pack customer textbox uses the shared fuzzy-search pattern on blur.
 - Fuzzy search runs only when the textbox value changed since focus-gain and is nonblank on blur.
 - Single-candidate results normalize automatically; multi-candidate results use the shared picker.
 - The customer display remains in `ID - Name` format.
 - The existing explicit report refresh flow remains unchanged.
-</completion_criteria>

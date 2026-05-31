@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-new-feature-request.prompt.md
-- Instruction File: .github/instructions/copilotforms-new-feature-request.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-new-feature-request.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-new-feature-request.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/new-feature-request
 
 ## Catalog Context

@@ -5,8 +5,8 @@
 - Feature Id: feature-id
 - Feature Name: Feature Name
 - Module: Module_Name
-- Prompt File: .github/prompts/copilotforms-ui-mockup.prompt.md
-- Instruction File: .github/instructions/copilotforms-ui-mockup.instructions.md
+- Prompt File: .github/prompts/copilotforms/copilotforms-ui-mockup.prompt.md
+- Instruction File: .github/instructions/copilotforms/copilotforms-ui-mockup.instructions.md
 - Suggested Output Folder: docs/CopilotForms/outputs/ui-mockup
 
 ## Mockup Goal
