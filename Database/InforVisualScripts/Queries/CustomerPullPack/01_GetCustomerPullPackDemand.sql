@@ -14,7 +14,7 @@
 --   @CustomerId       nvarchar  Required Infor Visual customer ID.
 --   @DateFrom         datetime  Inclusive lower bound for pull date.
 --   @DateTo           datetime  Inclusive upper bound for pull date.
---   @SiteId           nvarchar  Site scope, defaults to '002'.
+--   @SiteId           nvarchar  Customer-order site scope, defaults to 'MTM2'.
 --   @WarehouseCode    nvarchar  Warehouse scope for CR_PART_LOCATION, defaults to '002'.
 --   @PartId           nvarchar  Optional exact parent part filter.
 --   @LocationId       nvarchar  Optional exact FG location filter.
@@ -26,7 +26,7 @@
 DECLARE @CustomerId     nvarchar(15) = 'VOLVO';
 DECLARE @DateFrom       datetime     = '2026-05-01';
 DECLARE @DateTo         datetime     = '2026-05-31';
-DECLARE @SiteId         nvarchar(15) = '002';
+DECLARE @SiteId         nvarchar(15) = 'MTM2';
 DECLARE @WarehouseCode  nvarchar(15) = '002';
 DECLARE @PartId         nvarchar(30) = NULL;
 DECLARE @LocationId     nvarchar(15) = NULL;

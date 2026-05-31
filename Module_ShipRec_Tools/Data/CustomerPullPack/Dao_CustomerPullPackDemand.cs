@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
 public class Dao_CustomerPullPackDemand
 {
     private const string DemandQueryPath = "CustomerPullPack/01_GetCustomerPullPackDemand.sql";
-    private const string DefaultSiteId = "002";
+    private const string DefaultSiteId = "MTM2";
     private const string DefaultWarehouseCode = "002";
 
     private readonly string _inforVisualConnectionString;

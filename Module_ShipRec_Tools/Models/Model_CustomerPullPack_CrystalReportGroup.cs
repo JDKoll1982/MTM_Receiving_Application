@@ -18,7 +18,7 @@ public sealed class Model_CustomerPullPack_CrystalReportGroup
     public string PrimaryPartId { get; set; } = string.Empty;
 
     public string GroupHeaderDisplay =>
-        string.IsNullOrWhiteSpace(CustomerOrderId)
+        string.IsNullOrWhiteSpace(PrimaryPartId) is false
             ? $"P/N:{PrimaryPartId}"
             : $"CO:{CustomerOrderId}";
 

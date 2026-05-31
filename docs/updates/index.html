@@ -19,11 +19,11 @@
                 </div>
             </div>
             <div class="hero-meta">
-                <span class="badge">Latest release 2.7.0</span>
+                <span class="badge">Latest release 2.7.5</span>
                 <span class="meta-text">Updated May 2026</span>
                 <div class="hero-actions">
                     <button type="button" class="button button-primary" data-scroll-target="#releases">View release history</button>
-                    <button type="button" class="button button-secondary" id="copy-version" data-copy-text="2.7.0">Copy latest version</button>
+                    <button type="button" class="button button-secondary" id="copy-version" data-copy-text="2.7.5">Copy latest version</button>
                 </div>
             </div>
         </header>
@@ -43,20 +43,20 @@
                 <section id="latest" class="card section-block">
                     <div class="section-heading">
                         <p class="section-label">Latest release</p>
-                        <h2>Version 2.7.0 at a glance</h2>
+                        <h2>Version 2.7.5 at a glance</h2>
                     </div>
                     <div class="highlight-grid">
                         <article class="highlight-card accent-blue">
-                            <p class="highlight-title">Reprint from History</p>
-                            <p class="highlight-text">Select any received load in History view and send it straight back to the label queue with one click — no re-entering data required.</p>
+                            <p class="highlight-title">Parent-part grouping</p>
+                            <p class="highlight-text">Customer Pull n' Pack now keeps related request lines together under the parent part so the report is easier to review before a pull request is created.</p>
                         </article>
                         <article class="highlight-card accent-green">
-                            <p class="highlight-title">Clear button stays active</p>
-                            <p class="highlight-text">After queuing a reprint, the Clear Label Data button re-enables automatically so you can clear the queue as soon as labels are printed.</p>
+                            <p class="highlight-title">Correct site data</p>
+                            <p class="highlight-text">Customer Pull n' Pack demand now reads from the intended customer-order site, which improves report accuracy for live review work.</p>
                         </article>
                         <article class="highlight-card accent-gold">
-                            <p class="highlight-title">DB migration required</p>
-                            <p class="highlight-text">An IT administrator must run migration script 09_Migration_receiving_reprint_flag.sql before the Reprint from History feature becomes available.</p>
+                            <p class="highlight-title">No user action required</p>
+                            <p class="highlight-text">This patch focuses on report accuracy and startup reliability. Operators do not need to change settings or run a migration after updating.</p>
                         </article>
                     </div>
                 </section>
@@ -78,12 +78,17 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><a class="release-link" href="2.7.5/index.html"><strong>2.7.5</strong></a></td>
+                                    <td>May 28, 2026</td>
+                                    <td>Customer Pull n' Pack now groups request lines by parent part, uses the correct customer-order site for live demand, and starts against the shared MySQL server more reliably.</td>
+                                </tr>
+                                <tr>
                                     <td><a class="release-link" href="2.7.0/index.html"><strong>2.7.0</strong></a></td>
                                     <td>May 14, 2026</td>
                                     <td>Reprint any previously received load from history with one click, Browse buttons on all label path and shared path settings replace manual typing, ten more settings pages are reachable from the title-bar search, and the navigation footer label shortcuts were redesigned with clearer letter icons.</td>
                                 </tr>
                                 <tr>
-                                    <td><a class="release-link" href="2.7.0/index.html"><strong>2.7.0</strong></a></td>
+                                    <td><a class="release-link" href="2.6.0/index.html"><strong>2.6.0</strong></a></td>
                                     <td>January 2025</td>
                                     <td>Label file paths are now user-specific instead of application-wide. Each user can configure their own paths for Receiving, Mini-Receiving, Volvo, and Dunnage labels.</td>
                                 </tr>
@@ -123,7 +128,7 @@
                                     <td>Purchase Receipt Entry support tools, a direct save button on Receiving reconciliation settings, and a clearer reconciliation process guide</td>
                                 </tr>
                                 <tr>
-                                    <td><a class="release-link" href="1.4.1/index.html"><strong>1.4.2</strong></a></td>
+                                    <td><a class="release-link" href="1.4.1/index.html"><strong>1.4.1</strong></a></td>
                                     <td>April 29, 2026</td>
                                     <td>Label buttons now open templates more cleanly in LabelView, with Explorer shortcuts that select saved files and a tidier workflow footer layout</td>
                                 </tr>

@@ -811,7 +811,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     {
         var hasSelectedLineForGroup = DemandLines.Any(line =>
             line.IsSelected
-            && string.Equals(line.CustomerOrderId, groupKey, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
         );
 
         if (hasSelectedLineForGroup is false)
@@ -819,7 +819,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             foreach (
                 var line in DemandLines.Where(line =>
                     string.Equals(
-                        line.CustomerOrderId,
+                        line.ParentPartId,
                         groupKey,
                         StringComparison.OrdinalIgnoreCase
                     )
@@ -840,7 +840,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
         foreach (
             var line in DemandLines.Where(line =>
-                string.Equals(line.CustomerOrderId, groupKey, StringComparison.OrdinalIgnoreCase)
+                string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
             )
         )
         {
@@ -853,7 +853,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
         var focusedLine = DemandLines.FirstOrDefault(line =>
             line.IsSelected
-            && string.Equals(line.CustomerOrderId, groupKey, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
         );
         if (focusedLine is not null)
         {
@@ -952,7 +952,7 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         var matchingGroup = CrystalReportGroups.FirstOrDefault(group =>
             string.Equals(
                 group.GroupKey,
-                selectedLine.CustomerOrderId,
+                selectedLine.ParentPartId,
                 StringComparison.OrdinalIgnoreCase
             )
         );
@@ -1091,16 +1091,16 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     }
 
     // Implements Workflow 1.1 and Workflow 2.1 by projecting live demand and location state
-    // into the crystal-style report surface used for report review and multi-row selection by customer order.
+    // into the crystal-style report surface used for report review and multi-row selection by parent part.
     private void RefreshCrystalReportGroups()
     {
         var groupedDemandLines = DemandLines
-            .GroupBy(static line => line.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
+            .GroupBy(static line => line.ParentPartId, StringComparer.OrdinalIgnoreCase)
             .Select(group =>
             {
                 var groupLines = group
                     .OrderBy(static line => line.PullDate)
-                    .ThenBy(static line => line.ParentPartId, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(static line => line.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
                     .ToList();
                 var firstLine = groupLines[0];
 
@@ -1112,7 +1112,9 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                         var firstOption = locationGroup.First();
                         return new Model_CustomerPullPack_CrystalSubPartLocation
                         {
-                            PartId = group.Key,
+                            PartId = string.IsNullOrWhiteSpace(firstOption.ParentPartId)
+                                ? firstLine.ParentPartId
+                                : firstOption.ParentPartId,
                             LocationId = firstOption.LocationId,
                             PartLocationId = firstOption.LocationId,
                             OnHandQuantity = locationGroup.Max(static option =>
@@ -1150,9 +1152,9 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                 return new Model_CustomerPullPack_CrystalReportGroup
                 {
                     GroupKey = group.Key,
-                    CustomerOrderId = group.Key,
-                    PrimaryPartId = firstLine.ParentPartId,
-                    QuantityToPack = groupLines.Sum(static line => line.QuantityToPack),
+                    CustomerOrderId = firstLine.CustomerOrderId,
+                    PrimaryPartId = group.Key,
+                    QuantityToPack = groupLines.Sum(static line => line.ShipQuantity),
                     QuantitySelected = subPartLocations
                         .Where(static location => location.IsSelected)
                         .Sum(static location => location.OnHandQuantity),

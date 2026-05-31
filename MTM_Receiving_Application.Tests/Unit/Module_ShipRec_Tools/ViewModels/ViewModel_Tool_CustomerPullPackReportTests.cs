@@ -264,7 +264,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.SelectedDemandLine.Should().BeNull();
         viewModel.ActiveCustomerId.Should().Be("VOLVO");
         viewModel.CrystalReportGroups.Should().HaveCount(2);
-        viewModel.CrystalReportGroups[0].CustomerOrderId.Should().Be("CO-1001");
+        viewModel.CrystalReportGroups[0].PrimaryPartId.Should().Be("PART-100");
     }
 
     [Fact]
@@ -345,17 +345,17 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
 
-        viewModel.CrystalReportGroups.Should().HaveCount(2);
+        viewModel.CrystalReportGroups.Should().ContainSingle();
         var group = viewModel.CrystalReportGroups[0];
-        group.CustomerOrderId.Should().Be("CO-1001");
-        group.QuantityToPack.Should().Be(24);
+        group.PrimaryPartId.Should().Be("PART-100");
+        group.QuantityToPack.Should().Be(34);
         group.QuantitySelected.Should().Be(0);
-        group.RequestLines.Should().ContainSingle();
-        group.SubPartLocations.Should().ContainSingle();
+        group.RequestLines.Should().HaveCount(2);
+        group.SubPartLocations.Should().HaveCount(2);
         group
             .SubPartLocations.Single(location => location.LocationId == "SUB-01")
             .OnHandQuantity.Should()
-            .Be(12);
+            .Be(15);
     }
 
     [Fact]
@@ -544,7 +544,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         viewModel
             .DemandLines.Single(line => line.SourceLineKey == "LINE-1")
@@ -613,7 +613,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         viewModel.DemandLines[0].IsSelected.Should().BeFalse();
         viewModel
@@ -691,7 +691,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         viewModel.ApplyCrystalRequestLineSelection(["LINE-2"]);
 
@@ -749,7 +749,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         viewModel.ApplyCrystalRequestLineSelection([]);
 
@@ -814,7 +814,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -912,8 +912,8 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1", "LINE-2"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1002", ["SUB-02"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-200", ["SUB-02"]);
 
         viewModel.SelectedDemandLines.Should().HaveCount(2);
         viewModel
@@ -1018,7 +1018,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1", "LINE-2"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01", "SUB-02"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -1095,7 +1095,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01", "SUB-02"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -1161,7 +1161,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01", "SUB-02"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01", "SUB-02"]);
 
         await viewModel.CreateOrUpdateWaitlistCommand.ExecuteAsync(null);
 
@@ -1237,7 +1237,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
         viewModel.CustomerSearchText = "VOLVO - Volvo Group";
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         viewModel
             .DemandLines.Single(line => line.ParentPartId == "PART-200")
@@ -1382,7 +1382,7 @@ public sealed class ViewModel_Tool_CustomerPullPackReportTests
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
         viewModel.ApplyCrystalRequestLineSelection(["LINE-1"]);
-        viewModel.ApplyCrystalLocationSelection("CO-1001", ["SUB-01"]);
+        viewModel.ApplyCrystalLocationSelection("PART-100", ["SUB-01"]);
 
         await viewModel.RefreshReportCommand.ExecuteAsync(null);
 

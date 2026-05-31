@@ -28,7 +28,6 @@ public class Query_CustomerPullPackReportHandler
     /// <summary>
     /// Initializes a new instance of the <see cref="Query_CustomerPullPackReportHandler"/> class.
     /// </summary>
-    /// <param name="demandDao"></param>
     /// <param name="logger"></param>
     public Query_CustomerPullPackReportHandler(
         IService_CustomerPullPackDemandSource demandSource,

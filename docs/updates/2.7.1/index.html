@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 2.7.5 — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 2.7.5</h1>
+                    <p class="hero-copy">This patch refines the Customer Pull n' Pack report so related lines stay grouped under the parent part, the live demand uses the intended customer-order site, and startup points at the shared MySQL server more reliably.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 2.7.5</span>
+                <span class="meta-text">Released May 28, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="2.7.5">Copy version</button>
+                <p class="sidebar-note">Use this version number when reporting an issue to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What's improved in 2.7.5</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Parent-part report grouping</p>
+                            <p class="highlight-text">Customer Pull n' Pack now keeps related request lines together under the parent part, so the report layout better matches how material is reviewed and pulled.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Correct live demand source</p>
+                            <p class="highlight-text">The Customer Pull n' Pack demand query now uses the intended customer-order site, which improves the accuracy of the live report data shown to operators.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">No user action required</p>
+                            <p class="highlight-text">This patch focuses on report accuracy and connection reliability. Operators do not need to change settings or run a migration after updating.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details for this patch</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Customer Pull n' Pack lines now group by parent part</summary>
+                        <p>
+                            The crystal-style Customer Pull n' Pack review now groups request lines by
+                            <strong>parent part</strong> instead of splitting the same part across separate customer-order groups.
+                            The <strong>QTY TO PACK</strong> value now reflects the combined ship quantity for the grouped parent part,
+                            which makes the report easier to review before you choose locations.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Sub-part location selection now stays inside the active parent-part group</summary>
+                        <p>
+                            When you choose locations in the <strong>SUB PARTS ON HAND</strong> section, the selection now stays tied to
+                            the active parent-part group instead of following customer-order-only grouping. This keeps selected locations
+                            aligned with the part you are actually reviewing.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Customer Pull n' Pack demand now reads from the intended site</summary>
+                        <p>
+                            The live Customer Pull n' Pack demand query now uses the intended customer-order site for report data.
+                            This helps prevent mismatched or incomplete demand when the report is refreshed from the live source.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Startup now points to the shared MySQL server</summary>
+                        <p>
+                            Application startup now uses the shared MySQL server at <strong>localhost:3306</strong>
+                            instead of the old localhost default. The startup path still uses the existing
+                            <strong>mtm_receiving_application</strong> database that the application expects.
+                        </p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>How this patch helps daily work</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Clearer pull review</h3>
+                            <p>When the same parent part spans multiple request lines, the report now keeps those lines together so it is easier to understand the full pull picture before taking action.</p>
+                        </article>
+                        <article>
+                            <h3>Fewer misleading selections</h3>
+                            <p>Location choices now stay scoped to the parent part being reviewed, which reduces the chance of selecting the wrong sub-part location context.</p>
+                        </article>
+                        <article>
+                            <h3>More dependable live data</h3>
+                            <p>Using the intended customer-order site and the shared MySQL server improves the chances that operators see the right report data when the screen loads or refreshes.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>No extra steps after updating</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <p>After installing the new version, open Customer Pull n' Pack as normal. If the report still appears to use the old grouping or does not load, close and reopen the application and report version <strong>2.7.5</strong> to MTM IT support.</p>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Contact MTM IT support</h2>
+                    </div>
+                    <p>If something does not look right after updating, note the version number shown at the top of this page (<strong>2.7.5</strong>) and report it to your supervisor or the MTM IT support team.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

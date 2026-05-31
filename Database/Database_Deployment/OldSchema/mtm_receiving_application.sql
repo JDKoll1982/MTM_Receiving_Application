@@ -7790,7 +7790,7 @@ CREATE TABLE `software_version` (
 --
 
 INSERT INTO `software_version` (`id`, `required_version`, `created_at`, `updated_at`, `updated_by`) VALUES
-(1, '2.6.0', '2026-05-04 06:43:30', '2026-05-12 09:59:04', 'seed');
+(1, '2.7.5', '2026-05-04 06:43:30', '2026-05-12 09:59:04', 'seed');
 
 -- --------------------------------------------------------
 

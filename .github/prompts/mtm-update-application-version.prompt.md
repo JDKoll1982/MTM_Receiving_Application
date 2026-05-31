@@ -6,7 +6,7 @@ description: "Analyze uncommitted MTM changes, choose the best semantic version 
 
 ## Task
 
-When I ask to change the application version, determine the most appropriate semantic version bump from the current uncommitted changes, then update the application and SQL deployment artifacts consistently and publish an end-user-friendly update page for that version.
+When I ask to change the application version, determine the most appropriate semantic version bump from the current uncommitted changes, then update the application and SQL deployment artifacts consistently and publish an end-user-friendly update page for that version. Before writing the new update page, compare prior release documentation so you do not repeat notes that were already published unless the current diff meaningfully changes that earlier feature.
 
 ## Step 1 - Inspect Current Changes
 
@@ -55,6 +55,15 @@ If additional version sources are discovered later in the repo, update them too 
 
 After choosing the new version, create a versioned update page that explains the current patch in plain language for operators and other end users.
 
+Before drafting the new page, review prior release documentation:
+
+1. `docs/updates/index.html`
+2. The latest existing versioned release page
+3. Any earlier release page whose summary or body appears to cover the same feature area
+
+Use that review to avoid duplicating previously published release notes.
+If the current diff fixes, refines, or extends a feature that was already documented, describe it as an update to that existing feature and explain what changed in this release.
+
 Create or update these files:
 
 1. `docs/updates/{version}/index.html`
@@ -77,6 +86,8 @@ Requirements for the versioned update page:
 - Use `../../../Assets/MTMLogo.jpg` in the page header.
 - Keep the content end-user focused, not developer focused.
 - Summarize only changes that are supported by the actual uncommitted diff.
+- Avoid repeating unchanged release notes that were already documented in previous version pages.
+- If a previously documented feature changed again, describe the new refinement or fix rather than restating the earlier feature as brand new.
 - Group the update into clear sections such as highlights, what changed, why it matters, and any action the user should take.
 - If no user action is required, say so explicitly.
 - Reference the shared `../styles.css` and `../app.js` files from each versioned page rather than embedding everything inline.
@@ -97,6 +108,7 @@ Requirements for `docs/updates/index.html`:
 - Confirm the generated HTML page matches the chosen version folder name and references the shared `../styles.css` and `../app.js` files.
 - Confirm `docs/updates/index.html` includes the new version entry with the correct link and summary.
 - Confirm the page uses the shared MTM logo path correctly.
+- Confirm the new release page was compared against previous release documentation and does not duplicate previously published notes unless it clearly calls out a follow-up change to an existing feature.
 - Do not guess a prerelease suffix unless the user asked for one.
 
 ## Step 6 - Summarize
