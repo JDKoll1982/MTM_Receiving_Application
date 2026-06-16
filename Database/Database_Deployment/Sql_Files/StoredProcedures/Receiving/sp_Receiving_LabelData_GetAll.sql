@@ -37,6 +37,8 @@ BEGIN
         received_date,
         created_at,
         user_id,
+        user_set_customer_name,
+        user_set_variable,
         employee_number,
         is_quality_hold_required,
         is_quality_hold_acknowledged,

@@ -33,7 +33,7 @@ changes ship.
 ## Current Repo State
 
 - `appsettings.json` lines 17–20 contain plaintext credentials for both databases:
-  - `"MySql": "Server=localhost;...Uid=root;Pwd=root;..."`
+  - `"MySql": "Server=172.16.1.104;...Uid=root;Pwd=root;..."`
   - `"InforVisual": "...User Id=SHOP2;Password=SHOP;..."`
 - `appsettings.json` is tracked by git and not listed in `.gitignore`.
 - `appsettings.Development.json` exists in the repo root and is intended for dev-only overrides.

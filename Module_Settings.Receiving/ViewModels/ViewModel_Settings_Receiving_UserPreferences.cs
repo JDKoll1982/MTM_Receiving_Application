@@ -51,6 +51,19 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     [ObservableProperty]
     private string? _selectedIgnoredLocation;
 
+    [ObservableProperty]
+    private ObservableCollection<Model_ReceivingVendorVariableMapping> _vendorVariableMappings =
+        new();
+
+    [ObservableProperty]
+    private Model_ReceivingVendorVariableMapping? _selectedVendorVariableMapping;
+
+    [ObservableProperty]
+    private string _pendingVendorName = string.Empty;
+
+    [ObservableProperty]
+    private string _pendingVariableName = string.Empty;
+
     // Test input/output
     [ObservableProperty]
     private string _testInput = string.Empty;
@@ -119,6 +132,9 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             var ignoredLocationsJson = await GetStringSettingAsync(
                 ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson
             );
+            var vendorMappingsJson = await GetStringSettingAsync(
+                ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
+            );
 
             var rulesToApply = new List<Model_PartNumberPrefixRule>();
 
@@ -144,6 +160,7 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
 
             ReplacePrefixRules(rulesToApply);
             ReplaceIgnoredLocations(DeserializeIgnoredLocations(ignoredLocationsJson));
+            ReplaceVendorVariableMappings(DeserializeVendorVariableMappings(vendorMappingsJson));
             PendingIgnoredLocation = string.Empty;
         }
         catch (Exception ex)
@@ -392,6 +409,10 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
                 ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson,
                 JsonSerializer.Serialize(IgnoredReconciliationLocations.ToArray())
             );
+            await SaveSettingAsync(
+                ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson,
+                JsonSerializer.Serialize(VendorVariableMappings.ToArray())
+            );
 
             StatusMessage = "Saved successfully";
             _logger.LogInfo("Receiving user preferences saved successfully");
@@ -519,6 +540,113 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         SelectedIgnoredLocation = null;
     }
 
+    private void ReplaceVendorVariableMappings(
+        IEnumerable<Model_ReceivingVendorVariableMapping> mappings
+    )
+    {
+        VendorVariableMappings = new ObservableCollection<Model_ReceivingVendorVariableMapping>(
+            mappings
+                .Where(mapping =>
+                    string.IsNullOrWhiteSpace(mapping.VendorName) is false
+                    && string.IsNullOrWhiteSpace(mapping.VariableName) is false
+                )
+                .Select(mapping => new Model_ReceivingVendorVariableMapping
+                {
+                    VendorName = mapping.VendorName.Trim(),
+                    VariableName = mapping.VariableName.Trim(),
+                })
+                .GroupBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .OrderBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
+        );
+
+        SelectedVendorVariableMapping = null;
+    }
+
+    partial void OnSelectedVendorVariableMappingChanged(Model_ReceivingVendorVariableMapping? value)
+    {
+        if (value is null)
+        {
+            PendingVendorName = string.Empty;
+            PendingVariableName = string.Empty;
+        }
+        else
+        {
+            PendingVendorName = value.VendorName;
+            PendingVariableName = value.VariableName;
+        }
+
+        OnPropertyChanged(nameof(VendorVariableActionText));
+    }
+
+    public string VendorVariableActionText =>
+        SelectedVendorVariableMapping is null ? "Add Mapping" : "Update Mapping";
+
+    [RelayCommand]
+    private void SaveVendorVariableMapping()
+    {
+        var vendorName = PendingVendorName.Trim();
+        var variableName = PendingVariableName.Trim();
+
+        if (string.IsNullOrWhiteSpace(vendorName) || string.IsNullOrWhiteSpace(variableName))
+        {
+            ShowStatus(
+                "Enter both a vendor name and variable name before saving.",
+                InfoBarSeverity.Warning
+            );
+            return;
+        }
+
+        var target = SelectedVendorVariableMapping;
+        if (target is null)
+        {
+            target = VendorVariableMappings.FirstOrDefault(mapping =>
+                string.Equals(mapping.VendorName, vendorName, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (target is null)
+            {
+                target = new Model_ReceivingVendorVariableMapping();
+                VendorVariableMappings.Add(target);
+            }
+        }
+
+        target.VendorName = vendorName;
+        target.VariableName = variableName;
+
+        var duplicateMappings = VendorVariableMappings
+            .Where(mapping =>
+                !ReferenceEquals(mapping, target)
+                && string.Equals(mapping.VendorName, vendorName, StringComparison.OrdinalIgnoreCase)
+            )
+            .ToList();
+
+        foreach (var duplicateMapping in duplicateMappings)
+        {
+            VendorVariableMappings.Remove(duplicateMapping);
+        }
+
+        SelectedVendorVariableMapping = target;
+        ShowStatus($"Saved vendor variable mapping for '{vendorName}'.", InfoBarSeverity.Success);
+    }
+
+    [RelayCommand]
+    private void RemoveVendorVariableMapping()
+    {
+        if (SelectedVendorVariableMapping is null)
+        {
+            return;
+        }
+
+        var removedVendorName = SelectedVendorVariableMapping.VendorName;
+        VendorVariableMappings.Remove(SelectedVendorVariableMapping);
+        SelectedVendorVariableMapping = null;
+        ShowStatus(
+            $"Removed vendor variable mapping for '{removedVendorName}'.",
+            InfoBarSeverity.Success
+        );
+    }
+
     private static IEnumerable<string> DeserializeIgnoredLocations(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
@@ -535,6 +663,35 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             return json.Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(location => location.Trim());
         }
+    }
+
+    private static IEnumerable<Model_ReceivingVendorVariableMapping> DeserializeVendorVariableMappings(
+        string json
+    )
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [CreateDefaultVendorVariableMapping()];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Model_ReceivingVendorVariableMapping[]>(json)
+                ?? [CreateDefaultVendorVariableMapping()];
+        }
+        catch
+        {
+            return [CreateDefaultVendorVariableMapping()];
+        }
+    }
+
+    private static Model_ReceivingVendorVariableMapping CreateDefaultVendorVariableMapping()
+    {
+        return new Model_ReceivingVendorVariableMapping
+        {
+            VendorName = "Skana",
+            VariableName = "DM #",
+        };
     }
 
     private static string NormalizeLocationForMatch(string? location)

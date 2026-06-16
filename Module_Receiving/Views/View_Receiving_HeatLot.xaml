@@ -57,7 +57,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="models:Model_ReceivingLoad">
                                 <Grid
                                     MinHeight="90"
                                     Margin="0,0,4,4"
@@ -81,14 +81,27 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <TextBox
+                                    <StackPanel
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
-                                        AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.HeatLotAccessibilityName}"
-                                        behaviors:Behavior_TextBoxCharacterCasing.ForceUppercase="True"
-                                        Header="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldHeaderText}"
-                                        PlaceholderText="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldPlaceholderText}"
-                                        Text="{Binding HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        Orientation="Horizontal"
+                                        Spacing="12">
+                                        <TextBox
+                                            Width="240"
+                                            AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.HeatLotAccessibilityName}"
+                                            behaviors:Behavior_TextBoxCharacterCasing.ForceUppercase="True"
+                                            Header="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldHeaderText}"
+                                            PlaceholderText="{Binding ElementName=Root, Path=ViewModel.HeatLotFieldPlaceholderText}"
+                                            Text="{x:Bind HeatLotNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                        <TextBox
+                                            Width="180"
+                                            AutomationProperties.Name="{x:Bind UserSetVariableAccessibilityName, Mode=OneWay}"
+                                            Header="{x:Bind UserSetVariableFieldHeaderText, Mode=OneWay}"
+                                            PlaceholderText="{x:Bind UserSetVariableFieldPlaceholderText, Mode=OneWay}"
+                                            Text="{x:Bind UserSetVariable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="{x:Bind UserSetVariableFieldVisibility, Mode=OneWay}" />
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

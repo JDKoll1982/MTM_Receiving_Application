@@ -328,6 +328,126 @@
                     </StackPanel>
                 </Border>
 
+                <Border
+                    Padding="20"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Vendor Variable Prompts" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Define which vendor names should show the extra guided receiving textbox and what variable label appears beside it."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="320" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Spacing="12">
+                                <Border
+                                    Height="280"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <ListView
+                                        ItemsSource="{x:Bind ViewModel.VendorVariableMappings, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedVendorVariableMapping, Mode=TwoWay}"
+                                        SelectionMode="Single">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="models:Model_ReceivingVendorVariableMapping">
+                                                <Grid Padding="12,8">
+                                                    <StackPanel Spacing="2">
+                                                        <TextBlock
+                                                            FontSize="14"
+                                                            FontWeight="SemiBold"
+                                                            Text="{x:Bind VendorName, Mode=OneWay}" />
+                                                        <TextBlock
+                                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                                            Text="{x:Bind VariableName, Mode=OneWay}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Border>
+
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{x:Bind ViewModel.SaveVendorVariableMappingCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                            <TextBlock Text="{x:Bind ViewModel.VendorVariableActionText, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{x:Bind ViewModel.RemoveVendorVariableMappingCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon FontSize="14" Glyph="&#xE74D;" />
+                                            <TextBlock Text="Remove" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <Border
+                                Grid.Column="1"
+                                Padding="20"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel Spacing="16">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock
+                                            FontSize="16"
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            Text="Prompt Configuration" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="Select a mapping to edit, or enter a new vendor and variable label." />
+                                    </StackPanel>
+
+                                    <TextBox
+                                        Header="Vendor Name"
+                                        PlaceholderText="e.g., Skana"
+                                        Text="{x:Bind ViewModel.PendingVendorName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBox
+                                        Header="Variable Label"
+                                        PlaceholderText="e.g., DM #"
+                                        Text="{x:Bind ViewModel.PendingVariableName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        TextWrapping="Wrap"
+                                        Text="When the guided PO's vendor name contains the configured vendor text, Receiving will show the additional textbox on the Heat/Lot step." />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <!--  Test Padding Card  -->
                 <Border
                     Padding="20"

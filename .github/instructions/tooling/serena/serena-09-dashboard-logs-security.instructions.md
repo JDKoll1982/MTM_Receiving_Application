@@ -21,7 +21,7 @@ the current session.
 When Serena is running:
 
 ```
-http://localhost:24282/dashboard/index.html
+http://172.16.1.104:24282/dashboard/index.html
 ```
 
 A higher port (24283, 24284, etc.) is used if 24282 is unavailable.
@@ -60,7 +60,7 @@ Or at startup:
 serena start-mcp-server --open-web-dashboard false
 ```
 
-The dashboard still runs at `http://localhost:24282` — you can open it manually when needed.
+The dashboard still runs at `http://172.16.1.104:24282` — you can open it manually when needed.
 
 ---
 
@@ -88,7 +88,7 @@ Official docs: <https://oraios.github.io/serena/02-usage/065_logs.html>
 
 ### Accessing Logs
 
-**Via Dashboard:** Navigate to `http://localhost:24282/dashboard` → **Logs** tab.
+**Via Dashboard:** Navigate to `http://172.16.1.104:24282/dashboard` → **Logs** tab.
 
 **Via GUI Tool:** If enabled, the native window shows live logs.
 

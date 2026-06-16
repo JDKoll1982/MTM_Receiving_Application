@@ -336,6 +336,8 @@ public static class ReceivingSettingsKeys
     {
         public const string IgnoredReconciliationLocationsJson =
             "Receiving.UserPreferences.IgnoredReconciliationLocationsJson";
+        public const string VendorVariableMappingsJson =
+            "Receiving.UserPreferences.VendorVariableMappingsJson";
     }
 
     public static class Shortcuts

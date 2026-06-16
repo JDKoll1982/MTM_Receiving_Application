@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS receiving_label_data (
     remaining_quantity INT NULL COMMENT 'Remaining open quantity on the PO line',
     employee_number INT NOT NULL DEFAULT 0 COMMENT 'Employee ID who processed the receiving',
     user_id VARCHAR(100) NULL COMMENT 'Application user identifier',
+    user_set_customer_name VARCHAR(255) NULL COMMENT 'Matched vendor/customer name that enables the user-set variable field',
+    user_set_variable VARCHAR(255) NULL COMMENT 'User-entered variable value captured for the matched vendor/customer',
     heat VARCHAR(100) NULL COMMENT 'Heat/lot number for material traceability',
     received_date DATETIME NULL COMMENT 'Full timestamp when the record was received',
     transaction_date DATE NOT NULL COMMENT 'Date portion of the receiving transaction',

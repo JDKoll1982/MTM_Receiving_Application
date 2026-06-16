@@ -288,6 +288,8 @@ public static class ReceivingSettingsDefaults
 
             // User Preferences defaults
             [ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson] = "[]",
+            [ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson] =
+                "[{\"VendorName\":\"Skana\",\"VariableName\":\"DM #\"}]",
         };
 
     public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } =

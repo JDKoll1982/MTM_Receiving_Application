@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -41,6 +43,20 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _heatLotFieldPlaceholderText = "Enter heat/lot number or leave blank";
+
+        [ObservableProperty]
+        private Visibility _userSetVariableFieldVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        private string _userSetVariableFieldHeaderText = "User Set Variable";
+
+        [ObservableProperty]
+        private string _userSetVariableFieldPlaceholderText = "Enter variable value";
+
+        [ObservableProperty]
+        private string _userSetVariableAccessibilityName = "User Set Variable";
+
+        private Model_ReceivingVendorVariableMapping? _activeVendorVariableMapping;
 
         // Accessibility Properties
         [ObservableProperty]
@@ -121,6 +137,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
+            await RefreshVendorVariableFieldAsync();
+
             await Task.CompletedTask;
         }
 
@@ -166,6 +184,121 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 {
                     load.HeatLotNumber = "Nothing Entered";
                 }
+            }
+        }
+
+        private async Task RefreshVendorVariableFieldAsync()
+        {
+            try
+            {
+                var vendorMappingsJson = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
+                );
+                var vendorMappings = DeserializeVendorVariableMappings(vendorMappingsJson);
+                var currentVendorName = _workflowService.CurrentPOVendor;
+
+                _activeVendorVariableMapping = vendorMappings
+                    .Where(mapping => mapping.MatchesVendorName(currentVendorName))
+                    .OrderByDescending(mapping => mapping.VendorName.Length)
+                    .ThenBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
+                    .FirstOrDefault();
+
+                if (_activeVendorVariableMapping is null)
+                {
+                    UserSetVariableFieldVisibility = Visibility.Collapsed;
+                    UserSetVariableFieldHeaderText = "User Set Variable";
+                    UserSetVariableFieldPlaceholderText = "Enter variable value";
+                    UserSetVariableAccessibilityName = "User Set Variable";
+
+                    foreach (var load in Loads)
+                    {
+                        load.UserSetCustomerName = string.Empty;
+                        load.UserSetVariable = string.Empty;
+                        load.UserSetVariableFieldVisibility = Visibility.Collapsed;
+                        load.UserSetVariableFieldHeaderText = "User Set Variable";
+                        load.UserSetVariableFieldPlaceholderText = "Enter variable value";
+                        load.UserSetVariableAccessibilityName = "User Set Variable";
+                    }
+
+                    return;
+                }
+
+                UserSetVariableFieldVisibility = Visibility.Visible;
+                UserSetVariableFieldHeaderText = _activeVendorVariableMapping.VariableName;
+                UserSetVariableFieldPlaceholderText =
+                    $"Enter {_activeVendorVariableMapping.VariableName}";
+                UserSetVariableAccessibilityName = _activeVendorVariableMapping.VariableName;
+
+                foreach (var load in Loads)
+                {
+                    if (
+                        string.Equals(
+                            load.UserSetCustomerName,
+                            _activeVendorVariableMapping.VendorName,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                        is false
+                    )
+                    {
+                        load.UserSetVariable = string.Empty;
+                    }
+
+                    load.UserSetCustomerName = _activeVendorVariableMapping.VendorName;
+                    load.UserSetVariableFieldVisibility = Visibility.Visible;
+                    load.UserSetVariableFieldHeaderText = _activeVendorVariableMapping.VariableName;
+                    load.UserSetVariableFieldPlaceholderText =
+                        $"Enter {_activeVendorVariableMapping.VariableName}";
+                    load.UserSetVariableAccessibilityName =
+                        _activeVendorVariableMapping.VariableName;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading vendor variable mapping: {ex.Message}", ex);
+                UserSetVariableFieldVisibility = Visibility.Collapsed;
+                UserSetVariableFieldHeaderText = "User Set Variable";
+                UserSetVariableFieldPlaceholderText = "Enter variable value";
+                UserSetVariableAccessibilityName = "User Set Variable";
+            }
+        }
+
+        private static IEnumerable<Model_ReceivingVendorVariableMapping> DeserializeVendorVariableMappings(
+            string json
+        )
+        {
+            try
+            {
+                return string.IsNullOrWhiteSpace(json)
+                    ?
+                    [
+                        new Model_ReceivingVendorVariableMapping
+                        {
+                            VendorName = "Skana",
+                            VariableName = "DM #",
+                        },
+                    ]
+                    : System.Text.Json.JsonSerializer.Deserialize<Model_ReceivingVendorVariableMapping[]>(
+                        json
+                    )
+                        ??
+                        [
+                            new Model_ReceivingVendorVariableMapping
+                            {
+                                VendorName = "Skana",
+                                VariableName = "DM #",
+                            },
+                        ];
+            }
+            catch
+            {
+                return
+                [
+                    new Model_ReceivingVendorVariableMapping
+                    {
+                        VendorName = "Skana",
+                        VariableName = "DM #",
+                    },
+                ];
             }
         }
 

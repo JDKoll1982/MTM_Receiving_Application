@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models
@@ -78,6 +80,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         [ObservableProperty]
         private string? _userId;
+
+        [ObservableProperty]
+        private string _userSetCustomerName = string.Empty;
+
+        [ObservableProperty]
+        private string _userSetVariable = string.Empty;
+
+        [ObservableProperty]
+        [JsonIgnore]
+        private Visibility _userSetVariableFieldVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        [JsonIgnore]
+        private string _userSetVariableFieldHeaderText = "User Set Variable";
+
+        [ObservableProperty]
+        [JsonIgnore]
+        private string _userSetVariableFieldPlaceholderText = "Enter variable value";
+
+        [ObservableProperty]
+        [JsonIgnore]
+        private string _userSetVariableAccessibilityName = "User Set Variable";
 
         [ObservableProperty]
         private int _employeeNumber;

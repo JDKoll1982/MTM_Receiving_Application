@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS receiving_history (
     unit_of_measure VARCHAR(20) NULL COMMENT 'Unit of measure snapshot',
     remaining_quantity INT NULL COMMENT 'Remaining PO quantity snapshot',
     user_id VARCHAR(100) NULL COMMENT 'Windows user / app user id snapshot',
+    user_set_customer_name VARCHAR(255) NULL COMMENT 'Matched vendor/customer name that enables the user-set variable field',
+    user_set_variable VARCHAR(255) NULL COMMENT 'User-entered variable value captured for the matched vendor/customer',
     packages_per_load INT NULL COMMENT 'Number of packages per load/skid',
     package_type_name VARCHAR(50) NULL COMMENT 'Package type description (Skid, Box, Coil, etc.)',
     weight_per_package DECIMAL(18, 2) NULL COMMENT 'Weight of each individual package',
