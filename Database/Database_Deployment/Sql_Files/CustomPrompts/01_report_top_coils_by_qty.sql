@@ -19,15 +19,22 @@ SET @part_filter = '%MMC%';                  -- case-insensitive filter applied 
 SET @row_limit = 25;
 
 -- -----------------------------
--- Direct SELECT using a literal filter for phpMyAdmin compatibility.
--- Edit the LIKE pattern below to change the filter (e.g., '%coil%').
+-- Direct SELECT — phpMyAdmin-compatible literal filter.
+-- BUG FIX 1: COALESCE hides part_id when part_description is non-NULL.
+--            Use OR so rows where part_id matches are included even when
+--            part_description does not contain the search token.
+-- BUG FIX 2: CEIL(quantity/packages_per_load) gives pieces-per-skid, not skid count.
+--            packages_per_load is the number of packages/skids in the receiving event;
+--            SUM(packages_per_load) is the correct total-skid aggregate.
+-- Edit the '%mmc%' literals below to change the filter (e.g., '%coil%').
 SELECT
-  part_id AS part_number,
-  COALESCE(part_description, part_id) AS description,
-  SUM(quantity) AS total_received_qty,
-  SUM(COALESCE(coils_on_skid, CEIL(quantity / NULLIF(packages_per_load,0)))) AS total_skid_estimate
+  part_id                                         AS part_number,
+  COALESCE(part_description, part_id)             AS description,
+  SUM(quantity)                                   AS total_received_qty,
+  SUM(COALESCE(packages_per_load, 1))             AS total_skids_received
 FROM receiving_history
-WHERE LOWER(COALESCE(part_description, part_id)) LIKE '%mmc%'
+WHERE LOWER(part_id)          LIKE '%mmc%'
+   OR LOWER(part_description) LIKE '%mmc%'
 GROUP BY part_id, part_description
 ORDER BY total_received_qty DESC
 LIMIT 25;

@@ -19,16 +19,24 @@ SET @row_limit = 25;
 -- -----------------------------
 -- Query: prefer explicit skid_count when present, otherwise estimate using quantity_per_skid
 -- -----------------------------
--- Direct SELECT using literal filter for phpMyAdmin compatibility. Edit literal below as needed.
+-- Direct SELECT — phpMyAdmin-compatible literal filter.
+-- BUG FIX 1: COALESCE(part_description, part_id) hides part_id whenever
+--            part_description is non-NULL, causing zero matches for MMC parts
+--            whose descriptions don't contain 'mmc'. Use OR to check both.
+-- BUG FIX 2: CEIL(quantity/packages_per_load) = pieces-per-skid (density),
+--            not the skid count. packages_per_load is the number of skids in
+--            the receiving event; SUM(packages_per_load) is total skids received.
+-- Edit the '%mmc%' literals below to change the filter (e.g., '%coil%').
 SELECT
-  part_id AS part_number,
-  COALESCE(part_description, part_id) AS description,
-  SUM(COALESCE(coils_on_skid, CEIL(quantity / NULLIF(packages_per_load,0)))) AS total_skids,
-  SUM(quantity) AS total_qty
+  part_id                                         AS part_number,
+  COALESCE(part_description, part_id)             AS description,
+  SUM(COALESCE(packages_per_load, 1))             AS total_skids_received,
+  SUM(quantity)                                   AS total_received_qty
 FROM receiving_history
-WHERE LOWER(COALESCE(part_description, part_id)) LIKE '%mmc%'
+WHERE LOWER(part_id)          LIKE '%mmc%'
+   OR LOWER(part_description) LIKE '%mmc%'
 GROUP BY part_id, part_description
-ORDER BY total_skids DESC
+ORDER BY total_skids_received DESC
 LIMIT 25;
 
 -- End of file
