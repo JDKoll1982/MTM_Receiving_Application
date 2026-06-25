@@ -1228,15 +1228,68 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             return;
         }
 
-        var saveResult = await _dunnageService.SaveQuantityTypeIfMissingAsync(quantityType);
-        if (!saveResult.IsSuccess)
+        // Run the save operation in the background so a slow DB call does not block the UI thread.
+        _ = Task.Run(async () =>
         {
-            await _errorHandler.HandleDaoErrorAsync(
-                saveResult,
-                nameof(PromptToSaveCustomQuantityTypeAsync),
-                true
-            );
-        }
+            try
+            {
+                var saveResult = await _dunnageService.SaveQuantityTypeIfMissingAsync(quantityType).ConfigureAwait(false);
+
+                if (!saveResult.IsSuccess)
+                {
+                    var dispatcher = App.MainWindow?.DispatcherQueue;
+                    if (dispatcher != null)
+                    {
+                        // Enqueue a synchronous delegate that starts the async handler and attaches a continuation
+                        dispatcher.TryEnqueue(() =>
+                        {
+                            _ = _errorHandler.HandleDaoErrorAsync(
+                                    saveResult,
+                                    nameof(PromptToSaveCustomQuantityTypeAsync),
+                                    true
+                                )
+                                .ContinueWith(t =>
+                                {
+                                    if (t.Exception != null)
+                                    {
+                                        // Log the exception to avoid unobserved exceptions
+                                        _ = _logger.LogErrorAsync($"Error in HandleDaoErrorAsync continuation: {t.Exception.Message}")
+                                            .ContinueWith(_ => { }, TaskScheduler.Default);
+                                    }
+                                }, TaskScheduler.Default);
+                        });
+                    }
+                    else
+                    {
+                        // Fallback: handle without UI dialog, but catch/log any exceptions
+                        try
+                        {
+                            await _errorHandler.HandleDaoErrorAsync(
+                                saveResult,
+                                nameof(PromptToSaveCustomQuantityTypeAsync),
+                                false
+                            ).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            await _logger.LogErrorAsync($"Fallback HandleDaoErrorAsync failed: {ex.Message}").ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ensure any unexpected exception from the background task is logged to avoid unobserved exceptions crashing the process
+                try
+                {
+                    await _logger.LogErrorAsync($"Unexpected error saving quantity type '{quantityType}': {ex.Message}").ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Swallow - logging failure shouldn't rethrow
+                }
+            }
+        });
     }
 
     #endregion
