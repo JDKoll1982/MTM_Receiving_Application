@@ -1,6 +1,6 @@
 -- =============================================================================
 -- APP_01: Receiving app PO receipt summary (MySQL side of reconciliation)
--- Server  : 172.16.1.104 (MySQL / MAMP)
+-- Server  : localhost (MySQL / MAMP)
 -- Database: mtm_receiving_application
 -- Run in  : phpMyAdmin or MAMP mysql client
 -- Purpose : Summarises what the receiving app recorded per PO number and part

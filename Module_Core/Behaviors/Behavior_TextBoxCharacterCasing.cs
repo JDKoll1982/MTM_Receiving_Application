@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -9,6 +10,17 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
     /// </summary>
     public static class Behavior_TextBoxCharacterCasing
     {
+        private static readonly StringComparer Comparison = StringComparer.OrdinalIgnoreCase;
+        private static readonly HashSet<string> PresetHeatLotExceptions = new(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            "Refer to Vendor Tag",
+            "N/A",
+            "Old Coil",
+            "Old Flatstock",
+            "Old Product",
+        };
+
         public static readonly DependencyProperty ForceUppercaseProperty =
             DependencyProperty.RegisterAttached(
                 "ForceUppercase",
@@ -71,7 +83,7 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
             }
 
             var currentText = sender.Text ?? string.Empty;
-            var upperText = currentText.ToUpperInvariant();
+            var upperText = NormalizeText(currentText);
             if (string.Equals(currentText, upperText, StringComparison.Ordinal))
             {
                 return;
@@ -85,6 +97,57 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
             sender.SelectionStart = selectionStart;
             sender.SelectionLength = selectionLength;
             SetIsUpdatingText(sender, false);
+        }
+
+        /// <summary>
+        /// Returns the forced-uppercase text unless the value matches one of the exception values.
+        /// </summary>
+        /// <param name="text">The current text value.</param>
+        /// <param name="uppercaseExceptions">Values that should preserve their original casing.</param>
+        /// <returns>The normalized text value.</returns>
+        public static string NormalizeText(string? text, IEnumerable<string>? uppercaseExceptions)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            var trimmedText = text.Trim();
+            var exceptions = uppercaseExceptions ?? PresetHeatLotExceptions;
+            if (MatchesException(trimmedText, exceptions))
+            {
+                return trimmedText;
+            }
+
+            return trimmedText.ToUpperInvariant();
+        }
+
+        /// <summary>
+        /// Returns the default forced-uppercase text behavior with built-in Heat/Lot exceptions.
+        /// </summary>
+        /// <param name="text">The current text value.</param>
+        /// <returns>The normalized text value.</returns>
+        public static string NormalizeText(string? text)
+        {
+            return NormalizeText(text, PresetHeatLotExceptions);
+        }
+
+        private static bool MatchesException(string text, IEnumerable<string>? uppercaseExceptions)
+        {
+            if (uppercaseExceptions is null)
+            {
+                return false;
+            }
+
+            foreach (var uppercaseException in uppercaseExceptions)
+            {
+                if (!string.IsNullOrWhiteSpace(uppercaseException) && Comparison.Equals(text, uppercaseException.Trim()))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

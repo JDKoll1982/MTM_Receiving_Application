@@ -52,7 +52,7 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
         var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
 
-        var windowSize = new Windows.Graphics.SizeInt32 { Width = 1000, Height = 850 };
+        var windowSize = this.GetScaledWindowSize(1000, 850);
         appWindow.Resize(windowSize);
 
         var displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(

@@ -127,7 +127,9 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.HeatLotLoadPrefix] = "Load #{0}",
             [ReceivingSettingsKeys.UiText.HeatLotFieldHeader] = "Heat/Lot Number (Optional)",
             [ReceivingSettingsKeys.UiText.HeatLotFieldPlaceholder] =
-                "Enter heat/lot number or leave blank",
+                "Enter Heat or Lot Number",
+            [ReceivingSettingsKeys.UiText.HeatLotPresetFillers] =
+                "[\"Refer to Vendor Tag\",\"N/A\",\"Old Coil\",\"Old Flatstock\",\"Old Product\"]",
 
             // Package Type
             [ReceivingSettingsKeys.UiText.PackageTypeHeader] =

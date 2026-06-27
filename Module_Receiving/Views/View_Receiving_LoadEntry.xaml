@@ -12,70 +12,56 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
-        <Grid Padding="20">
+        <Grid>
             <StackPanel Spacing="16">
                 <Border
-                    Padding="24"
+                    Padding="16,12"
                     HorizontalAlignment="Stretch"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <StackPanel HorizontalAlignment="Stretch" Spacing="20">
-                        <Grid ColumnSpacing="16" RowSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                    <Grid ColumnSpacing="16" RowSpacing="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                            <StackPanel
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Orientation="Horizontal"
-                                Spacing="6">
+                            <Grid Grid.Row="0"
+                                  Grid.Column="0"
+                                  ColumnSpacing="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
                                 <TextBlock
+                                    Grid.Column="0"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource BodyTextBlockStyle}"
                                     Text="Part Number:" />
                                 <TextBlock
+                                    Grid.Column="1"
                                     Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
                                     Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}" />
-                            </StackPanel>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                HorizontalAlignment="Right"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="{x:Bind ViewModel.LoadEntryInstructionText, Mode=OneWay}"
-                                TextAlignment="Right"
-                                TextWrapping="WrapWholeWords" />
-
-                            <StackPanel
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Orientation="Horizontal"
-                                Spacing="6">
                                 <TextBlock
+                                    Grid.Column="3"
+                                    TextTrimming="WordEllipsis"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BodyTextBlockStyle}"
-                                    Text="Description:" />
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
-                                    TextWrapping="WrapWholeWords" />
-                            </StackPanel>
-                        </Grid>
-                        <Grid ColumnSpacing="16">
+                                    TextWrapping="NoWrap" />
+                            </Grid>
+                            
+
+
+                        <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnSpacing="16" >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
                                 <ColumnDefinition Width="1*" />
@@ -84,8 +70,7 @@
                             <NumberBox
                                 x:Name="NumberOfLoadsNumberBox"
                                 Grid.Column="0"
-                                MinWidth="240"
-                                MaxWidth="480"
+                                MinWidth="220"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.NumberOfLoadsAccessibilityName, Mode=OneWay}"
                                 Header="{x:Bind ViewModel.LoadEntryHeaderText, Mode=OneWay}"
@@ -98,15 +83,14 @@
 
                             <TextBox
                                 Grid.Column="1"
-                                MinWidth="240"
-                                MaxWidth="480"
+                                MinWidth="220"
                                 HorizontalAlignment="Stretch"
                                 Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
                                 LostFocus="LocationTextBox_LostFocus"
                                 PlaceholderText="Enter receiving location"
                                 Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
                 <Border
@@ -117,7 +101,7 @@
                     BorderThickness="1"
                     CornerRadius="8">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
+                        <TextBlock TextWrapping="NoWrap" TextTrimming="WordEllipsis" Style="{StaticResource SubtitleTextBlockStyle}" Text="Recommended Locations" />
 
                         <ProgressRing
                             Width="24"
@@ -128,7 +112,7 @@
 
                         <ScrollViewer
                             Margin="0,4,0,0"
-                            HorizontalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Visible"
                             HorizontalScrollMode="Enabled"
                             VerticalScrollBarVisibility="Disabled"
                             VerticalScrollMode="Disabled"
@@ -186,5 +170,4 @@
                 </Border>
             </StackPanel>
         </Grid>
-    </ScrollViewer>
 </UserControl>

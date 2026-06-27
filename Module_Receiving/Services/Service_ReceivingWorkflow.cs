@@ -328,7 +328,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     {
                         if (string.IsNullOrWhiteSpace(load.HeatLotNumber))
                         {
-                            load.HeatLotNumber = "Nothing Entered";
+                            load.HeatLotNumber = "Refer to Vendor Tag";
                         }
                     }
 

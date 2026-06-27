@@ -1040,12 +1040,23 @@
       "category": "Receiving",
       "key": "Receiving.UiText.HeatLot.FieldPlaceholder",
       "displayName": "Heat/Lot - Field Placeholder",
-      "defaultValue": "Enter heat/lot number or leave blank",
+      "defaultValue": "Enter Heat/Lot #",
       "dataType": "String",
       "scope": "System",
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.HeatLot.PresetFillers",
+      "displayName": "Heat/Lot - Preset Fillers",
+      "defaultValue": "[\"Refer to Vendor Tag\",\"N/A\",\"Old Coil\",\"Old Flatstock\",\"Old Product\"]",
+      "dataType": "Json",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of preset heat/lot fillers"
     },
     {
       "category": "Receiving",

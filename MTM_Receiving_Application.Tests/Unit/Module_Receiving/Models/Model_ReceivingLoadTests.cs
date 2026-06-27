@@ -51,4 +51,14 @@ public sealed class Model_ReceivingLoadTests
 
         load.HeatLotNumber.Should().Be("HEAT-12AB");
     }
+
+    [Fact]
+    public void HeatLotNumber_WhenPresetFillerIsEntered_ShouldPreserveConfiguredCasing()
+    {
+        var load = new Model_ReceivingLoad();
+
+        load.HeatLotNumber = "  Refer to Vendor Tag  ";
+
+        load.HeatLotNumber.Should().Be("Refer to Vendor Tag");
+    }
 }

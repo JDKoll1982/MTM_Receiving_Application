@@ -14,6 +14,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private readonly IService_Focus _focusService;
 
+        public double ViewportWidth { get; private set; } = double.MaxValue;
+
+        public double ViewportHeight { get; private set; } = double.MaxValue;
+
         public View_Receiving_LoadEntry(
             ViewModel_Receiving_LoadEntry viewModel,
             IService_Focus focusService
@@ -27,7 +31,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             DataContext = ViewModel;
             InitializeComponent();
 
+            SizeChanged += View_Receiving_LoadEntry_SizeChanged;
+            UpdateViewportBounds();
+
             _focusService.AttachFocusOnVisibility(this, NumberOfLoadsNumberBox);
+        }
+
+        private void View_Receiving_LoadEntry_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateViewportBounds();
+        }
+
+        private void UpdateViewportBounds()
+        {
+            ViewportWidth = ActualWidth > 0 ? ActualWidth : double.MaxValue;
+            ViewportHeight = ActualHeight > 0 ? ActualHeight : double.MaxValue;
+            Bindings.Update();
         }
 
         /// <summary>

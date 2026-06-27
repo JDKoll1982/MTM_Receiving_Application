@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using Windows.Graphics;
@@ -139,8 +140,13 @@ public sealed partial class View_ShipRecTools_Main : Page
         }
 
         var currentSize = mainWindow.AppWindow.Size;
-        var desiredWidth = Math.Max(currentSize.Width, CustomerPullPackWindowWidth);
-        var desiredHeight = Math.Max(currentSize.Height, CustomerPullPackWindowHeight);
+        var desiredSize = mainWindow.GetScaledWindowSize(
+            CustomerPullPackWindowWidth,
+            CustomerPullPackWindowHeight
+        );
+
+        var desiredWidth = Math.Max(currentSize.Width, desiredSize.Width);
+        var desiredHeight = Math.Max(currentSize.Height, desiredSize.Height);
         mainWindow.AppWindow.Resize(new SizeInt32(desiredWidth, desiredHeight));
     }
 
@@ -151,6 +157,8 @@ public sealed partial class View_ShipRecTools_Main : Page
             return;
         }
 
-        mainWindow.AppWindow.Resize(new SizeInt32(DefaultMainWindowWidth, DefaultMainWindowHeight));
+        mainWindow.AppWindow.Resize(
+            mainWindow.GetScaledWindowSize(DefaultMainWindowWidth, DefaultMainWindowHeight)
+        );
     }
 }

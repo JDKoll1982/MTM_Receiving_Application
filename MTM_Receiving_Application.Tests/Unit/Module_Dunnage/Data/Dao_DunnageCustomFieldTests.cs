@@ -14,7 +14,7 @@ public sealed class Dao_DunnageCustomFieldTests
         using var reader = CreateReader();
         reader.Read().Should().BeTrue();
 
-        var dao = new Dao_DunnageCustomField("Server=172.16.1.104;Database=test;");
+        var dao = new Dao_DunnageCustomField("Server=localhost;Database=test;");
         var methodInfo = typeof(Dao_DunnageCustomField).GetMethod(
             "MapFromReader",
             BindingFlags.Instance | BindingFlags.NonPublic

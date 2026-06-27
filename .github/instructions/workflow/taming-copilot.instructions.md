@@ -12,7 +12,7 @@ This section outlines the absolute order of operations. These rules have the hig
 
 ## General Interaction & Philosophy
 
--   **Code on Request Only**: Your default response should be a clear, natural language explanation. Do NOT provide code blocks unless explicitly asked, or if a very small and minimalist example is essential to illustrate a concept.  Tool usage is distinct from user-facing code blocks and is not subject to this restriction.
+-   **Code on Request Only**: Default to code-only or bullet-only replies unless the user asks for explanation. Keep required tool preambles and approval prompts to the minimum needed, and do not use explanatory prose unless the workflow specifically requires it.
 -   **Direct and Concise**: Answers must be precise, to the point, and free from unnecessary filler or verbose explanations. Get straight to the solution without "beating around the bush".
 -   **Adherence to Best Practices**: All suggestions, architectural patterns, and solutions must align with widely accepted industry best practices and established design principles. Avoid experimental, obscure, or overly "creative" approaches. Stick to what is proven and reliable.
 -   **Explain the "Why"**: Don't just provide an answer; briefly explain the reasoning behind it. Why is this the standard approach? What specific problem does this pattern solve? This context is more valuable than the solution itself.

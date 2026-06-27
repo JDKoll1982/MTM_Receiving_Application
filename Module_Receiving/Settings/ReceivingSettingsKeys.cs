@@ -139,6 +139,7 @@ public static class ReceivingSettingsKeys
         public const string HeatLotLoadPrefix = "Receiving.UiText.HeatLot.LoadPrefix";
         public const string HeatLotFieldHeader = "Receiving.UiText.HeatLot.FieldHeader";
         public const string HeatLotFieldPlaceholder = "Receiving.UiText.HeatLot.FieldPlaceholder";
+        public const string HeatLotPresetFillers = "Receiving.UiText.HeatLot.PresetFillers";
 
         public const string PackageTypeHeader = "Receiving.UiText.PackageType.Header";
         public const string PackageTypeComboHeader = "Receiving.UiText.PackageType.ComboHeader";

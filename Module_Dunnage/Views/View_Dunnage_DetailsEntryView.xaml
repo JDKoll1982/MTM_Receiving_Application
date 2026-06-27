@@ -2,7 +2,6 @@
     x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_DetailsEntryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:behaviors="using:MTM_Receiving_Application.Module_Core.Behaviors"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -50,7 +49,6 @@
                             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="PO Number" />
                             <TextBox
                                 x:Name="PoNumberTextBox"
-                                behaviors:Behavior_TextBoxCharacterCasing.ForceUppercase="True"
                                 HorizontalAlignment="Stretch"
                                 LostFocus="PoNumberTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"

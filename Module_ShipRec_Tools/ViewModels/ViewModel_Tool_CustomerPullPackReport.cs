@@ -173,7 +173,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     {
         get
         {
-            var selectedCount = DemandLines.Count(static line => line.IsSelected);
+            var selectedCount = DemandLines.Count(static line =>
+            {
+                return line.IsSelected;
+            });
             return selectedCount switch
             {
                 0 => "No request lines selected",
@@ -191,8 +194,14 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         string.Join(
             ", ",
             SelectedDemandLines
-                .Select(static line => line.ParentPartId)
-                .Where(static partId => string.IsNullOrWhiteSpace(partId) is false)
+                .Select(static line =>
+                {
+                    return line.ParentPartId;
+                })
+                .Where(static partId =>
+                {
+                    return string.IsNullOrWhiteSpace(partId) is false;
+                })
                 .Distinct(StringComparer.OrdinalIgnoreCase)
         );
 
@@ -200,10 +209,14 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         string.Join(
             ", ",
             SelectedDemandLines
-                .Select(static line => line.CustomerOrderId)
+                .Select(static line =>
+                {
+                    return line.CustomerOrderId;
+                })
                 .Where(static customerOrderId =>
-                    string.IsNullOrWhiteSpace(customerOrderId) is false
-                )
+                {
+                    return string.IsNullOrWhiteSpace(customerOrderId) is false;
+                })
                 .Distinct(StringComparer.OrdinalIgnoreCase)
         );
 
@@ -233,8 +246,14 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             : string.Join(
                 ", ",
                 SelectedDemandLineLocationOptions
-                    .Where(static option => option.Selected)
-                    .Select(static option => option.LocationId)
+                    .Where(static option =>
+                    {
+                        return option.Selected;
+                    })
+                    .Select(static option =>
+                    {
+                        return option.LocationId;
+                    })
             );
 
     public ViewModel_Tool_CustomerPullPackReport(
@@ -475,7 +494,12 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     [RelayCommand]
     private async Task CreateOrUpdateWaitlistAsync()
     {
-        var selectedLines = DemandLines.Where(static line => line.IsSelected).ToList();
+        var selectedLines = DemandLines
+            .Where(static line =>
+            {
+                return line.IsSelected;
+            })
+            .ToList();
         if (selectedLines.Count == 0)
         {
             ShowStatus(
@@ -486,7 +510,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         }
 
         var existingLinkedSelections = selectedLines
-            .Where(line => string.IsNullOrWhiteSpace(line.LinkedWaitlistId) is false)
+            .Where(line =>
+            {
+                return string.IsNullOrWhiteSpace(line.LinkedWaitlistId) is false;
+            })
             .ToList();
         if (existingLinkedSelections.Count > 1)
         {
@@ -613,24 +640,25 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
         var matchingLines = DemandLines
             .Where(line =>
-                string.Equals(
-                    line.SourceLineKey,
-                    linkedWaitlistResult.Data.SourceLineKey,
-                    StringComparison.OrdinalIgnoreCase
-                )
-                || (
-                    string.Equals(
-                        line.CustomerOrderId,
-                        linkedWaitlistResult.Data.CustomerOrderId,
+            {
+                return string.Equals(
+                        line.SourceLineKey,
+                        linkedWaitlistResult.Data.SourceLineKey,
                         StringComparison.OrdinalIgnoreCase
                     )
-                    && string.Equals(
-                        line.ParentPartId,
-                        linkedWaitlistResult.Data.ParentPartId,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-            )
+                    || (
+                        string.Equals(
+                            line.CustomerOrderId,
+                            linkedWaitlistResult.Data.CustomerOrderId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                        && string.Equals(
+                            line.ParentPartId,
+                            linkedWaitlistResult.Data.ParentPartId,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+            })
             .ToList();
         if (matchingLines.Count == 0)
         {
@@ -645,12 +673,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         foreach (var line in DemandLines)
         {
             line.IsSelected = matchingLines.Any(match =>
-                string.Equals(
+            {
+                return string.Equals(
                     match.SourceLineKey,
                     line.SourceLineKey,
                     StringComparison.OrdinalIgnoreCase
-                )
-            );
+                );
+            });
         }
 
         RefreshDemandLinesSnapshot();
@@ -675,9 +704,18 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         DemandLines = new ObservableCollection<Model_CustomerPullPack_DemandLine>(orderedLines);
         SelectedDemandLines = [];
         SelectedDemandLine = null;
-        ShortageLineCount = orderedLines.Count(static line => line.ShortageFlag);
-        LateOrderLineCount = orderedLines.Count(static line => line.LateOrderFlag);
-        LinkedWaitlistLineCount = orderedLines.Count(static line => line.HasLinkedWaitlist);
+        ShortageLineCount = orderedLines.Count(static line =>
+        {
+            return line.ShortageFlag;
+        });
+        LateOrderLineCount = orderedLines.Count(static line =>
+        {
+            return line.LateOrderFlag;
+        });
+        LinkedWaitlistLineCount = orderedLines.Count(static line =>
+        {
+            return line.HasLinkedWaitlist;
+        });
         OnPropertyChanged(nameof(CurrentCustomerDisplay));
         OnPropertyChanged(nameof(LinkedWaitlistSummary));
         OnPropertyChanged(nameof(SelectedParentPartId));
@@ -763,11 +801,15 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     public void ApplyCrystalRequestLineSelection(IReadOnlyCollection<string> selectedSourceLineKeys)
     {
         var selectedSourceLineSet = selectedSourceLineKeys
-            .Where(static key => string.IsNullOrWhiteSpace(key) is false)
+            .Where(static key =>
+            {
+                return string.IsNullOrWhiteSpace(key) is false;
+            })
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var focusedLine = DemandLines.FirstOrDefault(line =>
-            selectedSourceLineSet.Contains(line.SourceLineKey)
-        );
+        {
+            return selectedSourceLineSet.Contains(line.SourceLineKey);
+        });
         var selectedCustomerId = focusedLine?.CustomerId ?? string.Empty;
 
         foreach (var line in DemandLines)
@@ -810,20 +852,22 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     )
     {
         var hasSelectedLineForGroup = DemandLines.Any(line =>
-            line.IsSelected
-            && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
-        );
+        {
+            return line.IsSelected
+                && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase);
+        });
 
         if (hasSelectedLineForGroup is false)
         {
             foreach (
                 var line in DemandLines.Where(line =>
-                    string.Equals(
+                {
+                    return string.Equals(
                         line.ParentPartId,
                         groupKey,
                         StringComparison.OrdinalIgnoreCase
-                    )
-                )
+                    );
+                })
             )
             {
                 foreach (var locationOption in line.LocationOptions)
@@ -840,8 +884,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
 
         foreach (
             var line in DemandLines.Where(line =>
-                string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
-            )
+            {
+                return string.Equals(
+                    line.ParentPartId,
+                    groupKey,
+                    StringComparison.OrdinalIgnoreCase
+                );
+            })
         )
         {
             foreach (var locationOption in line.LocationOptions)
@@ -852,9 +901,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         }
 
         var focusedLine = DemandLines.FirstOrDefault(line =>
-            line.IsSelected
-            && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase)
-        );
+        {
+            return line.IsSelected
+                && string.Equals(line.ParentPartId, groupKey, StringComparison.OrdinalIgnoreCase);
+        });
         if (focusedLine is not null)
         {
             SelectedDemandLine = focusedLine;
@@ -926,7 +976,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                     duplicateNoticeMessage,
                     InfoBarSeverity.Warning,
                     "Open Existing Item",
-                    async () => await ReopenDuplicateWaitlistCommand.ExecuteAsync(null)
+                    async () =>
+                    {
+                        await ReopenDuplicateWaitlistCommand.ExecuteAsync(null);
+                    }
                 );
                 return;
             }
@@ -950,12 +1003,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         }
 
         var matchingGroup = CrystalReportGroups.FirstOrDefault(group =>
-            string.Equals(
+        {
+            return string.Equals(
                 group.GroupKey,
                 selectedLine.ParentPartId,
                 StringComparison.OrdinalIgnoreCase
-            )
-        );
+            );
+        });
 
         if (matchingGroup is null || matchingGroup.QuantityToPack <= 0)
         {
@@ -1028,24 +1082,25 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         {
             var matchingLines = DemandLines
                 .Where(line =>
-                    string.Equals(
-                        line.SourceLineKey,
-                        savedEntry.SourceLineKey,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                    || (
-                        string.Equals(
-                            line.CustomerOrderId,
-                            savedEntry.CustomerOrderId,
+                {
+                    return string.Equals(
+                            line.SourceLineKey,
+                            savedEntry.SourceLineKey,
                             StringComparison.OrdinalIgnoreCase
                         )
-                        && string.Equals(
-                            line.ParentPartId,
-                            savedEntry.ParentPartId,
-                            StringComparison.OrdinalIgnoreCase
-                        )
-                    )
-                )
+                        || (
+                            string.Equals(
+                                line.CustomerOrderId,
+                                savedEntry.CustomerOrderId,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                            && string.Equals(
+                                line.ParentPartId,
+                                savedEntry.ParentPartId,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        );
+                })
                 .ToList();
             if (matchingLines.Count == 0)
             {
@@ -1065,12 +1120,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                 foreach (var locationOption in matchingLine.LocationOptions)
                 {
                     locationOption.Selected = savedEntry.SelectedLocations.Any(locationId =>
-                        string.Equals(
+                    {
+                        return string.Equals(
                             locationId,
                             locationOption.LocationId,
                             StringComparison.OrdinalIgnoreCase
-                        )
-                    );
+                        );
+                    });
                 }
             }
         }
@@ -1081,10 +1137,16 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     private void RefreshDemandLinesSnapshot()
     {
         SelectedDemandLines = new ObservableCollection<Model_CustomerPullPack_DemandLine>(
-            DemandLines.Where(static line => line.IsSelected)
+            DemandLines.Where(static line =>
+            {
+                return line.IsSelected;
+            })
         );
         SelectedDemandLine = SelectedDemandLines.FirstOrDefault();
-        LinkedWaitlistLineCount = DemandLines.Count(static line => line.HasLinkedWaitlist);
+        LinkedWaitlistLineCount = DemandLines.Count(static line =>
+        {
+            return line.HasLinkedWaitlist;
+        });
         OnPropertyChanged(nameof(LinkedWaitlistSummary));
         OnPropertyChanged(nameof(DemandLines));
         RefreshCrystalReportGroups();
@@ -1095,18 +1157,42 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     private void RefreshCrystalReportGroups()
     {
         var groupedDemandLines = DemandLines
-            .GroupBy(static line => line.ParentPartId, StringComparer.OrdinalIgnoreCase)
+            .GroupBy(
+                static line =>
+                {
+                    return line.ParentPartId;
+                },
+                StringComparer.OrdinalIgnoreCase
+            )
             .Select(group =>
             {
                 var groupLines = group
-                    .OrderBy(static line => line.PullDate)
-                    .ThenBy(static line => line.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(static line =>
+                    {
+                        return line.PullDate;
+                    })
+                    .ThenBy(
+                        static line =>
+                        {
+                            return line.CustomerOrderId;
+                        },
+                        StringComparer.OrdinalIgnoreCase
+                    )
                     .ToList();
                 var firstLine = groupLines[0];
 
                 var subPartLocations = groupLines
-                    .SelectMany(static line => line.LocationOptions)
-                    .GroupBy(static option => option.LocationId, StringComparer.OrdinalIgnoreCase)
+                    .SelectMany(static line =>
+                    {
+                        return line.LocationOptions;
+                    })
+                    .GroupBy(
+                        static option =>
+                        {
+                            return option.LocationId;
+                        },
+                        StringComparer.OrdinalIgnoreCase
+                    )
                     .Select(locationGroup =>
                     {
                         var firstOption = locationGroup.First();
@@ -1118,15 +1204,20 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                             LocationId = firstOption.LocationId,
                             PartLocationId = firstOption.LocationId,
                             OnHandQuantity = locationGroup.Max(static option =>
-                                option.OnHandQuantity
-                            ),
-                            IsSelected = locationGroup.Any(static option => option.Selected),
+                            {
+                                return option.OnHandQuantity;
+                            }),
+                            IsSelected = locationGroup.Any(static option =>
+                            {
+                                return option.Selected;
+                            }),
                         };
                     })
                     .ToList();
 
-                var requestLines = groupLines
-                    .Select(line => new Model_CustomerPullPack_CrystalRequestLine
+                var requestLines = groupLines.ConvertAll(line =>
+                {
+                    return new Model_CustomerPullPack_CrystalRequestLine
                     {
                         SourceLineKey = line.SourceLineKey,
                         CustomerId = line.CustomerId,
@@ -1146,26 +1237,47 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                         FulfillmentDetailText = BuildFulfillmentDetailText(line),
                         IsSelected = line.IsSelected,
                         StatusNoteText = GetStatusNoteText(line),
-                    })
-                    .ToList();
+                    };
+                });
 
                 return new Model_CustomerPullPack_CrystalReportGroup
                 {
                     GroupKey = group.Key,
                     CustomerOrderId = firstLine.CustomerOrderId,
                     PrimaryPartId = group.Key,
-                    QuantityToPack = groupLines.Sum(static line => line.ShipQuantity),
+                    QuantityToPack = groupLines.Sum(static line =>
+                    {
+                        return line.ShipQuantity;
+                    }),
                     QuantitySelected = subPartLocations
-                        .Where(static location => location.IsSelected)
-                        .Sum(static location => location.OnHandQuantity),
+                        .Where(static location =>
+                        {
+                            return location.IsSelected;
+                        })
+                        .Sum(static location =>
+                        {
+                            return location.OnHandQuantity;
+                        }),
                     FgLocationId = firstLine.FgLocationId,
                     FgOnHandQuantity = firstLine.FgOnHandQuantity,
-                    ShortageFlag = groupLines.Any(static line => line.ShortageFlag),
-                    LateOrderFlag = groupLines.Any(static line => line.LateOrderFlag),
+                    ShortageFlag = groupLines.Any(static line =>
+                    {
+                        return line.ShortageFlag;
+                    }),
+                    LateOrderFlag = groupLines.Any(static line =>
+                    {
+                        return line.LateOrderFlag;
+                    }),
                     ServiceNote =
                         groupLines
-                            .Select(static line => line.RequesterNote)
-                            .FirstOrDefault(static note => string.IsNullOrWhiteSpace(note) is false)
+                            .Select(static line =>
+                            {
+                                return line.RequesterNote;
+                            })
+                            .FirstOrDefault(static note =>
+                            {
+                                return string.IsNullOrWhiteSpace(note) is false;
+                            })
                         ?? string.Empty,
                     SubPartLocations = subPartLocations,
                     RequestLines = requestLines,
@@ -1219,8 +1331,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     private bool HasActiveSelections()
     {
         return DemandLines.Any(line =>
-            line.IsSelected || line.LocationOptions.Any(static option => option.Selected)
-        );
+        {
+            return line.IsSelected
+                || line.LocationOptions.Any(static option =>
+                {
+                    return option.Selected;
+                });
+        });
     }
 
     private void ClearCurrentSelections()
@@ -1313,8 +1430,9 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             LinkedWaitlistId = source.LinkedWaitlistId,
             WaitlistStateDisplay = source.WaitlistStateDisplay,
             RequesterNote = source.RequesterNote,
-            LocationOptions = source
-                .LocationOptions.Select(option => new Model_CustomerPullPack_LocationOption
+            LocationOptions = source.LocationOptions.ConvertAll(option =>
+            {
+                return new Model_CustomerPullPack_LocationOption
                 {
                     LocationKey = option.LocationKey,
                     LocationId = option.LocationId,
@@ -1322,8 +1440,8 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                     OnHandQuantity = option.OnHandQuantity,
                     SourceType = option.SourceType,
                     Selected = option.Selected,
-                })
-                .ToList(),
+                };
+            }),
         };
     }
 
@@ -1340,7 +1458,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     {
         var favoriteDisplays = defaults
             .FavoriteCustomerIds.Select(ResolveCustomerDisplay)
-            .Where(static customer => string.IsNullOrWhiteSpace(customer) is false)
+            .Where(static customer =>
+            {
+                return string.IsNullOrWhiteSpace(customer) is false;
+            })
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
@@ -1367,7 +1488,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
     {
         return _mockDataCatalog
             .GetDemandRows()
-            .GroupBy(static row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
+            .GroupBy(
+                static row =>
+                {
+                    return row.CustomerId;
+                },
+                StringComparer.OrdinalIgnoreCase
+            )
             .Select(group =>
             {
                 var row = group.First();
@@ -1375,7 +1502,10 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
                     ? row.CustomerId.Trim().ToUpperInvariant()
                     : $"{row.CustomerId.Trim().ToUpperInvariant()} - {row.CustomerName.Trim()}";
             })
-            .Where(static customer => string.IsNullOrWhiteSpace(customer) is false)
+            .Where(static customer =>
+            {
+                return string.IsNullOrWhiteSpace(customer) is false;
+            })
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
@@ -1391,8 +1521,14 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         var startDate = DateFrom.Date;
         var endDate = DateTo.Date;
         var inRangeRow = mockRows
-            .Where(row => row.PullDate.Date >= startDate && row.PullDate.Date <= endDate)
-            .OrderBy(row => row.PullDate)
+            .Where(row =>
+            {
+                return row.PullDate.Date >= startDate && row.PullDate.Date <= endDate;
+            })
+            .OrderBy(row =>
+            {
+                return row.PullDate;
+            })
             .FirstOrDefault();
 
         if (inRangeRow is not null)
@@ -1400,12 +1536,26 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
             return ResolveCustomerDisplay(inRangeRow.CustomerId);
         }
 
-        var minPullDate = mockRows.Min(row => row.PullDate.Date);
-        var maxPullDate = mockRows.Max(row => row.PullDate.Date);
+        var minPullDate = mockRows.Min(row =>
+        {
+            return row.PullDate.Date;
+        });
+        var maxPullDate = mockRows.Max(row =>
+        {
+            return row.PullDate.Date;
+        });
         DateFrom = new DateTimeOffset(minPullDate);
         DateTo = new DateTimeOffset(maxPullDate);
 
-        return ResolveCustomerDisplay(mockRows.OrderBy(row => row.PullDate).First().CustomerId);
+        return ResolveCustomerDisplay(
+            mockRows
+                .OrderBy(row =>
+                {
+                    return row.PullDate;
+                })
+                .First()
+                .CustomerId
+        );
     }
 
     private string ResolveCustomerDisplay(string customerId)
@@ -1419,12 +1569,13 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         var matchingMockCustomer = _mockDataCatalog
             .GetDemandRows()
             .FirstOrDefault(row =>
-                string.Equals(
+            {
+                return string.Equals(
                     row.CustomerId,
                     normalizedCustomerId,
                     StringComparison.OrdinalIgnoreCase
-                )
-            );
+                );
+            });
 
         if (
             matchingMockCustomer is null
@@ -1489,18 +1640,37 @@ public partial class ViewModel_Tool_CustomerPullPackReport : ViewModel_Shared_Ba
         return _mockDataCatalog
             .GetDemandRows()
             .Where(row =>
-                row.CustomerId.Contains(lookupTerm, StringComparison.OrdinalIgnoreCase)
-                || row.CustomerName.Contains(lookupTerm, StringComparison.OrdinalIgnoreCase)
+            {
+                return row.CustomerId.Contains(lookupTerm, StringComparison.OrdinalIgnoreCase)
+                    || row.CustomerName.Contains(lookupTerm, StringComparison.OrdinalIgnoreCase);
+            })
+            .GroupBy(
+                row =>
+                {
+                    return row.CustomerId;
+                },
+                StringComparer.OrdinalIgnoreCase
             )
-            .GroupBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(
+                group =>
+                {
+                    return group.Key;
+                },
+                StringComparer.OrdinalIgnoreCase
+            )
             .Take(50)
             .Select(group =>
             {
                 var customerId = group.Key.Trim().ToUpperInvariant();
                 var customerName = group
-                    .Select(row => row.CustomerName?.Trim() ?? string.Empty)
-                    .FirstOrDefault(static value => string.IsNullOrWhiteSpace(value) is false);
+                    .Select(row =>
+                    {
+                        return row.CustomerName?.Trim() ?? string.Empty;
+                    })
+                    .FirstOrDefault(static value =>
+                    {
+                        return string.IsNullOrWhiteSpace(value) is false;
+                    });
                 var label = string.IsNullOrWhiteSpace(customerName)
                     ? customerId
                     : $"{customerId} - {customerName}";

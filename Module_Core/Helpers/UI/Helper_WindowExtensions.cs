@@ -27,7 +27,28 @@ public static class Helper_WindowExtensions
     public static void SetWindowSize(this Window window, int width, int height)
     {
         var appWindow = window.GetAppWindow();
-        appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
+        appWindow.Resize(window.GetScaledWindowSize(width, height));
+    }
+
+    /// <summary>
+    /// Gets a DPI-aware window size for the current window.
+    /// </summary>
+    /// <param name="window">The window to measure.</param>
+    /// <param name="width">Desired logical width.</param>
+    /// <param name="height">Desired logical height.</param>
+    /// <returns>A physical pixel size adjusted for the current rasterization scale.</returns>
+    public static Windows.Graphics.SizeInt32 GetScaledWindowSize(
+        this Window window,
+        int width,
+        int height
+    )
+    {
+        var scale = GetWindowScale(window);
+
+        return new Windows.Graphics.SizeInt32(
+            (int)Math.Round(width * scale),
+            (int)Math.Round(height * scale)
+        );
     }
 
     /// <summary>
@@ -195,5 +216,15 @@ public static class Helper_WindowExtensions
         var hWnd = WindowNative.GetWindowHandle(window);
         var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
         return AppWindow.GetFromWindowId(windowId);
+    }
+
+    private static double GetWindowScale(Window window)
+    {
+        if (window.Content is FrameworkElement contentElement && contentElement.XamlRoot != null)
+        {
+            return contentElement.XamlRoot.RasterizationScale;
+        }
+
+        return 1.0;
     }
 }

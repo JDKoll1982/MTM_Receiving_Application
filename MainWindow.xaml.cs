@@ -156,7 +156,7 @@ namespace MTM_Receiving_Application
             ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
 
             // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(1450, 900));
+            AppWindow.Resize(this.GetScaledWindowSize(1450, 900));
 
             // Center window on screen
             CenterWindow();

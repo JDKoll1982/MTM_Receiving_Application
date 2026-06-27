@@ -1382,7 +1382,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Placeholder.Field.HeatLotNumber",
-                Content = "Enter heat/lot number or leave blank",
+                Content = "Enter Heat or Lot Number",
                 HelpType = Enum_HelpType.Tip,
             }
         );

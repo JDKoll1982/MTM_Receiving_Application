@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
@@ -9,6 +11,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_WeightQuantity : UserControl, IReceivingWorkflowFocusable
     {
+        private readonly Storyboard _currentTotalReminderStoryboard = new();
+        private readonly SolidColorBrush _currentTotalReminderBrush = new(
+            Windows.UI.Color.FromArgb(255, 153, 0, 0));
+        private bool _isViewLoaded;
+        private bool _pendingCurrentTotalReminderAnimation;
+
         public ViewModel_Receiving_WeightQuantity ViewModel
         {
             get => (ViewModel_Receiving_WeightQuantity)GetValue(ViewModelProperty);
@@ -35,7 +43,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _focusService = focusService;
             DataContext = ViewModel;
             this.InitializeComponent();
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            Loaded += View_Receiving_WeightQuantity_Loaded;
+            this.Unloaded += View_Receiving_WeightQuantity_Unloaded;
             AttachLoadFocus();
+            InitializeCurrentTotalReminderAnimation();
+
+            CurrentTotalReminderTextBlock.Foreground = _currentTotalReminderBrush;
         }
 
         /// <summary>
@@ -82,6 +96,95 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     _focusService.SetFocusFirstInput(this);
                 });
             });
+        }
+
+        private void View_Receiving_WeightQuantity_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _isViewLoaded = false;
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            this.Unloaded -= View_Receiving_WeightQuantity_Unloaded;
+            Loaded -= View_Receiving_WeightQuantity_Loaded;
+        }
+
+        private void View_Receiving_WeightQuantity_Loaded(object sender, RoutedEventArgs e)
+        {
+            _isViewLoaded = true;
+
+            if (_pendingCurrentTotalReminderAnimation)
+            {
+                _pendingCurrentTotalReminderAnimation = false;
+                StartCurrentTotalReminderAnimation();
+            }
+        }
+
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ViewModel_Receiving_WeightQuantity.CurrentTotal))
+            {
+                TriggerCurrentTotalReminderAnimation();
+            }
+        }
+
+        private void TriggerCurrentTotalReminderAnimation()
+        {
+            if (_isViewLoaded is false)
+            {
+                _pendingCurrentTotalReminderAnimation = true;
+                return;
+            }
+
+            StartCurrentTotalReminderAnimation();
+        }
+
+        private void InitializeCurrentTotalReminderAnimation()
+        {
+            var first = new ColorAnimationUsingKeyFrames();
+            Storyboard.SetTarget(first, _currentTotalReminderBrush);
+            Storyboard.SetTargetProperty(first, "Color");
+
+            first.AutoReverse = true;
+
+            // 0ms: Start at your base Dark Red
+            first.KeyFrames.Add(
+                new LinearColorKeyFrame
+                {
+                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.Zero),
+                    Value = Windows.UI.Color.FromArgb(255, 153, 0, 0),
+                }
+            );
+            // 500ms: Dim down to Maroon (40% red intensity)
+            first.KeyFrames.Add(
+                new LinearColorKeyFrame
+                {
+                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(500)),
+                    Value = Windows.UI.Color.FromArgb(255, 102, 0, 0),
+                }
+            );
+            // 1000ms: Dim down to Very Dark Maroon (20% red intensity)
+            first.KeyFrames.Add(
+                new LinearColorKeyFrame
+                {
+                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(1000)),
+                    Value = Windows.UI.Color.FromArgb(255, 51, 0, 0),
+                }
+            );
+            // 1500ms: Turn completely Black, then immediately reverse back up
+            first.KeyFrames.Add(
+                new DiscreteColorKeyFrame
+                {
+                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(1500)),
+                    Value = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                }
+            );
+
+            _currentTotalReminderStoryboard.Children.Add(first);
+        }
+
+
+        private void StartCurrentTotalReminderAnimation()
+        {
+            _currentTotalReminderStoryboard.Stop();
+            _currentTotalReminderStoryboard.Begin();
         }
 
         private static T? FindDescendant<T>(DependencyObject parent)

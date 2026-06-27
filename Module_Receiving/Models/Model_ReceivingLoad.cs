@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 
 namespace MTM_Receiving_Application.Module_Receiving.Models
 {
@@ -17,6 +20,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[Bb]?)$",
             RegexOptions.IgnoreCase
         );
+
+        private static readonly HashSet<string> HeatLotPresetFillers = BuildHeatLotPresetFillers();
 
         [ObservableProperty]
         private Guid _loadID = Guid.NewGuid();
@@ -318,9 +323,41 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
 
         private static string NormalizeHeatLotNumber(string value)
         {
-            return string.IsNullOrWhiteSpace(value)
-                ? string.Empty
-                : value.Trim().ToUpperInvariant();
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var trimmedValue = value.Trim();
+            return HeatLotPresetFillers.Contains(trimmedValue)
+                ? trimmedValue
+                : trimmedValue.ToUpperInvariant();
+        }
+
+        private static HashSet<string> BuildHeatLotPresetFillers()
+        {
+            if (
+                ReceivingSettingsDefaults.StringDefaults.TryGetValue(
+                    ReceivingSettingsKeys.UiText.HeatLotPresetFillers,
+                    out var presetFillersJson
+                )
+                && !string.IsNullOrWhiteSpace(presetFillersJson)
+            )
+            {
+                try
+                {
+                    var presetFillers = JsonSerializer.Deserialize<string[]>(presetFillersJson);
+                    if (presetFillers is { Length: > 0 })
+                    {
+                        return new HashSet<string>(presetFillers, StringComparer.OrdinalIgnoreCase);
+                    }
+                }
+                catch (JsonException)
+                {
+                }
+            }
+
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -32,6 +34,23 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _poQuantityInfo = string.Empty;
+
+        private string _currentTotal = string.Empty;
+
+        public string CurrentTotal
+        {
+            get => _currentTotal;
+            private set
+            {
+                if (_currentTotal == value)
+                {
+                    return;
+                }
+
+                _currentTotal = value;
+                OnPropertyChanged(nameof(CurrentTotal));
+            }
+        }
 
         [ObservableProperty]
         private string _currentPartId = string.Empty;
@@ -113,6 +132,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public async Task OnNavigatedToAsync()
         {
             UpdateHeaderInfo();
+            HookLoadTracking(Loads);
             // Refresh loads from session
             IEnumerable<Model_ReceivingLoad> sessionLoads = _workflowService.CurrentSession is null
                 ? new List<Model_ReceivingLoad>()
@@ -144,12 +164,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
             else if (_workflowService.CurrentPart != null)
             {
-                PoQuantityInfo = $"Ordered: {_workflowService.CurrentPart.QtyOrdered:N2}";
+                PoQuantityInfo = _workflowService.CurrentPart.QtyOrdered.ToString("N2");
             }
             else
             {
                 PoQuantityInfo = string.Empty;
             }
+
+            UpdateCurrentTotal();
         }
 
         private async Task CheckSameDayReceivingAsync()
@@ -200,14 +222,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task ValidateAndContinueAsync()
         {
-            // Validate all loads have weight > 0
             foreach (var load in Loads)
             {
                 var result = _validationService.ValidateWeightQuantity(load.WeightQuantity);
                 if (!result.IsValid)
                 {
                     await _errorHandler.HandleErrorAsync(
-                        $"Load {load.LoadNumber}: {result.Message}",
+                        "There is a Load with a Weight Quantity error.",
                         Enum_ErrorSeverity.Warning
                     );
                     return;
@@ -232,6 +253,86 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     HasWarning = true;
                 }
             }
+
+            UpdateCurrentTotal();
+        }
+
+        private void HookLoadTracking(ObservableCollection<Model_ReceivingLoad> loads)
+        {
+            ArgumentNullException.ThrowIfNull(loads);
+
+            loads.CollectionChanged += Loads_CollectionChanged;
+
+            foreach (var load in loads)
+            {
+                load.PropertyChanged += Load_PropertyChanged;
+            }
+
+            UpdateCurrentTotal();
+        }
+
+        private void UnhookLoadTracking(ObservableCollection<Model_ReceivingLoad> loads)
+        {
+            ArgumentNullException.ThrowIfNull(loads);
+
+            loads.CollectionChanged -= Loads_CollectionChanged;
+
+            foreach (var load in loads)
+            {
+                load.PropertyChanged -= Load_PropertyChanged;
+            }
+        }
+
+        partial void OnLoadsChanging(
+            ObservableCollection<Model_ReceivingLoad>? oldValue,
+            ObservableCollection<Model_ReceivingLoad> newValue
+        )
+        {
+            if (oldValue is not null)
+            {
+                UnhookLoadTracking(oldValue);
+            }
+        }
+
+        partial void OnLoadsChanged(ObservableCollection<Model_ReceivingLoad> value)
+        {
+            HookLoadTracking(value);
+        }
+
+        private void Loads_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems is not null)
+            {
+                foreach (Model_ReceivingLoad load in e.OldItems)
+                {
+                    load.PropertyChanged -= Load_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems is not null)
+            {
+                foreach (Model_ReceivingLoad load in e.NewItems)
+                {
+                    load.PropertyChanged += Load_PropertyChanged;
+                }
+            }
+
+            UpdateCurrentTotal();
+        }
+
+        private void Load_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is not Model_ReceivingLoad)
+            {
+                return;
+            }
+
+            UpdateCurrentTotal();
+        }
+
+        private void UpdateCurrentTotal()
+        {
+            CurrentTotal = Loads.Sum(load => load.WeightQuantity).ToString("N2");
         }
 
         [RelayCommand]

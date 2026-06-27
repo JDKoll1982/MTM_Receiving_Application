@@ -12,6 +12,7 @@ using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using System.Text.Json;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -42,7 +43,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _heatLotFieldHeaderText = "Heat/Lot Number (Optional)";
 
         [ObservableProperty]
-        private string _heatLotFieldPlaceholderText = "Enter heat/lot number or leave blank";
+        private string _heatLotFieldPlaceholderText = "Enter Heat or Lot Number";
+
+        [ObservableProperty]
+        private ObservableCollection<string> _heatLotPresetFillers = new();
+
+        [ObservableProperty]
+        private string _selectedHeatLotPresetFiller = string.Empty;
 
         [ObservableProperty]
         private Visibility _userSetVariableFieldVisibility = Visibility.Collapsed;
@@ -109,6 +116,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ReceivingSettingsKeys.Accessibility.HeatLotNumber
                 );
 
+                await LoadHeatLotPresetFillersAsync();
+
                 _logger.LogInfo("Heat/Lot UI text loaded from settings successfully");
             }
             catch (Exception ex)
@@ -122,11 +131,52 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             return string.Format(HeatLotLoadPrefixText, loadNumber);
         }
 
+        private async Task LoadHeatLotPresetFillersAsync()
+        {
+            try
+            {
+                var presetFillersJson = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.HeatLotPresetFillers
+                );
+
+                HeatLotPresetFillers = new ObservableCollection<string>(
+                    DeserializeHeatLotPresetFillers(presetFillersJson)
+                );
+                SelectedHeatLotPresetFiller = HeatLotPresetFillers.FirstOrDefault() ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    $"Error loading Heat/Lot preset fillers from settings: {ex.Message}",
+                    ex
+                );
+
+                HeatLotPresetFillers = new ObservableCollection<string>(
+                    GetDefaultHeatLotPresetFillers()
+                );
+                SelectedHeatLotPresetFiller = HeatLotPresetFillers.FirstOrDefault() ?? string.Empty;
+            }
+        }
+
         private void OnStepChanged(object? sender, System.EventArgs e)
         {
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.HeatLotEntry)
             {
                 _ = OnNavigatedToAsync();
+            }
+        }
+
+        [RelayCommand]
+        private void ApplyHeatLotPreset()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedHeatLotPresetFiller))
+            {
+                return;
+            }
+
+            foreach (var load in Loads)
+            {
+                load.HeatLotNumber = SelectedHeatLotPresetFiller;
             }
         }
 
@@ -185,6 +235,36 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     load.HeatLotNumber = "Nothing Entered";
                 }
             }
+        }
+
+        private static IEnumerable<string> DeserializeHeatLotPresetFillers(string json)
+        {
+            try
+            {
+                var fillers = string.IsNullOrWhiteSpace(json)
+                    ? GetDefaultHeatLotPresetFillers()
+                    : JsonSerializer.Deserialize<string[]>(json) ?? GetDefaultHeatLotPresetFillers();
+
+                return fillers.Where(static item => string.IsNullOrWhiteSpace(item) is false).Select(
+                    item => item.Trim()
+                );
+            }
+            catch
+            {
+                return GetDefaultHeatLotPresetFillers();
+            }
+        }
+
+        private static IReadOnlyList<string> GetDefaultHeatLotPresetFillers()
+        {
+            return
+            [
+                "Refer to Vendor Tag",
+                "N/A",
+                "Old Coil",
+                "Old Flatstock",
+                "Old Product",
+            ];
         }
 
         private async Task RefreshVendorVariableFieldAsync()
