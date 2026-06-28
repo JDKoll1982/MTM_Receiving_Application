@@ -16,7 +16,7 @@
         <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="20">
+    <Grid>
         <Grid RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

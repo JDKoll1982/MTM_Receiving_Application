@@ -9,6 +9,13 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPa
 /// <summary>
 /// Builds a print-ready Customer Pull n' Pack context from the active report or queue state.
 /// </summary>
+/// <param name="PrintMode"></param>
+/// <param name="CustomerId"></param>
+/// <param name="CustomerName"></param>
+/// <param name="ActiveFiltersSummary"></param>
+/// <param name="DemandLines"></param>
+/// <param name="WaitlistEntries"></param>
+/// <param name="Title"></param>
 public sealed record Query_CustomerPullPackPrintContext(
     Enum_CustomerPullPackPrintMode PrintMode,
     string CustomerId,

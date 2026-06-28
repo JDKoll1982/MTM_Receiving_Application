@@ -62,7 +62,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void AttachLoadFocus()
         {
-            this.Loaded += (_, _) => FocusFirstLoadQuantityInput();
+            this.Loaded += (_, _) =>
+            {
+                if (this.Visibility == Visibility.Visible)
+                {
+                    FocusFirstLoadQuantityInput();
+                }
+            };
             this.RegisterPropertyChangedCallback(
                 UIElement.VisibilityProperty,
                 (_, _) =>
@@ -77,7 +83,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void FocusFirstLoadQuantityInput()
         {
-            if (this.DispatcherQueue == null)
+            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
             {
                 return;
             }

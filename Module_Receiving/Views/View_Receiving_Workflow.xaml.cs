@@ -93,7 +93,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
             _workflowService.StepChanged += WorkflowService_StepChanged;
-            RequestFocusForCurrentStep();
         }
 
         private void View_Receiving_Workflow_Unloaded(object sender, RoutedEventArgs e)
@@ -108,24 +107,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             _ = sender;
             _ = e;
-            RequestFocusForCurrentStep();
-        }
-
-        private void RequestFocusForCurrentStep()
-        {
-            if (DispatcherQueue == null)
-            {
-                return;
-            }
-
-            // Use Low priority so this runs after all pending Normal-priority UI work
-            // (NavigationView selection animations, frame navigation callbacks, etc.)
-            // has settled. This prevents other UI operations from stealing focus back
-            // after we set it.
-            DispatcherQueue.TryEnqueue(
-                Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
-                () => ResolveFocusableStepView()?.FocusForAccess()
-            );
         }
 
         private IReceivingWorkflowFocusable? ResolveFocusableStepView()
@@ -239,11 +220,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private async Task LoadShortcutsAsync()
         {
-            var shortcuts = await _receivingShortcuts.GetShortcutsAsync();
-            _shortcutSettings = (
-                shortcuts ?? Model_Settings_ReceivingShortcuts.CreateDefault()
-            ).Clone();
-            ApplyKeyboardShortcuts(isSimpleNavigationToggleActive: false);
+            try
+            {
+                var shortcuts = await _receivingShortcuts.GetShortcutsAsync();
+                _shortcutSettings = (
+                    shortcuts ?? Model_Settings_ReceivingShortcuts.CreateDefault()
+                ).Clone();
+                ApplyKeyboardShortcuts(isSimpleNavigationToggleActive: false);
+            }
+            catch (Exception ex)
+            {
+                _ = ex;
+                _shortcutSettings = Model_Settings_ReceivingShortcuts.CreateDefault();
+                ApplyKeyboardShortcuts(isSimpleNavigationToggleActive: false);
+            }
         }
 
         private void ApplyKeyboardShortcuts(bool isSimpleNavigationToggleActive)

@@ -78,6 +78,7 @@
     <None Include=".agent_work\Action-Log.md" />
     <None Include=".agent_work\Decision-Record.md" />
     <None Include=".agent_work\README.md" />
+    <None Include=".specify\memory\vendor-variable-mappings-json.md" />
     <None Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -104,7 +105,7 @@
   <ItemGroup>
     <Compile Remove=".agent_work\**" />
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
-    <Compile Remove="Scripts\McpServers\**" />
+    <Compile Remove="Scripts\**" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Logging.cs" />
@@ -117,10 +118,12 @@
     <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="obj_verify\**" />
+    <EmbeddedResource Remove="Scripts\**" />
     <None Remove=".agent_work\**" />
     <None Remove="MTM_Receiving_Application.Tests\**" />
     <None Remove="Properties\**" />
     <None Remove="obj_verify\**" />
+    <None Remove="Scripts\**" />
     <Page Remove=".agent_work\**" />
     <Page Remove="MTM_Receiving_Application.Tests\**" />
     <Page Remove="Properties\**" />
@@ -157,12 +160,10 @@
   </ItemGroup>
   <!-- Exclude scripts and specs folder from compilation -->
   <ItemGroup>
-    <Compile Remove="scripts\**" />
-    <EmbeddedResource Remove="scripts\**" />
-    <None Remove="scripts\**" />
     <Compile Remove="specs\**" />
     <EmbeddedResource Remove="specs\**" />
     <None Remove="specs\**" />
+    <Page Remove="Scripts\**" />
     <Page Remove="specs\**" />
     <ApplicationDefinition Remove="specs\**" />
     <!-- Exclude additional non-source directories -->
@@ -342,9 +343,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="docs\development\CopilotForms\data\module-metadata\Module_OutsideService\" />
-    <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove=".agent_work\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Scripts\**" />
   </ItemGroup>
 </Project>

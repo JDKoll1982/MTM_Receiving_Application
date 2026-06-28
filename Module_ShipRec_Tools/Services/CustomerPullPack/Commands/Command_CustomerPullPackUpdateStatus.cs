@@ -9,6 +9,12 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPa
 /// <summary>
 /// Updates the current status, owner assignment, and handler notes for a queue item.
 /// </summary>
+/// <param name="WaitlistId"></param>
+/// <param name="NewStatus"></param>
+/// <param name="CurrentUserId"></param>
+/// <param name="CurrentUserDisplayName"></param>
+/// <param name="ProblemReason"></param>
+/// <param name="HandlerNote"></param>
 public sealed record Command_CustomerPullPackUpdateStatus(
     string WaitlistId,
     Enum_CustomerPullPackWaitlistStatus NewStatus,

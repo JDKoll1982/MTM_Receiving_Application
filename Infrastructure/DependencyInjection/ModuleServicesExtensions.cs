@@ -86,6 +86,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_PackageTypePreference(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_QualityHold(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_ReceivingNonPOEntry(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ReceivingVendorVariable(mySqlConnectionString));
 
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving, Service_MySQL_Receiving>();
@@ -94,6 +95,7 @@ public static class ModuleServicesExtensions
             _ => new Service_MySQL_PackagePreferences(mySqlConnectionString)
         );
         services.AddSingleton<IService_MySQL_QualityHold, Service_MySQL_QualityHold>();
+        services.AddSingleton<IService_MySQL_ReceivingVendorVariable, Service_MySQL_ReceivingVendorVariable>();
         services.AddSingleton<IService_QualityHoldWarning, Service_QualityHoldWarning>();
         services.AddSingleton<IService_SessionManager>(sp =>
         {
@@ -402,6 +404,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_LabelPaths>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_VendorVariables>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_PersonalDefaults>();
@@ -460,6 +463,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();

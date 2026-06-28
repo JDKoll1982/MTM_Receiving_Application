@@ -1,0 +1,158 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters">
+    <Page.Resources>
+        <converters:Converter_ObjectToBoolean x:Key="ObjectToBooleanConverter" />   
+    </Page.Resources>
+    
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <!--  Vendor Selection Card  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="Vendor Search / Selection" />
+
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                x:Name="VendorTextBox"
+                                Grid.Column="0"
+                                Header="Vendor Name"
+                                LostFocus="VendorTextBox_LostFocus"
+                                PlaceholderText="Select or search for a vendor"
+                                Text="{x:Bind ViewModel.VendorName, Mode=TwoWay}" />
+
+                            <Button
+                                Grid.Column="1"
+                                Height="32"
+                                Margin="0,28,0,0"
+                                Click="SearchVendorButton_Click"
+                                Content="Search"
+                                ToolTipService.ToolTip="Search for vendor in Infor Visual" />
+
+                            <Button
+                                Grid.Column="2"
+                                Height="32"
+                                Margin="0,28,0,0"
+                                Command="{x:Bind ViewModel.ClearFormCommand}"
+                                Content="Clear"
+                                ToolTipService.ToolTip="Clear vendor and variable fields" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!--  Variable Name Card  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="Vendor Variable Name" />
+
+                        <TextBox
+                            Header="Variable Name"
+                            MaxLength="100"
+                            PlaceholderText="e.g., DM #"
+                            Text="{x:Bind ViewModel.VariableName, Mode=TwoWay}" />
+
+                        <InfoBar
+                            IsClosable="False"
+                            IsOpen="{x:Bind ViewModel.IsEditingExisting, Mode=OneWay}"
+                            Message="You are editing an existing mapping. Saving will overwrite the current variable name for this vendor."
+                            Severity="Warning" />
+
+                        <StackPanel
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <Button
+                                Command="{x:Bind ViewModel.SaveCommand}"
+                                Content="Save"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--  Current Mappings Card  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <Grid>
+                            <TextBlock
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                Text="Current Mappings" />
+                            <Button
+                                HorizontalAlignment="Right"
+                                Command="{x:Bind ViewModel.DeleteSelectedCommand}"
+                                Content="Delete Selected">
+                                <Button.IsEnabled>
+                                    <Binding
+                                        Converter="{StaticResource ObjectToBooleanConverter}"
+                                        Mode="OneWay"
+                                    Path="SelectedMapping" />
+                                </Button.IsEnabled>
+                            </Button>
+                        </Grid>
+
+                        <ListView
+                            ItemsSource="{x:Bind ViewModel.Mappings, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedMapping, Mode=TwoWay}"
+                            SelectionMode="Single">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_ReceivingVendorVariableMapping">
+                                    <Grid Padding="8,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind VendorName}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="12,0"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="→" />
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="{x:Bind VariableName}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

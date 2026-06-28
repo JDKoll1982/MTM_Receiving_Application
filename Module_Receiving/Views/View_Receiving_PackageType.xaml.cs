@@ -50,7 +50,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void AttachPackagePerLoadFocus()
         {
-            this.Loaded += (_, _) => FocusFirstPackagesPerLoadInput();
+            this.Loaded += (_, _) =>
+            {
+                if (this.Visibility == Visibility.Visible)
+                {
+                    FocusFirstPackagesPerLoadInput();
+                }
+            };
             this.RegisterPropertyChangedCallback(
                 UIElement.VisibilityProperty,
                 (_, _) =>
@@ -65,7 +71,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void FocusFirstPackagesPerLoadInput()
         {
-            if (this.DispatcherQueue == null)
+            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
             {
                 return;
             }

@@ -47,6 +47,10 @@ public sealed partial class ViewModel_Settings_Receiving_CategoryHub
             new Model_SettingsNavigationStep(
                 "Label Files",
                 typeof(Views.View_Settings_Receiving_LabelPaths)
+            ),
+            new Model_SettingsNavigationStep(
+                "Custom Vendor Variables",
+                typeof(Views.View_Settings_Receiving_VendorVariables)
             )
         );
     }

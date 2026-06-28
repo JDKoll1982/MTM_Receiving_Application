@@ -249,6 +249,38 @@
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Button>
+
+            <Button
+                Grid.Row="2"
+                Grid.Column="1"
+                Width="320"
+                Height="180"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep7Clicked"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xF1B1;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Custom Vendor Variables" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="2"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Set Vendor Variables allowing for special input in the Heat/Lot screen."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>                
+            </Button>
         </Grid>
     </Grid>
 </Page>

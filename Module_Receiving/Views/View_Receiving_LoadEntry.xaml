@@ -10,6 +10,10 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_StringFormat x:Key="StringFormatConverter" />
+        <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
+        <converters:Converter_DoubleToDecimal x:Key="DoubleToDecimalConverter" />
+        <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
     </UserControl.Resources>
 
         <Grid>

@@ -69,6 +69,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _heatLotAccessibilityName = "Heat Lot Number";
 
+        private string _currentPartId = string.Empty;
+
+        public string CurrentPartId
+        {
+            get => _currentPartId;
+            private set => SetProperty(ref _currentPartId, value);
+        }
+
+        private string _currentPartDescription = string.Empty;
+
+        public string CurrentPartDescription
+        {
+            get => _currentPartDescription;
+            private set => SetProperty(ref _currentPartDescription, value);
+        }
+
         public ViewModel_Receiving_HeatLot(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
@@ -187,6 +203,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
+            RefreshCurrentPartInfo();
+
             await RefreshVendorVariableFieldAsync();
 
             await Task.CompletedTask;
@@ -235,6 +253,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     load.HeatLotNumber = "Nothing Entered";
                 }
             }
+        }
+
+        private void RefreshCurrentPartInfo()
+        {
+            CurrentPartId = _workflowService.CurrentPart?.PartID?.Trim() ?? string.Empty;
+            CurrentPartDescription = _workflowService.CurrentPart?.Description?.Trim() ?? string.Empty;
         }
 
         private static IEnumerable<string> DeserializeHeatLotPresetFillers(string json)
@@ -292,7 +316,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     foreach (var load in Loads)
                     {
-                        load.UserSetCustomerName = string.Empty;
+                        load.UserSetCustomerName = currentVendorName ?? string.Empty;
                         load.UserSetVariable = string.Empty;
                         load.UserSetVariableFieldVisibility = Visibility.Collapsed;
                         load.UserSetVariableFieldHeaderText = "User Set Variable";
@@ -314,7 +338,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     if (
                         string.Equals(
                             load.UserSetCustomerName,
-                            _activeVendorVariableMapping.VendorName,
+                            currentVendorName,
                             StringComparison.OrdinalIgnoreCase
                         )
                         is false
@@ -323,7 +347,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         load.UserSetVariable = string.Empty;
                     }
 
-                    load.UserSetCustomerName = _activeVendorVariableMapping.VendorName;
+                    load.UserSetCustomerName = currentVendorName ?? string.Empty;
                     load.UserSetVariableFieldVisibility = Visibility.Visible;
                     load.UserSetVariableFieldHeaderText = _activeVendorVariableMapping.VariableName;
                     load.UserSetVariableFieldPlaceholderText =

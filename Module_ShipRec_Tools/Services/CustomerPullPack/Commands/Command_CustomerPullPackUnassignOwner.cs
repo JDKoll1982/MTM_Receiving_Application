@@ -8,6 +8,9 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPa
 /// <summary>
 /// Clears queue ownership so another handler can take the line.
 /// </summary>
+/// <param name="WaitlistId"></param>
+/// <param name="CurrentUserId"></param>
+/// <param name="CurrentUserDisplayName"></param>
 public sealed record Command_CustomerPullPackUnassignOwner(
     string WaitlistId,
     string CurrentUserId,

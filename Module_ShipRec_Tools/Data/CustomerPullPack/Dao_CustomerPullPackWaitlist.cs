@@ -31,6 +31,7 @@ public class Dao_CustomerPullPackWaitlist
     /// Initializes a new instance of the <see cref="Dao_CustomerPullPackWaitlist"/> class.
     /// </summary>
     /// <param name="connectionString">MySQL application connection string.</param>
+    /// <param name="logger"></param>
     public Dao_CustomerPullPackWaitlist(
         string connectionString,
         IService_LoggingUtility? logger = null
