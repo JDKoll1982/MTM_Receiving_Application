@@ -945,7 +945,7 @@ Build started 4/2/2026 10:14:28 AM.
 [STATUS 2026-04-02 10:14:31] Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): NuGet.DependencyResolver.Core, Version=7.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 (location: C:\Program Files\dotnet\sdk\10.0.104\NuGet.DependencyResolver.Core.dll, MVID: fdf74c42-0a14-4a20-9dc7-7f6f1ccf0078, AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.104\NuGet.Build.Tasks.dll)
          Running restore with 4 concurrent jobs.
          Reading project file C:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj.
-         Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed (location: C:\Program Files\dotnet\sdk\10.0.104\Newtonsoft.Json.dll, MVID: 7e62198b-eab2-4380-bbac-29171862d1d8, AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.104\NuGet.Build.Tasks.dll)
+         Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): Newtonsoft.Json, Version=13.0.1.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed (location: C:\Program Files\dotnet\sdk\10.0.104\Newtonsoft.Json.dll, MVID: 7e62198b-eab2-4380-bbac-29171862d1d8, AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.104\NuGet.Build.Tasks.dll)
          Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): System.Runtime.Serialization.Primitives, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (location: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.4\System.Runtime.Serialization.Primitives.dll, MVID: e772f334-70f1-44e1-b2f8-c38d9b6692d4, AssemblyLoadContext: Default)
          Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): System.Runtime.Numerics, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (location: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.4\System.Runtime.Numerics.dll, MVID: c832bef8-c4dc-4a9b-80fd-125e8f9f638b, AssemblyLoadContext: Default)
          Assembly loaded during TaskRun (NuGet.Build.Tasks.RestoreTask): System.Text.Encodings.Web, Version=10.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51 (location: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.4\System.Text.Encodings.Web.dll, MVID: fedde5b1-94fe-434b-820a-f02fcf06f409, AssemblyLoadContext: Default)
@@ -3538,7 +3538,7 @@ Build started 4/2/2026 10:14:28 AM.
              Reference found at search path location "{HintPathFromItem}".
              Found related file "C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.widgets\1.8.251231004\lib\net6.0-windows10.0.17763.0\Microsoft.Windows.Widgets.Projection.xml".
              This reference is not "CopyLocal" because at least one source item had "Private" set to "false" and no source items had "Private" set to "true".
-         Primary reference "Microsoft.WinUI, Version=3.0.0.0, Culture=neutral, PublicKeyToken=de31ebe4ad15742b".
+         Primary reference "Microsoft.WinUI, Version=3.0.1.0, Culture=neutral, PublicKeyToken=de31ebe4ad15742b".
              Resolved file path is "C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\lib\net6.0-windows10.0.17763.0\Microsoft.WinUI.dll".
              Reference found at search path location "{HintPathFromItem}".
              Found related file "C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\lib\net6.0-windows10.0.17763.0\Microsoft.WinUI.xml".
@@ -3573,7 +3573,7 @@ Build started 4/2/2026 10:14:28 AM.
              Reference found at search path location "{HintPathFromItem}".
              Found related file "C:\Users\jkoll\.nuget\packages\opentelemetry.extensions.hosting\1.15.0\lib\net10.0\OpenTelemetry.Extensions.Hosting.xml".
              This reference is not "CopyLocal" because at least one source item had "Private" set to "false" and no source items had "Private" set to "true".
-         Unified primary reference "Serilog, Version=4.3.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10".
+         Unified primary reference "Serilog, Version=4.3.0.1, Culture=neutral, PublicKeyToken=24c2f752a8e58a10".
              Using this version instead of original version "4.0.0.0" in "C:\Users\jkoll\.nuget\packages\serilog.enrichers.environment\3.0.1\lib\net8.0\Serilog.Enrichers.Environment.dll" because AutoUnify is 'true'.
              Using this version instead of original version "4.0.0.0" in "C:\Users\jkoll\.nuget\packages\serilog.enrichers.thread\4.0.0\lib\net8.0\Serilog.Enrichers.Thread.dll" because AutoUnify is 'true'.
              Using this version instead of original version "4.2.0.0" in "C:\Users\jkoll\.nuget\packages\serilog.extensions.logging\10.0.0\lib\net10.0\Serilog.Extensions.Logging.dll" because AutoUnify is 'true'.
@@ -3582,7 +3582,7 @@ Build started 4/2/2026 10:14:28 AM.
              Reference found at search path location "{HintPathFromItem}".
              Found related file "C:\Users\jkoll\.nuget\packages\serilog\4.3.0\lib\net9.0\Serilog.xml".
              This reference is not "CopyLocal" because at least one source item had "Private" set to "false" and no source items had "Private" set to "true".
-         Primary reference "Serilog.Enrichers.Environment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10".
+         Primary reference "Serilog.Enrichers.Environment, Version=3.0.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10".
              Resolved file path is "C:\Users\jkoll\.nuget\packages\serilog.enrichers.environment\3.0.1\lib\net8.0\Serilog.Enrichers.Environment.dll".
              Reference found at search path location "{HintPathFromItem}".
              Found related file "C:\Users\jkoll\.nuget\packages\serilog.enrichers.environment\3.0.1\lib\net8.0\Serilog.Enrichers.Environment.xml".
@@ -5307,8 +5307,8 @@ Build started 4/2/2026 10:14:28 AM.
    1:7>Target "MarkupCompilePass1" in file "C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\buildTransitive\Microsoft.UI.Xaml.Markup.Compiler.interop.targets" from project "C:\Users\jkoll\source\repos\MTM_Receiving_Application\MTM_Receiving_Application.csproj" (target "PrepareResources" depends on it):
        Task "MakeDir"
        Done executing task "MakeDir".
-       Assembly loaded during TaskRun: Microsoft.UI.Xaml.Markup.Compiler.IO, Version=3.0.0.2602, Culture=neutral, PublicKeyToken=de31ebe4ad15742b (location: C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll, MVID: fe57a96f-6581-4ae7-a551-fdfef15acb61, AssemblyLoadContext: MSBuild plugin C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll)
-       Assembly loaded during TaskRun: Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop, Version=3.0.0.2602, Culture=neutral, PublicKeyToken=de31ebe4ad15742b (location: C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop.dll, MVID: 7e5ecee1-b719-4813-8ec7-fe2119b9fadd, AssemblyLoadContext: MSBuild plugin C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll)
+       Assembly loaded during TaskRun: Microsoft.UI.Xaml.Markup.Compiler.IO, Version=3.0.1.2602, Culture=neutral, PublicKeyToken=de31ebe4ad15742b (location: C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll, MVID: fe57a96f-6581-4ae7-a551-fdfef15acb61, AssemblyLoadContext: MSBuild plugin C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll)
+       Assembly loaded during TaskRun: Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop, Version=3.0.1.2602, Culture=neutral, PublicKeyToken=de31ebe4ad15742b (location: C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.MSBuildInterop.dll, MVID: 7e5ecee1-b719-4813-8ec7-fe2119b9fadd, AssemblyLoadContext: MSBuild plugin C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll)
        Using "InputSerializer" task from assembly "C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\buildTransitive\..\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll".
        Task "InputSerializer"
          Assembly loaded during TaskRun (Microsoft.UI.Xaml.Markup.Compiler.IO.InputSerializer): System.Text.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51 (location: C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\System.Text.Json.dll, MVID: 18286260-1922-4a47-ab1c-75627396fd30, AssemblyLoadContext: MSBuild plugin C:\Users\jkoll\.nuget\packages\microsoft.windowsappsdk.winui\1.8.260204000\tools\net6.0\Microsoft.UI.Xaml.Markup.Compiler.IO.dll)

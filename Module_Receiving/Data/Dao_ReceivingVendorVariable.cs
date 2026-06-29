@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -46,6 +47,10 @@ public class Dao_ReceivingVendorVariable
                 mappings.Add(Map(reader));
             }
 
+            #if DEBUG
+            Debug.WriteLine($"[Dao_ReceivingVendorVariable] GetAllMappingsAsync: Retrieved {mappings.Count} mappings");
+            #endif
+
             return Model_Dao_Result_Factory.Success(mappings);
         }
         catch (Exception ex)
@@ -79,8 +84,16 @@ public class Dao_ReceivingVendorVariable
             await using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return Model_Dao_Result_Factory.Success<Model_ReceivingVendorVariableMapping?>(Map(reader));
+                var mapping = Map(reader);
+                #if DEBUG
+                Debug.WriteLine($"[Dao_ReceivingVendorVariable] GetMappingByVendorAsync: vendor='{vendorName}' -> variable='{mapping.VariableName}'");
+                #endif
+                return Model_Dao_Result_Factory.Success<Model_ReceivingVendorVariableMapping?>(mapping);
             }
+
+            #if DEBUG
+            Debug.WriteLine($"[Dao_ReceivingVendorVariable] GetMappingByVendorAsync: vendor='{vendorName}' -> no mapping found");
+            #endif
 
             return Model_Dao_Result_Factory.Success<Model_ReceivingVendorVariableMapping?>(null);
         }

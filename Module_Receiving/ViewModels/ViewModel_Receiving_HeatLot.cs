@@ -13,11 +13,16 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using System.Text.Json;
+using System.Diagnostics;
+using MTM_Receiving_Application.Module_Receiving.Data;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_HeatLot : ViewModel_Shared_Base
     {
+        private readonly IService_MySQL_ReceivingVendorVariable _vendorVariableService;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
@@ -92,7 +97,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService
+            IService_Notification notificationService,
+            IService_MySQL_ReceivingVendorVariable vendorVariableService
         )
             : base(errorHandler, logger, notificationService)
         {
@@ -100,6 +106,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _validationService = validationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
+            _vendorVariableService = vendorVariableService ?? throw new ArgumentNullException(nameof(vendorVariableService));
 
             _workflowService.StepChanged += OnStepChanged;
 
@@ -295,17 +302,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                var vendorMappingsJson = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
-                );
-                var vendorMappings = DeserializeVendorVariableMappings(vendorMappingsJson);
                 var currentVendorName = _workflowService.CurrentPOVendor;
-
-                _activeVendorVariableMapping = vendorMappings
-                    .Where(mapping => mapping.MatchesVendorName(currentVendorName))
-                    .OrderByDescending(mapping => mapping.VendorName.Length)
-                    .ThenBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
-                    .FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(currentVendorName))
+                {
+                    _activeVendorVariableMapping = null;
+                }
+                else
+                {
+                    #if DEBUG
+                    Debug.WriteLine($"[ViewModel_Receiving_HeatLot] RefreshVendorVariableFieldAsync: querying service for vendor='{currentVendorName.Trim()}'");
+                    #endif
+                    var mappingResult = await _vendorVariableService.GetMappingByVendorAsync(currentVendorName.Trim());
+                    if (mappingResult.IsSuccess)
+                    {
+                        _activeVendorVariableMapping = mappingResult.Data;
+                    }
+                    else
+                    {
+                        _logger.LogError($"Unable to load vendor mapping from DB for '{currentVendorName}': {mappingResult.ErrorMessage}");
+                        #if DEBUG
+                        Debug.WriteLine($"[ViewModel_Receiving_HeatLot] Service error: {mappingResult.ErrorMessage}");
+                        #endif
+                        _activeVendorVariableMapping = null;
+                    }
+                }
 
                 if (_activeVendorVariableMapping is null)
                 {
@@ -363,46 +383,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 UserSetVariableFieldHeaderText = "User Set Variable";
                 UserSetVariableFieldPlaceholderText = "Enter variable value";
                 UserSetVariableAccessibilityName = "User Set Variable";
-            }
-        }
-
-        private static IEnumerable<Model_ReceivingVendorVariableMapping> DeserializeVendorVariableMappings(
-            string json
-        )
-        {
-            try
-            {
-                return string.IsNullOrWhiteSpace(json)
-                    ?
-                    [
-                        new Model_ReceivingVendorVariableMapping
-                        {
-                            VendorName = "Skana",
-                            VariableName = "DM #",
-                        },
-                    ]
-                    : System.Text.Json.JsonSerializer.Deserialize<Model_ReceivingVendorVariableMapping[]>(
-                        json
-                    )
-                        ??
-                        [
-                            new Model_ReceivingVendorVariableMapping
-                            {
-                                VendorName = "Skana",
-                                VariableName = "DM #",
-                            },
-                        ];
-            }
-            catch
-            {
-                return
-                [
-                    new Model_ReceivingVendorVariableMapping
-                    {
-                        VendorName = "Skana",
-                        VariableName = "DM #",
-                    },
-                ];
             }
         }
 

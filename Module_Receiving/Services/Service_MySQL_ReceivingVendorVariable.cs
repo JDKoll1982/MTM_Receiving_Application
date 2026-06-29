@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -50,21 +51,38 @@ public class Service_MySQL_ReceivingVendorVariable : IService_MySQL_ReceivingVen
         ArgumentNullException.ThrowIfNull(vendorName);
         _logger.LogInfo($"Retrieving vendor variable mapping for: {vendorName}");
         var result = await _dao.GetMappingByVendorAsync(vendorName);
+
+        #if DEBUG
         if (result.IsSuccess)
         {
             if (result.Data is not null)
             {
-                _logger.LogInfo($"Found mapping: {vendorName} -> {result.Data.VariableName}");
+                Debug.WriteLine($"[Service_MySQL_ReceivingVendorVariable] GetMappingByVendorAsync: Found mapping for '{vendorName}' -> '{result.Data.VariableName}'");
             }
             else
             {
-                _logger.LogInfo($"No mapping found for vendor: {vendorName}");
+                Debug.WriteLine($"[Service_MySQL_ReceivingVendorVariable] GetMappingByVendorAsync: No mapping for '{vendorName}'");
             }
+        }
+        else
+        {
+            Debug.WriteLine($"[Service_MySQL_ReceivingVendorVariable] GetMappingByVendorAsync: ERROR for '{vendorName}': {result.ErrorMessage}");
+        }
+        #endif
+
+        if (result.IsSuccess && result.Data is not null)
+        {
+            _logger.LogInfo($"Found mapping: {vendorName} -> {result.Data.VariableName}");
+        }
+        else if (result.IsSuccess)
+        {
+            _logger.LogInfo($"No mapping found for vendor: {vendorName}");
         }
         else
         {
             _logger.LogError($"Failed to retrieve mapping for {vendorName}: {result.ErrorMessage}");
         }
+
         return result;
     }
 
