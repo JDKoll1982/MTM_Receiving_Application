@@ -298,14 +298,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var vendorMappingsJson = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
                 );
-                var vendorMappings = DeserializeVendorVariableMappings(vendorMappingsJson);
-                var currentVendorName = _workflowService.CurrentPOVendor;
+                var vendorMappings = DeserializeVendorVariableMappings(vendorMappingsJson)
+                    .Select(m =>
+                    {
+                        m.VendorName = m.VendorName?.Trim() ?? string.Empty;
+                        m.VariableName = m.VariableName?.Trim() ?? string.Empty;
+                        return m;
+                    })
+                    .ToList();
+                var currentVendorName = _workflowService.CurrentPOVendor?.Trim();
+
+                _logger.LogInfo($"Refreshing vendor variable field. Current vendor: '{currentVendorName ?? "(null)"}'. Mappings count: {vendorMappings?.Count ?? 0}");
 
                 _activeVendorVariableMapping = vendorMappings
                     .Where(mapping => mapping.MatchesVendorName(currentVendorName))
                     .OrderByDescending(mapping => mapping.VendorName.Length)
                     .ThenBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
                     .FirstOrDefault();
+
+                if (_activeVendorVariableMapping is not null)
+                {
+                    _logger.LogInfo($"Matched vendor mapping: VendorName='{_activeVendorVariableMapping.VendorName}', VariableName='{_activeVendorVariableMapping.VariableName}'");
+                }
 
                 if (_activeVendorVariableMapping is null)
                 {
