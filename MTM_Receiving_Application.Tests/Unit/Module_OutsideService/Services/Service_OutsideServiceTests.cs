@@ -226,7 +226,7 @@ public class Service_OutsideServiceTests
         appSettings.Setup(service => service.GetUseInforVisualMockData()).Returns(useMockData);
 
         return new Service_OutsideService(
-            new Dao_OutsideServiceRequest("Server=localhost;Database=test;Uid=test;Pwd=test;"),
+            new Dao_OutsideServiceRequest("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;"),
             inforVisual,
             CreateMockCatalog().Object,
             logger,

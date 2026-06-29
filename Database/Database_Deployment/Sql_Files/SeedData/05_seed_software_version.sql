@@ -4,7 +4,7 @@ INSERT INTO software_version (
     updated_by
 ) VALUES (
     1,
-    '2.7.5',
+    '3.0.0',
     'seed'
 )
 ON DUPLICATE KEY UPDATE
