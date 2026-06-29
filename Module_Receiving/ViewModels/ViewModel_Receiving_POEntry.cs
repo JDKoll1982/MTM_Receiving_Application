@@ -311,6 +311,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     // Set PO header data in Workflow Service for XLSX export
                     _workflowService.CurrentPOVendor = result.Data.Vendor;
+                    // Notify any registered ViewModels to refresh vendor-variable UI
+                    foreach (var vm in _viewModelRegistry.GetViewModels<ViewModel_Receiving_HeatLot>())
+                    {
+                        try
+                        {
+                            _ = vm.RefreshVendorVariableFieldPublicAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Error requesting vendor variable refresh on HeatLot VM: {ex.Message}", ex);
+                        }
+                    }
                     _workflowService.CurrentPOStatus = result.Data.Status;
                     _currentPoHeaderPromiseDate = result.Data.HeaderPromiseDate;
                     _workflowService.CurrentPODueDate = _currentPoHeaderPromiseDate;

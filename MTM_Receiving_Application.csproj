@@ -33,6 +33,10 @@
   <!-- WindowsAppSDKSelfContained ensures the Windows App SDK runtime is included in the output -->
   <PropertyGroup>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Ensure the Windows App SDK runtime is initialized correctly for unpackaged (desktop) apps -->
+    <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+    <!-- Allow undocked reg-free WinRT initialization for the Windows App SDK runtime (helps when running from IDE) -->
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>true</WindowsAppSdkUndockedRegFreeWinRTInitialize>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="MTMIcon.ico">

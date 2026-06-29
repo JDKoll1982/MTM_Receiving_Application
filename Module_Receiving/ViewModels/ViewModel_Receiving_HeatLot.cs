@@ -22,6 +22,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingValidation _validationService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingSettings _receivingSettings;
+        private readonly IService_MySQL_ReceivingVendorVariable _vendorVariableService;
+        private readonly IService_ViewModelRegistry _viewModelRegistry;
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -92,7 +94,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
-            IService_Notification notificationService
+            IService_Notification notificationService,
+            IService_ViewModelRegistry viewModelRegistry
         )
             : base(errorHandler, logger, notificationService)
         {
@@ -100,6 +103,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _validationService = validationService;
             _helpService = helpService;
             _receivingSettings = receivingSettings;
+
+            _viewModelRegistry = viewModelRegistry;
+            _viewModelRegistry.Register(this);
+
+            // Resolve vendor-variable service from DI container via service provider if available
+            var sp = (viewModelRegistry as IServiceProvider) ?? null;
+            if (sp is null)
+            {
+                // Fallback: attempt to get IServiceProvider via reflection on registry (some hosts expose it)
+                var svcProp = viewModelRegistry.GetType().GetProperty("ServiceProvider");
+                sp = svcProp?.GetValue(viewModelRegistry) as IServiceProvider;
+            }
+
+            _vendorVariableService = sp?.GetService(typeof(IService_MySQL_ReceivingVendorVariable)) as IService_MySQL_ReceivingVendorVariable
+                ?? throw new ArgumentNullException(nameof(_vendorVariableService));
 
             _workflowService.StepChanged += OnStepChanged;
 
@@ -281,40 +299,45 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private static IReadOnlyList<string> GetDefaultHeatLotPresetFillers()
         {
-            return
-            [
+            return new List<string>
+            {
                 "Refer to Vendor Tag",
                 "N/A",
                 "Old Coil",
                 "Old Flatstock",
                 "Old Product",
-            ];
+            };
         }
 
         private async Task RefreshVendorVariableFieldAsync()
         {
             try
             {
-                var vendorMappingsJson = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
-                );
-                var vendorMappings = DeserializeVendorVariableMappings(vendorMappingsJson)
-                    .Select(m =>
-                    {
-                        m.VendorName = m.VendorName?.Trim() ?? string.Empty;
-                        m.VariableName = m.VariableName?.Trim() ?? string.Empty;
-                        return m;
-                    })
-                    .ToList();
+                // Prefer database-backed vendor variable mapping lookup instead of JSON settings
                 var currentVendorName = _workflowService.CurrentPOVendor?.Trim();
+                _logger.LogInfo($"Refreshing vendor variable field via DB lookup. Current vendor: '{currentVendorName ?? "(null)"}'");
 
-                _logger.LogInfo($"Refreshing vendor variable field. Current vendor: '{currentVendorName ?? "(null)"}'. Mappings count: {vendorMappings?.Count ?? 0}");
+                Model_ReceivingVendorVariableMapping? dbMapping = null;
+                if (!string.IsNullOrWhiteSpace(currentVendorName))
+                {
+                    var mappingResult = await _vendorVariableService.GetMappingByVendorAsync(currentVendorName);
+                    if (mappingResult.IsSuccess)
+                    {
+                        dbMapping = mappingResult.Data;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Vendor mapping lookup failed for '{currentVendorName}': {mappingResult.ErrorMessage}");
+                    }
+                }
 
-                _activeVendorVariableMapping = vendorMappings
-                    .Where(mapping => mapping.MatchesVendorName(currentVendorName))
-                    .OrderByDescending(mapping => mapping.VendorName.Length)
-                    .ThenBy(mapping => mapping.VendorName, StringComparer.OrdinalIgnoreCase)
-                    .FirstOrDefault();
+                if (dbMapping is not null)
+                {
+                    dbMapping.VendorName = dbMapping.VendorName?.Trim() ?? string.Empty;
+                    dbMapping.VariableName = dbMapping.VariableName?.Trim() ?? string.Empty;
+                }
+
+                _activeVendorVariableMapping = dbMapping;
 
                 if (_activeVendorVariableMapping is not null)
                 {
@@ -380,43 +403,50 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
+        // Public wrapper so other viewmodels can request a refresh when vendor changes
+        public Task RefreshVendorVariableFieldPublicAsync()
+        {
+            return RefreshVendorVariableFieldAsync();
+        }
+
         private static IEnumerable<Model_ReceivingVendorVariableMapping> DeserializeVendorVariableMappings(
             string json
         )
         {
             try
             {
-                return string.IsNullOrWhiteSpace(json)
-                    ?
-                    [
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return new[]
+                    {
                         new Model_ReceivingVendorVariableMapping
                         {
                             VendorName = "Skana",
                             VariableName = "DM #",
                         },
-                    ]
-                    : System.Text.Json.JsonSerializer.Deserialize<Model_ReceivingVendorVariableMapping[]>(
-                        json
-                    )
-                        ??
-                        [
-                            new Model_ReceivingVendorVariableMapping
-                            {
-                                VendorName = "Skana",
-                                VariableName = "DM #",
-                            },
-                        ];
-            }
-            catch
-            {
-                return
-                [
+                    };
+                }
+
+                var deserialized = System.Text.Json.JsonSerializer.Deserialize<Model_ReceivingVendorVariableMapping[]>(json);
+                return deserialized ?? new[]
+                {
                     new Model_ReceivingVendorVariableMapping
                     {
                         VendorName = "Skana",
                         VariableName = "DM #",
                     },
-                ];
+                };
+            }
+            catch
+            {
+                return new[]
+                {
+                    new Model_ReceivingVendorVariableMapping
+                    {
+                        VendorName = "Skana",
+                        VariableName = "DM #",
+                    },
+                };
             }
         }
 
