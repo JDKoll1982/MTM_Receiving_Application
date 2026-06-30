@@ -69,7 +69,7 @@ For each project:
        <TargetFramework>net6.0</TargetFramework>
      </PropertyGroup>
      <ItemGroup>
-       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
        <PackageReference Include="Moq" Version="4.16.1" />
      </ItemGroup>
    </Project>
