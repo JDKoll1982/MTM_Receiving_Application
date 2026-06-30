@@ -12,7 +12,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         public View_Receiving_ModeSelection(ViewModel_Receiving_ModeSelection viewModel)
         {
             ArgumentNullException.ThrowIfNull(viewModel);
-
             ViewModel = viewModel;
             DataContext = ViewModel;
             this.InitializeComponent();

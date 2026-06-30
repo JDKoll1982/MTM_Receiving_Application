@@ -11,13 +11,16 @@
     VerticalAlignment="Stretch"
     HorizontalContentAlignment="Stretch"
     VerticalContentAlignment="Stretch"
-    mc:Ignorable="d"
->
+    mc:Ignorable="d">
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowSpacing="16">
+    <Grid
+        Padding="24"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -25,13 +28,15 @@
         </Grid.RowDefinitions>
 
         <!--  Content Section with View Toggle  -->
-        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
             <!--  Single Entry View  -->
             <Grid
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}"
-            >
+                Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -44,30 +49,26 @@
                     Padding="12,6"
                     HorizontalAlignment="Stretch"
                     Background="{ThemeResource AccentFillColorDefaultBrush}"
-                    CornerRadius="8,8,0,0"
-                >
+                    CornerRadius="8,8,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon FontSize="16" Foreground="White" Glyph="&#xE8FD;" />
-                        <TextBlock
+                        <FontIcon
+                            FontSize="16"
                             Foreground="White"
-                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                        >
+                            Glyph="&#xE8FD;" />
+                        <TextBlock Foreground="White" Style="{ThemeResource SubtitleTextBlockStyle}">
                             <Run Text="{x:Bind ViewModel.ReviewEntryLabelText, Mode=OneWay}" />
-                            <Run
-                                FontWeight="Bold"
-                                Text="{x:Bind ViewModel.DisplayIndex, Mode=OneWay}"
-                            />
+                            <Run FontWeight="Bold" Text="{x:Bind ViewModel.DisplayIndex, Mode=OneWay}" />
                             <Run Text="{x:Bind ViewModel.ReviewOfLabelText, Mode=OneWay}" />
-                            <Run
-                                FontWeight="Bold"
-                                Text="{x:Bind ViewModel.Loads.Count, Mode=OneWay}"
-                            />
+                            <Run FontWeight="Bold" Text="{x:Bind ViewModel.Loads.Count, Mode=OneWay}" />
                         </TextBlock>
                     </StackPanel>
                 </Border>
 
                 <!--  Single Entry Form  -->
-                <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
                     <Border
                         Padding="20"
                         HorizontalAlignment="Stretch"
@@ -75,15 +76,13 @@
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
-                        CornerRadius="0,0,8,8"
-                    >
+                        CornerRadius="0,0,8,8">
                         <controls:UniformGrid
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             ColumnSpacing="8"
                             Columns="3"
-                            RowSpacing="8"
-                        >
+                            RowSpacing="8">
                             <!--  PO Number  -->
 
                             <controls:UniformGrid
@@ -91,26 +90,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE8A5;"
-                                        />
+                                            Glyph="&#xE8A5;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewPurchaseOrderNumberText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewPurchaseOrderNumberText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -120,8 +115,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.PoNumber, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.PoNumber, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Part ID  -->
@@ -131,26 +125,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE8B7;"
-                                        />
+                                            Glyph="&#xE8B7;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewPartIdText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewPartIdText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -160,8 +150,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.PartID, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.PartID, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Weight/Quantity  -->
@@ -171,26 +160,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xEA8B;"
-                                        />
+                                            Glyph="&#xEA8B;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewWeightQuantityText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewWeightQuantityText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -200,8 +185,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.WeightQuantity, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.WeightQuantity, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Heat/Lot Number  -->
@@ -211,26 +195,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE8B4;"
-                                        />
+                                            Glyph="&#xE8B4;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewHeatLotNumberText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewHeatLotNumberText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -240,8 +220,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.HeatLotNumber, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.HeatLotNumber, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Location  -->
@@ -251,26 +230,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE707;"
-                                        />
+                                            Glyph="&#xE707;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewLocationText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewLocationText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -280,8 +255,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.InitialLocation, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.InitialLocation, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Packages Per Load  -->
@@ -291,26 +265,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE7B8;"
-                                        />
+                                            Glyph="&#xE7B8;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewPackagesPerLoadText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewPackagesPerLoadText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -320,8 +290,7 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.PackagesPerLoad, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.PackagesPerLoad, Mode=OneWay}" />
                             </controls:UniformGrid>
 
                             <!--  Package Type  -->
@@ -331,26 +300,22 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Columns="1"
-                                Rows="2"
-                            >
+                                Rows="2">
                                 <Border
                                     Grid.Row="0"
                                     Padding="12,6"
                                     HorizontalAlignment="Stretch"
                                     Background="{ThemeResource CardStrokeColorDefault}"
-                                    CornerRadius="8,8,0,0"
-                                >
+                                    CornerRadius="8,8,0,0">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <FontIcon
                                             FontSize="14"
                                             Foreground="{ThemeResource TextFillColorPrimary}"
-                                            Glyph="&#xE7B8;"
-                                        />
+                                            Glyph="&#xE7B8;" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorPrimary}"
                                             Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                            Text="{x:Bind ViewModel.ReviewPackageTypeText, Mode=OneWay}"
-                                        />
+                                            Text="{x:Bind ViewModel.ReviewPackageTypeText, Mode=OneWay}" />
                                     </StackPanel>
                                 </Border>
                                 <TextBox
@@ -360,30 +325,30 @@
                                     CornerRadius="0,0,8,8"
                                     IsHitTestVisible="False"
                                     IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.CurrentEntry.PackageTypeName, Mode=OneWay}"
-                                />
+                                    Text="{x:Bind ViewModel.CurrentEntry.PackageTypeName, Mode=OneWay}" />
                             </controls:UniformGrid>
                         </controls:UniformGrid>
                     </Border>
                 </Grid>
 
                 <!--  Navigation Bar for Single View  -->
-                <CommandBar Grid.Row="2" Margin="0,12,0,0" DefaultLabelPosition="Right">
+                <CommandBar
+                    Grid.Row="2"
+                    Margin="0,12,0,0"
+                    DefaultLabelPosition="Right">
                     <AppBarButton
                         AutomationProperties.Name="{x:Bind ViewModel.ReviewPreviousEntryAccessibilityName, Mode=OneWay}"
                         Command="{x:Bind ViewModel.PreviousEntryCommand}"
                         Icon="Back"
                         IsEnabled="{x:Bind ViewModel.CanGoBack, Mode=OneWay}"
-                        Label="{x:Bind ViewModel.ReviewPreviousLabelText, Mode=OneWay}"
-                    />
+                        Label="{x:Bind ViewModel.ReviewPreviousLabelText, Mode=OneWay}" />
 
                     <AppBarButton
                         AutomationProperties.Name="{x:Bind ViewModel.ReviewNextEntryAccessibilityName, Mode=OneWay}"
                         Command="{x:Bind ViewModel.NextEntryCommand}"
                         Icon="Forward"
                         IsEnabled="{x:Bind ViewModel.CanGoNext, Mode=OneWay}"
-                        Label="{x:Bind ViewModel.ReviewNextLabelText, Mode=OneWay}"
-                    />
+                        Label="{x:Bind ViewModel.ReviewNextLabelText, Mode=OneWay}" />
 
                     <AppBarSeparator />
 
@@ -391,8 +356,7 @@
                         AutomationProperties.Name="{x:Bind ViewModel.ReviewSwitchToTableAccessibilityName, Mode=OneWay}"
                         Command="{x:Bind ViewModel.SwitchToTableViewCommand}"
                         Icon="ViewAll"
-                        Label="{x:Bind ViewModel.ReviewTableViewLabelText, Mode=OneWay}"
-                    />
+                        Label="{x:Bind ViewModel.ReviewTableViewLabelText, Mode=OneWay}" />
                 </CommandBar>
             </Grid>
 
@@ -409,8 +373,7 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
-                >
+                    CornerRadius="8">
                     <controls:DataGrid
                         x:Name="ReviewDataGrid"
                         AutoGenerateColumns="False"
@@ -419,8 +382,7 @@
                         GridLinesVisibility="Horizontal"
                         HeadersVisibility="Column"
                         ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}"
-                        SelectionMode="Single"
-                    >
+                        SelectionMode="Single">
                         <controls:DataGrid.CellStyle>
                             <Style TargetType="controls:DataGridCell">
                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -431,54 +393,48 @@
                                 Width="Auto"
                                 Binding="{Binding LoadNumber}"
                                 Header="{x:Bind ViewModel.ReviewColumnLoadNumberText, Mode=OneWay}"
-                                IsReadOnly="True"
-                            />
+                                IsReadOnly="True" />
                             <controls:DataGridTextColumn
                                 Width="*"
                                 Binding="{Binding PartID}"
-                                Header="{x:Bind ViewModel.ReviewColumnPartIdText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnPartIdText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="*"
                                 Binding="{Binding WeightQuantity}"
-                                Header="{x:Bind ViewModel.ReviewColumnWeightQtyText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnWeightQtyText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="Auto"
                                 Binding="{Binding HeatLotNumber}"
-                                Header="{x:Bind ViewModel.ReviewColumnHeatLotText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnHeatLotText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="Auto"
                                 Binding="{Binding InitialLocation}"
-                                Header="{x:Bind ViewModel.ReviewColumnLocationText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnLocationText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="*"
                                 Binding="{Binding PoNumber, TargetNullValue='N/A'}"
-                                Header="{x:Bind ViewModel.ReviewColumnPoNumberText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnPoNumberText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="Auto"
                                 Binding="{Binding PackagesPerLoad}"
-                                Header="{x:Bind ViewModel.ReviewColumnPkgsText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnPkgsText, Mode=OneWay}" />
                             <controls:DataGridTextColumn
                                 Width="Auto"
                                 Binding="{Binding PackageTypeName}"
-                                Header="{x:Bind ViewModel.ReviewColumnPkgTypeText, Mode=OneWay}"
-                            />
+                                Header="{x:Bind ViewModel.ReviewColumnPkgTypeText, Mode=OneWay}" />
                         </controls:DataGrid.Columns>
                     </controls:DataGrid>
                 </Border>
 
                 <!--  Navigation Bar for Table View  -->
-                <CommandBar Grid.Row="1" Margin="0,16,0,0" DefaultLabelPosition="Right">
+                <CommandBar
+                    Grid.Row="1"
+                    Margin="0,16,0,0"
+                    DefaultLabelPosition="Right">
                     <AppBarButton
                         AutomationProperties.Name="{x:Bind ViewModel.ReviewSwitchToSingleAccessibilityName, Mode=OneWay}"
                         Command="{x:Bind ViewModel.SwitchToSingleViewCommand}"
-                        Label="{x:Bind ViewModel.ReviewSingleViewLabelText, Mode=OneWay}"
-                    >
+                        Label="{x:Bind ViewModel.ReviewSingleViewLabelText, Mode=OneWay}">
                         <AppBarButton.Icon>
                             <FontIcon Glyph="&#xE8A9;" />
                         </AppBarButton.Icon>
@@ -488,7 +444,10 @@
         </Grid>
 
         <!--  Action Buttons  -->
-        <Grid Grid.Row="2" Margin="0,16,0,0" ColumnSpacing="12">
+        <Grid
+            Grid.Row="2"
+            Margin="0,16,0,0"
+            ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -499,8 +458,7 @@
                 Grid.Column="1"
                 AutomationProperties.Name="{x:Bind ViewModel.ReviewAddAnotherAccessibilityName, Mode=OneWay}"
                 Command="{x:Bind ViewModel.AddAnotherPartCommand}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddAnother'), Mode=OneWay}"
-            >
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddAnother'), Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon FontSize="16" Glyph="&#xE710;" />
                     <TextBlock Text="{x:Bind ViewModel.ReviewAddAnotherText, Mode=OneWay}" />
@@ -512,8 +470,7 @@
                 AutomationProperties.Name="{x:Bind ViewModel.ReviewSaveToDatabaseAccessibilityName, Mode=OneWay}"
                 Command="{x:Bind ViewModel.SaveCommand}"
                 Style="{StaticResource AccentButtonStyle}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndGenerate'), Mode=OneWay}"
-            >
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndGenerate'), Mode=OneWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon FontSize="16" Glyph="&#xE74E;" />
                     <TextBlock Text="{x:Bind ViewModel.ReviewSaveToDatabaseText, Mode=OneWay}" />

@@ -16,7 +16,6 @@ using System.Text.Json;
 using System.Diagnostics;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
-using MTM_Receiving_Application.Module_Receiving.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {

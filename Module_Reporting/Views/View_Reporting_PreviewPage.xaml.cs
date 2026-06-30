@@ -20,16 +20,16 @@ public sealed partial class View_Reporting_PreviewPage : Page
     {
         ViewModel = viewModel;
         _headerBackNavigation = headerBackNavigation;
+
         InitializeComponent();
         DataContext = ViewModel;
+
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _ = sender;
-        _ = e;
         _headerBackNavigation.RegisterBackAction(
             NavigateBackToReportingAsync,
             "Back to Report Setup"
@@ -38,9 +38,14 @@ public sealed partial class View_Reporting_PreviewPage : Page
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
-        _ = sender;
-        _ = e;
         _headerBackNavigation.ClearBackAction();
+
+        // Safely clear the TabView items source layout tree during page destruction
+        // to prevent x:Load caching memory leaks.
+        if (PreviewModulesTabView != null)
+        {
+            PreviewModulesTabView.TabItems.Clear();
+        }
     }
 
     private Task NavigateBackToReportingAsync()
@@ -52,6 +57,7 @@ public sealed partial class View_Reporting_PreviewPage : Page
 
         var reportingMainPage = App.GetService<View_Reporting_Main>();
         mainWindow.SetContentPage(reportingMainPage, "End of Day Reports");
+
         return Task.CompletedTask;
     }
 }

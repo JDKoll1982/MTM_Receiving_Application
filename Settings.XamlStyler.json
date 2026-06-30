@@ -1,0 +1,34 @@
+{
+  "AccessKeyOrder": 11,
+  "AttributeIndent": 0,
+  "AttributeIndentSize": 2,
+  "AttributeOrderingRuleGroups": [
+    "x:Class",
+    "xmlns, xmlns:x",
+    "xmlns:*",
+    "x:Key, x:Name, Name",
+    "Grid.Row, Grid.Column, Grid.RowSpan, Grid.ColumnSpan, Canvas.Left, Canvas.Top, RelativePanel.*",
+    "Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight",
+    "Margin, Padding, HorizontalAlignment, VerticalAlignment, HorizontalContentAlignment, VerticalContentAlignment",
+    "Style, Background, Foreground, FontSize, FontFamily, FontWeight",
+    "*:*",
+    "x:*"
+  ],
+  "AttributesPerLine": 1,
+  "CommentPadding": 1,
+  "EnableNamespaceReordering": true,
+  "FirstAttributeOnSameLine": true,
+  "FormatOnSave": true,
+  "IndentSize": 4,
+  "KeepFirstAttributeOnSameLine": true,
+  "MaxAttributesPerLine": 1,
+  "MaxBlankLines": 1,
+  "NoFirstAttributeOnSameLineRules": [
+    "Window",
+    "Page",
+    "UserControl"
+  ],
+  "OrderAttributesByName": true,
+  "PutEndingBracketOnNewLine": true,
+  "SpaceBeforeInvertedClosingSlash": false
+}

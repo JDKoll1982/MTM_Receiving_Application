@@ -119,8 +119,8 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind SubPartNumberDisplay, Mode=OneWay}" />
-                                    <TextBlock Grid.Column="1" Text="{x:Bind CurrentStatus, Mode=OneWay}" />
+                                        Text="{x:Bind SubPartNumberDisplay, Mode=OneTime}" />
+                                    <TextBlock Grid.Column="1" Text="{x:Bind CurrentStatus, Mode=OneTime}" />
                                 </Grid>
                                 <Grid Grid.Row="1" ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -130,11 +130,11 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind CustomerOrderId, Mode=OneWay}" />
+                                        Text="{x:Bind CustomerOrderId, Mode=OneTime}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind RequestTimeDisplay, Mode=OneWay}" />
+                                        Text="{x:Bind RequestTimeDisplay, Mode=OneTime}" />
                                 </Grid>
                                 <Grid Grid.Row="2" ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -144,11 +144,11 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind CurrentOwnerDisplayName, Mode=OneWay}" />
+                                        Text="{x:Bind CurrentOwnerDisplayName, Mode=OneTime}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind SelectedLocationCountDisplay, Mode=OneWay}" />
+                                        Text="{x:Bind SelectedLocationCountDisplay, Mode=OneTime}" />
                                 </Grid>
                             </Grid>
                         </DataTemplate>
@@ -213,9 +213,9 @@
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{x:Bind LocationId, Mode=OneWay}" />
-                                                <TextBlock Grid.Column="1" Text="{x:Bind ParentPartId, Mode=OneWay}" />
-                                                <TextBlock Grid.Column="2" Text="{x:Bind OnHandQuantity, Mode=OneWay}" />
+                                                <TextBlock Grid.Column="0" Text="{x:Bind LocationId, Mode=OneTime}" />
+                                                <TextBlock Grid.Column="1" Text="{x:Bind ParentPartId, Mode=OneTime}" />
+                                                <TextBlock Grid.Column="2" Text="{x:Bind OnHandQuantity, Mode=OneTime}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>

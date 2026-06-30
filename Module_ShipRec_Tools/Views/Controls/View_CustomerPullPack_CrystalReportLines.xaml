@@ -502,7 +502,7 @@
                                                     <Border Height="1" Background="#FFBBBBBB" />
 
                                                     <ListView
-                                                        IsEnabled="{x:Bind HasSelectedRequestLine, Mode=OneWay}"
+                                                        IsEnabled="{x:Bind HasSelectedRequestLine, Mode=OneTime}"
                                                         ItemsSource="{x:Bind SubPartLocations, Mode=OneTime}"
                                                         Loaded="OnSelectableLocationListLoaded"
                                                         SelectionChanged="OnSelectableLocationListSelectionChanged"

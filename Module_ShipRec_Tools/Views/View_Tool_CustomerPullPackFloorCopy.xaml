@@ -15,7 +15,7 @@
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"
                     Text="{x:Bind GeneratedAtDisplay, Mode=OneTime}" />
-                <ItemsControl ItemsSource="{x:Bind PrintContext.DemandLines, Mode=OneWay}">
+                <ItemsControl ItemsSource="{x:Bind PrintContext.DemandLines, Mode=OneTime}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_CustomerPullPack_DemandLine">
                             <Border
@@ -30,17 +30,17 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Spacing="2">
-                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind CustomerOrderId, Mode=OneWay}" />
-                                        <TextBlock Text="{x:Bind ParentPartId, Mode=OneWay}" />
+                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind CustomerOrderId, Mode=OneTime}" />
+                                        <TextBlock Text="{x:Bind ParentPartId, Mode=OneTime}" />
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="{x:Bind SubPartAvailabilitySummary, Mode=OneWay}"
+                                            Text="{x:Bind SubPartAvailabilitySummary, Mode=OneTime}"
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Spacing="2">
-                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind PullDateDisplay, Mode=OneWay}" />
-                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind QuantityToPack, Mode=OneWay}" />
-                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind WaitlistDisplay, Mode=OneWay}" />
+                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind PullDateDisplay, Mode=OneTime}" />
+                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind QuantityToPack, Mode=OneTime}" />
+                                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind WaitlistDisplay, Mode=OneTime}" />
                                     </StackPanel>
                                 </Grid>
                             </Border>

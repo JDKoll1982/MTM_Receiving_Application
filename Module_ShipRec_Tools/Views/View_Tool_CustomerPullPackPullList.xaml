@@ -11,7 +11,7 @@
                     Style="{StaticResource BodyTextBlockStyle}"
                     Text="{x:Bind PrintContext.ActiveFiltersSummary, Mode=OneTime}"
                     TextWrapping="WrapWholeWords" />
-                <ItemsControl ItemsSource="{x:Bind PrintContext.GroupedSubPartTotals, Mode=OneWay}">
+                <ItemsControl ItemsSource="{x:Bind PrintContext.GroupedSubPartTotals, Mode=OneTime}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:Model_CustomerPullPack_SubPartPrintGroup">
                             <Border
@@ -21,13 +21,13 @@
                                 BorderThickness="1"
                                 CornerRadius="8">
                                 <StackPanel Spacing="8">
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind SubPartId, Mode=OneWay}" />
-                                    <TextBlock Text="{x:Bind TotalQuantityNeeded, Mode=OneWay}" />
-                                    <TextBlock Text="{x:Bind TotalQuantityOnHand, Mode=OneWay}" />
-                                    <ItemsControl ItemsSource="{x:Bind ChosenLocations, Mode=OneWay}">
+                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind SubPartId, Mode=OneTime}" />
+                                    <TextBlock Text="{x:Bind TotalQuantityNeeded, Mode=OneTime}" />
+                                    <TextBlock Text="{x:Bind TotalQuantityOnHand, Mode=OneTime}" />
+                                    <ItemsControl ItemsSource="{x:Bind ChosenLocations, Mode=OneTime}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="x:String">
-                                                <TextBlock Text="{x:Bind Mode=OneWay}" />
+                                                <TextBlock Text="{x:Bind Mode=OneTime}" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>

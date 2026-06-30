@@ -33,11 +33,11 @@
 
                 <ComboBox
                     Header="Default Sort"
-                    ItemsSource="{x:Bind SortModes, Mode=OneWay}"
+                    ItemsSource="{x:Bind SortModes, Mode=OneTime}"
                     SelectedItem="{x:Bind DefaultSortMode, Mode=TwoWay}" />
                 <ComboBox
                     Header="Default Print Preset"
-                    ItemsSource="{x:Bind PrintModes, Mode=OneWay}"
+                    ItemsSource="{x:Bind PrintModes, Mode=OneTime}"
                     SelectedItem="{x:Bind DefaultPrintPreset, Mode=TwoWay}" />
 
                 <StackPanel Orientation="Horizontal" Spacing="16">

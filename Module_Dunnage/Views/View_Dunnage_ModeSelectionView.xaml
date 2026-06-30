@@ -12,136 +12,148 @@
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         BorderThickness="1"
         CornerRadius="8">
-        <Grid Padding="24">
+        <Grid
+            Padding="24"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center"
+            ColumnSpacing="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel
+            <Button
+                Grid.Row="0"
+                Grid.Column="0"
+                MinWidth="240"
+                Padding="20"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                AutomationProperties.Name="Guided Wizard Mode"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="48"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE771;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Guided Wizard" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Step-by-step workflow for dunnage receiving with validation at each stage."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <!--  Edit Mode Column  -->
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                MinWidth="240"
+                Padding="20"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                AutomationProperties.Name="Edit Mode"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.SelectEditModeCommand}"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="48"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE70F;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Edit Mode" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Load historical dunnage records for editing and correction."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Row="0"
+                Grid.Column="2"
+                MinWidth="240"
+                Padding="20"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                AutomationProperties.Name="Search Mode"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.OpenImageSearchCommand}"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="48"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE7C5;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Image Search" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Search Dunnage Parts by Image."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+
+            <!--  Guided Mode Checkbox  -->
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="0"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="24">
-                <!--  Guided Wizard Column  -->
-                <StackPanel Spacing="12">
-                    <Button
-                        Width="280"
-                        Height="180"
-                        Padding="20"
-                        AutomationProperties.Name="Guided Wizard Mode"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        Command="{x:Bind ViewModel.SelectGuidedModeCommand}"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <FontIcon
-                                FontSize="48"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Glyph="&#xE771;" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Guided Wizard" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Step-by-step workflow for dunnage receiving with validation at each stage."
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Button>
+                Checked="OnGuidedDefaultChecked"
+                Content="Set as default mode"
+                IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}"
+                Unchecked="OnGuidedDefaultUnchecked" />
 
-                    <!--  Guided Mode Checkbox  -->
-                    <CheckBox
-                        HorizontalAlignment="Center"
-                        Checked="OnGuidedDefaultChecked"
-                        Content="Set as default mode"
-                        IsChecked="{x:Bind ViewModel.IsGuidedModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Tooltip.Button.QuickGuidedWizard'), Mode=OneWay}"
-                        Unchecked="OnGuidedDefaultUnchecked" />
-                </StackPanel>
+            <!--  Edit Mode Checkbox  -->
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                Checked="OnEditDefaultChecked"
+                Content="Set as default mode"
+                IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
+                Unchecked="OnEditDefaultUnchecked" />
 
-                <!--  Edit Mode Column  -->
-                <StackPanel Spacing="12">
-                    <Button
-                        Width="280"
-                        Height="180"
-                        Padding="20"
-                        AutomationProperties.Name="Edit Mode"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        Command="{x:Bind ViewModel.SelectEditModeCommand}"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <FontIcon
-                                FontSize="48"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Glyph="&#xE70F;" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Edit Mode" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Load historical dunnage records for editing and correction."
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Button>
-
-                    <!--  Edit Mode Checkbox  -->
-                    <CheckBox
-                        HorizontalAlignment="Center"
-                        Checked="OnEditDefaultChecked"
-                        Content="Set as default mode"
-                        IsChecked="{x:Bind ViewModel.IsEditModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.QuickEditMode'), Mode=OneWay}"
-                        Unchecked="OnEditDefaultUnchecked" />
-                </StackPanel>
-
-                <StackPanel Spacing="12">
-                    <Button
-                        Width="280"
-                        Height="180"
-                        Padding="20"
-                        AutomationProperties.Name="Search Mode"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        Command="{x:Bind ViewModel.OpenImageSearchCommand}"
-                        CornerRadius="8">
-                        <StackPanel Spacing="12">
-                            <FontIcon
-                                FontSize="48"
-                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                Glyph="&#xE7C5;" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Image Search" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Search Dunnage Parts by Image."
-                                TextAlignment="Center"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Button>
-                    <!--  Search Mode Checkbox  -->
-                    <CheckBox
-                        HorizontalAlignment="Center"
-                        Checked="OnImageSearchDefaultChecked"
-                        Content="Set as default mode"
-                        IsChecked="{x:Bind ViewModel.IsImageSearchModeDefault, Mode=TwoWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ImageSearchDefaultMode'), Mode=OneWay}"
-                        Unchecked="OnImageSearchDefaultUnchecked" />
-                </StackPanel>
-
-            </StackPanel>
+            <!--  Search Mode Checkbox  -->
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="2"
+                HorizontalAlignment="Center"
+                Checked="OnImageSearchDefaultChecked"
+                Content="Set as default mode"
+                IsChecked="{x:Bind ViewModel.IsImageSearchModeDefault, Mode=TwoWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ImageSearchDefaultMode'), Mode=OneWay}"
+                Unchecked="OnImageSearchDefaultUnchecked" />
         </Grid>
     </Border>
 </UserControl>

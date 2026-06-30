@@ -311,7 +311,6 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         content.Children.Add(errorMessage);
         content.Children.Add(searchBox);
         content.Children.Add(receivedSkidsBox);
-        content.Children.Add(locationBox);
         content.Children.Add(
             new TextBlock
             {

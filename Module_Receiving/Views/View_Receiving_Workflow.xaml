@@ -31,6 +31,8 @@
                 x:Name="ModeSelectionHost"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Manual Entry View  -->
@@ -180,15 +182,6 @@
                     </StackPanel>
 
                     <!--  File Path Display  -->
-                    <TextBlock
-                        Margin="0,4,0,0"
-                        FontSize="12"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        IsTextSelectionEnabled="True"
-                        Text="{x:Bind ViewModel.LastSaveResult.ArchiveQueuePath, Mode=OneWay}"
-                        TextWrapping="Wrap"
-                        Visibility="{x:Bind ViewModel.LastSaveResult.LabelQueueSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{x:Bind ViewModel.CompletionDatabaseLabelText, Mode=OneWay}" />
                         <TextBlock

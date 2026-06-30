@@ -1,3 +1,9 @@
+/// <summary>
+/// View_Receiving_HeatLot.xaml.cs
+/// Last Updated: 6/29/2026 7:47:10 PM
+/// By: JOHNSPC\johnk
+/// </summary>
+
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -7,22 +13,36 @@ using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
+    /// <summary>
+    /// Defines the <see cref="View_Receiving_HeatLot" />.
+    /// </summary>
     public sealed partial class View_Receiving_HeatLot : UserControl, IReceivingWorkflowFocusable
     {
-        public ViewModel_Receiving_HeatLot ViewModel
-        {
-            get => (ViewModel_Receiving_HeatLot)GetValue(ViewModelProperty);
-            private set => SetValue(ViewModelProperty, value);
-        }
+        /// <summary>
+        /// Gets the ViewModel.
+        /// </summary>
+        public ViewModel_Receiving_HeatLot ViewModel { get => (ViewModel_Receiving_HeatLot)GetValue(ViewModelProperty); private set => SetValue(ViewModelProperty, value); }
 
+        /// <summary>
+        /// Defines the ViewModelProperty.
+        /// </summary>
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
             nameof(ViewModel),
             typeof(ViewModel_Receiving_HeatLot),
             typeof(View_Receiving_HeatLot),
             new PropertyMetadata(null)
         );
+
+        /// <summary>
+        /// Defines the _focusService.
+        /// </summary>
         private readonly IService_Focus _focusService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="View_Receiving_HeatLot"/> class.
+        /// </summary>
+        /// <param name="viewModel">The viewModel<see cref="ViewModel_Receiving_HeatLot"/>.</param>
+        /// <param name="focusService">The focusService<see cref="IService_Focus"/>.</param>
         public View_Receiving_HeatLot(
             ViewModel_Receiving_HeatLot viewModel,
             IService_Focus focusService
@@ -46,6 +66,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             FocusFirstLoadHeatLotInput();
         }
 
+        /// <summary>
+        /// The AttachLoadFocus.
+        /// </summary>
         private void AttachLoadFocus()
         {
             this.Loaded += (_, _) =>
@@ -67,6 +90,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             );
         }
 
+        /// <summary>
+        /// Moves focus to the first heat or lot input.
+        /// </summary>
         private void FocusFirstLoadHeatLotInput()
         {
             if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
@@ -90,6 +116,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             });
         }
 
+        /// <summary>
+        /// Finds the first descendant of the specified type within the visual tree.
+        /// </summary>
+        /// <typeparam name="T">The type of descendant to find.</typeparam>
+        /// <param name="parent">The parent <see cref="DependencyObject"/>.</param>
+        /// <returns>The first descendant of type <see cref="T"/> if found; otherwise, <c>null</c>.</returns>
         private static T? FindDescendant<T>(DependencyObject parent)
             where T : DependencyObject
         {
