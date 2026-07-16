@@ -222,7 +222,7 @@ public partial class ViewModel_Tool_CustomerPullPackQueue : ViewModel_Shared_Bas
     public async Task LoadUserDefaultsAsync()
     {
         var result = await _mediator.Send(new Query_CustomerPullPackDefaults(CurrentUserId));
-        if (result is null || !result.IsSuccess || result.Data is null)
+        if (result?.IsSuccess != true || result.Data is null)
         {
             return;
         }

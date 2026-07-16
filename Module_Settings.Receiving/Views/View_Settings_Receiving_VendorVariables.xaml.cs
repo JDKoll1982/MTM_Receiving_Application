@@ -50,7 +50,7 @@ public sealed partial class View_Settings_Receiving_VendorVariables : Page
         try
         {
             var matches = await ViewModel.SearchVendorsAsync(searchTerm);
-            if (matches is null || !matches.Any())
+            if (matches?.Count is not > 0)
             {
                 ViewModel.ShowStatus($"No vendors found matching '{searchTerm}'");
                 return;

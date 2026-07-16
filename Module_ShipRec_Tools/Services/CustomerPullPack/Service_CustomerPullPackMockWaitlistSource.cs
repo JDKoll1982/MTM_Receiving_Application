@@ -174,7 +174,7 @@ public sealed class Service_CustomerPullPackMockWaitlistSource
             {
                 entries = entries.Where(entry => IsOpenStatus(entry.CurrentStatus));
             }
-            else if (statusSet is not null && statusSet.Count > 0)
+            else if (statusSet?.Count > 0)
             {
                 var normalizedStatuses = new HashSet<Enum_CustomerPullPackWaitlistStatus>(
                     statusSet
