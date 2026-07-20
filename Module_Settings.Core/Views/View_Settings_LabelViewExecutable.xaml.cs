@@ -35,4 +35,21 @@ public sealed partial class View_Settings_LabelViewExecutable : Page
 
         ViewModel.ExecutablePath = file.Path;
     }
+
+    private async void PickLabelFileButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".lbl");
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSingleFileAsync().AsTask();
+        if (file is null)
+        {
+            return;
+        }
+
+        ViewModel.SetSelectedButtonPath(file.Path);
+    }
 }

@@ -962,8 +962,8 @@ public partial class ViewModel_Volvo_ShipmentEntry : ViewModel_Shared_Base
         if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
         {
             await RedirectToSettingsPageAsync(
-                typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
-                "Volvo Label path is missing or invalid. Opening Volvo label settings."
+                typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                "Volvo Label path is missing or invalid. Opening LabelView settings."
             );
             return;
         }

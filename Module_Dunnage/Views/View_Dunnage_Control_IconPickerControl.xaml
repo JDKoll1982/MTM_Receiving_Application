@@ -83,8 +83,8 @@
                 SelectionMode="Single">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <!--  Wraps icons horizontally, showing a maximum of 6 per row  -->
-                        <ItemsWrapGrid MaximumRowsOrColumns="6" Orientation="Horizontal" />
+                        <!--  Wrap icons based on available width  -->
+                        <ItemsWrapGrid Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
@@ -109,8 +109,8 @@
             SelectionMode="Single">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <!--  Wraps icons horizontally, showing a maximum of 6 per row  -->
-                    <ItemsWrapGrid MaximumRowsOrColumns="6" Orientation="Horizontal" />
+                    <!--  Wrap icons based on available width  -->
+                    <ItemsWrapGrid Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>

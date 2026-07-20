@@ -123,10 +123,6 @@ public static class ModuleServicesExtensions
             Module_Receiving.Services.Service_ReceivingSettings
         >();
         services.AddSingleton<IService_ReceivingShortcuts, Service_ReceivingShortcuts>();
-        services.AddSingleton<
-            IService_ReceivingUserLabelSettings,
-            Service_ReceivingUserLabelSettings
-        >();
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
@@ -190,10 +186,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
         services.AddSingleton<IService_DunnageShortcuts, Service_DunnageShortcuts>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
-        services.AddSingleton<
-            IService_DunnageUserLabelSettings,
-            Service_DunnageUserLabelSettings
-        >();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
@@ -270,7 +262,6 @@ public static class ModuleServicesExtensions
         });
         services.AddSingleton<IService_VolvoRecipientSettings, Service_VolvoRecipientSettings>();
         services.AddSingleton<IService_VolvoSettings, Service_VolvoSettings>();
-        services.AddSingleton<IService_VolvoUserLabelSettings, Service_VolvoUserLabelSettings>();
 
         // ViewModels (Transient)
         services.AddTransient<Module_Volvo.ViewModels.ViewModel_Volvo_ShipmentEntry>();
@@ -368,6 +359,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_SettingsPagination, Service_SettingsPagination>();
         services.AddSingleton<IService_UserPreferences, Service_UserPreferences>();
         services.AddSingleton<IService_SettingsErrorHandler, Service_SettingsErrorHandler>();
+        services.AddSingleton<IService_SettingsUserLabelButtons, Service_SettingsUserLabelButtons>();
 
         // Settings ViewModels (Transient - Per-settings-page instances)
         RegisterSettingsViewModels(services);
@@ -403,7 +395,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_PartFormatting>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_KeyboardShortcuts>();
-        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_LabelPaths>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_VendorVariables>();
 
         // Dunnage Settings Pages
@@ -412,14 +403,12 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_WorkflowVisuals>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_KeyboardShortcuts>();
-        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_LabelPaths>();
 
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
         // Volvo Settings Pages
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_PartCatalog>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
-        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_LabelPaths>();
 
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
@@ -452,7 +441,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_KeyboardShortcuts>();
-        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths>();
 
         // Receiving Settings Views
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub>();
@@ -462,14 +450,12 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_EmailRecipients>();
-        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths>();
     }
 
     /// <summary>

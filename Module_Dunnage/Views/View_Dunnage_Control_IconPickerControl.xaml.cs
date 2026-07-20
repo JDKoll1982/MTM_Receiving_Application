@@ -29,7 +29,15 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
     public MaterialIconKind? SelectedIcon
     {
         get => (MaterialIconKind?)GetValue(SelectedIconProperty);
-        set => SetValue(SelectedIconProperty, value);
+        set
+        {
+            if (Equals(GetValue(SelectedIconProperty), value))
+            {
+                return;
+            }
+
+            SetValue(SelectedIconProperty, value);
+        }
     }
 
     public ObservableCollection<Model_IconDefinition> RecentlyUsedIcons
@@ -40,6 +48,7 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
 
     private readonly List<MaterialIconKind> _allIcons;
     private readonly ObservableCollection<MaterialIconKind> _filteredIcons;
+    private bool _isSynchronizingSelection;
 
     public View_Dunnage_Control_IconPickerControl()
     {
@@ -62,17 +71,26 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
             && e.NewValue is MaterialIconKind kind
         )
         {
+            if (control._isSynchronizingSelection)
+            {
+                return;
+            }
+
             // Update RecentIconsGrid selection if the icon is in the list
             if (control.RecentlyUsedIcons != null)
             {
                 var recent = control.RecentlyUsedIcons.FirstOrDefault(x => x.Kind == kind);
-                if (recent != null)
+                if (!Equals(control.RecentIconsGrid.SelectedItem, recent))
                 {
-                    control.RecentIconsGrid.SelectedItem = recent;
-                }
-                else
-                {
-                    control.RecentIconsGrid.SelectedItem = null;
+                    control._isSynchronizingSelection = true;
+                    try
+                    {
+                        control.RecentIconsGrid.SelectedItem = recent;
+                    }
+                    finally
+                    {
+                        control._isSynchronizingSelection = false;
+                    }
                 }
             }
         }
@@ -80,9 +98,25 @@ public sealed partial class View_Dunnage_Control_IconPickerControl : UserControl
 
     private void OnRecentIconSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_isSynchronizingSelection)
+        {
+            return;
+        }
+
         if (RecentIconsGrid.SelectedItem is Model_IconDefinition selectedModel)
         {
-            SelectedIcon = selectedModel.Kind;
+            if (!Equals(SelectedIcon, selectedModel.Kind))
+            {
+                _isSynchronizingSelection = true;
+                try
+                {
+                    SelectedIcon = selectedModel.Kind;
+                }
+                finally
+                {
+                    _isSynchronizingSelection = false;
+                }
+            }
         }
     }
 

@@ -429,8 +429,8 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
         {
             await RedirectToSettingsPageAsync(
-                typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
-                $"{labelName} path is missing or invalid. Opening Dunnage label settings."
+                typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                $"{labelName} path is missing or invalid. Opening LabelView settings."
             );
             return;
         }

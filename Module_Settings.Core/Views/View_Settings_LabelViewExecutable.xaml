@@ -2,7 +2,10 @@
     x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_LabelViewExecutable"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters">
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:dunnageViews="using:MTM_Receiving_Application.Module_Dunnage.Views"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models"
+    xmlns:materialIcons="using:Material.Icons.WinUI3">
     <Page.Resources>
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
     </Page.Resources>
@@ -67,6 +70,136 @@
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Text="Only an existing file named LV.exe is accepted."
                             TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="MainWindow Label Buttons" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Configure up to 10 buttons. Footer buttons are now horizontally scrollable."
+                            TextWrapping="WrapWholeWords" />
+
+                        <ListView
+                            Height="320"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                            ItemsSource="{x:Bind ViewModel.LabelButtons, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedLabelButton, Mode=TwoWay}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_MainWindowLabelButton">
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <materialIcons:MaterialIcon
+                                            Width="18"
+                                            Height="18"
+                                            VerticalAlignment="Center"
+                                            Kind="{x:Bind IconKind, Mode=OneWay}" />
+                                        <StackPanel Grid.Column="1" Spacing="2">
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Label, Mode=OneWay}" />
+                                            <TextBlock
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind LabelPath, Mode=OneWay}"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{x:Bind IsEnabled, Mode=OneWay}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Command="{x:Bind ViewModel.AddButtonCommand}" Content="Add" />
+                            <Button
+                                Command="{x:Bind ViewModel.DuplicateSelectedButtonCommand}"
+                                Content="Duplicate"
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.MoveSelectedButtonUpCommand}"
+                                Content="Move Up"
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.MoveSelectedButtonDownCommand}"
+                                Content="Move Down"
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.RemoveSelectedButtonCommand}"
+                                Content="Delete"
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+                            <Button Command="{x:Bind ViewModel.ResetButtonsCommand}" Content="Reset Buttons" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Selected Button" />
+
+                        <TextBox
+                            Header="Display Label"
+                            IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.SelectedButtonLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                Header="Label File Path (.lbl)"
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}"
+                                Text="{x:Bind ViewModel.SelectedButtonPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="1"
+                                Margin="0,28,0,0"
+                                Click="PickLabelFileButton_Click"
+                                Content="Browse..."
+                                IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+                        </Grid>
+
+                        <CheckBox
+                            Content="Enabled"
+                            IsChecked="{x:Bind ViewModel.IsSelectedButtonEnabled, Mode=TwoWay}"
+                            IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}" />
+
+                        <ComboBox
+                            Header="Accent"
+                            IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}"
+                            ItemsSource="{x:Bind ViewModel.AccentOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedAccentOption, Mode=TwoWay}" />
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Pick an icon. The icon picker searches Material icons by name."
+                            TextWrapping="WrapWholeWords" />
+
+                        <dunnageViews:View_Dunnage_Control_IconPickerControl
+                            IsEnabled="{x:Bind ViewModel.IsButtonSelected, Mode=OneWay}"
+                            RecentlyUsedIcons="{x:Bind ViewModel.RecentlyUsedIcons, Mode=OneWay}"
+                            SelectedIcon="{x:Bind ViewModel.SelectedIconKind, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>
 

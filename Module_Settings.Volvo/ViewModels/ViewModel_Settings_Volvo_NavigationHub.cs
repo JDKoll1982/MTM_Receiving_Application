@@ -27,10 +27,6 @@ public sealed partial class ViewModel_Settings_Volvo_NavigationHub
             new Model_SettingsNavigationStep(
                 "Email Recipients",
                 typeof(Views.View_Settings_Volvo_EmailRecipients)
-            ),
-            new Model_SettingsNavigationStep(
-                "Label Files",
-                typeof(Views.View_Settings_Volvo_LabelPaths)
             )
         );
     }

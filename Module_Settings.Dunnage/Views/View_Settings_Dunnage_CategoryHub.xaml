@@ -186,37 +186,6 @@
                 </StackPanel>
             </Button>
 
-            <Button
-                Grid.Row="1"
-                Grid.Column="2"
-                Width="320"
-                Height="180"
-                Padding="20"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Click="OnStep5Clicked"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon
-                        FontSize="40"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE8A5;" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Label Files" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        MaxLines="3"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set the LabelView template path used when opening the Dunnage label file."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Button>
         </Grid>
     </Grid>
 </Page>

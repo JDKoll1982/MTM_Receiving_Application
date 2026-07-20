@@ -4,9 +4,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Material.Icons;
+using Material.Icons.WinUI3;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -18,9 +21,9 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
-using MTM_Receiving_Application.Module_Volvo.Contracts;
 using Windows.Graphics;
 
 namespace MTM_Receiving_Application
@@ -35,17 +38,19 @@ namespace MTM_Receiving_Application
         private readonly IService_LoggingUtility _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IService_LabelViewLauncher _labelViewLauncher;
-        private readonly IService_ReceivingUserLabelSettings _receivingUserLabelSettings;
-        private readonly IService_DunnageUserLabelSettings _dunnageUserLabelSettings;
-        private readonly IService_VolvoUserLabelSettings _volvoUserLabelSettings;
+        private readonly IService_SettingsUserLabelButtons _labelButtonSettings;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_HeaderBackNavigation _headerBackNavigation;
+        private const int LabelButtonsPerPage = 4;
+        private readonly List<Model_MainWindowLabelButton> _allLabelButtons = new();
+        private readonly List<Model_MainWindowLabelButton> _configuredLabelButtons = new();
         private readonly List<object> _applicationMenuItems = new();
         private readonly List<object> _applicationFooterItems = new();
         private readonly List<object> _settingsMenuItems = new();
         private bool _hasNavigatedOnStartup = false;
         private bool _isUpdatingNavSelection;
         private bool _isSettingsMode;
+        private int _labelButtonsPageIndex;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
         private string? _settingsReturnRouteTag;
@@ -127,9 +132,7 @@ namespace MTM_Receiving_Application
             IService_LoggingUtility logger,
             IServiceProvider serviceProvider,
             IService_LabelViewLauncher labelViewLauncher,
-            IService_ReceivingUserLabelSettings receivingUserLabelSettings,
-            IService_DunnageUserLabelSettings dunnageUserLabelSettings,
-            IService_VolvoUserLabelSettings volvoUserLabelSettings,
+            IService_SettingsUserLabelButtons labelButtonSettings,
             IService_HeaderBackNavigation headerBackNavigation,
             IService_ErrorHandler errorHandler
         )
@@ -140,9 +143,7 @@ namespace MTM_Receiving_Application
             _logger = logger;
             _serviceProvider = serviceProvider;
             _labelViewLauncher = labelViewLauncher;
-            _receivingUserLabelSettings = receivingUserLabelSettings;
-            _dunnageUserLabelSettings = dunnageUserLabelSettings;
-            _volvoUserLabelSettings = volvoUserLabelSettings;
+            _labelButtonSettings = labelButtonSettings;
             _headerBackNavigation = headerBackNavigation;
             _errorHandler = errorHandler;
             ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
@@ -200,6 +201,8 @@ namespace MTM_Receiving_Application
             ApplyNavigationMode(isSettingsMode: false);
             UpdateHeaderBackButton();
             UpdateStatusInfoBarActionButton();
+
+            _ = LoadConfiguredLabelButtonsAsync();
         }
 
         private void HeaderBackNavigation_PropertyChanged(
@@ -279,6 +282,7 @@ namespace MTM_Receiving_Application
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
+                _ = LoadConfiguredLabelButtonsAsync();
 
                 // Navigate to Receiving workflow on first activation
                 if (!_hasNavigatedOnStartup)
@@ -443,60 +447,7 @@ namespace MTM_Receiving_Application
             NavigateWithDI(route.PageType, route.Title);
         }
 
-        private async void OpenReceivingLabelButton_Click(object sender, RoutedEventArgs e)
-        {
-            _ = sender;
-            _ = e;
-            await OpenLabelAsync(
-                () => _receivingUserLabelSettings.GetReceivingLabelPathAsync(),
-                typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
-                "Receiving Label",
-                "Receiving label settings"
-            );
-        }
-
-        private async void OpenMiniReceivingLabelButton_Click(object sender, RoutedEventArgs e)
-        {
-            _ = sender;
-            _ = e;
-            await OpenLabelAsync(
-                () => _receivingUserLabelSettings.GetMiniReceivingLabelPathAsync(),
-                typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
-                "Mini-Receiving Label",
-                "Receiving label settings"
-            );
-        }
-
-        private async void OpenVolvoLabelButton_Click(object sender, RoutedEventArgs e)
-        {
-            _ = sender;
-            _ = e;
-            await OpenLabelAsync(
-                () => _volvoUserLabelSettings.GetVolvoLabelPathAsync(),
-                typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
-                "Volvo Label",
-                "Volvo label settings"
-            );
-        }
-
-        private async void OpenDunnageLabelButton_Click(object sender, RoutedEventArgs e)
-        {
-            _ = sender;
-            _ = e;
-            await OpenLabelAsync(
-                () => _dunnageUserLabelSettings.GetDunnageLabelPathAsync(),
-                typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
-                "Dunnage Label",
-                "Dunnage label settings"
-            );
-        }
-
-        private async Task OpenLabelAsync(
-            Func<Task<string>> getLabelPathAsync,
-            Type settingsPageType,
-            string labelName,
-            string settingsAreaName
-        )
+        private async Task OpenLabelAsync(Model_MainWindowLabelButton button)
         {
             var executablePath = await _labelViewLauncher.ResolveExecutablePathAsync();
             if (string.IsNullOrWhiteSpace(executablePath))
@@ -508,17 +459,16 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            var labelPath = await getLabelPathAsync();
-            if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
+            if (!_labelViewLauncher.IsLabelFilePathValid(button.LabelPath))
             {
                 await RedirectToLabelSettingsPageAsync(
-                    settingsPageType,
-                    $"{labelName} path is missing or invalid. Opening {settingsAreaName}."
+                    typeof(View_Settings_LabelViewExecutable),
+                    $"{button.Label} path is missing or invalid. Opening LabelView settings."
                 );
                 return;
             }
 
-            var launchResult = await _labelViewLauncher.LaunchLabelAsync(labelPath);
+            var launchResult = await _labelViewLauncher.LaunchLabelAsync(button.LabelPath);
             if (!launchResult.IsSuccess)
             {
                 await _errorHandler.HandleDaoErrorAsync(launchResult, nameof(OpenLabelAsync));
@@ -526,9 +476,269 @@ namespace MTM_Receiving_Application
             }
 
             ViewModel.NotificationService.ShowStatus(
-                $"{labelName} opened in LabelView.",
+                $"{button.Label} opened in LabelView.",
                 Module_Core.Models.Enums.InfoBarSeverity.Success
             );
+        }
+
+        private async Task LoadConfiguredLabelButtonsAsync()
+        {
+            var buttons = await _labelButtonSettings.GetButtonsAsync();
+            _allLabelButtons.Clear();
+            _allLabelButtons.AddRange(buttons.OrderBy(button => button.SortOrder));
+
+            _configuredLabelButtons.Clear();
+            _configuredLabelButtons.AddRange(
+                buttons
+                    .Where(button => button.IsEnabled)
+                    .OrderBy(button => button.SortOrder)
+            );
+
+            ClampLabelButtonsPageIndex();
+            RenderConfiguredLabelButtons();
+        }
+
+        private void RenderConfiguredLabelButtons()
+        {
+            PrimaryLabelButtonsPanel.Children.Clear();
+
+            foreach (var button in GetLabelButtonsForCurrentPage())
+            {
+                PrimaryLabelButtonsPanel.Children.Add(CreateLabelButton(button));
+            }
+
+            UpdateLabelButtonsPagingState();
+        }
+
+        private IReadOnlyList<Model_MainWindowLabelButton> GetLabelButtonsForCurrentPage()
+        {
+            if (_configuredLabelButtons.Count == 0)
+            {
+                return Array.Empty<Model_MainWindowLabelButton>();
+            }
+
+            var pageCount = GetLabelButtonsPageCount();
+            if (_labelButtonsPageIndex >= pageCount)
+            {
+                _labelButtonsPageIndex = pageCount - 1;
+            }
+
+            return _configuredLabelButtons
+                .Skip(_labelButtonsPageIndex * LabelButtonsPerPage)
+                .Take(LabelButtonsPerPage)
+                .ToList();
+        }
+
+        private int GetLabelButtonsPageCount()
+        {
+            if (_configuredLabelButtons.Count == 0)
+            {
+                return 1;
+            }
+
+            return (_configuredLabelButtons.Count + LabelButtonsPerPage - 1) / LabelButtonsPerPage;
+        }
+
+        private void ClampLabelButtonsPageIndex()
+        {
+            var maxPageIndex = Math.Max(0, GetLabelButtonsPageCount() - 1);
+            _labelButtonsPageIndex = Math.Clamp(_labelButtonsPageIndex, 0, maxPageIndex);
+        }
+
+        private void UpdateLabelButtonsPagingState()
+        {
+            var hasPaging = _configuredLabelButtons.Count > LabelButtonsPerPage;
+            var contentRoot = GetContentRoot();
+
+            if (contentRoot?.FindName("PrimaryLabelButtonsPagingPanel") is FrameworkElement pagingPanel)
+            {
+                pagingPanel.Visibility = hasPaging ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (contentRoot?.FindName("PrimaryLabelButtonsUpButton") is Button upButton)
+            {
+                upButton.IsEnabled = hasPaging && _labelButtonsPageIndex > 0;
+            }
+
+            if (contentRoot?.FindName("PrimaryLabelButtonsDownButton") is Button downButton)
+            {
+                downButton.IsEnabled = hasPaging && _labelButtonsPageIndex < GetLabelButtonsPageCount() - 1;
+            }
+        }
+
+        private void MoveLabelButtonsPage(int delta)
+        {
+            if (_configuredLabelButtons.Count <= LabelButtonsPerPage)
+            {
+                return;
+            }
+
+            var nextPage = _labelButtonsPageIndex + delta;
+            var maxPageIndex = Math.Max(0, GetLabelButtonsPageCount() - 1);
+            _labelButtonsPageIndex = Math.Clamp(nextPage, 0, maxPageIndex);
+            RenderConfiguredLabelButtons();
+        }
+
+        private Button CreateLabelButton(Model_MainWindowLabelButton configuredButton)
+        {
+            var contentGrid = new Grid
+            {
+                Width = 35,
+                Height = 35,
+            };
+
+            contentGrid.Children.Add(
+                new Border
+                {
+                    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 248, 250, 251)),
+                    BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 55, 65, 81)),
+                    BorderThickness = new Thickness(1.5),
+                    CornerRadius = new CornerRadius(3),
+                }
+            );
+
+            contentGrid.Children.Add(
+                new MaterialIcon
+                {
+                    Width = 22,
+                    Height = 22,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Kind = ParseIconKind(configuredButton.IconKey),
+                    Foreground = ResolveAccentBrush(configuredButton),
+                }
+            );
+
+            var button = new Button
+            {
+                Content = contentGrid,
+            };
+
+            ToolTipService.SetToolTip(button, $"Open {configuredButton.Label}");
+            button.Click += async (_, _) => await OpenLabelAsync(configuredButton);
+            button.ContextFlyout = BuildLabelButtonContextFlyout(configuredButton);
+
+            return button;
+        }
+
+        private MenuFlyout BuildLabelButtonContextFlyout(Model_MainWindowLabelButton configuredButton)
+        {
+            var flyout = new MenuFlyout();
+
+            var editItem = new MenuFlyoutItem { Text = "Edit" };
+            editItem.Click += async (_, _) =>
+                await RedirectToLabelSettingsPageAsync(
+                    typeof(View_Settings_LabelViewExecutable),
+                    "Opening LabelView settings."
+                );
+
+            var duplicateItem = new MenuFlyoutItem { Text = "Duplicate" };
+            duplicateItem.Click += async (_, _) =>
+            {
+                if (_configuredLabelButtons.Count >= 10)
+                {
+                    ViewModel.NotificationService.ShowStatus(
+                        "You can configure up to 10 label buttons.",
+                        Module_Core.Models.Enums.InfoBarSeverity.Warning
+                    );
+                    return;
+                }
+
+                var updated = _allLabelButtons.ToList();
+                var index = updated.FindIndex(button => button.Id == configuredButton.Id);
+                if (index < 0)
+                {
+                    index = updated.Count - 1;
+                }
+
+                updated.Insert(
+                    index + 1,
+                    new Model_MainWindowLabelButton
+                    {
+                        Id = Guid.NewGuid().ToString("N"),
+                        Label = $"{configuredButton.Label} Copy",
+                        LabelPath = configuredButton.LabelPath,
+                        IconKey = configuredButton.IconKey,
+                        Accent = configuredButton.Accent,
+                        IsEnabled = true,
+                        SortOrder = configuredButton.SortOrder + 1,
+                    }
+                );
+
+                NormalizeSortOrder(updated);
+                var saveResult = await _labelButtonSettings.SaveButtonsAsync(updated);
+                if (!saveResult.IsSuccess)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(saveResult, nameof(BuildLabelButtonContextFlyout));
+                    return;
+                }
+
+                await LoadConfiguredLabelButtonsAsync();
+            };
+
+            var deleteItem = new MenuFlyoutItem { Text = "Delete" };
+            deleteItem.Click += async (_, _) =>
+            {
+                var updated = _allLabelButtons
+                    .Where(button => button.Id != configuredButton.Id)
+                    .ToList();
+
+                NormalizeSortOrder(updated);
+                var saveResult = await _labelButtonSettings.SaveButtonsAsync(updated);
+                if (!saveResult.IsSuccess)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(saveResult, nameof(BuildLabelButtonContextFlyout));
+                    return;
+                }
+
+                await LoadConfiguredLabelButtonsAsync();
+            };
+
+            flyout.Items.Add(editItem);
+            flyout.Items.Add(duplicateItem);
+            flyout.Items.Add(deleteItem);
+            return flyout;
+        }
+
+        private static void NormalizeSortOrder(List<Model_MainWindowLabelButton> buttons)
+        {
+            for (var index = 0; index < buttons.Count; index++)
+            {
+                buttons[index].SortOrder = index;
+            }
+        }
+
+        private void PrimaryLabelButtonsPageUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveLabelButtonsPage(-1);
+        }
+
+        private void PrimaryLabelButtonsPageDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveLabelButtonsPage(1);
+        }
+
+        private static MaterialIconKind ParseIconKind(string iconKey)
+        {
+            return Enum.TryParse<MaterialIconKind>(iconKey, true, out var iconKind)
+                ? iconKind
+                : MaterialIconKind.PackageVariantClosed;
+        }
+
+        private static Brush ResolveAccentBrush(Model_MainWindowLabelButton button)
+        {
+            return button.Accent switch
+            {
+                Module_Settings.Core.Enums.Enum_MainWindowLabelButtonAccent.Green =>
+                    new SolidColorBrush(Windows.UI.Color.FromArgb(255, 22, 101, 52)),
+                Module_Settings.Core.Enums.Enum_MainWindowLabelButtonAccent.Red =>
+                    new SolidColorBrush(Windows.UI.Color.FromArgb(255, 185, 28, 28)),
+                Module_Settings.Core.Enums.Enum_MainWindowLabelButtonAccent.Blue =>
+                    new SolidColorBrush(Windows.UI.Color.FromArgb(255, 30, 64, 175)),
+                Module_Settings.Core.Enums.Enum_MainWindowLabelButtonAccent.Black =>
+                    new SolidColorBrush(Windows.UI.Color.FromArgb(255, 17, 24, 39)),
+                _ => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 55, 65, 81)),
+            };
         }
 
         private async Task RedirectToLabelSettingsPageAsync(Type pageType, string statusMessage)
@@ -772,14 +982,6 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts receiving"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
-                    "Receiving Label Files",
-                    "Configure the LabelView template paths used by Receiving workflow label buttons",
-                    "receiving label files",
-                    "receiving label paths",
-                    "receiving label templates"
-                ),
-                CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
                     "Dunnage Settings",
                     "Dunnage settings categories",
@@ -827,14 +1029,6 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts dunnage"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
-                    "Dunnage Label Files",
-                    "Configure the LabelView template path used for Dunnage labels",
-                    "dunnage label files",
-                    "dunnage label paths",
-                    "dunnage label templates"
-                ),
-                CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
                     "Reporting Settings",
                     "Reporting settings placeholder",
@@ -871,14 +1065,6 @@ namespace MTM_Receiving_Application
                     "volvo email",
                     "volvo email recipients",
                     "volvo notifications"
-                ),
-                CreateSettingsDestination(
-                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
-                    "Volvo Label Files",
-                    "Configure the LabelView template path used for Volvo labels",
-                    "volvo label files",
-                    "volvo label paths",
-                    "volvo label templates"
                 ),
             ];
         }
@@ -1309,6 +1495,11 @@ namespace MTM_Receiving_Application
 
             SetNavigationSelectionByTag(routeTag);
             var navigationSucceeded = await NavigateToRouteTagAsync(routeTag);
+            if (navigationSucceeded)
+            {
+                await LoadConfiguredLabelButtonsAsync();
+            }
+
             UpdateSettingsBackButtonState();
             return navigationSucceeded;
         }

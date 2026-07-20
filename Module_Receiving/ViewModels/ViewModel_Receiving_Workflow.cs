@@ -797,8 +797,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (!_labelViewLauncher.IsLabelFilePathValid(labelPath))
             {
                 await RedirectToSettingsPageAsync(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
-                    $"{labelName} path is missing or invalid. Opening Receiving label settings."
+                    typeof(Module_Settings.Core.Views.View_Settings_LabelViewExecutable),
+                    $"{labelName} path is missing or invalid. Opening LabelView settings."
                 );
                 return;
             }

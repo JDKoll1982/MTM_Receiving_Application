@@ -80,6 +80,17 @@
       "validationRules": "Path to LV.exe"
     },
     {
+      "category": "User",
+      "key": "Core.LabelView.MainWindowButtons",
+      "displayName": "MainWindow Label Buttons",
+      "defaultValue": "[{\"id\":\"receiving\",\"label\":\"Receiving\",\"labelPath\":\"\",\"iconKey\":\"LabelVariant\",\"accent\":1,\"isEnabled\":true,\"sortOrder\":0},{\"id\":\"mini-receiving\",\"label\":\"Mini Receiving\",\"labelPath\":\"\",\"iconKey\":\"Label\",\"accent\":2,\"isEnabled\":true,\"sortOrder\":1},{\"id\":\"dunnage\",\"label\":\"Dunnage\",\"labelPath\":\"\",\"iconKey\":\"PackageVariantClosed\",\"accent\":3,\"isEnabled\":true,\"sortOrder\":2},{\"id\":\"volvo\",\"label\":\"Volvo\",\"labelPath\":\"\",\"iconKey\":\"Car\",\"accent\":4,\"isEnabled\":true,\"sortOrder\":3}]",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON array of MainWindow label button entries"
+    },
+    {
       "category": "System",
       "key": "Core.Database.ConnectionSecret",
       "displayName": "Database Connection Secret",

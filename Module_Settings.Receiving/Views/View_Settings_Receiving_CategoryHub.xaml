@@ -220,38 +220,6 @@
 
             <Button
                 Grid.Row="2"
-                Grid.Column="0"
-                Width="320"
-                Height="180"
-                Padding="20"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                Click="OnStep6Clicked"
-                CornerRadius="8">
-                <StackPanel Spacing="12">
-                    <FontIcon
-                        FontSize="40"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                        Glyph="&#xE8A5;" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="Label Files" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        MaxLines="2"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set LabelView template paths for Receiving and Mini-Receiving."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                Grid.Row="2"
                 Grid.Column="1"
                 Width="320"
                 Height="180"
@@ -261,7 +229,7 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep7Clicked"
+                Click="OnStep6Clicked"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
