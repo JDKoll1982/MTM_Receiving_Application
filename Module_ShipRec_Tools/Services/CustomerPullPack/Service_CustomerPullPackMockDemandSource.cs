@@ -89,7 +89,7 @@ public sealed class Service_CustomerPullPackMockDemandSource : IService_Customer
             locationRows
         );
 
-        if (linkedEntry is not null && linkedEntry.SelectedLocations.Count > 0)
+        if (linkedEntry?.SelectedLocations.Count > 0)
         {
             foreach (var option in locationOptions)
             {

@@ -745,7 +745,7 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
             .Where(value => value.HasValue)
             .Select(value => value!.Value)
             .Distinct()
-            .OrderBy(value => value)
+            .Order()
             .ToList();
 
         return distinctValues.Count switch
