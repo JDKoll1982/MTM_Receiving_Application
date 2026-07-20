@@ -1581,6 +1581,39 @@ function Split-MySqlScriptByDelimiter {
     return @($segments | ForEach-Object { $_ })
 }
 
+function Normalize-MySqlLegacyRoutineDelimiterLayout {
+    param(
+        [string]$SqlText
+    )
+
+    if ([string]::IsNullOrWhiteSpace($SqlText)) {
+        return $SqlText
+    }
+
+    $pattern = '(?m)^(?<dropIndent>\s*)DROP\s+(?<routineType>PROCEDURE|FUNCTION|TRIGGER)\s+IF\s+EXISTS\s+(?<routineName>.+?);\s*$\r?\n(?:\s*\r?\n)*(?<delimiterIndent>\s*)DELIMITER\s+(?<delimiter>\S+)\s*$'
+
+    return [regex]::Replace(
+        $SqlText,
+        $pattern,
+        {
+            param($match)
+
+            $newline = if ($match.Value.Contains("`r`n")) { "`r`n" } else { "`n" }
+            $dropIndent = $match.Groups['dropIndent'].Value
+            $delimiterIndent = $match.Groups['delimiterIndent'].Value
+            $routineType = $match.Groups['routineType'].Value
+            $routineName = $match.Groups['routineName'].Value.Trim()
+            $delimiter = $match.Groups['delimiter'].Value
+
+            return @(
+                ($delimiterIndent + "DELIMITER $delimiter"),
+                '',
+                ($dropIndent + "DROP $routineType IF EXISTS $routineName$delimiter")
+            ) -join $newline
+        }
+    )
+}
+
 function Test-RequiresLegacyBatchCompatibility {
     param(
         [hashtable]$ClientInfo
@@ -1809,6 +1842,7 @@ function Execute-SqlFile {
 
         $clientInfo = Get-MySqlClientInfo -ExePath $exe
         if (Test-RequiresLegacyBatchCompatibility -ClientInfo $clientInfo) {
+            $body = Normalize-MySqlLegacyRoutineDelimiterLayout -SqlText $body
             $segments = @(Split-MySqlScriptByDelimiter -SqlText $body)
             foreach ($segment in $segments) {
                 $segmentFile = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.sql')
