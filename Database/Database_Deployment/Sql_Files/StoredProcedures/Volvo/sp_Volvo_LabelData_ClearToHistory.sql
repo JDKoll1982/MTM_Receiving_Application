@@ -22,12 +22,14 @@ CREATE PROCEDURE `sp_Volvo_LabelData_ClearToHistory`(
     OUT p_error_message     VARCHAR(1000)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_headers_count   INT DEFAULT 0;
     DECLARE v_lines_count     INT DEFAULT 0;
 
     -- Roll back and surface the error if anything inside the transaction fails.
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         SET p_headers_moved    = 0;
         SET p_lines_moved      = 0;
@@ -159,6 +161,7 @@ BEGIN
         COMMIT;
     END IF;
 
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

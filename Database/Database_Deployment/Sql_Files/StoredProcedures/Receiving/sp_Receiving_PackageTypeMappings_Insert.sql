@@ -1,4 +1,4 @@
-﻿-- Fixed: sp_Receiving_PackageTypeMappings_Insert
+-- Fixed: sp_Receiving_PackageTypeMappings_Insert
 -- Aligns with receiving_package_type_mapping schema, normalizes prefix,
 -- ensures single default, and upserts on duplicate part_prefix returning id.
 
@@ -13,6 +13,7 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Insert(
     IN p_created_by INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_prefix VARCHAR(10);
 
     SET v_prefix = UPPER(TRIM(p_part_prefix));
@@ -51,6 +52,7 @@ BEGIN
         id = LAST_INSERT_ID(id);
 
     SELECT LAST_INSERT_ID() AS id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

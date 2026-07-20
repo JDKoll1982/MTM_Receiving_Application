@@ -15,8 +15,10 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
     IN p_user VARCHAR(50)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         RESIGNAL;
     END;
@@ -99,6 +101,7 @@ BEGIN
     END IF;
 
     COMMIT;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

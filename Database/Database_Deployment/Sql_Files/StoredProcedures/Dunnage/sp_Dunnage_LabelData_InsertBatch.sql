@@ -32,6 +32,7 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_InsertBatch`(
     IN p_user      VARCHAR(100)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE i     INT DEFAULT 0;
     DECLARE cnt   INT DEFAULT 0;
     DECLARE v_load_uuid         CHAR(36);
@@ -106,6 +107,7 @@ BEGIN
 
         SET i = i + 1;
     END WHILE;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

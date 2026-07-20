@@ -16,11 +16,13 @@ CREATE PROCEDURE `sp_Volvo_Shipment_Complete`(
   IN p_archived_by VARCHAR(100)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   DECLARE v_history_id INT;
   DECLARE v_archive_batch_id CHAR(36);
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
     ROLLBACK;
     RESIGNAL;
   END;
@@ -106,6 +108,7 @@ BEGIN
   WHERE id = p_shipment_id;
 
   COMMIT;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

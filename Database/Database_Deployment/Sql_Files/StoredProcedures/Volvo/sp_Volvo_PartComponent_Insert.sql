@@ -15,8 +15,10 @@ CREATE PROCEDURE `sp_Volvo_PartComponent_Insert`(
   IN p_quantity INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   INSERT INTO volvo_part_components (parent_part_number, component_part_number, quantity)
   VALUES (p_parent_part_number, p_component_part_number, p_quantity);
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

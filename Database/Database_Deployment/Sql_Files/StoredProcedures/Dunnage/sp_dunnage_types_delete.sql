@@ -20,11 +20,13 @@ CREATE PROCEDURE `sp_Dunnage_Types_Delete`(
     OUT p_error_msg VARCHAR(500)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_exists INT DEFAULT 0;
     DECLARE v_parts_count INT DEFAULT 0;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
         SET p_status = -1;
         ROLLBACK;
@@ -61,6 +63,7 @@ BEGIN
             COMMIT;
         END IF;
     END IF;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

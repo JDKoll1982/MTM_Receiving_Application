@@ -13,8 +13,10 @@ CREATE PROCEDURE `sp_Volvo_PartComponent_DeleteByParent`(
   IN p_parent_part_number VARCHAR(20)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   DELETE FROM volvo_part_components
   WHERE parent_part_number = p_parent_part_number;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

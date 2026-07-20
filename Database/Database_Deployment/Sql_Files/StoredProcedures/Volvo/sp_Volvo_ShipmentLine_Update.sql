@@ -7,7 +7,7 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_Volvo_ShipmentLine_Update`$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_ShipmentLine_Update` $$
 
 CREATE PROCEDURE `sp_Volvo_ShipmentLine_Update`(
   IN p_id INT,
@@ -22,6 +22,7 @@ CREATE PROCEDURE `sp_Volvo_ShipmentLine_Update`(
   IN p_discrepancy_note TEXT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   UPDATE volvo_line_data
   SET
     part_number = p_part_number,
@@ -34,6 +35,20 @@ BEGIN
     expected_skid_count = p_expected_skid_count,
     discrepancy_note = p_discrepancy_note
   WHERE id = p_id;
+
+  UPDATE volvo_line_history
+  SET
+    part_number = p_part_number,
+    po_status = COALESCE(NULLIF(TRIM(p_po_status), ''), 'Pending'),
+    location = NULLIF(TRIM(p_location), ''),
+    quantity_per_skid = p_quantity_per_skid,
+    received_skid_count = p_received_skid_count,
+    calculated_piece_count = p_calculated_piece_count,
+    has_discrepancy = p_has_discrepancy,
+    expected_skid_count = p_expected_skid_count,
+    discrepancy_note = p_discrepancy_note
+  WHERE original_id = p_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

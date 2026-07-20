@@ -12,6 +12,7 @@ CREATE PROCEDURE `sp_Dunnage_Parts_Update`(
     IN p_user VARCHAR(50)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_parts
     SET 
         part_id = p_part_id,
@@ -22,6 +23,7 @@ BEGIN
         modified_by = p_user,
         modified_date = NOW()
     WHERE id = p_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

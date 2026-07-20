@@ -27,6 +27,7 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_Insert`(
     IN p_specs_json         JSON
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     INSERT INTO dunnage_label_data
     (
         load_uuid,
@@ -65,6 +66,7 @@ BEGIN
         p_part_skid_total,
         p_specs_json
     );
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

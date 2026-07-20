@@ -10,6 +10,8 @@ CREATE PROCEDURE `sp_Receiving_NonPO_Delete`(
     IN p_id INT UNSIGNED
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DELETE FROM `receiving_non_po_entries` WHERE `id` = p_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 DELIMITER ;

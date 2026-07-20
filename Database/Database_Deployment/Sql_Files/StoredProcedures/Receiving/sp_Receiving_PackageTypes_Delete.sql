@@ -17,6 +17,7 @@ CREATE PROCEDURE `sp_Receiving_PackageTypes_Delete`(
     IN p_id INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     -- Hard delete from receiving_package_types table
     -- This table (PreferenceID, PartID, PackageTypeName, CustomTypeName, LastModified)
     -- stores user preferences for package types per part, not the mapping table
@@ -24,6 +25,7 @@ BEGIN
     WHERE PreferenceID = p_id;
 
     SELECT ROW_COUNT() AS affected_rows;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

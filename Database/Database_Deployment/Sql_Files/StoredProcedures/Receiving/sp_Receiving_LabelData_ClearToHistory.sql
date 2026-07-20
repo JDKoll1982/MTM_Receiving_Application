@@ -18,10 +18,12 @@ CREATE PROCEDURE `sp_Receiving_LabelData_ClearToHistory`(
     OUT p_error_message VARCHAR(1000)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_rows_to_move INT DEFAULT 0;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         SET p_rows_moved = 0;
         SET p_status = 1;
@@ -175,6 +177,7 @@ BEGIN
             SET p_error_message = NULL;
         END IF;
     END IF;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

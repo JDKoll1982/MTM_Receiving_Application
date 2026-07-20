@@ -16,6 +16,7 @@ CREATE PROCEDURE `sp_Dunnage_Types_Update`(
     IN p_modified_by VARCHAR(50)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     -- Check for duplicate type_name (excluding self)
     IF EXISTS (SELECT 1 FROM dunnage_types WHERE type_name = p_type_name AND id != p_id) THEN
         SIGNAL SQLSTATE '45000'
@@ -31,6 +32,7 @@ BEGIN
     WHERE id = p_id;
 
     SELECT ROW_COUNT() AS affected_rows;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 
