@@ -20,7 +20,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Authentication
         private const string SharedSecretDirectoryPath =
             "\\\\MTMANU-FS01\\Expo Drive\\Software Development\\Live Applications\\MTM_Application_Keys";
         private const string LegacySharedSecretDirectoryPath =
-            "\\\\172.16.1.104\\MTM_Receiving_Application\\Security";
+            "\\\\localhost\\MTM_Receiving_Application\\Security";
 
         public string HashPin(string pin)
         {

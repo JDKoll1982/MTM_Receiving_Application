@@ -3,9 +3,8 @@
 --              record ID when available, otherwise falls back to the GUID.
 --              Parameter names match Dao_ReceivingLoad.UpdateLoadsAsync exactly
 --              (the DAO helper auto-prepends p_ to each key).
---              Parameters for fields not stored in receiving_history
---              (PartType, POLineNumber, PackagesPerLoad, PackageTypeName,
---              WeightPerPackage) are accepted but not used in the UPDATE.
+--              Parameters for fields not stored in receiving_history are still
+--              used to keep the active receiving_label_data row aligned.
 
 DELIMITER $$
 
@@ -29,11 +28,19 @@ CREATE PROCEDURE `sp_Receiving_Load_Update`(
     IN p_ReceivedDate     DATETIME
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     UPDATE receiving_history
     SET
         part_id          = p_PartID,
+        weight_quantity  = p_WeightQuantity,
+        part_type        = p_PartType,
+        po_line_number   = p_POLineNumber,
         po_number        = p_PONumber,
+        load_number      = IFNULL(p_LoadNumber, 1),
         quantity         = ROUND(p_WeightQuantity, 0),
+        weight_per_package = p_WeightPerPackage,
+        packages_per_load = p_PackagesPerLoad,
+        package_type_name = p_PackageTypeName,
         heat             = p_HeatLotNumber,
         initial_location = p_InitialLocation,
         transaction_date = DATE(p_ReceivedDate),
@@ -46,6 +53,26 @@ BEGIN
             AND p_LoadID <> ''
             AND load_guid = p_LoadID
         );
+
+    UPDATE receiving_label_data
+    SET
+        part_id = p_PartID,
+        part_type = p_PartType,
+        po_number = p_PONumber,
+        po_line_number = p_POLineNumber,
+        load_number = IFNULL(p_LoadNumber, 1),
+        quantity = ROUND(p_WeightQuantity, 0),
+        weight_quantity = p_WeightQuantity,
+        heat = p_HeatLotNumber,
+        initial_location = p_InitialLocation,
+        packages_per_load = p_PackagesPerLoad,
+        package_type_name = p_PackageTypeName,
+        weight_per_package = p_WeightPerPackage,
+        is_non_po_item = IFNULL(p_IsNonPOItem, 0),
+        received_date = p_ReceivedDate,
+        transaction_date = DATE(p_ReceivedDate)
+    WHERE load_id = p_LoadID;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

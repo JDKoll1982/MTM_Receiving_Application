@@ -1,10 +1,8 @@
-SET
-    FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS dunnage_history;
 
-SET
-    FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE dunnage_history (
     load_uuid CHAR(36) PRIMARY KEY COMMENT 'Unique identifier for the load transaction',
@@ -13,6 +11,7 @@ CREATE TABLE dunnage_history (
     quantity_type VARCHAR(100) NOT NULL DEFAULT 'Quantity' COMMENT 'Quantity label header snapshot preserved when queue rows move to history',
     received_date DATETIME NOT NULL COMMENT 'Date and time the dunnage was received',
     created_by VARCHAR(50) NOT NULL COMMENT 'Username of user who created the record',
+    user_id VARCHAR(100) NULL DEFAULT NULL COMMENT 'Application user identifier copied from the active queue row',
     employee_number INT NULL COMMENT '4-digit employee identifier preserved from the active queue row',
     created_date DATETIME NOT NULL COMMENT 'Timestamp when record was created',
     modified_by VARCHAR(50) COMMENT 'Username of user who last modified the record',

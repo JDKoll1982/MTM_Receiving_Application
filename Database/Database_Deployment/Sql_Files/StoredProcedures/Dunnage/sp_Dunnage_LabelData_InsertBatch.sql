@@ -49,6 +49,8 @@ BEGIN
     DECLARE v_part_skid_total    INT;
     DECLARE v_specs_json        JSON;
 
+    SET FOREIGN_KEY_CHECKS = 0;
+
     SET cnt = JSON_LENGTH(p_load_data);
 
     WHILE i < cnt DO
@@ -106,8 +108,9 @@ BEGIN
 
         SET i = i + 1;
     END WHILE;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;
 
 -- ============================================================================

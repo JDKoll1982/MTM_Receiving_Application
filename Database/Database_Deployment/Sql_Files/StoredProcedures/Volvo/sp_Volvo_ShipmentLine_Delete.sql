@@ -13,8 +13,10 @@ CREATE PROCEDURE `sp_Volvo_ShipmentLine_Delete`(
   IN p_id INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   DELETE FROM volvo_line_data
   WHERE id = p_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

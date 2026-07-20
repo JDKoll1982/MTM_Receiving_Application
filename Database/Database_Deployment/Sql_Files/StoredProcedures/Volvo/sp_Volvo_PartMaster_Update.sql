@@ -14,11 +14,13 @@ CREATE PROCEDURE `sp_Volvo_PartMaster_Update`(
   IN p_quantity_per_skid INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   UPDATE volvo_masterdata
   SET
     quantity_per_skid = p_quantity_per_skid,
     modified_date = CURRENT_TIMESTAMP
   WHERE part_number = p_part_number;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

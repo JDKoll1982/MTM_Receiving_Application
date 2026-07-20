@@ -15,8 +15,10 @@ CREATE PROCEDURE `sp_Volvo_PartMaster_Insert`(
   IN p_is_active TINYINT(1)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
   INSERT INTO volvo_masterdata (part_number, quantity_per_skid, is_active)
   VALUES (p_part_number, p_quantity_per_skid, p_is_active);
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

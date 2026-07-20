@@ -7,7 +7,7 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Complete`$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Complete` $$
 
 CREATE PROCEDURE `sp_Volvo_Shipment_Complete`(
   IN p_shipment_id INT,
@@ -21,9 +21,12 @@ BEGIN
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
     ROLLBACK;
     RESIGNAL;
   END;
+
+  SET FOREIGN_KEY_CHECKS = 0;
 
   SET v_archive_batch_id = UUID();
 
@@ -106,6 +109,7 @@ BEGIN
   WHERE id = p_shipment_id;
 
   COMMIT;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

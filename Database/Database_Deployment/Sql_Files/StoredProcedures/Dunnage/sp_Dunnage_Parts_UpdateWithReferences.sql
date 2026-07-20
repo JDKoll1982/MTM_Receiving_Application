@@ -1,6 +1,6 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_UpdateWithReferences`$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_UpdateWithReferences` $$
 
 CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
     IN p_id INT,
@@ -17,9 +17,12 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         RESIGNAL;
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     START TRANSACTION;
 
@@ -99,6 +102,7 @@ BEGIN
     END IF;
 
     COMMIT;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

@@ -27,6 +27,7 @@ CREATE PROCEDURE `sp_Receiving_History_Import`(
     IN p_IsNonPOItem TINYINT(1)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     INSERT INTO receiving_history
     (
         quantity,
@@ -61,6 +62,7 @@ BEGIN
     -- Assign to a session variable so no result-set is returned (avoids
     -- flooding stdout during bulk imports via mysql.exe batch mode).
     SELECT LAST_INSERT_ID() INTO @last_import_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END //
 
 DELIMITER ;

@@ -14,7 +14,7 @@ public sealed class Service_UserPreferencesTests
     public async Task GetLatestUserPreferenceAsync_ShouldPreserveMissingModuleDefaults()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao
@@ -45,7 +45,7 @@ public sealed class Service_UserPreferencesTests
     public async Task UpdateDefaultDunnageModeAsync_ShouldNormalizeModeAndPassUserIdToDao()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao
@@ -74,7 +74,7 @@ public sealed class Service_UserPreferencesTests
     public async Task UpdateDefaultDunnageModeAsync_ShouldSucceedWithoutUpdating_WhenUserIsMissing()
     {
         var userDao = new Mock<Dao_User>(
-            "Server=172.16.1.104;Database=test;",
+            "Server=localhost;Database=test;",
             new Mock<IService_AuthCredentialProtection>().Object
         );
         userDao

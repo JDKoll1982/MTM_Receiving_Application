@@ -21,9 +21,11 @@ CREATE PROCEDURE `sp_Receiving_Line_Insert`(
     OUT p_ErrorMsg VARCHAR(500)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     -- This SP is deprecated - use receiving_history and receiving_label_data tables
     SET p_Status = 1;
     SET p_ErrorMsg = 'sp_Receiving_Line_Insert is deprecated - use receiving_history table';
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

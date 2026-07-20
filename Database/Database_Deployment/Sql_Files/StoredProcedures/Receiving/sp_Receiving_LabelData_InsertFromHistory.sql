@@ -19,6 +19,8 @@ CREATE PROCEDURE `sp_Receiving_LabelData_InsertFromHistory`(
 BEGIN
     DECLARE v_already_queued INT DEFAULT 0;
 
+    SET FOREIGN_KEY_CHECKS = 0;
+
     -- Guard: block re-queuing if a reprint row for this history GUID already exists.
     SELECT COUNT(*)
     INTO v_already_queued
@@ -107,6 +109,7 @@ BEGIN
 
         SELECT ROW_COUNT() AS rows_inserted;
     END IF;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

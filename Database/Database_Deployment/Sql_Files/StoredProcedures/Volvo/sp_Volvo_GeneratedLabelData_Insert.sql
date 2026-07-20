@@ -16,6 +16,7 @@ CREATE PROCEDURE `sp_Volvo_GeneratedLabelData_Insert`(
     IN p_employee_number INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     INSERT INTO volvo_generated_label_data (
         shipment_id,
         shipment_number,
@@ -38,6 +39,7 @@ BEGIN
         p_part_description,
         p_employee_number
     );
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

@@ -1,4 +1,4 @@
-﻿-- =============================================
+-- =============================================
 -- Stored Procedure: sp_Receiving_PackageTypeMappings_Update
 -- Purpose: Update a receiving_package_type_mapping row.
 -- - Enforces unique part_prefix (fails if duplicate exists on another row)
@@ -10,6 +10,7 @@
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS sp_Receiving_PackageTypeMappings_Update$$
+
 CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Update(
     IN p_id INT,
     IN p_part_prefix VARCHAR(10),
@@ -20,6 +21,8 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Update(
 )
 BEGIN
     DECLARE v_conflict_id INT DEFAULT NULL;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     -- Check for duplicate part_prefix on a different row
     SELECT id INTO v_conflict_id
@@ -51,6 +54,7 @@ BEGIN
 
         SELECT ROW_COUNT() AS affected_rows, NULL AS error_message;
     END IF;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

@@ -11,12 +11,23 @@ CREATE PROCEDURE `sp_Volvo_Shipment_Update`(
     IN p_notes TEXT
 )
 BEGIN
+    DECLARE v_affected_rows INT DEFAULT 0;
+
+    SET FOREIGN_KEY_CHECKS = 0;
     UPDATE volvo_label_data
     SET notes = p_notes,
         modified_date = CURRENT_TIMESTAMP
     WHERE id = p_id;
 
-    SELECT ROW_COUNT() AS affected_rows;
+    SET v_affected_rows = ROW_COUNT();
+
+    UPDATE volvo_label_history
+    SET notes = p_notes,
+        modified_date = CURRENT_TIMESTAMP
+    WHERE original_id = p_id;
+
+    SELECT v_affected_rows AS affected_rows;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

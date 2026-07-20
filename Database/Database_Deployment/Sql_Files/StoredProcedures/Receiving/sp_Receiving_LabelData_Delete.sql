@@ -13,6 +13,7 @@ CREATE PROCEDURE `sp_Receiving_LabelData_Delete`(
     IN p_load_id CHAR(36)
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DELETE FROM receiving_label_data
     WHERE (p_label_data_record_id IS NOT NULL AND id = p_label_data_record_id)
        OR (
@@ -21,6 +22,7 @@ BEGIN
             AND p_load_id <> ''
             AND load_id = p_load_id
         );
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

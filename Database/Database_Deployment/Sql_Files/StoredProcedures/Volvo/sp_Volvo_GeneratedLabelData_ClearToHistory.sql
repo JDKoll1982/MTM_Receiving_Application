@@ -18,11 +18,14 @@ BEGIN
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         SET p_rows_moved = 0;
         SET p_status = 1;
         SET p_error_message = 'Clear generated Volvo label data failed. Transaction rolled back.';
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET p_rows_moved = 0;
     SET p_status = 0;
@@ -62,20 +65,20 @@ BEGIN
             )
             SELECT
                 vgl.id,
-                vgl.shipment_id,
-                vgl.shipment_number,
-                vgl.shipment_date,
-                vgl.part_number,
-                vgl.quantity,
-                vgl.skid_number,
-                vgl.total_skids,
-                vgl.part_description,
+                COALESCE(vgl.shipment_id, 0),
+                COALESCE(vgl.shipment_number, 0),
+                COALESCE(vgl.shipment_date, CURRENT_DATE),
+                COALESCE(vgl.part_number, ''),
+                COALESCE(vgl.quantity, 0),
+                COALESCE(vgl.skid_number, 0),
+                COALESCE(vgl.total_skids, 0),
+                COALESCE(vgl.part_description, ''),
                 vgl.employee_number,
-                vgl.created_at,
-                vgl.updated_at,
-                NOW(),
-                p_archived_by,
-                p_archive_batch_id
+                COALESCE(vgl.created_at, NOW()),
+                COALESCE(vgl.updated_at, NOW()),
+                COALESCE(NOW(), CURRENT_TIMESTAMP),
+                COALESCE(NULLIF(TRIM(p_archived_by), ''), ''),
+                COALESCE(NULLIF(TRIM(p_archive_batch_id), ''), UUID())
             FROM volvo_generated_label_data vgl
             WHERE COALESCE(p_clear_all, 0) = 1
                OR vgl.employee_number = p_employee_number;
@@ -89,8 +92,7 @@ BEGIN
             COMMIT;
         END IF;
     END IF;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
-
-DELIMITER ;
+DELIMITER;

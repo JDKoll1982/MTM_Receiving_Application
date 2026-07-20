@@ -1,4 +1,4 @@
-﻿-- =============================================
+-- =============================================
 -- Stored Procedure: sp_Receiving_PackageTypeMappings_Delete
 -- Purpose: Soft-delete a mapping. Prevent deleting the default mapping.
 -- =============================================

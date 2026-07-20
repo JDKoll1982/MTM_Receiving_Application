@@ -12,6 +12,7 @@ CREATE PROCEDURE `sp_Dunnage_CustomFields_Update`(
     IN p_validation_rules TEXT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_custom_fields
     SET
         FieldName = p_field_name,
@@ -21,6 +22,7 @@ BEGIN
         IsRequired = p_is_required,
         ValidationRules = p_validation_rules
     WHERE ID = p_field_id;
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;

@@ -12,6 +12,7 @@ CREATE PROCEDURE `sp_Receiving_Load_Delete`(
     IN p_HistoryRecordID INT
 )
 BEGIN
+    SET FOREIGN_KEY_CHECKS = 0;
     DELETE FROM receiving_history
     WHERE (p_HistoryRecordID IS NOT NULL AND id = p_HistoryRecordID)
        OR (
@@ -20,6 +21,7 @@ BEGIN
             AND p_LoadID <> ''
             AND load_guid = p_LoadID
         );
+    SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
 DELIMITER ;
