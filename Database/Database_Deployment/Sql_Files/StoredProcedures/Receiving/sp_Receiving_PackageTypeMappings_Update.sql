@@ -10,6 +10,7 @@
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS sp_Receiving_PackageTypeMappings_Update$$
+
 CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Update(
     IN p_id INT,
     IN p_part_prefix VARCHAR(10),
@@ -19,8 +20,9 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Update(
     IN p_is_active BOOLEAN
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_conflict_id INT DEFAULT NULL;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     -- Check for duplicate part_prefix on a different row
     SELECT id INTO v_conflict_id
@@ -55,4 +57,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

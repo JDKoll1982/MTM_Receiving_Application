@@ -1,6 +1,6 @@
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_InsertWithInventory`$$
+DROP PROCEDURE IF EXISTS `sp_Dunnage_Parts_InsertWithInventory` $$
 
 CREATE PROCEDURE `sp_Dunnage_Parts_InsertWithInventory`(
     IN p_part_id VARCHAR(50),
@@ -15,13 +15,14 @@ CREATE PROCEDURE `sp_Dunnage_Parts_InsertWithInventory`(
     OUT p_new_id INT
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
         RESIGNAL;
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     START TRANSACTION;
 
@@ -70,4 +71,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

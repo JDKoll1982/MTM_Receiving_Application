@@ -16,7 +16,6 @@ CREATE PROCEDURE `sp_Dunnage_CustomFields_Insert`(
     OUT p_error_msg VARCHAR(500)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     -- Error handler
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -26,6 +25,8 @@ BEGIN
         SET p_new_id = NULL;
         ROLLBACK;
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     -- Start transaction
     START TRANSACTION;
@@ -73,4 +74,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

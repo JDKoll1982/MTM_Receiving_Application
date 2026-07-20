@@ -20,7 +20,6 @@ CREATE PROCEDURE `sp_Dunnage_Types_Delete`(
     OUT p_error_msg VARCHAR(500)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_exists INT DEFAULT 0;
     DECLARE v_parts_count INT DEFAULT 0;
 
@@ -31,6 +30,8 @@ BEGIN
         SET p_status = -1;
         ROLLBACK;
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     START TRANSACTION;
 
@@ -66,4 +67,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

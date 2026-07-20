@@ -1628,6 +1628,44 @@ function Invoke-MySqlBatchFile {
     return $LASTEXITCODE
 }
 
+function Expand-MySqlSourceReferences {
+    param(
+        [string]$SqlText,
+        [string]$BaseDirectory
+    )
+
+    $outputLines = New-Object System.Collections.Generic.List[string]
+
+    foreach ($line in ($SqlText -split "`r?`n")) {
+        if ($line -match '^\s*SOURCE\s+(.+?);\s*$') {
+            $includePath = $matches[1].Trim().Trim('"').Trim("'")
+            $resolvedPath = if ([System.IO.Path]::IsPathRooted($includePath)) {
+                $includePath
+            }
+            else {
+                Join-Path $BaseDirectory $includePath
+            }
+
+            if (-not (Test-Path $resolvedPath)) {
+                throw "Included SQL file not found: $includePath"
+            }
+
+            $includedText = [System.IO.File]::ReadAllText($resolvedPath)
+            $expandedText = Expand-MySqlSourceReferences -SqlText $includedText -BaseDirectory $BaseDirectory
+            $trimmedExpandedText = $expandedText.TrimEnd("`r", "`n")
+
+            if ($trimmedExpandedText.Length -gt 0) {
+                $outputLines.Add($trimmedExpandedText)
+            }
+        }
+        else {
+            $outputLines.Add($line)
+        }
+    }
+
+    return ($outputLines -join "`r`n")
+}
+
 # Returns an ordered list of *.sql FileInfo objects for $BasePath.
 # If a sibling folder named "Updated$FolderName" exists, files with matching
 # relative paths are replaced by the Updated version and extra files are appended.
@@ -1749,8 +1787,10 @@ function Execute-SqlFile {
 
     try {
         $defaultsFile = Get-SharedMySqlDefaultsFile
+        $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
         $body = [System.IO.File]::ReadAllText($FilePath)
+        $body = Expand-MySqlSourceReferences -SqlText $body -BaseDirectory $repoRoot
 
         if ($DisableForeignKeyChecks) {
             $tempSql = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.sql')

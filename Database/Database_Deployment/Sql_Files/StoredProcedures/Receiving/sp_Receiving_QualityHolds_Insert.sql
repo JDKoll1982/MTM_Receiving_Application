@@ -17,8 +17,9 @@ CREATE PROCEDURE `sp_Receiving_QualityHolds_Insert`(
     OUT p_ErrorMsg VARCHAR(500)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_RowCount INT;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET p_Status = 1;
     SET p_ErrorMsg = '';
@@ -66,4 +67,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

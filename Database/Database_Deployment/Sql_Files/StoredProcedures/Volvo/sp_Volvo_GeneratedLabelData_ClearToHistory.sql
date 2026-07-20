@@ -14,7 +14,6 @@ CREATE PROCEDURE `sp_Volvo_GeneratedLabelData_ClearToHistory`(
     OUT p_error_message     VARCHAR(1000)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_rows_count INT DEFAULT 0;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -25,6 +24,8 @@ BEGIN
         SET p_status = 1;
         SET p_error_message = 'Clear generated Volvo label data failed. Transaction rolled back.';
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET p_rows_moved = 0;
     SET p_status = 0;
@@ -93,7 +94,5 @@ BEGIN
     END IF;
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
-
-DELIMITER;
 
 DELIMITER;

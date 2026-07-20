@@ -5,6 +5,7 @@
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS sp_Receiving_PackageTypeMappings_Insert$$
+
 CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Insert(
     IN p_part_prefix VARCHAR(10),
     IN p_package_type VARCHAR(50),
@@ -13,8 +14,9 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Insert(
     IN p_created_by INT
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_prefix VARCHAR(10);
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET v_prefix = UPPER(TRIM(p_part_prefix));
 
@@ -55,4 +57,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

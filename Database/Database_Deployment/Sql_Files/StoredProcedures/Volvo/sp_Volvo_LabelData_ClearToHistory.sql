@@ -22,7 +22,6 @@ CREATE PROCEDURE `sp_Volvo_LabelData_ClearToHistory`(
     OUT p_error_message     VARCHAR(1000)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_headers_count   INT DEFAULT 0;
     DECLARE v_lines_count     INT DEFAULT 0;
 
@@ -36,6 +35,8 @@ BEGIN
         SET p_status           = 1;
         SET p_error_message    = 'Clear Label Data failed. Transaction rolled back.';
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET p_headers_moved    = 0;
     SET p_lines_moved      = 0;
@@ -164,5 +165,5 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;
 -- ============================================================================

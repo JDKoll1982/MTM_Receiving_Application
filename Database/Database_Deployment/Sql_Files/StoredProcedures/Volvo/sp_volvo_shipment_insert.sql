@@ -7,7 +7,7 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Insert`$$
+DROP PROCEDURE IF EXISTS `sp_Volvo_Shipment_Insert` $$
 
 CREATE PROCEDURE `sp_Volvo_Shipment_Insert`(
   IN p_shipment_date DATE,
@@ -17,8 +17,9 @@ CREATE PROCEDURE `sp_Volvo_Shipment_Insert`(
   OUT p_shipment_number INT
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
   DECLARE v_next_number INT;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
   -- Calculate next shipment number for this date
   SELECT COALESCE(MAX(shipment_number), 0) + 1
@@ -38,4 +39,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

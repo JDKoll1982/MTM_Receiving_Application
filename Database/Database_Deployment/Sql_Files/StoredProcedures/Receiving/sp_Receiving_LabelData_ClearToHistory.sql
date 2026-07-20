@@ -18,7 +18,6 @@ CREATE PROCEDURE `sp_Receiving_LabelData_ClearToHistory`(
     OUT p_error_message VARCHAR(1000)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE v_rows_to_move INT DEFAULT 0;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -29,6 +28,8 @@ BEGIN
         SET p_status = 1;
         SET p_error_message = 'Clear Label Data failed. Transaction rolled back.';
     END;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET p_rows_moved = 0;
     SET p_status = 0;
@@ -180,4 +181,4 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;

@@ -32,7 +32,6 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_InsertBatch`(
     IN p_user      VARCHAR(100)
 )
 BEGIN
-    SET FOREIGN_KEY_CHECKS = 0;
     DECLARE i     INT DEFAULT 0;
     DECLARE cnt   INT DEFAULT 0;
     DECLARE v_load_uuid         CHAR(36);
@@ -49,6 +48,8 @@ BEGIN
     DECLARE v_part_skid_sequence INT;
     DECLARE v_part_skid_total    INT;
     DECLARE v_specs_json        JSON;
+
+    SET FOREIGN_KEY_CHECKS = 0;
 
     SET cnt = JSON_LENGTH(p_load_data);
 
@@ -110,6 +111,6 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
 END $$
 
-DELIMITER ;
+DELIMITER;
 
 -- ============================================================================
