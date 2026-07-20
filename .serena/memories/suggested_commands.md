@@ -30,7 +30,7 @@ dotnet test MTM_Receiving_Application.slnx --filter "FullyQualifiedName~Integrat
 Deploy stored procedures to MySQL by running individual `.sql` files in `Database/StoredProcedures/`:
 
 ```powershell
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < Database/StoredProcedures/sp_example.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application_test < Database/StoredProcedures/sp_example.sql
 ```
 
 ## Architecture Validation Searches

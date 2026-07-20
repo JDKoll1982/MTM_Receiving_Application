@@ -148,6 +148,53 @@ public sealed class ViewModel_Dunnage_TypeSelectionViewModelTests
         );
     }
 
+    [Fact]
+    public void BuildSavedRowRewriteWarning_ShouldDescribeNameAndIconChanges()
+    {
+        var message = InvokeSavedRowRewriteWarning(
+            "Bins",
+            "Totes",
+            "PackageVariantClosed",
+            "Archive"
+        );
+
+        message.Should().Contain("current label data and history rows");
+        message.Should().Contain("type name from 'Bins' to 'Totes'");
+        message.Should().Contain("type icon from 'PackageVariantClosed' to 'Archive'");
+    }
+
+    [Fact]
+    public void BuildSavedRowRewriteWarning_ShouldReturnNull_WhenNoSavedRowFieldsChange()
+    {
+        var message = InvokeSavedRowRewriteWarning(
+            "Bins",
+            "Bins",
+            "PackageVariantClosed",
+            "PackageVariantClosed"
+        );
+
+        message.Should().BeNull();
+    }
+
+    private static string? InvokeSavedRowRewriteWarning(
+        string originalName,
+        string newName,
+        string originalIcon,
+        string newIcon
+    )
+    {
+        var method = typeof(ViewModel_dunnage_typeselection).GetMethod(
+            "BuildSavedRowRewriteWarning",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+
+        return method!
+            .Invoke(null, [originalName, newName, originalIcon, newIcon])
+            .As<string?>();
+    }
+
     private static ViewModel_dunnage_typeselection CreateViewModel(
         Mock<IService_DunnageWorkflow>? workflow = null,
         Mock<IService_MySQL_Dunnage>? dunnageService = null,

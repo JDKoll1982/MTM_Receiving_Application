@@ -21,12 +21,13 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_ClearToHistory`(
 )
 BEGIN
     DECLARE v_rows_to_move INT DEFAULT 0;
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
 
     -- Roll back and surface the error if anything inside the transaction fails.
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         SET p_rows_moved       = 0;
         SET p_status           = 1;
         SET p_error_message    = 'Clear Label Data failed. Transaction rolled back.';
@@ -62,6 +63,7 @@ BEGIN
                 quantity,
                 quantity_type,
                 received_date,
+                created_at,
                 created_by,
                 employee_number,
                 created_date,
@@ -69,6 +71,9 @@ BEGIN
                 type_id,
                 type_name,
                 type_icon,
+                dunnage_type_id,
+                dunnage_type_name,
+                dunnage_type_icon,
                 location,
                 label_number,
                 part_skid_sequence,
@@ -84,6 +89,7 @@ BEGIN
                 dld.quantity,
                 dld.quantity_type,
                 COALESCE(dld.received_date, NOW())  AS received_date,
+                dld.created_at                      AS created_at,
                 dld.user_id                         AS created_by,
                 dld.employee_number                AS employee_number,
                 NOW()                               AS created_date,
@@ -91,6 +97,9 @@ BEGIN
                 dld.dunnage_type_id                 AS type_id,
                 dld.dunnage_type_name               AS type_name,
                 dld.dunnage_type_icon               AS type_icon,
+                dld.dunnage_type_id                 AS dunnage_type_id,
+                dld.dunnage_type_name               AS dunnage_type_name,
+                dld.dunnage_type_icon               AS dunnage_type_icon,
                 dld.location,
                 dld.label_number,
                 dld.part_skid_sequence,
@@ -113,7 +122,7 @@ BEGIN
             SET p_rows_moved = v_rows_to_move;
         END IF;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

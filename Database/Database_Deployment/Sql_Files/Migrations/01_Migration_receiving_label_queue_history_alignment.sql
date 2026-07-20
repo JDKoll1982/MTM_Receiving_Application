@@ -164,8 +164,12 @@ BEGIN
 
     CALL sp_mig38_add_column_if_missing('receiving_history', 'load_number',
         'ALTER TABLE receiving_history ADD COLUMN load_number INT NULL COMMENT ''Sequential load number within the receiving session''');
+    CALL sp_mig38_add_column_if_missing('receiving_history', 'load_id',
+        'ALTER TABLE receiving_history ADD COLUMN load_id CHAR(36) NULL COMMENT ''Compatibility alias for receiving_label_data.load_id''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'po_status',
         'ALTER TABLE receiving_history ADD COLUMN po_status VARCHAR(100) NULL COMMENT ''PO status snapshot''');
+    CALL sp_mig38_add_column_if_missing('receiving_history', 'po_vendor',
+        'ALTER TABLE receiving_history ADD COLUMN po_vendor VARCHAR(255) NULL COMMENT ''Compatibility alias for receiving_label_data.po_vendor''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'po_due_date',
         'ALTER TABLE receiving_history ADD COLUMN po_due_date DATE NULL COMMENT ''PO due date snapshot''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'qty_ordered',
@@ -176,6 +180,8 @@ BEGIN
         'ALTER TABLE receiving_history ADD COLUMN remaining_quantity INT NULL COMMENT ''Remaining PO quantity snapshot''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'user_id',
         'ALTER TABLE receiving_history ADD COLUMN user_id VARCHAR(100) NULL COMMENT ''Windows user / app user id''');
+    CALL sp_mig38_add_column_if_missing('receiving_history', 'received_date',
+        'ALTER TABLE receiving_history ADD COLUMN received_date DATETIME NULL COMMENT ''Compatibility alias for receiving_label_data.received_date''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'packages_per_load',
         'ALTER TABLE receiving_history ADD COLUMN packages_per_load INT NULL COMMENT ''Number of packages per load/skid''');
     CALL sp_mig38_add_column_if_missing('receiving_history', 'package_type_name',

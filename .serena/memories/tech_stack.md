@@ -32,7 +32,7 @@ Last Updated: 2026-03-21
 
 | Database                                | Access     | Purpose                               |
 | --------------------------------------- | ---------- | ------------------------------------- |
-| MySQL 5.7 (`mtm_receiving_application`) | READ/WRITE | Application data, audit trail         |
+| MySQL 5.7 (`mtm_receiving_application_test`) | READ/WRITE | Application data, audit trail         |
 | SQL Server (Infor Visual MTMFG)         | READ ONLY  | ERP data lookup (POs, parts, vendors) |
 
 ## Key Helper Classes

@@ -46,6 +46,7 @@ CREATE PROCEDURE `sp_Receiving_LabelData_Insert`(
     IN p_part_skid_total INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     INSERT IGNORE INTO receiving_label_data
     (
@@ -123,7 +124,7 @@ BEGIN
         p_part_skid_sequence,
         p_part_skid_total
     );
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

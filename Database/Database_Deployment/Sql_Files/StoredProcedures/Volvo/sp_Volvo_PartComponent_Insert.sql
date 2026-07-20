@@ -15,10 +15,11 @@ CREATE PROCEDURE `sp_Volvo_PartComponent_Insert`(
   IN p_quantity INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
   INSERT INTO volvo_part_components (parent_part_number, component_part_number, quantity)
   VALUES (p_parent_part_number, p_component_part_number, p_quantity);
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

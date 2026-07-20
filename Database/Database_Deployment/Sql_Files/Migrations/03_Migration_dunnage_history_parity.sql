@@ -80,6 +80,15 @@ BEGIN
         'ALTER TABLE dunnage_history ADD COLUMN type_name VARCHAR(100) NULL COMMENT ''Type name snapshot (e.g. Corrugated Cardboard)''');
     CALL sp_mig41_add_column_if_missing('dunnage_history', 'type_icon',
         'ALTER TABLE dunnage_history ADD COLUMN type_icon VARCHAR(100) NULL COMMENT ''MaterialIconKind string snapshot (e.g. PackageVariantClosed)''');
+    CALL sp_mig41_add_column_if_missing('dunnage_history', 'dunnage_type_id',
+        'ALTER TABLE dunnage_history ADD COLUMN dunnage_type_id INT NULL COMMENT ''Compatibility alias for dunnage_label_data.dunnage_type_id''');
+    CALL sp_mig41_add_column_if_missing('dunnage_history', 'dunnage_type_name',
+        'ALTER TABLE dunnage_history ADD COLUMN dunnage_type_name VARCHAR(100) NULL COMMENT ''Compatibility alias for dunnage_label_data.dunnage_type_name''');
+    CALL sp_mig41_add_column_if_missing('dunnage_history', 'dunnage_type_icon',
+        'ALTER TABLE dunnage_history ADD COLUMN dunnage_type_icon VARCHAR(100) NULL COMMENT ''Compatibility alias for dunnage_label_data.dunnage_type_icon''');
+
+    CALL sp_mig41_add_column_if_missing('dunnage_history', 'created_at',
+        'ALTER TABLE dunnage_history ADD COLUMN created_at TIMESTAMP NULL DEFAULT NULL COMMENT ''Original queue-row insert timestamp copied from dunnage_label_data for payload parity''');
 
     -- Location and label tracking
     CALL sp_mig41_add_column_if_missing('dunnage_history', 'location',

@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -503,6 +504,8 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
             if (dialog.WasAccepted)
             {
+                var originalName = type.TypeName;
+                var originalIcon = type.Icon;
                 var newName = dialog.TypeName;
                 var newIcon = dialog.SelectedIconKind.ToString();
                 var newSpecs = dialog.Specs; // Collection of SpecItem
@@ -514,6 +517,21 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                     || dialog.SelectedImagePath != type.ImagePath
                 )
                 {
+                    if (
+                        await ConfirmSavedRowRewriteAsync(
+                            BuildSavedRowRewriteWarning(
+                                originalName,
+                                newName,
+                                originalIcon,
+                                newIcon
+                            )
+                        ) is false
+                        && (newName != originalName || newIcon != originalIcon)
+                    )
+                    {
+                        return;
+                    }
+
                     type.TypeName = newName;
                     type.Icon = newIcon;
                     type.ImagePath = dialog.SelectedImagePath;
@@ -670,6 +688,66 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
     {
         UpdatePaginationProperties();
         UpdatePageDisplay();
+    }
+
+    private async Task<bool> ConfirmSavedRowRewriteAsync(string? warningMessage)
+    {
+        if (string.IsNullOrWhiteSpace(warningMessage))
+        {
+            return true;
+        }
+
+        var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+        if (xamlRoot == null)
+        {
+            return false;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Update Saved Dunnage Rows",
+            Content = warningMessage,
+            PrimaryButtonText = "Continue",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            dialog.XamlRoot
+        );
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
+    internal static string? BuildSavedRowRewriteWarning(
+        string originalName,
+        string newName,
+        string originalIcon,
+        string newIcon
+    )
+    {
+        var changedValues = new List<string>();
+
+        if (string.Equals(originalName, newName, StringComparison.Ordinal) is false)
+        {
+            changedValues.Add($"type name from '{originalName}' to '{newName}'");
+        }
+
+        if (string.Equals(originalIcon, newIcon, StringComparison.Ordinal) is false)
+        {
+            changedValues.Add($"type icon from '{originalIcon}' to '{newIcon}'");
+        }
+
+        if (changedValues.Count == 0)
+        {
+            return null;
+        }
+
+        var changeSummary = string.Join(" and ", changedValues);
+        return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {changeSummary}?";
     }
 
     private void UpdatePaginationProperties()

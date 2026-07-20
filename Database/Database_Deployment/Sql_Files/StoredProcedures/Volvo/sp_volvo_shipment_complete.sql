@@ -19,9 +19,10 @@ BEGIN
   DECLARE v_history_id INT;
   DECLARE v_archive_batch_id CHAR(36);
 
+  DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
   BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
     ROLLBACK;
     RESIGNAL;
   END;
@@ -109,7 +110,7 @@ BEGIN
   WHERE id = p_shipment_id;
 
   COMMIT;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

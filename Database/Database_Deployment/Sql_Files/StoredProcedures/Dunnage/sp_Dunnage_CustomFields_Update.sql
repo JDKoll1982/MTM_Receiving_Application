@@ -12,6 +12,7 @@ CREATE PROCEDURE `sp_Dunnage_CustomFields_Update`(
     IN p_validation_rules TEXT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_custom_fields
     SET
@@ -22,7 +23,7 @@ BEGIN
         IsRequired = p_is_required,
         ValidationRules = p_validation_rules
     WHERE ID = p_field_id;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

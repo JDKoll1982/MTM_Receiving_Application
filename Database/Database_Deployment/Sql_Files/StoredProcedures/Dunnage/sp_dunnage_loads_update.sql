@@ -18,6 +18,8 @@ CREATE PROCEDURE `sp_Dunnage_Loads_Update`(
     IN p_user VARCHAR(50)
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_history
     SET
@@ -28,6 +30,9 @@ BEGIN
         type_id = p_type_id,
         type_name = p_type_name,
         type_icon = p_type_icon,
+        dunnage_type_id = p_type_id,
+        dunnage_type_name = p_type_name,
+        dunnage_type_icon = p_type_icon,
         location = p_location,
         label_number = p_label_number,
         part_skid_sequence = p_part_skid_sequence,
@@ -52,7 +57,7 @@ BEGIN
         specs_json = p_specs_json,
         user_id = p_user
     WHERE load_uuid = p_load_uuid;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

@@ -15,9 +15,10 @@ CREATE PROCEDURE `sp_Dunnage_Parts_InsertWithInventory`(
     OUT p_new_id INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         ROLLBACK;
         RESIGNAL;
     END;
@@ -68,7 +69,7 @@ BEGIN
     END IF;
 
     COMMIT;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

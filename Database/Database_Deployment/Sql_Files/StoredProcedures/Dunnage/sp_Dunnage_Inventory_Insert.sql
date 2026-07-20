@@ -10,6 +10,7 @@ CREATE PROCEDURE `sp_Dunnage_Inventory_Insert`(
     OUT p_new_id INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     INSERT INTO dunnage_requires_inventory (
         part_id,
@@ -26,7 +27,7 @@ BEGIN
     );
 
     SET p_new_id = LAST_INSERT_ID();
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

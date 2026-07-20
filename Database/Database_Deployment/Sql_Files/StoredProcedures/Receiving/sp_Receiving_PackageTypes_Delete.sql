@@ -17,6 +17,7 @@ CREATE PROCEDURE `sp_Receiving_PackageTypes_Delete`(
     IN p_id INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     -- Hard delete from receiving_package_types table
     -- This table (PreferenceID, PartID, PackageTypeName, CustomTypeName, LastModified)
@@ -25,7 +26,7 @@ BEGIN
     WHERE PreferenceID = p_id;
 
     SELECT ROW_COUNT() AS affected_rows;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

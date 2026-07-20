@@ -65,6 +65,78 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
         );
     }
 
+    [Fact]
+    public void BuildSavedRowRewriteWarning_ShouldDescribePropagatedPartChanges()
+    {
+        var message = InvokeSavedRowRewriteWarning(
+            "BIN-100",
+            "BIN-200",
+            "Each",
+            "Pallets",
+            "{\"color\":\"Blue\"}",
+            "{\"color\":\"Red\"}",
+            "Images/old.png",
+            "Images/new.png"
+        );
+
+        message.Should().Contain("current label data and history rows");
+        message.Should().Contain("part number from 'BIN-100' to 'BIN-200'");
+        message.Should().Contain("quantity type from 'Each' to 'Pallets'");
+        message.Should().Contain("saved spec values");
+    }
+
+    [Fact]
+    public void BuildSavedRowRewriteWarning_ShouldReturnNull_WhenNoPropagatedFieldsChange()
+    {
+        var message = InvokeSavedRowRewriteWarning(
+            "BIN-100",
+            "BIN-100",
+            "Each",
+            "Each",
+            "{\"color\":\"Blue\"}",
+            "{\"color\":\"Blue\"}",
+            "Images/same.png",
+            "Images/same.png"
+        );
+
+        message.Should().BeNull();
+    }
+
+    private static string? InvokeSavedRowRewriteWarning(
+        string originalPartId,
+        string updatedPartId,
+        string originalQuantityType,
+        string updatedQuantityType,
+        string originalSpecValuesJson,
+        string updatedSpecValuesJson,
+        string? originalImagePath,
+        string? updatedImagePath
+    )
+    {
+        var method = typeof(ViewModel_Dunnage_PartSelection).GetMethod(
+            "BuildSavedRowRewriteWarning",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+
+        return method!
+            .Invoke(
+                null,
+                [
+                    originalPartId,
+                    updatedPartId,
+                    originalQuantityType,
+                    updatedQuantityType,
+                    originalSpecValuesJson,
+                    updatedSpecValuesJson,
+                    originalImagePath,
+                    updatedImagePath,
+                ]
+            )
+            .As<string?>();
+    }
+
     private static ViewModel_Dunnage_PartSelection CreateViewModel(
         Mock<IService_DunnageSettings>? dunnageSettings = null,
         Mock<IService_UserSessionManager>? sessionManager = null,

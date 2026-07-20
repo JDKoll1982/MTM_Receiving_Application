@@ -6,7 +6,7 @@
 param(
     [string]$Server = "localhost",
     [string]$Port = "3306",
-    [string]$Database = "mtm_receiving_application",
+    [string]$Database = "mtm_receiving_application_test",
     [string]$User = "root",
     [string]$Password = "root"
 )

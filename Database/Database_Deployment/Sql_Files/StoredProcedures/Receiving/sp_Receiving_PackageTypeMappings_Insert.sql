@@ -16,6 +16,7 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Insert(
 BEGIN
     DECLARE v_prefix VARCHAR(10);
 
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
 
     SET v_prefix = UPPER(TRIM(p_part_prefix));
@@ -54,7 +55,7 @@ BEGIN
         id = LAST_INSERT_ID(id);
 
     SELECT LAST_INSERT_ID() AS id;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

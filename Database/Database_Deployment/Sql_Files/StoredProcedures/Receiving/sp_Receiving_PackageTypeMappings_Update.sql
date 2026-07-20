@@ -22,6 +22,7 @@ CREATE PROCEDURE sp_Receiving_PackageTypeMappings_Update(
 BEGIN
     DECLARE v_conflict_id INT DEFAULT NULL;
 
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
 
     -- Check for duplicate part_prefix on a different row
@@ -54,7 +55,7 @@ BEGIN
 
         SELECT ROW_COUNT() AS affected_rows, NULL AS error_message;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

@@ -26,6 +26,8 @@ CREATE PROCEDURE `sp_Dunnage_LabelData_Update`(
     IN p_specs_json JSON
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_label_data
     SET
@@ -59,13 +61,16 @@ BEGIN
         type_id = p_dunnage_type_id,
         type_name = p_dunnage_type_name,
         type_icon = p_dunnage_type_icon,
+        dunnage_type_id = p_dunnage_type_id,
+        dunnage_type_name = p_dunnage_type_name,
+        dunnage_type_icon = p_dunnage_type_icon,
         location = p_location,
         label_number = p_label_number,
         part_skid_sequence = p_part_skid_sequence,
         part_skid_total = p_part_skid_total,
         specs_json = p_specs_json
     WHERE load_uuid = p_load_uuid;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

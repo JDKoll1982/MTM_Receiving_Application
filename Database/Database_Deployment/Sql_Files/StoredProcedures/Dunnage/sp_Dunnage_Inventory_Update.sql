@@ -10,6 +10,7 @@ CREATE PROCEDURE `sp_Dunnage_Inventory_Update`(
     IN p_user VARCHAR(50)
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE dunnage_requires_inventory
     SET
@@ -19,7 +20,7 @@ BEGIN
         modified_by = p_user,
         modified_date = NOW()
     WHERE id = p_id;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

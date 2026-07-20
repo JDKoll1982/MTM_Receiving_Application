@@ -18,6 +18,7 @@ CREATE PROCEDURE `sp_Dunnage_Types_Insert`(
     OUT p_new_id    INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     -- Check for duplicate type_name (SP-level guard against race conditions)
     IF EXISTS (SELECT 1 FROM dunnage_types WHERE type_name = p_type_name) THEN
@@ -29,7 +30,7 @@ BEGIN
     VALUES (p_type_name, p_icon, NULLIF(p_image_path, ''), p_user, NOW());
 
     SET p_new_id = LAST_INSERT_ID();
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 

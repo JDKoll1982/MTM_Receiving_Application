@@ -26,9 +26,10 @@ BEGIN
     DECLARE v_lines_count     INT DEFAULT 0;
 
     -- Roll back and surface the error if anything inside the transaction fails.
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         ROLLBACK;
         SET p_headers_moved    = 0;
         SET p_lines_moved      = 0;
@@ -162,7 +163,7 @@ BEGIN
         COMMIT;
     END IF;
 
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

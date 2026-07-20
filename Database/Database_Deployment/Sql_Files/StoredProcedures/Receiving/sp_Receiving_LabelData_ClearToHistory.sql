@@ -19,11 +19,12 @@ CREATE PROCEDURE `sp_Receiving_LabelData_ClearToHistory`(
 )
 BEGIN
     DECLARE v_rows_to_move INT DEFAULT 0;
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         SET p_rows_moved = 0;
         SET p_status = 1;
         SET p_error_message = 'Clear Label Data failed. Transaction rolled back.';
@@ -64,13 +65,16 @@ BEGIN
         INSERT INTO receiving_history
         (
             load_guid,
+            load_id,
             quantity,
             part_id,
             part_description,
             po_number,
             po_line_number,
+            po_vendor,
             employee_number,
             heat,
+            received_date,
             transaction_date,
             created_at,
             initial_location,
@@ -98,13 +102,16 @@ BEGIN
         )
         SELECT
             COALESCE(rld.load_id, UUID())                              AS load_guid,
+            rld.load_id                                                AS load_id,
             rld.quantity                                               AS quantity,
             rld.part_id                                                AS part_id,
             rld.part_description                                       AS part_description,
             rld.po_number                                              AS po_number,
             rld.po_line_number                                         AS po_line_number,
+            rld.po_vendor                                              AS po_vendor,
             rld.employee_number                                        AS employee_number,
             rld.heat                                                   AS heat,
+            rld.received_date                                          AS received_date,
             COALESCE(DATE(rld.received_date), rld.transaction_date)    AS transaction_date,
             COALESCE(rld.received_date, rld.created_at, CURRENT_TIMESTAMP) AS created_at,
             rld.initial_location                                       AS initial_location,
@@ -134,13 +141,16 @@ BEGIN
             AND (COALESCE(p_clear_all, 0) = 1
               OR rld.employee_number = p_employee_number)
         ON DUPLICATE KEY UPDATE
+            load_id          = VALUES(load_id),
             quantity         = VALUES(quantity),
             part_id          = VALUES(part_id),
             part_description = VALUES(part_description),
             po_number        = VALUES(po_number),
             po_line_number   = VALUES(po_line_number),
+            po_vendor        = VALUES(po_vendor),
             employee_number  = VALUES(employee_number),
             heat             = VALUES(heat),
+            received_date    = VALUES(received_date),
             transaction_date = VALUES(transaction_date),
             created_at       = VALUES(created_at),
             initial_location = VALUES(initial_location),
@@ -178,7 +188,7 @@ BEGIN
             SET p_error_message = NULL;
         END IF;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

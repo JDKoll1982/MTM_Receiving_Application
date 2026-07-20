@@ -18,6 +18,13 @@ CREATE PROCEDURE `sp_Receiving_LabelData_InsertFromHistory`(
 )
 BEGIN
     DECLARE v_already_queued INT DEFAULT 0;
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
+        RESIGNAL;
+    END;
 
     SET FOREIGN_KEY_CHECKS = 0;
 
@@ -70,7 +77,7 @@ BEGIN
             quality_hold_restriction_type
         )
         SELECT
-            rh.load_guid,
+            COALESCE(rh.load_id, rh.load_guid),
             rh.load_number,
             rh.quantity,
             CAST(rh.quantity AS DECIMAL(18,2)),
@@ -79,7 +86,7 @@ BEGIN
             NULL,
             rh.po_number,
             rh.po_line_number,
-            rh.vendor_name,
+            COALESCE(rh.po_vendor, rh.vendor_name),
             rh.po_status,
             rh.po_due_date,
             rh.qty_ordered,
@@ -90,7 +97,7 @@ BEGIN
             rh.user_set_customer_name,
             rh.user_set_variable,
             rh.heat,
-            rh.created_at,
+            COALESCE(rh.received_date, rh.created_at),
             rh.transaction_date,
             rh.initial_location,
             rh.packages_per_load,
@@ -109,7 +116,7 @@ BEGIN
 
         SELECT ROW_COUNT() AS rows_inserted;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

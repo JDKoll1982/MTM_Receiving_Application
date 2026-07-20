@@ -15,10 +15,12 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
     IN p_user VARCHAR(50)
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
         ROLLBACK;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         RESIGNAL;
     END;
 
@@ -37,18 +39,21 @@ BEGIN
         modified_date = NOW()
     WHERE id = p_id;
 
-    IF p_original_part_id <> p_new_part_id THEN
-        UPDATE dunnage_history
-        SET
-            part_id = p_new_part_id,
-            modified_by = p_user,
-            modified_date = NOW()
-        WHERE part_id = p_original_part_id;
+    UPDATE dunnage_history
+    SET
+        part_id = p_new_part_id,
+        quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        specs_json = p_spec_values,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE part_id IN (p_original_part_id, p_new_part_id);
 
-        UPDATE dunnage_label_data
-        SET part_id = p_new_part_id
-        WHERE part_id = p_original_part_id;
-    END IF;
+    UPDATE dunnage_label_data
+    SET
+        part_id = p_new_part_id,
+        quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
+        specs_json = p_spec_values
+    WHERE part_id IN (p_original_part_id, p_new_part_id);
 
     IF p_inventory_method IS NULL
         OR TRIM(p_inventory_method) = ''
@@ -102,7 +107,7 @@ BEGIN
     END IF;
 
     COMMIT;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

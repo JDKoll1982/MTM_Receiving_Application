@@ -37,6 +37,8 @@ CREATE PROCEDURE `sp_Receiving_LabelData_Update`(
     IN p_weight_per_package DECIMAL(18,2),
     IN p_coils_on_skid INT,
     IN p_label_number INT,
+    IN p_part_skid_sequence INT,
+    IN p_part_skid_total INT,
     IN p_vendor_name VARCHAR(255),
     IN p_is_non_po_item TINYINT(1),
     IN p_is_quality_hold_required TINYINT(1),
@@ -44,6 +46,8 @@ CREATE PROCEDURE `sp_Receiving_LabelData_Update`(
     IN p_quality_hold_restriction_type VARCHAR(255)
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE receiving_label_data
     SET
@@ -89,6 +93,7 @@ BEGIN
 
     UPDATE receiving_history
     SET
+        load_id = p_load_id,
         load_number = p_load_number,
         quantity = p_quantity,
         weight_quantity = p_weight_quantity,
@@ -96,8 +101,10 @@ BEGIN
         part_type = p_part_type,
         po_number = p_po_number,
         po_line_number = p_po_line_number,
+        po_vendor = p_po_vendor,
         employee_number = p_employee_number,
         heat = p_heat,
+        received_date = p_received_date,
         transaction_date = p_transaction_date,
         initial_location = p_initial_location,
         coils_on_skid = p_coils_on_skid,
@@ -118,12 +125,12 @@ BEGIN
         is_quality_hold_acknowledged = p_is_quality_hold_acknowledged,
         is_reprint = 0,
         quality_hold_restriction_type = p_quality_hold_restriction_type,
-        part_skid_sequence = p_part_skid_sequence,
-        part_skid_total = p_part_skid_total
+                part_skid_sequence = COALESCE(p_part_skid_sequence, part_skid_sequence),
+                part_skid_total = COALESCE(p_part_skid_total, part_skid_total)
     WHERE p_load_id IS NOT NULL
       AND p_load_id <> ''
       AND load_guid = p_load_id;
-    SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

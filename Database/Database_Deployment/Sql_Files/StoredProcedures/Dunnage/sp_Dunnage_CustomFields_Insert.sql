@@ -17,9 +17,10 @@ CREATE PROCEDURE `sp_Dunnage_CustomFields_Insert`(
 )
 BEGIN
     -- Error handler
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
         SET p_status = -1;
         SET p_new_id = NULL;
@@ -71,7 +72,7 @@ BEGIN
         SET p_error_msg = 'Custom field created successfully';
         COMMIT;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

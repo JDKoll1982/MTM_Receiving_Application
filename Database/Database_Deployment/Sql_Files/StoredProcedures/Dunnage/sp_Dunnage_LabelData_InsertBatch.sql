@@ -49,6 +49,7 @@ BEGIN
     DECLARE v_part_skid_total    INT;
     DECLARE v_specs_json        JSON;
 
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
 
     SET cnt = JSON_LENGTH(p_load_data);
@@ -108,7 +109,7 @@ BEGIN
 
         SET i = i + 1;
     END WHILE;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

@@ -23,6 +23,7 @@ CREATE PROCEDURE `sp_Receiving_Load_Insert`(
     IN p_PartDescription VARCHAR(500)
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
     INSERT INTO receiving_history
     (
@@ -56,7 +57,7 @@ BEGIN
     );
 
     SELECT LAST_INSERT_ID() AS new_id;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END //
 
 DELIMITER ;

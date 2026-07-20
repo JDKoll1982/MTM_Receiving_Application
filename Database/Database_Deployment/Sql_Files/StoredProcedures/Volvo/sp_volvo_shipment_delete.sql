@@ -13,11 +13,12 @@ CREATE PROCEDURE `sp_Volvo_Shipment_Delete`(
   IN p_shipment_id INT
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
   -- Lines will be deleted automatically by CASCADE DELETE
   DELETE FROM volvo_label_data
   WHERE id = p_shipment_id;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER ;

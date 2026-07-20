@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
@@ -852,6 +853,9 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 }
 
                 var partIdToReselect = SelectedPart.PartId;
+                var originalSpecValuesJson = SelectedPart.SpecValues;
+                var originalQuantityType = SelectedPart.QuantityType;
+                var originalImagePath = SelectedPart.ImagePath;
                 var updatedPartId = dialog.UpdatedPartId;
 
                 var updatedPart = new Model_DunnagePart
@@ -865,6 +869,22 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     QuantityType = dialog.ResolvedQuantityType,
                     HomeLocation = dialog.UpdatedHomeLocation,
                 };
+
+                var savedRowRewriteWarning = BuildSavedRowRewriteWarning(
+                    partIdToReselect,
+                    updatedPartId,
+                    originalQuantityType,
+                    dialog.ResolvedQuantityType,
+                    originalSpecValuesJson,
+                    dialog.UpdatedSpecValuesJson,
+                    originalImagePath,
+                    dialog.SelectedImagePath
+                );
+
+                if (await ConfirmSavedRowRewriteAsync(savedRowRewriteWarning) is false)
+                {
+                    return;
+                }
 
                 var updateResult = await _dunnageService.UpdatePartWithInventoryAndReferencesAsync(
                     updatedPart,
@@ -940,6 +960,83 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     StringComparison.OrdinalIgnoreCase
                 )
             );
+    }
+
+    private async Task<bool> ConfirmSavedRowRewriteAsync(string? warningMessage)
+    {
+        if (string.IsNullOrWhiteSpace(warningMessage))
+        {
+            return true;
+        }
+
+        var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+        if (xamlRoot == null)
+        {
+            return false;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Update Saved Dunnage Rows",
+            Content = warningMessage,
+            PrimaryButtonText = "Continue",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            dialog.XamlRoot
+        );
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
+    private static string? BuildSavedRowRewriteWarning(
+        string originalPartId,
+        string updatedPartId,
+        string originalQuantityType,
+        string updatedQuantityType,
+        string originalSpecValuesJson,
+        string updatedSpecValuesJson,
+        string? originalImagePath,
+        string? updatedImagePath
+    )
+    {
+        var changedValues = new List<string>();
+
+        if (string.Equals(originalPartId, updatedPartId, StringComparison.Ordinal) is false)
+        {
+            changedValues.Add($"part number from '{originalPartId}' to '{updatedPartId}'");
+        }
+
+        if (
+            string.Equals(originalQuantityType, updatedQuantityType, StringComparison.Ordinal)
+            is false
+        )
+        {
+            changedValues.Add(
+                $"quantity type from '{originalQuantityType}' to '{updatedQuantityType}'"
+            );
+        }
+
+        if (
+            string.Equals(originalSpecValuesJson, updatedSpecValuesJson, StringComparison.Ordinal)
+            is false
+            || string.Equals(originalImagePath, updatedImagePath, StringComparison.Ordinal) is false
+        )
+        {
+            changedValues.Add("saved spec values");
+        }
+
+        if (changedValues.Count == 0)
+        {
+            return null;
+        }
+
+        return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {string.Join(" and ", changedValues)}?";
     }
 
     /// <summary>

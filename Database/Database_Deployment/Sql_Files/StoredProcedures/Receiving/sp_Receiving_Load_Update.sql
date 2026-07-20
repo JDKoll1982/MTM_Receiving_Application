@@ -28,9 +28,12 @@ CREATE PROCEDURE `sp_Receiving_Load_Update`(
     IN p_ReceivedDate     DATETIME
 )
 BEGIN
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     SET FOREIGN_KEY_CHECKS = 0;
     UPDATE receiving_history
     SET
+        load_id          = p_LoadID,
         part_id          = p_PartID,
         weight_quantity  = p_WeightQuantity,
         part_type        = p_PartType,
@@ -43,6 +46,7 @@ BEGIN
         package_type_name = p_PackageTypeName,
         heat             = p_HeatLotNumber,
         initial_location = p_InitialLocation,
+        received_date    = p_ReceivedDate,
         transaction_date = DATE(p_ReceivedDate),
         label_number     = IFNULL(p_LoadNumber, 1),
         is_non_po_item   = IFNULL(p_IsNonPOItem, 0)
@@ -72,7 +76,7 @@ BEGIN
         received_date = p_ReceivedDate,
         transaction_date = DATE(p_ReceivedDate)
     WHERE load_id = p_LoadID;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

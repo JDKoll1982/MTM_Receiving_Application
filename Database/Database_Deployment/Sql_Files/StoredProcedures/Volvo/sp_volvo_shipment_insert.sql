@@ -19,6 +19,7 @@ CREATE PROCEDURE `sp_Volvo_Shipment_Insert`(
 BEGIN
   DECLARE v_next_number INT;
 
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
 
   -- Calculate next shipment number for this date
@@ -36,7 +37,7 @@ BEGIN
 
   SET p_new_id = LAST_INSERT_ID();
   SET p_shipment_number = v_next_number;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

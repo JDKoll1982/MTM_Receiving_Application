@@ -23,9 +23,10 @@ BEGIN
     DECLARE v_exists INT DEFAULT 0;
     DECLARE v_parts_count INT DEFAULT 0;
 
+    DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SET FOREIGN_KEY_CHECKS = 1;
+        SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
         GET DIAGNOSTICS CONDITION 1 p_error_msg = MESSAGE_TEXT;
         SET p_status = -1;
         ROLLBACK;
@@ -64,7 +65,7 @@ BEGIN
             COMMIT;
         END IF;
     END IF;
-    SET FOREIGN_KEY_CHECKS = 1;
+    SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
 DELIMITER;

@@ -391,6 +391,8 @@ public class Dao_ReceivingLabelData
                     { "p_is_quality_hold_required", load.IsQualityHoldRequired ? 1 : 0 },
                     { "p_is_quality_hold_acknowledged", load.IsQualityHoldAcknowledged ? 1 : 0 },
                     { "p_quality_hold_restriction_type", load.QualityHoldRestrictionType },
+                    { "p_part_skid_sequence", DBNull.Value },
+                    { "p_part_skid_total", DBNull.Value },
                 };
 
                 var execResult = await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
