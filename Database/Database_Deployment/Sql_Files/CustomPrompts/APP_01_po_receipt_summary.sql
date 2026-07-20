@@ -1,6 +1,6 @@
 -- =============================================================================
 -- APP_01: Receiving app PO receipt summary (MySQL side of reconciliation)
--- Server  : 172.16.1.104 (MySQL / MAMP)
+-- Server  : localhost (MySQL / MAMP)
 -- Database: mtm_receiving_application
 -- Run in  : phpMyAdmin or MAMP mysql client
 -- Purpose : Summarises what the receiving app recorded per PO number and part
@@ -13,16 +13,23 @@
 -- =============================================================================
 SELECT
     po_number,
-    part_id                                       AS part_number,
-    COALESCE(part_description, part_id)           AS description,
-    COUNT(*)                                      AS label_events,
-    SUM(quantity)                                 AS qty_received_app,
-    SUM(COALESCE(packages_per_load, 1))           AS total_skids,
-    MIN(transaction_date)                         AS first_received,
-    MAX(transaction_date)                         AS last_received
+    part_id AS part_number,
+    COALESCE(part_description, part_id) AS description,
+    COUNT(*) AS label_events,
+    SUM(quantity) AS qty_received_app,
+    SUM(
+        COALESCE(packages_per_load, 1)
+    ) AS total_skids,
+    MIN(transaction_date) AS first_received,
+    MAX(transaction_date) AS last_received
 FROM receiving_history
-WHERE (LOWER(part_id)          LIKE '%mmc%'
-    OR LOWER(part_description) LIKE '%mmc%')
-  AND po_number IS NOT NULL
-GROUP BY po_number, part_id, part_description
+WHERE (
+        LOWER(part_id) LIKE '%mmc%'
+        OR LOWER(part_description) LIKE '%mmc%'
+    )
+    AND po_number IS NOT NULL
+GROUP BY
+    po_number,
+    part_id,
+    part_description
 ORDER BY po_number, part_id;

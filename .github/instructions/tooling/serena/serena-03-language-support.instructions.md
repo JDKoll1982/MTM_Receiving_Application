@@ -146,7 +146,7 @@ languages:
 dotnet --version
 
 # Restart Serena language server via dashboard
-# Navigate to http://172.16.1.104:24282/dashboard
+# Navigate to http://localhost:24282/dashboard
 # OR instruct the LLM: "restart the C# language server"
 ```
 
