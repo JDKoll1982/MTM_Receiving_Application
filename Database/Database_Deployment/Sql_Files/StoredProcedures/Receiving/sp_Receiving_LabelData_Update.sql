@@ -133,4 +133,4 @@ BEGIN
         SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$
 
-DELIMITER;
+DELIMITER ;
