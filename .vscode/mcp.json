@@ -13,37 +13,6 @@
         "--project",
         "${workspaceFolder}"
       ]
-    },
-    "githubRemote": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/"
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"]
-    },
-    "filesystem": {
-      "type": "stdio",
-      "command": "node",
-      "args": [
-        "${workspaceFolder}/Scripts/McpServers/filesystem-win/index.mjs",
-        "${workspaceFolder}"
-      ]
-    },
-    "winapp": {
-      "type": "stdio",
-      "command": "c:\\Users\\johnk\\.vscode\\extensions\\brijesharung.winapp-mcp-2.0.0\\server\\WinAppMCP.exe",
-      "args": [],
-      "version": "1.0.0"
     }
-  },
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "github_token",
-      "description": "GitHub Personal Access Token (only needed for githubLocal)",
-      "password": true
-    }
-  ]
+  }
 }
