@@ -6,7 +6,7 @@
 --   2. Re-deploy sp_Receiving_LabelData_GetAll        (SELECTs is_reprint).
 --   3. Re-deploy sp_Receiving_LabelData_ClearToHistory (skips is_reprint rows).
 --   4. Deploy    sp_Receiving_LabelData_InsertFromHistory (new procedure).
--- Run this single file against mtm_receiving_application_test to apply everything.
+-- Run this single file against mtm_receiving_application to apply everything.
 -- ============================================================================
 
 USE mtm_receiving_application;

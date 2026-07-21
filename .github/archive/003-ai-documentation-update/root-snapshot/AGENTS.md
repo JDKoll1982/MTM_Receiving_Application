@@ -404,7 +404,7 @@ dotnet test --filter "FullyQualifiedName~Integration" # Integration tests
 mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application
 
 # Deploy stored procedure
-mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application_test < sp_name.sql
+mysql -h 172.16.1.104 -P 3306 -u root -p mtm_receiving_application < sp_name.sql
 ```
 
 ### XAML Troubleshooting

@@ -9,9 +9,9 @@
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
-CREATE DATABASE IF NOT EXISTS `mtm_receiving_application_test` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `mtm_receiving_application` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE `mtm_receiving_application_test`;
+USE `mtm_receiving_application`;
 
 START TRANSACTION;
 
@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 ;
 
 --
--- Database: `mtm_receiving_application_test`
+-- Database: `mtm_receiving_application`
 --
 
 DELIMITER $$

@@ -94,7 +94,7 @@ LABELVIEW requires the **32-bit** administrator:
    | **Port**             | `3306`                          |
    | **User**             | root                            |
    | **Password**         | root                            |
-   | **Database**         | `mtm_receiving_application_test`     |
+   | **Database**         | `mtm_receiving_application`     |
 
 5. Click **Test** to verify the connection succeeds
 6. Click **OK** to save
