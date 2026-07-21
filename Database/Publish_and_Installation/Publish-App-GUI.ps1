@@ -1,6 +1,30 @@
 # MTM Receiving Application - Publish Tool (WPF GUI)
 # Select a publish option; notes are shown alongside; click Publish to run dotnet publish.
 
+# Publishing from this tool requires elevated privileges in this environment.
+# If not elevated, re-launch immediately as Administrator and exit this process.
+$windowsIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+$windowsPrincipal = [Security.Principal.WindowsPrincipal]::new($windowsIdentity)
+$isAdministrator = $windowsPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $isAdministrator) {
+    $psExe = (Get-Process -Id $PID).MainModule.FileName
+    $elevatedArgs = @('-STA', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $PSCommandPath) + $args
+
+    try {
+        $elevatedProcess = Start-Process -FilePath $psExe -ArgumentList $elevatedArgs -Verb RunAs -PassThru -Wait
+        if ($null -ne $elevatedProcess) {
+            exit $elevatedProcess.ExitCode
+        }
+
+        exit 0
+    }
+    catch {
+        Write-Error "Administrator privileges are required to run the Publish GUI. Elevation was cancelled or failed."
+        exit 1
+    }
+}
+
 # WPF requires an STA thread. The VS Code PowerShell Extension REPL runs MTA and will
 # crash with exit code 0xE0434352 if WPF is loaded there. This guard re-launches the
 # script in a dedicated pwsh -STA process automatically.
@@ -58,6 +82,57 @@ $script:ProtectedDeploymentRelativePaths = @(
     'Assets\DunnageImages',
     'Assets/DunnageImages'
 )
+$script:OutputRootPathStartupMessage = ''
+
+function Resolve-StartupOutputRootPath {
+    param(
+        [string]$PreferredPath
+    )
+
+    $fallbackRoot = Join-Path $env:USERPROFILE 'Documents\MTM Receiving Application\Publish Output'
+
+    if ([string]::IsNullOrWhiteSpace($PreferredPath)) {
+        return [pscustomobject]@{
+            Path = [System.IO.Path]::GetFullPath($fallbackRoot)
+            Message = "Default publish share path is empty. Using local fallback: $fallbackRoot"
+        }
+    }
+
+    if (Test-Path -LiteralPath $PreferredPath) {
+        return [pscustomobject]@{
+            Path = [System.IO.Path]::GetFullPath($PreferredPath)
+            Message = ''
+        }
+    }
+
+    if ($PreferredPath -match '^(?<Drive>[A-Za-z]):\\(?<Rest>.*)$') {
+        $driveLetter = $matches.Drive.ToUpperInvariant()
+        $relativeRest = $matches.Rest
+        $networkKey = "HKCU:\Network\$driveLetter"
+
+        if (Test-Path -LiteralPath $networkKey) {
+            $remotePath = (Get-ItemProperty -LiteralPath $networkKey -Name RemotePath -ErrorAction SilentlyContinue).RemotePath
+            if (-not [string]::IsNullOrWhiteSpace($remotePath)) {
+                $uncPath = if ([string]::IsNullOrWhiteSpace($relativeRest)) {
+                    $remotePath
+                }
+                else {
+                    Join-Path $remotePath $relativeRest
+                }
+
+                return [pscustomobject]@{
+                    Path = $uncPath
+                    Message = "Mapped drive $driveLetter`: is not available in this elevated session. Using UNC path instead: $uncPath"
+                }
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Path = [System.IO.Path]::GetFullPath($fallbackRoot)
+        Message = "Mapped publish share path '$PreferredPath' is not available. Using local fallback: $fallbackRoot"
+    }
+}
 
 function Get-SatelliteLanguageOptions {
     $languageOptions = New-Object System.Collections.Generic.List[System.Windows.Controls.ComboBoxItem]
@@ -172,11 +247,19 @@ function Get-OutputPathValidationResult {
         }
     }
 
-    $resolvedDestination = if ($null -eq $Option) {
-        $resolvedRoot
+    try {
+        $resolvedDestination = if ($null -eq $Option) {
+            $resolvedRoot
+        }
+        else {
+            [System.IO.Path]::GetFullPath((Join-Path $resolvedRoot $Option.Folder))
+        }
     }
-    else {
-        [System.IO.Path]::GetFullPath((Join-Path $resolvedRoot $Option.Folder))
+    catch {
+        return [pscustomobject]@{
+            IsValid = $false
+            Message = 'The selected publish output folder could not be combined with the publish option folder. Verify the output path and drive availability.'
+        }
     }
 
     if (Test-PathIsEqualOrChild -BasePath $repoRoot -CandidatePath $resolvedRoot) {
@@ -448,6 +531,170 @@ function Get-UseExistingBuildOutput {
     return $true -eq [bool]$useExistingBuildCheckBox.IsChecked
 }
 
+function Get-WindowsSdkAvailability {
+    $registryCandidates = @(
+        'HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots',
+        'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows Kits\Installed Roots',
+        'HKLM:\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0'
+    )
+
+    foreach ($registryPath in $registryCandidates) {
+        if (-not (Test-Path -LiteralPath $registryPath)) {
+            continue
+        }
+
+        try {
+            $registryValues = Get-ItemProperty -LiteralPath $registryPath -ErrorAction Stop
+        }
+        catch {
+            continue
+        }
+
+        $kitsRootCandidate = if (-not [string]::IsNullOrWhiteSpace([string]$registryValues.KitsRoot10)) {
+            [string]$registryValues.KitsRoot10
+        }
+        elseif (-not [string]::IsNullOrWhiteSpace([string]$registryValues.InstallationFolder)) {
+            [string]$registryValues.InstallationFolder
+        }
+        else {
+            $null
+        }
+
+        if ([string]::IsNullOrWhiteSpace($kitsRootCandidate)) {
+            continue
+        }
+
+        try {
+            $kitsRoot = [System.IO.Path]::GetFullPath($kitsRootCandidate)
+        }
+        catch {
+            continue
+        }
+
+        $includeRoot = Join-Path $kitsRoot 'Include'
+        $libRoot = Join-Path $kitsRoot 'Lib'
+        $hasIncludes = Test-Path -LiteralPath $includeRoot
+        $hasLibs = Test-Path -LiteralPath $libRoot
+
+        if ($hasIncludes -and $hasLibs) {
+            return [pscustomobject]@{
+                IsAvailable = $true
+                RegistryPath = $registryPath
+                KitsRoot = $kitsRoot
+                Reason = ''
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        IsAvailable = $false
+        RegistryPath = ''
+        KitsRoot = ''
+        Reason = 'Windows SDK 10/11 was not found in the expected registry locations.'
+    }
+}
+
+function Get-TargetPlatformVersionFromTargetFramework {
+    param(
+        [string]$TargetFramework
+    )
+
+    if ([string]::IsNullOrWhiteSpace($TargetFramework)) {
+        return ''
+    }
+
+    if ($TargetFramework -match 'windows(?<Version>\d+(?:\.\d+){1,3})$') {
+        return $matches.Version
+    }
+
+    return ''
+}
+
+function Get-WindowsSdkPreflightResult {
+    param(
+        [bool]$UseExistingBuild,
+        [string]$ProjectPath
+    )
+
+    $availability = Get-WindowsSdkAvailability
+    $targetPlatformVersion = ''
+
+    if (-not [string]::IsNullOrWhiteSpace($ProjectPath) -and (Test-Path -LiteralPath $ProjectPath)) {
+        try {
+            $projectXml = [xml](Get-Content -LiteralPath $ProjectPath -Raw -ErrorAction Stop)
+            $propertyGroups = @($projectXml.Project.PropertyGroup)
+            $targetFramework = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.TargetFramework) } | Select-Object -First 1).TargetFramework
+            if ([string]::IsNullOrWhiteSpace($targetFramework)) {
+                $targetFrameworks = ($propertyGroups | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.TargetFrameworks) } | Select-Object -First 1).TargetFrameworks
+                if (-not [string]::IsNullOrWhiteSpace($targetFrameworks)) {
+                    $targetFramework = ($targetFrameworks -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+                }
+            }
+
+            $targetPlatformVersion = Get-TargetPlatformVersionFromTargetFramework -TargetFramework $targetFramework
+        }
+        catch {
+            $targetPlatformVersion = ''
+        }
+    }
+
+    if ($availability.IsAvailable) {
+        if (-not [string]::IsNullOrWhiteSpace($targetPlatformVersion)) {
+            $platformXmlPath = Join-Path $availability.KitsRoot (Join-Path 'Platforms\UAP' (Join-Path $targetPlatformVersion 'Platform.xml'))
+            if (-not (Test-Path -LiteralPath $platformXmlPath)) {
+                $availableVersions = @()
+                $uapRoot = Join-Path $availability.KitsRoot 'Platforms\UAP'
+                if (Test-Path -LiteralPath $uapRoot) {
+                    $availableVersions = @(Get-ChildItem -LiteralPath $uapRoot -Directory -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name | Sort-Object -Descending)
+                }
+
+                $availablePreview = if ($availableVersions.Count -gt 0) {
+                    ($availableVersions | Select-Object -First 5) -join ', '
+                }
+                else {
+                    'none detected'
+                }
+
+                $message = "The project targets Windows SDK $targetPlatformVersion, but Platform.xml was not found at:`n$platformXmlPath`n`nDetected UAP platform versions: $availablePreview`n`nInstall Windows SDK 10.0.$targetPlatformVersion (or change the project target to a supported installed SDK version)."
+
+                if ($UseExistingBuild) {
+                    return [pscustomobject]@{
+                        IsReady = $true
+                        IsWarning = $true
+                        Message = "$message`n`nContinuing because 'Reuse existing build output' is enabled (--no-build)."
+                    }
+                }
+
+                return [pscustomobject]@{
+                    IsReady = $false
+                    IsWarning = $false
+                    Message = $message
+                }
+            }
+        }
+
+        return [pscustomobject]@{
+            IsReady = $true
+            IsWarning = $false
+            Message = ''
+        }
+    }
+
+    if ($UseExistingBuild) {
+        return [pscustomobject]@{
+            IsReady = $true
+            IsWarning = $true
+            Message = "Windows SDK registry entries were not found. Continuing because 'Reuse existing build output' is enabled (--no-build). If publish still fails, install the Windows 10/11 SDK from Visual Studio Installer."
+        }
+    }
+
+    return [pscustomobject]@{
+        IsReady = $false
+        IsWarning = $false
+        Message = "Publish requires the Windows 10/11 SDK, but it was not found on this machine.`n`nFix options:`n  1) Install 'Windows 10/11 SDK' from Visual Studio Installer (Individual components), then retry.`n  2) Build the project successfully in Visual Studio, enable 'Reuse existing build output', and publish with --no-build."
+    }
+}
+
 function Get-ProjectPublishMetadata {
     param(
         [string]$ProjectPath
@@ -683,7 +930,12 @@ function Get-EffectiveOutputPath {
         return $script:OutputRootPath
     }
 
-    return Join-Path $script:OutputRootPath $Option.Folder
+    try {
+        return Join-Path $script:OutputRootPath $Option.Folder
+    }
+    catch {
+        return $script:OutputRootPath
+    }
 }
 
 function Clear-PublishOutputDirectory {
@@ -1503,6 +1755,9 @@ if ($null -eq $satelliteLanguagesComboBox) {
 }
 
 $projectPathText.Text = $script:ProjectFile
+$startupOutputRoot = Resolve-StartupOutputRootPath -PreferredPath $script:OutputRootPath
+$script:OutputRootPath = $startupOutputRoot.Path
+$script:OutputRootPathStartupMessage = $startupOutputRoot.Message
 $satelliteLanguagesComboBox.Items.Clear()
 foreach ($languageItem in (Get-SatelliteLanguageOptions)) {
     [void]$satelliteLanguagesComboBox.Items.Add($languageItem)
@@ -1512,6 +1767,9 @@ Update-OutputPathDisplay
 
 if (-not (Test-Path -LiteralPath $script:ProjectFile)) {
     Update-PublishStatus "Project file not found. Review the Project path before publishing."
+}
+elseif (-not [string]::IsNullOrWhiteSpace($script:OutputRootPathStartupMessage)) {
+    Update-PublishStatus $script:OutputRootPathStartupMessage
 }
 
 # ---------------------------------------------------------------------------
@@ -1598,6 +1856,25 @@ $publishButton.Add_Click({
             return
         }
 
+        Update-ExistingBuildCheckboxState
+        $useExistingBuild = $script:ExistingBuildAvailability.IsAvailable -and (Get-UseExistingBuildOutput)
+        $windowsSdkPreflight = Get-WindowsSdkPreflightResult -UseExistingBuild:$useExistingBuild -ProjectPath $projectPath
+        if (-not $windowsSdkPreflight.IsReady) {
+            $script:PublishCompletionHandled = $false
+            $script:IsPublishInProgress = $false
+            $script:IsSyncInProgress = $false
+            $errorBorder.Visibility = [System.Windows.Visibility]::Visible
+            $errorText.Text = $windowsSdkPreflight.Message
+            $successBorder.Visibility = [System.Windows.Visibility]::Collapsed
+            $outputBorder.Visibility = [System.Windows.Visibility]::Collapsed
+            Update-PublishStatus 'Publish blocked - Windows SDK prerequisites are missing.'
+            return
+        }
+
+        if ($windowsSdkPreflight.IsWarning) {
+            Update-PublishStatus $windowsSdkPreflight.Message
+        }
+
         $script:PublishCompletionHandled = $false
         $script:IsPublishInProgress = $true
         $script:IsSyncInProgress = $false
@@ -1619,8 +1896,6 @@ $publishButton.Add_Click({
         $script:PublishStagingPath = New-PublishStagingDirectory
         $publishOutputPath = $script:PublishStagingPath
         $selectedPublishVerbosity = Get-SelectedPublishVerbosity
-        Update-ExistingBuildCheckboxState
-        $useExistingBuild = $script:ExistingBuildAvailability.IsAvailable -and (Get-UseExistingBuildOutput)
         $noBuildArg = if ($useExistingBuild) {
             ' --no-build'
         }
