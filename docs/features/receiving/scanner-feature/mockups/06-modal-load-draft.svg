@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600" role="img" aria-labelledby="title desc">
+  <title id="title">Load Saved Items Modal</title>
+  <desc id="desc">Dialog for opening a saved batch before sending.</desc>
+  <defs><style>
+    .modal-bg { fill: #000000; fill-opacity: 0.18; }
+    .card { fill: #ffffff; stroke: #d5d7db; stroke-width: 1; }
+    .subtle { fill: #f7f8fa; stroke: #dde0e5; stroke-width: 1; }
+    .input { fill: #ffffff; stroke: #cfd4dc; stroke-width: 1; }
+    .table-head { fill: #eef1f6; }
+    .text-title { font-family: Segoe UI, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #1f2328; }
+    .text-cap { font-family: Segoe UI, Arial, sans-serif; font-size: 11px; fill: #667085; }
+    .text-body { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #344054; }
+    .btn { fill: #ffffff; stroke: #c7ccd4; stroke-width: 1; }
+    .btn-accent { fill: #1f6feb; stroke: #1a61d2; stroke-width: 1; }
+    .text-btn { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #1f2328; }
+    .text-btn-accent { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #ffffff; }
+  </style></defs>
+  <rect x="0" y="0" width="900" height="600" class="modal-bg"/>
+  <rect x="120" y="50" width="660" height="500" rx="12" class="card"/>
+  <rect x="120" y="50" width="660" height="50" rx="12" class="subtle"/>
+  <text x="140" y="81" class="text-title">Load Saved Items</text>
+  <rect x="140" y="110" width="620" height="34" rx="6" class="input"/>
+  <text x="152" y="131" class="text-cap">Find by name or date</text>
+  <rect x="140" y="150" width="620" height="296" rx="8" class="input"/>
+  <rect x="152" y="162" width="592" height="30" rx="6" class="table-head"/>
+  <text x="160" y="182" class="text-cap">Name</text>
+  <text x="362" y="182" class="text-cap">Updated</text>
+  <text x="482" y="182" class="text-cap">Items</text>
+  <text x="542" y="182" class="text-cap">Profile</text>
+  <rect x="152" y="198" width="592" height="36" class="subtle"/>
+  <text x="160" y="221" class="text-body">Morning Transfer Batch</text>
+  <text x="362" y="221" class="text-body">2026-07-21 07:42</text>
+  <text x="482" y="221" class="text-body">14</text>
+  <text x="542" y="221" class="text-body">Day Shift</text>
+  <rect x="152" y="238" width="592" height="36" class="input"/>
+  <rect x="152" y="278" width="592" height="36" class="input"/>
+  <rect x="152" y="318" width="592" height="36" class="input"/>
+  <rect x="152" y="458" width="620" height="42" rx="8" class="subtle"/>
+  <text x="152" y="478" class="text-cap">This will replace your current items unless you save first.</text>
+  <rect x="572" y="518" width="86" height="32" rx="6" class="btn"/>
+  <text x="599" y="539" class="text-btn">Cancel</text>
+  <rect x="666" y="518" width="92" height="32" rx="6" class="btn-accent"/>
+  <text x="696" y="539" class="text-btn-accent">Load</text>
+</svg>

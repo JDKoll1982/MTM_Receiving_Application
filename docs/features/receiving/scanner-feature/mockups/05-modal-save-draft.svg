@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="600" viewBox="0 0 850 600" role="img" aria-labelledby="title desc">
+  <title id="title">Save for Later Modal</title>
+  <desc id="desc">Dialog for saving the current batch with profile context before sending.</desc>
+  <defs><style>
+    .modal-bg { fill: #000000; fill-opacity: 0.18; }
+    .card { fill: #ffffff; stroke: #d5d7db; stroke-width: 1; }
+    .subtle { fill: #f7f8fa; stroke: #dde0e5; stroke-width: 1; }
+    .input { fill: #ffffff; stroke: #cfd4dc; stroke-width: 1; }
+    .chip { fill: #eef4ff; stroke: #b9d2ff; stroke-width: 1; }
+    .text-title { font-family: Segoe UI, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #1f2328; }
+    .text-cap { font-family: Segoe UI, Arial, sans-serif; font-size: 11px; fill: #667085; }
+    .text-body { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #344054; }
+    .btn { fill: #ffffff; stroke: #c7ccd4; stroke-width: 1; }
+    .btn-accent { fill: #1f6feb; stroke: #1a61d2; stroke-width: 1; }
+    .text-btn { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #1f2328; }
+    .text-btn-accent { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #ffffff; }
+  </style></defs>
+  <rect x="0" y="0" width="850" height="600" class="modal-bg"/>
+  <rect x="145" y="60" width="560" height="480" rx="12" class="card"/>
+  <rect x="145" y="60" width="560" height="50" rx="12" class="subtle"/>
+  <text x="165" y="92" class="text-title">Save for Later</text>
+  <text x="165" y="122" class="text-cap">Save your items to use again later.</text>
+  <text x="165" y="152" class="text-cap">Name</text>
+  <rect x="165" y="160" width="480" height="34" rx="6" class="input"/>
+  <text x="165" y="210" class="text-cap">Notes</text>
+  <rect x="165" y="218" width="480" height="96" rx="6" class="input"/>
+  <text x="165" y="330" class="text-cap">Profile</text>
+  <rect x="165" y="342" width="480" height="34" rx="6" class="subtle"/>
+  <text x="177" y="362" class="text-body">Receiving - Day Shift</text>
+  <text x="165" y="392" class="text-cap">Items In Batch</text>
+  <rect x="165" y="404" width="140" height="34" rx="6" class="subtle"/>
+  <text x="177" y="425" class="text-body">14</text>
+  <rect x="165" y="448" width="480" height="44" rx="8" class="chip"/>
+  <text x="177" y="468" class="text-cap">You can access this later. Save time is recorded.</text>
+  <text x="177" y="484" class="text-cap">Profile, warehouse defaults, and item values are saved with the draft.</text>
+  <rect x="482" y="510" width="86" height="32" rx="6" class="btn"/>
+  <text x="509" y="531" class="text-btn">Cancel</text>
+  <rect x="576" y="510" width="92" height="32" rx="6" class="btn-accent"/>
+  <text x="606" y="531" class="text-btn-accent">Save</text>
+</svg>

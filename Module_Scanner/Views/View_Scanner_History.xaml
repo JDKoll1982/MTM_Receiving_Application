@@ -1,0 +1,46 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Scanner.Views.View_Scanner_History"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="8">
+            <TextBlock
+                HorizontalAlignment="Center"
+                Style="{StaticResource TitleTextBlockStyle}"
+                Text="Scanner History" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="Under Construction" />
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Padding="24,12,24,16"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="12">
+                <Button Command="{x:Bind ViewModel.NavigateToWorkbenchCommand}" Content="Workbench" />
+                <Button Command="{x:Bind ViewModel.NavigateToHistoryCommand}" Content="History" />
+                <Button Command="{x:Bind ViewModel.NavigateToSettingsCommand}" Content="Settings" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

@@ -43,6 +43,45 @@ Use narrower workspace tasks when validating a focused change.
 - Use stored procedures for MySQL access.
 - Keep Infor Visual access read only.
 
+## Scanner Feature UI And DB Guardrails
+
+- UI for scanner workflows should match approved mockups as closely as possible.
+- Scanner UI must preserve resize behavior using vertical and horizontal stretch mechanics.
+- MySQL target version is 5.7 for this feature.
+- MySQL writes must stay behind stored procedures (no raw MySQL DML in C#).
+
+### Recommended Scanner Implementation Order
+
+1. Complete `Module_Scanner` core contracts, models, and service interfaces, and create corresponding tests in `MTM_Receiving_Application.Tests`.
+   - contract tests for request/response and DTO boundary expectations
+   - model mapping tests for scanner state and persistence shape conversions
+   - interface wiring tests to confirm DI resolution and expected service registrations
+2. Implement MySQL DAO and stored-procedure access for scanner persistence requirements.
+3. Implement scanner services (workflow orchestration, validation, persistence/history, native input automation).
+4. Implement ViewModel behavior and command/state flow.
+5. Complete scanner view composition and x:Bind wiring to match approved mockups.
+6. Validate DI and shell navigation route behavior across scanner pages.
+7. Add and run feature tests in `MTM_Receiving_Application.Tests` before final integration:
+   - unit tests for ViewModels and interface-only service behavior
+   - integration tests for DAO-backed and persistence-bound paths
+   - validation-result mapping tests for add-line Status/Notes behavior
+8. Perform end-to-end manual verification against configured ERP target profile and then update feature docs if behavior changed.
+
+Current scanner progress:
+
+- Step 1 is complete in `Module_Scanner` with baseline scanner tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner`.
+- Step 2 is complete in `Module_Scanner/Data` with DAO-focused scanner tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner/Data`.
+
+Reference mockup set:
+
+- docs/features/receiving/scanner-feature/mockups/01-scanner-workbench.png
+- docs/features/receiving/scanner-feature/mockups/02-scanner-history.png
+- docs/features/receiving/scanner-feature/mockups/03-scanner-settings.png
+- docs/features/receiving/scanner-feature/mockups/04-modal-manage-batch-rows.png
+- docs/features/receiving/scanner-feature/mockups/05-modal-save-draft.png
+- docs/features/receiving/scanner-feature/mockups/06-modal-load-draft.png
+- docs/features/receiving/scanner-feature/mockups/07-modal-configure-hotkeys.png
+
 ## AI Customization Entry Points
 
 - `.github/copilot-instructions.md` — global repository rules

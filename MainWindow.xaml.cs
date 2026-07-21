@@ -315,6 +315,10 @@ namespace MTM_Receiving_Application
                 typeof(Module_Receiving.Views.View_Receiving_Workflow),
                 string.Empty
             ),
+            ["ScannerMainPage"] = (
+                typeof(Module_Scanner.Views.View_Scanner_Main),
+                "Scanner"
+            ),
             ["DunnageLabelPage"] = (
                 typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
                 string.Empty

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1450" height="900" viewBox="0 0 1450 900" role="img" aria-labelledby="title desc">
+  <title id="title">Settings View</title>
+  <desc id="desc">Settings page including VMINVENT target details and warehouse defaults used by scanner transfers.</desc>
+  <defs>
+    <style>
+      .app-shell { fill: #fafafa; stroke: #d6d6d6; stroke-width: 1; }
+      .titlebar { fill: #f7f7f8; }
+      .nav-pane { fill: #f2f2f3; }
+      .content-bg { fill: #fbfbfc; }
+      .card { fill: #ffffff; stroke: #d5d7db; stroke-width: 1; }
+      .subtle { fill: #f7f8fa; stroke: #dde0e5; stroke-width: 1; }
+      .input { fill: #ffffff; stroke: #cfd4dc; stroke-width: 1; }
+      .btn { fill: #ffffff; stroke: #c7ccd4; stroke-width: 1; }
+      .btn-accent { fill: #1f6feb; stroke: #1a61d2; stroke-width: 1; }
+      .chip { fill: #eef4ff; stroke: #b9d2ff; stroke-width: 1; }
+      .chip-warn { fill: #fff7e8; stroke: #ffd28a; stroke-width: 1; }
+      .text-title { font-family: Segoe UI, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #1f2328; }
+      .text-h2 { font-family: Segoe UI, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #1f2328; }
+      .text-body { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #344054; }
+      .text-cap { font-family: Segoe UI, Arial, sans-serif; font-size: 11px; fill: #667085; }
+      .text-nav { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #1f2328; }
+      .text-btn { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #1f2328; }
+      .text-btn-accent { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #ffffff; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1450" height="900" class="app-shell"/>
+  <rect x="0" y="0" width="1450" height="48" rx="14" class="titlebar"/>
+  <rect x="0" y="34" width="1450" height="14" class="titlebar"/>
+  <rect x="16" y="12" width="24" height="24" rx="4" class="subtle"/>
+  <text x="52" y="29" class="text-body">MTM Receiving Application</text>
+  <rect x="520" y="10" width="420" height="28" rx="6" class="input"/>
+  <text x="536" y="29" class="text-cap">Search</text>
+  <rect x="0" y="48" width="272" height="852" class="nav-pane"/>
+  <text x="24" y="90" class="text-h2">Dashboard</text>
+  <rect x="18" y="112" width="236" height="34" rx="6" class="chip"/>
+  <text x="30" y="134" class="text-nav">Receiving Labels</text>
+  <rect x="272" y="48" width="1178" height="852" class="content-bg"/>
+  <rect x="296" y="72" width="1130" height="72" rx="8" class="subtle"/>
+  <text x="320" y="102" class="text-title">Settings</text>
+  <text x="320" y="124" class="text-cap">Create profiles, target VMINVENT.exe, set warehouse defaults, and keyboard shortcuts.</text>
+  <rect x="308" y="168" width="314" height="728" rx="10" class="card"/>
+  <text x="328" y="198" class="text-h2">Profiles</text>
+  <rect x="328" y="212" width="90" height="28" rx="6" class="btn"/><text x="356" y="232" class="text-btn">New</text>
+  <rect x="424" y="212" width="90" height="28" rx="6" class="btn"/><text x="446" y="232" class="text-btn">Copy</text>
+  <rect x="520" y="212" width="90" height="28" rx="6" class="btn"/><text x="550" y="232" class="text-btn">Delete</text>
+  <rect x="328" y="254" width="278" height="42" rx="6" class="chip"/><text x="340" y="280" class="text-body">Receiving - Day Shift (Default)</text>
+  <rect x="328" y="300" width="278" height="42" rx="6" class="input"/><text x="340" y="326" class="text-body">Receiving - Night Shift</text>
+  <rect x="328" y="346" width="278" height="42" rx="6" class="input"/><text x="340" y="372" class="text-body">Receiving - Training</text>
+  <rect x="640" y="168" width="768" height="728" rx="10" class="card"/>
+  <text x="660" y="198" class="text-h2">Profile Editor</text>
+  <text x="660" y="222" class="text-cap">Profile Name</text>
+  <rect x="660" y="230" width="340" height="32" rx="6" class="input"/>
+  <rect x="1008" y="230" width="140" height="32" rx="6" class="btn"/><text x="1042" y="250" class="text-btn">Set As Default</text>
+  <text x="660" y="280" class="text-h2">Application</text>
+  <rect x="660" y="292" width="180" height="32" rx="6" class="input"/><text x="672" y="312" class="text-cap">Executable: VMINVENT.exe</text>
+  <rect x="848" y="292" width="232" height="32" rx="6" class="input"/><text x="860" y="312" class="text-cap">Child Screen: Inventory Transfers</text>
+  <rect x="1088" y="292" width="180" height="32" rx="6" class="btn"/><text x="1110" y="312" class="text-btn">Test</text>
+  <rect x="660" y="328" width="420" height="32" rx="6" class="input"/><text x="672" y="348" class="text-cap">Optional Window Class (Gupta/Centura verification)</text>
+  <text x="660" y="388" class="text-h2">Warehouse Defaults</text>
+  <rect x="660" y="400" width="280" height="32" rx="6" class="input"/><text x="672" y="420" class="text-cap">From Warehouse Variable (Current: 002)</text>
+  <rect x="948" y="400" width="280" height="32" rx="6" class="input"/><text x="960" y="420" class="text-cap">To Warehouse Variable (Current: 002)</text>
+  <rect x="660" y="438" width="558" height="32" rx="6" class="subtle"/><text x="672" y="458" class="text-cap">Warehouse values are settings-controlled and read-only on workbench items. Changeable for future plants.</text>
+  <text x="660" y="492" class="text-h2">Timing (Milliseconds)</text>
+  <rect x="660" y="504" width="180" height="32" rx="6" class="input"/><text x="672" y="524" class="text-cap">Startup Wait</text>
+  <rect x="848" y="504" width="180" height="32" rx="6" class="input"/><text x="860" y="524" class="text-cap">Delay Between Fields</text>
+  <rect x="1036" y="504" width="182" height="32" rx="6" class="input"/><text x="1048" y="524" class="text-cap">Pause After Item</text>
+  <rect x="660" y="544" width="180" height="32" rx="6" class="input"/><text x="672" y="564" class="text-cap">Popup Timeout</text>
+  <rect x="848" y="544" width="180" height="32" rx="6" class="input"/><text x="860" y="564" class="text-cap">Auto-close Popups</text>
+  <rect x="1036" y="544" width="182" height="32" rx="6" class="input"/><text x="1048" y="564" class="text-cap">Timing Mode</text>
+  <rect x="660" y="584" width="558" height="56" rx="8" class="chip-warn"/>
+  <text x="672" y="604" class="text-cap">Advanced timing is optional (usually off).</text>
+  <text x="672" y="620" class="text-cap">When on, enforces safety timeouts.</text>
+  <text x="660" y="656" class="text-h2">Keyboard Shortcuts</text>
+  <rect x="660" y="668" width="280" height="32" rx="6" class="input"/><text x="672" y="688" class="text-cap">Start/Send: Ctrl+Alt+M</text>
+  <rect x="948" y="668" width="280" height="32" rx="6" class="input"/><text x="960" y="688" class="text-cap">Stop: Ctrl+Alt+N</text>
+  <rect x="660" y="708" width="558" height="44" rx="8" class="chip-warn"/><text x="672" y="728" class="text-cap">Keys must be different. Stop works between items.</text>
+  <rect x="660" y="768" width="130" height="32" rx="6" class="btn"/><text x="692" y="788" class="text-btn">Reset</text>
+  <rect x="798" y="768" width="142" height="32" rx="6" class="btn"/><text x="828" y="788" class="text-btn">Safe Defaults</text>
+  <rect x="948" y="768" width="130" height="32" rx="6" class="btn-accent"/><text x="985" y="788" class="text-btn-accent">Save</text>
+  <rect x="660" y="820" width="558" height="56" rx="8" class="subtle"/><text x="672" y="840" class="text-cap">Last test: VMINVENT.exe / Inventory Transfers ready at 11:38:42</text><text x="672" y="856" class="text-cap">App is ready for sending items.</text>
+</svg>

@@ -23,6 +23,10 @@ using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Services;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Scanner.Contracts;
+using MTM_Receiving_Application.Module_Scanner.Data;
+using MTM_Receiving_Application.Module_Scanner.Services;
+using MTM_Receiving_Application.Module_Scanner.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
@@ -53,6 +57,7 @@ public static class ModuleServicesExtensions
     )
     {
         services.AddReceivingModule(configuration);
+        services.AddScannerModule(configuration);
         services.AddDunnageModule(configuration);
         // MODULE_OUTSIDESERVICE_DISABLED: Outside Service is temporarily removed from startup registration.
         services.AddVolvoModule(configuration);
@@ -60,6 +65,42 @@ public static class ModuleServicesExtensions
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
         services.AddShipRecToolsModule(configuration);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers Scanner module services, view models, and views.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    private static IServiceCollection AddScannerModule(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+
+        services.AddSingleton(_ => new Dao_ScannerBatchSession(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ScannerBatchItem(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ScannerProfile(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_ScannerRunHistory(mySqlConnectionString));
+
+        services.AddSingleton<IService_ScannerNavigation, Service_ScannerNavigation>();
+        services.AddSingleton<IService_ScannerWorkflow, Service_ScannerWorkflow>();
+        services.AddSingleton<IService_ScannerValidation, Service_ScannerValidation>();
+
+        services.AddTransient<ViewModel_Scanner_Main>();
+        services.AddTransient<ViewModel_Scanner_Workbench>();
+        services.AddTransient<ViewModel_Scanner_History>();
+        services.AddTransient<ViewModel_Scanner_Settings>();
+
+        services.AddTransient<Module_Scanner.Views.View_Scanner_Main>();
+        services.AddTransient<Module_Scanner.Views.View_Scanner_Workbench>();
+        services.AddTransient<Module_Scanner.Views.View_Scanner_History>();
+        services.AddTransient<Module_Scanner.Views.View_Scanner_Settings>();
 
         return services;
     }

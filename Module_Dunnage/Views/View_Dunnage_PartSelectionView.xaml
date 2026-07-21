@@ -21,14 +21,14 @@
         </Grid.RowDefinitions>
         <!--  Part Selection Form  -->
         <ScrollViewer Grid.Row="0"
-                Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
+                      Style="{StaticResource SharedScrollViewerBothAutoHiddenStyle}">
             <StackPanel Spacing="24">
                 <!--  Part Dropdown  -->
                 <StackPanel
                     Spacing="12"
                     Visibility="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Text="Select Part"/>
+                               Text="Select Part"/>
                     <ComboBox
                         x:Name="PartNumberComboBox"
                         MinWidth="300"
@@ -43,7 +43,7 @@
                     Spacing="12"
                     Visibility="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Text="Select Part"/>
+                               Text="Select Part"/>
 
                     <GridView
                         x:Name="PartCardGridView"
@@ -99,7 +99,7 @@
                                             CornerRadius="8"
                                             Visibility="{x:Bind HasPreferredVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Image Source="{x:Bind PreferredVisualSource, Mode=OneWay}"
-                                                    Stretch="Uniform"/>
+                                                   Stretch="Uniform"/>
                                         </Border>
 
                                         <Border
@@ -145,132 +145,124 @@
                     </GridView>
                 </StackPanel>
 
-                <!--  Part Details Card  -->
-                <Border
-                    Padding="20"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <!-- Part Details Card -->
+                <Border Padding="20"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+
                     <Grid RowSpacing="12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!--  Header  -->
-                        <TextBlock
-                            Grid.Row="0"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                            Text="Part Details"/>
+                        <!-- Header -->
+                        <TextBlock Grid.Row="0"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   Text="Part Details"/>
 
-                        <!--  Details Grid  -->
-                        <Grid
-                            Grid.Row="1"
-                            ColumnSpacing="24"
-                            RowSpacing="12">
+                        <!-- Details Grid -->
+                        <Grid Grid.Row="1"
+                                ColumnSpacing="24"
+                                RowSpacing="12">
                             <Grid.ColumnDefinitions>
+                                <!-- Column 0: Image (Collapses gracefully if no image exists) -->
                                 <ColumnDefinition Width="Auto"/>
+                                <!-- Column 1: Labels -->
                                 <ColumnDefinition Width="Auto"/>
+                                <!-- Column 2: Values -->
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border
-                                Grid.Row="0"
-                                Grid.RowSpan="3"
-                                Width="120"
-                                Height="120"
-                                Margin="0,0,12,0"
-                                Padding="4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Visibility="{x:Bind ViewModel.HasSelectedPartVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <!-- Part Image Border (Explicitly placed in Column 0) -->
+                            <Border Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.RowSpan="3"
+                                    Width="120"
+                                    Height="120"
+                                    Margin="0,0,12,0"
+                                    Padding="4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Visibility="{x:Bind ViewModel.HasSelectedPartVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Image Source="{x:Bind ViewModel.SelectedPartVisualSource, Mode=OneWay}"
-                                        Stretch="Uniform"/>
+                                       Stretch="Uniform"/>
                             </Border>
 
-                            <!--  Part ID  -->
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Part ID:"/>
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="2"
-                                FontWeight="SemiBold"
-                                Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}"/>
+                            <!-- Part ID -->
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="1"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="Part ID:"/>
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="2"
+                                       FontWeight="SemiBold"
+                                       Text="{x:Bind ViewModel.SelectedPart.PartId, Mode=OneWay}"/>
 
-                            <!--  Type  -->
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Type:"/>
-                            <StackPanel
-                                Grid.Row="1"
-                                Grid.Column="2"
-                                Orientation="Horizontal"
-                                Spacing="6">
-                                <mi:MaterialIcon
-                                    Width="16"
-                                    Height="16"
-                                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                    Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"/>
+                            <!-- Type -->
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="1"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="Type:"/>
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        Spacing="6">
+                                <mi:MaterialIcon Width="16"
+                                                 Height="16"
+                                                 Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                                 Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"/>
                                 <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
                             </StackPanel>
 
-                            <TextBlock
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                VerticalAlignment="Top"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Specs:"/>
-                            <StackPanel
-                                Grid.Row="2"
-                                Grid.Column="2"
-                                Spacing="4">
+                            <!-- Specs -->
+                            <TextBlock Grid.Row="2"
+                                       Grid.Column="1"
+                                       VerticalAlignment="Top"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="Specs:"/>
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="2"
+                                        Spacing="4">
                                 <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedPartSpecSummaries, Mode=OneWay}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="x:String">
                                             <TextBlock Text="{x:Bind}"
-                                                    TextWrapping="WrapWholeWords"/>
+                                                       TextWrapping="WrapWholeWords"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="No specs available for this part."
-                                    Visibility="{x:Bind ViewModel.HasSelectedPartSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="No specs available for this part."
+                                           Visibility="{x:Bind ViewModel.HasSelectedPartSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
                             </StackPanel>
                         </Grid>
 
-                        <!--  Inventory Method (if applicable)  -->
-                        <StackPanel
-                            Grid.Row="3"
-                            Orientation="Horizontal"
-                            Spacing="8"
-                            Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <FontIcon
-                                FontSize="16"
-                                Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                                Glyph="&#xE946;"/>
+                        <!-- Inventory Method Notification -->
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Horizontal"
+                                    Spacing="8"
+                                    Visibility="{x:Bind ViewModel.IsInventoryNotificationVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <FontIcon FontSize="16"
+                                      Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                      Glyph="&#xE946;"/>
                             <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Inventory Method:"/>
-                            <TextBlock
-                                FontWeight="SemiBold"
-                                Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                                Text="{x:Bind ViewModel.InventoryMethod, Mode=OneWay}"/>
+                                       Text="Inventory Method:"/>
+                            <TextBlock FontWeight="SemiBold"
+                                       Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                       Text="{x:Bind ViewModel.InventoryMethod, Mode=OneWay}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -287,7 +279,7 @@
             CornerRadius="8">
             <!--  Action Buttons  -->
             <Grid Grid.Row="1"
-                    ColumnSpacing="12">
+                  ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -303,9 +295,9 @@
                     Style="{StaticResource AccentButtonStyle}"
                     Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal"
-                            Spacing="8">
+                                Spacing="8">
                         <FontIcon FontSize="16"
-                                Glyph="&#xE710;"/>
+                                  Glyph="&#xE710;"/>
                         <TextBlock Text="Add New Part"/>
                     </StackPanel>
                 </Button>
@@ -316,9 +308,9 @@
                     ToolTipService.ToolTip="Edit the selected part's specifications and home location"
                     Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal"
-                            Spacing="8">
+                                Spacing="8">
                         <FontIcon FontSize="16"
-                                Glyph="&#xE70F;"/>
+                                  Glyph="&#xE70F;"/>
                         <TextBlock Text="Edit Part"/>
                     </StackPanel>
                 </Button>
@@ -329,9 +321,9 @@
                     ToolTipService.ToolTip="Permanently delete the selected part"
                     Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal"
-                            Spacing="8">
+                                Spacing="8">
                         <FontIcon FontSize="16"
-                                Glyph="&#xE74D;"/>
+                                  Glyph="&#xE74D;"/>
                         <TextBlock Text="Delete Part"/>
                     </StackPanel>
                 </Button>
@@ -341,9 +333,9 @@
                     Command="{x:Bind ViewModel.LoadPartsCommand}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.Refresh'), Mode=OneWay}">
                     <StackPanel Orientation="Horizontal"
-                            Spacing="8">
+                                Spacing="8">
                         <FontIcon FontSize="16"
-                                Glyph="&#xE72C;"/>
+                                  Glyph="&#xE72C;"/>
                         <TextBlock Text="Refresh Parts"/>
                     </StackPanel>
                 </Button>
