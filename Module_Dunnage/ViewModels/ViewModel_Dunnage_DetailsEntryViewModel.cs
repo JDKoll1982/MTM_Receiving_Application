@@ -348,6 +348,13 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     )
     {
         var normalizedType = NormalizeSpecType(definition.DataType);
+        var choices = definition.Choices?.ToList() ?? new List<string>();
+        var resolvedValue = ResolveInitialSpecValue(
+            normalizedType,
+            defaultValue,
+            definition.DefaultValue,
+            choices
+        );
 
         return new Model_SpecInput
         {
@@ -355,9 +362,45 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             SpecType = normalizedType,
             Unit = string.IsNullOrWhiteSpace(definition.Unit) ? null : definition.Unit,
             IsRequired = definition.Required,
-            Value = defaultValue,
-            Choices = definition.Choices?.ToList() ?? new List<string>(),
+            Value = resolvedValue,
+            Choices = choices,
         };
+    }
+
+    private static object? ResolveInitialSpecValue(
+        string normalizedType,
+        object? defaultValue,
+        string? definitionDefaultValue,
+        IReadOnlyCollection<string> choices
+    )
+    {
+        var candidate = defaultValue;
+        if (candidate is null && string.IsNullOrWhiteSpace(definitionDefaultValue) is false)
+        {
+            candidate = definitionDefaultValue.Trim();
+        }
+
+        if (normalizedType != "choices")
+        {
+            return candidate;
+        }
+
+        if (candidate is null || choices.Count == 0)
+        {
+            return candidate;
+        }
+
+        var candidateText = candidate.ToString()?.Trim();
+        if (string.IsNullOrWhiteSpace(candidateText))
+        {
+            return null;
+        }
+
+        var matchedChoice = choices.FirstOrDefault(choice =>
+            string.Equals(choice?.Trim(), candidateText, StringComparison.OrdinalIgnoreCase)
+        );
+
+        return matchedChoice ?? candidateText;
     }
 
     private static void AddInputToCollection(

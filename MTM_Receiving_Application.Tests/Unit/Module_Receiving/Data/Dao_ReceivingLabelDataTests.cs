@@ -33,7 +33,7 @@ public sealed class Dao_ReceivingLabelDataTests
 
     private static Model_ReceivingLoad InvokeMapRowToLoad(DataRow row)
     {
-        var dao = new Dao_ReceivingLabelData("Server=localhost;Database=test;");
+        var dao = new Dao_ReceivingLabelData("Server=172.16.1.104;Database=test;");
         var methodInfo = typeof(Dao_ReceivingLabelData).GetMethod(
             "MapRowToLoad",
             BindingFlags.Static | BindingFlags.NonPublic

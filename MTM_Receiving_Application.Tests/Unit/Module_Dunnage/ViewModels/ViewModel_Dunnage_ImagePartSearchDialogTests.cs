@@ -52,6 +52,44 @@ public sealed class ViewModel_Dunnage_ImagePartSearchDialogTests
     }
 
     [Fact]
+    public async Task Constructor_ShouldRefreshParts_WhenImageSearchIsAlreadyTheCurrentStep()
+    {
+        var loadedParts = new List<Model_DunnagePart>
+        {
+            new()
+            {
+                PartId = "PART-100",
+                DunnageTypeName = "Bags",
+                ImagePath = "Images/part100.png",
+            },
+        };
+
+        var loadTriggered = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetAllPartsAsync())
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(loadedParts))
+            .Callback(() => loadTriggered.TrySetResult(true));
+
+        var workflow = new Mock<IService_DunnageWorkflow>();
+        workflow.SetupGet(service => service.CurrentSession).Returns(new Model_DunnageSession());
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_DunnageWorkflowStep.ImagePartSearch);
+
+        var viewModel = CreateViewModel(dunnageService, workflow);
+
+        await loadTriggered.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await Task.Yield();
+
+        viewModel.DisplayedParts.Select(part => part.PartId).Should().Equal("PART-100");
+        dunnageService.Verify(service => service.GetAllPartsAsync(), Times.Once);
+    }
+
+    [Fact]
     public async Task FilterText_ShouldFilterDisplayedParts_ByPartTypeOrLocation()
     {
         var dunnageService = new Mock<IService_MySQL_Dunnage>();

@@ -222,6 +222,74 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
     }
 
     [Fact]
+    public async Task LoadSpecsForSelectedPartAsync_ShouldNormalizeChoiceValueFromSelectedPartData()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetSpecsForTypeAsync(5))
+            .ReturnsAsync(
+                new Model_Dao_Result<List<Model_DunnageSpec>>
+                {
+                    Success = true,
+                    Data =
+                    [
+                        new Model_DunnageSpec
+                        {
+                            SpecKey = "Cover Type",
+                            SpecValue = "{\"type\":\"Choices\",\"required\":true,\"choices\":[\"Wrap\",\"Lid\"]}",
+                        },
+                    ],
+                }
+            );
+
+        var selectedPart = new Model_DunnagePart
+        {
+            PartId = "DUN-100",
+            TypeId = 5,
+            SpecValues = JsonSerializer.Serialize(
+                new Dictionary<string, object?> { ["Cover Type"] = "wrap" }
+            ),
+        };
+
+        var workflowService = new Service_DunnageWorkflow(
+            dunnageService.Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_UserPrivileges>().Object
+        );
+
+        workflowService.CurrentSession.SelectedTypeId = 5;
+        workflowService.CurrentSession.SelectedPart = selectedPart;
+
+        var viewModel = new ViewModel_Dunnage_DetailsEntry(
+            workflowService,
+            dunnageService.Object,
+            new Mock<IService_Dispatcher>().Object,
+            new Mock<IService_Help>().Object,
+            new Mock<IService_ReceivingValidation>().Object,
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_SettingsCoreFacade>().Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_ErrorHandler>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_Notification>().Object
+        );
+
+        await viewModel.LoadSpecsForSelectedPartAsync();
+
+        viewModel.ChoiceSpecs.Should().ContainSingle(spec => spec.SpecName == "Cover Type");
+        viewModel
+            .ChoiceSpecs.Single(spec => spec.SpecName == "Cover Type")
+            .Value.Should()
+            .Be("Wrap");
+    }
+
+    [Fact]
     public async Task LoadSpecsForSelectedPartAsync_ShouldPreFillLocationFromSelectedPartHomeLocation()
     {
         var settingsCore = new Mock<IService_SettingsCoreFacade>();

@@ -171,8 +171,11 @@
                                                     Text="{Binding SpecName}" />
                                                 <ComboBox
                                                     Width="180"
+                                                    IsEditable="True"
                                                     ItemsSource="{Binding Choices}"
-                                                    SelectedItem="{Binding Value, Mode=TwoWay}" />
+                                                    SelectedValuePath="."
+                                                    SelectedValue="{Binding Value, Mode=TwoWay}"
+                                                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsRepeater.ItemTemplate>

@@ -77,7 +77,7 @@
                                         <NumberBox
                                             Grid.Column="1"
                                             AcceptsExpression="False"
-                                            Header="Quantity"
+                                            Header="{x:Bind QuantityType, Mode=OneWay}"
                                             Loaded="LoadQuantityNumberBox_Loaded"
                                             Minimum="0"
                                             PlaceholderText="Enter quantity"

@@ -147,6 +147,8 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
                 _workflowService.CurrentSession.SelectedPart?.PartId ?? string.Empty;
             var selectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
             var selectedPartImagePath = _workflowService.CurrentSession.SelectedPart?.ImagePath;
+            var selectedQuantityType =
+                _workflowService.CurrentSession.SelectedPart?.QuantityType ?? "Quantity";
 
             var rebuiltLoads = new List<Model_DunnageLoad>(NumberOfLoads);
             for (var index = 0; index < NumberOfLoads; index++)
@@ -160,6 +162,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
                     TypeIcon = selectedTypeIcon,
                     TypeImagePath = selectedTypeImagePath,
                     PartImagePath = selectedPartImagePath,
+                    QuantityType = selectedQuantityType,
                 };
                 rebuiltLoads.Add(load);
             }

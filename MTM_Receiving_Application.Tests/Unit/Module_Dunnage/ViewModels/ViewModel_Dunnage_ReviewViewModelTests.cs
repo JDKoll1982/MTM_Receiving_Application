@@ -5,6 +5,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -12,6 +13,27 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.ViewModels;
 
 public sealed class ViewModel_Dunnage_ReviewViewModelTests
 {
+    [Fact]
+    public async Task StartNewEntryAsync_ShouldRestartWorkflowUsingDefaultModeResolution()
+    {
+        var workflowService = new Mock<IService_DunnageWorkflow>();
+        workflowService
+            .SetupGet(service => service.CurrentSession)
+            .Returns(new Model_DunnageSession());
+        workflowService.Setup(service => service.StartWorkflowAsync()).ReturnsAsync(true);
+
+        var viewModel = CreateViewModel(workflowService.Object, new Mock<IService_InforVisual>().Object);
+
+        await viewModel.StartNewEntryCommand.ExecuteAsync(null);
+
+        workflowService.Verify(service => service.StartWorkflowAsync(), Times.Once);
+        workflowService.Verify(
+            service => service.GoToStep(It.IsAny<Enum_DunnageWorkflowStep>()),
+            Times.Never
+        );
+        workflowService.Verify(service => service.ClearSession(), Times.Never);
+    }
+
     [Fact]
     public async Task LoadSessionLoadsAsync_ShouldNormalizeCurrentLoadPoAndShowVendor_WhenPoExists()
     {

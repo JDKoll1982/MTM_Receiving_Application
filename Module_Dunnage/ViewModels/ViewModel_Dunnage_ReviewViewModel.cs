@@ -370,10 +370,9 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     }
 
     [RelayCommand]
-    private void StartNewEntry()
+    private async Task StartNewEntryAsync()
     {
-        _workflowService.ClearSession();
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+        await _workflowService.StartWorkflowAsync();
     }
 
     [RelayCommand]
@@ -427,7 +426,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            StartNewEntry();
+            await StartNewEntryAsync();
             return;
         }
 

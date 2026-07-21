@@ -45,6 +45,8 @@ public static class Helper_Database_StoredProcedure
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
+                LogConnectionContext(connection, connectionString, procedureName);
+
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
@@ -154,6 +156,8 @@ public static class Helper_Database_StoredProcedure
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
+                LogConnectionContext(connection, connectionString, procedureName);
+
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
@@ -242,6 +246,8 @@ public static class Helper_Database_StoredProcedure
 
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
+
+                LogConnectionContext(connection, connectionString, procedureName);
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
@@ -352,6 +358,8 @@ public static class Helper_Database_StoredProcedure
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
 
+                LogConnectionContext(connection, connectionString, procedureName);
+
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
                     CommandType = CommandType.StoredProcedure,
@@ -446,6 +454,8 @@ public static class Helper_Database_StoredProcedure
             {
                 await using var connection = new MySqlConnection(connectionString);
                 await connection.OpenAsync();
+
+                LogConnectionContext(connection, connectionString, procedureName);
 
                 await using var command = new MySqlCommand(procedureName, connection)
                 {
@@ -612,6 +622,38 @@ public static class Helper_Database_StoredProcedure
         else
         {
             System.Diagnostics.Debug.WriteLine($"[DB] No parameters provided");
+        }
+    }
+
+    private static void LogConnectionContext(
+        MySqlConnection connection,
+        string connectionString,
+        string procedureName
+    )
+    {
+        try
+        {
+            var configuredDatabase = string.Empty;
+
+            try
+            {
+                var builder = new MySqlConnectionStringBuilder(connectionString);
+                configuredDatabase = builder.Database ?? string.Empty;
+            }
+            catch
+            {
+                // Ignore parse failures for diagnostics and continue with active DB only.
+            }
+
+            var activeDatabase = connection.Database ?? string.Empty;
+
+            System.Diagnostics.Debug.WriteLine(
+                $"[DB] Connection Context: procedure={procedureName}, configured_database='{configuredDatabase}', active_database='{activeDatabase}'"
+            );
+        }
+        catch
+        {
+            // Never fail a data call because debug diagnostics failed.
         }
     }
 

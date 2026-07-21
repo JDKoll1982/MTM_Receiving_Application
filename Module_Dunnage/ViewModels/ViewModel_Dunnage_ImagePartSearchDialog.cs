@@ -35,6 +35,11 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         _dunnageService = dunnageService;
         _workflowService = workflowService;
         _workflowService.StepChanged += OnWorkflowStepChanged;
+
+        if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.ImagePartSearch)
+        {
+            RefreshForCurrentEntry();
+        }
     }
 
     [ObservableProperty]
@@ -57,6 +62,11 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
             return;
         }
 
+        RefreshForCurrentEntry();
+    }
+
+    private void RefreshForCurrentEntry()
+    {
         FilterText = string.Empty;
         _ = LoadPartsCommand.ExecuteAsync(null);
     }
