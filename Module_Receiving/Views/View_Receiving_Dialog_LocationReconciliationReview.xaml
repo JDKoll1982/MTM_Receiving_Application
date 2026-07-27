@@ -14,11 +14,13 @@
 
     <Border
         Padding="20"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         BorderThickness="1"
         CornerRadius="8">
-        <Grid x:Name="RootGrid" MaxWidth="1600">
+        <Grid x:Name="RootGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -34,7 +36,7 @@
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Text="{x:Bind ViewModel.DialogDescription, Mode=OneWay}"
-                    TextWrapping="Wrap" />
+                     />
             </StackPanel>
 
             <StackPanel
@@ -53,7 +55,7 @@
                     Style="{StaticResource BodyTextBlockStyle}"
                     Text="{x:Bind ViewModel.LoadingMessage, Mode=OneWay}"
                     TextAlignment="Center"
-                    TextWrapping="Wrap" />
+                     />
             </StackPanel>
 
             <StackPanel
@@ -75,396 +77,269 @@
                 </StackPanel>
             </StackPanel>
 
-            <ScrollViewer
-                Grid.Row="3"
-                Margin="0,16,0,0"
-                Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}"
-                Visibility="{x:Bind ViewModel.IsLoadingPreview, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
-                <Grid>
-                    <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-
-                        <Grid ColumnSpacing="8" RowSpacing="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-
-                            <Border
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Padding="16"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="10">
-                                <Grid ColumnSpacing="8" RowSpacing="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="7"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        FontWeight="SemiBold"
-                                        Text="Part Information"
-                                        TextAlignment="Center"
-                                        TextDecorations="Underline" />
-
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Part #:" />
-                                    <TextBlock
-                                        Grid.Row="2"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="PO #:" />
-                                    <TextBlock
-                                        Grid.Row="2"
-                                        Grid.Column="4"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Line #:" />
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="4"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Source:" />
-
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="2"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-                                    <TextBox
-                                        Grid.Row="2"
-                                        Grid.Column="2"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-                                    <TextBox
-                                        Grid.Row="2"
-                                        Grid.Column="5"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentPurchaseOrderLineText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="5"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-
-                                </Grid>
-                            </Border>
-
-                            <Border
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Padding="16"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="10">
-                                <Grid ColumnSpacing="8" RowSpacing="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="7"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        FontWeight="SemiBold"
-                                        Text="Transfer Evidence"
-                                        TextAlignment="Center"
-                                        TextDecorations="Underline" />
-
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Transfer Date: " />
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Grid.Column="4"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Transfer Time: " />
-                                    <TextBlock
-                                        Grid.Row="2"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="Visual User:" />
-
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="2"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentMovedDateText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Grid.Column="5"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentMovedTimeText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-                                    <TextBox
-                                        Grid.Row="2"
-                                        Grid.Column="2"
-                                        MinWidth="150"
-                                        IsHitTestVisible="False"
-                                        IsReadOnly="True"
-                                        Text="{x:Bind ViewModel.CurrentMovedByUserIdText, Mode=OneWay}"
-                                        TextWrapping="Wrap" />
-
-                                </Grid>
-                            </Border>
-
-                            <Border
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Padding="16"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="10">
-                                <StackPanel Spacing="14">
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        FontWeight="SemiBold"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Old Location"
-                                        TextDecorations="Underline" />
-
-                                    <Grid ColumnSpacing="4" RowSpacing="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Location:" />
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Saved Qty:" />
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Reference:" />
-
-                                        <TextBox
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-                                        <TextBox
-                                            Grid.Row="1"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-                                        <TextBox
-                                            Grid.Row="2"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <Border
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Padding="16"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="10">
-                                <StackPanel Spacing="14">
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        FontWeight="SemiBold"
-                                        HorizontalTextAlignment="Center"
-                                        Text="New Location"
-                                        TextDecorations="Underline" />
-
-                                    <Grid ColumnSpacing="4" RowSpacing="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Location:" />
-                                        <TextBox
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-
-
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Allocated Qty:" />
-                                        <TextBox
-                                            Grid.Row="1"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-
-
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="Method:" />
-                                        <TextBox
-                                            Grid.Row="2"
-                                            Grid.Column="1"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Text="{x:Bind ViewModel.CurrentAllocationMethodText, Mode=OneWay}"
-                                            TextWrapping="NoWrap" />
-
-                                    </Grid>
-
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+               <Grid
+                        Grid.Row="3"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        ColumnSpacing="8"
+                        RowSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
                         <Border
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
                             Padding="16"
-                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
+                            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                             CornerRadius="10">
-                            <StackPanel Spacing="8">
+                            <Grid ColumnSpacing="8" RowSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
                                 <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="4"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
                                     FontSize="16"
                                     FontWeight="SemiBold"
-                                    Text="Why This Destination Was Chosen" />
+                                    Text="Part Information"
+                                    TextAlignment="Center"
+                                    TextDecorations="Underline" />
+
                                 <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="{x:Bind ViewModel.CurrentEvidenceSummaryText, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
+                                    Text="Part #:" />
                                 <TextBlock
-                                    Text="{x:Bind ViewModel.CurrentReasonText, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="PO #:" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Line #:" />
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Source:" />
+
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPartIdText, Mode=OneWay}"
+                                    />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPurchaseOrderText, Mode=OneWay}"
+                                    />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Stretch"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentPurchaseOrderLineText, Mode=OneWay}" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Stretch"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentDataSourceText, Mode=OneWay}" />
+
+                            </Grid>
+                        </Border>
+
+                        
+
+                        <Border
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Padding="16"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            CornerRadius="10">
+                            <StackPanel Spacing="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalTextAlignment="Center"
+                                    Text="Old Location"
+                                    TextDecorations="Underline" />
+
+                                <Grid ColumnSpacing="4" RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Location:" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Saved Qty:" />
+
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentOriginalLocationText, Mode=OneWay}"/>
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentSavedRowQuantityText, Mode=OneWay}" />
+
+                                </Grid>
                             </StackPanel>
                         </Border>
 
-                    </StackPanel>
+                        <Border
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Padding="16"
+                            Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Spacing="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalTextAlignment="Center"
+                                    Text="New Location"
+                                    TextDecorations="Underline" />
 
-                    <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.IsSummaryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Grid ColumnSpacing="4" RowSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Location:" />
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentNewLocationText, Mode=OneWay}"/>
+
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="Allocated Qty:" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        IsHitTestVisible="False"
+                                        IsReadOnly="True"
+                                        Text="{x:Bind ViewModel.CurrentQuantityMovedText, Mode=OneWay}"
+                                        />
+
+
+
+
+
+
+
+                                </Grid>
+
+                            </StackPanel>
+                        </Border>
+
+
+
+                    </Grid>
+
+
+
+                    <StackPanel Margin="0,12,0,0" Grid.Row="3" Spacing="16" Visibility="{x:Bind ViewModel.IsSummaryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Border
                             Padding="16"
                             Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
@@ -480,7 +355,7 @@
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Style="{ThemeResource BodyTextBlockStyle}"
                                     Text="{x:Bind ViewModel.SummaryDescription, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
+                                     />
                             </StackPanel>
                         </Border>
 
@@ -579,7 +454,7 @@
                                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                 BorderThickness="1"
                                                 CornerRadius="10">
-                                                <StackPanel Spacing="4">
+                                                <StackPanel Spacing="4" Orientation="Vertical">
                                                     <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneTime}" />
                                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind PONumber, Mode=OneTime}" />
                                                     <TextBlock Text="{x:Bind ExistingLocation, Mode=OneTime}" />
@@ -652,7 +527,7 @@
                                                 <StackPanel Spacing="4">
                                                     <TextBlock FontWeight="SemiBold" Text="{x:Bind PartID, Mode=OneTime}" />
                                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind Resolution, Mode=OneTime}" />
-                                                    <TextBlock Text="{x:Bind Details, Mode=OneTime}" TextWrapping="Wrap" />
+                                                    <TextBlock Text="{x:Bind Details, Mode=OneTime}"  />
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>
@@ -661,8 +536,6 @@
                             </StackPanel>
                         </Border>
                     </StackPanel>
-                </Grid>
-            </ScrollViewer>
 
             <StackPanel
                 Grid.Row="4"

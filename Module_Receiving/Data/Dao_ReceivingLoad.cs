@@ -242,9 +242,19 @@ public class Dao_ReceivingLoad
 
                 if (result.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving history row matched the update request for load '{load.LoadNumber}'."
+                    var rowStillExists = await DoesHistoryRowExistAsync(
+                        connection,
+                        transaction,
+                        load.HistoryRecordID,
+                        load.LoadID
                     );
+
+                    if (!rowStillExists)
+                    {
+                        throw new InvalidOperationException(
+                            $"No receiving history row matched the update request for load '{load.LoadNumber}'."
+                        );
+                    }
                 }
 
                 updatedCount++;
@@ -615,5 +625,41 @@ public class Dao_ReceivingLoad
 
         var raw = value.ToString();
         return Guid.TryParse(raw, out var parsed) ? parsed : Guid.Empty;
+    }
+
+    private static async Task<bool> DoesHistoryRowExistAsync(
+        MySqlConnection connection,
+        MySqlTransaction transaction,
+        int? historyRecordId,
+        Guid loadId
+    )
+    {
+        string sql;
+        var command = new MySqlCommand { Connection = connection, Transaction = transaction };
+
+        if (historyRecordId.HasValue)
+        {
+            sql = "SELECT COUNT(*) FROM receiving_history WHERE id = @historyRecordId;";
+            command.Parameters.AddWithValue("@historyRecordId", historyRecordId.Value);
+        }
+        else if (loadId != Guid.Empty)
+        {
+            sql = "SELECT COUNT(*) FROM receiving_history WHERE load_guid = @loadGuid;";
+            command.Parameters.AddWithValue("@loadGuid", loadId.ToString());
+        }
+        else
+        {
+            return false;
+        }
+
+        command.CommandText = sql;
+        var count = await command.ExecuteScalarAsync();
+
+        if (count is null || count == DBNull.Value)
+        {
+            return false;
+        }
+
+        return Convert.ToInt32(count) > 0;
     }
 }
