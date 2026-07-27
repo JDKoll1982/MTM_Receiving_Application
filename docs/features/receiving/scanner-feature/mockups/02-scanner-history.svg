@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1450" height="900" viewBox="0 0 1450 900" role="img" aria-labelledby="title desc">
+  <title id="title">History View</title>
+  <desc id="desc">History screen showing previous sends with full from and to warehouse/location traceability.</desc>
+  <defs>
+    <style>
+      .app-shell { fill: #fafafa; stroke: #d6d6d6; stroke-width: 1; }
+      .titlebar { fill: #f7f7f8; }
+      .nav-pane { fill: #f2f2f3; }
+      .content-bg { fill: #fbfbfc; }
+      .card { fill: #ffffff; stroke: #d5d7db; stroke-width: 1; }
+      .subtle { fill: #f7f8fa; stroke: #dde0e5; stroke-width: 1; }
+      .input { fill: #ffffff; stroke: #cfd4dc; stroke-width: 1; }
+      .btn { fill: #ffffff; stroke: #c7ccd4; stroke-width: 1; }
+      .chip { fill: #eef4ff; stroke: #b9d2ff; stroke-width: 1; }
+      .chip-danger { fill: #fff1f2; stroke: #ffb4bf; stroke-width: 1; }
+      .subtle-chip { fill: #f3f4f6; stroke: #d5d7db; stroke-width: 1; }
+      .table-head { fill: #eef1f6; }
+      .text-title { font-family: Segoe UI, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #1f2328; }
+      .text-h2 { font-family: Segoe UI, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #1f2328; }
+      .text-body { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #344054; }
+      .text-cap { font-family: Segoe UI, Arial, sans-serif; font-size: 11px; fill: #667085; }
+      .text-nav { font-family: Segoe UI, Arial, sans-serif; font-size: 13px; fill: #1f2328; }
+      .text-btn { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #1f2328; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1450" height="900" class="app-shell"/>
+  <rect x="0" y="0" width="1450" height="48" rx="14" class="titlebar"/>
+  <rect x="0" y="34" width="1450" height="14" class="titlebar"/>
+  <rect x="16" y="12" width="24" height="24" rx="4" class="subtle"/>
+  <text x="52" y="29" class="text-body">MTM Receiving Application</text>
+  <rect x="520" y="10" width="420" height="28" rx="6" class="input"/>
+  <text x="536" y="29" class="text-cap">Search</text>
+  <rect x="0" y="48" width="272" height="852" class="nav-pane"/>
+  <text x="24" y="90" class="text-h2">Dashboard</text>
+  <rect x="18" y="112" width="236" height="34" rx="6" class="chip"/>
+  <text x="30" y="134" class="text-nav">Receiving Labels</text>
+  <rect x="18" y="152" width="236" height="34" rx="6" class="btn"/>
+  <text x="30" y="174" class="text-nav">Dunnage Labels</text>
+  <rect x="272" y="48" width="1178" height="852" class="content-bg"/>
+  <rect x="296" y="72" width="1130" height="72" rx="8" class="subtle"/>
+  <text x="320" y="102" class="text-title">History</text>
+  <text x="320" y="124" class="text-cap">See what was sent and retry items that failed.</text>
+  <rect x="308" y="168" width="960" height="104" rx="10" class="card"/>
+  <text x="328" y="198" class="text-h2">Filters</text>
+  <rect x="328" y="212" width="150" height="34" rx="6" class="input"/><text x="340" y="233" class="text-cap">Date From</text>
+  <rect x="488" y="212" width="150" height="34" rx="6" class="input"/><text x="500" y="233" class="text-cap">Date To</text>
+  <rect x="648" y="212" width="150" height="34" rx="6" class="input"/><text x="660" y="233" class="text-cap">Status</text>
+  <rect x="808" y="212" width="150" height="34" rx="6" class="input"/><text x="820" y="233" class="text-cap">Operator</text>
+  <rect x="968" y="212" width="120" height="34" rx="6" class="btn"/><text x="1006" y="233" class="text-btn">Apply</text>
+  <rect x="1100" y="212" width="120" height="34" rx="6" class="btn"/><text x="1136" y="233" class="text-btn">Clear</text>
+  <rect x="308" y="286" width="432" height="338" rx="10" class="card"/>
+  <text x="328" y="314" class="text-h2">Send History</text>
+  <rect x="328" y="328" width="390" height="34" rx="6" class="table-head"/>
+  <text x="340" y="350" class="text-cap">Time</text>
+  <text x="438" y="350" class="text-cap">Status</text>
+  <text x="520" y="350" class="text-cap">Items Sent</text>
+  <text x="600" y="350" class="text-cap">Failed</text>
+  <text x="660" y="350" class="text-cap">Waiting</text>
+  <rect x="328" y="372" width="390" height="40" class="input"/>
+  <text x="340" y="397" class="text-body">2026-07-21 09:14</text>
+  <rect x="442" y="380" width="92" height="22" rx="11" class="chip-danger"/><text x="462" y="395" class="text-cap">Incomplete</text>
+  <text x="520" y="397" class="text-body">6</text>
+  <text x="600" y="397" class="text-body">1</text>
+  <text x="660" y="397" class="text-body">8</text>
+  <rect x="328" y="416" width="390" height="40" class="input"/>
+  <text x="340" y="441" class="text-body">2026-07-21 08:55</text>
+  <rect x="442" y="424" width="92" height="22" rx="11" class="chip"/><text x="468" y="439" class="text-cap">Complete</text>
+  <text x="520" y="441" class="text-body">12</text>
+  <text x="600" y="441" class="text-body">0</text>
+  <text x="660" y="441" class="text-body">0</text>
+  <rect x="758" y="286" width="510" height="338" rx="10" class="card"/>
+  <text x="778" y="314" class="text-h2">Details</text>
+  <rect x="778" y="328" width="470" height="86" rx="8" class="subtle"/>
+  <text x="790" y="350" class="text-cap">Profile: Receiving - Day Shift</text>
+  <text x="790" y="369" class="text-cap">Target: VMINVENT.exe / Inventory Transfers</text>
+  <text x="790" y="388" class="text-cap">What Happened: Application went to background</text>
+  <text x="790" y="407" class="text-cap">Operator: J. Koll</text>
+  <rect x="778" y="424" width="470" height="180" rx="8" class="input"/>
+  <text x="790" y="448" class="text-cap">Result</text>
+  <text x="790" y="468" class="text-body">Items 1-6 were sent successfully.</text>
+  <text x="790" y="490" class="text-body">Items 7-15 were not sent and are ready to retry.</text>
+  <rect x="308" y="638" width="960" height="214" rx="10" class="card"/>
+  <text x="328" y="666" class="text-h2">Item Results</text>
+  <rect x="328" y="680" width="920" height="34" rx="6" class="table-head"/>
+  <text x="338" y="702" class="text-cap">#</text>
+  <text x="388" y="702" class="text-cap">Item ID</text>
+  <text x="478" y="702" class="text-cap">From Whse</text>
+  <text x="566" y="702" class="text-cap">From Loc</text>
+  <text x="650" y="702" class="text-cap">To Whse</text>
+  <text x="730" y="702" class="text-cap">To Loc</text>
+  <text x="812" y="702" class="text-cap">Status</text>
+  <text x="910" y="702" class="text-cap">Attempts</text>
+  <text x="990" y="702" class="text-cap">Issue Type</text>
+  <text x="1148" y="702" class="text-cap">Details</text>
+  <rect x="328" y="720" width="920" height="38" class="input"/>
+  <text x="338" y="744" class="text-body">7</text><text x="388" y="744" class="text-body">MMF-45088</text><text x="478" y="744" class="text-body">001</text><text x="566" y="744" class="text-body">A01</text><text x="650" y="744" class="text-body">002</text><text x="730" y="744" class="text-body">RECV-A01</text>
+  <rect x="802" y="728" width="88" height="22" rx="11" class="chip-danger"/><text x="824" y="743" class="text-cap">Failed</text>
+  <text x="924" y="744" class="text-body">1</text><text x="990" y="744" class="text-body">Not in Focus</text><text x="1148" y="744" class="text-body">Application moved.</text>
+  <rect x="328" y="762" width="920" height="38" class="input"/>
+  <text x="338" y="786" class="text-body">8</text><text x="388" y="786" class="text-body">MMF-46011</text><text x="478" y="786" class="text-body">001</text><text x="566" y="786" class="text-body">A01</text><text x="650" y="786" class="text-body">002</text><text x="730" y="786" class="text-body">RECV-A01</text>
+  <rect x="802" y="770" width="96" height="22" rx="11" class="subtle-chip"/><text x="826" y="785" class="text-cap">Waiting</text>
+  <text x="924" y="786" class="text-body">0</text><text x="990" y="786" class="text-body">-</text><text x="1148" y="786" class="text-body">Not yet sent.</text>
+  <rect x="1046" y="813" width="98" height="28" rx="6" class="btn"/><text x="1078" y="832" class="text-btn">Export</text>
+  <rect x="1152" y="813" width="96" height="28" rx="6" class="btn"/><text x="1180" y="832" class="text-btn">Reload</text>
+</svg>

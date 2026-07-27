@@ -252,6 +252,14 @@
                 </NavigationViewItem>
                 <NavigationViewItem
                     Margin="0,0,0,4"
+                    Content="Scanner"
+                    Tag="ScannerMainPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8A1;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem
+                    Margin="0,0,0,4"
                     Content="Dunnage Labels"
                     Tag="DunnageLabelPage">
 

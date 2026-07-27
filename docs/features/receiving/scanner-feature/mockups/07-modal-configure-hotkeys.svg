@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="600" viewBox="0 0 880 600" role="img" aria-labelledby="title desc">
+  <title id="title">Keyboard Shortcuts Modal</title>
+  <desc id="desc">Dialog for configuring send and stop keyboard shortcuts for the scanner workflow.</desc>
+  <defs><style>
+    .modal-bg { fill: #000000; fill-opacity: 0.18; }
+    .card { fill: #ffffff; stroke: #d5d7db; stroke-width: 1; }
+    .subtle { fill: #f7f8fa; stroke: #dde0e5; stroke-width: 1; }
+    .input { fill: #ffffff; stroke: #cfd4dc; stroke-width: 1; }
+    .chip-warn { fill: #fff7e8; stroke: #ffd28a; stroke-width: 1; }
+    .text-title { font-family: Segoe UI, Arial, sans-serif; font-size: 20px; font-weight: 600; fill: #1f2328; }
+    .text-h2 { font-family: Segoe UI, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #1f2328; }
+    .text-cap { font-family: Segoe UI, Arial, sans-serif; font-size: 11px; fill: #667085; }
+    .btn { fill: #ffffff; stroke: #c7ccd4; stroke-width: 1; }
+    .btn-accent { fill: #1f6feb; stroke: #1a61d2; stroke-width: 1; }
+    .text-btn { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #1f2328; }
+    .text-btn-accent { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; fill: #ffffff; }
+  </style></defs>
+  <rect x="0" y="0" width="880" height="600" class="modal-bg"/>
+  <rect x="170" y="60" width="540" height="480" rx="12" class="card"/>
+  <rect x="170" y="60" width="540" height="50" rx="12" class="subtle"/>
+  <text x="190" y="92" class="text-title">Keyboard Shortcuts</text>
+  <text x="190" y="122" class="text-cap">Set keyboard shortcuts to start/send and stop.</text>
+  <rect x="190" y="140" width="500" height="108" rx="10" class="subtle"/>
+  <text x="204" y="164" class="text-h2">Start/Send Shortcut</text>
+  <rect x="204" y="176" width="216" height="34" rx="6" class="input"/>
+  <text x="216" y="196" class="text-cap">Ctrl + Alt + M</text>
+  <text x="204" y="228" class="text-cap">Press this to send items when the app is active.</text>
+  <rect x="190" y="256" width="500" height="108" rx="10" class="subtle"/>
+  <text x="204" y="280" class="text-h2">Stop Shortcut</text>
+  <rect x="204" y="292" width="216" height="34" rx="6" class="input"/>
+  <text x="216" y="312" class="text-cap">Ctrl + Alt + N</text>
+  <text x="204" y="344" class="text-cap">Works between items only. Current item finishes first.</text>
+  <rect x="190" y="372" width="500" height="70" rx="10" class="chip-warn"/>
+  <text x="204" y="392" class="text-cap">Keys must be different and work on your computer.</text>
+  <text x="204" y="408" class="text-cap">We will tell you if something goes wrong. Saving in ERP stays manual.</text>
+  <rect x="532" y="472" width="88" height="32" rx="6" class="btn"/>
+  <text x="559" y="493" class="text-btn">Cancel</text>
+  <rect x="628" y="472" width="92" height="32" rx="6" class="btn-accent"/>
+  <text x="658" y="493" class="text-btn-accent">Save</text>
+</svg>
