@@ -221,7 +221,7 @@ public partial class App : Application
     /// <summary>
     /// [DEPRECATED] Service Locator anti-pattern - use constructor injection instead.
     /// This method exists temporarily for backward compatibility with legacy code.
-    /// TODO: Refactor all App.GetService&lt;T&gt;() calls to use constructor injection.
+    /// TODO: Refactor all App.GetService() calls to use constructor injection.
     /// </summary>
     /// <typeparam name="T">The service type to retrieve.</typeparam>
     /// <returns>The requested service instance.</returns>

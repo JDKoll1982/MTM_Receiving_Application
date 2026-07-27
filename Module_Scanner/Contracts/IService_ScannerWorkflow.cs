@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -29,6 +31,28 @@ public interface IService_ScannerWorkflow
 
 	Task<Model_Dao_Result<Model_ScannerRunHistoryQueryResult>> GetRunHistoryAsync(
 		Model_ScannerRunHistoryQueryRequest request,
+		CancellationToken cancellationToken = default
+	);
+
+	Task<Model_Dao_Result<List<Model_ScannerProfile>>> GetProfilesAsync(
+		string ownerUserId,
+		CancellationToken cancellationToken = default
+	);
+
+	Task<Model_Dao_Result<Model_ScannerProfile>> SaveProfileAsync(
+		Model_ScannerProfile profile,
+		CancellationToken cancellationToken = default
+	);
+
+	Task<Model_Dao_Result> SetDefaultProfileAsync(
+		Guid profileId,
+		string ownerUserId,
+		CancellationToken cancellationToken = default
+	);
+
+	Task<Model_Dao_Result> DeleteProfileAsync(
+		Guid profileId,
+		string ownerUserId,
 		CancellationToken cancellationToken = default
 	);
 }
