@@ -232,6 +232,72 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
     }
 
     [Fact]
+    public async Task SendNextCommand_ShouldMarkEligibleItemAsSent_WhenSessionHasValidItems()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+
+        await viewModel.SendNextCommand.ExecuteAsync(null);
+
+        viewModel.SessionItems.Single(item => item.ItemId == validItem.ItemId).ExecutionState.Should().Be(Enum_ScannerExecutionState.Sent);
+        viewModel.CurrentSession!.Status.Should().Be(Enum_ScannerSessionStatus.Completed);
+    }
+
+    [Fact]
+    public void StopAfterThisCommand_ShouldRequestStopAndPreserveCurrentBatch()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+
+        viewModel.StopAfterThisCommand.Execute(null);
+
+        viewModel.CurrentSession!.StopRequested.Should().BeTrue();
+        viewModel.CurrentSession!.StopReason.Should().Be(Enum_ScannerStopReason.UserStop);
+        viewModel.StatusMessage.Should().Contain("Stop requested");
+    }
+
+    [Fact]
     public async Task RefreshHistoryCommand_ShouldPopulateRuns_WhenWorkflowReturnsData()
     {
         var workflow = new Mock<IService_ScannerWorkflow>();

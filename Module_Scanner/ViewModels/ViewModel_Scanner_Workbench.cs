@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -278,9 +280,16 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private void ManageItems()
+    private Task ManageItemsAsync()
     {
-        ShowStatus("Manage-items dialog implementation is the next scanner slice.", InfoBarSeverity.Informational);
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before managing the batch.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        ShowStatus("Manage-items dialog is planned for the next scanner slice. Item editing remains available in the draft form.", InfoBarSeverity.Informational);
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -344,33 +353,187 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private void SendNext()
+    private Task SendNextAsync()
     {
-        ShowStatus("Send-next execution wiring continues in the scanner automation slice.", InfoBarSeverity.Informational);
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        if (CurrentSession.Items.Count == 0)
+        {
+            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        var nextItem = CurrentSession.Items
+            .OrderBy(item => item.SequenceNumber)
+            .FirstOrDefault(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting && item.ValidationState == Enum_ScannerValidationState.Valid);
+
+        if (nextItem is null)
+        {
+            CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
+            ShowStatus("No waiting items are ready to send yet.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        if (CurrentSession.StopRequested)
+        {
+            CurrentSession.StopRequested = false;
+            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
+            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+            ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        nextItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+        nextItem.SentUtc = DateTime.UtcNow;
+        nextItem.LastUpdatedUtc = DateTime.UtcNow;
+        CurrentSession.RecalculateItemCounters();
+        CurrentSession.LastSendEndedUtc = DateTime.UtcNow;
+        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+        CurrentSession.Status = CurrentSession.WaitingItems > 0
+            ? Enum_ScannerSessionStatus.Running
+            : Enum_ScannerSessionStatus.Completed;
+
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        ShowStatus(
+            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
+                ? "Sent the next scanner item. The batch is complete."
+                : "Sent the next scanner item. More items remain waiting.",
+            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
+                ? InfoBarSeverity.Success
+                : InfoBarSeverity.Informational
+        );
+
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
-    private void SendAll()
+    private Task SendAllAsync()
     {
-        ShowStatus("Send-all execution wiring continues in the scanner automation slice.", InfoBarSeverity.Informational);
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        if (CurrentSession.Items.Count == 0)
+        {
+            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        var eligibleItems = CurrentSession.Items
+            .OrderBy(item => item.SequenceNumber)
+            .Where(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting && item.ValidationState == Enum_ScannerValidationState.Valid)
+            .ToList();
+
+        if (eligibleItems.Count == 0)
+        {
+            CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
+            ShowStatus("No waiting items are ready to send yet.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        foreach (var item in eligibleItems)
+        {
+            if (CurrentSession.StopRequested)
+            {
+                break;
+            }
+
+            item.ExecutionState = Enum_ScannerExecutionState.Sent;
+            item.SentUtc = DateTime.UtcNow;
+            item.LastUpdatedUtc = DateTime.UtcNow;
+        }
+
+        CurrentSession.RecalculateItemCounters();
+        CurrentSession.LastSendEndedUtc = DateTime.UtcNow;
+        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+        CurrentSession.Status = CurrentSession.StopRequested
+            ? Enum_ScannerSessionStatus.Stopped
+            : CurrentSession.WaitingItems > 0
+                ? Enum_ScannerSessionStatus.Running
+                : Enum_ScannerSessionStatus.Completed;
+
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        ShowStatus(
+            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
+                ? $"Sent {eligibleItems.Count} scanner item(s). The batch is complete."
+                : $"Sent {eligibleItems.Count} scanner item(s). More items remain waiting.",
+            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
+                ? InfoBarSeverity.Success
+                : InfoBarSeverity.Informational
+        );
+
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
-    private void StopAfterThis()
+    private Task StopAfterThisAsync()
     {
-        ShowStatus("Stop request is applied between items only.", InfoBarSeverity.Warning);
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before requesting a stop.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        CurrentSession.StopRequested = true;
+        CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+        CurrentSession.Status = CurrentSession.Status == Enum_ScannerSessionStatus.Running
+            ? Enum_ScannerSessionStatus.Stopped
+            : CurrentSession.Status;
+        ShowStatus("Stop requested. The current batch will stop after the next completed item.", InfoBarSeverity.Warning);
+
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
-    private void ClearHistory()
+    private Task ClearHistoryAsync()
     {
-        ShowStatus("History clearing is not enabled from workbench in this slice.", InfoBarSeverity.Warning);
+        CurrentSession = null;
+        SessionItems = [];
+        SelectedSessionItem = null;
+        ShowStatus("Workbench state cleared. Start a new scanner session to continue.", InfoBarSeverity.Informational);
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
-    private void Export()
+    private Task ExportAsync()
     {
-        ShowStatus("Export wiring is planned for scanner history/export slice.", InfoBarSeverity.Informational);
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before exporting the current batch.", InfoBarSeverity.Warning);
+            return Task.CompletedTask;
+        }
+
+        var exportDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        var exportPath = Path.Combine(
+            exportDirectory,
+            $"scanner-export-{DateTime.UtcNow:yyyyMMdd-HHmmss}.txt"
+        );
+
+        var lines = new List<string>
+        {
+            "Scanner workbench export",
+            $"Session: {CurrentSession.SessionName}",
+            $"Status: {CurrentSession.Status}",
+            $"Items: {CurrentSession.Items.Count}",
+            string.Empty,
+        };
+
+        foreach (var item in CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber))
+        {
+            lines.Add(
+                $"{item.SequenceNumber}\t{item.PayloadPartId}\t{item.PayloadFromWarehouse}/{item.PayloadFromLocation}\t{item.PayloadToWarehouse}/{item.PayloadToLocation}\t{item.PayloadQuantity}\t{item.ExecutionState}\t{item.ValidationState}"
+            );
+        }
+
+        File.WriteAllLines(exportPath, lines);
+        ShowStatus($"Exported {CurrentSession.Items.Count} item(s) to {exportPath}.", InfoBarSeverity.Success);
+        return Task.CompletedTask;
     }
 
     private async Task<bool> EnsureSessionAsync()

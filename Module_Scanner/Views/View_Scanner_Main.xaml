@@ -11,6 +11,7 @@
     </Page.Resources>
 
     <Grid
+        x:Name="ScannerMainRootGrid"
         Margin="16,0,16,16"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch">

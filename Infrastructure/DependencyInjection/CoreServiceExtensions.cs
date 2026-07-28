@@ -60,6 +60,7 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_HeaderBackNavigation, Service_HeaderBackNavigation>();
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
+        services.AddSingleton<IService_AdaptiveLayout, Service_AdaptiveLayout>();
         services.AddSingleton<IService_LabelViewLauncher, Service_LabelViewLauncher>();
         services.AddSingleton<IService_Help, Service_Help>();
         services.AddSingleton<IService_ThemeManager, Service_ThemeManager>();

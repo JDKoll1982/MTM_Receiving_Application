@@ -1,6 +1,6 @@
 # Scanner History ViewModel
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This view-model provides searchable history of previous sends and item-level results after execution.
 
@@ -9,6 +9,17 @@ This view-model provides searchable history of previous sends and item-level res
 - display previous sends with status and timing summaries
 - expose filtering by date, status, and operator
 - provide drill-down into sent, failed, and waiting item results
+
+## Current Implementation State
+
+- Runs collection
+- SelectedRun
+- SelectedRunItems collection
+- DateFromUtc and DateToUtc filters
+- StatusFilter
+- OwnerUserId
+- MaxResults
+- RefreshHistoryAsync and ClearFilters
 
 ## Required State
 

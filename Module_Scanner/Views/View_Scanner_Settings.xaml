@@ -25,19 +25,45 @@
         </Style>
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid
+        x:Name="SettingsRootGrid"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="ScannerDefaultState">
+                    <VisualState.Setters>
+                        <Setter Target="SettingsLeftColumn.Width" Value="0.32*" />
+                        <Setter Target="SettingsRightColumn.Width" Value="0.68*" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ScannerCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="SettingsLeftColumn.Width" Value="0.4*" />
+                        <Setter Target="SettingsRightColumn.Width" Value="0.6*" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ScannerWideState">
+                    <VisualState.Setters>
+                        <Setter Target="SettingsLeftColumn.Width" Value="0.3*" />
+                        <Setter Target="SettingsRightColumn.Width" Value="0.7*" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid
+            x:Name="SettingsLayoutGrid"
             Grid.Row="0"
             Padding="16"
             ColumnSpacing="12">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.32*" />
-                <ColumnDefinition Width="0.68*" />
+                <ColumnDefinition x:Name="SettingsLeftColumn" Width="0.32*" />
+                <ColumnDefinition x:Name="SettingsRightColumn" Width="0.68*" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -45,7 +71,9 @@
                 Padding="14"
                 Background="{ThemeResource LayerFillColorAltBrush}"
                 CornerRadius="8">
-                <Grid RowSpacing="8">
+                <Grid
+                    x:Name="SettingsProfilesPanelGrid"
+                    RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -53,9 +81,13 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Profiles" />
+                    <TextBlock
+                        x:Name="ProfilesHeaderTextBlock"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Profiles" />
 
                     <StackPanel
+                        x:Name="ProfilesActionButtonsPanel"
                         Grid.Row="1"
                         Orientation="Horizontal"
                         Spacing="8">
@@ -65,6 +97,7 @@
                     </StackPanel>
 
                     <ListView
+                        x:Name="ProfilesListView"
                         Grid.Row="2"
                         ItemsSource="{x:Bind ViewModel.Profiles, Mode=OneWay}"
                         SelectedItem="{x:Bind ViewModel.SelectedProfile, Mode=TwoWay}">
@@ -81,6 +114,7 @@
                     </ListView>
 
                     <Button
+                        x:Name="ProfilesLoadButton"
                         Grid.Row="3"
                         Style="{StaticResource ScannerActionButtonStyle}"
                         HorizontalAlignment="Left"
@@ -90,6 +124,7 @@
             </Border>
 
             <ScrollViewer
+                x:Name="SettingsEditorScrollViewer"
                 Grid.Column="1"
                 HorizontalScrollMode="Disabled"
                 HorizontalScrollBarVisibility="Disabled"

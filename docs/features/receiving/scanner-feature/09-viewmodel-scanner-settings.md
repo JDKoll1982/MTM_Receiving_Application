@@ -1,6 +1,6 @@
 # Scanner Settings ViewModel
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This view-model manages sending profile editing, keyboard shortcut policy, and safety defaults.
 
@@ -9,6 +9,18 @@ This view-model manages sending profile editing, keyboard shortcut policy, and s
 - create and edit sending profiles
 - enforce keyboard shortcut and timing validation
 - persist user-scoped defaults
+
+## Current Implementation State
+
+- Profiles collection
+- SelectedProfile
+- EditableProfileDraft
+- IsDirty
+- ValidationErrors collection
+- CanSaveProfile
+- CanDeleteProfile
+- IsTestingTargetWindow
+- LastTargetTestResult
 
 ## Required State
 

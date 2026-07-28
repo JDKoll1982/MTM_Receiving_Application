@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
@@ -18,6 +19,7 @@ namespace MTM_Receiving_Application.Module_Scanner.Views;
 /// </summary>
 public sealed partial class View_Scanner_Workbench : Page
 {
+    private readonly IService_AdaptiveLayout _adaptiveLayout;
     private readonly IService_ReceivingSettings _receivingSettings;
     private List<Model_PartNumberPrefixRule> _paddingRules = [];
     private bool _isPaddingEnabled;
@@ -27,16 +29,53 @@ public sealed partial class View_Scanner_Workbench : Page
 
     public View_Scanner_Workbench(
         ViewModel_Scanner_Workbench viewModel,
+        IService_AdaptiveLayout adaptiveLayout,
         IService_ReceivingSettings receivingSettings
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
+        ArgumentNullException.ThrowIfNull(adaptiveLayout);
         ArgumentNullException.ThrowIfNull(receivingSettings);
         ViewModel = viewModel;
+        _adaptiveLayout = adaptiveLayout;
         _receivingSettings = receivingSettings;
         InitializeComponent();
         DataContext = ViewModel;
+        Loaded += OnLoaded;
+        SizeChanged += OnSizeChanged;
         _ = LoadPaddingSettingsAsync();
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        ApplyAdaptiveLayout();
+    }
+
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        ApplyAdaptiveLayout();
+    }
+
+    private void ApplyAdaptiveLayout()
+    {
+        WorkbenchContentGrid.Padding = _adaptiveLayout.GetScannerContentPadding(ActualWidth);
+
+        var state = _adaptiveLayout.ResolveScannerLayoutState(ActualWidth);
+        _ = VisualStateManager.GoToState(this, state, false);
+
+        var boundedHeight = _adaptiveLayout.CalculateBoundedViewportHeight(
+            containerHeightEpx: ItemsCardContentGrid.ActualHeight,
+            occupiedHeightsEpx:
+            [
+                ItemsHeaderGrid.ActualHeight,
+                ItemEntryGrid.ActualHeight,
+            ]
+        );
+
+        if (boundedHeight > 0)
+        {
+            SessionItemsListView.MaxHeight = boundedHeight;
+        }
     }
 
     private async Task LoadPaddingSettingsAsync()

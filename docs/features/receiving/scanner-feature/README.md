@@ -1,6 +1,6 @@
 # Scanner Feature Design Pack
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This folder expands the approved memorandum in specs/ScannerFeature/MainPM.md into implementation-ready documentation artifacts for MTM.
 
@@ -84,21 +84,21 @@ Each file is written as a direct implementation handoff with:
 - Save and send workflows must keep manual ERP validation and save behavior visible; no auto-finalize or `Alt+S` workflow is implied.
 - New-item validation must check Infor Visual using existing fuzzy-check patterns for part and location matching, plus source on-hand quantity validation, and surface the result through Status and Notes instead of blocking the add.
 - Scanner feature ownership is expected to live in `Module_Scanner`, not `Module_Receiving`.
+- The workbench page now stays resize-responsive with the main window, and the item list is the only scrollable region instead of the entire page.
 
-## Current Scaffold Status
+## Current Implementation Status
 
-- `Module_Scanner` navigation skeleton is in place for workbench, history, and settings pages.
-- Bottom-page navigation command bindings are now aligned with generated RelayCommand properties across all three scanner page ViewModels.
-- Step 1 (contracts/models/service-interface baseline) is implemented with scanner-focused unit tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner`.
-- Step 2 (DAO layer) is implemented in `Module_Scanner/Data` using MySQL stored procedures only and `Model_Dao_Result` failure patterns, with DAO validation/mapping unit tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner/Data`.
-- Step 3 (scanner services) is implemented in `Module_Scanner/Services` with DAO-backed workflow persistence/history and Infor Visual-backed validation checks for part/location/quantity sufficiency.
-- Step 4 (ViewModel behavior) is implemented for scanner workbench and history flows, including session start, non-blocking add-line validation status/notes mapping, draft item staging, run-snapshot command flow, and run-history refresh behavior.
-- Step 5 is started with a view-binding source-of-truth in `docs/features/receiving/scanner-feature/15-view-bindings-reference.md`, and initial workbench/history/settings view implementation now bound to scanner ViewModel command/state surfaces.
-- Step 5 settings continuation is implemented: scanner settings now bind to profile editor state and load/save/default commands via `ViewModel_Scanner_Settings` and `IService_ScannerWorkflow` profile operations.
-- Step 5 layout continuation is implemented: workbench/history/settings now include mockup-aligned structural regions (manage-items entry, send controls, selected run/item detail panes, and expanded settings profile editor actions) with x:Bind and stretch/scroll support for resize compatibility.
-- Step 5 visual polish continuation is implemented: spacing rhythm, typography weight hierarchy, and chip/button sizing were tuned across scanner views to better match mockup intent while preserving MTM styling and behavior constraints.
-- Step 5 responsive sizing refinement is implemented: forced page-level minimum widths and rigid fixed column widths were removed from scanner pages so layouts stay within window bounds and auto-size during resize.
-- Scanner workbench part entry now reuses the Receiving Part Formatting settings path so configured part-padding rules are applied to the staged part field when the operator commits the value.
+- `Module_Scanner` is now implemented beyond the initial scaffold for the workbench, history, and settings pages.
+- Bottom-page navigation command bindings are aligned with generated RelayCommand properties across the scanner workbench, history, and settings ViewModels.
+- Step 1 (contracts, models, and service interfaces) is implemented and covered by scanner-focused unit tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner`.
+- Step 2 (DAO layer) is implemented in `Module_Scanner/Data` using MySQL stored procedures only and `Model_Dao_Result` failure patterns, with DAO mapping and persistence tests in `MTM_Receiving_Application.Tests/Unit/Module_Scanner/Data`.
+- Step 3 (scanner services) is implemented in `Module_Scanner/Services` with DAO-backed workflow persistence/history and Infor Visual-backed validation checks for part, location, and quantity sufficiency.
+- Step 4 (ViewModel behavior) is implemented for the scanner workbench and history flows, including session start, non-blocking add-line validation status/notes mapping, draft item staging, run-snapshot command flow, run-history refresh, and workbench send/stop actions.
+- Step 5 view implementation is now materially present: the workbench, history, and settings views bind to the scanner ViewModel state and commands, and the layout includes the main operational regions needed for the workflow.
+- The workbench layout keeps the page itself stretchable with the window while the items list uses its own scrollable region for overflow.
+- Scanner views now run a shared adaptive layout service pilot that applies scanner-specific width breakpoints and bounded list/editor viewport sizing across workbench, history, settings, and scanner main host pages.
+- Scanner workbench item entry now reuses the Receiving Part Formatting settings path so configured part-padding rules apply to staged part values.
 - Scanner validation now tolerates location values entered with separators such as dashes by retrying the canonical alphanumeric Visual location ID during from/to location checks and stock validation.
-- Scanner workbench `Check All` now revalidates the full staged session and refreshes item status/notes summaries, and scanner profile save now blocks duplicate per-user profile names plus missing target executable/child-screen metadata.
-- Scanner pages remain intentionally under-construction placeholders until service and workflow implementation is completed.
+- Scanner workbench `Check All` revalidates the full staged session and refreshes item status/notes summaries.
+- Scanner profile save now blocks duplicate per-user profile names plus missing target executable/child-screen metadata.
+- The remaining work is primarily polish and UX refinement rather than foundational architecture or service wiring.

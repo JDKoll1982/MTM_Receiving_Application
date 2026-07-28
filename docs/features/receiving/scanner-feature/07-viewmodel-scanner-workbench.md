@@ -1,6 +1,6 @@
 # Scanner ViewModel
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This view-model is the operational center for preparing items, validating data, and sending them to inventory.
 
@@ -10,6 +10,17 @@ This view-model is the operational center for preparing items, validating data, 
 - expose item editing, ordering, and validation commands
 - trigger send-next and send-all operations
 - present progress and partial-send state to the user
+
+## Current Implementation State
+
+- CurrentSession
+- SessionItems collection
+- SelectedSessionItem
+- OwnerUserId and OwnerDisplayName
+- AppWindowTitleSnapshot and AppWindowClassSnapshot
+- LastValidationStatus and LastValidationNotes
+- HasActiveSession
+- Status and notification state from the shared base view-model
 
 ## Required State
 
@@ -43,6 +54,16 @@ This view-model is the operational center for preparing items, validating data, 
 - StopAfterThis (formerly StopAfterCurrentCycle)
 - RetryFailedItem
 - ClearHistory
+
+## Implemented Workbench Behaviors
+
+- StartDraftSessionAsync creates a new draft session and initializes the workbench state.
+- AddDraftItemAsync validates new items and stages them into the active session without blocking the workflow when validation returns warnings or issues.
+- BuildRunSnapshotAsync creates the run snapshot and updates the current session status from the workflow service response.
+- CheckAllAsync revalidates all staged items and refreshes status/notes summaries.
+- SendNextAsync and SendAllAsync transition eligible items into sent state and update counters and session status.
+- StopAfterThisAsync records a stop request for the current batch.
+- ClearHistoryAsync clears the active workbench UI state and ExportAsync writes the current batch to a text export.
 
 ## Validation Responsibilities
 

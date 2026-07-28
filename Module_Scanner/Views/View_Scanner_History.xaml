@@ -19,19 +19,49 @@
         </Style>
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid
+        x:Name="HistoryRootGrid"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="ScannerDefaultState">
+                    <VisualState.Setters>
+                        <Setter Target="HistoryRunsColumn.Width" Value="1.05*" />
+                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
+                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="12" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ScannerCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="HistoryRunsColumn.Width" Value="*" />
+                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
+                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="8" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ScannerWideState">
+                    <VisualState.Setters>
+                        <Setter Target="HistoryRunsColumn.Width" Value="1.2*" />
+                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
+                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="14" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <ScrollViewer
+            x:Name="HistoryPageScrollViewer"
             Grid.Row="0"
             HorizontalScrollMode="Disabled"
             HorizontalScrollBarVisibility="Disabled"
             VerticalScrollMode="Auto"
             VerticalScrollBarVisibility="Auto">
             <Grid
+                x:Name="HistoryContentGrid"
                 Padding="16"
                 RowSpacing="12">
                 <Grid.RowDefinitions>
@@ -109,11 +139,12 @@
                 </Border>
 
                 <Grid
+                    x:Name="HistoryTopSplitGrid"
                     Grid.Row="2"
                     ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.05*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition x:Name="HistoryRunsColumn" Width="1.05*" />
+                        <ColumnDefinition x:Name="HistoryDetailsColumn" Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <Border
@@ -121,32 +152,41 @@
                         Padding="10"
                         Background="{ThemeResource LayerFillColorAltBrush}"
                         CornerRadius="8">
-                        <Grid RowSpacing="8">
+                        <Grid
+                            x:Name="HistoryRunsPanelGrid"
+                            RowSpacing="8">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Send History" />
-                            <ListView
+                            <TextBlock
+                                x:Name="HistoryRunsHeaderTextBlock"
+                                Style="{StaticResource ScannerSectionHeaderStyle}"
+                                Text="Send History" />
+
+                            <Grid
                                 Grid.Row="1"
+                                ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="1.1*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Time" />
+                                <TextBlock Grid.Column="1" Text="Status" />
+                                <TextBlock Grid.Column="2" Text="Sent" />
+                                <TextBlock Grid.Column="3" Text="Fail" />
+                                <TextBlock Grid.Column="4" Text="Waiting" />
+                            </Grid>
+
+                            <ListView
+                                x:Name="RunHistoryListView"
+                                Grid.Row="2"
                                 ItemsSource="{x:Bind ViewModel.Runs, Mode=OneWay}"
                                 SelectedItem="{x:Bind ViewModel.SelectedRun, Mode=TwoWay}">
-                                <ListView.Header>
-                                    <Grid ColumnSpacing="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="2*" />
-                                            <ColumnDefinition Width="1.1*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="1*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="Time" />
-                                        <TextBlock Grid.Column="1" Text="Status" />
-                                        <TextBlock Grid.Column="2" Text="Sent" />
-                                        <TextBlock Grid.Column="3" Text="Fail" />
-                                        <TextBlock Grid.Column="4" Text="Waiting" />
-                                    </Grid>
-                                </ListView.Header>
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:Model_ScannerRun">
                                         <Grid ColumnSpacing="10">
@@ -214,43 +254,51 @@
                     Padding="10"
                     Background="{ThemeResource LayerFillColorAltBrush}"
                     CornerRadius="8">
-                    <Grid RowSpacing="8">
+                    <Grid
+                        x:Name="ItemResultsPanelGrid"
+                        RowSpacing="8">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Item Results" />
+                        <TextBlock
+                            x:Name="ItemResultsHeaderTextBlock"
+                            Style="{StaticResource ScannerSectionHeaderStyle}"
+                            Text="Item Results" />
+
+                        <Grid
+                            Grid.Row="1"
+                            ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*" />
+                                <ColumnDefinition Width="1.2*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition Width="1.1*" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="#" />
+                            <TextBlock Grid.Column="1" Text="Item ID" />
+                            <TextBlock Grid.Column="2" Text="From WH" />
+                            <TextBlock Grid.Column="3" Text="From Loc" />
+                            <TextBlock Grid.Column="4" Text="To WH" />
+                            <TextBlock Grid.Column="5" Text="To Loc" />
+                            <TextBlock Grid.Column="6" Text="Status" />
+                            <TextBlock Grid.Column="7" Text="Attempts" />
+                            <TextBlock Grid.Column="8" Text="Issue" />
+                            <TextBlock Grid.Column="9" Text="Details" />
+                        </Grid>
 
                         <ListView
-                            Grid.Row="1"
+                            x:Name="ItemResultsListView"
+                            Grid.Row="2"
                             ItemsSource="{x:Bind ViewModel.SelectedRunItems, Mode=OneWay}">
-                            <ListView.Header>
-                                <Grid ColumnSpacing="8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="0.5*" />
-                                        <ColumnDefinition Width="1.2*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                        <ColumnDefinition Width="1.1*" />
-                                        <ColumnDefinition Width="2*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="#" />
-                                    <TextBlock Grid.Column="1" Text="Item ID" />
-                                    <TextBlock Grid.Column="2" Text="From WH" />
-                                    <TextBlock Grid.Column="3" Text="From Loc" />
-                                    <TextBlock Grid.Column="4" Text="To WH" />
-                                    <TextBlock Grid.Column="5" Text="To Loc" />
-                                    <TextBlock Grid.Column="6" Text="Status" />
-                                    <TextBlock Grid.Column="7" Text="Attempts" />
-                                    <TextBlock Grid.Column="8" Text="Issue" />
-                                    <TextBlock Grid.Column="9" Text="Details" />
-                                </Grid>
-                            </ListView.Header>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:Model_ScannerRunItem">
                                     <Grid ColumnSpacing="8">
