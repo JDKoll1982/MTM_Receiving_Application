@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
+using MTM_Receiving_Application.Module_Settings.Core.Settings;
 using MTM_Receiving_Application.Module_Shared.Views;
 
 namespace MTM_Receiving_Application.Module_Core.Services.Authentication;
@@ -77,15 +78,18 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
         {
             ApplySafeUserDefaults(user);
 
+            await InitializePrivilegesAsync(user.EmployeeNumber);
+            await InitializeSettingsDefaultsAsync(user.EmployeeNumber);
+
+            var sessionTimeout = await ResolveSessionTimeoutAsync(workstationConfig);
+
             var session = _sessionManager.CreateSession(
                 user,
                 workstationConfig,
                 authenticationMethod
             );
+            session.TimeoutDuration = sessionTimeout;
             _sessionManager.StartTimeoutMonitoring();
-
-            await InitializePrivilegesAsync(user.EmployeeNumber);
-            await InitializeSettingsDefaultsAsync(user.EmployeeNumber);
 
             _logger.LogInfo(
                 $"Initialized authenticated session for employee {user.EmployeeNumber} using {authenticationMethod}.",
@@ -224,5 +228,40 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
         {
             user.DefaultDunnageMode = user.DefaultDunnageMode.Trim().ToLowerInvariant();
         }
+    }
+
+    private async Task<TimeSpan> ResolveSessionTimeoutAsync(
+        Model_WorkstationConfig workstationConfig
+    )
+    {
+        var fallbackTimeout = workstationConfig.TimeoutDuration;
+
+        try
+        {
+            var timeoutResult = await _settingsCoreFacade.GetSettingAsync(
+                CoreSettingsKeys.SystemCategory,
+                CoreSettingsKeys.Session.InactivityTimeoutMinutes
+            );
+
+            if (
+                timeoutResult.IsSuccess
+                && timeoutResult.Data != null
+                && int.TryParse(timeoutResult.Data.Value, out var timeoutMinutes)
+                && timeoutMinutes >= 5
+                && timeoutMinutes <= 240
+            )
+            {
+                return TimeSpan.FromMinutes(timeoutMinutes);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"Failed to resolve session inactivity timeout setting. Falling back to workstation default: {ex.Message}",
+                nameof(Service_UserLoginCoordinator)
+            );
+        }
+
+        return fallbackTimeout;
     }
 }

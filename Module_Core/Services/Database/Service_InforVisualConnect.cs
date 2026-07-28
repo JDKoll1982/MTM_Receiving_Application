@@ -773,40 +773,6 @@ public class Service_InforVisualConnect : IService_InforVisual
         return Model_Dao_Result_Factory.Success(results);
     }
 
-    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyCustomers(string term)
-    {
-        var normalizedTerm = term.Trim();
-        var results = _mockDataCatalog
-            .GetCustomerPullPackDemandRows()
-            .Where(row =>
-                row.CustomerId.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
-                || row.CustomerName.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
-            )
-            .GroupBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
-            .Take(10)
-            .Select(group =>
-            {
-                var customerId = group.Key.Trim().ToUpperInvariant();
-                var customerName = group
-                    .Select(row => row.CustomerName?.Trim() ?? string.Empty)
-                    .FirstOrDefault(static value => string.IsNullOrWhiteSpace(value) is false);
-                var label = string.IsNullOrWhiteSpace(customerName)
-                    ? customerId
-                    : $"{customerId} - {customerName}";
-
-                return new Model_FuzzySearchResult
-                {
-                    Key = customerId,
-                    Label = label,
-                    Detail = string.IsNullOrWhiteSpace(customerName) ? null : customerName,
-                };
-            })
-            .ToList();
-
-        return Model_Dao_Result_Factory.Success(results);
-    }
-
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockPartsByVendor(string vendorId)
     {
         var results = _mockDataCatalog
@@ -955,8 +921,12 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         if (UseMockData)
         {
-            _logger?.LogInfo($"[MOCK DATA MODE] Returning mock fuzzy customer results for: {term}");
-            return CreateMockFuzzyCustomers(term);
+            _logger?.LogWarning(
+                $"[MOCK DATA MODE] Customer fuzzy search is unavailable for term: {term}"
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
+                "Customer fuzzy search is unavailable in mock data mode."
+            );
         }
 
         return await _dao.FuzzySearchCustomersByIdOrNameAsync(term);

@@ -23,21 +23,47 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         );
 
         private readonly IService_Focus _focusService;
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
 
         public View_Receiving_PackageType(
             ViewModel_Receiving_PackageType viewModel,
-            IService_Focus focusService
+            IService_Focus focusService,
+            IService_AdaptiveLayout adaptiveLayout
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
 
             ViewModel = viewModel;
             _focusService = focusService;
+            _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
 
             this.InitializeComponent();
             AttachPackagePerLoadFocus();
+            Loaded += View_Receiving_PackageType_Loaded;
+            SizeChanged += View_Receiving_PackageType_SizeChanged;
+        }
+
+        private void View_Receiving_PackageType_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void View_Receiving_PackageType_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void ApplyAdaptiveLayout()
+        {
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
         }
 
         /// <summary>

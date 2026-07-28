@@ -70,6 +70,56 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="HeaderUserMenuButtonStyle" TargetType="Button">
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border
+                                    x:Name="UserCardBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                                <ContentPresenter
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="UserCardBorder.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                                <Setter Target="UserCardBorder.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="UserCardBorder.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                                <Setter Target="UserCardBorder.BorderBrush" Value="{ThemeResource ControlStrokeColorSecondaryBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="UserCardBorder.Opacity" Value="0.6" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -157,74 +207,91 @@
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
             <NavigationView.Header>
-                <Grid MinHeight="80" Padding="0,0,40,0">
+                <Grid
+                    MinHeight="80"
+                    Margin="-36,0,-4,0"
+                    Padding="0,0,24,0"
+                    RowSpacing="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="64" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <Border
+                        Grid.Row="0"
+                        Padding="12,10"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <StackPanel
-                            Grid.Column="0"
-                            HorizontalAlignment="Left"
-                            Orientation="Horizontal"
-                            Spacing="8">
-                            <Button
-                                x:Name="HeaderBackButton"
-                                Padding="8"
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Click="HeaderBackButton_Click"
-                                Visibility="Collapsed">
-                                <FontIcon FontSize="14" Glyph="&#xE72B;" />
-                            </Button>
-
-                            <TextBlock
-                                x:Name="PageTitleTextBlock"
+                            <StackPanel
+                                Grid.Column="0"
                                 HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                MaxLines="1"
-                                Style="{StaticResource BodyLargeStrongTextBlockStyle}"
-                                Text="Dashboard" />
-                        </StackPanel>
-
-                        <Button
-                            x:Name="UserMenuButton"
-                            Grid.Column="1"
-                            Padding="8"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            BorderThickness="0">
-                            <Button.Flyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Click="UserLogOutMenuItem_Click" Text="Log Out" />
-                                </MenuFlyout>
-                            </Button.Flyout>
-
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <PersonPicture
-                                    x:Name="UserPicture"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Button
+                                    x:Name="HeaderBackButton"
                                     Width="32"
-                                    Height="32" />
-                                <TextBlock
-                                    x:Name="UserDisplayTextBlock"
+                                    Height="32"
+                                    Padding="0"
                                     VerticalAlignment="Center"
-                                    Style="{StaticResource BodyTextBlockStyle}"
-                                    Text="Not Logged In" />
+                                    Background="Transparent"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    Click="HeaderBackButton_Click"
+                                    CornerRadius="8"
+                                    Visibility="Collapsed">
+                                    <FontIcon FontSize="14" Glyph="&#xE72B;" />
+                                </Button>
+
+                                <TextBlock
+                                    x:Name="PageTitleTextBlock"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    MaxLines="1"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="Dashboard"
+                                    TextTrimming="CharacterEllipsis" />
                             </StackPanel>
-                        </Button>
-                    </Grid>
+
+                            <Button
+                                x:Name="UserMenuButton"
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource HeaderUserMenuButtonStyle}">
+                                <Button.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Click="UserLogOutMenuItem_Click" Text="Log Out" />
+                                    </MenuFlyout>
+                                </Button.Flyout>
+
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <PersonPicture
+                                        x:Name="UserPicture"
+                                        Width="28"
+                                        Height="28" />
+                                    <TextBlock
+                                        x:Name="UserDisplayTextBlock"
+                                        VerticalAlignment="Center"
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="Not Logged In"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
 
                     <InfoBar
                         x:Name="StatusInfoBar"
                         Grid.Row="1"
+                        Margin="0,0,0,2"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
                         IsClosable="True"
@@ -248,14 +315,6 @@
                     Tag="ReceivingWorkflowView">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE74C;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem
-                    Margin="0,0,0,4"
-                    Content="Scanner"
-                    Tag="ScannerMainPage">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8A1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
@@ -293,6 +352,14 @@
                     Tag="ShipRecToolsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE90F;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem
+                    Margin="0,0,0,4"
+                    Content="Scanner"
+                    Tag="ScannerMainPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8A1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem

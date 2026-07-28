@@ -82,6 +82,37 @@
             </Button>
 
             <Button
+                x:Name="SystemSettingsButton"
+                Grid.Row="0"
+                Grid.Column="2"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnNavigateSystemSettings"
+                CornerRadius="8"
+                Visibility="Collapsed">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE713;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="System Settings" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Admin-only controls for global timeout, theme, and runtime defaults."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
                 Grid.Row="1"
                 Grid.Column="0"
                 Width="280"

@@ -107,7 +107,7 @@ Pause and ask via chat approval flow when a major assumption is needed, includin
 
 ## Docs Maintenance
 
-If code changes invalidate source-of-truth docs, update matching files under .github/, specs/, docs/, or CopilotForms metadata.
+If code changes invalidate source-of-truth docs, update matching files under .github/, specs/, or docs/.
 
 ## Build/Test Commands
 

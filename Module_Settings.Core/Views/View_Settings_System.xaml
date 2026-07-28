@@ -1,0 +1,138 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_System"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.Models"
+    x:Name="RootPage">
+    <Page.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <InfoBar
+            Grid.Row="0"
+            IsClosable="False"
+            IsOpen="True"
+            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+            Severity="Informational" />
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Spacing="24">
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Editable System Settings" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="These values are saved as system-scoped settings and are shared across users."
+                            TextWrapping="Wrap" />
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Application Theme" />
+                            <ComboBox
+                                IsEnabled="{x:Bind ViewModel.CanManageSystemSettings, Mode=OneWay}"
+                                ItemsSource="{x:Bind ViewModel.ThemeChoices, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Logging Level" />
+                            <ComboBox
+                                IsEnabled="{x:Bind ViewModel.CanManageSystemSettings, Mode=OneWay}"
+                                ItemsSource="{x:Bind ViewModel.LoggingLevelChoices, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedLoggingLevel, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Session Inactivity Timeout (Minutes)" />
+                            <TextBox
+                                IsEnabled="{x:Bind ViewModel.CanManageSystemSettings, Mode=OneWay}"
+                                PlaceholderText="5-240"
+                                Text="{x:Bind ViewModel.InactivityTimeoutMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Used for automatic session timeout and app close when no user activity is detected."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button
+                                Command="{x:Bind ViewModel.RefreshCommand}"
+                                Content="Refresh"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.SaveCommand}"
+                                Content="Save"
+                                IsEnabled="{x:Bind ViewModel.CanManageSystemSettings, Mode=OneWay}"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Read-Only System Context" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="These values are intentionally shown for visibility but are not editable in this page."
+                            TextWrapping="Wrap" />
+
+                        <ListView
+                            Background="Transparent"
+                            BorderThickness="0"
+                            ItemsSource="{x:Bind ViewModel.NonSettableSettings, Mode=OneWay}"
+                            SelectionMode="None">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0,0,0,10" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_SystemSettingInfoRow">
+                                    <Border
+                                        Padding="12"
+                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind DisplayName}" />
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Key}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{x:Bind Value}" TextWrapping="Wrap" />
+                                            <TextBlock
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Text="{x:Bind Notes}"
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

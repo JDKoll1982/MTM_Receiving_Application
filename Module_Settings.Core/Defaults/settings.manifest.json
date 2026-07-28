@@ -9,7 +9,7 @@
       "defaultValue": "System",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "User",
+      "permissionLevel": "Admin",
       "isSensitive": false,
       "validationRules": "Allowed: Light, Dark, System"
     },
@@ -20,9 +20,20 @@
       "defaultValue": "Information",
       "dataType": "String",
       "scope": "System",
-      "permissionLevel": "User",
+      "permissionLevel": "Admin",
       "isSensitive": false,
       "validationRules": "Allowed: Verbose, Debug, Information, Warning, Error, Fatal"
+    },
+    {
+      "category": "System",
+      "key": "Core.Session.InactivityTimeoutMinutes",
+      "displayName": "Session Inactivity Timeout (Minutes)",
+      "defaultValue": "30",
+      "dataType": "Int",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "Range: 5-240"
     },
     {
       "category": "System",

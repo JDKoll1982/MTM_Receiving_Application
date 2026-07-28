@@ -106,10 +106,8 @@
     <Compile Remove=".agent_work\**" />
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
     <Compile Remove="Scripts\**" />
-    <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Logging.cs" />
-    <Compile Remove="Module_Settings.Core\Views\View_Settings_System.xaml.cs" />
     <Compile Remove="Module_Settings.Core\Views\View_Settings_Database.xaml.cs" />
     <Compile Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml.cs" />
     <Compile Remove="Properties\**" />
@@ -339,9 +337,6 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="docs\development\CopilotForms\data\module-metadata\Module_OutsideService\" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove=".agent_work\**" />

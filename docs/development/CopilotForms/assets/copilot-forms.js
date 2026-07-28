@@ -1256,25 +1256,6 @@ function buildHumanSummary(form, feature, subFeature, values) {
   return lines.join(" ").trim();
 }
 
-function buildMetadataReviewInfo(feature, values) {
-  const moduleName =
-    feature?.module || values.moduleName || "the edited module";
-  const paths = ["docs/CopilotForms/data/copilot-forms.config.json"];
-
-  if (moduleName && moduleName !== "the edited module") {
-    paths.push(`docs/CopilotForms/data/module-metadata/${moduleName}/`);
-  } else {
-    paths.push("docs/CopilotForms/data/module-metadata/<ModuleName>/");
-  }
-
-  return {
-    moduleName,
-    paths,
-    instruction:
-      "As part of this request, review and update the CopilotForms metadata for the edited module if it is stale.",
-  };
-}
-
 // ── Build markdown output ──────────────────────────────────────────────────────
 function buildMarkdown(form, feature, values) {
   const exportValues = getExportValues(form, values);
@@ -1289,7 +1270,6 @@ function buildMarkdown(form, feature, values) {
     _subFeature,
     exportValues,
   );
-  const metadataReview = buildMetadataReviewInfo(feature, exportValues);
   lines.push(
     `- Feature: ${feature?.name || exportValues.featureName || "Unspecified"}`,
   );
@@ -1358,14 +1338,6 @@ function buildMarkdown(form, feature, values) {
     lines.push("");
   }
 
-  lines.push("## Required Metadata Follow-Up", "");
-  lines.push(`- ${metadataReview.instruction}`);
-  lines.push(`- Module to review: ${metadataReview.moduleName}`);
-  metadataReview.paths.forEach((path) =>
-    lines.push(`- Metadata path: ${path}`),
-  );
-  lines.push("");
-
   lines.push("## Structured Request", "");
 
   for (const group of form.fieldGroups || []) {
@@ -1421,7 +1393,6 @@ function buildJson(form, feature, values) {
       outputFolder: form.outputFolder,
       promptFile: form.promptFile,
       humanSummary: buildHumanSummary(form, feature, subFeature, exportValues),
-      metadataReview: buildMetadataReviewInfo(feature, exportValues),
       feature: feature || null,
       subFeature: subFeature || null,
       values: exportValues,
@@ -1566,9 +1537,7 @@ function initPromptRunner(form) {
     const noobHint = noobOn
       ? " Noob Mode ON — explain step-by-step, avoid jargon, add inline code comments."
       : "";
-    const metadataHint =
-      " Also review and update the CopilotForms metadata for the edited module as part of the same request.";
-    const msg = `Use the prompt file \`${form.promptFile}\` in Copilot Chat if prompt files are available. If you cannot use prompt files directly, paste the saved export into chat and mention the prompt file path manually. Link the export saved to \`${form.outputFolder}\`.${metadataHint}${serenaHint}${noobHint}`;
+    const msg = `Use the prompt file \`${form.promptFile}\` in Copilot Chat if prompt files are available. If you cannot use prompt files directly, paste the saved export into chat and mention the prompt file path manually. Link the export saved to \`${form.outputFolder}\`.${serenaHint}${noobHint}`;
     copyText(msg);
     showToast("Prompt text copied — paste into Copilot Chat!");
   };
@@ -1886,39 +1855,9 @@ async function loadJsonFile(basePath, relativePath) {
   return r.json();
 }
 
-async function enrichConfigWithModuleMetadata(config, basePath) {
-  const manifestPaths = config.project?.moduleMetadataIndexes || [];
-  if (!manifestPaths.length) return config;
-
-  const externalFeatures = [];
-  for (const manifestPath of manifestPaths) {
-    const manifest = await loadJsonFile(basePath, manifestPath);
-    const manifestFolder = manifestPath.split("/").slice(0, -1).join("/");
-    for (const featureFile of manifest.featureFiles || []) {
-      const feature = await loadJsonFile(
-        basePath,
-        `${manifestFolder}/${featureFile}`,
-      );
-      externalFeatures.push(feature);
-    }
-  }
-
-  const externalIds = new Set(externalFeatures.map((feature) => feature.id));
-  return {
-    ...config,
-    features: [
-      ...externalFeatures,
-      ...(config.features || []).filter(
-        (feature) => !externalIds.has(feature.id),
-      ),
-    ],
-  };
-}
-
 async function loadConfig(basePath) {
   const config = await loadJsonFile(basePath, "data/copilot-forms.config.json");
-  const enrichedConfig = await enrichConfigWithModuleMetadata(config, basePath);
-  return ensureSharedFormFields(enrichedConfig);
+  return ensureSharedFormFields(config);
 }
 
 // ── Local config fallback ──────────────────────────────────────────────────────
@@ -2382,9 +2321,7 @@ async function initFormPage(
   });
 
   wireLocalConfig(async (cfg) => {
-    const enrichedConfig = ensureSharedFormFields(
-      await enrichConfigWithModuleMetadata(cfg, basePath),
-    );
+    const enrichedConfig = ensureSharedFormFields(cfg);
     _config = enrichedConfig;
     const nextForm =
       (enrichedConfig.forms || []).find((f) => f.id === formId) || form;

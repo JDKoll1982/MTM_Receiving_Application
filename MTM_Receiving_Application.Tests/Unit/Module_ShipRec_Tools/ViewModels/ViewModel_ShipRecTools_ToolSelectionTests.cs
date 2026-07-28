@@ -76,13 +76,13 @@ public sealed class ViewModel_ShipRecTools_ToolSelectionTests
 
         viewModel.ToolSelected += toolKey => selectedToolKey = toolKey;
 
-        viewModel.SelectToolCommand.Execute("CustomerPullPack");
+        viewModel.SelectToolCommand.Execute("MaterialAvailabilityBoard");
 
-        selectedToolKey.Should().Be("CustomerPullPack");
+        selectedToolKey.Should().Be("MaterialAvailabilityBoard");
     }
 
     [Fact]
-    public void LoadTools_ShouldKeepWaitlistUtilityEntry_WhenProvidedByNavigationService()
+    public void LoadTools_ShouldIncludeMaterialAvailabilityBoard_WhenProvidedByNavigationService()
     {
         var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
         navigationServiceMock
@@ -90,11 +90,10 @@ public sealed class ViewModel_ShipRecTools_ToolSelectionTests
             .Returns(
                 new List<Model_ToolDefinition>
                 {
-                    new() { ToolKey = "CustomerPullPack", Title = "Customer Pull n' Pack" },
                     new()
                     {
-                        ToolKey = "CustomerPullPackWaitlist",
-                        Title = "Customer Pull n' Pack Waitlist",
+                        ToolKey = "MaterialAvailabilityBoard",
+                        Title = "Material Availability Board",
                     },
                 }
             );
@@ -111,6 +110,6 @@ public sealed class ViewModel_ShipRecTools_ToolSelectionTests
         viewModel
             .AllTools.Select(tool => tool.ToolKey)
             .Should()
-            .Contain("CustomerPullPackWaitlist");
+            .Contain("MaterialAvailabilityBoard");
     }
 }

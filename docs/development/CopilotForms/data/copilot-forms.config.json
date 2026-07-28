@@ -4,24 +4,8 @@
     "name": "MTM Receiving Application",
     "repoRoot": "c:/Users/johnk/source/repos/MTM_Receiving_Application",
     "defaultBranch": "orgin",
-    "moduleMetadataIndexes": [
-      "data/module-metadata/Module_Receiving/index.json",
-      "data/module-metadata/Module_Dunnage/index.json",
-      "data/module-metadata/Module_Reporting/index.json",
-      "data/module-metadata/Module_Volvo/index.json",
-      "data/module-metadata/Module_Core/index.json",
-      "data/module-metadata/Module_Shared/index.json",
-      "data/module-metadata/Module_Settings.Core/index.json",
-      "data/module-metadata/Module_Settings.Receiving/index.json",
-      "data/module-metadata/Module_Settings.Dunnage/index.json",
-      "data/module-metadata/Module_Settings.Reporting/index.json",
-      "data/module-metadata/Module_Settings.Volvo/index.json",
-      "data/module-metadata/Module_ShipRec_Tools/index.json"
-    ],
     "notes": [
-      "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows.",
-      "Prefer editing split module metadata under data/module-metadata; the inline features array below is a fallback copy for local-load compatibility.",
-      "The inline features array is a local-load fallback; when split module metadata is fetched, matching feature ids from moduleMetadataIndexes take precedence."
+      "WinUI 3 desktop app with MVVM, CQRS, and database-backed workflows."
     ]
   },
   "shared": {

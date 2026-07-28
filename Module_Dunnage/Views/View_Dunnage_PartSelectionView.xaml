@@ -189,7 +189,7 @@
                     BorderThickness="1"
                     CornerRadius="8"
                     Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid RowSpacing="8">
+                <Grid RowSpacing="4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -244,16 +244,10 @@
                                    Grid.Column="1"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    Text="Type:"/>
-                        <StackPanel Grid.Row="1"
-                                    Grid.Column="2"
-                                    Orientation="Horizontal"
-                                    Spacing="6">
-                            <mi:MaterialIcon Width="16"
-                                             Height="16"
-                                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                             Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"/>
-                            <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
-                        </StackPanel>
+                        
+                                <TextBlock Grid.Row="1"
+                                    Grid.Column="2" Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+                 
 
                         <TextBlock Grid.Row="2"
                                    Grid.Column="1"

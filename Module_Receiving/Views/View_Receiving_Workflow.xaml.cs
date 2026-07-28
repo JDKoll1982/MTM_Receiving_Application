@@ -21,6 +21,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     public sealed partial class View_Receiving_Workflow : Page
     {
         public ViewModel_Receiving_Workflow ViewModel { get; }
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingShortcuts _receivingShortcuts;
@@ -31,6 +32,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         public View_Receiving_Workflow(
             ViewModel_Receiving_Workflow viewModel,
+            IService_AdaptiveLayout adaptiveLayout,
             IService_ReceivingWorkflow workflowService,
             IService_Help helpService,
             IService_ReceivingShortcuts receivingShortcuts,
@@ -47,6 +49,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
             ArgumentNullException.ThrowIfNull(workflowService);
             ArgumentNullException.ThrowIfNull(helpService);
             ArgumentNullException.ThrowIfNull(receivingShortcuts);
@@ -62,6 +65,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(reconciliationReviewView);
 
             ViewModel = viewModel;
+            _adaptiveLayout = adaptiveLayout;
             _workflowService = workflowService;
             _helpService = helpService;
             _receivingShortcuts = receivingShortcuts;
@@ -82,6 +86,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             Loaded += View_Receiving_Workflow_Loaded;
             Unloaded += View_Receiving_Workflow_Unloaded;
+            SizeChanged += View_Receiving_Workflow_SizeChanged;
 
             _ = LoadShortcutsAsync();
         }
@@ -93,6 +98,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
             _workflowService.StepChanged += WorkflowService_StepChanged;
+            ApplyAdaptiveLayout();
         }
 
         private void View_Receiving_Workflow_Unloaded(object sender, RoutedEventArgs e)
@@ -101,6 +107,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _ = e;
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
+            SizeChanged -= View_Receiving_Workflow_SizeChanged;
+        }
+
+        private void View_Receiving_Workflow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void ApplyAdaptiveLayout()
+        {
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
         }
 
         private void WorkflowService_StepChanged(object? sender, EventArgs e)

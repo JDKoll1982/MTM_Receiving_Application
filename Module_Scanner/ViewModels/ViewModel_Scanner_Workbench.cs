@@ -426,8 +426,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         var eligibleItems = CurrentSession.Items
-            .OrderBy(item => item.SequenceNumber)
             .Where(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting && item.ValidationState == Enum_ScannerValidationState.Valid)
+            .OrderBy(item => item.SequenceNumber)
             .ToList();
 
         if (eligibleItems.Count == 0)

@@ -17,8 +17,28 @@
         <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
     </UserControl.Resources>
 
-    <Grid>
-        <Grid RowSpacing="16">
+    <Grid x:Name="WeightQuantityRootGrid">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingWeightQuantityAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="WeightQuantityRootGrid.Padding" Value="10" />
+                        <Setter Target="WeightQuantityContentGrid.RowSpacing" Value="12" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="WeightQuantityRootGrid.Padding" Value="20" />
+                        <Setter Target="WeightQuantityContentGrid.RowSpacing" Value="20" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid
+            x:Name="WeightQuantityContentGrid"
+            RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <!--  Border Header Section  -->

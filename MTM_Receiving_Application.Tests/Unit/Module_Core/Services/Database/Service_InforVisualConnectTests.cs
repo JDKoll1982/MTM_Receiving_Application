@@ -281,31 +281,6 @@ public sealed class Service_InforVisualConnectTests
         mockCatalog
             .Setup(service => service.GetReceivingTransactions())
             .Returns(activeCatalog.ReceivingTransactions);
-        mockCatalog
-            .Setup(service => service.GetCustomerPullPackDemandRows())
-            .Returns(
-                new List<Model_InforVisualCustomerPullPackDemandRow>
-                {
-                    new()
-                    {
-                        SourceLineKey = "LINE-1",
-                        CustomerId = "VOLVO",
-                        CustomerName = "Volvo Trucks",
-                    },
-                    new()
-                    {
-                        SourceLineKey = "LINE-2",
-                        CustomerId = "VOLVO",
-                        CustomerName = "Volvo Trucks",
-                    },
-                    new()
-                    {
-                        SourceLineKey = "LINE-3",
-                        CustomerId = "MACK",
-                        CustomerName = "Mack Trucks",
-                    },
-                }
-            );
 
         return new Service_InforVisualConnect(
             dao,

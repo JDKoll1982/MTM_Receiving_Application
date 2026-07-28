@@ -535,6 +535,8 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async Task<bool> EnsureDetailsLocationResolvedAsync()
     {
+        DetailsEntryView.CommitPendingInputs();
+
         var validation = await DetailsEntryView.ViewModel.ValidateLocationAsync();
         if (validation.IsValid)
         {

@@ -60,6 +60,7 @@ namespace MTM_Receiving_Application
         {
             FrameRoute,
             SettingsPage,
+            Command,
         }
 
         private sealed class SearchDestination
@@ -73,6 +74,7 @@ namespace MTM_Receiving_Application
                 string? routeTag,
                 Type? settingsPageType,
                 string detail,
+                string? commandText = null,
                 params string[] aliases
             )
             {
@@ -82,6 +84,7 @@ namespace MTM_Receiving_Application
                 RouteTag = routeTag;
                 SettingsPageType = settingsPageType;
                 Detail = detail;
+                CommandText = commandText;
                 _aliases = aliases;
             }
 
@@ -91,6 +94,7 @@ namespace MTM_Receiving_Application
             public string? RouteTag { get; }
             public Type? SettingsPageType { get; }
             public string Detail { get; }
+            public string? CommandText { get; }
 
             public IEnumerable<string> SearchTerms
             {
@@ -101,6 +105,11 @@ namespace MTM_Receiving_Application
                     if (!string.IsNullOrWhiteSpace(RouteTag))
                     {
                         yield return RouteTag;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(CommandText))
+                    {
+                        yield return CommandText;
                     }
 
                     foreach (var alias in _aliases)
@@ -372,11 +381,30 @@ namespace MTM_Receiving_Application
         private static readonly List<SearchDestination> _searchDestinations =
             CreateSearchDestinations();
 
+        private static readonly List<SearchDestination> _searchCommandDestinations =
+            CreateSearchCommandDestinations();
+
         private static readonly Dictionary<string, SearchDestination> _searchDestinationsByKey =
-            _searchDestinations.ToDictionary(
-                destination => destination.Key,
-                StringComparer.Ordinal
-            );
+            _searchDestinations
+                .Concat(_searchCommandDestinations)
+                .ToDictionary(destination => destination.Key, StringComparer.Ordinal);
+
+        private static readonly HashSet<string> _searchCommandNames = new(
+            [
+                "/all",
+                "/apps",
+                "/settings",
+                "/help",
+                "/labels",
+                "/tools",
+                "/receiving",
+                "/dunnage",
+                "/volvo",
+                "/reporting",
+                "/docs",
+            ],
+            StringComparer.OrdinalIgnoreCase
+        );
 
         private async void NavView_SelectionChanged(
             NavigationView sender,
@@ -879,6 +907,23 @@ namespace MTM_Receiving_Application
                     "shipping receiving tools",
                     "tools"
                 ),
+                CreateFrameDestination(
+                    "ScannerMainPage",
+                    "Scanner",
+                    "Scanner workbench, history, and settings",
+                    "scanner",
+                    "scanner module",
+                    "scan"
+                ),
+                CreateFrameDestination(
+                    "AppDocumentation",
+                    "Documentation",
+                    "Open the in-app documentation index",
+                    "documentation",
+                    "docs",
+                    "help docs",
+                    "application docs"
+                ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_CoreNavigationHub),
                     "Configuration",
@@ -1073,12 +1118,105 @@ namespace MTM_Receiving_Application
             ];
         }
 
+        private static List<SearchDestination> CreateSearchCommandDestinations()
+        {
+            static SearchDestination CreateCommandDestination(
+                string commandText,
+                string label,
+                string detail,
+                params string[] aliases
+            )
+            {
+                return new SearchDestination(
+                    key: $"command:{commandText}",
+                    label: label,
+                    kind: SearchDestinationKind.Command,
+                    routeTag: null,
+                    settingsPageType: null,
+                    detail: detail,
+                    commandText: commandText,
+                    aliases: aliases
+                );
+            }
+
+            return
+            [
+                CreateCommandDestination(
+                    "/all",
+                    "/all",
+                    "Show all searchable links",
+                    "all"
+                ),
+                CreateCommandDestination(
+                    "/apps",
+                    "/apps",
+                    "Show application pages only",
+                    "apps",
+                    "pages"
+                ),
+                CreateCommandDestination(
+                    "/settings",
+                    "/settings",
+                    "Show settings pages only",
+                    "settings"
+                ),
+                CreateCommandDestination(
+                    "/labels",
+                    "/labels",
+                    "Show label-related destinations",
+                    "labels"
+                ),
+                CreateCommandDestination(
+                    "/tools",
+                    "/tools",
+                    "Show tools-related destinations",
+                    "tools"
+                ),
+                CreateCommandDestination(
+                    "/receiving",
+                    "/receiving",
+                    "Show receiving-related destinations",
+                    "receiving"
+                ),
+                CreateCommandDestination(
+                    "/dunnage",
+                    "/dunnage",
+                    "Show dunnage-related destinations",
+                    "dunnage"
+                ),
+                CreateCommandDestination(
+                    "/volvo",
+                    "/volvo",
+                    "Show volvo-related destinations",
+                    "volvo"
+                ),
+                CreateCommandDestination(
+                    "/reporting",
+                    "/reporting",
+                    "Show reporting-related destinations",
+                    "reporting"
+                ),
+                CreateCommandDestination(
+                    "/docs",
+                    "/docs",
+                    "Show documentation destination",
+                    "docs",
+                    "documentation"
+                ),
+            ];
+        }
+
         private static IReadOnlyList<SearchDestination> GetSearchMatches(string queryText)
         {
             var normalizedQuery = NormalizeSearchText(queryText);
             if (string.IsNullOrWhiteSpace(normalizedQuery))
             {
                 return Array.Empty<SearchDestination>();
+            }
+
+            if (TryGetCommandMatches(normalizedQuery, out var commandMatches))
+            {
+                return commandMatches;
             }
 
             return _searchDestinations
@@ -1102,6 +1240,18 @@ namespace MTM_Receiving_Application
             var normalizedQuery = NormalizeSearchText(queryText);
             if (string.IsNullOrWhiteSpace(normalizedQuery))
             {
+                destination = null;
+                return false;
+            }
+
+            if (TryGetCommandMatches(normalizedQuery, out var commandMatches))
+            {
+                if (commandMatches.Count == 1)
+                {
+                    destination = commandMatches[0];
+                    return true;
+                }
+
                 destination = null;
                 return false;
             }
@@ -1147,6 +1297,123 @@ namespace MTM_Receiving_Application
 
             destination = null;
             return false;
+        }
+
+        private static bool TryGetCommandMatches(
+            string normalizedQuery,
+            out IReadOnlyList<SearchDestination> matches
+        )
+        {
+            matches = Array.Empty<SearchDestination>();
+
+            if (!normalizedQuery.StartsWith('/'))
+            {
+                return false;
+            }
+
+            var parts = normalizedQuery.Split(' ', 2, StringSplitOptions.TrimEntries);
+            var command = parts[0];
+            var optionalFilter = parts.Length > 1 ? parts[1] : string.Empty;
+
+            if (string.Equals(command, "/help", StringComparison.OrdinalIgnoreCase))
+            {
+                var commandSet = _searchCommandDestinations.AsEnumerable();
+                if (!string.IsNullOrWhiteSpace(optionalFilter))
+                {
+                    commandSet = commandSet
+                        .Select(destination => new
+                        {
+                            Destination = destination,
+                            Rank = GetSearchMatchRank(destination, optionalFilter),
+                        })
+                        .Where(result => result.Rank < int.MaxValue)
+                        .OrderBy(result => result.Rank)
+                        .ThenBy(result => result.Destination.Label, StringComparer.OrdinalIgnoreCase)
+                        .Select(result => result.Destination);
+                }
+                else
+                {
+                    commandSet = commandSet.OrderBy(
+                        destination => destination.Label,
+                        StringComparer.OrdinalIgnoreCase
+                    );
+                }
+
+                matches = commandSet.ToList();
+                return true;
+            }
+
+            IEnumerable<SearchDestination> baseSet = command.ToLowerInvariant() switch
+            {
+                "/all" => _searchDestinations,
+                "/apps" => _searchDestinations.Where(destination =>
+                    destination.Kind == SearchDestinationKind.FrameRoute
+                ),
+                "/settings" => _searchDestinations.Where(destination =>
+                    destination.Kind == SearchDestinationKind.SettingsPage
+                ),
+                "/labels" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("label", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/tools" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("tool", StringComparison.OrdinalIgnoreCase)
+                    )
+                    || destination.SearchTerms.Any(term =>
+                        term.Contains("scanner", StringComparison.OrdinalIgnoreCase)
+                    )
+                    || destination.SearchTerms.Any(term =>
+                        term.Contains("report", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/receiving" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("receiving", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/dunnage" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("dunnage", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/volvo" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("volvo", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/reporting" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("report", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/docs" => _searchDestinations.Where(destination =>
+                    string.Equals(destination.RouteTag, "AppDocumentation", StringComparison.Ordinal)
+                ),
+                _ => Enumerable.Empty<SearchDestination>(),
+            };
+
+            if (!string.IsNullOrWhiteSpace(optionalFilter))
+            {
+                baseSet = baseSet
+                    .Select(destination => new
+                    {
+                        Destination = destination,
+                        Rank = GetSearchMatchRank(destination, optionalFilter),
+                    })
+                    .Where(result => result.Rank < int.MaxValue)
+                    .OrderBy(result => result.Rank)
+                    .ThenBy(result => result.Destination.Label, StringComparer.OrdinalIgnoreCase)
+                    .Select(result => result.Destination);
+            }
+            else
+            {
+                baseSet = baseSet.OrderBy(destination => destination.Label, StringComparer.OrdinalIgnoreCase);
+            }
+
+            matches = baseSet.ToList();
+            return true;
         }
 
         private static string NormalizeSearchText(string queryText)
@@ -1203,7 +1470,7 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            sender.ItemsSource = GetSearchMatches(queryText).Take(8).ToList();
+            sender.ItemsSource = GetSearchMatches(queryText).Take(24).ToList();
         }
 
         private void TitleBarSearchBox_SuggestionChosen(
@@ -1231,6 +1498,29 @@ namespace MTM_Receiving_Application
             var queryText = args.QueryText?.Trim();
             if (string.IsNullOrWhiteSpace(queryText))
             {
+                return;
+            }
+
+            var normalizedQuery = NormalizeSearchText(queryText);
+            if (normalizedQuery.StartsWith('/'))
+            {
+                var commandMatches = GetSearchMatches(normalizedQuery).Take(50).ToList();
+                if (commandMatches.Count == 1)
+                {
+                    await NavigateToSearchDestinationAsync(commandMatches[0]);
+                    return;
+                }
+
+                if (commandMatches.Count > 1)
+                {
+                    await ShowSearchDisambiguationAsync(queryText, commandMatches);
+                    return;
+                }
+
+                ViewModel.NotificationService.ShowStatus(
+                    $"Unknown search command '{normalizedQuery}'. Try: {string.Join(", ", _searchCommandNames.OrderBy(command => command, StringComparer.OrdinalIgnoreCase))}",
+                    global::MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
                 return;
             }
 
@@ -1301,6 +1591,14 @@ namespace MTM_Receiving_Application
 
         private async Task NavigateToSearchDestinationAsync(SearchDestination destination)
         {
+            if (destination.Kind == SearchDestinationKind.Command)
+            {
+                var commandText = destination.CommandText ?? destination.Label;
+                TitleBarSearchBox.Text = commandText;
+                TitleBarSearchBox.ItemsSource = GetSearchMatches(commandText).Take(24).ToList();
+                return;
+            }
+
             bool navigationSucceeded;
             if (destination.Kind == SearchDestinationKind.FrameRoute)
             {
@@ -1326,6 +1624,15 @@ namespace MTM_Receiving_Application
 
         private async Task<bool> NavigateToRouteTagAsync(string routeTag)
         {
+            if (string.Equals(routeTag, "AppDocumentation", StringComparison.Ordinal))
+            {
+                var docsPath = Path.Combine(AppContext.BaseDirectory, "docs", "index.html");
+                var docsUri = new Uri(docsPath);
+                _ = await Windows.System.Launcher.LaunchUriAsync(docsUri);
+                SetNavigationSelectionByTag("AppDocumentation");
+                return true;
+            }
+
             if (!_navRoutes.TryGetValue(routeTag, out var route))
             {
                 return false;

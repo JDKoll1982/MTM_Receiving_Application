@@ -8,7 +8,6 @@ using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MySql.Data.MySqlClient;
 using Serilog;
 
@@ -71,10 +70,6 @@ public partial class App : Application
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         await _host.StartAsync();
-
-        var dunnageImageStorage = _host.Services.GetRequiredService<IService_DunnageImageStorage>();
-        await dunnageImageStorage.RefreshConfiguredRootFolderAsync();
-        _ = dunnageImageStorage.SyncLocalCacheAsync();
 
         var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
         var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();

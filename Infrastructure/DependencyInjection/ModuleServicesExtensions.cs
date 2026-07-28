@@ -28,10 +28,7 @@ using MTM_Receiving_Application.Module_Scanner.Data;
 using MTM_Receiving_Application.Module_Scanner.Services;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Data.CustomerPullPack;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Commands;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Services.CustomerPullPack.Queries;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
 using MTM_Receiving_Application.Module_Volvo.Data;
@@ -64,7 +61,7 @@ public static class ModuleServicesExtensions
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
-        services.AddShipRecToolsModule(configuration);
+        services.AddShipRecToolsModule();
 
         return services;
     }
@@ -416,6 +413,7 @@ public static class ModuleServicesExtensions
     {
         // Core Settings
         services.AddTransient<ViewModel_SettingsWindow>();
+        services.AddTransient<ViewModel_Settings_System>();
         services.AddTransient<ViewModel_Settings_Users>();
         services.AddTransient<ViewModel_Settings_Theme>();
         services.AddTransient<ViewModel_Settings_SharedPaths>();
@@ -465,6 +463,7 @@ public static class ModuleServicesExtensions
         // Core Settings Views
         services.AddTransient<Module_Settings.Core.Views.View_Settings_CoreWindow>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_CoreNavigationHub>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_System>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_SharedPaths>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_LabelViewExecutable>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
@@ -541,31 +540,10 @@ public static class ModuleServicesExtensions
     /// Uses the InforVisual connection string for read-only Infor Visual queries.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <exception cref="InvalidOperationException">Thrown when InforVisual connection string is missing.</exception>
     private static IServiceCollection AddShipRecToolsModule(
-        this IServiceCollection services,
-        IConfiguration configuration
+        this IServiceCollection services
     )
     {
-        var mySqlConnectionString =
-            configuration.GetConnectionString("MySql")
-            ?? throw new InvalidOperationException("MySql connection string not found");
-        var inforVisualConnectionString =
-            configuration.GetConnectionString("InforVisual")
-            ?? throw new InvalidOperationException("InforVisual connection string not found");
-
-        // DAOs (Singleton - stateless data access)
-        services.AddSingleton(sp => new Dao_CustomerPullPackDemand(
-            inforVisualConnectionString,
-            sp.GetRequiredService<IService_LoggingUtility>()
-        ));
-        services.AddSingleton(sp => new Dao_CustomerPullPackWaitlist(
-            mySqlConnectionString,
-            sp.GetRequiredService<IService_LoggingUtility>()
-        ));
-        services.AddSingleton(_ => new Dao_CustomerPullPackUserDefaults(mySqlConnectionString));
-
         // Services (Singleton)
         services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
         services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
@@ -581,56 +559,18 @@ public static class ModuleServicesExtensions
             return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
         });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
-        services.AddSingleton<
-            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackDataSourceResolver,
-            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackDataSourceResolver
-        >();
-        services.AddSingleton<Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackMockDataCatalog>(
-            sp =>
-            {
-                var logger = sp.GetService<IService_LoggingUtility>();
-                return new Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockDataCatalog(
-                    logger
-                );
-            }
-        );
-        services.AddSingleton<Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockWaitlistSource>();
-        services.AddSingleton<Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackMockDemandSource>();
-        services.AddSingleton<
-            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackDemandSource,
-            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackDemandSource
-        >();
-        services.AddSingleton<
-            Module_ShipRec_Tools.Contracts.Services.IService_CustomerPullPackWaitlistSource,
-            Module_ShipRec_Tools.Services.CustomerPullPack.Service_CustomerPullPackWaitlistSource
-        >();
-        services.AddTransient<Command_CustomerPullPackBatchUpsertHandler>();
-        services.AddTransient<Command_CustomerPullPackSaveDefaultsHandler>();
-        services.AddTransient<Command_CustomerPullPackUnassignOwnerHandler>();
-        services.AddTransient<Command_CustomerPullPackUpdateStatusHandler>();
-        services.AddTransient<Query_CustomerPullPackDefaultsHandler>();
-        services.AddTransient<Query_CustomerPullPackLinkedWaitlistHandler>();
-        services.AddTransient<Query_CustomerPullPackPrintContextHandler>();
-        services.AddTransient<Query_CustomerPullPackReportHandler>();
-        services.AddTransient<Query_CustomerPullPackWaitlistQueueHandler>();
 
         // ViewModels (Transient - Per-navigation instances)
         services.AddTransient<ViewModel_ShipRecTools_Main>();
         services.AddTransient<ViewModel_ShipRecTools_ToolSelection>();
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
-        services.AddTransient<ViewModel_Dialog_CustomerPullPackWaitlistEditor>();
-        services.AddTransient<ViewModel_Tool_CustomerPullPackQueue>();
-        services.AddTransient<ViewModel_Tool_CustomerPullPackReport>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
-        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackQueue>();
-        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_CustomerPullPackReport>();
-        services.AddTransient<Module_ShipRec_Tools.Dialogs.Dialog_CustomerPullPackWaitlistEditor>();
 
         return services;
     }

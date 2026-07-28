@@ -62,6 +62,7 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
 
         var scope = definition.Scope;
         var userId = ResolveUserId(scope, request.UserId);
+        var permissionUserId = request.UserId ?? _sessionManager.CurrentSession?.User?.EmployeeNumber;
         if (scope == Enum_SettingsScope.User && userId == null)
         {
             return Model_Dao_Result_Factory.Failure(
@@ -69,7 +70,7 @@ public class SetSettingCommandHandler : IRequestHandler<SetSettingCommand, Model
             );
         }
 
-        if (!await HasPermissionAsync(definition.PermissionLevel, userId))
+        if (!await HasPermissionAsync(definition.PermissionLevel, permissionUserId))
         {
             return Model_Dao_Result_Factory.Failure(
                 "Insufficient permissions to modify this setting."

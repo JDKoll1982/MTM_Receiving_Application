@@ -15,7 +15,7 @@
         <converters:Converter_EmptyStringToVisibility x:Key="EmptyStringToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="24" RowSpacing="16">
+    <Grid Padding="6" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -36,7 +36,7 @@
             <Grid Visibility="{x:Bind ViewModel.IsSingleView, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -64,10 +64,10 @@
                 </Border>
 
                 <!--  Single Entry Form  -->
+
                 <Grid Grid.Row="1">
                     <Border
                         Padding="20"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
@@ -78,122 +78,187 @@
                             </Grid.ColumnDefinitions>
 
                             <!--  Left Column  -->
-                            <StackPanel
+                            <Grid
                                 Grid.Column="0"
-                                Margin="0,0,12,0"
-                                Spacing="12">
-                                <Border
-                                    Width="160"
-                                    Height="160"
-                                    Padding="4"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="Uniform" />
-                                </Border>
+                                ColumnSpacing="16"
+                                RowSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
                                 <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
                                     Margin="0,0,0,8"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Stretch"
                                     Style="{StaticResource SubtitleTextBlockStyle}"
                                     Text="Load Details" />
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Type" />
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <mi:MaterialIcon
-                                            Width="18"
-                                            Height="18"
-                                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                            Kind="{x:Bind ViewModel.CurrentLoad.TypeIconKind, Mode=OneWay}" />
-                                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.TypeName, Mode=OneWay}" />
-                                    </StackPanel>
-                                </StackPanel>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Part ID:" />
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Part ID" />
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.PartId, Mode=OneWay}" />
-                                </StackPanel>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.PartId, Mode=OneWay}" />
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Quantity" />
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.Quantity, Mode=OneWay}" />
-                                </StackPanel>
-                            </StackPanel>
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Type:" />
+
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.TypeName, Mode=OneWay}" />
+
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Quantity:" />
+
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.Quantity, Mode=OneWay}" />
+
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="PO Number:" />
+
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.PoNumber, Mode=OneWay}" />
+
+                                <TextBlock
+                                    Grid.Row="5"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Location:" />
+
+                                <TextBlock
+                                    Grid.Row="5"
+                                    Grid.Column="1"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" />
+
+                                <TextBlock
+                                    Grid.Row="6"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Vendor:"
+                                    Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                <TextBlock
+                                    Grid.Row="6"
+                                    Grid.Column="1"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+
+                                <TextBlock
+                                    Grid.Row="7"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+
+                                <TextBlock
+                                    Grid.Row="8"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Inventory Method:" />
+
+                                <TextBlock
+                                    Grid.Row="8"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}" />
+
+                                <TextBlock
+                                    Grid.Row="9"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BaseTextBlockStyle}"
+                                    Text="Load Details:" />
+                                <TextBlock
+                                    Grid.Row="9"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.SpecSummaryDisplay, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+
+                            </Grid>
 
                             <!--  Right Column  -->
-                            <StackPanel
+
+                            <Border
+                                Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="12,0,0,0"
-                                Spacing="12">
-                                <TextBlock
-                                    Margin="0,0,0,8"
-                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                    Text="Additional Information" />
+                                Margin="0,6,6,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="Uniform" />
+                            </Border>
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="PO Number" />
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.PoNumber, Mode=OneWay}" />
-                                </StackPanel>
 
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Location" />
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4" Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Vendor" />
-                                    <TextBlock
-                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                        Text="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay}"
-                                        TextWrapping="WrapWholeWords"
-                                        Visibility="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-                                    <TextBlock
-                                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                        Style="{StaticResource BodyTextBlockStyle}"
-                                        Text="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay}"
-                                        TextWrapping="WrapWholeWords"
-                                        Visibility="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Inventory Method" />
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}" />
-                                </StackPanel>
-
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Load Details" />
-                                    <TextBlock
-                                        Style="{StaticResource BodyTextBlockStyle}"
-                                        Text="{x:Bind ViewModel.CurrentLoad.SpecSummaryDisplay, Mode=OneWay}"
-                                        TextWrapping="WrapWholeWords" />
-                                </StackPanel>
-                            </StackPanel>
                         </Grid>
                     </Border>
                 </Grid>

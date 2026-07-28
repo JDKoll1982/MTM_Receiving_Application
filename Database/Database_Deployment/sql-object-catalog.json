@@ -13145,23 +13145,7 @@
           "object": "settings_module_volvo"
         }
       ]
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_UserDefaults_GetByUser.sql",
-      "category": "stored_procedure_file",
-      "objectType": "stored_procedure",
-      "objectName": "sp_CustomerPullPack_UserDefaults_GetByUser",
-      "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackUserDefaults.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
+    }
       ],
       "parameters": [
         {
@@ -13194,23 +13178,7 @@
           "object": "customer_pull_pack_user_defaults"
         }
       ]
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_UserDefaults_Upsert.sql",
-      "category": "stored_procedure_file",
-      "objectType": "stored_procedure",
-      "objectName": "sp_CustomerPullPack_UserDefaults_Upsert",
-      "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackUserDefaults.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
+    }
       ],
       "parameters": [
         {
@@ -13364,23 +13332,7 @@
           "object": "DATETIME"
         }
       ]
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_Waitlist_GetQueue.sql",
-      "category": "stored_procedure_file",
-      "objectType": "stored_procedure",
-      "objectName": "sp_CustomerPullPack_Waitlist_GetQueue",
-      "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackWaitlist.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
+    }
       ],
       "parameters": [
         {
@@ -13630,23 +13582,7 @@
           "object": "__derived__:SelectedLocationsPipe"
         }
       ]
-    },
-    {
-      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/ShipRecTools/CustomerPullPack/sp_CustomerPullPack_Waitlist_Upsert.sql",
-      "category": "stored_procedure_file",
-      "objectType": "stored_procedure",
-      "objectName": "sp_CustomerPullPack_Waitlist_Upsert",
-      "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_ShipRec_Tools/Data/CustomerPullPack/Dao_CustomerPullPackWaitlist.cs",
-          "count": 1,
-          "patterns": [
-            "Helper_Database_StoredProcedure"
-          ]
-        }
+    }
       ],
       "parameters": [
         {

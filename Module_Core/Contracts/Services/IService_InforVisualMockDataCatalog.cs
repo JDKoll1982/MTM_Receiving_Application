@@ -31,16 +31,6 @@ public interface IService_InforVisualMockDataCatalog
     IReadOnlyList<Model_InforVisualMockReceivingTransaction> GetReceivingTransactions();
 
     /// <summary>
-    /// Gets the combined base and runtime Customer Pull n' Pack mock demand rows.
-    /// </summary>
-    IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow> GetCustomerPullPackDemandRows();
-
-    /// <summary>
-    /// Gets the combined base and runtime Customer Pull n' Pack mock location rows.
-    /// </summary>
-    IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> GetCustomerPullPackLocationRows();
-
-    /// <summary>
     /// Appends or updates mock receiving transactions after a successful receiving save.
     /// </summary>
     /// <param name="transactions"></param>

@@ -16,9 +16,32 @@
         <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
     </UserControl.Resources>
 
-    <Grid>
-        <StackPanel Spacing="16">
+    <Grid x:Name="ReceivingLoadEntryRootGrid">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="LoadEntryRootStackPanel.Spacing" Value="12" />
+                        <Setter Target="LoadEntrySummaryBorder.Padding" Value="12,10" />
+                        <Setter Target="RecommendedLocationsBorder.Padding" Value="12,8" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="LoadEntryRootStackPanel.Spacing" Value="20" />
+                        <Setter Target="LoadEntrySummaryBorder.Padding" Value="20,14" />
+                        <Setter Target="RecommendedLocationsBorder.Padding" Value="20,10" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <StackPanel
+            x:Name="LoadEntryRootStackPanel"
+            Spacing="16">
             <Border
+                x:Name="LoadEntrySummaryBorder"
                 Padding="16,12"
                 HorizontalAlignment="Stretch"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -103,6 +126,7 @@
 
             <!--  Reduced Padding from 20 to 16,8 to flatten the outer box  -->
             <Border
+                x:Name="RecommendedLocationsBorder"
                 Padding="16,8"
                 HorizontalAlignment="Stretch"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -112,12 +136,14 @@
                 <!--  Reduced Spacing from 12 to 6 to pull layout elements closer together  -->
                 <StackPanel Spacing="6">
                     <TextBlock
+                        x:Name="RecommendedLocationsHeaderTextBlock"
                         Style="{StaticResource SubtitleTextBlockStyle}"
                         Text="Recommended Locations"
                         TextTrimming="WordEllipsis"
                         TextWrapping="NoWrap" />
 
                     <ProgressRing
+                        x:Name="RecommendedLocationsProgressRing"
                         Width="24"
                         Height="24"
                         HorizontalAlignment="Left"
@@ -126,6 +152,7 @@
 
                     <!--  Removed top margin to save vertical whitespace  -->
                     <ScrollViewer
+                        x:Name="RecommendedLocationsScrollViewer"
                         HorizontalScrollBarVisibility="Visible"
                         HorizontalScrollMode="Enabled"
                         VerticalScrollBarVisibility="Disabled"

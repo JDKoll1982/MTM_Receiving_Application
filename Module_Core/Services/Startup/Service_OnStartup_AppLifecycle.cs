@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
+using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -21,6 +22,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly IService_ApplicationShutdown _applicationShutdown;
         private readonly IService_ErrorHandler _errorHandler;
         private readonly IService_ReceivingLabelData _labelDataService;
+        private readonly IService_DunnageImageStorage _dunnageImageStorage;
         private readonly Dao_SettingsCoreRoles _rolesDao;
         private readonly Dao_SettingsCoreUserRoles _userRolesDao;
         private View_Shared_SplashScreenWindow? _splashScreen;
@@ -34,6 +36,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             IService_ApplicationShutdown applicationShutdown,
             IService_ErrorHandler errorHandler,
             IService_ReceivingLabelData labelDataService,
+            IService_DunnageImageStorage dunnageImageStorage,
             Dao_SettingsCoreRoles rolesDao,
             Dao_SettingsCoreUserRoles userRolesDao
         )
@@ -46,6 +49,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
             _applicationShutdown = applicationShutdown;
             _errorHandler = errorHandler;
             _labelDataService = labelDataService;
+            _dunnageImageStorage = dunnageImageStorage;
             _rolesDao = rolesDao;
             _userRolesDao = userRolesDao;
         }
@@ -80,6 +84,17 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 // 3. Initialize Services (20%)
                 UpdateSplash(20, "Initializing services...");
                 await Task.Delay(300);
+                if (ShouldAbortStartup())
+                {
+                    return;
+                }
+
+                // 3a. Refresh Dunnage image cache (network -> local)
+                UpdateSplash(24, "Preparing Dunnage image assets...");
+                await _dunnageImageStorage.RefreshConfiguredRootFolderAsync();
+                SetSplashIndeterminate("Syncing Dunnage images from network...");
+                await _dunnageImageStorage.SyncLocalCacheAsync();
+                UpdateSplash(28, "Dunnage image assets ready.");
                 if (ShouldAbortStartup())
                 {
                     return;

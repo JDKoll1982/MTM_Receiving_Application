@@ -17,10 +17,29 @@
     </UserControl.Resources>
 
     <Grid
+        x:Name="ReviewRootGrid"
         Padding="24"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         RowSpacing="16">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingReviewAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="ReviewRootGrid.Padding" Value="10" />
+                        <Setter Target="ReviewRootGrid.RowSpacing" Value="12" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="ReviewRootGrid.Padding" Value="20" />
+                        <Setter Target="ReviewRootGrid.RowSpacing" Value="20" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

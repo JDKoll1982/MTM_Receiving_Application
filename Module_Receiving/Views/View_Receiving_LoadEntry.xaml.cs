@@ -13,6 +13,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         public ViewModel_Receiving_LoadEntry ViewModel { get; }
 
         private readonly IService_Focus _focusService;
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
 
         public double ViewportWidth { get; private set; } = double.MaxValue;
 
@@ -20,14 +21,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         public View_Receiving_LoadEntry(
             ViewModel_Receiving_LoadEntry viewModel,
-            IService_Focus focusService
+            IService_Focus focusService,
+            IService_AdaptiveLayout adaptiveLayout
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
 
             ViewModel = viewModel;
             _focusService = focusService;
+            _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
             InitializeComponent();
 
@@ -46,6 +50,26 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             ViewportWidth = ActualWidth > 0 ? ActualWidth : double.MaxValue;
             ViewportHeight = ActualHeight > 0 ? ActualHeight : double.MaxValue;
+
+            ReceivingLoadEntryRootGrid.Padding = _adaptiveLayout.GetReceivingContentPadding(
+                ActualWidth
+            );
+
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
+
+            var recommendedLocationsBoundedHeight = _adaptiveLayout.CalculateBoundedViewportHeight(
+                containerHeightEpx: ActualHeight,
+                occupiedHeightsEpx:
+                [
+                    LoadEntrySummaryBorder.ActualHeight,
+                    RecommendedLocationsHeaderTextBlock.ActualHeight,
+                    RecommendedLocationsProgressRing.ActualHeight,
+                    96,
+                ]
+            );
+
+            RecommendedLocationsScrollViewer.MaxHeight = recommendedLocationsBoundedHeight;
             Bindings.Update();
         }
 

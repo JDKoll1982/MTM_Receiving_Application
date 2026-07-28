@@ -25,7 +25,37 @@ public class Service_AdaptiveLayout : IService_AdaptiveLayout
         return "ScannerDefaultState";
     }
 
+    public string ResolveReceivingLayoutState(double availableWidthEpx)
+    {
+        if (availableWidthEpx <= CompactBreakpoint)
+        {
+            return "ReceivingCompactState";
+        }
+
+        if (availableWidthEpx >= WideBreakpoint)
+        {
+            return "ReceivingWideState";
+        }
+
+        return "ReceivingDefaultState";
+    }
+
     public Thickness GetScannerContentPadding(double availableWidthEpx)
+    {
+        if (availableWidthEpx <= CompactBreakpoint)
+        {
+            return new Thickness(10);
+        }
+
+        if (availableWidthEpx >= WideBreakpoint)
+        {
+            return new Thickness(20);
+        }
+
+        return new Thickness(16);
+    }
+
+    public Thickness GetReceivingContentPadding(double availableWidthEpx)
     {
         if (availableWidthEpx <= CompactBreakpoint)
         {
