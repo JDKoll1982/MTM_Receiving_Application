@@ -24,6 +24,11 @@ public interface IService_ScannerWorkflow
 		CancellationToken cancellationToken = default
 	);
 
+	Task<Model_Dao_Result<Model_ScannerBatchSession>> ReplaceSessionItemsAsync(
+		Model_ScannerBatchSession session,
+		CancellationToken cancellationToken = default
+	);
+
 	Task<Model_Dao_Result<Model_ScannerRun>> BuildRunSnapshotAsync(
 		Model_ScannerBatchSession session,
 		CancellationToken cancellationToken = default

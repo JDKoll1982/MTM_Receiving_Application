@@ -293,7 +293,7 @@
                                 <Button
                                     Grid.Column="1"
                                     Style="{StaticResource ScannerActionButtonStyle}"
-                                    Command="{x:Bind ViewModel.ManageItemsCommand}"
+                                    Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
                                     Content="Manage Items" />
                             </Grid>
 

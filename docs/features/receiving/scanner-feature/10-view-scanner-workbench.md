@@ -15,6 +15,7 @@ The page must resize with the main window, and only the item list region should 
 
 - Header region: session identity, selected profile, application status
 - Items region: ordered items with status badges and a clear entry point to open the manage-items dialog
+- Manage Items dialog: batch editor for add, duplicate, move, and delete actions, with apply/cancel behavior
 - Send Control region: Check All, Send Next, Send All, Stop After This
 - Status region: inline issues, current message, progress counters (Sent, Failed, Waiting)
 - Footer region: save for later state and last persistence result
@@ -34,7 +35,7 @@ Main Body Left:
 
 - Items table with columns for #, Item, From Warehouse, From Location, To Warehouse, To Location, Quantity, Status
 - Manage Items button to open the batch-edit dialog
-- item actions for Add, Remove, Move Up, Move Down are handled inside the manage-items dialog
+- item actions for Add, Remove, Move Up, Move Down are handled inside the manage-items dialog and persist back to the active session
 
 Main Body Right:
 
@@ -61,6 +62,7 @@ Bottom Action Strip:
 - Users edit line-level values through the staged draft workflow rather than typing directly into the workbench grid.
 - After a new item is added, the workbench validates part, source location, destination location, and available source quantity against Infor Visual.
 - Invalid items remain in the batch with visible status and notes so the user can correct them.
+- Manage Items edits preserve row order and carry the current validation context forward when the dialog is applied.
 - After data entry completes, the user manually validates what the ERP received and performs save/commit actions; no `Alt+S` or auto-finalize behavior is part of this screen.
 - The workbench currently presents a compact item list with the item details panel on the right side so the operator can focus on the part number, locations, and status without the extra notes/warehouse/ID columns.
 - The workbench layout must keep the red-box items region as the only scrollable section so the rest of the page stays anchored while the window resizes.

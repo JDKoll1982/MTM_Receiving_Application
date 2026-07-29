@@ -77,7 +77,7 @@ The scanner feature is in late implementation and stabilization. Core feature sl
 | Step 2: MySQL DAO and stored procedures | Complete | Scanner persistence DAO path is implemented in `Module_Scanner/Data` and covered by DAO-focused tests under `MTM_Receiving_Application.Tests/Unit/Module_Scanner/Data`. |
 | Step 3: Scanner services | Complete | Workflow orchestration, history persistence, and validation routing are implemented in `Module_Scanner/Services`, including Infor Visual-backed validation checks where required. |
 | Step 4: ViewModel command/state flow | Complete | Workbench/history/settings ViewModel command and state behavior are implemented, including non-blocking add-line status and notes handling. |
-| Step 5: View composition and x:Bind wiring | In progress (high completion) | Workbench, history, and settings views are wired and operational. Most recent updates focus on layout parity, responsive sizing, fixed/footer interaction regions, and profile-editing usability. |
+| Step 5: View composition and x:Bind wiring | In progress (high completion) | Workbench, history, and settings views are wired and operational. The Manage Items modal is now implemented, and remaining work is concentrated on polish, route hardening, and final interaction refinements. |
 | Step 6: DI and navigation route validation | In progress | Scanner navigation is functionally wired and exercised during feature validation; final hardening remains tied to full feature signoff pass. |
 | Step 7: Feature test expansion and regression checks | In progress | Scanner-focused test runs are green and used iteratively during UI changes. Additional targeted coverage can still be added for edge interactions and final route cases. |
 | Step 8: End-to-end ERP-target verification and final doc lock | Pending final signoff | Manual end-to-end verification and final documentation lock are reserved for release readiness after UX/behavior signoff. |
@@ -86,6 +86,7 @@ The scanner feature is in late implementation and stabilization. Core feature sl
 
 - Implemented mockup-aligned structural layout for scanner workbench, history, and settings surfaces.
 - Completed scanner settings profile editor wiring for create, duplicate, delete, load, set default, safe defaults, and save/reset flows.
+- Implemented the scanner Manage Items modal for add, duplicate, reorder, and delete batch editing.
 - Applied visual polish pass for spacing, typography weight, and button/chip consistency.
 - Applied responsive behavior pass to remove rigid overflow patterns and support window-resize workflows.
 - Updated workbench interaction flow so fixed lower action controls remain anchored while upper content scrolls.

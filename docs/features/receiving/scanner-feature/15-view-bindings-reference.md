@@ -60,7 +60,7 @@ Draft list bindings:
 
 Workbench detail and control bindings:
 
-- Manage items command: ViewModel.ManageItemsCommand
+- Manage items command: ViewModel.ManageItemsDialogCommand
 - Selected item detail fields: SelectedSessionItem.PayloadPartId, PayloadFromWarehouse, PayloadFromLocation, PayloadToWarehouse, PayloadToLocation, ValidationNotes
 - Progress counters: CurrentSession.SentItems, CurrentSession.FailedItems, CurrentSession.WaitingItems
 - Send control commands: ViewModel.CheckAllCommand, SendNextCommand, SendAllCommand, StopAfterThisCommand, ClearHistoryCommand, ExportCommand

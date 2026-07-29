@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
+using MTM_Receiving_Application.Module_Scanner.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
@@ -22,6 +24,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerNavigation _navigationService;
     private readonly IService_ScannerWorkflow _workflowService;
     private readonly IService_ScannerValidation _validationService;
+    private readonly IService_Window _windowService;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasActiveSession))]
@@ -75,6 +78,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         IService_ScannerNavigation navigationService,
         IService_ScannerWorkflow workflowService,
         IService_ScannerValidation validationService,
+        IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -84,9 +88,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         ArgumentNullException.ThrowIfNull(navigationService);
         ArgumentNullException.ThrowIfNull(workflowService);
         ArgumentNullException.ThrowIfNull(validationService);
+        ArgumentNullException.ThrowIfNull(windowService);
         _navigationService = navigationService;
         _workflowService = workflowService;
         _validationService = validationService;
+        _windowService = windowService;
     }
 
     [RelayCommand]
@@ -280,7 +286,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private Task ManageItemsAsync()
+    private Task ManageItemsDialogAsync()
     {
         if (CurrentSession is null)
         {
@@ -288,8 +294,68 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return Task.CompletedTask;
         }
 
-        ShowStatus("Manage-items dialog is planned for the next scanner slice. Item editing remains available in the draft form.", InfoBarSeverity.Informational);
-        return Task.CompletedTask;
+        return ManageItemsDialogCoreAsync();
+    }
+
+    private async Task ManageItemsDialogCoreAsync()
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot is null)
+        {
+            ShowStatus("Unable to open Manage Items because the window root is unavailable.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before managing the batch.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var dialog = new View_Scanner_ManageItemsDialog(CurrentSession)
+        {
+            XamlRoot = xamlRoot,
+        };
+
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
+
+        var result = await dialog.ShowAsync();
+        if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            ShowStatus("Manage Items closed without changes.", InfoBarSeverity.Informational);
+            return;
+        }
+
+        CurrentSession.Items.Clear();
+        foreach (var item in dialog.GetItemsSnapshot().OrderBy(candidate => candidate.SequenceNumber))
+        {
+            item.SessionId = CurrentSession.SessionId;
+            CurrentSession.Items.Add(item);
+        }
+
+        CurrentSession.RecalculateItemCounters();
+        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        SelectedSessionItem = SessionItems.FirstOrDefault(candidate =>
+            SelectedSessionItem is not null && candidate.ItemId == SelectedSessionItem.ItemId);
+
+        var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+        if (!persist.Success || persist.Data is null)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(persist.ErrorMessage)
+                    ? "Manage Items changes were applied locally but could not be saved."
+                    : persist.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        CurrentSession = persist.Data;
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        SelectedSessionItem = SessionItems.FirstOrDefault(candidate =>
+            SelectedSessionItem is not null && candidate.ItemId == SelectedSessionItem.ItemId);
+        ShowStatus("Manage Items changes saved.", InfoBarSeverity.Success);
     }
 
     [RelayCommand]

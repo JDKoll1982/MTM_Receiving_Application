@@ -152,6 +152,51 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 		return Model_Dao_Result_Factory.Success(session);
 	}
 
+	public async Task<Model_Dao_Result<Model_ScannerBatchSession>> ReplaceSessionItemsAsync(
+		Model_ScannerBatchSession session,
+		CancellationToken cancellationToken = default
+	)
+	{
+		if (session is null)
+		{
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>("Session is required.");
+		}
+
+		var deleteResult = await _itemDao.DeleteBySessionAsync(session.SessionId);
+		if (!deleteResult.Success)
+		{
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				deleteResult.ErrorMessage,
+				deleteResult.Exception
+			);
+		}
+
+		foreach (var item in session.Items.OrderBy(candidate => candidate.SequenceNumber))
+		{
+			item.SessionId = session.SessionId;
+			var persistItem = await _itemDao.UpsertItemAsync(item);
+			if (!persistItem.Success)
+			{
+				return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+					persistItem.ErrorMessage,
+					persistItem.Exception
+				);
+			}
+		}
+
+		session.RecalculateItemCounters();
+		var persistSession = await _sessionDao.UpsertSessionAsync(session);
+		if (!persistSession.Success)
+		{
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				persistSession.ErrorMessage,
+				persistSession.Exception
+			);
+		}
+
+		return Model_Dao_Result_Factory.Success(session);
+	}
+
 	public async Task<Model_Dao_Result<Model_ScannerRun>> BuildRunSnapshotAsync(
 		Model_ScannerBatchSession session,
 		CancellationToken cancellationToken = default

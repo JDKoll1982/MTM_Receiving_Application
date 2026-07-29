@@ -21,6 +21,7 @@ This view-model is the operational center for preparing items, validating data, 
 - LastValidationStatus and LastValidationNotes
 - HasActiveSession
 - Status and notification state from the shared base view-model
+- ManageItemsDialogCommand
 
 ## Required State
 
@@ -64,6 +65,7 @@ This view-model is the operational center for preparing items, validating data, 
 - SendNextAsync and SendAllAsync transition eligible items into sent state and update counters and session status.
 - StopAfterThisAsync records a stop request for the current batch.
 - ClearHistoryAsync clears the active workbench UI state and ExportAsync writes the current batch to a text export.
+- ManageItemsDialogAsync opens the batch-edit dialog, allows add/duplicate/reorder/delete actions, and persists the reordered session back through the workflow service.
 
 ## Validation Responsibilities
 
@@ -101,6 +103,7 @@ Modify or extend:
 - scanner module navigation host to include scanner workbench route
 - scanner module command wiring to expose scanner entry points
 - workbench command surface to open the manage-items dialog for inline item entry and reorder workflows
+- manage-items dialog implementation in Module_Scanner.Views and its workflow persistence path
 
 Do not modify:
 

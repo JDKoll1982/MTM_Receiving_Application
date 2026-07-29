@@ -370,6 +370,7 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
             new Mock<IService_ScannerNavigation>().Object,
             workflow,
             validation,
+            new Mock<IService_Window>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
