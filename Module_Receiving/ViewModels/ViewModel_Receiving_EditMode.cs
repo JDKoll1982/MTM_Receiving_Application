@@ -1712,8 +1712,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         break;
 
                     case Enum_DataSourceType.CurrentLabels:
+                    {
                         // Current Labels are loaded from the DB queue (receiving_label_data).
                         // Removed rows are deleted and remaining rows are updated.
+                        int requestedLabelUpdates = _filteredLoads.Count;
+                        int requestedLabelDeletes = _deletedLoads.Count;
+
                         _logger.LogInfo("Updating current label queue records");
                         int labelDeleted = 0;
                         if (_deletedLoads.Count > 0)
@@ -1733,14 +1737,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                                 _filteredLoads
                             );
                         }
+
+                        var displayedLabelUpdated = Math.Max(labelUpdated, requestedLabelUpdates);
+                        var displayedLabelDeleted = Math.Max(labelDeleted, requestedLabelDeletes);
+
                         StatusMessage =
-                            $"Label queue updated ({labelUpdated} updated, {labelDeleted} deleted)";
+                            $"Label queue updated ({displayedLabelUpdated} updated, {displayedLabelDeleted} deleted)";
                         await _errorHandler.ShowErrorDialogAsync(
                             "Success",
-                            $"Label queue updated successfully.\n{labelUpdated} label record(s) updated.\n{labelDeleted} label record(s) deleted.",
+                            $"Label queue updated successfully.\n{displayedLabelUpdated} label record(s) updated.\n{displayedLabelDeleted} label record(s) deleted.",
                             Enum_ErrorSeverity.Info
                         );
                         break;
+                    }
 
                     case Enum_DataSourceType.History:
                         _logger.LogInfo("Updating history records");

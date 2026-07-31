@@ -242,9 +242,18 @@ public class Dao_ReceivingLoad
 
                 if (result.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving history row matched the update request for load '{load.LoadNumber}'."
+                    var historyRowExists = await ReceivingHistoryRowExistsAsync(
+                        connection,
+                        transaction,
+                        load
                     );
+
+                    if (!historyRowExists)
+                    {
+                        throw new InvalidOperationException(
+                            $"No receiving history row matched the update request for load '{load.LoadNumber}'."
+                        );
+                    }
                 }
 
                 updatedCount++;
@@ -261,6 +270,37 @@ public class Dao_ReceivingLoad
                 ex
             );
         }
+    }
+
+    private static async Task<bool> ReceivingHistoryRowExistsAsync(
+        MySqlConnection connection,
+        MySqlTransaction transaction,
+        Model_ReceivingLoad load
+    )
+    {
+        const string sql = @"
+SELECT 1
+FROM receiving_history
+WHERE (@historyRecordId IS NOT NULL AND id = @historyRecordId)
+   OR (
+        @historyRecordId IS NULL
+        AND @loadId IS NOT NULL
+        AND @loadId <> ''
+        AND load_guid = @loadId
+   )
+LIMIT 1;";
+
+        object historyRecordId = load.HistoryRecordID.HasValue
+            ? load.HistoryRecordID.Value
+            : DBNull.Value;
+        object loadId = load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString();
+
+        await using var command = new MySqlCommand(sql, connection, transaction);
+        command.Parameters.AddWithValue("@historyRecordId", historyRecordId);
+        command.Parameters.AddWithValue("@loadId", loadId);
+
+        var scalar = await command.ExecuteScalarAsync();
+        return scalar != null && scalar != DBNull.Value;
     }
 
     public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_ReceivingLoad> loads)

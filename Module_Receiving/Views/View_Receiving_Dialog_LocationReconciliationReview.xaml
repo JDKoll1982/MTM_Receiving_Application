@@ -6,7 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch">
 
     <UserControl.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
@@ -19,6 +21,43 @@
         BorderThickness="1"
         CornerRadius="8">
         <Grid x:Name="RootGrid" MaxWidth="1600">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="ReceivingLocationReconciliationAdaptiveStates">
+                    <VisualState x:Name="ReceivingDefaultState" />
+                    <VisualState x:Name="ReceivingCompactState">
+                        <VisualState.Setters>
+                            <Setter Target="RootGrid.MaxWidth" Value="1200" />
+                            <Setter Target="DetailsCardsGrid.ColumnSpacing" Value="0" />
+                            <Setter Target="DetailsCardsLeftColumn.Width" Value="*" />
+                            <Setter Target="DetailsCardsRightColumn.Width" Value="0" />
+                            <Setter Target="PartInformationCardBorder.(Grid.Row)" Value="0" />
+                            <Setter Target="PartInformationCardBorder.(Grid.Column)" Value="0" />
+                            <Setter Target="TransferEvidenceCardBorder.(Grid.Row)" Value="1" />
+                            <Setter Target="TransferEvidenceCardBorder.(Grid.Column)" Value="0" />
+                            <Setter Target="OldLocationCardBorder.(Grid.Row)" Value="2" />
+                            <Setter Target="OldLocationCardBorder.(Grid.Column)" Value="0" />
+                            <Setter Target="NewLocationCardBorder.(Grid.Row)" Value="3" />
+                            <Setter Target="NewLocationCardBorder.(Grid.Column)" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="ReceivingWideState">
+                        <VisualState.Setters>
+                            <Setter Target="RootGrid.MaxWidth" Value="1700" />
+                            <Setter Target="DetailsCardsGrid.ColumnSpacing" Value="8" />
+                            <Setter Target="DetailsCardsLeftColumn.Width" Value="*" />
+                            <Setter Target="DetailsCardsRightColumn.Width" Value="*" />
+                            <Setter Target="PartInformationCardBorder.(Grid.Row)" Value="0" />
+                            <Setter Target="PartInformationCardBorder.(Grid.Column)" Value="0" />
+                            <Setter Target="TransferEvidenceCardBorder.(Grid.Row)" Value="0" />
+                            <Setter Target="TransferEvidenceCardBorder.(Grid.Column)" Value="1" />
+                            <Setter Target="OldLocationCardBorder.(Grid.Row)" Value="1" />
+                            <Setter Target="OldLocationCardBorder.(Grid.Column)" Value="0" />
+                            <Setter Target="NewLocationCardBorder.(Grid.Row)" Value="1" />
+                            <Setter Target="NewLocationCardBorder.(Grid.Column)" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -83,17 +122,20 @@
                 <Grid>
                     <StackPanel Spacing="6" Visibility="{x:Bind ViewModel.HasPendingItems, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                        <Grid ColumnSpacing="8" RowSpacing="8">
+                        <Grid x:Name="DetailsCardsGrid" ColumnSpacing="8" RowSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition x:Name="DetailsCardsLeftColumn" Width="*" />
+                                <ColumnDefinition x:Name="DetailsCardsRightColumn" Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Border
+                                x:Name="PartInformationCardBorder"
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Padding="16"
@@ -196,6 +238,7 @@
                             </Border>
 
                             <Border
+                                x:Name="TransferEvidenceCardBorder"
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Padding="16"
@@ -283,6 +326,7 @@
                             </Border>
 
                             <Border
+                                x:Name="OldLocationCardBorder"
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Padding="16"
@@ -360,6 +404,7 @@
                             </Border>
 
                             <Border
+                                x:Name="NewLocationCardBorder"
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 Padding="16"
@@ -441,27 +486,6 @@
                             </Border>
                         </Grid>
 
-                        <Border
-                            Padding="16"
-                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="10">
-                            <StackPanel Spacing="8">
-                                <TextBlock
-                                    FontSize="16"
-                                    FontWeight="SemiBold"
-                                    Text="Why This Destination Was Chosen" />
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="{x:Bind ViewModel.CurrentEvidenceSummaryText, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
-                                <TextBlock
-                                    Text="{x:Bind ViewModel.CurrentReasonText, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
                     </StackPanel>
 
                     <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.IsSummaryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -488,12 +512,15 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
                             <Border
                                 Grid.Column="0"
+                                Grid.Row="0"
                                 Padding="14"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -510,6 +537,7 @@
 
                             <Border
                                 Grid.Column="1"
+                                Grid.Row="0"
                                 Padding="14"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -525,7 +553,8 @@
                             </Border>
 
                             <Border
-                                Grid.Column="2"
+                                Grid.Column="0"
+                                Grid.Row="1"
                                 Padding="14"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -541,7 +570,8 @@
                             </Border>
 
                             <Border
-                                Grid.Column="3"
+                                Grid.Column="1"
+                                Grid.Row="1"
                                 Padding="14"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

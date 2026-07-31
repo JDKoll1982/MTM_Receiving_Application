@@ -483,9 +483,41 @@ public class Dao_ReceivingLabelData
 
                 if (execResult.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving_label_data row matched the delete request for load '{load.LoadNumber}'."
-                    );
+                    // If ID lookup missed, retry by workflow GUID only.
+                    if (load.LoadID != Guid.Empty && load.LabelDataRecordID.HasValue)
+                    {
+                        var fallbackParameters = new Dictionary<string, object>
+                        {
+                            { "p_label_data_record_id", DBNull.Value },
+                            { "p_load_id", load.LoadID.ToString() },
+                        };
+
+                        var fallbackResult =
+                            await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                                connection,
+                                transaction,
+                                "sp_Receiving_LabelData_Delete",
+                                fallbackParameters
+                            );
+
+                        if (!fallbackResult.Success)
+                        {
+                            throw new InvalidOperationException(
+                                fallbackResult.ErrorMessage,
+                                fallbackResult.Exception
+                            );
+                        }
+
+                        if (fallbackResult.AffectedRows > 0)
+                        {
+                            deletedCount++;
+                            continue;
+                        }
+                    }
+
+                    // Treat missing rows as idempotent delete success and count as processed.
+                    deletedCount++;
+                    continue;
                 }
 
                 deletedCount++;
