@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
@@ -81,53 +85,82 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _focusService.SetFocus(NumberOfLoadsNumberBox);
         }
 
-        private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private async void LocationLookupControl_ValidationCompleted(
+            object sender,
+            Model_SharedLookupValidationCompletedEventArgs e
+        )
         {
-            if (sender is not TextBox textBox)
+            if (!e.Result.IsValid)
             {
+                ViewModel.ShowStatus(
+                    e.Result.Message,
+                    MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
                 return;
             }
 
-            var validation = await ViewModel.ValidateLocationAsync();
-            if (validation.IsValid)
+            if (e.Result.UsedFuzzyFallback && e.Result.HasExactMatch is false)
             {
-                return;
-            }
+                var selectedResult = await ShowFuzzyPickerAsync(
+                    e.Result.FormattedValue,
+                    e.Result.FuzzyCandidates
+                );
 
-            var suggestionsResult = await ViewModel.GetLocationSuggestionsAsync();
-            if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
-            {
-                var dialog = new Dialog_FuzzySearchPicker(
-                    suggestionsResult.Data,
-                    "Select Location",
-                    $"No exact match was found for '{ViewModel.Location?.Trim()}'. Select a matching location."
-                )
+                if (selectedResult is null)
                 {
-                    XamlRoot = textBox.XamlRoot,
-                };
-
-                var dialogResult = await dialog.ShowAsync();
-                if (
-                    dialogResult == ContentDialogResult.Primary
-                    && dialog.SelectedResult is not null
-                    && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
-                )
-                {
-                    ViewModel.Location = dialog.SelectedResult.Label.Trim();
+                    LocationLookupControl.InputValue = string.Empty;
+                    ViewModel.Location = string.Empty;
                     return;
                 }
+
+                var selectedValue = (selectedResult.Key ?? selectedResult.Label ?? string.Empty)
+                    .Trim();
+
+                if (string.IsNullOrWhiteSpace(selectedValue))
+                {
+                    LocationLookupControl.InputValue = string.Empty;
+                    ViewModel.Location = string.Empty;
+                    return;
+                }
+
+                LocationLookupControl.InputValue = selectedValue;
+                ViewModel.Location = selectedValue;
+                await LocationLookupControl.ValidateAsync();
+            }
+        }
+
+        private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
+            string searchTerm,
+            IReadOnlyList<Model_FuzzySearchResult> items
+        )
+        {
+            if (items.Count == 0)
+            {
+                return null;
             }
 
-            var statusMessage = validation.Message;
-            if (
-                !suggestionsResult.IsSuccess
-                && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false
+            var xamlRoot = XamlRoot;
+            if (xamlRoot is null)
+            {
+                return null;
+            }
+
+            var dialog = new Dialog_FuzzySearchPicker(
+                items,
+                "Select Location",
+                $"No exact location match was found for '{searchTerm}'. Select a similar location to continue."
             )
             {
-                statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
+                XamlRoot = xamlRoot,
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return null;
             }
 
-            ViewModel.ShowStatus(statusMessage, Module_Core.Models.Enums.InfoBarSeverity.Warning);
+            return dialog.SelectedResult;
         }
 
         private void RecommendedLocationButton_Click(object sender, RoutedEventArgs e)

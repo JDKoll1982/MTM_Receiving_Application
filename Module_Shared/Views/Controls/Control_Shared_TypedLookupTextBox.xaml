@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Shared.Views.Controls.Control_Shared_TypedLookupTextBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
+    x:Name="Root">
+    <StackPanel Spacing="6">
+        <TextBlock
+            x:Name="HeaderTextBlock"
+            Text="{x:Bind HeaderText, Mode=OneWay}" />
+
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                x:Name="LookupTextBox"
+                Grid.Column="0"
+                Text="{x:Bind InputValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                PlaceholderText="{x:Bind PlaceholderText, Mode=OneWay}"
+                GotFocus="LookupTextBox_GotFocus"
+                LostFocus="LookupTextBox_LostFocus"
+                KeyDown="LookupTextBox_KeyDown" />
+
+            <ProgressRing
+                Grid.Column="1"
+                Width="16"
+                Height="16"
+                IsActive="{x:Bind IsValidationInProgress, Mode=OneWay}" />
+        </Grid>
+    </StackPanel>
+</UserControl>

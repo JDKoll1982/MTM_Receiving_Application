@@ -498,75 +498,28 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
     {
-        var locationToValidate = Location.Trim();
+        await Task.CompletedTask;
+
+        var locationToValidate = NormalizeLocation(Location);
 
         if (string.IsNullOrWhiteSpace(locationToValidate))
         {
             return Model_ReceivingValidationResult.Error("Please enter a location.");
         }
 
-        var validation = await _receivingValidation.ValidateLocationAsync(
-            locationToValidate,
-            WarehouseCode
-        );
-        if (validation.IsValid)
-        {
-            Location = locationToValidate;
-        }
-
-        return validation;
+        Location = locationToValidate;
+        return Model_ReceivingValidationResult.Success();
     }
 
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetLocationSuggestionsAsync()
     {
-        if (string.IsNullOrWhiteSpace(Location))
-        {
-            return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
-        }
+        await Task.CompletedTask;
+        return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
+    }
 
-        if (_receivingValidation.UseMockLocationList)
-        {
-            var normalizedSearch = NormalizeLocationForMatch(Location);
-            var locationSuggestions = _receivingValidation
-                .PresetLocations.Where(presetLocation =>
-                {
-                    var normalizedPreset = NormalizeLocationForMatch(presetLocation);
-                    return normalizedPreset.Contains(
-                        normalizedSearch,
-                        StringComparison.OrdinalIgnoreCase
-                    );
-                })
-                .OrderByDescending(presetLocation =>
-                    presetLocation.StartsWith(Location.Trim(), StringComparison.OrdinalIgnoreCase)
-                )
-                .ThenBy(presetLocation => presetLocation, StringComparer.OrdinalIgnoreCase)
-                .Select(presetLocation => new Model_FuzzySearchResult
-                {
-                    Key = presetLocation,
-                    Label = presetLocation,
-                    Detail = "Preset mock location",
-                })
-                .ToList();
-
-            return Model_Dao_Result_Factory.Success(locationSuggestions);
-        }
-
-        var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
-            Location.Trim(),
-            WarehouseCode
-        );
-        if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null)
-        {
-            return fuzzyResult;
-        }
-
-        var suggestions = fuzzyResult
-            .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
-            .GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
-            .Select(static group => group.First())
-            .ToList();
-
-        return Model_Dao_Result_Factory.Success(suggestions);
+    private static string NormalizeLocation(string? value)
+    {
+        return (value ?? string.Empty).Trim().ToUpperInvariant();
     }
 
     private void UpdateInventoryMessage()

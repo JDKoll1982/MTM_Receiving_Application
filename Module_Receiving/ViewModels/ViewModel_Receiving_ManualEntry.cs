@@ -1755,7 +1755,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (poResult.Data.Parts.Count == 0)
             {
-                await ShowPoHasNoUsablePartsDialogAsync(normalizedPo);
+                await ShowPoHasNoUsablePartsDialogAsync(load, normalizedPo);
                 return false;
             }
 
@@ -1911,7 +1911,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 load.QualityHoldRestrictionType = selectedPart.QualityHoldRestrictionType.Trim();
             }
 
-            return await _qualityHoldWarning.CheckAndWarnAsync(selectedPart.PartID, load);
+            if (!await TryEnterManualEntryDialogAsync())
+            {
+                _logger.LogWarning(
+                    $"Skipped quality hold warning for {selectedPart.PartID} because another Manual Entry dialog is already open."
+                );
+                return false;
+            }
+
+            try
+            {
+                return await _qualityHoldWarning.CheckAndWarnAsync(selectedPart.PartID, load);
+            }
+            finally
+            {
+                ExitManualEntryDialog();
+            }
         }
 
         private static void ClearPoSelectedPart(Model_ReceivingLoad load)
@@ -1928,15 +1943,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             load.QualityHoldRestrictionType = string.Empty;
         }
 
-        private async Task ShowPoHasNoUsablePartsDialogAsync(string poNumber)
+        private async Task ShowPoHasNoUsablePartsDialogAsync(
+            Model_ReceivingLoad load,
+            string poNumber
+        )
         {
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot is null)
             {
                 await _errorHandler.HandleErrorAsync(
-                    $"PO {poNumber} does not have any parts available for selection. Use Non-PO mode instead.",
+                    $"No Inventoriable items found in this PO ({poNumber}).",
                     Enum_ErrorSeverity.Warning
                 );
+                ClearPoForRow(load);
                 return;
             }
 
@@ -1950,9 +1969,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
-                Title = "PO Cannot Be Used Here",
+                Title = "No Inventoriable Items Found",
                 Content =
-                    $"PO {poNumber} does not have any parts available for selection in Manual Entry. Use Non-PO mode for this row instead.",
+                    $"No Inventoriable items found in this PO ({poNumber}). The PO will be cleared for this row.",
                 CloseButtonText = "OK",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
                 XamlRoot = xamlRoot,
@@ -1966,6 +1985,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 ExitManualEntryDialog();
             }
+
+            ClearPoForRow(load);
+        }
+
+        private static void ClearPoForRow(Model_ReceivingLoad load)
+        {
+            load.PoNumber = string.Empty;
+            load.PoLineNumber = string.Empty;
+            load.SelectedPartSourcePONumber = string.Empty;
+            load.PoVendor = string.Empty;
+            load.PoStatus = string.Empty;
+            load.PoDueDate = null;
+            ClearPoSelectedPart(load);
         }
 
         private async Task<bool> TryEnterManualEntryDialogAsync()

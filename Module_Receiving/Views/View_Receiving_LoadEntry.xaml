@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     x:Name="Root"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -112,14 +113,18 @@
                             SpinButtonPlacementMode="Inline"
                             Value="{x:Bind ViewModel.NumberOfLoads, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <TextBox
+                        <sharedControls:Control_Shared_TypedLookupTextBox
+                            x:Name="LocationLookupControl"
+                            AutoResolveFuzzyMatches="False"
                             Grid.Column="1"
                             MinWidth="220"
                             HorizontalAlignment="Stretch"
-                            Header="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
-                            LostFocus="LocationTextBox_LostFocus"
+                            HeaderText="{x:Bind ViewModel.LoadEntryLocationHeaderText, Mode=OneWay}"
+                            InputValue="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            LookupType="Location"
                             PlaceholderText="Enter receiving location"
-                            Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            ValidationCompleted="LocationLookupControl_ValidationCompleted"
+                            WarehouseCode="002" />
                     </Grid>
                 </Grid>
             </Border>

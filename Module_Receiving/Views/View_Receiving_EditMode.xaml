@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:enums="using:MTM_Receiving_Application.Module_Core.Models.Enums"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
     x:Name="Root"
     mc:Ignorable="d">
@@ -313,10 +314,16 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                     <controls:DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <TextBox
+                            <sharedControls:Control_Shared_TypedLookupTextBox
                                 VerticalAlignment="Stretch"
-                                BorderThickness="0"
-                                Text="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                AutoResolveFuzzyMatches="False"
+                                GotFocus="LookupControl_GotFocus"
+                                HeaderText=""
+                                InputValue="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="PartNumber"
+                                LostFocus="LookupControl_LostFocus"
+                                Loaded="PartLookupControl_Loaded"
+                                ValidationCompleted="PartLookupControl_ValidationCompleted" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>
@@ -358,11 +365,34 @@
                     Tag="HeatLotNumber" />
 
                 <!--  InitialLocation  -->
-                <controls:DataGridTextColumn
+                <controls:DataGridTemplateColumn
                     Width="Auto"
-                    Binding="{Binding InitialLocation}"
                     Header="Location"
-                    Tag="InitialLocation" />
+                    Tag="InitialLocation">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Padding="12,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding InitialLocation}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <sharedControls:Control_Shared_TypedLookupTextBox
+                                VerticalAlignment="Stretch"
+                                AutoResolveFuzzyMatches="False"
+                                GotFocus="LookupControl_GotFocus"
+                                HeaderText=""
+                                InputValue="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="Location"
+                                LostFocus="LookupControl_LostFocus"
+                                Loaded="LocationLookupControl_Loaded"
+                                ValidationCompleted="LocationLookupControl_ValidationCompleted"
+                                WarehouseCode="002" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!--  RemainingQuantity  -->
                 <controls:DataGridTextColumn

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:enums="using:MTM_Receiving_Application.Module_Core.Models.Enums"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -169,15 +170,18 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                     <controls:DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <TextBox
+                            <sharedControls:Control_Shared_TypedLookupTextBox
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
-                                VerticalContentAlignment="Center"
-                                BorderThickness="0"
-                                DoubleTapped="PartIdCell_DoubleTapped"
-                                LostFocus="PartIDTextBox_LostFocus"
-                                Text="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            />
+                                AutoValidateOnLostFocus="False"
+                                AutoResolveFuzzyMatches="False"
+                                GotFocus="LookupControl_GotFocus"
+                                HeaderText=""
+                                InputValue="{Binding PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="PartNumber"
+                                LostFocus="PartLookupControl_LostFocus"
+                                Loaded="PartLookupControl_Loaded"
+                                ValidationCompleted="PartLookupControl_ValidationCompleted" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>
@@ -254,14 +258,18 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                     <controls:DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <TextBox
+                            <sharedControls:Control_Shared_TypedLookupTextBox
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
-                                VerticalContentAlignment="Center"
-                                BorderThickness="0"
-                                LostFocus="LocationTextBox_LostFocus"
-                                Text="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            />
+                                AutoResolveFuzzyMatches="False"
+                                GotFocus="LookupControl_GotFocus"
+                                HeaderText=""
+                                InputValue="{Binding InitialLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="Location"
+                                LostFocus="LocationLookupControl_LostFocus"
+                                Loaded="LocationLookupControl_Loaded"
+                                ValidationCompleted="LocationLookupControl_ValidationCompleted"
+                                WarehouseCode="002" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellEditingTemplate>
                 </controls:DataGridTemplateColumn>

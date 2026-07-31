@@ -59,44 +59,15 @@ public sealed partial class View_Dunnage_DetailsEntryView : UserControl
         ViewModel.Location = textBox.Text.Trim();
 
         var validation = await ViewModel.ValidateLocationAsync();
-        if (validation.IsValid)
+        if (!validation.IsValid)
         {
+            ViewModel.ShowStatus(
+                validation.Message,
+                Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
             return;
         }
 
-        var suggestionsResult = await ViewModel.GetLocationSuggestionsAsync();
-        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
-        {
-            var dialog = new Dialog_FuzzySearchPicker(
-                suggestionsResult.Data,
-                "Select Location",
-                $"No exact match was found for '{ViewModel.Location?.Trim()}'. Select a matching location."
-            )
-            {
-                XamlRoot = textBox.XamlRoot,
-            };
-
-            var dialogResult = await dialog.ShowAsync();
-            if (
-                dialogResult == ContentDialogResult.Primary
-                && dialog.SelectedResult is not null
-                && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
-            )
-            {
-                ViewModel.Location = dialog.SelectedResult.Label.Trim();
-                return;
-            }
-        }
-
-        var statusMessage = validation.Message;
-        if (
-            !suggestionsResult.IsSuccess
-            && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false
-        )
-        {
-            statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
-        }
-
-        ViewModel.ShowStatus(statusMessage, Module_Core.Models.Enums.InfoBarSeverity.Warning);
+        textBox.Text = ViewModel.Location;
     }
 }

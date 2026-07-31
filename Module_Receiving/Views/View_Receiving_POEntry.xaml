@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     HorizontalAlignment="Stretch"
@@ -153,14 +154,17 @@
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PartIdentifierHeaderText, Mode=OneWay}" />
                             </StackPanel>
 
-                            <TextBox
-                                x:Name="PartIDTextBox"
+                            <sharedControls:Control_Shared_TypedLookupTextBox
+                                x:Name="PartIDLookupControl"
+                                AutoResolveFuzzyMatches="False"
                                 MinWidth="320"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PartIdAccessibilityName, Mode=OneWay}"
-                                LostFocus="PartIDTextBox_LostFocus"
+                                HeaderText=""
+                                InputValue="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="PartNumber"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
-                                Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                ValidationCompleted="PartIDLookupControl_ValidationCompleted" />
                         </StackPanel>
 
                         <!--  Package Type Display (Auto-detected)  -->

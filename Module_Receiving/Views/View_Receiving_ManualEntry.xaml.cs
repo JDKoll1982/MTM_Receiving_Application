@@ -12,10 +12,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
+using MTM_Receiving_Application.Module_Shared.Views.Controls;
 using Windows.System;
 using Windows.UI.Core;
 
@@ -33,6 +37,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private bool _isPaddingEnabled;
         private bool _paddingSettingsLoaded;
         private bool _isDialogTransitionActive;
+        private readonly Dictionary<Control_Shared_TypedLookupTextBox, string> _lookupStartValues =
+            new();
 
         public View_Receiving_ManualEntry(
             ViewModel_Receiving_ManualEntry viewModel,
@@ -539,40 +545,127 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             return trimmed;
         }
 
-        /// <summary>
-        /// Auto-formats Part ID when user leaves the textbox using configured padding rules.
-        /// Example: "MMC1000" → "MMC0001000" (if rule configured for MMC prefix with MaxLength 10)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void PartIDTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void PartLookupControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (sender is not TextBox textBox)
+            if (sender is not Control_Shared_TypedLookupTextBox control)
             {
                 return;
             }
 
-            if (textBox.DataContext is not Model_ReceivingLoad load)
+            control.AutoResolveFuzzyMatches = false;
+            control.PrefixPaddingRules = GetSharedPaddingRules();
+        }
+
+        private void LocationLookupControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
             {
                 return;
             }
 
-            var value = textBox.Text?.Trim();
+            control.AutoResolveFuzzyMatches = false;
+        }
 
-            if (string.IsNullOrWhiteSpace(value))
+        private void LookupControl_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
             {
-                load.PartID = string.Empty;
                 return;
             }
 
-            // Auto-format Part ID using configured padding rules
-            string formattedPartID = ApplyPartNumberPadding(value);
+            _lookupStartValues[control] = control.InputValue ?? string.Empty;
+        }
 
-            if (formattedPartID != value)
+        private async void PartLookupControl_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
             {
-                load.PartID = formattedPartID;
-                textBox.Text = formattedPartID;
-                Debug.WriteLine($"[ManualEntry] Formatted PartID: '{value}' → '{formattedPartID}'");
+                return;
+            }
+
+            if (control.IsValidationInProgress)
+            {
+                return;
+            }
+
+            await control.ValidateAsync();
+            QueueGridReloadIfLookupValueChanged(control);
+        }
+
+        private async void LocationLookupControl_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
+            {
+                return;
+            }
+
+            await WaitForLookupValidationToFinishAsync(control);
+            QueueGridReloadIfLookupValueChanged(control);
+        }
+
+        private async void PartLookupControl_ValidationCompleted(
+            object sender,
+            Model_SharedLookupValidationCompletedEventArgs e
+        )
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
+            {
+                return;
+            }
+
+            if (control.DataContext is not Model_ReceivingLoad load)
+            {
+                return;
+            }
+
+            if (!e.Result.IsValid)
+            {
+                ViewModel.ShowStatus(
+                    e.Result.Message,
+                    Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            var canonicalPartValue = string.IsNullOrWhiteSpace(e.Result.ResolvedValue)
+                ? e.Result.FormattedValue
+                : e.Result.ResolvedValue;
+
+            if (string.IsNullOrWhiteSpace(canonicalPartValue) is false)
+            {
+                var normalizedPart = canonicalPartValue.Trim();
+                control.InputValue = normalizedPart;
+                load.PartID = normalizedPart;
+            }
+
+            if (e.Result.UsedFuzzyFallback && e.Result.HasExactMatch is false)
+            {
+                var selectedResult = await ShowFuzzyPickerAsync(
+                    "Select Part",
+                    $"No exact part match was found for '{e.Result.FormattedValue}'. Select a similar part to continue.",
+                    e.Result.FuzzyCandidates
+                );
+
+                if (selectedResult is null)
+                {
+                    control.InputValue = string.Empty;
+                    load.PartID = string.Empty;
+                    return;
+                }
+
+                var selectedValue = (selectedResult.Key ?? selectedResult.Label ?? string.Empty)
+                    .Trim();
+                if (string.IsNullOrWhiteSpace(selectedValue))
+                {
+                    control.InputValue = string.Empty;
+                    load.PartID = string.Empty;
+                    return;
+                }
+
+                control.InputValue = selectedValue;
+                load.PartID = selectedValue;
+                await control.ValidateAsync();
+                return;
             }
 
             await RunWithDialogTransitionSuppressedAsync(async () =>
@@ -580,6 +673,127 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 await ViewModel.ResolveManualEntryRowAsync(load);
                 return true;
             });
+        }
+
+        private async void LocationLookupControl_ValidationCompleted(
+            object sender,
+            Model_SharedLookupValidationCompletedEventArgs e
+        )
+        {
+            if (sender is not Control_Shared_TypedLookupTextBox control)
+            {
+                return;
+            }
+
+            if (control.DataContext is not Model_ReceivingLoad load)
+            {
+                return;
+            }
+
+            if (!e.Result.IsValid)
+            {
+                ViewModel.ShowStatus(
+                    e.Result.Message,
+                    Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            var canonicalLocationValue = string.IsNullOrWhiteSpace(e.Result.ResolvedValue)
+                ? e.Result.FormattedValue
+                : e.Result.ResolvedValue;
+
+            if (string.IsNullOrWhiteSpace(canonicalLocationValue) is false)
+            {
+                var normalizedLocation = canonicalLocationValue.Trim();
+                control.InputValue = normalizedLocation;
+                load.InitialLocation = normalizedLocation;
+            }
+
+            if (e.Result.UsedFuzzyFallback && e.Result.HasExactMatch is false)
+            {
+                var selectedResult = await ShowFuzzyPickerAsync(
+                    "Select Location",
+                    $"No exact location match was found for '{e.Result.FormattedValue}'. Select a similar location to continue.",
+                    e.Result.FuzzyCandidates
+                );
+
+                if (selectedResult is null)
+                {
+                    control.InputValue = string.Empty;
+                    load.InitialLocation = string.Empty;
+                    return;
+                }
+
+                var selectedValue = (selectedResult.Key ?? selectedResult.Label ?? string.Empty)
+                    .Trim();
+                if (string.IsNullOrWhiteSpace(selectedValue))
+                {
+                    control.InputValue = string.Empty;
+                    load.InitialLocation = string.Empty;
+                    return;
+                }
+
+                control.InputValue = selectedValue;
+                load.InitialLocation = selectedValue;
+                await control.ValidateAsync();
+                return;
+            }
+        }
+
+        private IReadOnlyList<Model_SharedLookupPrefixPaddingRule> GetSharedPaddingRules()
+        {
+            if (!_paddingSettingsLoaded || !_isPaddingEnabled || _paddingRules.Count == 0)
+            {
+                return Array.Empty<Model_SharedLookupPrefixPaddingRule>();
+            }
+
+            return _paddingRules
+                .Where(rule =>
+                    rule.IsEnabled
+                    && string.IsNullOrWhiteSpace(rule.Prefix) is false
+                    && rule.MaxLength > 0
+                )
+                .Select(rule => new Model_SharedLookupPrefixPaddingRule
+                {
+                    Prefix = rule.Prefix.Trim(),
+                    MaxLength = rule.MaxLength,
+                    PadCharacter = rule.PadChar,
+                })
+                .ToArray();
+        }
+
+        private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
+            string title,
+            string subtitle,
+            IReadOnlyList<Model_FuzzySearchResult> candidates
+        )
+        {
+            if (candidates.Count == 0)
+            {
+                return null;
+            }
+
+            _isDialogTransitionActive = true;
+            try
+            {
+                var dialog = new Dialog_FuzzySearchPicker(candidates, title, subtitle)
+                {
+                    XamlRoot = XamlRoot,
+                };
+
+                var dialogResult = await dialog.ShowAsync();
+                if (dialogResult != ContentDialogResult.Primary)
+                {
+                    return null;
+                }
+
+                return dialog.SelectedResult;
+            }
+            finally
+            {
+                _isDialogTransitionActive = false;
+            }
         }
 
         private async void PartIdCell_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -598,33 +812,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 await ViewModel.TrySelectPartForPoAsync(load, forceReselection: true);
                 return true;
             });
-        }
-
-        private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is not TextBox textBox)
-            {
-                return;
-            }
-
-            if (textBox.DataContext is not Model_ReceivingLoad load)
-            {
-                return;
-            }
-
-            var value = textBox.Text?.Trim();
-            load.InitialLocation = value ?? string.Empty;
-
-            var validation = await ViewModel.ValidateLocationAsync(load);
-            if (!validation.IsValid)
-            {
-                ViewModel.ShowStatus(
-                    validation.Message,
-                    Module_Core.Models.Enums.InfoBarSeverity.Warning
-                );
-                textBox.Focus(FocusState.Programmatic);
-                textBox.SelectAll();
-            }
         }
 
         private async void PackageTypeButton_Click(object sender, RoutedEventArgs e)
@@ -756,22 +943,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             await dialog.ShowAsync();
         }
 
-        /// <summary>
-        /// Applies part number padding rules to the input string.
-        /// </summary>
-        /// <param name="input"></param>
-        private string ApplyPartNumberPadding(string input)
-        {
-            // Guard: if settings haven't finished loading yet, skip formatting to avoid applying
-            // stale defaults. The user can re-commit the cell or Auto-Fill once settings are ready.
-            if (!_paddingSettingsLoaded || !_isPaddingEnabled || _paddingRules.Count == 0)
-            {
-                return input;
-            }
-
-            return Model_PartNumberPrefixRule.ApplyBestMatchingRule(_paddingRules.ToArray(), input);
-        }
-
         private async Task<T> RunWithDialogTransitionSuppressedAsync<T>(Func<Task<T>> action)
         {
             _isDialogTransitionActive = true;
@@ -799,6 +970,49 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                     $"[ManualEntryView] {source}: BeginEdit suppressed after COMException: {ex.Message}"
                 );
             }
+        }
+
+        private async Task WaitForLookupValidationToFinishAsync(
+            Control_Shared_TypedLookupTextBox control
+        )
+        {
+            const int maxAttempts = 25;
+            for (var attempt = 0; attempt < maxAttempts && control.IsValidationInProgress; attempt++)
+            {
+                await Task.Delay(10);
+            }
+        }
+
+        private void QueueGridReloadIfLookupValueChanged(Control_Shared_TypedLookupTextBox control)
+        {
+            if (_lookupStartValues.TryGetValue(control, out var startValue) is false)
+            {
+                return;
+            }
+
+            _lookupStartValues.Remove(control);
+
+            var endValue = control.InputValue ?? string.Empty;
+            if (string.Equals(startValue, endValue, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            ManualEntryDataGrid.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    ManualEntryDataGrid.CommitEdit();
+                    ManualEntryDataGrid.UpdateLayout();
+                    Bindings.Update();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(
+                        $"[ManualEntryView] Grid reload after lookup edit failed: {ex.Message}"
+                    );
+                }
+            });
         }
     }
 }

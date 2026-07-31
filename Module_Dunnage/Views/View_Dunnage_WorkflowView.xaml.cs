@@ -543,43 +543,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             return true;
         }
 
-        var suggestionsResult = await DetailsEntryView.ViewModel.GetLocationSuggestionsAsync();
-        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
-        {
-            var dialog = new Dialog_FuzzySearchPicker(
-                suggestionsResult.Data,
-                "Select Location",
-                $"No exact match was found for '{DetailsEntryView.ViewModel.Location?.Trim()}'. Select a matching location."
-            )
-            {
-                XamlRoot = this.XamlRoot,
-            };
-
-            var dialogResult = await dialog.ShowAsync();
-            if (
-                dialogResult == ContentDialogResult.Primary
-                && dialog.SelectedResult is not null
-                && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
-            )
-            {
-                DetailsEntryView.ViewModel.Location = dialog.SelectedResult.Label.Trim();
-                return true;
-            }
-        }
-
-        var statusMessage = validation.Message;
-        if (
-            !suggestionsResult.IsSuccess
-            && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false
-        )
-        {
-            statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
-        }
-
         var errorDialog = new ContentDialog
         {
             Title = "Finish This Step First",
-            Content = statusMessage,
+            Content = validation.Message,
             CloseButtonText = "OK",
             XamlRoot = this.XamlRoot,
         };

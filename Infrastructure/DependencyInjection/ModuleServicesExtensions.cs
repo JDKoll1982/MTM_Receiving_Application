@@ -22,6 +22,8 @@ using MTM_Receiving_Application.Module_Settings.Core.Data;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Services;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
+using MTM_Receiving_Application.Module_Shared.Services.Lookup;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Data;
@@ -511,6 +513,11 @@ public static class ModuleServicesExtensions
         _ = configuration; // Currently unused, preserved for future configuration needs
         // Startup Service (Transient - Per-startup execution)
         services.AddTransient<IService_OnStartup_AppLifecycle, Service_OnStartup_AppLifecycle>();
+
+        // Shared typed lookup workflow (cross-module reusable Infor Visual validation pipeline)
+        services.AddSingleton<ISharedLookupStrategy, Strategy_SharedPartNumberLookup>();
+        services.AddSingleton<ISharedLookupStrategy, Strategy_SharedLocationLookup>();
+        services.AddSingleton<IService_SharedLookupWorkflow, Service_SharedLookupWorkflow>();
 
         // Shared ViewModels (Transient)
         services.AddTransient<ViewModel_Shared_MainWindow>();

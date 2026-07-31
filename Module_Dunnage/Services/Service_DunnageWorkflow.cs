@@ -614,6 +614,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         private async Task<Model_ReceivingValidationResult> EnsureDefaultAndValidatedLocationAsync()
         {
+            await Task.CompletedTask;
+
             var resolvedLocation = CurrentSession.Location?.Trim() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(resolvedLocation))
@@ -621,16 +623,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 return Model_ReceivingValidationResult.Error("Please enter a location.");
             }
 
-            var validation = await _receivingValidation.ValidateLocationAsync(
-                resolvedLocation,
-                WarehouseCode
-            );
-            if (!validation.IsValid)
-            {
-                return validation;
-            }
-
-            CurrentSession.Location = resolvedLocation;
+            CurrentSession.Location = resolvedLocation.ToUpperInvariant();
             return Model_ReceivingValidationResult.Success();
         }
     }
