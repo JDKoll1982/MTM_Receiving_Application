@@ -158,6 +158,7 @@
                                 MinWidth="320"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PartIdAccessibilityName, Mode=OneWay}"
+                                LostFocus="PartIDTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
                                 Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>

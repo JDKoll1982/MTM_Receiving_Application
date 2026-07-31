@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Configuration;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
@@ -28,7 +27,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_Window _windowService;
-        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
+        private readonly IService_AppSettings _appSettings;
         private readonly IService_ReceivingSettings _receivingSettings;
         private DateTime? _currentPoHeaderPromiseDate;
         private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
@@ -152,7 +151,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_InforVisualMockDataCatalog mockDataCatalog,
             IService_ViewModelRegistry viewModelRegistry,
             IService_Window windowService,
-            Microsoft.Extensions.Configuration.IConfiguration configuration,
+            IService_AppSettings appSettings,
             IService_ReceivingSettings receivingSettings,
             IService_Notification notificationService
         )
@@ -165,7 +164,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _mockDataCatalog = mockDataCatalog;
             _viewModelRegistry = viewModelRegistry;
             _windowService = windowService;
-            _configuration = configuration;
+            _appSettings = appSettings;
             _receivingSettings = receivingSettings;
 
             _viewModelRegistry.Register(this);
@@ -355,6 +354,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _currentPoHeaderPromiseDate = null;
             _workflowService.CurrentPODueDate = null;
             _workflowService.CurrentLocation = string.Empty;
+
+            if (IsNonPOItem)
+            {
+                _ = TryAutoFillPartAsync();
+            }
         }
 
         [RelayCommand]
@@ -393,11 +397,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     var fuzzyResults = await _inforVisualService.FuzzySearchPartsAsync(searchTerm);
                     if (!fuzzyResults.IsSuccess)
                     {
+                        var fallbackMessage = await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                        );
                         await _errorHandler.HandleErrorAsync(
-                            fuzzyResults.ErrorMessage
-                                ?? await _receivingSettings.GetStringAsync(
-                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
-                                ),
+                            string.IsNullOrWhiteSpace(fuzzyResults.ErrorMessage)
+                                ? fallbackMessage
+                                : fuzzyResults.ErrorMessage,
                             Enum_ErrorSeverity.Error
                         );
                         ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
@@ -407,11 +413,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     if (fuzzyResults.Data is null || fuzzyResults.Data.Count == 0)
                     {
+                        var fallbackMessage = await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                        );
                         await _errorHandler.HandleErrorAsync(
-                            result.ErrorMessage
-                                ?? await _receivingSettings.GetStringAsync(
-                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
-                                ),
+                            string.IsNullOrWhiteSpace(result.ErrorMessage)
+                                ? fallbackMessage
+                                : result.ErrorMessage,
                             Enum_ErrorSeverity.Error
                         );
                         ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
@@ -434,11 +442,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     if (!selectedPartResult.IsSuccess || selectedPartResult.Data is null)
                     {
+                        var fallbackMessage = await _receivingSettings.GetStringAsync(
+                            ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                        );
                         await _errorHandler.HandleErrorAsync(
-                            selectedPartResult.ErrorMessage
-                                ?? await _receivingSettings.GetStringAsync(
-                                    ReceivingSettingsKeys.Messages.ErrorPartNotFound
-                                ),
+                            string.IsNullOrWhiteSpace(selectedPartResult.ErrorMessage)
+                                ? fallbackMessage
+                                : selectedPartResult.ErrorMessage,
                             Enum_ErrorSeverity.Error
                         );
                         ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
@@ -458,11 +468,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
                 else
                 {
+                    var fallbackMessage = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Messages.ErrorPartNotFound
+                    );
                     await _errorHandler.HandleErrorAsync(
-                        result.ErrorMessage
-                            ?? await _receivingSettings.GetStringAsync(
-                                ReceivingSettingsKeys.Messages.ErrorPartNotFound
-                            ),
+                        string.IsNullOrWhiteSpace(result.ErrorMessage)
+                            ? fallbackMessage
+                            : result.ErrorMessage,
                         Enum_ErrorSeverity.Error
                     );
                     ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
@@ -473,6 +485,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task PartTextBoxLostFocusAsync()
+        {
+            if (!IsNonPOItem || IsLoading || string.IsNullOrWhiteSpace(PartID))
+            {
+                return;
+            }
+
+            var currentPartId = PartID.Trim();
+            if (
+                SelectedPart is not null
+                && string.Equals(
+                    SelectedPart.PartID?.Trim(),
+                    currentPartId,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return;
+            }
+
+            await LookupPartAsync();
         }
 
         private async Task<Model_FuzzySearchResult?> ShowPartFuzzyPickerAsync(
@@ -620,6 +656,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 PackageType = "Skids";
         }
 
+        partial void OnIsNonPOItemChanged(bool value)
+        {
+            if (value)
+            {
+                _ = TryAutoFillPartAsync();
+            }
+        }
+
         partial void OnSelectedPartChanged(Model_InforVisualPart? value)
         {
             _workflowService.CurrentPart = value;
@@ -722,15 +766,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             try
             {
-                var useMockData = _configuration.GetValue<bool>(
-                    "AppSettings:UseInforVisualMockData"
-                );
+                var useMockData = _appSettings.GetUseInforVisualMockData();
 
                 if (useMockData)
                 {
+                    if (IsNonPOItem)
+                    {
+                        await TryAutoFillPartAsync();
+                        return;
+                    }
+
                     var defaultPO =
                         _mockDataCatalog.GetDefaultPurchaseOrderNumber()
-                        ?? _configuration.GetValue<string>("AppSettings:DefaultMockPONumber");
+                        ?? _appSettings.GetDefaultMockPONumber();
 
                     if (string.IsNullOrWhiteSpace(defaultPO))
                     {
@@ -755,6 +803,44 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 await _logger.LogErrorAsync($"Error during initialization: {ex.Message}", ex);
+            }
+        }
+
+        private async Task TryAutoFillPartAsync()
+        {
+            try
+            {
+                if (_appSettings.GetUseInforVisualMockData() is false)
+                {
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(PartID) is false)
+                {
+                    return;
+                }
+
+                var defaultPart = _mockDataCatalog
+                    .GetCatalog()
+                    .Parts.FirstOrDefault(static part =>
+                        string.IsNullOrWhiteSpace(part.PartID) is false
+                    );
+
+                if (defaultPart is null)
+                {
+                    await _logger.LogWarningAsync(
+                        "[MOCK DATA MODE] No default mock part was found for non-PO guided entry."
+                    );
+                    return;
+                }
+
+                PartID = defaultPart.PartID.Trim();
+                _workflowService.RaiseStatusMessage($"[MOCK DATA] Auto-filled part: {PartID}");
+                await LookupPartAsync();
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync($"Error during part auto-fill initialization: {ex.Message}", ex);
             }
         }
     }

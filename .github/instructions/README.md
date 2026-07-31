@@ -22,6 +22,9 @@ Instruction files are grouped by topic so agents can load only the guidance that
 - `database/sql-sp-generation.instructions.md`
 - `testing/testing-strategy.instructions.md`
 - `tooling/mcp-tooling.instructions.md`
+- `tooling/microsoft-learn-mcp-token-friendly.instructions.md`
+- `tooling/context7-mcp-token-friendly.instructions.md`
+- `tooling/serena/serena-token-friendly.instructions.md`
 
 ## Maintenance Rules
 

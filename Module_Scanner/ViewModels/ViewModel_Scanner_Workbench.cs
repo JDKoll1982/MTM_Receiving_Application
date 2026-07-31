@@ -8,7 +8,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Views;
@@ -34,6 +36,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private ObservableCollection<Model_ScannerBatchItem> _sessionItems = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedSessionItem))]
     private Model_ScannerBatchItem? _selectedSessionItem;
 
     [ObservableProperty]
@@ -73,6 +76,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private string _lastValidationNotes = string.Empty;
 
     public bool HasActiveSession => CurrentSession is not null;
+
+    public bool HasSelectedSessionItem => SelectedSessionItem is not null;
 
     public ViewModel_Scanner_Workbench(
         IService_ScannerNavigation navigationService,
@@ -240,6 +245,124 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
+    private async Task RemoveSelectedSessionItemAsync()
+    {
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before removing items.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (SelectedSessionItem is null)
+        {
+            ShowStatus("Select an item before removing.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
+            candidate.ItemId == SelectedSessionItem.ItemId
+        );
+        if (itemToRemove is null)
+        {
+            ShowStatus("The selected item could not be found in the session.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        CurrentSession.Items.Remove(itemToRemove);
+
+        var orderedItems = CurrentSession.Items
+            .OrderBy(candidate => candidate.SequenceNumber)
+            .ToList();
+        CurrentSession.Items.Clear();
+
+        for (var index = 0; index < orderedItems.Count; index++)
+        {
+            orderedItems[index].SequenceNumber = index + 1;
+            orderedItems[index].LastUpdatedUtc = DateTime.UtcNow;
+            CurrentSession.Items.Add(orderedItems[index]);
+        }
+
+        CurrentSession.RecalculateItemCounters();
+        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+
+        var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+        if (!persist.Success || persist.Data is null)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(persist.ErrorMessage)
+                    ? "Unable to remove the selected item."
+                    : persist.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        CurrentSession = persist.Data;
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        SelectedSessionItem = SessionItems.FirstOrDefault();
+        ShowStatus("Selected item removed.", InfoBarSeverity.Success);
+    }
+
+    public async Task<Model_ScannerLocationValidationResult> ValidateFromLocationAsync()
+    {
+        var validation = await _validationService.ValidateLocationAsync(
+            NewFromLocation,
+            NewFromWarehouse
+        );
+
+        if (!validation.Success || validation.Data is null)
+        {
+            return new Model_ScannerLocationValidationResult
+            {
+                IsValid = false,
+                Message = string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                    ? "Location validation is currently unavailable."
+                    : validation.ErrorMessage,
+            };
+        }
+
+        if (validation.Data.IsValid)
+        {
+            NewFromLocation = validation.Data.CanonicalLocation;
+        }
+
+        return validation.Data;
+    }
+
+    public async Task<Model_ScannerLocationValidationResult> ValidateToLocationAsync()
+    {
+        var validation = await _validationService.ValidateLocationAsync(NewToLocation, NewToWarehouse);
+
+        if (!validation.Success || validation.Data is null)
+        {
+            return new Model_ScannerLocationValidationResult
+            {
+                IsValid = false,
+                Message = string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                    ? "Location validation is currently unavailable."
+                    : validation.ErrorMessage,
+            };
+        }
+
+        if (validation.Data.IsValid)
+        {
+            NewToLocation = validation.Data.CanonicalLocation;
+        }
+
+        return validation.Data;
+    }
+
+    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetFromLocationSuggestionsAsync()
+    {
+        return _validationService.GetLocationSuggestionsAsync(NewFromLocation, NewFromWarehouse);
+    }
+
+    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetToLocationSuggestionsAsync()
+    {
+        return _validationService.GetLocationSuggestionsAsync(NewToLocation, NewToWarehouse);
+    }
+
+    [RelayCommand]
     private async Task BuildRunSnapshotAsync()
     {
         if (CurrentSession is null)
@@ -312,7 +435,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        var dialog = new View_Scanner_ManageItemsDialog(CurrentSession)
+        var dialog = new View_Scanner_ManageItemsDialog(CurrentSession, _validationService)
         {
             XamlRoot = xamlRoot,
         };
@@ -611,5 +734,10 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
         await StartDraftSessionAsync();
         return CurrentSession is not null;
+    }
+
+    partial void OnSelectedSessionItemChanged(Model_ScannerBatchItem? value)
+    {
+        RemoveSelectedSessionItemCommand.NotifyCanExecuteChanged();
     }
 }

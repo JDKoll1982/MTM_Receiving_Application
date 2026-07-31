@@ -74,9 +74,21 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind SequenceNumber}" />
                             <TextBox Grid.Row="0" Grid.Column="1" Header="Part" Text="{x:Bind PayloadPartId, Mode=TwoWay}" />
                             <TextBox Grid.Row="0" Grid.Column="2" Header="From WH" IsReadOnly="True" Text="{x:Bind PayloadFromWarehouse, Mode=OneWay}" />
-                            <TextBox Grid.Row="0" Grid.Column="3" Header="From Loc" Text="{x:Bind PayloadFromLocation, Mode=TwoWay}" />
+                            <TextBox
+                                Grid.Row="0"
+                                Grid.Column="3"
+                                Header="From Loc"
+                                LostFocus="LocationTextBox_LostFocus"
+                                Tag="From"
+                                Text="{x:Bind PayloadFromLocation, Mode=TwoWay}" />
                             <TextBox Grid.Row="0" Grid.Column="4" Header="To WH" IsReadOnly="True" Text="{x:Bind PayloadToWarehouse, Mode=OneWay}" />
-                            <TextBox Grid.Row="0" Grid.Column="5" Header="To Loc" Text="{x:Bind PayloadToLocation, Mode=TwoWay}" />
+                            <TextBox
+                                Grid.Row="0"
+                                Grid.Column="5"
+                                Header="To Loc"
+                                LostFocus="LocationTextBox_LostFocus"
+                                Tag="To"
+                                Text="{x:Bind PayloadToLocation, Mode=TwoWay}" />
                             <TextBox Grid.Row="0" Grid.Column="6" Header="Qty" Text="{x:Bind PayloadQuantity, Mode=TwoWay}" />
                             <TextBlock Grid.Row="0" Grid.Column="7" VerticalAlignment="Center" Text="{x:Bind ValidationState}" />
 

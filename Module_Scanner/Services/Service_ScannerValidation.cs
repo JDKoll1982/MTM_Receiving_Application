@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 
@@ -39,9 +40,13 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 		}
 
 		var canonicalPartId = request.PartId?.Trim().ToUpperInvariant() ?? string.Empty;
-		var canonicalFromWarehouse = request.FromWarehouse?.Trim().ToUpperInvariant() ?? string.Empty;
+		var canonicalFromWarehouse = string.IsNullOrWhiteSpace(request.FromWarehouse)
+			? "002"
+			: request.FromWarehouse.Trim().ToUpperInvariant();
 		var canonicalFromLocation = request.FromLocation?.Trim().ToUpperInvariant() ?? string.Empty;
-		var canonicalToWarehouse = request.ToWarehouse?.Trim().ToUpperInvariant() ?? string.Empty;
+		var canonicalToWarehouse = string.IsNullOrWhiteSpace(request.ToWarehouse)
+			? "002"
+			: request.ToWarehouse.Trim().ToUpperInvariant();
 		var canonicalToLocation = request.ToLocation?.Trim().ToUpperInvariant() ?? string.Empty;
 
 		if (string.IsNullOrWhiteSpace(request.PartId))
@@ -145,6 +150,96 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 		}
 
 		return Model_Dao_Result_Factory.Success<IReadOnlyList<Model_ScannerItemValidationResult>>(results);
+	}
+
+	public async Task<Model_Dao_Result<Model_ScannerLocationValidationResult>> ValidateLocationAsync(
+		string location,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	)
+	{
+		var canonicalLocation = location?.Trim().ToUpperInvariant() ?? string.Empty;
+		var canonicalWarehouse = string.IsNullOrWhiteSpace(warehouseCode)
+			? "002"
+			: warehouseCode.Trim().ToUpperInvariant();
+
+		if (string.IsNullOrWhiteSpace(canonicalLocation))
+		{
+			return Model_Dao_Result_Factory.Success(
+				new Model_ScannerLocationValidationResult
+				{
+					IsValid = false,
+					Message = "Location is required.",
+				}
+			);
+		}
+
+		var resolution = await ResolveLocationAsync(
+			canonicalLocation,
+			canonicalWarehouse,
+			cancellationToken
+		);
+		if (!resolution.Success)
+		{
+			return Model_Dao_Result_Factory.Failure<Model_ScannerLocationValidationResult>(
+				resolution.ErrorMessage,
+				resolution.Exception
+			);
+		}
+
+		if (string.IsNullOrWhiteSpace(resolution.Data))
+		{
+			return Model_Dao_Result_Factory.Success(
+				new Model_ScannerLocationValidationResult
+				{
+					IsValid = false,
+					Message = $"Location {canonicalLocation} does not exist in warehouse {canonicalWarehouse}.",
+				}
+			);
+		}
+
+		return Model_Dao_Result_Factory.Success(
+			new Model_ScannerLocationValidationResult
+			{
+				IsValid = true,
+				CanonicalLocation = resolution.Data,
+			}
+		);
+	}
+
+	public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetLocationSuggestionsAsync(
+		string location,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		if (string.IsNullOrWhiteSpace(location))
+		{
+			return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
+		}
+
+		var canonicalWarehouse = string.IsNullOrWhiteSpace(warehouseCode)
+			? "002"
+			: warehouseCode.Trim().ToUpperInvariant();
+
+		var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
+			location.Trim(),
+			canonicalWarehouse
+		);
+		if (!fuzzyResult.Success || fuzzyResult.Data is null)
+		{
+			return fuzzyResult;
+		}
+
+		var suggestions = fuzzyResult
+			.Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
+			.GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
+			.Select(static group => group.First())
+			.ToList();
+
+		return Model_Dao_Result_Factory.Success(suggestions);
 	}
 
 	private async Task<Model_Dao_Result<Model_ScannerItemValidationResult>> ValidateAgainstInforVisualAsync(

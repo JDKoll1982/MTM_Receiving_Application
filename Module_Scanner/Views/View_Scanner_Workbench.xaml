@@ -288,6 +288,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Items To Send" />
                                 <Button
@@ -295,6 +296,13 @@
                                     Style="{StaticResource ScannerActionButtonStyle}"
                                     Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
                                     Content="Manage Items" />
+                                <Button
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    Style="{StaticResource ScannerActionButtonStyle}"
+                                    Click="RemoveSelectedItemButton_Click"
+                                    Content="Remove Selected"
+                                    IsEnabled="{x:Bind ViewModel.HasSelectedSessionItem, Mode=OneWay}" />
                             </Grid>
 
                             <Grid
@@ -303,12 +311,10 @@
                                 ColumnSpacing="10"
                                 RowSpacing="8">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="2.2*" />
+                                    <ColumnDefinition Width="1.3*" />
+                                    <ColumnDefinition Width="1.3*" />
+                                    <ColumnDefinition Width="0.8*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
@@ -317,13 +323,19 @@
                                     Header="Part"
                                     LostFocus="PartTextBox_LostFocus"
                                     Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay}" />
-                                <TextBox Grid.Column="1" Header="From WH" Text="{x:Bind ViewModel.NewFromWarehouse, Mode=TwoWay}" />
-                                <TextBox Grid.Column="2" Header="From Loc" Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Column="3" Header="To WH" Text="{x:Bind ViewModel.NewToWarehouse, Mode=TwoWay}" />
-                                <TextBox Grid.Column="4" Header="To Loc" Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Column="5" Header="Qty" Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay}" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Header="From Loc"
+                                    LostFocus="FromLocationTextBox_LostFocus"
+                                    Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay}" />
+                                <TextBox
+                                    Grid.Column="2"
+                                    Header="To Loc"
+                                    LostFocus="ToLocationTextBox_LostFocus"
+                                    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay}" />
+                                <TextBox Grid.Column="3" Header="Qty" Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay}" />
                                 <Button
-                                    Grid.Column="6"
+                                    Grid.Column="4"
                                     Style="{StaticResource ScannerActionButtonStyle}"
                                     VerticalAlignment="Bottom"
                                     Command="{x:Bind ViewModel.AddDraftItemCommand}"

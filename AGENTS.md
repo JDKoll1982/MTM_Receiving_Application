@@ -97,3 +97,10 @@ When needed by task impact:
 - No raw MySQL SQL in C#.
 - No SQL Server writes.
 - Keep async names with Async suffix.
+
+## MySQL Testing Workflow (Required)
+
+- Use the VS Code extension `cweijan.vscode-mysql-client2` for MySQL database exploration and validation queries.
+- Run exploratory or verification writes in `mtm_receiving_application_test` first, then reflect final SQL in `Database/` scripts when applicable.
+- Keep extension-side validation non-destructive: use explicit test schema targeting and remove temporary test objects/data after checks.
+- Never commit credentials; use local extension connection profiles or local environment configuration.

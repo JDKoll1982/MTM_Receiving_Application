@@ -6,10 +6,16 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
+using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Helpers;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
+using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Scanner.Views;
@@ -24,6 +30,7 @@ public sealed partial class View_Scanner_Workbench : Page
     private List<Model_PartNumberPrefixRule> _paddingRules = [];
     private bool _isPaddingEnabled;
     private bool _paddingSettingsLoaded;
+    private bool _isLocationPickerOpen;
 
     public ViewModel_Scanner_Workbench ViewModel { get; }
 
@@ -143,5 +150,138 @@ public sealed partial class View_Scanner_Workbench : Page
         }
 
         return Model_PartNumberPrefixRule.ApplyBestMatchingRule(_paddingRules.ToArray(), input);
+    }
+
+    private async void FromLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        await HandleLocationTextBoxLostFocusAsync(
+            textBox,
+            ViewModel.ValidateFromLocationAsync,
+            ViewModel.GetFromLocationSuggestionsAsync,
+            value => ViewModel.NewFromLocation = value,
+            () => ViewModel.NewFromLocation
+        );
+    }
+
+    private async void ToLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        await HandleLocationTextBoxLostFocusAsync(
+            textBox,
+            ViewModel.ValidateToLocationAsync,
+            ViewModel.GetToLocationSuggestionsAsync,
+            value => ViewModel.NewToLocation = value,
+            () => ViewModel.NewToLocation
+        );
+    }
+
+    private async Task HandleLocationTextBoxLostFocusAsync(
+        TextBox textBox,
+        Func<Task<Model_ScannerLocationValidationResult>> validateAsync,
+        Func<Task<Model_Dao_Result<List<Model_FuzzySearchResult>>>> suggestionAsync,
+        Action<string> setLocation,
+        Func<string> getLocation
+    )
+    {
+        if (_isLocationPickerOpen)
+        {
+            return;
+        }
+
+        var currentValue = getLocation()?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(currentValue))
+        {
+            return;
+        }
+
+        var validation = await validateAsync();
+        if (validation.IsValid)
+        {
+            return;
+        }
+
+        var suggestionsResult = await suggestionAsync();
+        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
+        {
+            _isLocationPickerOpen = true;
+            try
+            {
+                var dialog = new Dialog_FuzzySearchPicker(
+                    suggestionsResult.Data,
+                    "Select Location",
+                    $"No exact match was found for '{currentValue}'. Select a matching location."
+                )
+                {
+                    XamlRoot = textBox.XamlRoot,
+                };
+
+                var dialogResult = await dialog.ShowAsync();
+                if (
+                    dialogResult == ContentDialogResult.Primary
+                    && dialog.SelectedResult is not null
+                    && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
+                )
+                {
+                    setLocation(dialog.SelectedResult.Label.Trim());
+                    return;
+                }
+            }
+            finally
+            {
+                _isLocationPickerOpen = false;
+            }
+        }
+
+        var statusMessage = validation.Message;
+        if (!suggestionsResult.IsSuccess && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false)
+        {
+            statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
+        }
+
+        ViewModel.ShowStatus(
+            statusMessage,
+            Module_Core.Models.Enums.InfoBarSeverity.Warning
+        );
+    }
+
+    private async void RemoveSelectedItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedSessionItem is null)
+        {
+            return;
+        }
+
+        var xamlRoot = (sender as FrameworkElement)?.XamlRoot ?? XamlRoot;
+        if (xamlRoot is null)
+        {
+            return;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Remove selected item?",
+            Content = "This will remove the selected item from the list.",
+            PrimaryButtonText = "Remove",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            await ViewModel.RemoveSelectedSessionItemCommand.ExecuteAsync(null);
+        }
     }
 }

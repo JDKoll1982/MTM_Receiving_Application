@@ -147,42 +147,101 @@ namespace MTM_Receiving_Application
         )
         {
             InitializeComponent();
-            ViewModel = viewModel;
-            _sessionManager = sessionManager;
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-            _labelViewLauncher = labelViewLauncher;
-            _labelButtonSettings = labelButtonSettings;
-            _headerBackNavigation = headerBackNavigation;
-            _errorHandler = errorHandler;
-            ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
+            ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _labelViewLauncher = labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
+            _labelButtonSettings = labelButtonSettings ?? throw new ArgumentNullException(nameof(labelButtonSettings));
+            _headerBackNavigation = headerBackNavigation ?? throw new ArgumentNullException(nameof(headerBackNavigation));
+            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+
+            if (ViewModel.NotificationService is not null)
+            {
+                ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
+            }
+
             _headerBackNavigation.PropertyChanged += HeaderBackNavigation_PropertyChanged;
 
-            _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
-            _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
+            if (NavView is not null)
+            {
+                _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
+                _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
+            }
+
             _settingsMenuItems.AddRange(CreateSettingsNavigationItems());
 
             // Configure Frame to use DI for view activation
-            ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
+            if (ContentFrame is not null)
+            {
+                ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
+            }
 
-            // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
-            AppWindow.Resize(this.GetScaledWindowSize(1450, 900));
+            try
+            {
+                // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
+                AppWindow.Resize(this.GetScaledWindowSize(1450, 900));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to resize main window during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
-            // Center window on screen
-            CenterWindow();
+            try
+            {
+                // Center window on screen
+                CenterWindow();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to center main window during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
-            // Configure custom title bar
-            ConfigureTitleBar();
+            try
+            {
+                // Configure custom title bar
+                ConfigureTitleBar();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to configure title bar during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
-            // Apply the shared window icon so published builds match debug behavior.
-            this.ApplySharedIcon(_logger);
+            try
+            {
+                // Apply the shared window icon so published builds match debug behavior.
+                this.ApplySharedIcon(_logger);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to apply shared window icon during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
             // Set user display from current session
             if (_sessionManager.CurrentSession?.User != null)
             {
                 var user = _sessionManager.CurrentSession.User;
-                UserDisplayTextBlock.Text = user.DisplayName;
-                UserPicture.DisplayName = user.DisplayName;
+                if (UserDisplayTextBlock is not null)
+                {
+                    UserDisplayTextBlock.Text = user.DisplayName;
+                }
+
+                if (UserPicture is not null)
+                {
+                    UserPicture.DisplayName = user.DisplayName;
+                }
             }
 
             // Wire up activity tracking
@@ -201,13 +260,23 @@ namespace MTM_Receiving_Application
             this.Activated += MainWindow_Activated;
 
             // Subscribe to navigation events once
-            ContentFrame.Navigated += ContentFrame_Navigated;
+            if (ContentFrame is not null)
+            {
+                ContentFrame.Navigated += ContentFrame_Navigated;
+            }
 
             // Wire up title bar events
-            AppTitleBar.Loaded += AppTitleBar_Loaded;
-            AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+            if (AppTitleBar is not null)
+            {
+                AppTitleBar.Loaded += AppTitleBar_Loaded;
+                AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+            }
 
-            ApplyNavigationMode(isSettingsMode: false);
+            if (NavView is not null)
+            {
+                ApplyNavigationMode(isSettingsMode: false);
+            }
+
             UpdateHeaderBackButton();
             UpdateStatusInfoBarActionButton();
 

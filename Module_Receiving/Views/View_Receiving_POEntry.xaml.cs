@@ -66,5 +66,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             // Trigger auto-correction command
             ViewModel.PoTextBoxLostFocusCommand.Execute(null);
         }
+
+        private void PartIDTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ViewModel.PartTextBoxLostFocusCommand.Execute(null);
+        }
     }
 }

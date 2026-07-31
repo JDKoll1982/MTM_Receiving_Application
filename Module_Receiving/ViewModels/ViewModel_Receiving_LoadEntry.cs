@@ -171,15 +171,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private async Task RefreshRecommendedLocationsAsync()
         {
-            if (
-                _workflowService.CurrentPart is null
-                || string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber)
-            )
+            if (_workflowService.CurrentPart is null)
             {
                 RecommendedLocations =
                     new ObservableCollection<Model_ReceivingRecommendedLocation>();
                 RecommendedLocationsMessage =
                     "Current stock recommendations appear after a guided part is selected.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber))
+            {
+                await RefreshPartOnlyRecommendedLocationsAsync(_workflowService.CurrentPart.PartID);
                 return;
             }
 
@@ -219,6 +222,83 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError($"Error loading recommended locations: {ex.Message}", ex);
+                RecommendedLocations =
+                    new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                RecommendedLocationsMessage = "Recommended locations are unavailable right now.";
+            }
+            finally
+            {
+                IsRecommendedLocationsLoading = false;
+            }
+        }
+
+        private async Task RefreshPartOnlyRecommendedLocationsAsync(string partId)
+        {
+            try
+            {
+                IsRecommendedLocationsLoading = true;
+                RecommendedLocationsMessage = "Looking up current stock locations...";
+
+                var currentStockResult = await _inforVisualService.GetMaterialAvailabilityCurrentStockAsync(
+                    null,
+                    partId,
+                    "002"
+                );
+
+                if (!currentStockResult.IsSuccess || currentStockResult.Data is null)
+                {
+                    RecommendedLocations =
+                        new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                    RecommendedLocationsMessage = string.IsNullOrWhiteSpace(
+                        currentStockResult.ErrorMessage
+                    )
+                        ? "Recommended locations are unavailable right now."
+                        : currentStockResult.ErrorMessage;
+                    return;
+                }
+
+                var recommendedFromPartInventory = currentStockResult
+                    .Data.Where(stockRow =>
+                        string.IsNullOrWhiteSpace(stockRow.LocationId) is false
+                        && stockRow.Quantity > 0
+                    )
+                    .GroupBy(
+                        stockRow =>
+                            $"{stockRow.WarehouseCode.Trim()}|{stockRow.LocationId.Trim()}",
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .Select(group =>
+                    {
+                        var sample = group.First();
+                        return new Model_ReceivingRecommendedLocation
+                        {
+                            WarehouseId = sample.WarehouseCode?.Trim() ?? string.Empty,
+                            LocationId = sample.LocationId?.Trim() ?? string.Empty,
+                            QuantityOnHand = group.Sum(stockRow => stockRow.Quantity),
+                            ReasonText = "current stock for selected part",
+                        };
+                    })
+                    .OrderByDescending(location => location.QuantityOnHand)
+                    .ThenBy(
+                        location => location.DisplayLocation,
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .ToList();
+
+                RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>(
+                    recommendedFromPartInventory
+                );
+                RecommendedLocationsMessage =
+                    RecommendedLocations.Count == 0
+                        ? "No recommended locations with positive on-hand quantity were found."
+                        : $"{RecommendedLocations.Count} recommended location(s) found from current stock inventory.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    $"Error loading part-based recommended locations: {ex.Message}",
+                    ex
+                );
                 RecommendedLocations =
                     new ObservableCollection<Model_ReceivingRecommendedLocation>();
                 RecommendedLocationsMessage = "Recommended locations are unavailable right now.";
