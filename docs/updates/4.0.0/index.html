@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.0.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.0.0</h1>
+                    <p class="hero-copy">This release streamlines ShipRec tool options, expands scanner workflows, and improves shared lookup plus edit-mode date filtering behavior across Receiving and Dunnage.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.0.0</span>
+                <span class="meta-text">Released August 6, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.0.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What stands out in 4.0.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">ShipRec Customer Pull n' Pack removed</p>
+                            <p class="highlight-text">The Customer Pull n' Pack report, queue, and waitlist surfaces were removed from active ShipRec tooling in this release.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Scanner tools expanded</p>
+                            <p class="highlight-text">Scanner workbench, history, settings, validation, and item-management workflows were expanded and polished for daily use.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Faster lookup and filtering</p>
+                            <p class="highlight-text">Shared typed lookup behaviors and edit-mode date filtering were improved to reduce manual retries and speed up review tasks.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details by area</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Customer Pull n' Pack tools were retired from ShipRec</summary>
+                        <p>
+                            Customer Pull n' Pack report and waitlist tool surfaces were removed from ShipRec,
+                            including related queue and editor screens. ShipRec now focuses on the remaining
+                            supported tool paths.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Scanner workflow coverage expanded</summary>
+                        <p>
+                            Scanner history and settings workflows now include richer profile and run handling,
+                            and scanner item-management supports better batch editing behavior. Validation and
+                            workflow services were expanded to support these flows.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Receiving and Dunnage edit-mode date filtering refined</summary>
+                        <p>
+                            Edit Mode now includes a direct date-search button next to the date range,
+                            visible active-state highlights for preset filter buttons, and safer date-range
+                            handling for same-day and reversed-date scenarios.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Shared lookup and Dunnage column filtering usability improvements</summary>
+                        <p>
+                            Shared typed lookup support was expanded for part and location entry behavior, and
+                            Dunnage column filtering now supports vertical scrolling in the chooser dialog for
+                            easier access to lower options.
+                        </p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>No database migration step is required for this update</summary>
+                        <p>
+                            This release focuses on application workflow changes and UI behavior improvements.
+                            Standard update rollout can proceed without a new operator-side migration step.
+                        </p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means in daily work</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Clearer supported tool paths</h3>
+                            <p>ShipRec navigation now reflects active tooling only, which reduces confusion when operators switch between modules.</p>
+                        </article>
+                        <article>
+                            <h3>Better scanner throughput</h3>
+                            <p>Expanded scanner history, settings, and item-management behavior helps teams complete scanner-driven tasks with fewer manual corrections.</p>
+                        </article>
+                        <article>
+                            <h3>Fewer date-filter misses</h3>
+                            <p>Edit-mode filtering in Receiving and Dunnage is easier to trigger and more reliable for day-based and corrected date ranges.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Action depends on your team workflow</h2>
+                    </div>
+                    <p class="action-state warning">If your team used Customer Pull n' Pack in ShipRec, contact support for the replacement process before rollout.</p>
+                    <ul class="action-list">
+                        <li>Receiving, Dunnage, and scanner users can continue with normal update rollout.</li>
+                        <li>ShipRec users should verify the currently supported tools on first launch after update.</li>
+                        <li>No additional settings migration is required for standard module use.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Contact MTM IT support</h2>
+                    </div>
+                    <p>If anything looks different after this update, report version <strong>4.0.0</strong> to your supervisor or the MTM IT support team so they can quickly match the correct release guidance.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
