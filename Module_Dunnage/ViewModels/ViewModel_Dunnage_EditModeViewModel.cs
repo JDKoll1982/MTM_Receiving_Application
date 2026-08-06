@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Dialogs;
@@ -31,6 +33,17 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         CurrentMemory,
         CurrentLabels,
         History,
+    }
+
+    private enum DateFilterPreset
+    {
+        None,
+        LastWeek,
+        Today,
+        ThisWeek,
+        ThisMonth,
+        ThisQuarter,
+        ShowAll,
     }
 
     private sealed record Model_DunnageLoadSnapshot(
@@ -93,6 +106,18 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
     public bool HasUnsavedChanges => GetEditedLoads().Count > 0 || _removedLoads.Count > 0;
 
+    private static readonly Brush ActiveFilterButtonBrush = new SolidColorBrush(
+        Colors.DodgerBlue
+    );
+    private static readonly Brush InactiveFilterButtonBrush = new SolidColorBrush(
+        Colors.Transparent
+    );
+
+    private static Brush ResolveFilterButtonBackground(bool isActive)
+    {
+        return isActive ? ActiveFilterButtonBrush : InactiveFilterButtonBrush;
+    }
+
     public void ResetToDefaults()
     {
         _allLoads.Clear();
@@ -109,6 +134,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         CanNavigate = false;
         StatusMessage = string.Empty;
         _currentLoadSource = EditModeLoadSource.None;
+        SetActiveDateFilter(DateFilterPreset.None);
     }
 
     #region Observable Properties
@@ -128,8 +154,30 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     [ObservableProperty]
     private DateTimeOffset? _fromDate;
 
+    partial void OnFromDateChanged(DateTimeOffset? value)
+    {
+        if (_isApplyingPresetFilter)
+        {
+            return;
+        }
+
+        ClearActiveDateFilter();
+    }
+
     [ObservableProperty]
     private DateTimeOffset? _toDate;
+
+    partial void OnToDateChanged(DateTimeOffset? value)
+    {
+        if (_isApplyingPresetFilter)
+        {
+            return;
+        }
+
+        ClearActiveDateFilter();
+    }
+
+    private DateFilterPreset _activeDateFilter = DateFilterPreset.None;
 
     [ObservableProperty]
     private int _currentPage = 1;
@@ -150,6 +198,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     private readonly Dictionary<Guid, Model_DunnageLoadSnapshot> _originalLoadSnapshots = new();
     private readonly List<Model_DunnageLoad> _removedLoads = new();
     private EditModeLoadSource _currentLoadSource = EditModeLoadSource.None;
+    private bool _isApplyingPresetFilter;
 
     public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
 
@@ -192,6 +241,30 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             return "This Quarter";
         }
     }
+
+    public Brush LastWeekFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.LastWeek
+    );
+
+    public Brush TodayFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.Today
+    );
+
+    public Brush ThisWeekFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.ThisWeek
+    );
+
+    public Brush ThisMonthFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.ThisMonth
+    );
+
+    public Brush ThisQuarterFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.ThisQuarter
+    );
+
+    public Brush ShowAllFilterButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter == DateFilterPreset.ShowAll
+    );
 
     #endregion
 
@@ -304,8 +377,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             IsBusy = true;
             StatusMessage = "Loading historical data...";
 
-            var startDate = FromDate?.DateTime ?? DateTime.Now.AddDays(-7);
-            var endDate = ToDate?.DateTime ?? DateTime.Now;
+            var (startDate, endDate) = NormalizeHistoryDateRange(
+                FromDate?.DateTime,
+                ToDate?.DateTime
+            );
 
             var result = await _dunnageService.GetLoadsByDateRangeAsync(startDate, endDate);
 
@@ -342,6 +417,37 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         }
     }
 
+    [RelayCommand]
+    private async Task SearchByDateAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        ClearActiveDateFilter();
+        await LoadFromHistoryAsync();
+    }
+
+    private static (DateTime StartDate, DateTime EndDate) NormalizeHistoryDateRange(
+        DateTime? startDate,
+        DateTime? endDate
+    )
+    {
+        var normalizedStartDate = (startDate ?? DateTime.Now.AddDays(-7)).Date;
+        var normalizedEndDate = (endDate ?? DateTime.Now).Date.AddDays(1).AddTicks(-1);
+
+        if (normalizedStartDate > normalizedEndDate)
+        {
+            (normalizedStartDate, normalizedEndDate) = (
+                normalizedEndDate.Date,
+                normalizedStartDate.Date.AddDays(1).AddTicks(-1)
+            );
+        }
+
+        return (normalizedStartDate, normalizedEndDate);
+    }
+
     /// <summary>
     /// Shows contextual help for edit mode.
     /// </summary>
@@ -359,8 +465,12 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     {
         if (IsBusy)
             return;
-        ToDate = DateTime.Now.Date;
-        FromDate = DateTime.Now.Date.AddDays(-7);
+
+        ApplyPresetDateFilter(
+            DateTime.Now.Date.AddDays(-7),
+            DateTime.Now.Date,
+            DateFilterPreset.LastWeek
+        );
         await LoadFromHistoryAsync();
     }
 
@@ -372,8 +482,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     {
         if (IsBusy)
             return;
-        FromDate = DateTime.Now.Date;
-        ToDate = DateTime.Now.Date;
+
+        ApplyPresetDateFilter(DateTime.Now.Date, DateTime.Now.Date, DateFilterPreset.Today);
         await LoadFromHistoryAsync();
     }
 
@@ -391,8 +501,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         {
             startOfWeek = startOfWeek.AddDays(-7);
         }
-        FromDate = startOfWeek;
-        ToDate = today;
+
+        ApplyPresetDateFilter(startOfWeek, today, DateFilterPreset.ThisWeek);
         await LoadFromHistoryAsync();
     }
 
@@ -405,8 +515,12 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         if (IsBusy)
             return;
         var today = DateTime.Now.Date;
-        FromDate = new DateTime(today.Year, today.Month, 1);
-        ToDate = today;
+
+        ApplyPresetDateFilter(
+            new DateTime(today.Year, today.Month, 1),
+            today,
+            DateFilterPreset.ThisMonth
+        );
         await LoadFromHistoryAsync();
     }
 
@@ -421,8 +535,12 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         var today = DateTime.Now.Date;
         var quarter = (today.Month - 1) / 3 + 1;
         var startMonth = (quarter - 1) * 3 + 1;
-        FromDate = new DateTime(today.Year, startMonth, 1);
-        ToDate = today;
+
+        ApplyPresetDateFilter(
+            new DateTime(today.Year, startMonth, 1),
+            today,
+            DateFilterPreset.ThisQuarter
+        );
         await LoadFromHistoryAsync();
     }
 
@@ -434,9 +552,52 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     {
         if (IsBusy)
             return;
-        FromDate = DateTime.Now.Date.AddYears(-1);
-        ToDate = DateTime.Now.Date;
+
+        ApplyPresetDateFilter(
+            DateTime.Now.Date.AddYears(-1),
+            DateTime.Now.Date,
+            DateFilterPreset.ShowAll
+        );
         await LoadFromHistoryAsync();
+    }
+
+    private void ApplyPresetDateFilter(DateTime fromDate, DateTime toDate, DateFilterPreset preset)
+    {
+        _isApplyingPresetFilter = true;
+        try
+        {
+            FromDate = fromDate;
+            ToDate = toDate;
+            SetActiveDateFilter(preset);
+        }
+        finally
+        {
+            _isApplyingPresetFilter = false;
+        }
+    }
+
+    private void ClearActiveDateFilter()
+    {
+        if (_activeDateFilter != DateFilterPreset.None)
+        {
+            SetActiveDateFilter(DateFilterPreset.None);
+        }
+    }
+
+    private void SetActiveDateFilter(DateFilterPreset preset)
+    {
+        if (_activeDateFilter == preset)
+        {
+            return;
+        }
+
+        _activeDateFilter = preset;
+        OnPropertyChanged(nameof(LastWeekFilterButtonBackground));
+        OnPropertyChanged(nameof(TodayFilterButtonBackground));
+        OnPropertyChanged(nameof(ThisWeekFilterButtonBackground));
+        OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
+        OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
+        OnPropertyChanged(nameof(ShowAllFilterButtonBackground));
     }
 
     #endregion

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -36,6 +38,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPrivileges _userPrivileges;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+
+        private enum DateFilterPreset
+        {
+            None,
+            LastWeek,
+            Today,
+            ThisWeek,
+            ThisMonth,
+            ThisQuarter,
+            ShowAll,
+        }
 
         // ------------------------------------------------------------------ data
         private readonly List<Model_ReceivingLoad> _allLoads = new();
@@ -128,6 +141,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private DateTimeOffset _filterEndDate = DateTimeOffset.Now;
 
+        private DateFilterPreset _activeDateFilter = DateFilterPreset.None;
+
+        private bool _isApplyingPresetFilter;
+
         [ObservableProperty]
         private string _thisMonthButtonText = DateTime.Now.ToString("MMMM");
 
@@ -211,6 +228,42 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _editModeColumnWtPerPkgText = "UOM/Pkg";
 
+        private static readonly Brush ActiveFilterButtonBrush = new SolidColorBrush(
+            Colors.DodgerBlue
+        );
+        private static readonly Brush InactiveFilterButtonBrush = new SolidColorBrush(
+            Colors.Transparent
+        );
+
+        private static Brush ResolveFilterButtonBackground(bool isActive)
+        {
+            return isActive ? ActiveFilterButtonBrush : InactiveFilterButtonBrush;
+        }
+
+        public Brush LastWeekFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.LastWeek
+        );
+
+        public Brush TodayFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.Today
+        );
+
+        public Brush ThisWeekFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisWeek
+        );
+
+        public Brush ThisMonthFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisMonth
+        );
+
+        public Brush ThisQuarterFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisQuarter
+        );
+
+        public Brush ShowAllFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ShowAll
+        );
+
         // ------------------------------------------------------------------ event — tells the View to open the column-chooser dialog
         /// <summary>Raised when the user clicks the "Columns" toolbar button.</summary>
         public event EventHandler? ShowColumnChooserRequested;
@@ -279,6 +332,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             GotoPageNumber = 1;
             FilterStartDate = DateTimeOffset.Now.AddDays(-7);
             FilterEndDate = DateTimeOffset.Now;
+            SetActiveDateFilter(DateFilterPreset.None);
             SelectAllButtonText = "Select All";
             StatusMessage = string.Empty;
             _currentLabelDataPath = null;
@@ -991,12 +1045,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <summary>
         /// Handles changes to the filter start date.
         /// </summary>
-        partial void OnFilterStartDateChanged(DateTimeOffset value) => ApplyDateFilter();
+        partial void OnFilterStartDateChanged(DateTimeOffset value)
+        {
+            if (!_isApplyingPresetFilter)
+            {
+                ClearActiveDateFilter();
+            }
+
+            ApplyDateFilter();
+        }
 
         /// <summary>
         /// Handles changes to the filter end date.
         /// </summary>
-        partial void OnFilterEndDateChanged(DateTimeOffset value) => ApplyDateFilter();
+        partial void OnFilterEndDateChanged(DateTimeOffset value)
+        {
+            if (!_isApplyingPresetFilter)
+            {
+                ClearActiveDateFilter();
+            }
+
+            ApplyDateFilter();
+        }
 
         /// <summary>
         /// Applies the date filter to the loaded data.
@@ -1090,8 +1160,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterLastWeekAsync()
         {
-            FilterStartDate = DateTime.Today.AddDays(-7);
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(
+                DateTime.Today.AddDays(-7),
+                DateTime.Today,
+                DateFilterPreset.LastWeek
+            );
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1108,8 +1181,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterTodayAsync()
         {
-            FilterStartDate = DateTime.Today;
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(DateTime.Today, DateTime.Today, DateFilterPreset.Today);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1129,8 +1201,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var today = DateTime.Today;
             var start = today.AddDays(-(int)today.DayOfWeek);
             var end = start.AddDays(6);
-            FilterStartDate = start;
-            FilterEndDate = end;
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisWeek);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1148,8 +1219,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task SetFilterThisMonthAsync()
         {
             var today = DateTime.Today;
-            FilterStartDate = new DateTime(today.Year, today.Month, 1);
-            FilterEndDate = FilterStartDate.AddMonths(1).AddDays(-1);
+            var start = new DateTime(today.Year, today.Month, 1);
+            var end = start.AddMonths(1).AddDays(-1);
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisMonth);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1168,8 +1240,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             var today = DateTime.Today;
             int quarter = (today.Month - 1) / 3 + 1;
-            FilterStartDate = new DateTime(today.Year, 3 * quarter - 2, 1);
-            FilterEndDate = FilterStartDate.AddMonths(3).AddDays(-1);
+            var start = new DateTime(today.Year, 3 * quarter - 2, 1);
+            var end = start.AddMonths(3).AddDays(-1);
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisQuarter);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1186,8 +1259,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterShowAllAsync()
         {
-            FilterStartDate = DateTime.Today.AddYears(-1);
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(
+                DateTime.Today.AddYears(-1),
+                DateTime.Today,
+                DateFilterPreset.ShowAll
+            );
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1196,6 +1272,60 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 FilterAndPaginate();
             }
+        }
+
+        [RelayCommand]
+        private async Task SearchByDateAsync()
+        {
+            ClearActiveDateFilter();
+
+            if (CurrentDataSource == Enum_DataSourceType.History)
+            {
+                await LoadFromHistoryAsync();
+            }
+            else
+            {
+                FilterAndPaginate();
+            }
+        }
+
+        private void ApplyPresetDateFilter(DateTime startDate, DateTime endDate, DateFilterPreset preset)
+        {
+            _isApplyingPresetFilter = true;
+            try
+            {
+                FilterStartDate = startDate;
+                FilterEndDate = endDate;
+                SetActiveDateFilter(preset);
+            }
+            finally
+            {
+                _isApplyingPresetFilter = false;
+            }
+        }
+
+        private void ClearActiveDateFilter()
+        {
+            if (_activeDateFilter != DateFilterPreset.None)
+            {
+                SetActiveDateFilter(DateFilterPreset.None);
+            }
+        }
+
+        private void SetActiveDateFilter(DateFilterPreset preset)
+        {
+            if (_activeDateFilter == preset)
+            {
+                return;
+            }
+
+            _activeDateFilter = preset;
+            OnPropertyChanged(nameof(LastWeekFilterButtonBackground));
+            OnPropertyChanged(nameof(TodayFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisWeekFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
+            OnPropertyChanged(nameof(ShowAllFilterButtonBackground));
         }
 
         /// <summary>

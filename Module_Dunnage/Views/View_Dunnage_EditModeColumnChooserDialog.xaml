@@ -96,7 +96,11 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="6">
-            <ScrollViewer Style="{StaticResource SharedScrollViewerBothOffHiddenStyle}">
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Disabled"
+                HorizontalScrollMode="Disabled"
+                VerticalScrollBarVisibility="Auto"
+                VerticalScrollMode="Enabled">
                 <StackPanel x:Name="GroupsPanel" Spacing="16" />
             </ScrollViewer>
         </Border>

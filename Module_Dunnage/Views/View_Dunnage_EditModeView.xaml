@@ -119,6 +119,14 @@
                     Width="140"
                     Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
                     PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.EndDate'), Mode=OneWay}" />
+                <Button
+                    Width="36"
+                    Height="36"
+                    Padding="0"
+                    Command="{x:Bind ViewModel.SearchByDateCommand}"
+                    ToolTipService.ToolTip="Search by date range">
+                    <FontIcon Glyph="&#xE721;" />
+                </Button>
 
                 <Rectangle
                     Width="1"
@@ -129,26 +137,32 @@
                 <!--  T158, T159, T160, T161, T162, T163, T164: Date filter buttons with dynamic text  -->
                 <Button
                     Command="{x:Bind ViewModel.SetFilterLastWeekCommand}"
+                    Background="{x:Bind ViewModel.LastWeekFilterButtonBackground, Mode=OneWay}"
                     Content="{x:Bind ViewModel.LastWeekButtonText, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}" />
                 <Button
                     Command="{x:Bind ViewModel.SetFilterTodayCommand}"
+                    Background="{x:Bind ViewModel.TodayFilterButtonBackground, Mode=OneWay}"
                     Content="{x:Bind ViewModel.TodayButtonText, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}" />
                 <Button
                     Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
+                    Background="{x:Bind ViewModel.ThisWeekFilterButtonBackground, Mode=OneWay}"
                     Content="{x:Bind ViewModel.ThisWeekButtonText, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}" />
                 <Button
                     Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"
+                    Background="{x:Bind ViewModel.ThisMonthFilterButtonBackground, Mode=OneWay}"
                     Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisMonth'), Mode=OneWay}" />
                 <Button
                     Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
+                    Background="{x:Bind ViewModel.ThisQuarterFilterButtonBackground, Mode=OneWay}"
                     Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}" />
                 <Button
                     Command="{x:Bind ViewModel.SetFilterShowAllCommand}"
+                    Background="{x:Bind ViewModel.ShowAllFilterButtonBackground, Mode=OneWay}"
                     Content="Show All"
                     ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterShowAll'), Mode=OneWay}" />
             </StackPanel>
