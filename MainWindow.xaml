@@ -357,6 +357,8 @@
                 <NavigationViewItem
                     Margin="0,0,0,4"
                     Content="Scanner"
+                    IsEnabled="False"
+                    ToolTipService.ToolTip="Scanner functionality is not yet implemented."
                     Tag="ScannerMainPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8A1;" />
