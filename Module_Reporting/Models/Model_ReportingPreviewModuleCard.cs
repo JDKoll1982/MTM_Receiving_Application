@@ -212,12 +212,8 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
         _isApplyingColumnRules = true;
         try
         {
-            loadsOrSkidsColumn.CanChangeInOptions = !shouldForceCombinedRowCountColumn;
-
-            if (shouldForceCombinedRowCountColumn && !loadsOrSkidsColumn.IsIncluded)
-            {
-                loadsOrSkidsColumn.IsIncluded = true;
-            }
+            // Keep this column user-toggleable in all modes.
+            loadsOrSkidsColumn.CanChangeInOptions = true;
         }
         finally
         {
@@ -281,7 +277,7 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
             Header = LoadsOrSkidsColumnHeader,
             Width = LoadsOrSkidsColumnWidth,
             IsNumeric = true,
-            IsIncluded = false,
+            IsIncluded = true,
         };
 
         generatedColumn.PropertyChanged += OnColumnPropertyChanged;
@@ -576,6 +572,8 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
                 columnKey,
                 previewRowSource.Rows.Select(row => row.DisplayUnitsPerSkid)
             ),
+            nameof(Model_ReportRow.Location) or nameof(Model_ReportRow.DisplayLocation) =>
+                ResolveGroupedLocationValue(previewRowSource),
             _ => ResolveGroupedTextValue(
                 previewRowSource,
                 columnKey,
@@ -737,6 +735,61 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
         }
 
         return GetMixedValuePlaceholder(columnKey, previewRowSource);
+    }
+
+    private static string ResolveGroupedLocationValue(PreviewRowSource previewRowSource)
+    {
+        var rowsWithLocation = previewRowSource
+            .Rows.Select(row => new
+            {
+                Location = row.DisplayLocation,
+                Quantity = row.Quantity ?? 0m,
+            })
+            .Where(row => string.IsNullOrWhiteSpace(row.Location) is false)
+            .ToList();
+
+        if (rowsWithLocation.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var distinctLocations = rowsWithLocation
+            .Select(row => row.Location.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (distinctLocations.Count == 1)
+        {
+            return distinctLocations[0];
+        }
+
+        var groupedByLocation = new Dictionary<string, (string DisplayLocation, decimal Quantity)>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        foreach (var row in rowsWithLocation)
+        {
+            var normalizedLocation = row.Location.Trim();
+            if (groupedByLocation.TryGetValue(normalizedLocation, out var existing))
+            {
+                groupedByLocation[normalizedLocation] = (
+                    existing.DisplayLocation,
+                    existing.Quantity + row.Quantity
+                );
+                continue;
+            }
+
+            groupedByLocation[normalizedLocation] = (normalizedLocation, row.Quantity);
+        }
+
+        return string.Join(
+            $",{Environment.NewLine}",
+            groupedByLocation
+                .Values.OrderBy(value => value.DisplayLocation, StringComparer.OrdinalIgnoreCase)
+                .Select(value =>
+                    $"{value.DisplayLocation} - ({value.Quantity.ToString("#,##0.##", CultureInfo.InvariantCulture)})"
+                )
+        );
     }
 
     private static string ResolveGroupedDateValue(IEnumerable<DateTime?> values, bool includeTime)

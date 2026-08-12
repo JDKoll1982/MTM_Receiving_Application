@@ -134,6 +134,7 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
             session.SelectedPart = part;
             session.SelectedTypeId = part.TypeId;
             session.SelectedTypeName = part.DunnageTypeName;
+            session.IsPartSelectionFromImageSearch = true;
 
             var typeResult = await _dunnageService.GetTypeByIdAsync(part.TypeId);
             if (typeResult.IsSuccess && typeResult.Data is not null)

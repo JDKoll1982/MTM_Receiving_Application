@@ -18,7 +18,7 @@ SELECT
     DATE(dl.received_date) AS created_date,
     CAST(au.employee_number AS CHAR(20)) AS employee_number,
     dl.created_by AS created_by_username,
-    dp.home_location AS location,
+    dl.location AS location,
     CAST(NULL AS CHAR(255)) AS notes,
     'Dunnage' AS source_module
 FROM
@@ -35,7 +35,7 @@ GROUP BY
     dl.quantity,
     dl.received_date,
     dl.created_by,
-    dp.home_location,
+    dl.location,
     au.employee_number
 ORDER BY
     dl.received_date DESC;

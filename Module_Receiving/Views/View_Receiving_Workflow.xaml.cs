@@ -83,6 +83,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             PackageTypeHost.Content = packageTypeView;
             ReviewHost.Content = reviewView;
             ReconciliationReviewHost.Content = reconciliationReviewView;
+            RegisterGuidedStepFocusHooks();
 
             Loaded += View_Receiving_Workflow_Loaded;
             Unloaded += View_Receiving_Workflow_Unloaded;
@@ -99,6 +100,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _workflowService.StepChanged -= WorkflowService_StepChanged;
             _workflowService.StepChanged += WorkflowService_StepChanged;
             ApplyAdaptiveLayout();
+            QueueFocusForCurrentStep();
         }
 
         private void View_Receiving_Workflow_Unloaded(object sender, RoutedEventArgs e)
@@ -127,6 +129,58 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         {
             _ = sender;
             _ = e;
+            QueueFocusForCurrentStep();
+        }
+
+        private void QueueFocusForCurrentStep()
+        {
+            if (DispatcherQueue == null)
+            {
+                return;
+            }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    ResolveFocusableStepView()?.FocusForAccess();
+                });
+            });
+        }
+
+        private void RegisterGuidedStepFocusHooks()
+        {
+            RegisterGuidedStepHostFocusHook(POEntryHost, Enum_ReceivingWorkflowStep.POEntry);
+            RegisterGuidedStepHostFocusHook(LoadEntryHost, Enum_ReceivingWorkflowStep.LoadEntry);
+            RegisterGuidedStepHostFocusHook(
+                WeightQuantityHost,
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry
+            );
+            RegisterGuidedStepHostFocusHook(HeatLotHost, Enum_ReceivingWorkflowStep.HeatLotEntry);
+            RegisterGuidedStepHostFocusHook(
+                PackageTypeHost,
+                Enum_ReceivingWorkflowStep.PackageTypeEntry
+            );
+        }
+
+        private void RegisterGuidedStepHostFocusHook(
+            ContentControl host,
+            Enum_ReceivingWorkflowStep step
+        )
+        {
+            host.RegisterPropertyChangedCallback(
+                UIElement.VisibilityProperty,
+                (_, _) =>
+                {
+                    if (
+                        host.Visibility == Visibility.Visible
+                        && _workflowService.CurrentStep == step
+                    )
+                    {
+                        QueueFocusForCurrentStep();
+                    }
+                }
+            );
         }
 
         private IReceivingWorkflowFocusable? ResolveFocusableStepView()

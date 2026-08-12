@@ -19,6 +19,7 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_ShipRecTools_ToolSelection _toolSelectionViewModel;
     private readonly ViewModel_Tool_OutsideServiceHistory _outsideServiceHistoryViewModel;
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
+    private readonly ViewModel_Tool_POLineSpecSearch _poLineSpecSearchViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
@@ -26,23 +27,27 @@ public sealed partial class View_ShipRecTools_Main : Page
         ViewModel_ShipRecTools_Main viewModel,
         View_ShipRecTools_ToolSelection toolSelectionView,
         View_Tool_OutsideServiceHistory outsideServiceHistoryView,
-        View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView
+        View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
+        View_Tool_POLineSpecSearch poLineSpecSearchView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(toolSelectionView);
         ArgumentNullException.ThrowIfNull(outsideServiceHistoryView);
         ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
+        ArgumentNullException.ThrowIfNull(poLineSpecSearchView);
 
         ViewModel = viewModel;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
         _outsideServiceHistoryViewModel = outsideServiceHistoryView.ViewModel;
         _materialAvailabilityBoardViewModel = materialAvailabilityBoardView.ViewModel;
+        _poLineSpecSearchViewModel = poLineSpecSearchView.ViewModel;
         InitializeComponent();
 
         ToolSelectionHost.Content = toolSelectionView;
         OutsideServiceHistoryHost.Content = outsideServiceHistoryView;
         MaterialAvailabilityBoardHost.Content = materialAvailabilityBoardView;
+        POLineSpecSearchHost.Content = poLineSpecSearchView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -57,6 +62,7 @@ public sealed partial class View_ShipRecTools_Main : Page
             is nameof(ViewModel_ShipRecTools_Main.IsToolSelectionVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsOutsideServiceHistoryVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsMaterialAvailabilityBoardVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsPOLineSpecSearchVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -83,6 +89,13 @@ public sealed partial class View_ShipRecTools_Main : Page
         {
             RestoreMainWindowSize();
             _materialAvailabilityBoardViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsPOLineSpecSearchVisible)
+        {
+            RestoreMainWindowSize();
+            _poLineSpecSearchViewModel.ActivateView();
         }
     }
 

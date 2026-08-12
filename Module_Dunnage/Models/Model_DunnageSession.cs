@@ -17,6 +17,7 @@ public class Model_DunnageSession : ObservableObject
     private ObservableCollection<decimal> _loadQuantities = new();
     private System.Collections.Generic.Dictionary<string, object>? _specValues;
     private Model_DunnageType? _selectedType;
+    private bool _isPartSelectionFromImageSearch;
 
     public int SelectedTypeId
     {
@@ -95,6 +96,12 @@ public class Model_DunnageSession : ObservableObject
     {
         get => _selectedType;
         set => SetProperty(ref _selectedType, value);
+    }
+
+    public bool IsPartSelectionFromImageSearch
+    {
+        get => _isPartSelectionFromImageSearch;
+        set => SetProperty(ref _isPartSelectionFromImageSearch, value);
     }
 
     public bool HasLoads => Loads.Count > 0;

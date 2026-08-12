@@ -212,6 +212,7 @@
             AutoGenerateColumns="False"
             CanUserSortColumns="True"
             CurrentCellChanged="EditModeDataGrid_CurrentCellChanged"
+            Sorting="EditModeDataGrid_Sorting"
             GridLinesVisibility="All"
             HeadersVisibility="Column"
             IsReadOnly="False"

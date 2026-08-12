@@ -45,7 +45,7 @@ public sealed class Model_ReportingPreviewModuleCardTests
     }
 
     [Fact]
-    public void RefreshPreviewRows_CombineMode_ForcesLoadsSkidsColumnIncludedAndLocked()
+    public void RefreshPreviewRows_CombineMode_DoesNotForceLoadsSkidsColumnIncluded()
     {
         var card = CreateReceivingPreviewCard(
             CreateReportRow("PART-A", "LOT-1", new DateTime(2026, 3, 20), 1m, "PO-1001"),
@@ -58,12 +58,12 @@ public sealed class Model_ReportingPreviewModuleCardTests
             column.Key == nameof(Model_ReportRow.DisplayLoadsOrSkids)
         );
 
-        loadsOrSkidsColumn.IsIncluded.Should().BeTrue();
-        loadsOrSkidsColumn.CanChangeInOptions.Should().BeFalse();
+        loadsOrSkidsColumn.IsIncluded.Should().BeFalse();
+        loadsOrSkidsColumn.CanChangeInOptions.Should().BeTrue();
     }
 
     [Fact]
-    public void RefreshPreviewRows_CombineMode_SetsLoadsSkidsValueToCombinedRowCount()
+    public void RefreshPreviewRows_CombineMode_SetsLoadsSkidsValueToCombinedRowCount_WhenIncluded()
     {
         var card = CreateReceivingPreviewCard(
             CreateReportRow("PART-A", "LOT-1", new DateTime(2026, 3, 20), 1m, "PO-1001"),
@@ -72,6 +72,11 @@ public sealed class Model_ReportingPreviewModuleCardTests
         );
 
         card.RowDisplayMode = Enum_ReportingPreviewRowDisplayMode.UniquePartNumbersEntireDateRange;
+
+        var loadsOrSkidsColumn = card.AvailableColumns.Single(column =>
+            column.Key == nameof(Model_ReportRow.DisplayLoadsOrSkids)
+        );
+        loadsOrSkidsColumn.IsIncluded = true;
 
         GetPreviewCellValue(card, 0, nameof(Model_ReportRow.DisplayLoadsOrSkids)).Should().Be("2");
         GetPreviewCellValue(card, 1, nameof(Model_ReportRow.DisplayLoadsOrSkids)).Should().Be("1");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -29,7 +30,9 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
     private const int DefaultDisplayLimit = 50;
 
     private readonly IReadOnlyList<Model_FuzzySearchResult> _allItems;
+    private readonly Func<string, Task<IReadOnlyList<Model_FuzzySearchResult>>>? _fallbackSearchAsync;
     private readonly ObservableCollection<Model_FuzzySearchResult> _filtered = new();
+    private int _filterOperationId;
 
     /// <summary>The item selected by the user. Non-null when result is <see cref="ContentDialogResult.Primary"/>.</summary>
     public Model_FuzzySearchResult? SelectedResult { get; private set; }
@@ -43,11 +46,13 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
     public Dialog_FuzzySearchPicker(
         IReadOnlyList<Model_FuzzySearchResult> items,
         string pickerTitle,
-        string? subtitle = null
+        string? subtitle = null,
+        Func<string, Task<IReadOnlyList<Model_FuzzySearchResult>>>? fallbackSearchAsync = null
     )
     {
         ArgumentNullException.ThrowIfNull(items);
         _allItems = items;
+        _fallbackSearchAsync = fallbackSearchAsync;
 
         InitializeComponent();
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
@@ -60,31 +65,67 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
             SubtitleText.Visibility = Visibility.Visible;
         }
 
-        ApplyFilter(string.Empty);
+        _ = ApplyFilterAsync(string.Empty);
     }
 
     // ─── Filter Logic ───────────────────────────────────────────────────────
 
-    private void ApplyFilter(string term)
+    private async Task ApplyFilterAsync(string term)
     {
+        var operationId = ++_filterOperationId;
         _filtered.Clear();
 
-        var lower = term.Trim();
-        var isFilterActive = string.IsNullOrEmpty(lower) is false;
-        IEnumerable<Model_FuzzySearchResult> matches = isFilterActive
+        var trimmedTerm = term.Trim();
+        var isFilterActive = string.IsNullOrEmpty(trimmedTerm) is false;
+
+        var localMatches = isFilterActive
             ? _allItems.Where(i =>
-                i.Label.Contains(lower, StringComparison.OrdinalIgnoreCase)
-                || (i.Detail?.Contains(lower, StringComparison.OrdinalIgnoreCase) ?? false)
+                i.Label.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase)
+                || (i.Detail?.Contains(trimmedTerm, StringComparison.OrdinalIgnoreCase) ?? false)
             )
             : _allItems.Take(DefaultDisplayLimit);
 
-        foreach (var item in matches)
+        foreach (var item in localMatches)
         {
             _filtered.Add(item);
         }
 
         ResultsListView.ItemsSource = _filtered;
-        UpdateResultCount(isFilterActive);
+
+        if (isFilterActive && _filtered.Count == 0 && _fallbackSearchAsync is not null)
+        {
+            ResultCountText.Text = "Searching…";
+
+            IReadOnlyList<Model_FuzzySearchResult> fallbackMatches;
+            try
+            {
+                fallbackMatches =
+                    await _fallbackSearchAsync(trimmedTerm)
+                    ?? Array.Empty<Model_FuzzySearchResult>();
+            }
+            catch
+            {
+                fallbackMatches = Array.Empty<Model_FuzzySearchResult>();
+            }
+
+            if (operationId != _filterOperationId)
+            {
+                return;
+            }
+
+            _filtered.Clear();
+            foreach (var item in fallbackMatches)
+            {
+                _filtered.Add(item);
+            }
+
+            ResultsListView.ItemsSource = _filtered;
+            UpdateResultCount(true);
+        }
+        else
+        {
+            UpdateResultCount(isFilterActive);
+        }
 
         SelectedResult = null;
         IsPrimaryButtonEnabled = false;
@@ -109,9 +150,9 @@ public sealed partial class Dialog_FuzzySearchPicker : ContentDialog
 
     // ─── Event Handlers ─────────────────────────────────────────────────────
 
-    private void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
+    private async void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        ApplyFilter(FilterBox.Text);
+        await ApplyFilterAsync(FilterBox.Text);
     }
 
     private void ResultsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)

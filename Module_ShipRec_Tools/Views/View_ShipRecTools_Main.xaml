@@ -34,5 +34,12 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsMaterialAvailabilityBoardVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  PO Line Spec Search Tool  -->
+        <ContentControl
+            x:Name="POLineSpecSearchHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsPOLineSpecSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

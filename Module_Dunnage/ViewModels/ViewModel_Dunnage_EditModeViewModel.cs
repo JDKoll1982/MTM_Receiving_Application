@@ -911,7 +911,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
             var locationsResult = await _inforVisualService.FuzzySearchLocationsAsync(
                 string.Empty,
-                "002"
+                "002",
+                5000
             );
 
             if (!locationsResult.IsSuccess || locationsResult.Data == null)
@@ -941,7 +942,22 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             var selection = await ShowFuzzyPickerAsync(
                 availableLocations,
                 "Select Dunnage Location",
-                "Choose a location from Infor Visual warehouse 002."
+                "Choose a location from Infor Visual warehouse 002.",
+                async searchTerm =>
+                {
+                    var refreshResult = await _inforVisualService.FuzzySearchLocationsAsync(
+                        searchTerm,
+                        "002",
+                        5000
+                    );
+
+                    if (!refreshResult.IsSuccess || refreshResult.Data == null)
+                    {
+                        return Array.Empty<Model_FuzzySearchResult>();
+                    }
+
+                    return refreshResult.Data.OrderBy(location => location.Label).ToList();
+                }
             );
 
             if (selection is null)
@@ -1484,7 +1500,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
         IReadOnlyList<Model_FuzzySearchResult> options,
         string title,
-        string subtitle
+        string subtitle,
+        Func<string, Task<IReadOnlyList<Model_FuzzySearchResult>>>? fallbackSearchAsync = null
     )
     {
         var xamlRoot = _windowService.GetXamlRoot();
@@ -1499,7 +1516,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             return null;
         }
 
-        var dialog = new Dialog_FuzzySearchPicker(options, title, subtitle)
+        var dialog = new Dialog_FuzzySearchPicker(options, title, subtitle, fallbackSearchAsync)
         {
             XamlRoot = xamlRoot,
             PrimaryButtonText = "Select",

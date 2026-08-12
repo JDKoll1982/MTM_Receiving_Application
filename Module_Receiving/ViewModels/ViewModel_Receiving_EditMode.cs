@@ -38,6 +38,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPrivileges _userPrivileges;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private bool _isLoadingEditModePreferences;
 
         private enum DateFilterPreset
         {
@@ -102,7 +103,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             FilterAndPaginate();
         }
 
-        partial void OnSearchByColumnKeyChanged(string value) => FilterAndPaginate();
+        partial void OnSearchByColumnKeyChanged(string value)
+        {
+            FilterAndPaginate();
+            PersistEditModePreferencesIfReady();
+        }
 
         /// <summary>True when search text is non-empty; drives the clear-button visibility.</summary>
         public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
@@ -132,6 +137,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 _paginationService.SetSource(_filteredLoads);
             }
+
+            PersistEditModePreferencesIfReady();
         }
 
         // ------------------------------------------------------------------ date filter
@@ -532,6 +539,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="userId">Optional user ID for user-scoped settings.</param>
         internal async Task LoadColumnVisibilityAsync(int? userId = null)
         {
+            _isLoadingEditModePreferences = true;
             try
             {
                 var stored = await _receivingSettings.GetStringAsync(
@@ -607,6 +615,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     col.IsVisible = IsDefaultVisible(col.Key);
                     ColumnSettings.Add(col);
                 }
+            }
+            finally
+            {
+                _isLoadingEditModePreferences = false;
             }
         }
 
@@ -731,6 +743,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SortColumn = columnKey;
             SortAscending = ascending;
             FilterAndPaginate();
+            PersistEditModePreferencesIfReady();
+        }
+
+        private void PersistEditModePreferencesIfReady()
+        {
+            if (_isLoadingEditModePreferences)
+            {
+                return;
+            }
+
+            _ = SaveColumnVisibilityAsync();
         }
 
         private static List<Model_ReceivingLoad> ApplySort(

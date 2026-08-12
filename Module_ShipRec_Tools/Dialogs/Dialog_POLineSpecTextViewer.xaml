@@ -1,0 +1,27 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs.Dialog_POLineSpecTextViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    PrimaryButtonText="Close"
+    DefaultButton="Primary"
+    MinWidth="900"
+    MinHeight="620"
+    MaxWidth="1200"
+    MaxHeight="900">
+    <Grid>
+        <RichEditBox
+            x:Name="SpecTextEditor"
+            IsReadOnly="False"
+            IsSpellCheckEnabled="False"
+            IsTextPredictionEnabled="False"
+            AcceptsReturn="True"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            FontFamily="Consolas"
+            FontSize="13"
+            TextWrapping="NoWrap" />
+    </Grid>
+</ContentDialog>

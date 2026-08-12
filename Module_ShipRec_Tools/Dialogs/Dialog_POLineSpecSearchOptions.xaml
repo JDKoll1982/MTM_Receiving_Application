@@ -1,0 +1,105 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs.Dialog_POLineSpecSearchOptions"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    PrimaryButtonText="Apply"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary">
+    <ScrollViewer
+        MaxHeight="640"
+        Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <StackPanel Spacing="14">
+            <TextBlock
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="Search options" />
+
+            <Grid ColumnSpacing="16" RowSpacing="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="Search Mode:" />
+                <ComboBox
+                    x:Name="SearchModeComboBox"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Width="220" />
+
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="PO Status Filter:" />
+                <ComboBox
+                    x:Name="PoStatusFilterComboBox"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="220" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="Visible Lines:" />
+                <ComboBox
+                    x:Name="VisibleLinesComboBox"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Width="180" />
+            </Grid>
+
+            <TextBlock
+                Margin="0,4,0,0"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="Visible columns" />
+
+            <Grid ColumnSpacing="14" RowSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <CheckBox x:Name="ColumnPONumber" Content="PO Number" />
+                    <CheckBox x:Name="ColumnPOLineNumber" Content="PO Line" />
+                    <CheckBox x:Name="ColumnPartId" Content="Part ID" />
+                    <CheckBox x:Name="ColumnVendorName" Content="Vendor Name" />
+                    <CheckBox x:Name="ColumnVendorId" Content="Vendor ID" />
+                    <CheckBox x:Name="ColumnVendorPartId" Content="Vendor Part ID" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                    <CheckBox x:Name="ColumnQtyOrdered" Content="Qty Ordered" />
+                    <CheckBox x:Name="ColumnTotalQtyReceived" Content="Total Qty Received" />
+                    <CheckBox x:Name="ColumnPoStatus" Content="PO Status" />
+                    <CheckBox
+                        x:Name="ColumnSpecExcerpt"
+                        IsEnabled="False"
+                        Content="Spec text excerpt (always shown)" />
+                    <CheckBox x:Name="ColumnMatchScore" Content="Match score" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="At least one column must remain visible." />
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>

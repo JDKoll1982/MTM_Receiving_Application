@@ -92,5 +92,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "POLineSpecSearch",
+                Title = "PO Line Spec Search",
+                Description =
+                    "Search PO line binary specs and related line fields using weighted fuzzy ranking.",
+                IconGlyph = "\uE721",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
     }
 }

@@ -30,9 +30,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private readonly IService_Reporting _reportingService;
     private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_ReportingRecipientSettings _recipientSettings;
+    private readonly IService_ReportingSettings _reportingSettings;
     private bool _isSynchronizingModuleSelections;
     private bool _isApplyingDateRangePreset;
     private bool _suppressDateRangeReset;
+    private bool _isApplyingSavedPreviewSettings;
+    private Dictionary<string, Model_ReportingPreviewModuleSettings> _savedModuleSettings =
+        new(StringComparer.OrdinalIgnoreCase);
 
     public event EventHandler? PreviewRequested;
 
@@ -274,6 +278,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IService_Reporting reportingService,
         IService_ReportingClipboard reportingClipboard,
         IService_ReportingRecipientSettings recipientSettings,
+        IService_ReportingSettings reportingSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -286,8 +291,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             reportingClipboard ?? throw new ArgumentNullException(nameof(reportingClipboard));
         _recipientSettings =
             recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
+        _reportingSettings =
+            reportingSettings ?? throw new ArgumentNullException(nameof(reportingSettings));
         Title = "End of Day Reports";
         ResetAvailabilityState();
+
+        _ = LoadPreviewSettingsAsync();
     }
 
     [RelayCommand]
@@ -692,7 +701,66 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
         previewModuleCard.PropertyChanged += OnPreviewModuleCardPropertyChanged;
         previewModuleCard.InitializeColumns(CreateDetailColumnOptions(section));
+        ApplySavedModulePreferences(previewModuleCard);
         return previewModuleCard;
+    }
+
+    private void ApplySavedModulePreferences(Model_ReportingPreviewModuleCard previewModuleCard)
+    {
+        if (
+            !_savedModuleSettings.TryGetValue(previewModuleCard.ModuleName, out var savedSettings)
+            || savedSettings is null
+        )
+        {
+            return;
+        }
+
+        _isApplyingSavedPreviewSettings = true;
+        try
+        {
+            previewModuleCard.IsIncluded = savedSettings.IsIncluded;
+            SyncMainModuleSelection(previewModuleCard.ModuleName, previewModuleCard.IsIncluded);
+
+            if (savedSettings.IncludedColumnKeys is { Count: > 0 })
+            {
+                var includedKeys = new HashSet<string>(
+                    savedSettings.IncludedColumnKeys,
+                    StringComparer.Ordinal
+                );
+
+                foreach (var column in previewModuleCard.AvailableColumns)
+                {
+                    if (!column.CanChangeInOptions)
+                    {
+                        continue;
+                    }
+
+                    column.IsIncluded = includedKeys.Contains(column.Key);
+                }
+
+                previewModuleCard.RefreshPreviewRows();
+            }
+
+            if (
+                !string.IsNullOrWhiteSpace(savedSettings.SelectedSortOptionKey)
+                && previewModuleCard.SortOptions.Any(option =>
+                    string.Equals(
+                        option.Key,
+                        savedSettings.SelectedSortOptionKey,
+                        StringComparison.Ordinal
+                    )
+                )
+            )
+            {
+                previewModuleCard.SelectedSortOptionKey = savedSettings.SelectedSortOptionKey;
+            }
+
+            previewModuleCard.SelectedSortDirection = savedSettings.SelectedSortDirection;
+        }
+        finally
+        {
+            _isApplyingSavedPreviewSettings = false;
+        }
     }
 
     private void UpdatePreviewLayout()
@@ -1001,12 +1069,28 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private void OnPreviewModuleCardPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (
+            _isApplyingSavedPreviewSettings
+            || sender is not Model_ReportingPreviewModuleCard previewModuleCard
+        )
+        {
+            return;
+        }
+
+        if (
+            e.PropertyName
+                is nameof(Model_ReportingPreviewModuleCard.IsIncluded)
+                    or nameof(Model_ReportingPreviewModuleCard.SelectedSortOptionKey)
+                    or nameof(Model_ReportingPreviewModuleCard.SelectedSortDirection)
+                    or nameof(Model_ReportingPreviewModuleCard.DetailTableWidth)
+        )
+        {
+            _ = PersistPreviewSettingsAsync();
+        }
+
         if (e.PropertyName == nameof(Model_ReportingPreviewModuleCard.IsIncluded))
         {
-            if (sender is Model_ReportingPreviewModuleCard previewModuleCard)
-            {
-                SyncMainModuleSelection(previewModuleCard.ModuleName, previewModuleCard.IsIncluded);
-            }
+            SyncMainModuleSelection(previewModuleCard.ModuleName, previewModuleCard.IsIncluded);
 
             RefreshIncludedPreviewModuleCards();
         }
@@ -1394,6 +1478,84 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         OnPropertyChanged(nameof(IsUniquePartNumbersAndLotNumbersEntireDateRangeMode));
         OnPropertyChanged(nameof(IsUniquePartNumbersPerDayMode));
         OnPropertyChanged(nameof(IsUniquePartNumbersAndLotNumbersPerDayMode));
+
+        if (!_isApplyingSavedPreviewSettings)
+        {
+            _ = PersistPreviewSettingsAsync();
+        }
+    }
+
+    private async Task LoadPreviewSettingsAsync()
+    {
+        try
+        {
+            var settings = await _reportingSettings.GetPreviewSettingsAsync();
+
+            _savedModuleSettings = settings.ModuleSettings ?? new Dictionary<
+                string,
+                Model_ReportingPreviewModuleSettings
+            >(StringComparer.OrdinalIgnoreCase);
+
+            _isApplyingSavedPreviewSettings = true;
+            SelectedRowDisplayMode = settings.RowDisplayMode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Failed to load reporting preview settings: {ex.Message}");
+        }
+        finally
+        {
+            _isApplyingSavedPreviewSettings = false;
+        }
+    }
+
+    private async Task PersistPreviewSettingsAsync()
+    {
+        try
+        {
+            var settings = BuildCurrentPreviewSettings();
+            var saveResult = await _reportingSettings.SavePreviewSettingsAsync(settings);
+            if (!saveResult.IsSuccess)
+            {
+                _logger.LogWarning(
+                    $"Failed to save reporting preview settings: {saveResult.ErrorMessage}"
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Failed to save reporting preview settings: {ex.Message}");
+        }
+    }
+
+    private Model_ReportingPreviewSettings BuildCurrentPreviewSettings()
+    {
+        var moduleSettings = new Dictionary<string, Model_ReportingPreviewModuleSettings>(
+            _savedModuleSettings,
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        foreach (var previewModuleCard in PreviewModuleCards)
+        {
+            moduleSettings[previewModuleCard.ModuleName] = new Model_ReportingPreviewModuleSettings
+            {
+                IsIncluded = previewModuleCard.IsIncluded,
+                SelectedSortOptionKey = previewModuleCard.SelectedSortOptionKey,
+                SelectedSortDirection = previewModuleCard.SelectedSortDirection,
+                IncludedColumnKeys = previewModuleCard
+                    .AvailableColumns.Where(column => column.IsIncluded)
+                    .Select(column => column.Key)
+                    .ToList(),
+            };
+        }
+
+        _savedModuleSettings = moduleSettings;
+
+        return new Model_ReportingPreviewSettings
+        {
+            RowDisplayMode = SelectedRowDisplayMode,
+            ModuleSettings = moduleSettings,
+        };
     }
 
     private sealed record SelectedModuleRequest(

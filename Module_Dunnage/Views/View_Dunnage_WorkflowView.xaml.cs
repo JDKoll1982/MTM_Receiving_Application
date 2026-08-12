@@ -543,6 +543,24 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             return true;
         }
 
+        if (string.IsNullOrWhiteSpace(DetailsEntryView.ViewModel.Location) is false)
+        {
+            var warningDialog = new ContentDialog
+            {
+                Title = "Location Not Verified",
+                Content =
+                    $"{validation.Message}\n\nThe entered location will still be saved as-is.",
+                CloseButtonText = "Continue",
+                XamlRoot = this.XamlRoot,
+            };
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                warningDialog,
+                this.XamlRoot
+            );
+            await warningDialog.ShowAsync();
+            return true;
+        }
+
         var errorDialog = new ContentDialog
         {
             Title = "Finish This Step First",
@@ -643,7 +661,11 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
                 break;
             case Enum_DunnageWorkflowStep.PartSelection:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                _workflowService.GoToStep(
+                    _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+                        ? Enum_DunnageWorkflowStep.ImagePartSearch
+                        : Enum_DunnageWorkflowStep.TypeSelection
+                );
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);

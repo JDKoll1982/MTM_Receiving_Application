@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -774,6 +775,147 @@ public class Dao_InforVisualConnection
                 $"Error retrieving purchase orders for part: {ex.Message}",
                 ex
             );
+        }
+    }
+
+    /// <summary>
+    /// Searches PO line binary/spec content and related PO line supplemental spec fields.
+    /// Uses: 22_SearchPurchaseOrderLineSpecs.sql
+    /// </summary>
+    /// <param name="normalizedSearchTerm">Uppercased search term with collapsed whitespace.</param>
+    /// <param name="searchLike">Contains wildcard pattern for normalized term.</param>
+    /// <param name="normalizedWildcard">Ordered-token wildcard pattern (for example %PUR%AIR%CYLINDER%).</param>
+    /// <param name="firstTokenLike">Contains wildcard for first token to expand candidate recall.</param>
+    /// <param name="maxResults">Maximum number of rows returned by SQL.</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
+    > SearchPurchaseOrderLineSpecsAsync(
+        string normalizedSearchTerm,
+        string searchLike,
+        string normalizedWildcard,
+        string firstTokenLike,
+        int maxResults = 250,
+        string searchMode = "Weighted Ranking",
+        string poStatusCodeFilter = ""
+    )
+    {
+        try
+        {
+            var hasStatusFilter = string.IsNullOrWhiteSpace(poStatusCodeFilter) is false;
+            var selectedQueryFile = ResolvePoLineSpecSearchQueryFile(searchMode, hasStatusFilter);
+            _logger?.LogInfo(
+                $"Searching PO line specs for term '{normalizedSearchTerm}' (max {maxResults}) with script '{selectedQueryFile}'"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(selectedQueryFile);
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.Add("@SearchTerm", SqlDbType.NVarChar, 200).Value =
+                normalizedSearchTerm;
+            command.Parameters.Add("@SearchLike", SqlDbType.NVarChar, 260).Value = searchLike;
+            command.Parameters.Add("@NormalizedWildcard", SqlDbType.NVarChar, 260).Value =
+                normalizedWildcard;
+            command.Parameters.Add("@FirstTokenLike", SqlDbType.NVarChar, 260).Value =
+                firstTokenLike;
+            command.Parameters.Add("@MaxResults", SqlDbType.Int).Value = maxResults;
+            command.Parameters.Add("@PoStatusCode", SqlDbType.NVarChar, 10).Value =
+                string.IsNullOrWhiteSpace(poStatusCodeFilter)
+                    ? DBNull.Value
+                    : poStatusCodeFilter.Trim().ToUpperInvariant();
+
+            var rows = new List<Model_InforVisualPOLineSpecSearchRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualPOLineSpecSearchRow
+                    {
+                        PONumber = reader["PONumber"].ToString() ?? string.Empty,
+                        POLineNumber =
+                            reader["POLineNumber"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["POLineNumber"]),
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        VendorId = reader["VendorId"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        VendorPartId = reader["VendorPartId"].ToString() ?? string.Empty,
+                        QtyOrdered =
+                            reader["QtyOrdered"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["QtyOrdered"]),
+                        TotalQtyReceived =
+                            reader["TotalQtyReceived"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["TotalQtyReceived"]),
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        BinaryType = reader["BinaryType"].ToString() ?? string.Empty,
+                        SpecText = DecodeSpecText(reader["BinaryBits"]),
+                        SupplementalText = reader["SupplementalText"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error searching PO line specs: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLineSpecSearchRow>>(
+                $"Error searching PO line specs: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static string ResolvePoLineSpecSearchQueryFile(string searchMode, bool hasStatusFilter)
+    {
+        var normalizedMode = searchMode?.Trim() ?? string.Empty;
+
+        if (string.Equals(normalizedMode, "Exact Phrase", StringComparison.OrdinalIgnoreCase))
+        {
+            return hasStatusFilter
+                ? "27_SearchPurchaseOrderLineSpecs_ExactPhrase_StatusFiltered.sql"
+                : "26_SearchPurchaseOrderLineSpecs_ExactPhrase.sql";
+        }
+
+        if (
+            string.Equals(
+                normalizedMode,
+                "Tokenized Partial",
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return hasStatusFilter
+                ? "25_SearchPurchaseOrderLineSpecs_TokenizedPartial_StatusFiltered.sql"
+                : "24_SearchPurchaseOrderLineSpecs_TokenizedPartial.sql";
+        }
+
+        return hasStatusFilter
+            ? "23_SearchPurchaseOrderLineSpecs_WeightedRanking_StatusFiltered.sql"
+            : "22_SearchPurchaseOrderLineSpecs.sql";
+    }
+
+    private static string DecodeSpecText(object binaryBits)
+    {
+        if (binaryBits is not byte[] bytes || bytes.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            // SQL CAST(VARBINARY AS NVARCHAR) semantics are UTF-16 little-endian.
+            return Encoding.Unicode.GetString(bytes);
+        }
+        catch
+        {
+            // Defensive fallback for unexpected encoding artifacts.
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 

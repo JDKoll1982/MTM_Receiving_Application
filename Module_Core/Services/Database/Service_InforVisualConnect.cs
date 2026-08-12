@@ -887,6 +887,55 @@ public class Service_InforVisualConnect : IService_InforVisual
     }
 
     /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
+    > SearchPurchaseOrderLineSpecsAsync(
+        string searchTerm,
+        int maxResults = 250,
+        string searchMode = "Weighted Ranking",
+        string poStatusCodeFilter = ""
+    )
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLineSpecSearchRow>>(
+                "Search term cannot be empty"
+            );
+        }
+
+        var safeMaxResults = Math.Clamp(maxResults, 1, 1000);
+        var normalizedTerm = NormalizeSearchTerm(searchTerm);
+        if (string.IsNullOrWhiteSpace(normalizedTerm))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLineSpecSearchRow>>(
+                "Search term cannot be empty"
+            );
+        }
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning mock PO line spec search results for term: {normalizedTerm}"
+            );
+            return CreateMockPurchaseOrderLineSpecSearchResults(normalizedTerm);
+        }
+
+        var tokens = normalizedTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var orderedWildcard = $"%{string.Join("%", tokens)}%";
+        var firstTokenLike = tokens.Length > 0 ? $"%{tokens[0]}%" : "%";
+
+        return await _dao.SearchPurchaseOrderLineSpecsAsync(
+            normalizedTerm,
+            $"%{normalizedTerm}%",
+            orderedWildcard,
+            firstTokenLike,
+            safeMaxResults,
+            searchMode,
+            poStatusCodeFilter
+        );
+    }
+
+    /// <inheritdoc />
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchVendorsAsync(
         string term
     )
@@ -986,7 +1035,8 @@ public class Service_InforVisualConnect : IService_InforVisual
     /// <inheritdoc />
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(
         string term,
-        string warehouseCode
+        string warehouseCode,
+        int maxResults = 50
     )
     {
         if (string.IsNullOrWhiteSpace(warehouseCode))
@@ -1001,12 +1051,16 @@ public class Service_InforVisualConnect : IService_InforVisual
         if (UseMockData)
         {
             _logger?.LogInfo(
-                $"[MOCK DATA MODE] Returning mock location results for term '{normalizedTerm}' in warehouse '{warehouseCode}'"
+                $"[MOCK DATA MODE] Returning mock location results for term '{normalizedTerm}' in warehouse '{warehouseCode}' (max {maxResults})"
             );
             return CreateMockFuzzyLocations(normalizedTerm, warehouseCode);
         }
 
-        return await _dao.FuzzySearchLocationsByWarehouseAsync(normalizedTerm, warehouseCode);
+        return await _dao.FuzzySearchLocationsByWarehouseAsync(
+            normalizedTerm,
+            warehouseCode,
+            maxResults
+        );
     }
 
     /// <inheritdoc />
@@ -1184,6 +1238,44 @@ public class Service_InforVisualConnect : IService_InforVisual
             normalizedPartId,
             normalizedWarehouseCode
         );
+    }
+
+    private static string NormalizeSearchTerm(string rawSearchTerm)
+    {
+        var trimmed = rawSearchTerm.Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(trimmed))
+        {
+            return string.Empty;
+        }
+
+        return string.Join(
+            ' ',
+            trimmed.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+        );
+    }
+
+    private static Model_Dao_Result<
+        List<Model_InforVisualPOLineSpecSearchRow>
+    > CreateMockPurchaseOrderLineSpecSearchResults(string normalizedTerm)
+    {
+        var mockRows = new List<Model_InforVisualPOLineSpecSearchRow>();
+        if (normalizedTerm.Contains("PUR") || normalizedTerm.Contains("CYLINDER"))
+        {
+            mockRows.Add(
+                new Model_InforVisualPOLineSpecSearchRow
+                {
+                    PONumber = "PO-070945",
+                    POLineNumber = 1,
+                    PartId = "MMF0005007",
+                    VendorId = "MORAN",
+                    BinaryType = "D",
+                    SpecText = "PUR  AIR CYLINDER PHD OCG 11-1/4 X 2 - STPK2 DET 28",
+                    SupplementalText = string.Empty,
+                }
+            );
+        }
+
+        return Model_Dao_Result_Factory.Success(mockRows);
     }
 
     private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyLocations(

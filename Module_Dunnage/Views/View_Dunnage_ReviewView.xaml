@@ -312,6 +312,7 @@
                         CanUserReorderColumns="False"
                         CanUserResizeColumns="True"
                         CanUserSortColumns="True"
+                        Sorting="ReviewDataGrid_Sorting"
                         GridLinesVisibility="None"
                         HeadersVisibility="Column"
                         IsReadOnly="True"

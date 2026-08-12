@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     private bool _isRestoringDisplayFormatPreference;
     private bool _persistedImageDisplayPreference = true;
+    private string? _pendingWorkflowSelectionPartId;
 
     public ViewModel_Dunnage_PartSelection(
         IService_DunnageWorkflow workflowService,
@@ -229,6 +231,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
             SelectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
 
+            var workflowSelectedPart = _workflowService.CurrentSession.SelectedPart;
+            _pendingWorkflowSelectionPartId =
+                _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+                && string.IsNullOrWhiteSpace(workflowSelectedPart?.PartId) is false
+                    ? workflowSelectedPart!.PartId
+                    : null;
+
             _logger.LogInfo(
                 $"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}, SelectedTypeIcon={SelectedTypeIcon}",
                 "PartSelection"
@@ -236,7 +245,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
             await LoadPartsAsync();
 
-            RestoreWorkflowSelectedPart();
+            RestoreWorkflowSelectedPart(workflowSelectedPart);
+            QueueWorkflowSelectionReassert();
 
             StatusMessage = $"Loaded {AvailableParts.Count} parts for {SelectedTypeName}";
             _logger.LogInfo($"PartSelection: {StatusMessage}", "PartSelection");
@@ -436,21 +446,148 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     #region Part Selection
 
-    private void RestoreWorkflowSelectedPart()
+    private void RestoreWorkflowSelectedPart(Model_DunnagePart? workflowSelectedPart = null)
     {
-        var workflowSelectedPart = _workflowService.CurrentSession.SelectedPart;
+        workflowSelectedPart ??= _workflowService.CurrentSession.SelectedPart;
         if (workflowSelectedPart is null)
         {
             SelectedPart = null;
             return;
         }
 
-        var matchingPart = AvailableParts.FirstOrDefault(part =>
-            part.Id == workflowSelectedPart.Id
-            || part.PartId.Equals(workflowSelectedPart.PartId, StringComparison.OrdinalIgnoreCase)
-        );
+        var matchingPart = FindMatchingPartForWorkflowSelection(workflowSelectedPart);
+        if (matchingPart is null)
+        {
+            _logger.LogWarning(
+                $"PartSelection: Could not restore selected part '{workflowSelectedPart.PartId}' (Id={workflowSelectedPart.Id}, TypeId={workflowSelectedPart.TypeId}). Available parts: {string.Join(", ", AvailableParts.Select(part => part.PartId))}",
+                "PartSelection"
+            );
+        }
 
         SelectedPart = matchingPart;
+
+        if (matchingPart is not null)
+        {
+            _workflowService.CurrentSession.SelectedPart = matchingPart;
+            _pendingWorkflowSelectionPartId = null;
+        }
+    }
+
+    private void QueueWorkflowSelectionReassert()
+    {
+        if (string.IsNullOrWhiteSpace(_pendingWorkflowSelectionPartId))
+        {
+            return;
+        }
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            _dispatcher.TryEnqueue(() =>
+            {
+                _ = TryRestorePendingWorkflowPartSelection();
+            });
+        });
+    }
+
+    private bool TryRestorePendingWorkflowPartSelection()
+    {
+        if (string.IsNullOrWhiteSpace(_pendingWorkflowSelectionPartId))
+        {
+            return false;
+        }
+
+        var pendingMatch = FindMatchingPartForWorkflowSelection(
+            new Model_DunnagePart { PartId = _pendingWorkflowSelectionPartId }
+        );
+
+        if (pendingMatch is null)
+        {
+            return false;
+        }
+
+        SelectedPart = pendingMatch;
+        _workflowService.CurrentSession.SelectedPart = pendingMatch;
+        _pendingWorkflowSelectionPartId = null;
+        return true;
+    }
+
+    private Model_DunnagePart? FindMatchingPartForWorkflowSelection(Model_DunnagePart workflowPart)
+    {
+        if (AvailableParts.Count == 0)
+        {
+            return null;
+        }
+
+        if (workflowPart.Id > 0)
+        {
+            var byId = AvailableParts.FirstOrDefault(part => part.Id == workflowPart.Id);
+            if (byId is not null)
+            {
+                return byId;
+            }
+        }
+
+        var selectedPartKey = NormalizePartSelectionKey(workflowPart.PartId);
+        if (string.IsNullOrWhiteSpace(selectedPartKey))
+        {
+            return null;
+        }
+
+        var exactNormalizedMatch = AvailableParts.FirstOrDefault(part =>
+            string.Equals(
+                NormalizePartSelectionKey(part.PartId),
+                selectedPartKey,
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
+
+        if (exactNormalizedMatch is not null)
+        {
+            return exactNormalizedMatch;
+        }
+
+        var relaxedSelectedPartKey = BuildRelaxedPartSelectionKey(workflowPart.PartId);
+        if (string.IsNullOrWhiteSpace(relaxedSelectedPartKey))
+        {
+            return null;
+        }
+
+        return AvailableParts.FirstOrDefault(part =>
+            string.Equals(
+                BuildRelaxedPartSelectionKey(part.PartId),
+                relaxedSelectedPartKey,
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
+    }
+
+    private static string NormalizePartSelectionKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalizedWhitespace = string.Join(
+            " ",
+            value
+                .Trim()
+                .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+        );
+
+        return normalizedWhitespace.ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    private static string BuildRelaxedPartSelectionKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalized = NormalizePartSelectionKey(value);
+        var filteredChars = normalized.Where(static ch => char.IsLetterOrDigit(ch));
+        return new string(filteredChars.ToArray());
     }
 
     partial void OnSelectedPartChanged(Model_DunnagePart? oldValue, Model_DunnagePart? newValue)
@@ -458,6 +595,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         if (newValue != null)
         {
             _logger.LogInfo($"Part selected via ComboBox: {newValue.PartId}", "PartSelection");
+            _pendingWorkflowSelectionPartId = null;
 
             // Update workflow session immediately when part is selected
             _workflowService.CurrentSession.SelectedPart = newValue;
@@ -471,6 +609,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
         else
         {
+            if (TryRestorePendingWorkflowPartSelection())
+            {
+                return;
+            }
+
             _workflowService.CurrentSession.SelectedPart = null;
             IsInventoryNotificationVisible = false;
             ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
@@ -584,8 +727,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     [RelayCommand]
     private void GoBack()
     {
-        _logger.LogInfo("Returning to Type Selection", "PartSelection");
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+        var targetStep = _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+            ? Enum_DunnageWorkflowStep.ImagePartSearch
+            : Enum_DunnageWorkflowStep.TypeSelection;
+
+        _logger.LogInfo($"Returning to {targetStep}", "PartSelection");
+        _workflowService.GoToStep(targetStep);
     }
 
     [RelayCommand(CanExecute = nameof(IsPartSelected))]

@@ -37,6 +37,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isMaterialAvailabilityBoardVisible;
 
+    [ObservableProperty]
+    private bool _isPOLineSpecSearchVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -78,6 +81,12 @@ public partial class ViewModel_ShipRecTools_Main
 
                 case "MaterialAvailabilityBoard":
                     IsMaterialAvailabilityBoardVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "POLineSpecSearch":
+                    IsPOLineSpecSearchVisible = true;
                     CurrentToolTitle = toolTitle;
                     ShowHeaderBackButton();
                     break;
@@ -129,5 +138,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsToolSelectionVisible = false;
         IsOutsideServiceHistoryVisible = false;
         IsMaterialAvailabilityBoardVisible = false;
+        IsPOLineSpecSearchVisible = false;
     }
 }

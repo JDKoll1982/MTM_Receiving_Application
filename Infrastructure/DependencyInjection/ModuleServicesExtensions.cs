@@ -352,6 +352,7 @@ public static class ModuleServicesExtensions
             return new Service_Reporting(dao, logger, receivingSettings);
         });
         services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
+        services.AddSingleton<IService_ReportingSettings, Service_ReportingSettings>();
         services.AddSingleton<
             IService_ReportingRecipientSettings,
             Service_ReportingRecipientSettings
@@ -565,6 +566,12 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
         });
+        services.AddSingleton<IService_Tool_POLineSpecSearch>(sp =>
+        {
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_POLineSpecSearch(inforVisual, logger);
+        });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
 
         // ViewModels (Transient - Per-navigation instances)
@@ -572,12 +579,14 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_ShipRecTools_ToolSelection>();
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
+        services.AddTransient<ViewModel_Tool_POLineSpecSearch>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_ToolSelection>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_POLineSpecSearch>();
 
         return services;
     }

@@ -156,6 +156,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                             };
                         }
 
+                        CurrentSession.IsPartSelectionFromImageSearch = false;
                         GoToStep(Enum_DunnageWorkflowStep.PartSelection);
                         break;
 

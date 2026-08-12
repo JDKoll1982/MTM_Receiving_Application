@@ -142,6 +142,23 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Searches PO line binary/spec content and related PO line supplemental spec fields.
+        /// Returns raw candidate rows for tool-side weighted ranking.
+        /// </summary>
+        /// <param name="searchTerm">Free-text search term.</param>
+        /// <param name="maxResults">Maximum candidate rows to return before tool-side ranking.</param>
+        /// <param name="searchMode">Search mode label (Exact Phrase, Tokenized Partial, Weighted Ranking).</param>
+        /// <param name="poStatusCodeFilter">Optional single status code filter (for example R/F/C/V).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
+        > SearchPurchaseOrderLineSpecsAsync(
+            string searchTerm,
+            int maxResults = 250,
+            string searchMode = "Weighted Ranking",
+            string poStatusCodeFilter = ""
+        );
+
+        /// <summary>
         /// Fuzzy-searches vendors by name using a LIKE '%term%' query against Infor Visual.
         /// Returns up to 50 candidates for display in a selection picker.
         /// </summary>
@@ -185,9 +202,11 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="term">Partial location ID entered by the user.</param>
         /// <param name="warehouseCode">Warehouse code to scope results (e.g. "002").</param>
+        /// <param name="maxResults">Maximum rows to return from Infor Visual.</param>
         public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(
             string term,
-            string warehouseCode
+            string warehouseCode,
+            int maxResults = 50
         );
 
         /// <summary>
