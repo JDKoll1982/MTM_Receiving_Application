@@ -69,6 +69,9 @@
   <ItemGroup>
     <Content Remove="docs\development\CopilotForms\**" />
     <Content Remove="docs\CopilotForms\data\module-metadata\Module_Settings.Receiving\settings-receiving-configuration.json" />
+    <!-- Schema reference exports only; ~5,900 files that would otherwise be copied to output. -->
+    <Content Remove="docs\development\InforVisual\DatabaseCSVFiles\**" />
+    <None Remove="docs\development\InforVisual\DatabaseCSVFiles\**" />
     <None Include="docs\development\CopilotForms\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>docs\development\CopilotForms\%(RecursiveDir)%(Filename)%(Extension)</Link>
