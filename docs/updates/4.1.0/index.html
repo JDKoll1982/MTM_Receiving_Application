@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.1.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.1.0</h1>
+                    <p class="hero-copy">This release adds a PO line specification search to Ship/Rec Tools, remembers your screen preferences between sessions, improves Dunnage location and part lookup, and fixes a freeze when clearing a load quantity.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.1.0</span>
+                <span class="meta-text">Released August 14, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.1.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.1.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">New PO line specification search</p>
+                            <p class="highlight-text">Ship/Rec Tools now includes a search for purchase order line specification text, with options for ranked, partial-word, and exact-phrase matching.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Your screen setup is remembered</p>
+                            <p class="highlight-text">Edit Mode columns, sorting, page size, Reporting preview choices, and Dunnage view preferences now come back the way you left them.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Fixes to everyday entry</p>
+                            <p class="highlight-text">Clearing a load quantity no longer freezes the application, and keyboard focus lands on the right field as you move through guided steps.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>New: PO line specification search in Ship/Rec Tools</summary>
+                        <p>You can now search the specification text attached to purchase order lines directly from Ship/Rec Tools, instead of opening orders one at a time to read them.</p>
+                        <p>An options dialog lets you choose how the search behaves: ranked best-match results, partial word matching, or an exact phrase. You can also limit results by order status so closed or cancelled work does not clutter the list. Long specification text opens in its own reader window so you can review it comfortably.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Edit Mode remembers how you set it up</summary>
+                        <p>Version 4.0.0 improved Edit Mode date filtering. This release builds on that by saving the rest of your Edit Mode setup automatically as you change it: which columns are visible, which column Search By uses, the sort column and direction, and the page size.</p>
+                        <p>These come back the next time you open Edit Mode, so you no longer rebuild the same view every shift.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Reporting preview keeps your preferred layout</summary>
+                        <p>The Reporting preview now saves your Row Display Mode along with the per-module choices: whether a module is included, which columns are shown, and how it is sorted. Reopening Reporting restores that setup instead of starting from defaults.</p>
+                        <p>Rows that group multiple locations now display each location on its own line, which makes the preview table much easier to read.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage lookup and view preferences improved</summary>
+                        <p>The Dunnage location picker now loads a larger set of locations up front, and if what you type does not match anything on screen it automatically searches again using your typed text before reporting no matches.</p>
+                        <p>Your preferred thumbnail size, part image preference, and type selection sort order are now saved to your user profile. Returning from Part Selection also correctly takes you back to Image Search when that is where you started, and the part you picked stays selected while the screen refreshes.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Fixed: clearing a load quantity stopped the application</summary>
+                        <p>Deleting the number in a Load quantity box could cause the application to stop responding, forcing you to close it and re-enter the loads. Those boxes now accept an empty value safely. An empty box counts as zero, so type the correct number before continuing.</p>
+                        <p>The same fix applies to Receiving load entry and Dunnage quantity entry.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Fixed: keyboard focus in guided workflows</summary>
+                        <p>Moving between steps in the guided Receiving and Dunnage workflows now reliably puts the cursor in the field you are meant to fill in next, including when a step first becomes visible.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Navigation and behind-the-scenes updates</summary>
+                        <p>The Scanner entry in the main navigation is now selectable and shows a caution tooltip instead of being greyed out.</p>
+                        <p>Dunnage history and Dunnage location behavior were made consistent across the workflow screens, and the underlying saved-preference storage was tightened so settings that previously did not stick now save correctly.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less repeated setup</h3>
+                            <p>Edit Mode, Reporting preview, and Dunnage view choices carry over between sessions instead of resetting each time.</p>
+                        </article>
+                        <article>
+                            <h3>Faster specification lookups</h3>
+                            <p>Finding the right purchase order line by its specification text no longer means opening orders one by one.</p>
+                        </article>
+                        <article>
+                            <h3>No lost work during entry</h3>
+                            <p>Correcting a mistyped weight or quantity no longer risks losing the loads already entered for the part.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Set your preferences once</h2>
+                    </div>
+                    <p class="action-state success">No migration or setup step is required.</p>
+                    <ul class="action-list">
+                        <li>The first time you open Edit Mode, Reporting preview, or Dunnage after the update, set the view the way you want it. It will be remembered from then on.</li>
+                        <li>To try the new specification search, open Ship/Rec Tools and choose PO Line Spec Search.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a saved preference does not come back, a specification search returns unexpected results, or the application stops responding, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
