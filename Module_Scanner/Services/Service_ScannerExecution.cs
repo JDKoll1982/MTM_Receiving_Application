@@ -213,6 +213,23 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		return Task.FromResult(Model_Dao_Result_Factory.Success());
 	}
 
+	public Task<Model_Dao_Result> ClearTargetFormAsync(
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		// Alt+L clears the active Inventory Transfers form in Infor Visual.
+		const uint modAlt = 0x0001;
+		const ushort vkL = 0x4C;
+
+		return _engine.SendChord(modAlt, vkL)
+			? Task.FromResult(Model_Dao_Result_Factory.Success())
+			: Task.FromResult(
+				Model_Dao_Result_Factory.Failure("Could not clear the target form.")
+			);
+	}
+
 	private async Task<Model_Dao_Result<Model_ScannerExecutionOutcome>> ExecuteItemAsync(
 		Model_ScannerBatchSession session,
 		Model_ScannerBatchItem item,
@@ -304,18 +321,23 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		CancellationToken cancellationToken
 	)
 	{
-		var values = Helper_ScannerSequence.BuildFieldValues(item);
-		for (var index = 0; index < values.Count; index++)
+		var sequence = Helper_ScannerSequence.BuildFieldSequence(item);
+		for (var index = 0; index < sequence.Count; index++)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
+			var (value, tabsAfter) = sequence[index];
+
 			// Empty fields are still advanced past with Tab so the field contract stays intact.
-			if (!string.IsNullOrEmpty(values[index]) && !_engine.SendText(values[index]))
+			if (!string.IsNullOrEmpty(value) && !_engine.SendText(value))
 			{
 				return false;
 			}
 
-			if (index < values.Count - 1)
+			// Emit the configured number of Tab presses to reach the next field. Tab gaps skip
+			// fields that are not part of the payload (e.g. Reason after Quantity, From
+			// Type/Status after From Location). The last field has no trailing tab.
+			for (var tab = 0; tab < tabsAfter; tab++)
 			{
 				if (profile.DelayBetweenFieldsMs > 0)
 				{
@@ -325,11 +347,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 				if (!_engine.SendKeyPress(VkTab))
 				{
 					return false;
-				}
-
-				if (profile.DelayBetweenFieldsMs > 0)
-				{
-					await Task.Delay(profile.DelayBetweenFieldsMs, cancellationToken);
 				}
 			}
 		}

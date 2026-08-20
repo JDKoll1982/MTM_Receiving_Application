@@ -200,6 +200,32 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     private EditModeLoadSource _currentLoadSource = EditModeLoadSource.None;
     private bool _isApplyingPresetFilter;
 
+    private bool _hasLoadedData;
+
+    [ObservableProperty]
+    private string _emptyStateMessage = string.Empty;
+
+    /// <summary>
+    /// True when a load has completed but there are no rows to show (empty source, or the
+    /// search/date filter matched nothing). Drives the "nothing found" image overlay.
+    /// </summary>
+    public bool ShowEmptyState => _hasLoadedData && FilteredLoads.Count == 0;
+
+    private void ResetEmptyState()
+    {
+        _hasLoadedData = false;
+        EmptyStateMessage = string.Empty;
+        OnPropertyChanged(nameof(ShowEmptyState));
+    }
+
+    private void ShowEmptyStateFor(string message)
+    {
+        _hasLoadedData = true;
+        ReplaceFilteredLoads(Array.Empty<Model_DunnageLoad>());
+        EmptyStateMessage = message;
+        OnPropertyChanged(nameof(ShowEmptyState));
+    }
+
     public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
 
     partial void OnSearchTextChanged(string value)
@@ -333,21 +359,21 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         {
             IsBusy = true;
             StatusMessage = "Loading active label data...";
+                ResetEmptyState();
 
-            var result = await _dunnageService.GetActiveLabelDataAsync();
+                var result = await _dunnageService.GetActiveLabelDataAsync();
 
-            if (!result.Success)
-            {
-                await _errorHandler.HandleDaoErrorAsync(result, "LoadFromCurrentLabelsAsync", true);
-                return;
-            }
+                if (!result.Success)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(result, "LoadFromCurrentLabelsAsync", true);
+                    return;
+                }
 
-            _allLoads = result.Data ?? new List<Model_DunnageLoad>();
-            _currentLoadSource = EditModeLoadSource.CurrentLabels;
-            EnsureDisplayLoadNumbers();
-            CaptureOriginalSnapshots();
-            ApplySearchFilter(1);
-            StatusMessage = $"Loaded {TotalRecords} active label(s)";
+                _allLoads = result.Data ?? new List<Model_DunnageLoad>();
+                _currentLoadSource = EditModeLoadSource.CurrentLabels;
+                EnsureDisplayLoadNumbers();
+                CaptureOriginalSnapshots();
+                _hasLoadedData = true;
 
             _logger.LogInfo(
                 $"Loaded {TotalRecords} active labels from dunnage_label_data queue",
@@ -376,26 +402,26 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         {
             IsBusy = true;
             StatusMessage = "Loading historical data...";
+                ResetEmptyState();
 
-            var (startDate, endDate) = NormalizeHistoryDateRange(
-                FromDate?.DateTime,
-                ToDate?.DateTime
-            );
+                var (startDate, endDate) = NormalizeHistoryDateRange(
+                    FromDate?.DateTime,
+                    ToDate?.DateTime
+                );
 
-            var result = await _dunnageService.GetLoadsByDateRangeAsync(startDate, endDate);
+                var result = await _dunnageService.GetLoadsByDateRangeAsync(startDate, endDate);
 
-            if (!result.Success)
-            {
-                await _errorHandler.HandleDaoErrorAsync(result, "LoadFromHistoryAsync", true);
-                return;
-            }
+                if (!result.Success)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(result, "LoadFromHistoryAsync", true);
+                    return;
+                }
 
-            _allLoads = result.Data ?? new List<Model_DunnageLoad>();
-            _currentLoadSource = EditModeLoadSource.History;
-            EnsureDisplayLoadNumbers();
-            CaptureOriginalSnapshots();
-            ApplySearchFilter(1);
-            StatusMessage = $"Loaded {TotalRecords} records";
+                _allLoads = result.Data ?? new List<Model_DunnageLoad>();
+                _currentLoadSource = EditModeLoadSource.History;
+                EnsureDisplayLoadNumbers();
+                CaptureOriginalSnapshots();
+                _hasLoadedData = true;
 
             _logger.LogInfo(
                 $"Loaded {TotalRecords} historical loads from {startDate:d} to {endDate:d}",
@@ -1475,11 +1501,16 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             StatusMessage = string.IsNullOrWhiteSpace(SearchText)
                 ? "No loads found"
                 : $"No loads match \"{SearchText}\"";
+            EmptyStateMessage = string.IsNullOrWhiteSpace(SearchText)
+                ? "No loads found."
+                : $"No loads match \"{SearchText}\".";
+            OnPropertyChanged(nameof(ShowEmptyState));
             return;
         }
 
         var targetPage = Math.Min(Math.Max(pageNumber, 1), TotalPages);
         LoadPage(targetPage);
+        OnPropertyChanged(nameof(ShowEmptyState));
     }
 
     private static bool MatchesSearch(Model_DunnageLoad load, string searchTerm)

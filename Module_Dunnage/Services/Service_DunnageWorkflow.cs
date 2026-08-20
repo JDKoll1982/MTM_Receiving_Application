@@ -18,8 +18,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 {
     public class Service_DunnageWorkflow : IService_DunnageWorkflow, IDisposable
     {
-        private const string WarehouseCode = "002";
-
         private readonly IService_MySQL_Dunnage _dunnageService;
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;

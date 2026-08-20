@@ -9,6 +9,9 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
+using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
+using MTM_Receiving_Application.Module_Shared.Services.Lookup;
 
 namespace MTM_Receiving_Application.Module_Scanner.Services;
 
@@ -18,11 +21,31 @@ namespace MTM_Receiving_Application.Module_Scanner.Services;
 public sealed class Service_ScannerValidation : IService_ScannerValidation
 {
 	private readonly IService_InforVisual _inforVisualService;
+	private readonly Strategy_SharedLocationLookup _locationStrategy;
 
 	public Service_ScannerValidation(IService_InforVisual inforVisualService)
 	{
 		_inforVisualService =
 			inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
+		_locationStrategy = new Strategy_SharedLocationLookup(_inforVisualService);
+	}
+
+	public string FormatLocation(string location)
+	{
+		if (string.IsNullOrWhiteSpace(location))
+		{
+			return location ?? string.Empty;
+		}
+
+		var result = _locationStrategy.ApplyFormatting(
+			new Model_SharedLookupRequest
+			{
+				LookupType = Enum_SharedLookupType.Location,
+				RawInput = location.Trim(),
+			}
+		);
+
+		return result.FormattedValue;
 	}
 
 	public Task<Model_Dao_Result<Model_ScannerItemValidationResult>> ValidateNewItemAsync(
@@ -240,6 +263,63 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 			.ToList();
 
 		return Model_Dao_Result_Factory.Success(suggestions);
+	}
+
+	public async Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetLocationsWithStockAsync(
+		string partId,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		var canonicalPartId = partId?.Trim().ToUpperInvariant() ?? string.Empty;
+		if (string.IsNullOrWhiteSpace(canonicalPartId))
+		{
+			return Model_Dao_Result_Factory.Failure<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+				"Part ID is required."
+			);
+		}
+
+		var canonicalWarehouse = string.IsNullOrWhiteSpace(warehouseCode)
+			? "002"
+			: warehouseCode.Trim().ToUpperInvariant();
+
+		var stockResult = await _inforVisualService.GetMaterialAvailabilityCurrentStockAsync(
+			null,
+			canonicalPartId,
+			canonicalWarehouse
+		);
+		if (!stockResult.Success || stockResult.Data is null)
+		{
+			return Model_Dao_Result_Factory.Failure<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+				stockResult.ErrorMessage,
+				stockResult.Exception
+			);
+		}
+
+		// Aggregate per-location stock and keep only locations with positive on-hand quantity.
+		var inStockLocations = stockResult.Data
+			.Where(row =>
+				row.Quantity > 0
+				&& string.IsNullOrWhiteSpace(row.LocationId) is false
+			)
+			.GroupBy(row => row.LocationId.Trim(), StringComparer.OrdinalIgnoreCase)
+			.Select(group => new Model_InforVisualMaterialLocationRow
+			{
+				PartId = canonicalPartId,
+				PartDescription = group.First().PartDescription,
+				WarehouseCode = canonicalWarehouse,
+				LocationId = group.First().LocationId.Trim(),
+				Quantity = group.Sum(row => row.Quantity),
+				CommittedQuantity = group.Sum(row => row.CommittedQuantity),
+			})
+			.OrderBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		return Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+			inStockLocations
+		);
 	}
 
 	private async Task<Model_Dao_Result<Model_ScannerItemValidationResult>> ValidateAgainstInforVisualAsync(

@@ -12,6 +12,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
+using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -42,6 +43,20 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private Model_ScannerBatchItem? _selectedSessionItem;
 
     private Model_ScannerProfile? _activeProfile;
+
+    /// <summary>
+    /// Raised so the view can show the source-location inventory picker (locations holding
+    /// stock for the part). Receives (partId, fromWarehouse, currentLocation) and returns the
+    /// chosen location, or null when the operator cancels. Only set while the workbench view
+    /// is loaded.
+    /// </summary>
+    public event Func<string, string, string, Task<string?>>? FromLocationInventoryPickerRequested;
+
+    /// <summary>
+    /// Raised so the view can move focus to the Part ID text box, e.g. after a failed send
+    /// where the operator must retry the entry.
+    /// </summary>
+    public event Action? PartIdFocusRequested;
 
     [ObservableProperty]
     private string _ownerUserId = Environment.UserName;
@@ -78,6 +93,29 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     [ObservableProperty]
     private string _lastValidationNotes = string.Empty;
+
+    // ------------------------------------------------------------------ quantity state
+    /// <summary>True once the From location is filled and validated; enables the Qty field.</summary>
+    [ObservableProperty]
+    private bool _isQuantityEnabled;
+
+    /// <summary>Maximum quantity that can be entered, based on the validated From location's on-hand stock.</summary>
+    [ObservableProperty]
+    private decimal? _maxQuantity;
+
+    // ------------------------------------------------------------------ send confirmation
+    /// <summary>True while the workbench waits for the operator to confirm the sent line (Saved? Yes/No).</summary>
+    [ObservableProperty]
+    private bool _isSendPromptVisible;
+
+    partial void OnIsSendPromptVisibleChanged(bool value)
+    {
+        SendNextCommand.NotifyCanExecuteChanged();
+        SendAllCommand.NotifyCanExecuteChanged();
+    }
+
+    private Model_ScannerBatchItem? _pendingSendItem;
+    private bool _sendAllInProgress;
 
     public bool HasActiveSession => CurrentSession is not null;
 
@@ -229,6 +267,49 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             LastValidationNotes = item.ValidationNotes;
         }
 
+        // When the source location cannot fulfill the item (not found, or insufficient stock),
+        // let the operator pick a location that actually holds stock for the part and re-validate.
+        if (
+            validation.Success
+            && validation.Data is not null
+            && validation.Data.State == Enum_ScannerValidationState.Invalid
+            && IsSourceLocationIssue(validation.Data.Message)
+            && FromLocationInventoryPickerRequested is not null
+        )
+        {
+            var picked = await FromLocationInventoryPickerRequested(
+                NewPartId,
+                NewFromWarehouse,
+                NewFromLocation
+            );
+            if (string.IsNullOrWhiteSpace(picked) is false)
+            {
+                NewFromLocation = picked!;
+                item.PayloadFromLocation = picked!;
+
+                var revalidation = await _validationService.ValidateNewItemAsync(
+                    new Model_ScannerItemValidationRequest
+                    {
+                        SessionId = CurrentSession.SessionId,
+                        ItemId = item.ItemId,
+                        PartId = item.PayloadPartId,
+                        FromWarehouse = item.PayloadFromWarehouse,
+                        FromLocation = item.PayloadFromLocation,
+                        ToWarehouse = item.PayloadToWarehouse,
+                        ToLocation = item.PayloadToLocation,
+                        Quantity = item.PayloadQuantity,
+                    }
+                );
+
+                if (revalidation.Success && revalidation.Data is not null)
+                {
+                    item.ApplyValidationResult(revalidation.Data);
+                    LastValidationStatus = revalidation.Data.State.ToString();
+                    LastValidationNotes = revalidation.Data.Notes;
+                }
+            }
+        }
+
         var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
         if (!save.Success || save.Data is null)
         {
@@ -365,6 +446,60 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetFromLocationSuggestionsAsync()
     {
         return _validationService.GetLocationSuggestionsAsync(NewFromLocation, NewFromWarehouse);
+    }
+
+    /// <summary>
+    /// Returns every warehouse location that currently holds stock for the entered part,
+    /// scoped to the From warehouse. Used when the entered From location does not resolve.
+    /// </summary>
+    public Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetFromInventoryLocationsAsync()
+    {
+        return _validationService.GetLocationsWithStockAsync(NewPartId, NewFromWarehouse);
+    }
+
+    /// <summary>
+    /// Applies the shared warehouse-location autocomplete (dash rule) to a typed location,
+    /// for example "VA101" becomes "V-A1-01" and "R5" becomes "R-05". Used as the first
+    /// step for both the From and To location fields.
+    /// </summary>
+    public string FormatLocation(string location)
+    {
+        return _validationService.FormatLocation(location);
+    }
+
+    /// <summary>
+    /// Called once the From location is validated against stock: enables the Qty field and
+    /// records the maximum quantity that can be entered for that location.
+    /// </summary>
+    public void SetFromQuantityLimit(decimal available)
+    {
+        MaxQuantity = available;
+        IsQuantityEnabled = true;
+    }
+
+    /// <summary>Disables the Qty field and clears the maximum when the From location is not usable.</summary>
+    public void ClearFromQuantityLimit()
+    {
+        IsQuantityEnabled = false;
+        MaxQuantity = null;
+    }
+
+    /// <summary>
+    /// True when the validation message indicates the source (From) location is the problem:
+    /// the location was not found, or it cannot supply the requested quantity.
+    /// </summary>
+    private static bool IsSourceLocationIssue(string? message)
+    {
+        return string.Equals(
+                message,
+                "Source quantity is insufficient.",
+                StringComparison.Ordinal
+            )
+            || string.Equals(
+                message,
+                "From location was not found.",
+                StringComparison.Ordinal
+            );
     }
 
     public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetToLocationSuggestionsAsync()
@@ -551,7 +686,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSendNext))]
     private async Task SendNextAsync()
     {
         if (CurrentSession is null)
@@ -566,7 +701,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        if (IsBusy)
+        if (IsBusy || IsSendPromptVisible)
         {
             return;
         }
@@ -581,6 +716,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
             return;
         }
+
+        var next = Helper_ScannerSequence.FindNextEligible(CurrentSession.Items);
 
         IsBusy = true;
         try
@@ -600,6 +737,14 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             }
 
             RefreshSessionAfterExecution(result.Data);
+
+            // After a line is emitted, wait for the operator to confirm it was saved in the
+            // ERP before the next send is enabled.
+            if (result.Data.SentCount > 0 && next is not null)
+            {
+                _pendingSendItem = next;
+                IsSendPromptVisible = true;
+            }
         }
         finally
         {
@@ -607,7 +752,14 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
     }
 
-    [RelayCommand]
+    private bool CanSendNext()
+    {
+        return !IsSendPromptVisible
+            && !IsBusy
+            && CurrentSession?.Items.Count > 0;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSendNext))]
     private async Task SendAllAsync()
     {
         if (CurrentSession is null)
@@ -622,7 +774,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        if (IsBusy)
+        if (IsBusy || IsSendPromptVisible)
         {
             return;
         }
@@ -636,29 +788,86 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        IsBusy = true;
-        try
-        {
-            var profile = await ResolveActiveProfileAsync();
-            var result = await _executionService.SendAllAsync(CurrentSession, profile);
+        // Send items one at a time; each line is confirmed (Saved? Yes/No) before moving on.
+        _sendAllInProgress = true;
+        await SendNextAsync();
+    }
 
-            if (!result.Success || result.Data is null)
+    [RelayCommand]
+    private async Task ConfirmSavedAsync()
+    {
+        var savedItem = _pendingSendItem;
+        _pendingSendItem = null;
+        IsSendPromptVisible = false;
+
+        if (CurrentSession is not null && savedItem is not null)
+        {
+            var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
+                candidate.ItemId == savedItem.ItemId
+            );
+            if (itemToRemove is not null)
             {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to send the scanner batch."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
+                CurrentSession.Items.Remove(itemToRemove);
 
-            RefreshSessionAfterExecution(result.Data);
+                var orderedItems = CurrentSession.Items
+                    .OrderBy(candidate => candidate.SequenceNumber)
+                    .ToList();
+                CurrentSession.Items.Clear();
+                for (var index = 0; index < orderedItems.Count; index++)
+                {
+                    orderedItems[index].SequenceNumber = index + 1;
+                    orderedItems[index].LastUpdatedUtc = DateTime.UtcNow;
+                    CurrentSession.Items.Add(orderedItems[index]);
+                }
+
+                CurrentSession.RecalculateItemCounters();
+                CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+
+                var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+                if (persist.Success && persist.Data is not null)
+                {
+                    CurrentSession = persist.Data;
+                }
+
+                SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+                ShowStatus(
+                    $"Line {savedItem.SequenceNumber} saved to history.",
+                    InfoBarSeverity.Success
+                );
+            }
         }
-        finally
+
+        // In "send all" mode, continue automatically with the next eligible item.
+        if (_sendAllInProgress)
         {
-            IsBusy = false;
+            if (CurrentSession?.Items.Any(Helper_ScannerSequence.IsEligibleForSend) == true)
+            {
+                await SendNextAsync();
+            }
+            else
+            {
+                _sendAllInProgress = false;
+            }
         }
+    }
+
+    [RelayCommand]
+    private async Task ConfirmNotSavedAsync()
+    {
+        if (_pendingSendItem is not null)
+        {
+            // The line was not saved in the ERP; return it to the waiting queue for retry.
+            _pendingSendItem.ExecutionState = Enum_ScannerExecutionState.Waiting;
+            _pendingSendItem.LastUpdatedUtc = DateTime.UtcNow;
+        }
+
+        _sendAllInProgress = false;
+        _pendingSendItem = null;
+        IsSendPromptVisible = false;
+
+        await _executionService.ClearTargetFormAsync();
+        PartIdFocusRequested?.Invoke();
+        ShowStatus("Form cleared. Re-enter the part and try again.", InfoBarSeverity.Warning);
     }
 
     [RelayCommand]
@@ -669,6 +878,9 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             ShowStatus("Start a session before requesting a stop.", InfoBarSeverity.Warning);
             return;
         }
+
+        // Cancel any in-progress "send all" loop so it stops after the current confirmation.
+        _sendAllInProgress = false;
 
         var result = await _executionService.RequestStopAsync(CurrentSession);
         if (!result.Success)

@@ -34,4 +34,23 @@ public interface IService_ScannerValidation
 		string warehouseCode,
 		CancellationToken cancellationToken = default
 	);
+
+	/// <summary>
+	/// Returns every warehouse location that currently holds stock for
+	/// <paramref name="partId"/> (quantity &gt; 0), scoped to the given warehouse.
+	/// Used by the workbench From-location picker when the entered source location
+	/// does not resolve, so the operator can choose the real source location.
+	/// </summary>
+	Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetLocationsWithStockAsync(
+		string partId,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	);
+
+	/// <summary>
+	/// Applies the shared warehouse-location autocomplete formatting (dash rule) to
+	/// <paramref name="location"/> — for example "VA101" becomes "V-A1-01" and "R5"
+	/// becomes "R-05". Returns the uppercased input when no rule applies.
+	/// </summary>
+	string FormatLocation(string location);
 }

@@ -1,6 +1,6 @@
 # Scanner View
 
-Last Updated: 2026-07-28
+Last Updated: 2026-08-20
 
 This view is the user execution screen for preparing and sending items to inventory.
 The page must resize with the main window, and only the item list region should scroll.
@@ -54,6 +54,8 @@ Bottom Action Strip:
 
 ## Interaction Notes
 
+- When the entered From location does not resolve (invalid find), the view opens an inventory picker dialog instead of the fuzzy location picker. It queries Infor Visual for the entered part and lists every location with on-hand quantity greater than zero; the operator's selection replaces the From location. If the part has no on-hand stock anywhere in the From warehouse, a "no stock found" message is shown instead. This requires a part to be entered; otherwise the view falls back to fuzzy location suggestions.
+- The To location field keeps the existing fuzzy location picker behavior.
 - Send controls are available for the active draft session and update based on the current item counters and validation state.
 - Stop control is available for the current batch and is applied as a stop request rather than interrupting an in-progress item.
 - Row state changes are immediate and visually distinct.

@@ -1,6 +1,6 @@
 # Scanner ViewModel
 
-Last Updated: 2026-07-28
+Last Updated: 2026-08-20
 
 This view-model is the operational center for preparing items, validating data, and sending them to inventory.
 
@@ -66,6 +66,7 @@ This view-model is the operational center for preparing items, validating data, 
 - StopAfterThisAsync records a stop request for the current batch.
 - ClearHistoryAsync clears the active workbench UI state and ExportAsync writes the current batch to a text export.
 - ManageItemsDialogAsync opens the batch-edit dialog, allows add/duplicate/reorder/delete actions, and persists the reordered session back through the workflow service.
+- GetFromInventoryLocationsAsync returns every warehouse location that currently holds stock (quantity > 0) for the entered part, scoped to the From warehouse, via the validation service. It backs the From-location inventory picker shown when the typed source location does not resolve.
 
 ## Validation Responsibilities
 

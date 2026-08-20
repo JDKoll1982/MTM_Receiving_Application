@@ -319,21 +319,28 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox
+                                    x:Name="PartIdTextBox"
                                     Grid.Column="0"
                                     Header="Part"
                                     LostFocus="PartTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay}" />
+                                    Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <TextBox
                                     Grid.Column="1"
                                     Header="From Loc"
                                     LostFocus="FromLocationTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay}" />
+                                    Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <TextBox
                                     Grid.Column="2"
                                     Header="To Loc"
                                     LostFocus="ToLocationTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Column="3" Header="Qty" Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay}" />
+                                    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox
+                                    x:Name="QuantityTextBox"
+                                    Grid.Column="3"
+                                    Header="Qty"
+                                    IsEnabled="{x:Bind ViewModel.IsQuantityEnabled, Mode=OneWay}"
+                                    BeforeTextChanging="QuantityTextBox_BeforeTextChanging"
+                                    Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="4"
                                     Style="{StaticResource ScannerActionButtonStyle}"
@@ -413,7 +420,29 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.CheckAllCommand}" Content="Check All" />
-                <Button Grid.Column="1" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendNextCommand}" Content="Send Next" />
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <Button
+                        Style="{StaticResource ScannerPrimaryActionButtonStyle}"
+                        Command="{x:Bind ViewModel.SendNextCommand}"
+                        Content="Send Next" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Text="Saved?"
+                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Button
+                        Command="{x:Bind ViewModel.ConfirmSavedCommand}"
+                        Content="Yes"
+                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Button
+                        Command="{x:Bind ViewModel.ConfirmNotSavedCommand}"
+                        Content="No"
+                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
                 <Button Grid.Column="2" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendAllCommand}" Content="Send All" />
                 <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.StopAfterThisCommand}" Content="Stop After This" />
                 <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearHistoryCommand}" Content="Clear History" />

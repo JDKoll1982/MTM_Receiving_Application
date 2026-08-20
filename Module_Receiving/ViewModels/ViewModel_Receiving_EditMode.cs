@@ -116,6 +116,33 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _resultSummary = string.Empty;
 
+        // ------------------------------------------------------------------ empty state
+        private bool _hasLoadedData;
+
+        [ObservableProperty]
+        private string _emptyStateMessage = string.Empty;
+
+        /// <summary>
+        /// True when a load has completed but there are no rows to show (empty source, or the
+        /// search/date filter matched nothing). Drives the "nothing found" image overlay.
+        /// </summary>
+        public bool ShowEmptyState => _hasLoadedData && _filteredLoads.Count == 0;
+
+        private void ResetEmptyState()
+        {
+            _hasLoadedData = false;
+            EmptyStateMessage = string.Empty;
+            OnPropertyChanged(nameof(ShowEmptyState));
+        }
+
+        private void ShowEmptyStateFor(string message)
+        {
+            _hasLoadedData = true;
+            _filteredLoads = new List<Model_ReceivingLoad>();
+            EmptyStateMessage = message;
+            OnPropertyChanged(nameof(ShowEmptyState));
+        }
+
         // ------------------------------------------------------------------ sort
         [ObservableProperty]
         private string _sortColumn = string.Empty;
@@ -326,6 +353,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _filteredLoads = new List<Model_ReceivingLoad>();
             _deletedLoads.Clear();
             ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
+            ResetEmptyState();
             SelectedLoad = null;
             CurrentDataSource = Enum_DataSourceType.Memory;
             SearchText = string.Empty;
@@ -1016,6 +1044,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _allLoads.Clear();
             _filteredLoads = new List<Model_ReceivingLoad>();
             ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
+            ResetEmptyState();
             SelectedLoad = null;
             ResultSummary = "0 records";
             StatusMessage = "Current label queue cleared.";
@@ -1175,6 +1204,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             ResultSummary = string.IsNullOrWhiteSpace(SearchText)
                 ? $"{_filteredLoads.Count:N0} record{(_filteredLoads.Count == 1 ? "" : "s")}"
                 : $"{_filteredLoads.Count:N0} of {_allLoads.Count:N0} record{(_allLoads.Count == 1 ? "" : "s")} matching \"{SearchText}\"";
+
+            if (_allLoads.Count > 0)
+            {
+                _hasLoadedData = true;
+            }
+
+            EmptyStateMessage = string.IsNullOrWhiteSpace(SearchText)
+                ? "No records found."
+                : $"No records match \"{SearchText}\".";
+            OnPropertyChanged(nameof(ShowEmptyState));
         }
 
         /// <summary>
@@ -1470,6 +1509,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("User initiated Current Labels (DB) load");
                 IsBusy = true;
                 StatusMessage = "Loading current label queue from database...";
+                ResetEmptyState();
 
                 var result = await _mysqlService.GetCurrentLabelDataAsync();
 
@@ -1488,10 +1528,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (loadedData.Count == 0)
                 {
-                    await _errorHandler.ShowErrorDialogAsync(
-                        "No Labels Found",
-                        "The current label queue is empty. No labels have been printed today.",
-                        Enum_ErrorSeverity.Warning
+                    ShowEmptyStateFor(
+                        "The current label queue is empty. No labels have been printed today."
                     );
                     return;
                 }
@@ -1611,6 +1649,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("User initiated history load");
                 IsBusy = true;
                 StatusMessage = "Loading from history...";
+                ResetEmptyState();
 
                 var startDate = FilterStartDate.Date;
                 var endDate = FilterEndDate.Date;
@@ -1631,9 +1670,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (result.Data == null || result.Data.Count == 0)
                 {
-                    await _errorHandler.HandleErrorAsync(
-                        "No receiving records found in the specified date range.",
-                        Enum_ErrorSeverity.Warning
+                    ShowEmptyStateFor(
+                        "No receiving records found in the specified date range."
                     );
                     return;
                 }

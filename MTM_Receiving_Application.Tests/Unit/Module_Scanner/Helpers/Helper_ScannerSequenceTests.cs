@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.Helpers;
 public sealed class Helper_ScannerSequenceTests
 {
     [Fact]
-    public void BuildFieldValues_ShouldReturnFieldsInTransferContractOrder()
+    public void BuildFieldValues_ShouldReturnFieldsInScreenOrder()
     {
         var item = new Model_ScannerBatchItem
         {
@@ -21,7 +21,34 @@ public sealed class Helper_ScannerSequenceTests
 
         var values = Helper_ScannerSequence.BuildFieldValues(item);
 
-        values.Should().Equal("ABC-123", "002", "A1", "003", "B2", "5");
+        // VMINVENT "Inventory Transfers" tab path: part id, quantity, from warehouse,
+        // from location, to warehouse, to location.
+        values.Should().Equal("ABC-123", "5", "002", "A1", "003", "B2");
+    }
+
+    [Fact]
+    public void BuildFieldSequence_ShouldReturnTabCountsBetweenFields()
+    {
+        var item = new Model_ScannerBatchItem
+        {
+            PayloadPartId = "ABC-123",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A1",
+            PayloadToWarehouse = "003",
+            PayloadToLocation = "B2",
+            PayloadQuantity = "5",
+        };
+
+        var sequence = Helper_ScannerSequence.BuildFieldSequence(item);
+
+        sequence.Should().Equal(
+            ("ABC-123", 1),
+            ("5", 2),
+            ("002", 1),
+            ("A1", 5),
+            ("003", 1),
+            ("B2", 0)
+        );
     }
 
     [Theory]

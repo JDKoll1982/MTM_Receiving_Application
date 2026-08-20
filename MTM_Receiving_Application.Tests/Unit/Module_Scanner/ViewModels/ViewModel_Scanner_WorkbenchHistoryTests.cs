@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
@@ -125,6 +126,113 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         viewModel.SessionItems[0].ValidationState.Should().Be(Enum_ScannerValidationState.Invalid);
         viewModel.LastValidationStatus.Should().Be(nameof(Enum_ScannerValidationState.Invalid));
         viewModel.LastValidationNotes.Should().Be("Requested 10 exceeds available 2.");
+    }
+
+    [Fact]
+    public async Task AddDraftItemCommand_ShouldPickSourceLocation_WhenSourceQuantityInsufficient()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var sessionId = Guid.NewGuid();
+
+        workflow
+            .Setup(service =>
+                service.StartSessionAsync(
+                    It.IsAny<Model_ScannerSessionStartRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerSessionStartResponse
+                    {
+                        SessionId = sessionId,
+                        Status = Enum_ScannerSessionStatus.Draft,
+                        CreatedUtc = DateTime.UtcNow,
+                        Message = "Scanner session initialized.",
+                    }
+                )
+            );
+
+        var validationCall = 0;
+        validation
+            .Setup(service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                () =>
+                {
+                    validationCall++;
+                    return validationCall == 1
+                        ? Model_Dao_Result_Factory.Success(
+                            new Model_ScannerItemValidationResult
+                            {
+                                SessionId = sessionId,
+                                ItemId = Guid.NewGuid(),
+                                State = Enum_ScannerValidationState.Invalid,
+                                Message = "Source quantity is insufficient.",
+                                Notes = "Requested 10 exceeds available 2 at A-01.",
+                            }
+                        )
+                        : Model_Dao_Result_Factory.Success(
+                            new Model_ScannerItemValidationResult
+                            {
+                                SessionId = sessionId,
+                                ItemId = Guid.NewGuid(),
+                                State = Enum_ScannerValidationState.Valid,
+                                Message = string.Empty,
+                                Notes = "Validation passed.",
+                            }
+                        );
+                }
+            );
+
+        workflow
+            .Setup(service =>
+                service.UpsertBatchItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                (Model_ScannerBatchSession session, Model_ScannerBatchItem item, CancellationToken _) =>
+                {
+                    session.Items.Add(item);
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(session);
+                }
+            );
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.FromLocationInventoryPickerRequested += (_, _, _) =>
+            Task.FromResult<string?>("LOC-B");
+
+        viewModel.NewPartId = "MMCCS00740";
+        viewModel.NewFromWarehouse = "002";
+        viewModel.NewFromLocation = "A-01";
+        viewModel.NewToWarehouse = "002";
+        viewModel.NewToLocation = "B-01";
+        viewModel.NewQuantity = "10";
+
+        await viewModel.AddDraftItemCommand.ExecuteAsync(null);
+
+        viewModel.NewFromLocation.Should().Be("LOC-B");
+        viewModel.CurrentSession.Should().NotBeNull();
+        viewModel.SessionItems.Should().HaveCount(1);
+        viewModel.SessionItems[0].PayloadFromLocation.Should().Be("LOC-B");
+        viewModel.SessionItems[0].ValidationState.Should().Be(Enum_ScannerValidationState.Valid);
+        validation.Verify(
+            service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Exactly(2)
+        );
     }
 
     [Fact]
@@ -297,6 +405,236 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
     }
 
     [Fact]
+    public async Task SendNextCommand_ShouldShowSavedPrompt_WhenItemSent()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.SendNextItemAsync(session, It.IsAny<Model_ScannerProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                () =>
+                {
+                    validItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+                    validItem.SentUtc = DateTime.UtcNow;
+                    validItem.LastUpdatedUtc = DateTime.UtcNow;
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(
+                        new Model_ScannerExecutionOutcome { SentCount = 1 }
+                    );
+                }
+            );
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+
+        await viewModel.SendNextCommand.ExecuteAsync(null);
+
+        viewModel.IsSendPromptVisible.Should().BeTrue();
+        viewModel.SendNextCommand.CanExecute(null).Should().BeFalse();
+        viewModel.SendAllCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ConfirmSavedCommand_ShouldRemoveItemAndHidePrompt_WhenAnsweredYes()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.SendNextItemAsync(session, It.IsAny<Model_ScannerProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                () =>
+                {
+                    validItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+                    validItem.SentUtc = DateTime.UtcNow;
+                    validItem.LastUpdatedUtc = DateTime.UtcNow;
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(
+                        new Model_ScannerExecutionOutcome { SentCount = 1 }
+                    );
+                }
+            );
+        workflow
+            .Setup(service => service.ReplaceSessionItemsAsync(session, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(session));
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+
+        await viewModel.SendNextCommand.ExecuteAsync(null);
+        viewModel.IsSendPromptVisible.Should().BeTrue();
+
+        await viewModel.ConfirmSavedCommand.ExecuteAsync(null);
+
+        viewModel.IsSendPromptVisible.Should().BeFalse();
+        viewModel.SessionItems.Should().BeEmpty();
+        viewModel.CurrentSession!.Items.Should().BeEmpty();
+        viewModel.StatusMessage.Should().Contain("saved to history");
+    }
+
+    [Fact]
+    public async Task ConfirmNotSavedCommand_ShouldResetItemAndClearForm_WhenAnsweredNo()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.SendNextItemAsync(session, It.IsAny<Model_ScannerProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                () =>
+                {
+                    validItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+                    validItem.SentUtc = DateTime.UtcNow;
+                    validItem.LastUpdatedUtc = DateTime.UtcNow;
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(
+                        new Model_ScannerExecutionOutcome { SentCount = 1 }
+                    );
+                }
+            );
+        execution
+            .Setup(service => service.ClearTargetFormAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+
+        await viewModel.SendNextCommand.ExecuteAsync(null);
+        viewModel.IsSendPromptVisible.Should().BeTrue();
+
+        await viewModel.ConfirmNotSavedCommand.ExecuteAsync(null);
+
+        viewModel.IsSendPromptVisible.Should().BeFalse();
+        viewModel
+            .SessionItems.Single(item => item.ItemId == validItem.ItemId)
+            .ExecutionState.Should()
+            .Be(Enum_ScannerExecutionState.Waiting);
+        viewModel.StatusMessage.Should().Contain("Form cleared");
+        execution.Verify(
+            service => service.ClearTargetFormAsync(It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public void SetFromQuantityLimit_ShouldEnableQuantityAndCapMax()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+
+        viewModel.SetFromQuantityLimit(10000m);
+
+        viewModel.IsQuantityEnabled.Should().BeTrue();
+        viewModel.MaxQuantity.Should().Be(10000m);
+    }
+
+    [Fact]
+    public void ClearFromQuantityLimit_ShouldDisableQuantity()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.SetFromQuantityLimit(10000m);
+
+        viewModel.ClearFromQuantityLimit();
+
+        viewModel.IsQuantityEnabled.Should().BeFalse();
+        viewModel.MaxQuantity.Should().BeNull();
+    }
+
+    [Fact]
     public async Task StopAfterThisCommand_ShouldRequestStopAndPreserveCurrentBatch()
     {
         var workflow = new Mock<IService_ScannerWorkflow>();
@@ -399,6 +737,97 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         viewModel.StatusFilter.Should().BeNull();
         viewModel.MaxResults.Should().Be(100);
         viewModel.DateToUtc.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromMinutes(1));
+    }
+
+    [Fact]
+    public async Task GetFromInventoryLocationsAsync_ShouldReturnStockLocations_FromValidationService()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var expected = new List<Model_InforVisualMaterialLocationRow>
+        {
+            new()
+            {
+                PartId = "MMC0000850",
+                WarehouseCode = "002",
+                LocationId = "A-01",
+                Quantity = 10m,
+            },
+            new()
+            {
+                PartId = "MMC0000850",
+                WarehouseCode = "002",
+                LocationId = "B-01",
+                Quantity = 4m,
+            },
+        };
+        validation
+            .Setup(service =>
+                service.GetLocationsWithStockAsync(
+                    "MMC0000850",
+                    "002",
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<
+                    IReadOnlyList<Model_InforVisualMaterialLocationRow>
+                >(expected)
+            );
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.NewPartId = "MMC0000850";
+        viewModel.NewFromWarehouse = "002";
+
+        var result = await viewModel.GetFromInventoryLocationsAsync();
+
+        result.Success.Should().BeTrue();
+        result.Data.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void FormatLocation_ShouldReturnFormattedValue_FromValidationService()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.FormatLocation("VA101"))
+            .Returns("V-A1-01");
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+
+        var result = viewModel.FormatLocation("VA101");
+
+        result.Should().Be("V-A1-01");
+    }
+
+    [Fact]
+    public async Task ValidateFromLocationAsync_ShouldStoreCanonicalLocation_WhenResolved()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.ValidateLocationAsync("V-A1-01", "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerLocationValidationResult
+                    {
+                        IsValid = true,
+                        CanonicalLocation = "VA101",
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.NewFromWarehouse = "002";
+        viewModel.NewFromLocation = "V-A1-01";
+
+        var result = await viewModel.ValidateFromLocationAsync();
+
+        result.IsValid.Should().BeTrue();
+        // The quantity/stock match in the view relies on the canonical (DB) location id, so the
+        // ViewModel must replace the display-formatted value ("V-A1-01") with the canonical form.
+        viewModel.NewFromLocation.Should().Be("VA101");
     }
 
     private static ViewModel_Scanner_Workbench CreateWorkbenchViewModel(

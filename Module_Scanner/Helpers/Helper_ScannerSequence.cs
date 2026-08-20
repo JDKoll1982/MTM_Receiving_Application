@@ -12,8 +12,8 @@ public static class Helper_ScannerSequence
 {
 	/// <summary>
 	/// Ordered field values emitted for one Infor Visual Inventory Transfer record.
-	/// Field order matches the transfer data contract used by the VMINVENT screen:
-	/// part id, from warehouse, from location, to warehouse, to location, quantity.
+	/// Order follows the VMINVENT "Inventory Transfers" screen: part id, quantity, from
+	/// warehouse, from location, to warehouse, to location.
 	/// </summary>
 	public static IReadOnlyList<string> BuildFieldValues(Model_ScannerBatchItem item)
 	{
@@ -22,11 +22,35 @@ public static class Helper_ScannerSequence
 		return
 		[
 			item.PayloadPartId,
+			item.PayloadQuantity,
 			item.PayloadFromWarehouse,
 			item.PayloadFromLocation,
 			item.PayloadToWarehouse,
 			item.PayloadToLocation,
-			item.PayloadQuantity,
+		];
+	}
+
+	/// <summary>
+	/// Emission sequence for one Infor Visual Inventory Transfer record: each field value plus
+	/// the number of Tab presses required to reach the next field on the VMINVENT
+	/// "Inventory Transfers" screen. Tab gaps skip fields that are not part of the payload
+	/// (e.g. Reason after Quantity, From Type/Status after From Location). The last field has
+	/// no trailing tab.
+	/// </summary>
+	public static IReadOnlyList<(string Value, int TabsAfter)> BuildFieldSequence(
+		Model_ScannerBatchItem item
+	)
+	{
+		ArgumentNullException.ThrowIfNull(item);
+
+		return
+		[
+			(item.PayloadPartId, 1),
+			(item.PayloadQuantity, 2),
+			(item.PayloadFromWarehouse, 1),
+			(item.PayloadFromLocation, 5),
+			(item.PayloadToWarehouse, 1),
+			(item.PayloadToLocation, 0),
 		];
 	}
 

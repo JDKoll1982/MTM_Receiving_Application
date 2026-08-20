@@ -132,6 +132,36 @@ public sealed class Service_ScannerExecutionTests
         result.ErrorMessage.Should().Be("Session is required.");
     }
 
+    [Fact]
+    public async Task ClearTargetFormAsync_ShouldSendAltL()
+    {
+        var engine = new Mock<IService_ScannerInputEngine>();
+        engine
+            .Setup(service => service.SendChord(0x0001, 0x4C))
+            .Returns(true);
+        var service = CreateExecutionService(engine);
+
+        var result = await service.ClearTargetFormAsync();
+
+        result.Success.Should().BeTrue();
+        engine.Verify(service => service.SendChord(0x0001, 0x4C), Times.Once);
+    }
+
+    [Fact]
+    public async Task ClearTargetFormAsync_ShouldFail_WhenAltLSendBlocked()
+    {
+        var engine = new Mock<IService_ScannerInputEngine>();
+        engine
+            .Setup(service => service.SendChord(0x0001, 0x4C))
+            .Returns(false);
+        var service = CreateExecutionService(engine);
+
+        var result = await service.ClearTargetFormAsync();
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Could not clear the target form.");
+    }
+
     private static Service_ScannerExecution CreateExecutionService(
         Mock<IService_ScannerInputEngine>? engine = null
     )

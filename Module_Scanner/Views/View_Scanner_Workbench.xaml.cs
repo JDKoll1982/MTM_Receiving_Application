@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -57,12 +58,21 @@ public sealed partial class View_Scanner_Workbench : Page
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         ApplyAdaptiveLayout();
+        ViewModel.FromLocationInventoryPickerRequested += OnFromLocationInventoryPickerRequestedAsync;
+        ViewModel.PartIdFocusRequested += FocusPartIdTextBox;
         ViewModel.Activate();
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
+        ViewModel.FromLocationInventoryPickerRequested -= OnFromLocationInventoryPickerRequestedAsync;
+        ViewModel.PartIdFocusRequested -= FocusPartIdTextBox;
         ViewModel.Deactivate();
+    }
+
+    private void FocusPartIdTextBox()
+    {
+        PartIdTextBox?.Focus(FocusState.Programmatic);
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -166,13 +176,272 @@ public sealed partial class View_Scanner_Workbench : Page
             return;
         }
 
-        await HandleLocationTextBoxLostFocusAsync(
-            textBox,
-            ViewModel.ValidateFromLocationAsync,
-            ViewModel.GetFromLocationSuggestionsAsync,
-            value => ViewModel.NewFromLocation = value,
-            () => ViewModel.NewFromLocation
+        ViewModel.NewFromLocation = textBox.Text;
+        await HandleFromLocationTextBoxLostFocusAsync(textBox);
+    }
+
+    private async Task HandleFromLocationTextBoxLostFocusAsync(TextBox textBox)
+    {
+        if (_isLocationPickerOpen)
+        {
+            return;
+        }
+
+        var rawValue = ViewModel.NewFromLocation?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(rawValue))
+        {
+            ViewModel.ClearFromQuantityLimit();
+            return;
+        }
+
+        // Any new From validation resets the quantity limit until a valid source is resolved.
+        ViewModel.ClearFromQuantityLimit();
+
+        // 1) Autocomplete first: apply the shared dash-formatting rule (e.g. "VA101" ->
+        // "V-A1-01") and write the canonical value back into the field.
+        var formatted = ViewModel.FormatLocation(rawValue);
+        if (string.Equals(formatted, rawValue, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            ViewModel.NewFromLocation = formatted;
+            textBox.Text = formatted;
+        }
+
+        var currentValue = ViewModel.NewFromLocation?.Trim() ?? string.Empty;
+
+        // 2) Ensure the location exists in the system.
+        var validation = await ViewModel.ValidateFromLocationAsync();
+        if (validation.IsValid)
+        {
+            // 3) The location resolved cleanly — validate the quantity against the canonical
+            // location the validation service returned (e.g. "VA101" for the display-formatted
+            // "V-A1-01"). Matching against the display form fails because the stock rows use
+            // the canonical DB location id.
+            var canonicalFromLocation = ViewModel.NewFromLocation?.Trim() ?? string.Empty;
+            await ValidateFromQuantityAsync(
+                textBox,
+                string.IsNullOrWhiteSpace(canonicalFromLocation)
+                    ? currentValue
+                    : canonicalFromLocation
+            );
+            return;
+        }
+
+        // The location is not in the system. Without a part there is nothing to resolve
+        // against stock, so fall back to the generic fuzzy-location behavior.
+        if (string.IsNullOrWhiteSpace(ViewModel.NewPartId))
+        {
+            await HandleLocationTextBoxLostFocusAsync(
+                textBox,
+                ViewModel.ValidateFromLocationAsync,
+                ViewModel.GetFromLocationSuggestionsAsync,
+                value => ViewModel.NewFromLocation = value,
+                () => ViewModel.NewFromLocation
+            );
+            return;
+        }
+
+        // Fuzzy-search for a matching location, then validate the quantity on the selection.
+        var fuzzyResult = await ViewModel.GetFromLocationSuggestionsAsync();
+        if (fuzzyResult.IsSuccess && fuzzyResult.Data?.Count > 0)
+        {
+            _isLocationPickerOpen = true;
+            try
+            {
+                var dialog = new Dialog_FuzzySearchPicker(
+                    fuzzyResult.Data,
+                    "Select Location",
+                    $"'{currentValue}' was not found in the system. Select a matching location:"
+                )
+                {
+                    XamlRoot = XamlRoot,
+                };
+
+                var dialogResult = await dialog.ShowAsync();
+                if (
+                    dialogResult == ContentDialogResult.Primary
+                    && dialog.SelectedResult is not null
+                    && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
+                )
+                {
+                    var picked = dialog.SelectedResult.Label.Trim();
+                    ViewModel.NewFromLocation = picked;
+                    textBox.Text = picked;
+
+                    await ValidateFromQuantityAsync(textBox, picked);
+                    return;
+                }
+            }
+            finally
+            {
+                _isLocationPickerOpen = false;
+            }
+        }
+
+        ViewModel.ShowStatus(
+            validation.Message,
+            Module_Core.Models.Enums.InfoBarSeverity.Warning
         );
+    }
+
+    /// <summary>
+    /// Validates that the resolved From location can fulfill the requested quantity. When it
+    /// cannot, opens the inventory picker (locations holding stock) so the operator can choose
+    /// a source that has enough on hand.
+    /// </summary>
+    private async Task ValidateFromQuantityAsync(TextBox textBox, string fromLocation)
+    {
+        var stockResult = await ViewModel.GetFromInventoryLocationsAsync();
+        if (!stockResult.Success || stockResult.Data is null)
+        {
+            return; // Stock check is unavailable; do not block.
+        }
+
+        if (stockResult.Data.Count == 0)
+        {
+            ViewModel.ClearFromQuantityLimit();
+            ViewModel.ShowStatus(
+                $"No stock was found for {ViewModel.NewPartId} in warehouse {ViewModel.NewFromWarehouse}.",
+                Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
+            return;
+        }
+
+        var source = stockResult.Data.FirstOrDefault(row =>
+            string.Equals(row.LocationId, fromLocation, StringComparison.OrdinalIgnoreCase)
+        );
+        if (source is null)
+        {
+            ViewModel.ClearFromQuantityLimit();
+            ViewModel.ShowStatus(
+                $"No stock was found at {fromLocation} for {ViewModel.NewPartId}.",
+                Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
+            return;
+        }
+
+        // The From location is valid — enable the Qty field and cap it at the on-hand qty.
+        ViewModel.SetFromQuantityLimit(source.Quantity);
+
+        if (!TryGetRequestedQuantity(out var requested))
+        {
+            return; // No quantity entered yet; the limit is known for when the operator types one.
+        }
+
+        if (requested <= source.Quantity)
+        {
+            return; // The source can fulfill the entered quantity.
+        }
+
+        // The entered quantity exceeds the source's stock — offer locations that hold stock.
+        var picked = await ShowFromLocationInventoryPickerAsync(stockResult.Data, fromLocation);
+        if (string.IsNullOrWhiteSpace(picked) is false)
+        {
+            ViewModel.NewFromLocation = picked!;
+            textBox.Text = picked!;
+            var newSource = stockResult.Data.FirstOrDefault(row =>
+                string.Equals(row.LocationId, picked, StringComparison.OrdinalIgnoreCase)
+            );
+            if (newSource is not null)
+            {
+                ViewModel.SetFromQuantityLimit(newSource.Quantity);
+            }
+            return;
+        }
+
+        ViewModel.ShowStatus(
+            $"Requested {ViewModel.NewQuantity} exceeds available stock at {fromLocation}.",
+            Module_Core.Models.Enums.InfoBarSeverity.Warning
+        );
+    }
+
+    /// <summary>
+    /// Parses the entered quantity as a positive decimal. Returns false when none is set.
+    /// </summary>
+    private bool TryGetRequestedQuantity(out decimal quantity)
+    {
+        return decimal.TryParse(
+                ViewModel.NewQuantity,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out quantity
+            )
+            && quantity > 0;
+    }
+
+    /// <summary>
+    /// Shows the source-location inventory picker built from the given in-stock rows and
+    /// returns the selected location, or null when the operator cancels.
+    /// </summary>
+    private async Task<string?> ShowFromLocationInventoryPickerAsync(
+        IReadOnlyList<Model_InforVisualMaterialLocationRow> stockRows,
+        string currentValue
+    )
+    {
+        _isLocationPickerOpen = true;
+        try
+        {
+            var matches = stockRows
+                .Select(row => new Model_FuzzySearchResult
+                {
+                    Key = row.LocationId,
+                    Label = row.LocationId,
+                    Detail = $"On hand: {row.Quantity.ToString(CultureInfo.InvariantCulture)}",
+                })
+                .ToList();
+
+            var dialog = new Dialog_FuzzySearchPicker(
+                matches,
+                "Select Source Location",
+                $"'{currentValue}' cannot supply the requested quantity for {ViewModel.NewPartId}. Select the location holding stock:"
+            )
+            {
+                XamlRoot = XamlRoot,
+            };
+
+            var dialogResult = await dialog.ShowAsync();
+            if (
+                dialogResult == ContentDialogResult.Primary
+                && dialog.SelectedResult is not null
+                && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
+            )
+            {
+                return dialog.SelectedResult.Label.Trim();
+            }
+        }
+        finally
+        {
+            _isLocationPickerOpen = false;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// View-side handler for <see cref="ViewModel_Scanner_Workbench.FromLocationInventoryPickerRequested"/>:
+    /// queries the in-stock locations for the part and shows the picker.
+    /// </summary>
+    private async Task<string?> OnFromLocationInventoryPickerRequestedAsync(
+        string partId,
+        string fromWarehouse,
+        string currentValue
+    )
+    {
+        var stockResult = await ViewModel.GetFromInventoryLocationsAsync();
+        if (!stockResult.Success || stockResult.Data is null)
+        {
+            return null;
+        }
+
+        if (stockResult.Data.Count == 0)
+        {
+            ViewModel.ShowStatus(
+                $"No stock was found for {partId} in warehouse {fromWarehouse}.",
+                Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
+            return null;
+        }
+
+        return await ShowFromLocationInventoryPickerAsync(stockResult.Data, currentValue);
     }
 
     private async void ToLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
@@ -182,6 +451,7 @@ public sealed partial class View_Scanner_Workbench : Page
             return;
         }
 
+        ViewModel.NewToLocation = textBox.Text;
         await HandleLocationTextBoxLostFocusAsync(
             textBox,
             ViewModel.ValidateToLocationAsync,
@@ -191,12 +461,39 @@ public sealed partial class View_Scanner_Workbench : Page
         );
     }
 
+    /// <summary>
+    /// Rejects quantity input that exceeds the available stock at the validated From location.
+    /// </summary>
+    private void QuantityTextBox_BeforeTextChanging(
+        TextBox sender,
+        TextBoxBeforeTextChangingEventArgs args
+    )
+    {
+        if (!ViewModel.IsQuantityEnabled || ViewModel.MaxQuantity is null)
+        {
+            return;
+        }
+
+        if (
+            decimal.TryParse(
+                args.NewText,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var entered
+            )
+            && entered > ViewModel.MaxQuantity.Value
+        )
+        {
+            args.Cancel = true;
+        }
+    }
+
     private async Task HandleLocationTextBoxLostFocusAsync(
         TextBox textBox,
         Func<Task<Model_ScannerLocationValidationResult>> validateAsync,
         Func<Task<Model_Dao_Result<List<Model_FuzzySearchResult>>>> suggestionAsync,
         Action<string> setLocation,
-        Func<string> getLocation
+        Func<string?> getLocation
     )
     {
         if (_isLocationPickerOpen)
@@ -208,6 +505,16 @@ public sealed partial class View_Scanner_Workbench : Page
         if (string.IsNullOrWhiteSpace(currentValue))
         {
             return;
+        }
+
+        // Autocomplete first: apply the shared dash-formatting rule (e.g. "VA101" ->
+        // "V-A1-01") and write the canonical value back into the field.
+        var formatted = ViewModel.FormatLocation(currentValue);
+        if (string.Equals(formatted, currentValue, StringComparison.OrdinalIgnoreCase) is false)
+        {
+            setLocation(formatted);
+            textBox.Text = formatted;
+            currentValue = formatted;
         }
 
         var validation = await validateAsync();

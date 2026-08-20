@@ -1,6 +1,6 @@
 # Batch Orchestration Service
 
-Last Updated: 2026-07-21
+Last Updated: 2026-08-20
 
 This service is the execution coordinator for scanner sends. It owns validation, item ordering, state transitions, and stop-on-failure behavior.
 
@@ -38,6 +38,25 @@ This service is the execution coordinator for scanner sends. It owns validation,
 - maintain waiting state for unsent items after failure or stop
 - queue persistence updates asynchronously
 - never auto-finalize or auto-save inside the ERP; the user manually validates the entered data and performs save/commit actions themselves
+
+## Send Field Order
+
+Field emission follows the visible tab path on the VMINVENT "Inventory Transfers" screen.
+The batch payload is emitted as a value + tab-count sequence, so the focus lands on the right
+field for every entry regardless of how many empty fields sit between them:
+
+| Order | Field              | Tabs after |
+| ----- | ------------------ | ---------- |
+| 1     | Part ID            | 1          |
+| 2     | Quantity           | 2          |
+| 3     | From Warehouse ID  | 1          |
+| 4     | From Location ID   | 5          |
+| 5     | To Warehouse ID    | 1          |
+| 6     | To Location ID     | 0 (last)   |
+
+Each non-empty value is typed, then Tab is pressed the configured number of times. The sequence
+lives in `Helper_ScannerSequence.BuildFieldSequence` (flat values still available via
+`BuildFieldValues`); `EmitFieldSequenceAsync` applies it through the input engine.
 
 ## Failure Handling Policy
 

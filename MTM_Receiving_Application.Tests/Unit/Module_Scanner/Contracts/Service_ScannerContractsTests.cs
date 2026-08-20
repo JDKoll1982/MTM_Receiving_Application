@@ -174,6 +174,92 @@ public sealed class Service_ScannerContractsTests
         result.ErrorMessage.Should().Be("OwnerUserId is required.");
     }
 
+    [Fact]
+    public async Task GetLocationsWithStockAsync_ShouldReturnOnlyPositiveQuantityLocations_WhenPartHasStock()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-1", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualMaterialLocationRow>
+                    {
+                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "B-01", Quantity = 5m },
+                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "A-01", Quantity = 3m },
+                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "B-01", Quantity = 2m },
+                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "C-01", Quantity = 0m },
+                    }
+                )
+            );
+
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = await service.GetLocationsWithStockAsync("part-1", "002");
+
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Should().HaveCount(2);
+        result.Data.Should().ContainSingle(row => row.LocationId == "A-01" && row.Quantity == 3m);
+        result.Data.Should().ContainSingle(row => row.LocationId == "B-01" && row.Quantity == 7m);
+        result.Data.Should().NotContain(row => row.LocationId == "C-01");
+        result.Data[0].LocationId.Should().Be("A-01");
+    }
+
+    [Fact]
+    public async Task GetLocationsWithStockAsync_ShouldFail_WhenPartIdIsMissing()
+    {
+        var inforVisual = new Mock<IService_InforVisual>(MockBehavior.Strict);
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = await service.GetLocationsWithStockAsync("   ", "002");
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Part ID is required.");
+    }
+
+    [Fact]
+    public async Task GetLocationsWithStockAsync_ShouldFail_WhenStockQueryFails()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-1", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<Model_InforVisualMaterialLocationRow>>(
+                    "Visual query failed."
+                )
+            );
+
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = await service.GetLocationsWithStockAsync("PART-1", "002");
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Visual query failed.");
+    }
+
+    [Theory]
+    [InlineData("VA101", "V-A1-01")]
+    [InlineData("va101", "V-A1-01")]
+    [InlineData("R5", "R-05")]
+    [InlineData("r12", "R-12")]
+    [InlineData("V-A1-01", "V-A1-01")]
+    [InlineData("a-01", "A-01")]
+    [InlineData("", "")]
+    [InlineData(null, "")]
+    public void FormatLocation_ShouldApplyDashAutocomplete(string? input, string expected)
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = service.FormatLocation(input!);
+
+        result.Should().Be(expected);
+    }
+
     private static Service_ScannerWorkflow CreateWorkflowService()
     {
         const string cs = "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;";

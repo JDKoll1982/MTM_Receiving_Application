@@ -142,6 +142,7 @@
     <None Include=".github\**\*.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Backgrounds\NothingFound.jpg" />
     <Content Include="Assets\Icons\open-label-dunnage.png" />
     <Content Include="Assets\Icons\open-label-mini-receiving.png" />
     <Content Include="Assets\Icons\open-label-receiving.png" />

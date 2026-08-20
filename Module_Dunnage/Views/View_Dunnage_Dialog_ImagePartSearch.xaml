@@ -135,15 +135,26 @@
                 </GridView.ItemTemplate>
             </GridView>
 
-            <TextBlock
+            <StackPanel
+                MaxWidth="320"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Visibility="{x:Bind ViewModel.HasNoResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Spacing="8"
+                Visibility="{x:Bind ViewModel.HasNoResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Image
+                    Width="160"
+                    Height="160"
+                    HorizontalAlignment="Center"
+                    Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
+                    Stretch="Uniform" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    TextAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource BodyTextBlockStyle}"
+                    Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

@@ -537,6 +537,31 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
+        <!--  ============================================================ Empty state overlay (Row 3)  -->
+        <Grid
+            Grid.Row="3"
+            Visibility="{x:Bind ViewModel.ShowEmptyState, Mode=OneWay}">
+            <StackPanel
+                MaxWidth="320"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="8">
+                <Image
+                    Width="180"
+                    Height="180"
+                    HorizontalAlignment="Center"
+                    Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
+                    Stretch="Uniform" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    TextAlignment="Center"
+                    Style="{StaticResource BodyTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
         <!--  ============================================================ Row 4: Footer (Pagination + Save)  -->
         <Grid Grid.Row="4" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>

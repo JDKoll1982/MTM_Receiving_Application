@@ -51,4 +51,10 @@ public interface IService_ScannerExecution
 	/// input sequence.
 	/// </summary>
 	Task<Model_Dao_Result> RequestStopAsync(Model_ScannerBatchSession session);
+
+	/// <summary>
+	/// Sends Alt+L to the foreground Infor Visual window to clear the active Inventory
+	/// Transfers form so the operator can re-enter a line after a failed send.
+	/// </summary>
+	Task<Model_Dao_Result> ClearTargetFormAsync(CancellationToken cancellationToken = default);
 }
