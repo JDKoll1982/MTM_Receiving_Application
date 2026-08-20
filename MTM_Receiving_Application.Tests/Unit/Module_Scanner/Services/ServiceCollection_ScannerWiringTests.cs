@@ -64,9 +64,9 @@ public sealed class ServiceCollection_ScannerWiringTests
         var settings = new Dictionary<string, string?>
         {
             ["ConnectionStrings:MySql"] =
-                "Server=localhost;Port=3306;Database=mtm_receiving_application;Uid=test;Pwd=test;",
+                "Server=172.16.1.104;Port=3306;Database=mtm_receiving_application;Uid=test;Pwd=test;",
             ["ConnectionStrings:InforVisual"] =
-                "Server=localhost;Database=mtmfg;Trusted_Connection=True;ApplicationIntent=ReadOnly;",
+                "Server=172.16.1.104;Database=mtmfg;Trusted_Connection=True;ApplicationIntent=ReadOnly;",
         };
 
         return new ConfigurationBuilder().AddInMemoryCollection(settings).Build();

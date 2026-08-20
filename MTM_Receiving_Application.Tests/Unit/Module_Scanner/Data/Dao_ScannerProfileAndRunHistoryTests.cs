@@ -11,7 +11,7 @@ public sealed class Dao_ScannerProfileAndRunHistoryTests
     [Fact]
     public async Task UpsertProfileAsync_ShouldFail_WhenAppWindowTitleMissing()
     {
-        var dao = new Dao_ScannerProfile("Server=localhost;Database=test;Uid=test;Pwd=test;");
+        var dao = new Dao_ScannerProfile("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;");
 
         var result = await dao.UpsertProfileAsync(new Model_ScannerProfile
         {
@@ -28,7 +28,7 @@ public sealed class Dao_ScannerProfileAndRunHistoryTests
     [Fact]
     public async Task InsertRunItemAsync_ShouldFail_WhenSessionItemIdMissing()
     {
-        var dao = new Dao_ScannerRunHistory("Server=localhost;Database=test;Uid=test;Pwd=test;");
+        var dao = new Dao_ScannerRunHistory("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;");
 
         var result = await dao.InsertRunItemAsync(new Model_ScannerRunItem
         {

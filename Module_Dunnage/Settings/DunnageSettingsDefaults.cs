@@ -16,6 +16,7 @@ public static class DunnageSettingsDefaults
             [DunnageSettingsKeys.UserPreferences.PreferredThumbnailSize] = "96",
             [DunnageSettingsKeys.UserPreferences.PreferPartImages] = "true",
             [DunnageSettingsKeys.UserPreferences.TypeSelectionSort] = "Name (A-Z)",
+            [DunnageSettingsKeys.UserPreferences.ShowPartsWithoutImages] = "false",
             [DunnageSettingsKeys.UiUx.EnableTypeImages] = "true",
             [DunnageSettingsKeys.UiUx.EnablePartImages] = "true",
             [DunnageSettingsKeys.UiUx.DefaultThumbnailSize] = "96",

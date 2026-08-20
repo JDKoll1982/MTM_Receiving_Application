@@ -149,6 +149,6 @@ public sealed class Dao_ScannerBatchSessionTests
 
     private static Dao_ScannerBatchSession CreateDao()
     {
-        return new Dao_ScannerBatchSession("Server=localhost;Database=test;Uid=test;Pwd=test;");
+        return new Dao_ScannerBatchSession("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;");
     }
 }

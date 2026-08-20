@@ -95,6 +95,6 @@ public sealed class Dao_ScannerBatchItemTests
 
     private static Dao_ScannerBatchItem CreateDao()
     {
-        return new Dao_ScannerBatchItem("Server=localhost;Database=test;Uid=test;Pwd=test;");
+        return new Dao_ScannerBatchItem("Server=172.16.1.104;Database=test;Uid=test;Pwd=test;");
     }
 }

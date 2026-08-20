@@ -176,7 +176,7 @@ public sealed class Service_ScannerContractsTests
 
     private static Service_ScannerWorkflow CreateWorkflowService()
     {
-        const string cs = "Server=localhost;Database=test;Uid=test;Pwd=test;";
+        const string cs = "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;";
         return new Service_ScannerWorkflow(
             new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerBatchSession(cs),
             new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerBatchItem(cs),

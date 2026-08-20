@@ -1,4 +1,5 @@
 using System;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -27,5 +28,13 @@ public sealed partial class View_Dunnage_Dialog_ImagePartSearch : UserControl
         }
 
         await ViewModel.SelectPartCommand.ExecuteAsync(part);
+    }
+
+    private async void OnShowPartsWithoutImagesToggled(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch toggleSwitch)
+        {
+            await ViewModel.HandleShowPartsWithoutImagesChangedAsync(toggleSwitch.IsOn);
+        }
     }
 }

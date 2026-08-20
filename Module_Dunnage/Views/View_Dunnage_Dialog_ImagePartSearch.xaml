@@ -24,6 +24,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBox
                     Grid.Column="0"
@@ -34,6 +35,16 @@
                     Grid.Column="1"
                     Command="{x:Bind ViewModel.LoadPartsCommand}"
                     Content="Refresh" />
+                <ToggleSwitch
+                    Grid.Column="2"
+                    Margin="12,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    IsOn="{x:Bind ViewModel.ShowPartsWithoutImages, Mode=TwoWay}"
+                    OffContent="Images only"
+                    OnContent="Show all"
+                    ToolTipService.ToolTip="Include parts that do not have an image"
+                    Toggled="OnShowPartsWithoutImagesToggled" />
             </Grid>
 
         </Border>
@@ -89,7 +100,16 @@
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="8">
-                                    <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform"/>
+                                    <Grid>
+                                        <Image Source="{x:Bind ImageSource, Mode=OneWay}" Stretch="Uniform"/>
+                                        <FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="32"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Glyph="&#xE710;"
+                                            Visibility="{x:Bind HasImagePath, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                    </Grid>
                                 </Border>
 
                                 <TextBlock

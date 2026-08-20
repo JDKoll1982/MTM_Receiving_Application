@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -21,11 +22,17 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
 {
     private readonly IService_MySQL_Dunnage _dunnageService;
     private readonly IService_DunnageWorkflow _workflowService;
-    private List<Model_DunnagePart> _allImageParts = new();
+    private readonly IService_DunnageSettings _dunnageSettings;
+    private readonly IService_UserSessionManager _sessionManager;
+    private List<Model_DunnagePart> _allParts = new();
+    private bool _isRestoringShowPartsPreference;
+    private bool _persistedShowPartsWithoutImages;
 
     public ViewModel_Dunnage_ImagePartSearchDialog(
         IService_MySQL_Dunnage dunnageService,
         IService_DunnageWorkflow workflowService,
+        IService_DunnageSettings dunnageSettings,
+        IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -34,7 +41,11 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
     {
         _dunnageService = dunnageService;
         _workflowService = workflowService;
+        _dunnageSettings = dunnageSettings;
+        _sessionManager = sessionManager;
         _workflowService.StepChanged += OnWorkflowStepChanged;
+
+        _ = LoadShowPartsPreferenceAsync();
 
         if (_workflowService.CurrentStep == Enum_DunnageWorkflowStep.ImagePartSearch)
         {
@@ -50,6 +61,9 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
 
     [ObservableProperty]
     private string _emptyStateMessage = "Loading parts with images...";
+
+    [ObservableProperty]
+    private bool _showPartsWithoutImages;
 
     public bool HasNoResults => DisplayedParts.Count == 0;
 
@@ -82,7 +96,9 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         try
         {
             IsBusy = true;
-            EmptyStateMessage = "Loading parts with images...";
+            EmptyStateMessage = ShowPartsWithoutImages
+                ? "Loading Dunnage parts..."
+                : "Loading parts with images...";
 
             var result = await _dunnageService.GetAllPartsAsync();
             if (!result.IsSuccess || result.Data is null)
@@ -93,10 +109,7 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
                 return;
             }
 
-            _allImageParts = result
-                .Data.Where(static part => string.IsNullOrWhiteSpace(part.ImagePath) is false)
-                .OrderBy(static part => part.PartId)
-                .ToList();
+            _allParts = result.Data.OrderBy(static part => part.PartId).ToList();
 
             ApplyFilter();
         }
@@ -178,9 +191,108 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         ApplyFilter();
     }
 
+    public async Task HandleShowPartsWithoutImagesChangedAsync(bool isChecked)
+    {
+        if (_isRestoringShowPartsPreference)
+        {
+            return;
+        }
+
+        if (ShowPartsWithoutImages != isChecked)
+        {
+            _isRestoringShowPartsPreference = true;
+            ShowPartsWithoutImages = isChecked;
+            _isRestoringShowPartsPreference = false;
+            ApplyFilter();
+        }
+
+        if (isChecked == _persistedShowPartsWithoutImages)
+        {
+            return;
+        }
+
+        await PersistShowPartsPreferenceAsync(isChecked);
+    }
+
+    private async Task LoadShowPartsPreferenceAsync()
+    {
+        _isRestoringShowPartsPreference = true;
+
+        try
+        {
+            var savedPreference = await _dunnageSettings.GetBoolAsync(
+                DunnageSettingsKeys.UserPreferences.ShowPartsWithoutImages,
+                GetCurrentUserId()
+            );
+
+            _persistedShowPartsWithoutImages = savedPreference;
+            ShowPartsWithoutImages = savedPreference;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"ImagePartSearch: Failed to load 'show parts without images' preference. Falling back to images only. Error: {ex.Message}",
+                "ImagePartSearch"
+            );
+
+            _persistedShowPartsWithoutImages = false;
+            ShowPartsWithoutImages = false;
+        }
+        finally
+        {
+            _isRestoringShowPartsPreference = false;
+            ApplyFilter();
+        }
+    }
+
+    private async Task PersistShowPartsPreferenceAsync(bool isChecked)
+    {
+        try
+        {
+            await _dunnageSettings.SaveStringAsync(
+                DunnageSettingsKeys.UserPreferences.ShowPartsWithoutImages,
+                isChecked ? "true" : "false",
+                GetCurrentUserId()
+            );
+
+            _persistedShowPartsWithoutImages = isChecked;
+
+            _logger.LogInfo(
+                $"ImagePartSearch: 'Show parts without images' saved as {isChecked}",
+                "ImagePartSearch"
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"ImagePartSearch: Failed to save 'show parts without images' preference. Error: {ex.Message}",
+                "ImagePartSearch"
+            );
+
+            _isRestoringShowPartsPreference = true;
+            ShowPartsWithoutImages = _persistedShowPartsWithoutImages;
+            _isRestoringShowPartsPreference = false;
+            ApplyFilter();
+        }
+    }
+
+    private int? GetCurrentUserId()
+    {
+        int? employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+        return employeeNumber.HasValue && employeeNumber.Value > 0 ? employeeNumber : null;
+    }
+
     private void ApplyFilter()
     {
-        IEnumerable<Model_DunnagePart> filteredParts = _allImageParts;
+        IEnumerable<Model_DunnagePart> filteredParts = _allParts;
+
+        if (ShowPartsWithoutImages is false)
+        {
+            filteredParts = filteredParts.Where(static part =>
+                string.IsNullOrWhiteSpace(part.ImagePath) is false
+            );
+        }
+
         if (string.IsNullOrWhiteSpace(FilterText) is false)
         {
             filteredParts = filteredParts.Where(part =>
@@ -192,10 +304,19 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
 
         var filteredList = filteredParts.ToList();
         DisplayedParts = new ObservableCollection<Model_DunnagePart>(filteredList);
-        EmptyStateMessage =
-            _allImageParts.Count == 0
-                ? "No Dunnage parts currently have image paths configured."
-                : "No Dunnage parts matched the current filter.";
+        EmptyStateMessage = BuildEmptyStateMessage();
         OnPropertyChanged(nameof(HasNoResults));
+    }
+
+    private string BuildEmptyStateMessage()
+    {
+        if (_allParts.Count == 0)
+        {
+            return ShowPartsWithoutImages
+                ? "No Dunnage parts found."
+                : "No Dunnage parts currently have image paths configured.";
+        }
+
+        return "No Dunnage parts matched the current filter.";
     }
 }
