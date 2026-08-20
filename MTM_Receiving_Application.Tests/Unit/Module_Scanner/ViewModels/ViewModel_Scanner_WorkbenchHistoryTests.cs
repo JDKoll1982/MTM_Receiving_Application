@@ -1,3 +1,4 @@
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -262,18 +263,41 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         session.Items.Add(validItem);
         session.RecalculateItemCounters();
 
-        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.SendNextItemAsync(session, It.IsAny<Model_ScannerProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                () =>
+                {
+                    validItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+                    validItem.SentUtc = DateTime.UtcNow;
+                    validItem.LastUpdatedUtc = DateTime.UtcNow;
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(
+                        new Model_ScannerExecutionOutcome { SentCount = 1 }
+                    );
+                }
+            );
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
 
         await viewModel.SendNextCommand.ExecuteAsync(null);
 
-        viewModel.SessionItems.Single(item => item.ItemId == validItem.ItemId).ExecutionState.Should().Be(Enum_ScannerExecutionState.Sent);
+        viewModel
+            .SessionItems.Single(item => item.ItemId == validItem.ItemId)
+            .ExecutionState.Should()
+            .Be(Enum_ScannerExecutionState.Sent);
         viewModel.CurrentSession!.Status.Should().Be(Enum_ScannerSessionStatus.Completed);
     }
 
     [Fact]
-    public void StopAfterThisCommand_ShouldRequestStopAndPreserveCurrentBatch()
+    public async Task StopAfterThisCommand_ShouldRequestStopAndPreserveCurrentBatch()
     {
         var workflow = new Mock<IService_ScannerWorkflow>();
         var validation = new Mock<IService_ScannerValidation>();
@@ -286,11 +310,27 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
             ActiveProfileId = Guid.NewGuid(),
         };
 
-        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.RequestStopAsync(session))
+            .ReturnsAsync(
+                () =>
+                {
+                    session.StopRequested = true;
+                    session.StopReason = Enum_ScannerStopReason.UserStop;
+                    return Model_Dao_Result_Factory.Success();
+                }
+            );
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items];
 
-        viewModel.StopAfterThisCommand.Execute(null);
+        await viewModel.StopAfterThisCommand.ExecuteAsync(null);
 
         viewModel.CurrentSession!.StopRequested.Should().BeTrue();
         viewModel.CurrentSession!.StopReason.Should().Be(Enum_ScannerStopReason.UserStop);
@@ -363,13 +403,17 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
 
     private static ViewModel_Scanner_Workbench CreateWorkbenchViewModel(
         IService_ScannerWorkflow workflow,
-        IService_ScannerValidation validation
+        IService_ScannerValidation validation,
+        IService_ScannerExecution? execution = null,
+        IService_ScannerHotkey? hotkey = null
     )
     {
         return new ViewModel_Scanner_Workbench(
             new Mock<IService_ScannerNavigation>().Object,
             workflow,
             validation,
+            execution ?? new Mock<IService_ScannerExecution>().Object,
+            hotkey ?? new Mock<IService_ScannerHotkey>().Object,
             new Mock<IService_Window>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,

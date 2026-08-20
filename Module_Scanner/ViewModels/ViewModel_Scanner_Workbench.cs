@@ -26,6 +26,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerNavigation _navigationService;
     private readonly IService_ScannerWorkflow _workflowService;
     private readonly IService_ScannerValidation _validationService;
+    private readonly IService_ScannerExecution _executionService;
+    private readonly IService_ScannerHotkey _hotkeyService;
     private readonly IService_Window _windowService;
 
     [ObservableProperty]
@@ -38,6 +40,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedSessionItem))]
     private Model_ScannerBatchItem? _selectedSessionItem;
+
+    private Model_ScannerProfile? _activeProfile;
 
     [ObservableProperty]
     private string _ownerUserId = Environment.UserName;
@@ -83,6 +87,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         IService_ScannerNavigation navigationService,
         IService_ScannerWorkflow workflowService,
         IService_ScannerValidation validationService,
+        IService_ScannerExecution executionService,
+        IService_ScannerHotkey hotkeyService,
         IService_Window windowService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -93,10 +99,14 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         ArgumentNullException.ThrowIfNull(navigationService);
         ArgumentNullException.ThrowIfNull(workflowService);
         ArgumentNullException.ThrowIfNull(validationService);
+        ArgumentNullException.ThrowIfNull(executionService);
+        ArgumentNullException.ThrowIfNull(hotkeyService);
         ArgumentNullException.ThrowIfNull(windowService);
         _navigationService = navigationService;
         _workflowService = workflowService;
         _validationService = validationService;
+        _executionService = executionService;
+        _hotkeyService = hotkeyService;
         _windowService = windowService;
     }
 
@@ -542,141 +552,140 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private Task SendNextAsync()
+    private async Task SendNextAsync()
     {
         if (CurrentSession is null)
         {
             ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            return;
         }
 
         if (CurrentSession.Items.Count == 0)
         {
             ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            return;
         }
 
-        var nextItem = CurrentSession.Items
-            .OrderBy(item => item.SequenceNumber)
-            .FirstOrDefault(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting && item.ValidationState == Enum_ScannerValidationState.Valid);
-
-        if (nextItem is null)
+        if (IsBusy)
         {
-            CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
-            ShowStatus("No waiting items are ready to send yet.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            return;
+        }
+
+        // A pending stop is acknowledged on the next explicit send so the operator controls
+        // exactly when the batch resumes after stopping between send cycles.
+        if (CurrentSession.StopRequested)
+        {
+            CurrentSession.StopRequested = false;
+            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
+            ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var profile = await ResolveActiveProfileAsync();
+            var result = await _executionService.SendNextItemAsync(CurrentSession, profile);
+
+            if (!result.Success || result.Data is null)
+            {
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(result.ErrorMessage)
+                        ? "Unable to send the next scanner item."
+                        : result.ErrorMessage,
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            RefreshSessionAfterExecution(result.Data);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SendAllAsync()
+    {
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (CurrentSession.Items.Count == 0)
+        {
+            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        if (IsBusy)
+        {
+            return;
         }
 
         if (CurrentSession.StopRequested)
         {
             CurrentSession.StopRequested = false;
-            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
             CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
             ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            return;
         }
 
-        nextItem.ExecutionState = Enum_ScannerExecutionState.Sent;
-        nextItem.SentUtc = DateTime.UtcNow;
-        nextItem.LastUpdatedUtc = DateTime.UtcNow;
-        CurrentSession.RecalculateItemCounters();
-        CurrentSession.LastSendEndedUtc = DateTime.UtcNow;
-        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
-        CurrentSession.Status = CurrentSession.WaitingItems > 0
-            ? Enum_ScannerSessionStatus.Running
-            : Enum_ScannerSessionStatus.Completed;
-
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-        ShowStatus(
-            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
-                ? "Sent the next scanner item. The batch is complete."
-                : "Sent the next scanner item. More items remain waiting.",
-            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
-                ? InfoBarSeverity.Success
-                : InfoBarSeverity.Informational
-        );
-
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task SendAllAsync()
-    {
-        if (CurrentSession is null)
+        IsBusy = true;
+        try
         {
-            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
-        }
+            var profile = await ResolveActiveProfileAsync();
+            var result = await _executionService.SendAllAsync(CurrentSession, profile);
 
-        if (CurrentSession.Items.Count == 0)
-        {
-            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
-        }
-
-        var eligibleItems = CurrentSession.Items
-            .Where(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting && item.ValidationState == Enum_ScannerValidationState.Valid)
-            .OrderBy(item => item.SequenceNumber)
-            .ToList();
-
-        if (eligibleItems.Count == 0)
-        {
-            CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
-            ShowStatus("No waiting items are ready to send yet.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
-        }
-
-        foreach (var item in eligibleItems)
-        {
-            if (CurrentSession.StopRequested)
+            if (!result.Success || result.Data is null)
             {
-                break;
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(result.ErrorMessage)
+                        ? "Unable to send the scanner batch."
+                        : result.ErrorMessage,
+                    InfoBarSeverity.Error
+                );
+                return;
             }
 
-            item.ExecutionState = Enum_ScannerExecutionState.Sent;
-            item.SentUtc = DateTime.UtcNow;
-            item.LastUpdatedUtc = DateTime.UtcNow;
+            RefreshSessionAfterExecution(result.Data);
         }
-
-        CurrentSession.RecalculateItemCounters();
-        CurrentSession.LastSendEndedUtc = DateTime.UtcNow;
-        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
-        CurrentSession.Status = CurrentSession.StopRequested
-            ? Enum_ScannerSessionStatus.Stopped
-            : CurrentSession.WaitingItems > 0
-                ? Enum_ScannerSessionStatus.Running
-                : Enum_ScannerSessionStatus.Completed;
-
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-        ShowStatus(
-            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
-                ? $"Sent {eligibleItems.Count} scanner item(s). The batch is complete."
-                : $"Sent {eligibleItems.Count} scanner item(s). More items remain waiting.",
-            CurrentSession.Status == Enum_ScannerSessionStatus.Completed
-                ? InfoBarSeverity.Success
-                : InfoBarSeverity.Informational
-        );
-
-        return Task.CompletedTask;
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
-    private Task StopAfterThisAsync()
+    private async Task StopAfterThisAsync()
     {
         if (CurrentSession is null)
         {
             ShowStatus("Start a session before requesting a stop.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            return;
         }
 
-        CurrentSession.StopRequested = true;
-        CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+        var result = await _executionService.RequestStopAsync(CurrentSession);
+        if (!result.Success)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(result.ErrorMessage)
+                    ? "Unable to request a stop."
+                    : result.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
         CurrentSession.Status = CurrentSession.Status == Enum_ScannerSessionStatus.Running
             ? Enum_ScannerSessionStatus.Stopped
             : CurrentSession.Status;
         ShowStatus("Stop requested. The current batch will stop after the next completed item.", InfoBarSeverity.Warning);
-
-        return Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -734,6 +743,128 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
         await StartDraftSessionAsync();
         return CurrentSession is not null;
+    }
+
+    // ── Hotkey integration ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Subscribes the workbench to the global scanner hotkeys. Called from the page Loaded
+    /// event so subscription lifetime matches the page lifetime and never leaks.
+    /// </summary>
+    public void Activate() => SubscribeHotkeys();
+
+    /// <summary>Unsubscribes the workbench from the global scanner hotkeys. Called from page Unloaded.</summary>
+    public void Deactivate() => UnsubscribeHotkeys();
+
+    private void SubscribeHotkeys()
+    {
+        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
+        _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
+        _hotkeyService.StopShortcutPressed -= OnStopShortcutPressed;
+        _hotkeyService.StopShortcutPressed += OnStopShortcutPressed;
+    }
+
+    private void UnsubscribeHotkeys()
+    {
+        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
+        _hotkeyService.StopShortcutPressed -= OnStopShortcutPressed;
+    }
+
+    private void OnSendShortcutPressed(object? sender, EventArgs e)
+    {
+        // Fire and forget: the command reports its own status. Runs on the UI thread because
+        // WM_HOTKEY is dispatched through the window message loop.
+        _ = SendNextCommand.ExecuteAsync(null);
+    }
+
+    private void OnStopShortcutPressed(object? sender, EventArgs e)
+    {
+        _ = StopAfterThisCommand.ExecuteAsync(null);
+    }
+
+    private async Task<Model_ScannerProfile> ResolveActiveProfileAsync()
+    {
+        if (_activeProfile is not null)
+        {
+            return _activeProfile;
+        }
+
+        var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
+        var resolved =
+            profiles is { Success: true, Data: { Count: > 0 } }
+                ? profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
+                    ?? profiles.Data[0]
+                : new Model_ScannerProfile
+                {
+                    OwnerUserId = OwnerUserId,
+                    ProfileName = "Default",
+                    TargetExecutableName = "VMINVENT.exe",
+                    AppWindowTitle = AppWindowTitleSnapshot,
+                    TargetChildWindowTitle = AppWindowTitleSnapshot,
+                    FromWarehouseDefault = NewFromWarehouse,
+                    ToWarehouseDefault = NewToWarehouse,
+                };
+
+        _activeProfile = resolved;
+        return resolved;
+    }
+
+    private void RefreshSessionAfterExecution(Model_ScannerExecutionOutcome outcome)
+    {
+        if (CurrentSession is null)
+        {
+            return;
+        }
+
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+
+        if (outcome.FailedCount > 0)
+        {
+            CurrentSession.Status = Enum_ScannerSessionStatus.Failed;
+            ShowStatus(
+                string.IsNullOrWhiteSpace(outcome.FailureMessage)
+                    ? "A scanner item failed to send."
+                    : outcome.FailureMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        if (outcome.Stopped)
+        {
+            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
+            ShowStatus(
+                outcome.SentCount > 0
+                    ? $"Sent {outcome.SentCount} scanner item(s), then stopped at the operator request."
+                    : "Stop requested. The current batch remains intact.",
+                InfoBarSeverity.Warning
+            );
+            return;
+        }
+
+        if (outcome.SentCount > 0)
+        {
+            CurrentSession.Status = CurrentSession.WaitingItems > 0
+                ? Enum_ScannerSessionStatus.Running
+                : Enum_ScannerSessionStatus.Completed;
+            ShowStatus(
+                CurrentSession.WaitingItems > 0
+                    ? $"Sent {outcome.SentCount} scanner item(s). More items remain waiting."
+                    : $"Sent {outcome.SentCount} scanner item(s). The batch is complete.",
+                CurrentSession.WaitingItems > 0
+                    ? InfoBarSeverity.Informational
+                    : InfoBarSeverity.Success
+            );
+            return;
+        }
+
+        CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
+        ShowStatus(
+            string.IsNullOrWhiteSpace(outcome.FailureMessage)
+                ? "No waiting items are ready to send yet."
+                : outcome.FailureMessage,
+            InfoBarSeverity.Warning
+        );
     }
 
     partial void OnSelectedSessionItemChanged(Model_ScannerBatchItem? value)

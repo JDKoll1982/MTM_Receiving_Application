@@ -20,6 +20,8 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Scanner.Contracts;
+using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -277,6 +279,9 @@ namespace MTM_Receiving_Application
                 ApplyNavigationMode(isSettingsMode: false);
             }
 
+            ApplyScannerNavigationGate();
+            InitializeScannerHotkeys();
+
             UpdateHeaderBackButton();
             UpdateStatusInfoBarActionButton();
 
@@ -341,6 +346,72 @@ namespace MTM_Receiving_Application
                 .IsStatusActionVisible
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Enables the Scanner navigation entry only for developer users. The scanner
+        /// automation engine is implemented but not yet verified against a real VMINVENT
+        /// terminal, so non-developers keep the disabled entry with the caution tooltip.
+        /// </summary>
+        private void ApplyScannerNavigationGate()
+        {
+            try
+            {
+                var scannerItem = FindNavigationItemByTag("ScannerMainPage");
+                if (scannerItem is null)
+                {
+                    return;
+                }
+
+                var isDeveloper = Helper_ScannerAccess.IsDeveloperUser(
+                    _sessionManager.CurrentSession?.User,
+                    Environment.UserName
+                );
+                scannerItem.IsEnabled = isDeveloper;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to apply Scanner navigation gate: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Registers the global scanner hotkeys (Ctrl+Alt+M send, Ctrl+Alt+N stop) against the
+        /// main window and unregisters them when the window closes. The shortcuts are active
+        /// for the app lifetime so the operator can trigger a send while VMINVENT is focused.
+        /// </summary>
+        private void InitializeScannerHotkeys()
+        {
+            try
+            {
+                var hotkey = _serviceProvider.GetService<IService_ScannerHotkey>();
+                if (hotkey is null)
+                {
+                    return;
+                }
+
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                var registered = hotkey.TryRegister(hwnd, "Ctrl+Alt+M", "Ctrl+Alt+N");
+                if (!registered)
+                {
+                    _logger.LogWarning(
+                        "Unable to register global scanner hotkeys. Another application may already own the chord.",
+                        nameof(MainWindow)
+                    );
+                }
+
+                Closed += (_, _) => hotkey.Unregister();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to initialize scanner hotkeys: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

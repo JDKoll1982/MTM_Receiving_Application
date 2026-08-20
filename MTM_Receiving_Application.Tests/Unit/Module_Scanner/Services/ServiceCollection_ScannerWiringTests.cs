@@ -32,6 +32,21 @@ public sealed class ServiceCollection_ScannerWiringTests
             descriptor.ServiceType == typeof(IService_ScannerValidation)
             && descriptor.ImplementationType == typeof(Service_ScannerValidation)
             && descriptor.Lifetime == ServiceLifetime.Singleton);
+
+        services.Should().Contain(descriptor =>
+            descriptor.ServiceType == typeof(IService_ScannerInputEngine)
+            && descriptor.ImplementationType == typeof(Service_ScannerInputEngine)
+            && descriptor.Lifetime == ServiceLifetime.Singleton);
+
+        services.Should().Contain(descriptor =>
+            descriptor.ServiceType == typeof(IService_ScannerHotkey)
+            && descriptor.ImplementationType == typeof(Service_ScannerHotkey)
+            && descriptor.Lifetime == ServiceLifetime.Singleton);
+
+        services.Should().Contain(descriptor =>
+            descriptor.ServiceType == typeof(IService_ScannerExecution)
+            && descriptor.ImplementationType == typeof(Service_ScannerExecution)
+            && descriptor.Lifetime == ServiceLifetime.Singleton);
     }
 
     [Fact]

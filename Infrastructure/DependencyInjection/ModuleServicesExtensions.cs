@@ -90,6 +90,9 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_ScannerNavigation, Service_ScannerNavigation>();
         services.AddSingleton<IService_ScannerWorkflow, Service_ScannerWorkflow>();
         services.AddSingleton<IService_ScannerValidation, Service_ScannerValidation>();
+        services.AddSingleton<IService_ScannerInputEngine, Service_ScannerInputEngine>();
+        services.AddSingleton<IService_ScannerHotkey, Service_ScannerHotkey>();
+        services.AddSingleton<IService_ScannerExecution, Service_ScannerExecution>();
 
         services.AddTransient<ViewModel_Scanner_Main>();
         services.AddTransient<ViewModel_Scanner_Workbench>();

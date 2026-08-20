@@ -49,6 +49,7 @@ public sealed partial class View_Scanner_Workbench : Page
         InitializeComponent();
         DataContext = ViewModel;
         Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
         SizeChanged += OnSizeChanged;
         _ = LoadPaddingSettingsAsync();
     }
@@ -56,6 +57,12 @@ public sealed partial class View_Scanner_Workbench : Page
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         ApplyAdaptiveLayout();
+        ViewModel.Activate();
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.Deactivate();
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
