@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Data;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -445,6 +446,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 queuedBy,
                 employeeNumber
             );
+        }
+
+        public async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+            Model_ReprintHistoryFilter filter
+        )
+        {
+            return await _receivingLoadDao.GetReprintHistoryAsync(filter);
         }
 
         private async Task<(

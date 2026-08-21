@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -1226,6 +1227,62 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure<List<Model_DunnageLoad>>(
                     $"Error retrieving loads: {ex.Message}"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Loads dunnage history rows for the Reprint Labels page, including whether each row is
+        /// already queued for reprint.
+        /// </summary>
+        public async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+            Model_ReprintHistoryFilter filter
+        )
+        {
+            try
+            {
+                return await _daoDunnageLabelData.GetReprintHistoryAsync(filter);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(GetReprintHistoryAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<List<Model_ReprintHistoryRow>>(
+                    $"Error retrieving dunnage history for reprint: {ex.Message}"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Copies a single row from <c>dunnage_history</c> back into the active label queue so it
+        /// can be re-printed. Sets <c>is_reprint = 1</c>.
+        /// </summary>
+        public async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(string loadUuid)
+        {
+            try
+            {
+                var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber ?? 0;
+                _logger.LogInfo($"Queuing dunnage history record {loadUuid} for reprint by {CurrentUser}");
+                return await _daoDunnageLabelData.InsertFromHistoryAsync(
+                    loadUuid,
+                    CurrentUser,
+                    employeeNumber
+                );
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(InsertFromHistoryAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<int>(
+                    $"Error queuing dunnage history record {loadUuid} for reprint: {ex.Message}"
                 );
             }
         }

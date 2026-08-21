@@ -81,8 +81,9 @@ BEGIN
                 COALESCE(NULLIF(TRIM(p_archived_by), ''), ''),
                 COALESCE(NULLIF(TRIM(p_archive_batch_id), ''), UUID())
             FROM volvo_generated_label_data vgl
-            WHERE COALESCE(p_clear_all, 0) = 1
-               OR vgl.employee_number = p_employee_number;
+            WHERE vgl.is_reprint = 0
+              AND (COALESCE(p_clear_all, 0) = 1
+                OR vgl.employee_number = p_employee_number);
 
             DELETE FROM volvo_generated_label_data
             WHERE COALESCE(p_clear_all, 0) = 1

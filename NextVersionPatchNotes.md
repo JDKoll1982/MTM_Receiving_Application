@@ -1,9 +1,19 @@
 # Next Version Patch Notes
 
-Last Updated: 2026-08-12
+Last Updated: 2026-08-21
 
 ## Overview
 This patch focuses on better day-to-day usability and much stronger user preference persistence across Receiving, Dunnage, Reporting, and Ship/Recv Tools.
+
+## New: Reprint Labels
+- Added a dedicated "Reprint Labels" page (accessible from the footer navigation, directly above Scanner) that replaces the old reprint button inside Receiving Edit Mode.
+- Choose a module on the landing page: Receiving, Dunnage, or Volvo.
+- Each module shows its label history with a date range filter (Today, Yesterday, Week, Month, Quarter), a search-by dropdown, and a search box.
+- Select the history rows to reprint; rows that are already queued for reprint are shown in red and cannot be selected.
+- Reprint Selected re-queues the checked rows back into that module's active label queue with `is_reprint = 1` (same behavior Receiving already used).
+- After reprinting, a summary dialog reports how many rows were queued, how many were already queued, and offers Start Over or Mode Selection.
+- Search By preference is saved per module and restored on return.
+- Receiving, Dunnage, and Volvo reprint-capable label tables now all support `is_reprint`.
 
 ## New: PO Line Specification Search (Ship/Recv Tools)
 - Added a new PO line specification search workflow in Ship/Recv Tools.
@@ -48,6 +58,12 @@ This patch focuses on better day-to-day usability and much stronger user prefere
 - Improved module selection synchronization when loading saved preferences.
 - Improved grouped Location display for Reporting preview rows:
   - Multi-location values now render with line breaks after commas, improving readability in the preview table.
+- Fixed the End of Day Report preview so Dunnage and Volvo content renders correctly when Receiving is not included in the report.
+- Fixed an app crash when clicking Back from the End of Day Report preview page (the preview TabView no longer clears its items during page teardown).
+
+## Window and App Icon Fixes
+- Fixed the main window showing a default/white icon on the Windows taskbar instead of the app icon.
+- The shared window icon is now re-applied once when each window is first activated, so the taskbar reliably shows the app icon for every window (splash, main, settings, icon selector, and Volvo detail windows).
 
 ## Settings Reliability Hardening
 - Added missing user-scoped settings manifest keys for preferences that were previously not consistently persisted.

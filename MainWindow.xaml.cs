@@ -468,6 +468,10 @@ namespace MTM_Receiving_Application
                 typeof(Module_Scanner.Views.View_Scanner_Main),
                 "Scanner"
             ),
+            ["ReprintLabelsPage"] = (
+                typeof(Module_Reprint.Views.View_Reprint_Main),
+                "Reprint Labels"
+            ),
             ["DunnageLabelPage"] = (
                 typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
                 string.Empty
@@ -1054,6 +1058,14 @@ namespace MTM_Receiving_Application
                     "scanner",
                     "scanner module",
                     "scan"
+                ),
+                CreateFrameDestination(
+                    "ReprintLabelsPage",
+                    "Reprint Labels",
+                    "Reprint Receiving, Dunnage, or Volvo labels from history",
+                    "reprint",
+                    "reprint labels",
+                    "reprint labels page"
                 ),
                 CreateFrameDestination(
                     "AppDocumentation",

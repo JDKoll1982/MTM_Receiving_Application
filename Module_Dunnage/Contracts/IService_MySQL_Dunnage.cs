@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Contracts
@@ -82,6 +83,13 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> UpdateActiveLabelLoadsAsync(List<Model_DunnageLoad> loads);
         public Task<Model_Dao_Result> DeleteActiveLabelLoadAsync(string loadUuid);
         public Task<Model_Dao_Result> DeleteLoadAsync(string loadUuid);
+
+        // ==================== Reprint Operations ====================
+
+        public Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+            Model_ReprintHistoryFilter filter
+        );
+        public Task<Model_Dao_Result<int>> InsertFromHistoryAsync(string loadUuid);
 
         // ==================== Inventory Operations (6 methods) ====================
 

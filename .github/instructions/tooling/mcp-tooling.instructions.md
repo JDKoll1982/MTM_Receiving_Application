@@ -11,7 +11,7 @@ applyTo: '**'
 - Use Serena for symbol-level exploration and semantic navigation in C#.
 - Use Context7 for current non-Microsoft library/framework documentation.
 - Use Microsoft Learn MCP for Microsoft and Azure product documentation and official code samples.
-- Use the VS Code MySQL Client 2 extension (`cweijan.vscode-mysql-client2`) for direct MySQL schema reads and fast read/write validation against `mtm_receiving_application_test`.
+- Use the VS Code MySQL Client 2 extension (`cweijan.vscode-mysql-client2`) for direct MySQL schema reads and fast read/write validation against `mtm_receiving_application`.
 - Use WinApp only for live desktop UI inspection or automation tasks.
 - Use terminal commands for build, test, archive, or bulk file operations that are impractical as
   manual patches.

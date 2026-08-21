@@ -16902,6 +16902,516 @@
           "object": "volvo_line_history"
         }
       ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelData_InsertFromHistory.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_LabelData_InsertFromHistory",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_load_uuid",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_queued_by",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_already_queued",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "dunnage_label_data",
+        "dunnage_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "load_uuid"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "is_reprint"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "load_uuid"
+        }
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dld",
+          "object": "dunnage_label_data"
+        },
+        {
+          "alias": "dh",
+          "object": "dunnage_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelData_InsertFromHistory.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelData_InsertFromHistory",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_history_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_queued_by",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_already_queued",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "volvo_generated_label_data",
+        "volvo_generated_label_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "vgld",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vgld",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "is_reprint"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "original_id"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "id"
+        }
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "vgld",
+          "object": "volvo_generated_label_data"
+        },
+        {
+          "alias": "vgh",
+          "object": "volvo_generated_label_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_GetForReprint.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_History_GetForReprint",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Receiving/Data/Dao_ReceivingLoad.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_by",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_text",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history",
+        "receiving_label_data"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "received_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "vendor_name"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "po_vendor"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "heat"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_guid"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "load_id"
+        },
+        {
+          "qualifier": "rld",
+          "resolvedObject": "receiving_label_data",
+          "column": "is_reprint"
+        }
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_LabelHistory_GetForReprint.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_LabelHistory_GetForReprint",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_by",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_text",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_history",
+        "dunnage_label_data"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "load_uuid"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "received_date"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "created_date"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "dunnage_type_name"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "type_name"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "po_number"
+        },
+        {
+          "qualifier": "dh",
+          "resolvedObject": "dunnage_history",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "load_uuid"
+        },
+        {
+          "qualifier": "dld",
+          "resolvedObject": "dunnage_label_data",
+          "column": "is_reprint"
+        }
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dh",
+          "object": "dunnage_history"
+        },
+        {
+          "alias": "dld",
+          "object": "dunnage_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Volvo/sp_Volvo_GeneratedLabelHistory_GetForReprint.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Volvo_GeneratedLabelHistory_GetForReprint",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Volvo/Data/Dao_VolvoGeneratedLabelData.cs",
+          "count": 1,
+          "patterns": [
+            "MySqlCommand_Constructor"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATE"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_by",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_search_text",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "volvo_generated_label_history",
+        "volvo_generated_label_data"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "shipment_date"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "part_number"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "part_description"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "quantity"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "shipment_number"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "skid_number"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "total_skids"
+        },
+        {
+          "qualifier": "vgh",
+          "resolvedObject": "volvo_generated_label_history",
+          "column": "original_id"
+        },
+        {
+          "qualifier": "vgld",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "id"
+        },
+        {
+          "qualifier": "vgld",
+          "resolvedObject": "volvo_generated_label_data",
+          "column": "is_reprint"
+        }
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "vgh",
+          "object": "volvo_generated_label_history"
+        },
+        {
+          "alias": "vgld",
+          "object": "volvo_generated_label_data"
+        }
+      ]
     }
   ]
 }

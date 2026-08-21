@@ -135,26 +135,34 @@
                 </GridView.ItemTemplate>
             </GridView>
 
-            <StackPanel
-                MaxWidth="320"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="8"
+            <Grid
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.HasNoResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Image
-                    Width="160"
-                    Height="160"
+                    MaxWidth="520"
+                    MaxHeight="400"
                     HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
                     Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
-                    Stretch="Uniform" />
-                <TextBlock
+                    Stretch="UniformToFill" />
+                <Border
+                    MaxWidth="420"
+                    Padding="16,10"
                     HorizontalAlignment="Center"
-                    TextAlignment="Center"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource BodyTextBlockStyle}"
-                    Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
-                    TextWrapping="Wrap" />
-            </StackPanel>
+                    VerticalAlignment="Center"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <TextBlock
+                        TextAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

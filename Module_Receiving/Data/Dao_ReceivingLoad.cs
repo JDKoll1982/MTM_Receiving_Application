@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MySql.Data.MySqlClient;
 
@@ -411,6 +412,82 @@ LIMIT 1;";
                 ex
             );
         }
+    }
+
+    /// <summary>
+    /// Loads receiving history rows for the Reprint Labels page, including whether each row is
+    /// already queued for reprint (an <c>is_reprint = 1</c> row exists in receiving_label_data).
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_start_date", filter.StartDate is null ? DBNull.Value : filter.StartDate.Value.Date },
+            { "p_end_date", filter.EndDate is null ? DBNull.Value : filter.EndDate.Value.Date },
+            {
+                "p_search_by",
+                string.IsNullOrWhiteSpace(filter.SearchBy) ? "part" : filter.SearchBy
+            },
+            {
+                "p_search_text",
+                string.IsNullOrWhiteSpace(filter.SearchText) ? "" : filter.SearchText.Trim()
+            },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+            _connectionString,
+            "sp_Receiving_History_GetForReprint",
+            MapReprintHistoryRow,
+            parameters
+        );
+    }
+
+    private static Model_ReprintHistoryRow MapReprintHistoryRow(IDataReader reader)
+    {
+        var poNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("po_number")).Trim();
+        var loadNumber = reader.IsDBNull(reader.GetOrdinal("load_number"))
+            ? (int?)null
+            : reader.GetInt32(reader.GetOrdinal("load_number"));
+        var labelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+            ? (int?)null
+            : reader.GetInt32(reader.GetOrdinal("label_number"));
+
+        return new Model_ReprintHistoryRow
+        {
+            HistoryId = reader.GetInt32(reader.GetOrdinal("history_id")).ToString(),
+            RecordDate = reader.GetDateTime(reader.GetOrdinal("record_date")),
+            Part = reader.GetString(reader.GetOrdinal("part_id")),
+            Quantity = reader.IsDBNull(reader.GetOrdinal("quantity"))
+                ? 0m
+                : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
+            Reference = BuildReceivingReference(poNumber, loadNumber, labelNumber),
+            AlreadyQueued =
+                !reader.IsDBNull(reader.GetOrdinal("already_queued"))
+                && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
+        };
+    }
+
+    private static string BuildReceivingReference(
+        string poNumber,
+        int? loadNumber,
+        int? labelNumber
+    )
+    {
+        if (!string.IsNullOrWhiteSpace(poNumber))
+        {
+            return poNumber;
+        }
+
+        if (loadNumber.HasValue)
+        {
+            return $"Load {loadNumber.Value}";
+        }
+
+        return labelNumber.HasValue ? $"Label {labelNumber.Value}" : string.Empty;
     }
 
     public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync(

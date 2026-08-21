@@ -12,6 +12,7 @@
     x:Name="Root"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_DecimalToString x:Key="DecimalToStringConverter" />
         <converters:Converter_DateTimeToString x:Key="DateTimeToStringConverter" />
         <converters:Converter_PartIDToQualityHoldBrush x:Key="PartIDToQualityHoldBrushConverter" />
@@ -24,246 +25,237 @@
         VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!--  Row 0: main toolbar  -->
-            <RowDefinition Height="Auto" />
-            <!--  Row 1: date filter toolbar  -->
-            <RowDefinition Height="Auto" />
-            <!--  Row 2: search bar + result summary  -->
+            <!--  Row 0: toolbar (load data, date filter, search)  -->
             <RowDefinition Height="*" />
-            <!--  Row 3: data grid  -->
+            <!--  Row 1: data grid  -->
             <RowDefinition Height="Auto" />
-            <!--  Row 4: footer (pagination + save)  -->
+            <!--  Row 2: footer (pagination + save)  -->
         </Grid.RowDefinitions>
 
-        <!--  ============================================================ Row 0: Main Toolbar  -->
-        <Grid Grid.Row="0" Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12">
-                <!--  Load Data Section  -->
+        <!--  ============================================================ Row 0: Ribbon toolbar  -->
+        <Border
+            Grid.Row="0"
+            Padding="10,6"
+            Margin="0,0,0,8"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="6">
+            <Grid ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <!--  File  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  separator  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Edit  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  separator  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Filter Date  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  separator  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Find  -->
+                    <ColumnDefinition Width="*" />
+                    <!--  spacer  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  result summary  -->
+                </Grid.ColumnDefinitions>
+
+                <!--  Group: File  -->
+                <StackPanel Grid.Column="0" Spacing="3">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE8E5;" />
+                                <TextBlock Text="{x:Bind ViewModel.EditModeCurrentLabelsText, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE74C;" />
+                                <TextBlock Text="{x:Bind ViewModel.EditModeHistoryText, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="File" />
+                </StackPanel>
+
+                <Rectangle
+                    Grid.Column="1"
+                    Width="1"
+                    Height="54"
+                    Margin="2,0"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <!--  Group: Edit  -->
+                <StackPanel Grid.Column="2" Spacing="3">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button Command="{x:Bind ViewModel.SelectAllCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SelectAll'), Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE8B3;" />
+                                <TextBlock Text="{x:Bind ViewModel.SelectAllButtonText, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{x:Bind ViewModel.RemoveRowCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveRow'), Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE74D;" />
+                                <TextBlock Text="{x:Bind ViewModel.EditModeRemoveRowText, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button
+                            x:Name="ColumnsButton"
+                            Click="ColumnsButton_Click"
+                            ToolTipService.ToolTip="Choose visible columns">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE71D;" />
+                                <TextBlock Text="Columns" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Edit" />
+                </StackPanel>
+
+                <Rectangle
+                    Grid.Column="3"
+                    Width="1"
+                    Height="54"
+                    Margin="2,0"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <!--  Group: Filter Date  -->
+                <StackPanel Grid.Column="4" Spacing="3">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <CalendarDatePicker
+                            Width="118"
+                            Date="{x:Bind ViewModel.FilterStartDate, Mode=TwoWay}"
+                            PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.StartDate'), Mode=OneWay}" />
+                        <TextBlock VerticalAlignment="Center" Text="{x:Bind ViewModel.EditModeToText, Mode=OneWay}" />
+                        <CalendarDatePicker
+                            Width="118"
+                            Date="{x:Bind ViewModel.FilterEndDate, Mode=TwoWay}"
+                            PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.EndDate'), Mode=OneWay}" />
+                        <Button
+                            Width="34"
+                            Height="34"
+                            Padding="0"
+                            Command="{x:Bind ViewModel.SearchByDateCommand}"
+                            ToolTipService.ToolTip="Search by date range">
+                            <FontIcon Glyph="&#xE721;" />
+                        </Button>
+                        <Button
+                            Command="{x:Bind ViewModel.SetFilterTodayCommand}"
+                            Background="{x:Bind ViewModel.TodayFilterButtonBackground, Mode=OneWay}"
+                            Content="Today"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}" />
+                        <Button
+                            Width="34"
+                            Height="34"
+                            Padding="0"
+                            Command="{x:Bind ViewModel.ToggleDatePresetsCommand}"
+                            ToolTipService.ToolTip="More date ranges">
+                            <FontIcon FontSize="12" Glyph="{x:Bind ViewModel.DatePresetsToggleGlyph, Mode=OneWay}" />
+                        </Button>
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            Visibility="{x:Bind ViewModel.DatePresetsExpanded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button
+                                Command="{x:Bind ViewModel.SetFilterYesterdayCommand}"
+                                Background="{x:Bind ViewModel.YesterdayFilterButtonBackground, Mode=OneWay}"
+                                Content="Yesterday"
+                                ToolTipService.ToolTip="Filter to yesterday" />
+                            <Button
+                                Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
+                                Background="{x:Bind ViewModel.ThisWeekFilterButtonBackground, Mode=OneWay}"
+                                Content="Week"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
+                                Background="{x:Bind ViewModel.ThisQuarterFilterButtonBackground, Mode=OneWay}"
+                                Content="Quarter"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.SetFilterShowAllCommand}"
+                                Background="{x:Bind ViewModel.ShowAllFilterButtonBackground, Mode=OneWay}"
+                                Content="All"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ClearFilters'), Mode=OneWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.EditModeFilterDateText, Mode=OneWay}" />
+                </StackPanel>
+
+                <Rectangle
+                    Grid.Column="5"
+                    Width="1"
+                    Height="54"
+                    Margin="2,0"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <!--  Group: Find  -->
+                <StackPanel Grid.Column="6" Spacing="3">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <ComboBox
+                            MinWidth="120"
+                            ItemsSource="{x:Bind ViewModel.SearchByOptions}"
+                            SelectedItem="{x:Bind ViewModel.SearchByColumnKey, Mode=TwoWay}" />
+                        <Grid Width="240">
+                            <TextBox
+                                x:Name="SearchBox"
+                                Padding="8,5,40,5"
+                                PlaceholderText="Type to filter&#x2026;"
+                                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="0,0,2,0"
+                                Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{x:Bind ViewModel.ClearSearchCommand}"
+                                ToolTipService.ToolTip="Clear search"
+                                Visibility="{x:Bind ViewModel.HasSearchText, Mode=OneWay}">
+                                <FontIcon FontSize="11" Glyph="&#xE711;" />
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Find" />
+                </StackPanel>
+
+                <!--  Result summary (right-aligned)  -->
                 <TextBlock
-                    Margin="0,0,4,0"
+                    Grid.Column="8"
+                    Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    FontWeight="SemiBold"
-                    Text="{x:Bind ViewModel.EditModeLoadDataFromText, Mode=OneWay}" />
-
-                <Button Command="{x:Bind ViewModel.LoadFromCurrentLabelsCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadRecentCSV'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE8E5;" />
-                        <TextBlock Text="{x:Bind ViewModel.EditModeCurrentLabelsText, Mode=OneWay}" />
-                    </StackPanel>
-                </Button>
-
-                <Button Command="{x:Bind ViewModel.LoadFromHistoryCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LoadHistoricalData'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE74C;" />
-                        <TextBlock Text="{x:Bind ViewModel.EditModeHistoryText, Mode=OneWay}" />
-                    </StackPanel>
-                </Button>
-
-                <!--  Separator  -->
-                <Rectangle
-                    Width="1"
-                    Height="24"
-                    Margin="8,0"
-                    Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" />
-
-                <!--  Edit Actions  -->
-                <Button Command="{x:Bind ViewModel.SelectAllCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SelectAll'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE8B3;" />
-                        <TextBlock Text="{x:Bind ViewModel.SelectAllButtonText, Mode=OneWay}" />
-                    </StackPanel>
-                </Button>
-
-                <Button Command="{x:Bind ViewModel.RemoveRowCommand}" ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.RemoveRow'), Mode=OneWay}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE74D;" />
-                        <TextBlock Text="{x:Bind ViewModel.EditModeRemoveRowText, Mode=OneWay}" />
-                    </StackPanel>
-                </Button>
-
-                <!--  Reprint from History — only enabled when viewing History and a row is selected  -->
-                <Button Command="{x:Bind ViewModel.ReprintFromHistoryCommand}" ToolTipService.ToolTip="Queue selected history row for reprint">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE749;" />
-                        <TextBlock Text="Reprint" />
-                    </StackPanel>
-                </Button>
-
-                <!--  Separator  -->
-                <Rectangle
-                    Width="1"
-                    Height="24"
-                    Margin="8,0"
-                    Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" />
-
-                <!--  Column Chooser  -->
-                <Button
-                    x:Name="ColumnsButton"
-                    Click="ColumnsButton_Click"
-                    ToolTipService.ToolTip="Choose visible columns">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE71D;" />
-                        <TextBlock Text="Columns" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-
-            <!--  Help button (right-aligned)  -->
-            <Button
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                Command="{x:Bind ViewModel.ShowHelpCommand}"
-                ToolTipService.ToolTip="Help">
-                <FontIcon Glyph="&#xE897;" />
-            </Button>
-        </Grid>
-
-        <!--  ============================================================ Row 1: Date Filter Toolbar  -->
-        <Grid Grid.Row="1" Margin="0,0,0,12">
-            <StackPanel
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontWeight="SemiBold"
-                    Text="{x:Bind ViewModel.EditModeFilterDateText, Mode=OneWay}" />
-
-                <CalendarDatePicker
-                    Width="140"
-                    Date="{x:Bind ViewModel.FilterStartDate, Mode=TwoWay}"
-                    PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.StartDate'), Mode=OneWay}" />
-                <TextBlock VerticalAlignment="Center" Text="{x:Bind ViewModel.EditModeToText, Mode=OneWay}" />
-                <CalendarDatePicker
-                    Width="140"
-                    Date="{x:Bind ViewModel.FilterEndDate, Mode=TwoWay}"
-                    PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.EndDate'), Mode=OneWay}" />
-                <Button
-                    Width="36"
-                    Height="36"
-                    Padding="0"
-                    Command="{x:Bind ViewModel.SearchByDateCommand}"
-                    ToolTipService.ToolTip="Search by date range">
-                    <FontIcon Glyph="&#xE721;" />
-                </Button>
-
-                <Rectangle
-                    Width="1"
-                    Height="24"
-                    Margin="8,0"
-                    Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" />
-
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterLastWeekCommand}"
-                    Background="{x:Bind ViewModel.LastWeekFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.EditModeLastWeekText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterLastWeek'), Mode=OneWay}" />
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterTodayCommand}"
-                    Background="{x:Bind ViewModel.TodayFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.EditModeTodayText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterToday'), Mode=OneWay}" />
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterThisWeekCommand}"
-                    Background="{x:Bind ViewModel.ThisWeekFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.EditModeThisWeekText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisWeek'), Mode=OneWay}" />
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterThisMonthCommand}"
-                    Background="{x:Bind ViewModel.ThisMonthFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.ThisMonthButtonText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisMonth'), Mode=OneWay}" />
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterThisQuarterCommand}"
-                    Background="{x:Bind ViewModel.ThisQuarterFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.ThisQuarterButtonText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.FilterThisQuarter'), Mode=OneWay}" />
-                <Button
-                    Command="{x:Bind ViewModel.SetFilterShowAllCommand}"
-                    Background="{x:Bind ViewModel.ShowAllFilterButtonBackground, Mode=OneWay}"
-                    Content="{x:Bind ViewModel.EditModeShowAllText, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ClearFilters'), Mode=OneWay}" />
-            </StackPanel>
-        </Grid>
-
-        <!--  ============================================================ Row 2: Search Bar + Result Summary  -->
-        <Grid Grid.Row="2" Margin="0,0,0,8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <!--  "Search by" label  -->
-            <TextBlock
-                Grid.Column="0"
-                Margin="0,0,8,0"
-                VerticalAlignment="Center"
-                Text="Search by:" />
-
-            <!--  Column selector  -->
-            <ComboBox
-                Grid.Column="1"
-                MinWidth="130"
-                ItemsSource="{x:Bind ViewModel.SearchByOptions}"
-                SelectedItem="{x:Bind ViewModel.SearchByColumnKey, Mode=TwoWay}" />
-
-            <!--  Small separator  -->
-            <Rectangle
-                Grid.Column="2"
-                Width="1"
-                Height="20"
-                Margin="8,0"
-                Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" />
-
-            <!--  Search TextBox with overlay clear button  -->
-            <Grid Grid.Column="3" Width="280">
-                <TextBox
-                    x:Name="SearchBox"
-                    Padding="8,5,40,5"
-                    PlaceholderText="Type to filter&#x2026;"
-                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <Button
-                    Width="32"
-                    Height="32"
-                    Margin="0,0,2,0"
-                    Padding="0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{x:Bind ViewModel.ClearSearchCommand}"
-                    ToolTipService.ToolTip="Clear search"
-                    Visibility="{x:Bind ViewModel.HasSearchText, Mode=OneWay}">
-                    <FontIcon FontSize="11" Glyph="&#xE711;" />
-                </Button>
+                    FontStyle="Italic"
+                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                    Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
             </Grid>
+        </Border>
 
-            <!--  Result summary  -->
-            <TextBlock
-                Grid.Column="5"
-                Margin="12,0,0,0"
-                VerticalAlignment="Center"
-                FontStyle="Italic"
-                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                Text="{x:Bind ViewModel.ResultSummary, Mode=OneWay}" />
-        </Grid>
-
-        <!--  ============================================================ Row 3: Data Grid  -->
+        <!--  ============================================================ Row 1: Data Grid  -->
         <controls:DataGrid
             x:Name="EditModeDataGrid"
-            Grid.Row="3"
+            Grid.Row="1"
             AutoGenerateColumns="False"
             CanUserSortColumns="True"
             CurrentCellChanged="EditModeDataGrid_CurrentCellChanged"
@@ -271,6 +263,7 @@
             HeadersVisibility="Column"
             IsReadOnly="False"
             ItemsSource="{x:Bind ViewModel.Loads, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.ShowEmptyState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"
             KeyDown="EditModeDataGrid_KeyDown"
             LoadingRow="EditModeDataGrid_LoadingRow"
             SelectedItem="{x:Bind ViewModel.SelectedLoad, Mode=TwoWay}"
@@ -539,31 +532,35 @@
 
         <!--  ============================================================ Empty state overlay (Row 3)  -->
         <Grid
-            Grid.Row="3"
+            Grid.Row="1"
             Visibility="{x:Bind ViewModel.ShowEmptyState, Mode=OneWay}">
-            <StackPanel
-                MaxWidth="320"
+            <Image
+                MaxWidth="520"
+                MaxHeight="400"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Spacing="8">
-                <Image
-                    Width="180"
-                    Height="180"
-                    HorizontalAlignment="Center"
-                    Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
-                    Stretch="Uniform" />
+                Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
+                Stretch="UniformToFill" />
+            <Border
+                MaxWidth="420"
+                Padding="16,10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
                 <TextBlock
-                    HorizontalAlignment="Center"
                     TextAlignment="Center"
                     Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
                     TextWrapping="Wrap" />
-            </StackPanel>
+            </Border>
         </Grid>
 
         <!--  ============================================================ Row 4: Footer (Pagination + Save)  -->
-        <Grid Grid.Row="4" Margin="0,12,0,0">
+        <Grid Grid.Row="2" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

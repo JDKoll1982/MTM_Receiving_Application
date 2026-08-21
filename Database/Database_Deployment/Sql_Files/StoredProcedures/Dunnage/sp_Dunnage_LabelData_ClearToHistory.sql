@@ -109,8 +109,9 @@ BEGIN
                 p_archived_by                       AS archived_by,
                 p_archive_batch_id                  AS archive_batch_id
             FROM dunnage_label_data dld
-            WHERE COALESCE(p_clear_all, 0) = 1
-               OR dld.employee_number = p_employee_number;
+            WHERE dld.is_reprint = 0
+              AND (COALESCE(p_clear_all, 0) = 1
+                OR dld.employee_number = p_employee_number);
 
             -- Remove archived rows from the active queue.
             DELETE FROM dunnage_label_data

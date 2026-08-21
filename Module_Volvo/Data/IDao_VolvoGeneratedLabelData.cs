@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Volvo.Models;
 
 namespace MTM_Receiving_Application.Module_Volvo.Data;
@@ -23,5 +24,15 @@ public interface IDao_VolvoGeneratedLabelData
         string archivedBy,
         int employeeNumber,
         bool clearAllRows
+    );
+
+    Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    );
+
+    Task<Model_Dao_Result<int>> InsertFromHistoryAsync(
+        int historyId,
+        string queuedBy,
+        int employeeNumber
     );
 }

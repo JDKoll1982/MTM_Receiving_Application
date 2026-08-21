@@ -421,6 +421,16 @@
                     </Grid>
                 </Border>
                 <!--  TabView Content Row  -->
+                <!--
+                    Tabs are generated from the included-module collection instead of
+                    declaring one TabViewItem per module and collapsing hidden ones.
+                    Collapsing a TabViewItem via Visibility is broken in WinUI 3
+                    (microsoft-ui-xaml #7318): the collapsed first tab stays selected
+                    and the content area renders blank. Binding the tabs to
+                    IncludedPreviewModuleCards means a module that is not included is
+                    never present as a tab, so the first included module is always
+                    selected and its card renders.
+                -->
                 <TabView
                     x:Name="PreviewModulesTabView"
                     Grid.Row="2"
@@ -428,31 +438,23 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     x:Load="{x:Bind ViewModel.HasIncludedPreviewModuleCards, Mode=OneWay}"
-                    IsAddTabButtonVisible="False">
-                    <TabView.TabItems>
-                        <TabViewItem
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Header="Receiving"
-                            IsClosable="False"
-                            Visibility="{x:Bind ViewModel.HasReceivingIncludedPreviewModuleCard, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ContentControl Content="{x:Bind ViewModel.ReceivingPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
-                        </TabViewItem>
-
-                        <TabViewItem
-                            Header="Dunnage"
-                            IsClosable="False"
-                            Visibility="{x:Bind ViewModel.HasDunnageIncludedPreviewModuleCard, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
-                        </TabViewItem>
-
-                        <TabViewItem
-                            Header="Volvo"
-                            IsClosable="False"
-                            Visibility="{x:Bind ViewModel.HasVolvoIncludedPreviewModuleCard, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ContentControl Content="{x:Bind ViewModel.VolvoPreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
-                        </TabViewItem>
-                    </TabView.TabItems>
+                    IsAddTabButtonVisible="False"
+                    CanReorderTabs="False"
+                    SelectedIndex="0"
+                    TabItemsSource="{x:Bind ViewModel.IncludedPreviewModuleCards, Mode=OneWay}">
+                    <TabView.TabItemTemplate>
+                        <DataTemplate x:DataType="previewModels:Model_ReportingPreviewModuleCard">
+                            <TabViewItem
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Header="{x:Bind ModuleName}"
+                                IsClosable="False">
+                                <ContentControl
+                                    Content="{x:Bind}"
+                                    ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
+                            </TabViewItem>
+                        </DataTemplate>
+                    </TabView.TabItemTemplate>
                 </TabView>
 
             </Grid>

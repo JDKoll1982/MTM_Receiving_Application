@@ -563,44 +563,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void EditModeDataGrid_LoadingRow(object? sender, DataGridRowEventArgs e)
         {
-            if (e.Row.DataContext is not Model_ReceivingLoad load)
-            {
-                return;
-            }
-
-            ApplyReprintRowBackground(e.Row, load.IsReprint);
-
-            System.ComponentModel.PropertyChangedEventHandler handler = (s, pe) =>
-            {
-                if (s is not Model_ReceivingLoad changedLoad)
-                {
-                    return;
-                }
-
-                e.Row.DispatcherQueue.TryEnqueue(() =>
-                {
-                    if (
-                        e.Row.DataContext is Model_ReceivingLoad currentRowLoad
-                        && currentRowLoad.LabelDataRecordID == changedLoad.LabelDataRecordID
-                        && pe.PropertyName == nameof(Model_ReceivingLoad.IsReprint)
-                    )
-                    {
-                        ApplyReprintRowBackground(e.Row, changedLoad.IsReprint);
-                    }
-                });
-            };
-
-            load.PropertyChanged += handler;
-            e.Row.Unloaded += (_, _) => load.PropertyChanged -= handler;
-        }
-
-        private static void ApplyReprintRowBackground(DataGridRow row, bool isReprint)
-        {
-            row.Background = isReprint
-                ? new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                    Windows.UI.Color.FromArgb(255, 255, 230, 230)
-                )
-                : null;
+            // Reprint row highlighting moved to the dedicated Reprint Labels page.
         }
 
         private async Task WaitForLookupValidationToFinishAsync(

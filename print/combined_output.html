@@ -1,0 +1,97 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-16">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Markdown Files</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/themes/prism.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js"></script>
+      
+
+      <script>
+        // Ensure Prism is activated after the page load
+        document.addEventListener("DOMContentLoaded", function() {
+      Prism.highlightAll(); // This triggers the highlighting for all code blocks
+        window.onload = function() {
+          window.print(); // Automatically triggers the print dialog
+        }
+        });
+      </script>
+      <style>
+        body {
+          font-size: 16px;
+          font-family: Helvetica, sans-serif;
+          line-height: 1.6;
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+        .page-break {
+          page-break-before: always;
+          break-before: page;
+        }
+        .katex-html {
+          display: none;
+        }
+        pre[class*="language-" ],
+        :not(pre)>code[class*=language-],
+        code[class*="language-"] {
+            white-space: pre-wrap;
+            overflow: auto;
+            word-break: break-word;
+        }
+        
+        
+      </style>
+    </head>
+    <body>
+    <p><strong>print\MTM_Receiving_Application_ReprintLabelsPlan.md</strong></p>
+<h1>Plan: Reprint Labels (new <code>Module_Reprint</code>)</h1>
+<p><strong>What:</strong> A new dedicated <strong>Reprint Labels</strong> feature — a new top-level module with a sidebar entry (labeled &quot;Reprint Labels&quot;, placed <strong>above Scanner</strong>), a <strong>landing page with 3 mode cards</strong> (Receiving / Dunnage / Volvo), and one <strong>sub-page per mode</strong> showing that module's <strong>history only</strong>. Each grid has a <strong>far-left checkbox column</strong>; checked rows are re-queued into that module's <strong>active label queue with <code>is_reprint=1</code></strong> (Receiving's existing pattern) when you hit Save. Rows <strong>already queued render red and have no checkbox</strong>. It recreates Receiving's reprint logic behind dedicated per-module contracts, and <strong>removes the Reprint button from Receiving's Edit Mode</strong>.</p>
+<h2>Steps</h2>
+<h3>Phase 1 — Data layer (Dunnage &amp; Volvo)</h3>
+<ul>
+<li>Migration adding <code>is_reprint</code> to <code>dunnage_label_data</code> + <code>volvo_generated_label_data</code></li>
+<li>New <code>sp_Dunnage_LabelData_InsertFromHistory</code> and <code>sp_Volvo_GeneratedLabelData_InsertFromHistory</code> (mirror Receiving's, with duplicate guard)</li>
+<li>Per-module reprint-history queries that add an <code>already_queued</code> flag</li>
+<li>Matching DAO methods</li>
+</ul>
+<h3>Phase 2 — Dedicated reprint contracts</h3>
+<ul>
+<li><code>IService_Reprint_Receiving</code> (wraps existing <code>IService_MySQL_Receiving.InsertFromHistoryAsync</code>)</li>
+<li><code>IService_Reprint_Dunnage</code></li>
+<li><code>IService_Reprint_Volvo</code> (uses the <strong><code>volvo_generated_label_*</code> pair</strong>)</li>
+<li>Each exposes history-with-flag + a batch <code>ReprintAsync</code> that loops per row and returns <code>{Queued, AlreadyQueued, Failed}</code></li>
+</ul>
+<h3>Phase 3 — Module_Reprint UI</h3>
+<ul>
+<li><code>View_Reprint_Main</code> landing + 3 sub-pages/ViewModels (x:Bind, per-module filters, checkbox grid, red already-queued rows, Save button, summary feedback)</li>
+<li>Nav wiring: nav item above Scanner + <code>_navRoutes</code> entry + search terms + DI registration</li>
+</ul>
+<h3>Phase 4 — Remove Receiving Edit Mode reprint</h3>
+<ul>
+<li>Strip the button, <code>ReprintFromHistoryCommand</code>/<code>Async</code>/<code>CanReprintFromHistory</code>, and the <code>IsReprint</code> row-highlight — but <strong>keep</strong> the SP/DAO/service methods the new module reuses</li>
+</ul>
+<h3>Phase 5 — Tests/docs</h3>
+<ul>
+<li>Unit tests for landing + 3 sub-pages + batch duplicate/skip logic</li>
+<li>SP integration tests for the two new InsertFromHistory SPs</li>
+<li>DI registration</li>
+<li>Patch notes + a <code>Module_Reprint/docs/FeatureUpdates</code> slice</li>
+</ul>
+<h2>Key decisions locked from your answers</h2>
+<ul>
+<li>Volvo reprint = <code>volvo_generated_label_history → volvo_generated_label_data</code> (not the label_data pair)</li>
+<li>Landing page + separate sub-pages per mode; nav label &quot;Reprint Labels&quot; above Scanner</li>
+<li>History-only data source; reuse per-module history filters; new <code>already_queued</code> flag</li>
+<li>Batch reprint via checkboxes; per-row duplicate skip; summary + clear checks; no role gating</li>
+<li>Full Receiving Edit Mode removal (UI + command + row highlight), keep shared SPs/DAO</li>
+<li>Unit + SP integration tests</li>
+</ul>
+<h2>Further considerations (open but low-risk)</h2>
+<ol>
+<li>Volvo duplicate-guard key — I'll confirm whether to key on the history row's <code>original_id</code> vs shipment id when implementing.</li>
+<li>Red-row tooltip text (&quot;Already queued for reprint&quot;) and disabling Save until ≥1 checkbox is checked.</li>
+</ol>
+<div class="page-break"></div>
+    </body></html>

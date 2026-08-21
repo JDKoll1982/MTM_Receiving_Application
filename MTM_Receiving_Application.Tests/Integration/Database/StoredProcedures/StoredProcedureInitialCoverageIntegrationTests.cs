@@ -8143,6 +8143,152 @@ VALUES (@loadGuid, 1, @partId, 'PO-RPT', '1', 1012, CURDATE(), 'RPT-LOC', 1, 'Re
     }
 
     [Fact]
+    public async Task sp_Dunnage_LabelData_InsertFromHistory_ShouldQueueReprintRow_WhenIntegrationConnectionIsAvailable()
+    {
+        var connectionString = TryGetIntegrationConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        var loadUuid = Guid.NewGuid().ToString();
+        var partId = $"DLIFH-{CreateUniqueSuffix()[..8]}";
+        var typeName = $"TYPE-{CreateUniqueSuffix()[..8]}";
+        var typeId = 0;
+
+        try
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_types (type_name, created_by, created_date) VALUES (@typeName, 'integration.user', NOW());",
+                new MySqlParameter("@typeName", typeName)
+            );
+            typeId = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT id FROM dunnage_types WHERE type_name = @typeName;",
+                    new MySqlParameter("@typeName", typeName)
+                )
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_parts (part_id, type_id, created_by, created_date) VALUES (@partId, @typeId, 'integration.user', NOW());",
+                new MySqlParameter("@partId", partId),
+                new MySqlParameter("@typeId", typeId)
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, created_date, po_number)
+VALUES (@loadUuid, @partId, 2, 'Quantity', NOW(), 'integration.user', NOW(), 'PO-RPT');",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId)
+            );
+
+            await ExecuteStoredProcedureQueryAsync(
+                connectionString,
+                "sp_Dunnage_LabelData_InsertFromHistory",
+                new MySqlParameter("p_load_uuid", loadUuid),
+                new MySqlParameter("p_queued_by", "integration.user"),
+                new MySqlParameter("p_employee_number", 1012)
+            );
+
+            var queuedRows = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND is_reprint = 1;",
+                    new MySqlParameter("@loadUuid", loadUuid)
+                )
+            );
+            queuedRows.Should().Be(1);
+        }
+        finally
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_label_data WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_parts WHERE part_id = @partId;",
+                new MySqlParameter("@partId", partId)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_types WHERE id = @typeId;",
+                new MySqlParameter("@typeId", typeId)
+            );
+        }
+    }
+
+    [Fact]
+    public async Task sp_Volvo_GeneratedLabelData_InsertFromHistory_ShouldQueueReprintRow_WhenIntegrationConnectionIsAvailable()
+    {
+        var connectionString = TryGetIntegrationConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        var historyId = 0;
+        var partNumber = $"V{CreateUniqueSuffix()[..8]}";
+
+        try
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO volvo_generated_label_history (original_id, shipment_id, shipment_number, shipment_date, part_number, quantity, skid_number, total_skids, part_description, employee_number, archived_by)
+VALUES (999999, 1, 1001, CURDATE(), @partNumber, 3, 1, 2, 'Volvo reprint row', 1012, 'integration.user');",
+                new MySqlParameter("@partNumber", partNumber)
+            );
+            historyId = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT id FROM volvo_generated_label_history WHERE part_number = @partNumber ORDER BY id DESC LIMIT 1;",
+                    new MySqlParameter("@partNumber", partNumber)
+                )
+            );
+
+            await ExecuteStoredProcedureQueryAsync(
+                connectionString,
+                "sp_Volvo_GeneratedLabelData_InsertFromHistory",
+                new MySqlParameter("p_history_id", historyId),
+                new MySqlParameter("p_queued_by", "integration.user"),
+                new MySqlParameter("p_employee_number", 1012)
+            );
+
+            var queuedRows = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT COUNT(*) FROM volvo_generated_label_data WHERE part_number = @partNumber AND is_reprint = 1;",
+                    new MySqlParameter("@partNumber", partNumber)
+                )
+            );
+            queuedRows.Should().Be(1);
+        }
+        finally
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM volvo_generated_label_data WHERE part_number = @partNumber;",
+                new MySqlParameter("@partNumber", partNumber)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM volvo_generated_label_history WHERE id = @historyId;",
+                new MySqlParameter("@historyId", historyId)
+            );
+        }
+    }
+
+    [Fact]
     public async Task sp_Receiving_LabelData_ClearToHistory_ShouldMoveSeededQueueRowToHistory_WhenIntegrationConnectionIsAvailable()
     {
         var connectionString = TryGetIntegrationConnectionString();

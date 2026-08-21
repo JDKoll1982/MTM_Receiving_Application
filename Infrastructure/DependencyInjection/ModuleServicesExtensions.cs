@@ -64,6 +64,36 @@ public static class ModuleServicesExtensions
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
         services.AddShipRecToolsModule();
+        services.AddReprintModule();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Reprint Labels module: the dedicated per-module reprint contracts/services
+    /// consumed by the Reprint pages, plus the Reprint view models and views.
+    /// </summary>
+    private static IServiceCollection AddReprintModule(this IServiceCollection services)
+    {
+        services.AddSingleton<
+            MTM_Receiving_Application.Module_Receiving.Contracts.IService_Reprint_Receiving,
+            MTM_Receiving_Application.Module_Receiving.Services.Service_Reprint_Receiving
+        >();
+        services.AddSingleton<
+            MTM_Receiving_Application.Module_Dunnage.Contracts.IService_Reprint_Dunnage,
+            MTM_Receiving_Application.Module_Dunnage.Services.Service_Reprint_Dunnage
+        >();
+        services.AddSingleton<
+            MTM_Receiving_Application.Module_Volvo.Contracts.IService_Reprint_Volvo,
+            MTM_Receiving_Application.Module_Volvo.Services.Service_Reprint_Volvo
+        >();
+
+        services.AddTransient<MTM_Receiving_Application.Module_Reprint.ViewModels.ViewModel_Reprint_Main>();
+        services.AddTransient<MTM_Receiving_Application.Module_Reprint.ViewModels.ViewModel_Reprint_Receiving>();
+        services.AddTransient<MTM_Receiving_Application.Module_Reprint.ViewModels.ViewModel_Reprint_Dunnage>();
+        services.AddTransient<MTM_Receiving_Application.Module_Reprint.ViewModels.ViewModel_Reprint_Volvo>();
+
+        services.AddTransient<MTM_Receiving_Application.Module_Reprint.Views.View_Reprint_Main>();
 
         return services;
     }

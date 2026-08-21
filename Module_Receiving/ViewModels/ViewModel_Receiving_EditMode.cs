@@ -45,6 +45,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             None,
             LastWeek,
             Today,
+            Yesterday,
             ThisWeek,
             ThisMonth,
             ThisQuarter,
@@ -185,6 +186,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _thisQuarterButtonText = GetQuarterText(DateTime.Now);
 
+        [ObservableProperty]
+        private bool _datePresetsExpanded;
+
+        public string DatePresetsToggleGlyph => DatePresetsExpanded ? "\uE76B" : "\uE76C";
+
+        partial void OnDatePresetsExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(DatePresetsToggleGlyph));
+        }
+
+        [RelayCommand]
+        private void ToggleDatePresets() => DatePresetsExpanded = !DatePresetsExpanded;
+
         // ------------------------------------------------------------------ pagination
         [ObservableProperty]
         private int _currentPage = 1;
@@ -280,6 +294,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         public Brush TodayFilterButtonBackground => ResolveFilterButtonBackground(
             _activeDateFilter == DateFilterPreset.Today
+        );
+
+        public Brush YesterdayFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.Yesterday
         );
 
         public Brush ThisWeekFilterButtonBackground => ResolveFilterButtonBackground(
@@ -1015,7 +1033,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         partial void OnSelectedLoadChanged(Model_ReceivingLoad? value)
         {
-            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>
@@ -1026,7 +1043,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SaveCommand.NotifyCanExecuteChanged();
             RemoveRowCommand.NotifyCanExecuteChanged();
             SelectAllCommand.NotifyCanExecuteChanged();
-            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
         }
 
         public void HandleCurrentLabelQueueCleared()
@@ -1255,6 +1271,27 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
+        /// Sets the date filter to yesterday.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterYesterdayAsync()
+        {
+            ApplyPresetDateFilter(
+                DateTime.Today.AddDays(-1),
+                DateTime.Today.AddDays(-1),
+                DateFilterPreset.Yesterday
+            );
+            if (CurrentDataSource == Enum_DataSourceType.History)
+            {
+                await LoadFromHistoryAsync();
+            }
+            else
+            {
+                FilterAndPaginate();
+            }
+        }
+
+        /// <summary>
         /// Sets the date filter to the current week.
         /// </summary>
         [RelayCommand]
@@ -1384,6 +1421,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _activeDateFilter = preset;
             OnPropertyChanged(nameof(LastWeekFilterButtonBackground));
             OnPropertyChanged(nameof(TodayFilterButtonBackground));
+            OnPropertyChanged(nameof(YesterdayFilterButtonBackground));
             OnPropertyChanged(nameof(ThisWeekFilterButtonBackground));
             OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
             OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
@@ -1998,66 +2036,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             CurrentDataSource == Enum_DataSourceType.History
             && SelectedLoad?.HistoryRecordID.HasValue == true
             && !IsBusy;
-
-        /// <summary>
-        /// Queues the selected history row back into the active label print queue for reprint.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanReprintFromHistory))]
-        private async Task ReprintFromHistoryAsync()
-        {
-            if (SelectedLoad?.HistoryRecordID is not int historyId)
-            {
-                return;
-            }
-
-            if (IsBusy)
-            {
-                return;
-            }
-
-            try
-            {
-                IsBusy = true;
-                StatusMessage = "Queuing for reprint\u2026";
-
-                var result = await _mysqlService.InsertFromHistoryAsync(historyId);
-                if (!result.IsSuccess)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        result.ErrorMessage ?? "Failed to queue record for reprint.",
-                        Enum_ErrorSeverity.Warning
-                    );
-                    return;
-                }
-
-                ShowStatus(
-                    $"Part {SelectedLoad.PartID} queued for reprint. Switch to Current Labels to verify.",
-                    InfoBarSeverity.Success
-                );
-
-                // Re-enable "Clear Label Data" on the workflow VM — the queue is no longer empty.
-                foreach (
-                    var workflowVm in _viewModelRegistry.GetViewModels<ViewModel_Receiving_Workflow>()
-                )
-                {
-                    await workflowVm.RefreshClearLabelDataAvailabilityAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Medium,
-                    nameof(ReprintFromHistoryAsync),
-                    nameof(ViewModel_Receiving_EditMode)
-                );
-            }
-            finally
-            {
-                IsBusy = false;
-                ReprintFromHistoryCommand.NotifyCanExecuteChanged();
-            }
-        }
 
         /// <summary>
         /// Returns to the mode selection screen after confirmation.

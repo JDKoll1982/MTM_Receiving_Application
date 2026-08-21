@@ -70,7 +70,7 @@ Pause and ask via chat approval flow when a major assumption is needed, includin
 - MySQL: stored procedures only.
 - SQL Server (Infor Visual): read-only.
 - Never write raw MySQL SQL in C#.
-- Use the VS Code extension `cweijan.vscode-mysql-client2` for MySQL read/write validation against `mtm_receiving_application_test` before or during MySQL-related code changes.
+- Use the VS Code extension `cweijan.vscode-mysql-client2` for MySQL read/write validation against `mtm_receiving_application` before or during MySQL-related code changes.
 - Keep SQL files in `Database/` as source-of-truth artifacts; use extension queries for immediate validation and safe iteration.
 - Run extension-side tests with a non-destructive pattern: target the test schema explicitly and clean up any temporary rows/tables created during validation.
 

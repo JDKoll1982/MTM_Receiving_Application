@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MySql.Data.MySqlClient;
 
@@ -295,6 +296,122 @@ public class Dao_DunnageLabelData
             "sp_Dunnage_LabelData_GetAll",
             MapFromReader
         );
+    }
+
+    /// <summary>
+    /// Loads dunnage history rows for the Reprint Labels page, including whether each row is
+    /// already queued for reprint (an <c>is_reprint = 1</c> row exists in dunnage_label_data
+    /// for the same load_uuid).
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_start_date", filter.StartDate is null ? DBNull.Value : filter.StartDate.Value.Date },
+            { "p_end_date", filter.EndDate is null ? DBNull.Value : filter.EndDate.Value.Date },
+            {
+                "p_search_by",
+                string.IsNullOrWhiteSpace(filter.SearchBy) ? "part" : filter.SearchBy
+            },
+            {
+                "p_search_text",
+                string.IsNullOrWhiteSpace(filter.SearchText) ? "" : filter.SearchText.Trim()
+            },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+            _connectionString,
+            "sp_Dunnage_LabelHistory_GetForReprint",
+            MapReprintHistoryRow,
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Copies a single row from <c>dunnage_history</c> back into <c>dunnage_label_data</c> so it
+    /// can be re-printed. Sets <c>is_reprint = 1</c>. Returns 0 rows inserted when the history
+    /// row is already queued for reprint (the stored procedure raises SQLSTATE 45000).
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(
+        string loadUuid,
+        string queuedBy,
+        int employeeNumber
+    )
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                "sp_Dunnage_LabelData_InsertFromHistory",
+                connection
+            )
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+
+            command.Parameters.AddWithValue("p_load_uuid", loadUuid);
+            command.Parameters.AddWithValue("p_queued_by", queuedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            int inserted = 0;
+            if (await reader.ReadAsync())
+            {
+                inserted = Convert.ToInt32(reader["rows_inserted"]);
+            }
+
+            return Model_Dao_Result_Factory.Success<int>(inserted);
+        }
+        catch (MySqlException ex) when (ex.Number == 1644)
+        {
+            // SQLSTATE 45000 — already queued for reprint
+            return Model_Dao_Result_Factory.Failure<int>(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Error queuing history record {loadUuid} for reprint: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static Model_ReprintHistoryRow MapReprintHistoryRow(IDataReader reader)
+    {
+        var poNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("po_number")).Trim();
+        var labelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("label_number")).Trim();
+
+        return new Model_ReprintHistoryRow
+        {
+            HistoryId = reader.GetValue(reader.GetOrdinal("load_uuid")).ToString() ?? string.Empty,
+            RecordDate = reader.GetDateTime(reader.GetOrdinal("record_date")),
+            Part = reader.GetString(reader.GetOrdinal("part_id")),
+            Quantity = reader.IsDBNull(reader.GetOrdinal("quantity"))
+                ? 0m
+                : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
+            Reference = BuildDunnageReference(poNumber, labelNumber),
+            AlreadyQueued =
+                !reader.IsDBNull(reader.GetOrdinal("already_queued"))
+                && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
+        };
+    }
+
+    private static string BuildDunnageReference(string poNumber, string labelNumber)
+    {
+        if (!string.IsNullOrWhiteSpace(poNumber))
+        {
+            return poNumber;
+        }
+
+        return string.IsNullOrWhiteSpace(labelNumber) ? string.Empty : $"Label {labelNumber}";
     }
 
     /// <summary>
