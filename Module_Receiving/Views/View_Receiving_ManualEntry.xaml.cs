@@ -452,6 +452,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         }
 
         /// <summary>
+        /// Selects all text when the user enters a Pkgs/Load cell so the existing value can be overwritten quickly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PackagesPerLoadTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+            {
+                return;
+            }
+
+            _ = textBox.DispatcherQueue.TryEnqueue(() => textBox.SelectAll());
+        }
+
+        /// <summary>
         /// Auto-formats PO Number when user leaves the textbox.
         /// Applies same formatting logic as guided workflow: PO-NNNNNN (6 digits, zero-padded)
         /// </summary>

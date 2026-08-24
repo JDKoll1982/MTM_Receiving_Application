@@ -3,13 +3,64 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-        Brand accent brushes for the three primary working modules.
-        Single source of truth shared by the Receiving, Dunnage, Volvo,
-        Reporting, and Reprint modules. These are fixed brand colors, so they
-        are referenced with StaticResource and stay the same in light/dark themes.
+        Brand accent brushes for every working module. Single source of truth
+        shared by the Receiving, Dunnage, Volvo, Reporting, Ship/Rec Tools,
+        Reprint, Scanner, and Settings modules. The fill brushes are fixed brand
+        colors — referenced with StaticResource and unchanged across light/dark
+        themes because white text is rendered on top of them.
     -->
     <SolidColorBrush x:Key="ReceivingAccentBrush" Color="#0B6157" />
     <SolidColorBrush x:Key="DunnageAccentBrush" Color="#8A5E00" />
     <SolidColorBrush x:Key="VolvoAccentBrush" Color="#1E4F7A" />
+    <SolidColorBrush x:Key="ReportingAccentBrush" Color="#6A1B9A" />
+    <SolidColorBrush x:Key="ShipRecAccentBrush" Color="#37474F" />
+    <SolidColorBrush x:Key="ReprintAccentBrush" Color="#2E7D32" />
+    <SolidColorBrush x:Key="ScannerAccentBrush" Color="#B71C1C" />
+    <SolidColorBrush x:Key="SettingsAccentBrush" Color="#424242" />
     <SolidColorBrush x:Key="OnAccentForegroundBrush" Color="#FFFFFF" />
+
+    <!--
+        Fixed lighter highlights used for the header card border on top of the
+        accent fill. The header fill is constant across themes, so these stay
+        fixed and remain visible against the fill in both light and dark mode.
+    -->
+    <SolidColorBrush x:Key="ReceivingAccentHighlightBrush" Color="#4DB6AC" />
+    <SolidColorBrush x:Key="DunnageAccentHighlightBrush" Color="#D9A441" />
+    <SolidColorBrush x:Key="VolvoAccentHighlightBrush" Color="#64B5F6" />
+    <SolidColorBrush x:Key="ReportingAccentHighlightBrush" Color="#BA68C8" />
+    <SolidColorBrush x:Key="ShipRecAccentHighlightBrush" Color="#90A4AE" />
+    <SolidColorBrush x:Key="ReprintAccentHighlightBrush" Color="#81C784" />
+    <SolidColorBrush x:Key="ScannerAccentHighlightBrush" Color="#E57373" />
+    <SolidColorBrush x:Key="SettingsAccentHighlightBrush" Color="#BDBDBD" />
+
+    <!--
+        Theme-aware accent border brushes used for header elements that sit on a
+        neutral theme surface (the user card and the initials circle). The Light
+        theme holds the dark brand accents (visible on light surfaces); the Dark
+        theme holds lighter tints of the same hues (visible on dark surfaces).
+        Resolve with {ThemeResource} in XAML or through the app theme
+        dictionaries in code so borders stay readable in both modes.
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="ReceivingAccentBorderBrush" Color="#0B6157" />
+            <SolidColorBrush x:Key="DunnageAccentBorderBrush" Color="#8A5E00" />
+            <SolidColorBrush x:Key="VolvoAccentBorderBrush" Color="#1E4F7A" />
+            <SolidColorBrush x:Key="ReportingAccentBorderBrush" Color="#6A1B9A" />
+            <SolidColorBrush x:Key="ShipRecAccentBorderBrush" Color="#37474F" />
+            <SolidColorBrush x:Key="ReprintAccentBorderBrush" Color="#2E7D32" />
+            <SolidColorBrush x:Key="ScannerAccentBorderBrush" Color="#B71C1C" />
+            <SolidColorBrush x:Key="SettingsAccentBorderBrush" Color="#424242" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="ReceivingAccentBorderBrush" Color="#4DB6AC" />
+            <SolidColorBrush x:Key="DunnageAccentBorderBrush" Color="#D9A441" />
+            <SolidColorBrush x:Key="VolvoAccentBorderBrush" Color="#64B5F6" />
+            <SolidColorBrush x:Key="ReportingAccentBorderBrush" Color="#BA68C8" />
+            <SolidColorBrush x:Key="ShipRecAccentBorderBrush" Color="#90A4AE" />
+            <SolidColorBrush x:Key="ReprintAccentBorderBrush" Color="#81C784" />
+            <SolidColorBrush x:Key="ScannerAccentBorderBrush" Color="#E57373" />
+            <SolidColorBrush x:Key="SettingsAccentBorderBrush" Color="#BDBDBD" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

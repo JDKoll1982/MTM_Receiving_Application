@@ -21,7 +21,8 @@ public sealed partial class View_Scanner_Main : Page
         IService_AdaptiveLayout adaptiveLayout,
         View_Scanner_Workbench workbenchView,
         View_Scanner_History historyView,
-        View_Scanner_Settings settingsView
+        View_Scanner_Settings settingsView,
+        View_Scanner_AdvancedBulkMove advancedBulkMoveView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -29,6 +30,7 @@ public sealed partial class View_Scanner_Main : Page
         ArgumentNullException.ThrowIfNull(workbenchView);
         ArgumentNullException.ThrowIfNull(historyView);
         ArgumentNullException.ThrowIfNull(settingsView);
+        ArgumentNullException.ThrowIfNull(advancedBulkMoveView);
 
         ViewModel = viewModel;
         _adaptiveLayout = adaptiveLayout;
@@ -38,6 +40,7 @@ public sealed partial class View_Scanner_Main : Page
         WorkbenchHost.Content = workbenchView;
         HistoryHost.Content = historyView;
         SettingsHost.Content = settingsView;
+        AdvancedBulkMoveHost.Content = advancedBulkMoveView;
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;

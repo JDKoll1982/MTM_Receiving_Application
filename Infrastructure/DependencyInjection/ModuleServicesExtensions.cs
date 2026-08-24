@@ -128,11 +128,13 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Scanner_Workbench>();
         services.AddTransient<ViewModel_Scanner_History>();
         services.AddTransient<ViewModel_Scanner_Settings>();
+        services.AddTransient<ViewModel_Scanner_AdvancedBulkMove>();
 
         services.AddTransient<Module_Scanner.Views.View_Scanner_Main>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_Workbench>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_History>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_Settings>();
+        services.AddTransient<Module_Scanner.Views.View_Scanner_AdvancedBulkMove>();
 
         return services;
     }

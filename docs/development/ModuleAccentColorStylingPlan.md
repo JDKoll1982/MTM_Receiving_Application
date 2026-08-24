@@ -25,6 +25,12 @@ visually branded and consistent with the Reporting and Reprint modules.
 > were **removed** and replaced with a single mechanism: the **MainWindow shell header
 > changes its accent** to the active module's color. See `MainWindow Shell Header` below.
 
+> **Revision (2026-08-24):** Extended the brand palette from three to **eight** modules
+> (added Reporting, Ship/Rec Tools, Reprint, Scanner, Settings) and added **accent border
+> coloring** to the shell header: the header card border uses a fixed `*AccentHighlightBrush`
+> tint on top of the accent fill, while the user card and the initials circle use theme-aware
+> `*AccentBorderBrush` values so they stay visible in light and dark mode.
+
 ## Research Summary
 
 WinUI 3 theming guidance (Microsoft Learn + WinUI 3 Gallery):
@@ -41,10 +47,17 @@ WinUI 3 theming guidance (Microsoft Learn + WinUI 3 Gallery):
 
 ## Shared Resources (all modules)
 
-1. Create `Module_Core/Themes/ModuleAccentBrushes.xaml` as the single source of truth:
-   - `ReceivingAccentBrush` (`#0B6157`), `DunnageAccentBrush` (`#8A5E00`),
-     `VolvoAccentBrush` (`#1E4F7A`).
+1. `Module_Core/Themes/ModuleAccentBrushes.xaml` is the single source of truth:
+   - Fill brushes: `ReceivingAccentBrush` (`#0B6157`), `DunnageAccentBrush`
+     (`#8A5E00`), `VolvoAccentBrush` (`#1E4F7A`), `ReportingAccentBrush`
+     (`#6A1B9A`), `ShipRecAccentBrush` (`#37474F`), `ReprintAccentBrush`
+     (`#2E7D32`), `ScannerAccentBrush` (`#B71C1C`), `SettingsAccentBrush`
+     (`#424242`).
    - A shared `OnAccentForegroundBrush` (White) for text/icons on accent fills.
+   - Fixed `*AccentHighlightBrush` values (lighter tints of each fill) for the
+     header card border on top of the accent fill.
+   - Theme-aware `*AccentBorderBrush` values (Light = dark brand accent, Dark =
+     lighter tint) for the user card and initials circle borders.
    - Status: complete. No hover/pressed variants were needed because this pass brands
      static surfaces (headers, bars, icons), not accent-filled interactive buttons.
 2. Merge the dictionary into `App.xaml` so every view can resolve the brushes.
@@ -110,18 +123,30 @@ Status: complete.
 - `MainWindow.xaml`
   - Name the header `Border` `HeaderBarBorder` and the back-button icon
     `HeaderBackButtonIcon`.
+  - Wrap the initials `PersonPicture` in a circular named `Border`
+    (`UserPictureBorder`) so it can carry the module accent ring.
+  - The `HeaderUserMenuButtonStyle` hover/pressed states keep
+    `{TemplateBinding BorderBrush}` so the module accent border on the user card
+    persists on hover.
 - `MainWindow.xaml.cs`
   - `ApplyHeaderAccent(Type?)` is called from `SyncPageHeader` (the single chokepoint
-    every page navigation flows through).
-  - `GetModuleAccentBrush(Type?)` maps the active page type to the module accent brush:
+    every page navigation flows through) and re-applied on `ActualThemeChanged`.
+  - `GetModuleAccent(Type?)` maps the active page type to a fill brush, a
+    theme-aware border key, and a fixed highlight key:
     - `Module_Receiving.*` / `Module_Settings.Receiving.*` → `ReceivingAccentBrush`
     - `Module_Dunnage.*` / `Module_Settings.Dunnage.*` → `DunnageAccentBrush`
     - `Module_Volvo.*` / `Module_Settings.Volvo.*` → `VolvoAccentBrush`
-  - When an accent applies, the header bar background becomes the module color, the
-    page title and back-button icon turn white, and the back-button border becomes a
-    translucent white.
-  - Pages outside those modules (Dashboard, Scanner, Reprint, Reporting, Ship/Rec,
-    Core settings, docs) reset the header to the neutral theme resources.
+    - `Module_Reporting.*` / `Module_Settings.Reporting.*` → `ReportingAccentBrush`
+    - `Module_ShipRec_Tools.*` → `ShipRecAccentBrush`
+    - `Module_Reprint.*` → `ReprintAccentBrush`
+    - `Module_Scanner.*` → `ScannerAccentBrush`
+    - `Module_Settings.*` (core/settings hub, checked last) → `SettingsAccentBrush`
+  - When an accent applies, the header card background becomes the module color, the
+    page title and back-button icon turn white, the back-button border becomes a
+    translucent white, the header card border becomes the fixed accent highlight, and
+    the user card + initials circle borders become the theme-aware accent border.
+  - Pages outside those modules (Dashboard, Documentation) reset the header to the
+    neutral theme resources.
   - The reset restores the title/back-button via `ClearValue` (never a null
     assignment) so the page-title style's theme foreground applies and the header
     text stays visible on the neutral bar.
@@ -132,6 +157,9 @@ Status: complete.
   Status: complete — build succeeds with 0 warnings / 0 errors.
 - Manually verify (or verify via WinApp if available) each module page shows its accent
   in the branded header and emphasis elements in both light and dark themes.
+  Status: pending manual visual check.
+- Toggle light/dark theme (Settings → Theme) on a module page and confirm the user-card
+  and initials-circle accent borders stay visible in both modes.
   Status: pending manual visual check.
 
 ## Out of Scope

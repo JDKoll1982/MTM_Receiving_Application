@@ -2,43 +2,53 @@
 
 Last Updated: 2026-08-24
 
-Add an **Advanced** button to the Scanner Workbench that opens a two-step modal for moving
-parts from a source location into the Items To Send table.
+Add an **Advanced** button to the Scanner Workbench that navigates to a full-page two-step
+wizard for moving parts from a source location into the Items To Send table.
 
 ## Button Placement
 
-- [ ] Add an **Advanced** button immediately to the left of the **Manage Items** button in the
+- [x] Add an **Advanced** button immediately to the left of the **Manage Items** button in the
       Items To Send header.
-- [ ] Keep the existing Manage Items button position and behavior unchanged.
+- [x] Keep the existing Manage Items button position and behavior unchanged.
+
+## Page vs Modal
+
+- [x] Host the wizard as a full page (`View_Scanner_AdvancedBulkMove`) inside the scanner
+      module host instead of a `ContentDialog`, so it has more room for the search box and the
+      parts/destination lists.
+- [x] Add a fuzzy **From Location** search box (`AutoSuggestBox` with a `Find` query icon) plus
+      an explicit **Search** button in Step 1.
+- [x] The workbench **Advanced** button navigates to the page; completed destination rows are
+      handed back to the workbench through `IService_ScannerNavigation.PendingBulkMoveDestinations`.
 
 ## Step 1 — Select Source Location and Parts
 
-- [ ] Opening the modal shows a **From Location** selector.
-- [ ] Selecting a From Location pulls up all part numbers currently in that location.
-- [ ] Display the transaction/quantity amount for each part number (for example, `PartA` has
+- [x] The page shows a **From Location** search box with fuzzy location suggestions.
+- [x] Searching a From Location pulls up all part numbers currently in that location.
+- [x] Display the transaction/quantity amount for each part number (for example, `PartA` has
       `5000` in `RECV`).
-- [ ] Provide a checkbox for each part so the user can select any or all parts.
-- [ ] Add a **number box** next to the checkbox column, defaulting to `1`, to control how many
+- [x] Provide a checkbox for each part so the user can select any or all parts.
+- [x] Add a **number box** next to the checkbox column, defaulting to `1`, to control how many
       destination entries are created for that part.
-- [ ] Add a **Save** button that accepts the selected parts and advances to Step 2.
+- [x] Add a **Next** button that accepts the selected parts and advances to Step 2.
 
 ## Step 2 — Add To Locations
 
-- [ ] After Save, the modal content switches to an **Add To Locations** view.
-- [ ] Add one line for each selected part where the user can enter the destination location.
-- [ ] When a part's number box is greater than `1`, give that part that many destination rows
+- [x] After Next, the page content switches to an **Add To Locations** view.
+- [x] Add one line for each selected part where the user can enter the destination location.
+- [x] When a part's number box is greater than `1`, give that part that many destination rows
       (for example, move `2500` to `V-A1-01` and `2500` to `V-A1-02`).
-- [ ] Add a final **Save** button that sends all completed rows back to the Items To Send table.
+- [x] Add a final **Save** button that sends all completed rows back to the Items To Send table.
 
 ## Acceptance Criteria
 
-- [ ] Advanced button opens the modal on the left of Manage Items.
-- [ ] From Location selection filters parts to that location.
-- [ ] Part rows show available quantity and a selection checkbox.
-- [ ] Number box defaults to `1` and expands Step 2 rows accordingly.
-- [ ] Step 2 Save returns all filled rows to the Items To Send table.
-- [ ] Existing Manage Items behavior is not regressed.
-- [ ] Research complete — technical notes grounded in actual code files (see below).
+- [x] Advanced button navigates to the page (replacing the modal) on the left of Manage Items.
+- [x] From Location search filters parts to that location.
+- [x] Part rows show available quantity and a selection checkbox.
+- [x] Number box defaults to `1` and expands Step 2 rows accordingly.
+- [x] Step 2 Save returns all filled rows to the Items To Send table.
+- [x] Existing Manage Items behavior is not regressed.
+- [x] Build succeeds and Module_Scanner tests pass (116/116).
 
 ## 📑 Technical Research Notes
 
@@ -49,22 +59,36 @@ Last Updated: 2026-08-24
 - **View (XAML):** `Module_Scanner/Views/View_Scanner_Workbench.xaml`
   - The `Items To Send` header grid is `x:Name="ItemsHeaderGrid"` at approximately lines
     222–248 (inside `ItemsToSendCard` → `ItemsCardContentGrid`).
-  - The existing **Manage Items** button lives at `Grid.Column="1"` (approx. lines 230–235) and
-    binds to `ViewModel.ManageItemsDialogCommand`. The **Remove Selected** button is at
-    `Grid.Column="2"`.
-- **ViewModel:** `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs`
-  - Hosts `SessionItems` (the grid's `ItemsSource`) and `CurrentSession`.
-  - Existing dialog orchestration to model after: `ManageItemsDialogCoreAsync()` (approx. line
-    581) — resolves `XamlRoot`, constructs a `ContentDialog`, applies the shared theme helper,
-    awaits `ShowAsync()`, and reconciles results back into the session.
+  - The **Advanced** button lives at `Grid.Column="1"` (bound to
+    `ViewModel.AdvancedBulkMoveCommand`), **Manage Items** at `Grid.Column="2"`, and **Remove
+    Selected** at `Grid.Column="3"`.
+- **Page host:** `Module_Scanner/Views/View_Scanner_Main.xaml(.cs)`
+  - Adds an `AdvancedBulkMoveHost` `ContentControl`; the host constructor injects
+    `View_Scanner_AdvancedBulkMove` and assigns it. Visibility is driven by
+    `ViewModel_Scanner_Main.IsAdvancedBulkMoveVisible`.
+- **Page:** `Module_Scanner/Views/View_Scanner_AdvancedBulkMove.xaml(.cs)`
+  - Full-page two-step wizard. Step 1 has a fuzzy location `AutoSuggestBox`
+    (`FromLocationSearchBox`, `QueryIcon="Find"`) plus an explicit **Search** button that runs
+    `SearchPartsCommand`; the parts list uses `Parts` with checkbox + entry-count `NumberBox`.
+    Step 2 uses `Destinations` with To-location `TextBox` and qty `NumberBox`. Footer holds
+    Back (Step 2 only), Cancel, and a Next/Save primary button whose label/icon change with
+    `IsStepTwo`.
+- **Page ViewModel:** `Module_Scanner/ViewModels/ViewModel_Scanner_AdvancedBulkMove.cs`
+  - `SearchPartsCommand` → `_validationService.GetPartsInLocationAsync(location, warehouse)`.
+  - `UpdateLocationSuggestionsAsync` → `_validationService.GetLocationSuggestionsAsync`.
+  - `NextStepCommand` builds destinations (Step 1 → 2) or validates + hands rows back
+    (Step 2 save). `BackToStepOneCommand` and `CancelCommand` return to the workbench.
+- **Navigation contract:** `Module_Scanner/Contracts/IService_ScannerNavigation.cs`
+  - Adds `ShowAdvancedBulkMove()` and the `PendingBulkMoveDestinations` payload. The workbench
+    subscribes to `PropertyChanged` and stages the payload when it returns to the workbench.
 - **Row model:** `Module_Scanner/Models/Model_ScannerBatchItem.cs`
   - Key properties: `PayloadPartId`, `PayloadQuantity` (string), `PayloadFromWarehouse`,
     `PayloadFromLocation`, `PayloadToWarehouse`, `PayloadToLocation`, `SequenceNumber`,
     `ValidationState`, `FuzzyMatchedFromLocation`, `FuzzyMatchedToLocation`, `ItemId`.
-- **Dialog pattern reference:** `Module_Scanner/Views/View_Scanner_ManageItemsDialog.xaml(.cs)`
-  - The established `ContentDialog` subclass pattern: view-specific code-behind, `ObservableCollection<T>`
-    working set, `GetItemsSnapshot()` returning cloned models, `PrimaryButtonText="Apply"` /
-    `CloseButtonText="Cancel"`.
+- **Bulk-move models:** `Module_Scanner/Models/Model_ScannerBulkMovePart.cs` (Step 1 row:
+  `PartId`, `PartDescription`, `WarehouseCode`, `LocationId`, `Quantity`, `IsSelected`,
+  `EntryCount`) and `Model_ScannerBulkMoveDestination.cs` (Step 2 row: `PartId`,
+  `FromLocation`, `ToLocation`, `QuantityNumber`, computed `Quantity`).
 
 ### XAML & UI Strategy
 
@@ -81,16 +105,15 @@ Last Updated: 2026-08-24
           Command="{x:Bind ViewModel.AdvancedBulkMoveCommand}" Content="Advanced" />
   ```
 
-- **Dialog mechanism:** Use a `ContentDialog` subclass (consistent with
-  `View_Scanner_ManageItemsDialog` and the repo dialog guidance):
-  - Set `XamlRoot` from `IService_Window.GetXamlRoot()`.
-  - Apply `Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot)`.
-  - The two-step wizard can be one dialog whose content `Visibility` toggles between a
-    Step 1 panel and a Step 2 panel, or two chained dialogs. A single dialog with an internal
-    step state is simpler and matches the "contents of the modal window should then change"
-    requirement.
-  - Keep validation/persistence in the ViewModel/service layers; the dialog returns a
-    snapshot (cloned rows) via a method like `GetResultRows()`.
+- **Page mechanism:** Host the wizard as a full page (more room than a modal):
+  - The page lives in the scanner module host (`View_Scanner_Main`), so it gets the standard
+    header/back workflow automatically.
+  - Step 1 / Step 2 panels toggle via `IsStepTwo` bound to
+    `Converter_BooleanToVisibility` / `Converter_InverseBooleanToVisibility`.
+  - The step header text and the primary button label/icon (`Next` → `Save`) are bound to
+    `StepHeaderText`, `NextButtonText`, and `NextButtonIcon` observables.
+  - The page ViewModel keeps validation/persistence orchestration; the workbench stages the
+    returned snapshot (cloned rows via `GetDestinations()`).
 
 ### Data & SQL Architecture
 
@@ -112,30 +135,32 @@ Last Updated: 2026-08-24
 
 ### Step-by-Step Implementation Map
 
-1. **ViewModel — Step 1 state:** Add `AdvancedBulkMoveCommand`. On execution, open the dialog
-   and load parts via `_validationService` → `GetMaterialAvailabilityCurrentStockAsync(
-   selectedFromLocation, null, warehouse)`.
+1. **ViewModel — Step 1 state:** `AdvancedBulkMoveCommand` (workbench) checks for an active
+   session and calls `_navigationService.ShowAdvancedBulkMove()`. The page ViewModel loads
+   parts via `_validationService.GetPartsInLocationAsync(location, warehouse)`.
    - Map each returned `Model_InforVisualMaterialLocationRow` into a lightweight selectable row
-     (e.g. `PartId`, `PartDescription`, `Quantity`, `bool IsSelected`, `int EntryCount = 1`).
-   - The dialog binds the checkbox column to `IsSelected` and a `NumberBox` to `EntryCount`
+     (`Model_ScannerBulkMovePart`: `PartId`, `PartDescription`, `Quantity`, `IsSelected`,
+     `EntryCount = 1`).
+   - The page binds the checkbox column to `IsSelected` and a `NumberBox` to `EntryCount`
      (default `1`), next to the checkbox column as required.
-2. **ViewModel — Step 2 state:** On Step 1 Save, keep only rows where `IsSelected`. Build a
+2. **ViewModel — Step 2 state:** On Step 1 Next, keep only rows where `IsSelected`. Build a
    destination-row list by expanding each selected part `EntryCount` times:
    - Example: `PartA`, quantity `5000`, `EntryCount = 2` → two destination rows
      (`PartA → ?`, `PartA → ?`). Each row carries `PartId`, the shared `FromLocation`, and an
      editable `ToLocation` (blank by default) plus an editable per-row quantity (initialize to
      `quantity / EntryCount`, e.g. `2500` / `2500`, so the split is meaningful by default).
    - Add a `NumberBox`/`TextBox` per destination row so the user can adjust each split.
-3. **ViewModel — Save back:** On Step 2 Save, transform each destination row into a
+3. **ViewModel — Save back:** On Step 2 Save, the page sets
+   `_navigationService.PendingBulkMoveDestinations = GetDestinations()` (cloned rows) and calls
+   `ShowWorkbench()`. The workbench observes the navigation change and runs
+   `StageAdvancedBulkMoveDestinationsAsync`, transforming each destination row into a
    `Model_ScannerBatchItem`:
    - `PayloadPartId = PartId`
    - `PayloadFromWarehouse = warehouse`, `PayloadFromLocation = FromLocation`
    - `PayloadToWarehouse = warehouse`, `PayloadToLocation = entered ToLocation`
    - `PayloadQuantity = entered quantity`
-   - Reuse the existing add/persist path (like `AddDraftItemAsync`) so rows flow into
-     `SessionItems`/`CurrentSession.Items` and are validated/persisted consistently, or append
-     to `CurrentSession.Items` and persist via `ReplaceSessionItemsAsync` (the Manage Items
-     pattern).
-4. **View:** Add the Advanced button; wire `AdvancedBulkMoveCommand`. The dialog toggles its
-   internal Step 1 / Step 2 content and returns the final cloned rows for the ViewModel to
-   commit. Do not mutate `SessionItems` from inside the dialog — return snapshots only.
+   - It appends to `CurrentSession.Items`, validates each row via `ValidateNewItemAsync`, and
+     persists via `ReplaceSessionItemsAsync` (the Manage Items pattern).
+4. **View:** Add the Advanced button; wire `AdvancedBulkMoveCommand`. The page toggles its
+   internal Step 1 / Step 2 content and returns the final cloned rows for the workbench to
+   commit. Do not mutate `SessionItems` from inside the page — return snapshots only.

@@ -8,4 +8,5 @@ public enum Enum_ScannerPage
     Workbench,
     History,
     Settings,
+    AdvancedBulkMove,
 }

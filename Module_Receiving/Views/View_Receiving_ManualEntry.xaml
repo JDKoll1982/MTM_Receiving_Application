@@ -321,6 +321,7 @@
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Center"
                                 BorderThickness="0"
+                                GotFocus="PackagesPerLoadTextBox_GotFocus"
                                 Text="{Binding PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             />
                         </DataTemplate>

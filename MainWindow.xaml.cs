@@ -254,10 +254,15 @@ namespace MTM_Receiving_Application
                 rootElement.KeyDown += (s, e) => _sessionManager.UpdateLastActivity();
             }
 
-            // Subscribe to theme changes to update title bar colors
+            // Subscribe to theme changes to update the title bar colors and the
+            // theme-aware module accent borders in the header.
             if (Content is FrameworkElement contentElement)
             {
-                contentElement.ActualThemeChanged += (s, e) => UpdateTitleBarColors();
+                contentElement.ActualThemeChanged += (s, e) =>
+                {
+                    UpdateTitleBarColors();
+                    ApplyHeaderAccent(ContentFrame.Content?.GetType());
+                };
             }
 
             this.Activated += MainWindow_Activated;
@@ -2151,10 +2156,48 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
-        /// Colors the shell header with the active module's accent (Receiving,
-        /// Dunnage, or Volvo). Pages outside those modules keep the neutral theme
-        /// header. Driven by the page type so settings pages for a module match
-        /// their module too.
+        /// Namespace prefix to module accent brush keys. The generic
+        /// Module_Settings prefix is checked last so settings pages for a
+        /// specific module (Receiving, Dunnage, Volvo, Reporting) resolve to
+        /// their own module color.
+        /// </summary>
+        private static readonly (string NamespacePrefix, string FillKey, string BorderKey, string HighlightKey)[]
+            ModuleAccentMap =
+            [
+                ("MTM_Receiving_Application.Module_Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Volvo", "VolvoAccentBrush", "VolvoAccentBorderBrush", "VolvoAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Volvo", "VolvoAccentBrush", "VolvoAccentBorderBrush", "VolvoAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Reporting", "ReportingAccentBrush", "ReportingAccentBorderBrush", "ReportingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Reporting", "ReportingAccentBrush", "ReportingAccentBorderBrush", "ReportingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_ShipRec_Tools", "ShipRecAccentBrush", "ShipRecAccentBorderBrush", "ShipRecAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Reprint", "ReprintAccentBrush", "ReprintAccentBorderBrush", "ReprintAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Scanner", "ScannerAccentBrush", "ScannerAccentBorderBrush", "ScannerAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings", "SettingsAccentBrush", "SettingsAccentBorderBrush", "SettingsAccentHighlightBrush"),
+            ];
+
+        /// <summary>
+        /// Resolved accent brushes for a module: the accent fill used as the
+        /// header background, the theme-aware border brush key used for the user
+        /// card and the initials circle, and the fixed highlight brush key used
+        /// for the header card border on top of the accent fill.
+        /// </summary>
+        private sealed record ModuleAccent(
+            SolidColorBrush? Fill,
+            string BorderKey,
+            string HighlightKey
+        );
+
+        /// <summary>
+        /// Colors the shell header with the active module's accent. The header
+        /// card background becomes the module fill (title and back icon turn
+        /// white), the header card border becomes a fixed accent highlight, and
+        /// the user card and initials circle receive a theme-aware accent border
+        /// so they stay visible in light and dark mode. Pages outside the
+        /// branded modules keep the neutral theme header. Driven by the page
+        /// type so settings pages for a module match their module too.
         /// </summary>
         private void ApplyHeaderAccent(Type? pageType)
         {
@@ -2163,10 +2206,14 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            var accentBrush = GetModuleAccentBrush(pageType);
-            if (accentBrush is not null)
+            var accent = GetModuleAccent(pageType);
+            if (accent?.Fill is not null)
             {
-                HeaderBarBorder.Background = accentBrush;
+                HeaderBarBorder.Background = accent.Fill;
+                HeaderBarBorder.BorderBrush =
+                    ResolveAppBrush(accent.HighlightKey) ?? accent.Fill;
+                HeaderBarBorder.BorderThickness = new Thickness(2);
+
                 PageTitleTextBlock.Foreground = new SolidColorBrush(Colors.White);
                 HeaderBackButton.BorderBrush = new SolidColorBrush(
                     ColorHelper.FromArgb(64, 255, 255, 255)
@@ -2176,66 +2223,149 @@ namespace MTM_Receiving_Application
                     HeaderBackButtonIcon.Foreground = new SolidColorBrush(Colors.White);
                 }
 
+                ApplyUserCardAccentBorder(ResolveThemeAwareBrush(accent.BorderKey));
                 return;
             }
 
             HeaderBarBorder.Background = ResolveAppBrush("LayerFillColorDefaultBrush");
+            HeaderBarBorder.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            HeaderBarBorder.BorderThickness = new Thickness(1);
             PageTitleTextBlock.ClearValue(TextBlock.ForegroundProperty);
             HeaderBackButton.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
             HeaderBackButtonIcon?.ClearValue(IconElement.ForegroundProperty);
+            ApplyUserCardNeutralBorder();
         }
 
         /// <summary>
-        /// Maps a page type to its module brand accent brush, or null when the
-        /// page does not belong to a branded module.
+        /// Applies the module accent border to the user card and the initials
+        /// circle. Falls back to the theme card stroke when the theme-aware
+        /// brush cannot be resolved.
         /// </summary>
-        private static SolidColorBrush? GetModuleAccentBrush(Type? pageType)
+        private void ApplyUserCardAccentBorder(SolidColorBrush? accentBorder)
+        {
+            var borderBrush = accentBorder ?? ResolveAppBrush("CardStrokeColorDefaultBrush");
+            if (UserMenuButton is not null)
+            {
+                UserMenuButton.BorderBrush = borderBrush;
+                UserMenuButton.BorderThickness = new Thickness(2);
+            }
+
+            if (UserPictureBorder is not null)
+            {
+                UserPictureBorder.BorderBrush = borderBrush;
+                UserPictureBorder.BorderThickness = new Thickness(2);
+            }
+        }
+
+        /// <summary>
+        /// Restores the neutral theme card stroke on the user card and the
+        /// initials circle for non-branded pages.
+        /// </summary>
+        private void ApplyUserCardNeutralBorder()
+        {
+            var borderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            if (UserMenuButton is not null)
+            {
+                UserMenuButton.BorderBrush = borderBrush;
+                UserMenuButton.BorderThickness = new Thickness(1);
+            }
+
+            if (UserPictureBorder is not null)
+            {
+                UserPictureBorder.BorderBrush = borderBrush;
+                UserPictureBorder.BorderThickness = new Thickness(1);
+            }
+        }
+
+        /// <summary>
+        /// Resolves a theme-aware accent border brush from the app theme
+        /// dictionaries. The Light theme holds the dark brand accents (visible
+        /// on light surfaces) and the Dark theme holds lighter tints (visible on
+        /// dark surfaces), so the header borders stay readable in both modes.
+        /// Searches the root dictionary and every merged dictionary because the
+        /// theme dictionaries live inside the merged ModuleAccentBrushes.xaml.
+        /// </summary>
+        private SolidColorBrush? ResolveThemeAwareBrush(string key)
+        {
+            var themeKey = GetThemeKey(
+                (Content as FrameworkElement)?.ActualTheme ?? ElementTheme.Default
+            );
+
+            if (TryResolveThemeBrush(App.Current.Resources, themeKey, key, out var brush))
+            {
+                return brush;
+            }
+
+            foreach (var merged in App.Current.Resources.MergedDictionaries)
+            {
+                if (TryResolveThemeBrush(merged, themeKey, key, out brush))
+                {
+                    return brush;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool TryResolveThemeBrush(
+            ResourceDictionary dictionary,
+            string themeKey,
+            string key,
+            out SolidColorBrush? brush
+        )
+        {
+            brush = null;
+
+            if (dictionary.ThemeDictionaries is not { } themeDictionaries)
+            {
+                return false;
+            }
+
+            if (
+                themeDictionaries.TryGetValue(themeKey, out var themeDictionary)
+                && themeDictionary is ResourceDictionary resourceDictionary
+                && resourceDictionary.TryGetValue(key, out var value)
+                && value is SolidColorBrush solidBrush
+            )
+            {
+                brush = solidBrush;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static string GetThemeKey(ElementTheme theme) =>
+            theme switch
+            {
+                ElementTheme.Dark => "Dark",
+                ElementTheme.Light => "Light",
+                _ => Application.Current.RequestedTheme == ApplicationTheme.Dark
+                    ? "Dark"
+                    : "Light",
+            };
+
+        /// <summary>
+        /// Maps a page type to its module accent brushes, or null when the page
+        /// does not belong to a branded module.
+        /// </summary>
+        private static ModuleAccent? GetModuleAccent(Type? pageType)
         {
             if (pageType?.FullName is not string fullName)
             {
                 return null;
             }
 
-            if (
-                fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Receiving",
-                    StringComparison.Ordinal
-                )
-                || fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Settings.Receiving",
-                    StringComparison.Ordinal
-                )
-            )
+            foreach (var mapping in ModuleAccentMap)
             {
-                return ResolveAppBrush("ReceivingAccentBrush");
-            }
-
-            if (
-                fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Dunnage",
-                    StringComparison.Ordinal
-                )
-                || fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Settings.Dunnage",
-                    StringComparison.Ordinal
-                )
-            )
-            {
-                return ResolveAppBrush("DunnageAccentBrush");
-            }
-
-            if (
-                fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Volvo",
-                    StringComparison.Ordinal
-                )
-                || fullName.StartsWith(
-                    "MTM_Receiving_Application.Module_Settings.Volvo",
-                    StringComparison.Ordinal
-                )
-            )
-            {
-                return ResolveAppBrush("VolvoAccentBrush");
+                if (fullName.StartsWith(mapping.NamespacePrefix, StringComparison.Ordinal))
+                {
+                    return new ModuleAccent(
+                        ResolveAppBrush(mapping.FillKey),
+                        mapping.BorderKey,
+                        mapping.HighlightKey
+                    );
+                }
             }
 
             return null;

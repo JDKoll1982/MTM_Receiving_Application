@@ -18,7 +18,8 @@ Inside `NavigationView.Header` there is a two-row Grid:
 - Row 0: `HeaderBarBorder` (rounded `Border`) containing:
   - `HeaderBackButton` + `HeaderBackButtonIcon` (shared back button, Collapsed by default).
   - `PageTitleTextBlock` (the page title, uses `SubtitleTextBlockStyle`).
-  - `UserMenuButton` with `UserPicture` + `UserDisplayTextBlock` (user card).
+  - `UserMenuButton` with `UserPictureBorder` (circular border around the
+    initials) + `UserPicture` + `UserDisplayTextBlock` (user card).
 - Row 1: `StatusInfoBar` (status notifications).
 
 Only `MainWindow` owns these elements. Views and viewmodels never set
@@ -102,22 +103,40 @@ When no provider is found, the title comes from:
 ## Module Accent Coloring
 
 `ApplyHeaderAccent(Type? pageType)` colors the header to match the active
-module. `GetModuleAccentBrush` maps the page type namespace to a shared brush
-from `Module_Core/Themes/ModuleAccentBrushes.xaml`:
+module. `GetModuleAccent` maps the page type namespace to a shared brush set
+from `Module_Core/Themes/ModuleAccentBrushes.xaml` (fill + theme-aware border +
+fixed highlight):
 
 - `Module_Receiving.*` / `Module_Settings.Receiving.*` → `ReceivingAccentBrush` (`#0B6157`).
 - `Module_Dunnage.*` / `Module_Settings.Dunnage.*` → `DunnageAccentBrush` (`#8A5E00`).
 - `Module_Volvo.*` / `Module_Settings.Volvo.*` → `VolvoAccentBrush` (`#1E4F7A`).
+- `Module_Reporting.*` / `Module_Settings.Reporting.*` → `ReportingAccentBrush` (`#6A1B9A`).
+- `Module_ShipRec_Tools.*` → `ShipRecAccentBrush` (`#37474F`).
+- `Module_Reprint.*` → `ReprintAccentBrush` (`#2E7D32`).
+- `Module_Scanner.*` → `ScannerAccentBrush` (`#B71C1C`).
+- `Module_Settings.*` (core/settings hub and any settings page not claimed by a
+  specific module above) → `SettingsAccentBrush` (`#424242`).
+
+The generic `Module_Settings` prefix is checked **last** so settings namespaces
+that belong to a specific module (Receiving, Dunnage, Volvo, Reporting) resolve
+to that module's own color.
 
 Rules:
 
-- Accent path: `HeaderBarBorder.Background` = accent brush, `PageTitleTextBlock`
-  and `HeaderBackButtonIcon` turn white, back-button border becomes translucent
-  white. The accent brushes are fixed brand colors — reference them with
-  `StaticResource` in XAML, never redefine them.
+- Accent path: `HeaderBarBorder.Background` = accent brush and `PageTitleTextBlock`
+  + `HeaderBackButtonIcon` turn white. The header card border becomes the fixed
+  `*AccentHighlightBrush` (a lighter tint of the module color, visible on the
+  accent fill in both themes) at 2px. The user card (`UserMenuButton`) and the
+  initials circle (`UserPictureBorder`) receive the theme-aware
+  `*AccentBorderBrush` at 2px. The accent brushes are fixed brand colors —
+  reference them with `StaticResource` in XAML, never redefine them.
+- Theme-aware borders: `*AccentBorderBrush` resolves to the dark brand accent in
+  Light theme and a lighter tint in Dark theme, so the user card and initials
+  circle borders stay visible on their neutral fill in both modes. Resolved in
+  code via the app `ThemeDictionaries`; re-applied on `ActualThemeChanged`.
 - Reset path (all other pages): restore `LayerFillColorDefaultBrush` and
-  `CardStrokeColorDefaultBrush`, and clear the title/icon foregrounds with
-  `ClearValue`.
+  `CardStrokeColorDefaultBrush`, reset border thickness to 1px, and clear the
+  title/icon foregrounds with `ClearValue`.
 - **Never set `PageTitleTextBlock.Foreground = null`.** A null local value
   overrides the style's theme foreground and renders the title invisible.
   Use `PageTitleTextBlock.ClearValue(TextBlock.ForegroundProperty)` to restore
@@ -125,6 +144,9 @@ Rules:
   for the back icon).
 - The grey neutral bar is expected for non-module pages; the title must remain
   readable on it.
+- All header text stays readable in both themes: white on the accent fill
+  (title/back icon) and the theme `TextFillColorPrimaryBrush` on the neutral
+  user-card fill (user name).
 
 ## Shared Back Action
 
@@ -178,7 +200,18 @@ application and settings items and restore the return route on exit
 - New module landing pages that change title by context should implement
   `IViewModel_HeaderTitleProvider` and notify `CurrentHeaderTitle`.
 - Use the shared module accent brushes; do not hardcode hex values or duplicate
-  `ReceivingAccentBrush`/`DunnageAccentBrush`/`VolvoAccentBrush` locally.
+  the `*AccentBrush` / `*AccentBorderBrush` / `*AccentHighlightBrush` keys
+  locally.
+- Apply accent borders through `ApplyHeaderAccent` only (single chokepoint);
+  never touch `HeaderBarBorder.BorderBrush`, `UserMenuButton.BorderBrush`, or
+  `UserPictureBorder.BorderBrush` from a view or viewmodel.
+- Keep the header borders theme-aware: the user card and initials circle sit on
+  a neutral fill, so they must use the `*AccentBorderBrush` theme dictionaries
+  (not a fixed brush) or they will disappear in dark mode. The header card
+  border stays fixed (`*AccentHighlightBrush`) because the accent fill behind it
+  does not change with theme.
+- Re-apply the accent on theme changes: `ActualThemeChanged` already re-runs
+  `ApplyHeaderAccent` so live light/dark toggles keep the borders correct.
 - Never assign a null `Foreground` to header text elements; use `ClearValue` or a
   resolved theme brush.
 - Register back actions symmetrically (register when a drill-down becomes active,
@@ -190,10 +223,14 @@ application and settings items and restore the return route on exit
 ## Validation
 
 - `dotnet build MTM_Receiving_Application.csproj -c Debug -p:Platform=x64`
-- Manually verify each module page (Receiving, Dunnage, Volvo + their settings)
-  shows the accent header with white text, and every other page (Scanner,
-  Reprint, Reporting, Ship/Rec Tools, Dashboard, docs) shows the neutral bar with
+- Manually verify each module page (Receiving, Dunnage, Volvo, Reporting,
+  Ship/Rec Tools, Reprint, Scanner + their settings) shows the accent header
+  with white text and the accent borders on the header card, user card, and
+  initials circle, and that Dashboard / Documentation show the neutral bar with
   readable title text.
+- Toggle light/dark theme (Settings → Theme) on a module page and confirm the
+  user-card and initials-circle borders stay visible and the title/user text
+  stays readable in both modes.
 
 ## See Also
 

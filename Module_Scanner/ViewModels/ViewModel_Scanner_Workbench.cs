@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -156,6 +157,23 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         _executionService = executionService;
         _hotkeyService = hotkeyService;
         _windowService = windowService;
+
+        _navigationService.PropertyChanged += OnNavigationChanged;
+    }
+
+    private void OnNavigationChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // When the operator returns from the Advanced Bulk Move page with completed
+        // destination rows, stage them into the current session.
+        if (
+            e.PropertyName == nameof(IService_ScannerNavigation.CurrentPage)
+            && _navigationService.CurrentPage == Enum_ScannerPage.Workbench
+            && _navigationService.PendingBulkMoveDestinations is { Count: > 0 } destinations
+        )
+        {
+            _navigationService.PendingBulkMoveDestinations = null;
+            _ = StageAdvancedBulkMoveDestinationsAsync(destinations);
+        }
     }
 
     [RelayCommand]
@@ -640,7 +658,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task AdvancedBulkMoveAsync()
+    private void AdvancedBulkMove()
     {
         if (CurrentSession is null)
         {
@@ -648,28 +666,19 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        var xamlRoot = _windowService.GetXamlRoot();
-        if (xamlRoot is null)
+        _navigationService.ShowAdvancedBulkMove();
+    }
+
+    private async Task StageAdvancedBulkMoveDestinationsAsync(
+        IReadOnlyList<Model_ScannerBulkMoveDestination> destinations
+    )
+    {
+        if (CurrentSession is null)
         {
-            ShowStatus("Unable to open Advanced bulk move because the window root is unavailable.", InfoBarSeverity.Warning);
+            ShowStatus("Start a session before using Advanced bulk move.", InfoBarSeverity.Warning);
             return;
         }
 
-        var dialog = new View_Scanner_AdvancedMoveDialog(_validationService, NewFromWarehouse)
-        {
-            XamlRoot = xamlRoot,
-        };
-
-        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
-
-        var result = await dialog.ShowAsync();
-        if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-        {
-            ShowStatus("Advanced bulk move closed without changes.", InfoBarSeverity.Informational);
-            return;
-        }
-
-        var destinations = dialog.GetDestinations();
         if (destinations.Count == 0)
         {
             ShowStatus("No destination rows were produced by Advanced bulk move.", InfoBarSeverity.Warning);

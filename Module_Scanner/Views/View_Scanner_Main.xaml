@@ -32,5 +32,11 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsSettingsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <ContentControl
+            x:Name="AdvancedBulkMoveHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsAdvancedBulkMoveVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>
