@@ -260,6 +260,73 @@ public sealed class Service_ScannerContractsTests
         result.Should().Be(expected);
     }
 
+    [Fact]
+    public async Task GetPartsInLocationAsync_ShouldReturnAggregatedParts_WhenLocationHasStock()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync("RECV", null, "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualMaterialLocationRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-A",
+                            PartDescription = "Part A",
+                            WarehouseCode = "002",
+                            LocationId = "RECV",
+                            Quantity = 5000m,
+                        },
+                        new()
+                        {
+                            PartId = "PART-A",
+                            PartDescription = "Part A",
+                            WarehouseCode = "002",
+                            LocationId = "RECV",
+                            Quantity = 500m,
+                        },
+                        new()
+                        {
+                            PartId = "PART-B",
+                            PartDescription = "Part B",
+                            WarehouseCode = "002",
+                            LocationId = "RECV",
+                            Quantity = 0m,
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = await service.GetPartsInLocationAsync("recv", "002");
+
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        var parts = result.Data!.OrderBy(part => part.PartId).ToList();
+        parts.Should().ContainSingle(part => part.PartId == "PART-A");
+        parts
+            .Single(part => part.PartId == "PART-A")
+            .Quantity.Should()
+            .Be(5500m);
+        parts.Should().NotContain(part => part.PartId == "PART-B");
+    }
+
+    [Fact]
+    public async Task GetPartsInLocationAsync_ShouldFail_WhenLocationEmpty()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        var service = new Service_ScannerValidation(inforVisual.Object);
+
+        var result = await service.GetPartsInLocationAsync("  ", "002");
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Location is required.");
+    }
+
     private static Service_ScannerWorkflow CreateWorkflowService()
     {
         const string cs = "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;";
