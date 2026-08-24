@@ -49,6 +49,17 @@ public interface IService_ScannerValidation
 	);
 
 	/// <summary>
+	/// Returns every part that currently holds on-hand stock (quantity &gt; 0) at
+	/// <paramref name="location"/> in <paramref name="warehouseCode"/>. Backs the Advanced
+	/// bulk-move dialog Step 1 list so the operator can select parts to move out of a location.
+	/// </summary>
+	Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetPartsInLocationAsync(
+		string location,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	);
+
+	/// <summary>
 	/// Applies the shared warehouse-location autocomplete formatting (dash rule) to
 	/// <paramref name="location"/> — for example "VA101" becomes "V-A1-01" and "R5"
 	/// becomes "R-05". Returns the uppercased input when no rule applies.

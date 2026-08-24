@@ -345,6 +345,63 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 		);
 	}
 
+	public async Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetPartsInLocationAsync(
+		string location,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		var canonicalLocation = location?.Trim().ToUpperInvariant() ?? string.Empty;
+		if (string.IsNullOrWhiteSpace(canonicalLocation))
+		{
+			return Model_Dao_Result_Factory.Failure<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+				"Location is required."
+			);
+		}
+
+		var canonicalWarehouse = string.IsNullOrWhiteSpace(warehouseCode)
+			? "002"
+			: warehouseCode.Trim().ToUpperInvariant();
+
+		var stockResult = await _inforVisualService.GetMaterialAvailabilityCurrentStockAsync(
+			canonicalLocation,
+			partId: null,
+			canonicalWarehouse
+		);
+		if (!stockResult.Success || stockResult.Data is null)
+		{
+			return Model_Dao_Result_Factory.Failure<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+				stockResult.ErrorMessage,
+				stockResult.Exception
+			);
+		}
+
+		// Aggregate per-part stock at the requested location and keep only parts with on-hand.
+		var partsAtLocation = stockResult.Data
+			.Where(row =>
+				row.Quantity > 0
+				&& string.IsNullOrWhiteSpace(row.PartId) is false
+			)
+			.GroupBy(row => row.PartId.Trim(), StringComparer.OrdinalIgnoreCase)
+			.Select(group => new Model_InforVisualMaterialLocationRow
+			{
+				PartId = group.First().PartId.Trim(),
+				PartDescription = group.First().PartDescription,
+				WarehouseCode = canonicalWarehouse,
+				LocationId = canonicalLocation,
+				Quantity = group.Sum(row => row.Quantity),
+				CommittedQuantity = group.Sum(row => row.CommittedQuantity),
+			})
+			.OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		return Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+			partsAtLocation
+		);
+	}
+
 	private async Task<Model_Dao_Result<Model_ScannerItemValidationResult>> ValidateAgainstInforVisualAsync(
 		Model_ScannerItemValidationRequest request,
 		decimal quantity,

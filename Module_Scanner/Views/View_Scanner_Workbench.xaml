@@ -231,15 +231,22 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Items To Send" />
                                 <Button
                                     Grid.Column="1"
                                     Style="{StaticResource ScannerActionButtonStyle}"
+                                    Command="{x:Bind ViewModel.AdvancedBulkMoveCommand}"
+                                    Content="Advanced" />
+                                <Button
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    Style="{StaticResource ScannerActionButtonStyle}"
                                     Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
                                     Content="Manage Items" />
                                 <Button
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Margin="8,0,0,0"
                                     Style="{StaticResource ScannerActionButtonStyle}"
                                     Click="RemoveSelectedItemButton_Click"

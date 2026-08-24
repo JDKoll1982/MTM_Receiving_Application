@@ -640,6 +640,122 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
+    private async Task AdvancedBulkMoveAsync()
+    {
+        if (CurrentSession is null)
+        {
+            ShowStatus("Start a session before using Advanced bulk move.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot is null)
+        {
+            ShowStatus("Unable to open Advanced bulk move because the window root is unavailable.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var dialog = new View_Scanner_AdvancedMoveDialog(_validationService, NewFromWarehouse)
+        {
+            XamlRoot = xamlRoot,
+        };
+
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
+
+        var result = await dialog.ShowAsync();
+        if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        {
+            ShowStatus("Advanced bulk move closed without changes.", InfoBarSeverity.Informational);
+            return;
+        }
+
+        var destinations = dialog.GetDestinations();
+        if (destinations.Count == 0)
+        {
+            ShowStatus("No destination rows were produced by Advanced bulk move.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var sequence = CurrentSession.Items.Count + 1;
+            foreach (var destination in destinations)
+            {
+                var item = new Model_ScannerBatchItem
+                {
+                    SessionId = CurrentSession.SessionId,
+                    SequenceNumber = sequence++,
+                    PayloadPartId = destination.PartId,
+                    PayloadFromWarehouse = destination.FromWarehouse,
+                    PayloadFromLocation = destination.FromLocation,
+                    PayloadToWarehouse = destination.FromWarehouse,
+                    PayloadToLocation = destination.ToLocation,
+                    PayloadQuantity = destination.Quantity,
+                };
+
+                var validation = await _validationService.ValidateNewItemAsync(
+                    new Model_ScannerItemValidationRequest
+                    {
+                        SessionId = CurrentSession.SessionId,
+                        ItemId = item.ItemId,
+                        PartId = item.PayloadPartId,
+                        FromWarehouse = item.PayloadFromWarehouse,
+                        FromLocation = item.PayloadFromLocation,
+                        ToWarehouse = item.PayloadToWarehouse,
+                        ToLocation = item.PayloadToLocation,
+                        Quantity = item.PayloadQuantity,
+                    }
+                );
+
+                if (validation.Success && validation.Data is not null)
+                {
+                    item.ApplyValidationResult(validation.Data);
+                }
+                else
+                {
+                    item.ValidationState = Enum_ScannerValidationState.Invalid;
+                    item.ValidationMessage = "Validation unavailable.";
+                    item.ValidationNotes =
+                        string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                            ? "Validation failed due to service error."
+                            : validation.ErrorMessage;
+                }
+
+                CurrentSession.Items.Add(item);
+            }
+
+            CurrentSession.RecalculateItemCounters();
+            CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
+            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+
+            var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+            if (!persist.Success || persist.Data is null)
+            {
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(persist.ErrorMessage)
+                        ? "Advanced bulk move rows were added locally but could not be saved."
+                        : persist.ErrorMessage,
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            CurrentSession = persist.Data;
+            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+            SelectedSessionItem = SessionItems.LastOrDefault();
+            ShowStatus(
+                $"Advanced bulk move added {destinations.Count} item(s) to the draft session.",
+                InfoBarSeverity.Success
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task CheckAllAsync()
     {
         if (CurrentSession is null)
