@@ -17,10 +17,10 @@ direct Win32 `SendInput` (no NuGet dep); Scanner nav item enabled only for devel
 - `Contracts/IService_ScannerInputEngine.cs`, `Services/Service_ScannerInputEngine.cs` — SendInput,
   KEYEVENTF_UNICODE text, nav keys, chord, foreground helpers.
 - `Contracts/IService_ScannerHotkey.cs`, `Services/Service_ScannerHotkey.cs` — RegisterHotKey +
-  WM_HOTKEY via SetWindowSubclass; default chords Ctrl+Alt+M (send) / Ctrl+Alt+N (stop);
+  WM_HOTKEY via SetWindowSubclass; default send chord Ctrl+Alt+M (stop hotkey removed 2026-08-24);
   public `TryParseChord` (requires ≥1 modifier).
 - `Contracts/IService_ScannerExecution.cs`, `Services/Service_ScannerExecution.cs` —
-  `SendNextItemAsync`/`SendAllAsync`/`SendSpecificItemAsync`/`RequestStopAsync`/`ClearTargetFormAsync`;
+  `SendNextItemAsync`/`SendSpecificItemAsync`/`ClearTargetFormAsync` (Send All and Stop After This removed 2026-08-24);
   verify foreground by process name; send field order Part→Qty→FromWH→FromLoc→ToWH→ToLoc with tab counts
   1→2→1→5→1 (matching the visible VMINVENT "Inventory Transfers" screen tab path — see
   `Helper_ScannerSequence.BuildFieldSequence`);
@@ -30,9 +30,9 @@ direct Win32 `SendInput` (no NuGet dep); Scanner nav item enabled only for devel
 - `Helpers/Helper_ScannerAccess.cs` (dev gate: FullName "John Koll" | usernames jkoll/johnk | Department "Developer")
 
 ## Modified files
-- `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` — Send/SendAll/Stop now call execution
+- `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` — Send now calls execution
   service; `ResolveActiveProfileAsync` (default profile, null-safe fallback); hotkey subscribe via
-  `Activate()`/`Deactivate()`; `RefreshSessionAfterExecution`.
+  `Activate()`/`Deactivate()`; `RefreshSessionAfterExecution` (Send All / Stop After This removed 2026-08-24).
 - `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` — Loaded→`ViewModel.Activate()`, Unloaded→`Deactivate()`.
 - `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs` — registered the 3 new services (singletons).
 - `MainWindow.xaml.cs` — `ApplyScannerNavigationGate()` (dev-only enable of Scanner item) +
@@ -47,7 +47,7 @@ direct Win32 `SendInput` (no NuGet dep); Scanner nav item enabled only for devel
 - Full suite: 9 pre-existing failures in OTHER modules (Dunnage WinRT, Reporting, InforVisual, casing, CopilotForms) — unrelated.
 
 ## Next-phase candidates (do these next)
-1. **Configurable hotkey chords per profile** — read `Model_ScannerProfile.SendShortcutChord`/`StopShortcutChord`
+1. **Configurable send hotkey chord per profile** — read `Model_ScannerProfile.SendShortcutChord`
    in Settings; re-register hotkeys when profile changes (currently hardcoded in `MainWindow.InitializeScannerHotkeys`).
 2. **Populate `SessionItemId`** — make `sp_Receiving_ScannerItem_Upsert` return the inserted id so run-history
    recording works (currently best-effort/skipped when null).

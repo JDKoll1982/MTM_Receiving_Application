@@ -1,6 +1,6 @@
 # Scanner ViewModel
 
-Last Updated: 2026-08-20
+Last Updated: 2026-08-24
 
 This view-model is the operational center for preparing items, validating data, and sending them to inventory.
 
@@ -8,7 +8,7 @@ This view-model is the operational center for preparing items, validating data, 
 
 - manage the active session and batch items collection
 - expose item editing, ordering, and validation commands
-- trigger send-next and send-all operations
+- trigger send-next (manual, one item at a time) operations
 - present progress and partial-send state to the user
 
 ## Current Implementation State
@@ -34,7 +34,7 @@ This view-model is the operational center for preparing items, validating data, 
 - CurrentRunMessage
 - CurrentRunSeverity
 - SentCount, FailedCount, PendingCount
-- CanSendNext, CanSendBatch, CanStop
+- CanSendNext
 - LastRunSummary
 - ItemValidationSummaryMessage
 - HasInvalidItems
@@ -51,8 +51,6 @@ This view-model is the operational center for preparing items, validating data, 
 - MoveItemUp and MoveItemDown
 - CheckAll
 - SendNext
-- SendAll (formerly SendBatchCycle)
-- StopAfterThis (formerly StopAfterCurrentCycle)
 - RetryFailedItem
 - ClearHistory
 
@@ -62,8 +60,7 @@ This view-model is the operational center for preparing items, validating data, 
 - AddDraftItemAsync validates new items and stages them into the active session without blocking the workflow when validation returns warnings or issues.
 - BuildRunSnapshotAsync creates the run snapshot and updates the current session status from the workflow service response.
 - CheckAllAsync revalidates all staged items and refreshes status/notes summaries.
-- SendNextAsync and SendAllAsync transition eligible items into sent state and update counters and session status.
-- StopAfterThisAsync records a stop request for the current batch.
+- SendNextAsync transitions eligible items into sent state and updates counters and session status.
 - ClearHistoryAsync clears the active workbench UI state and ExportAsync writes the current batch to a text export.
 - ManageItemsDialogAsync opens the batch-edit dialog, allows add/duplicate/reorder/delete actions, and persists the reordered session back through the workflow service.
 - GetFromInventoryLocationsAsync returns every warehouse location that currently holds stock (quantity > 0) for the entered part, scoped to the From warehouse, via the validation service. It backs the From-location inventory picker shown when the typed source location does not resolve.

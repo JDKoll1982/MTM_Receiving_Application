@@ -114,14 +114,18 @@
                                     HorizontalContentAlignment="Stretch"
                                     IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
                                     <Expander.Header>
-                                        <Grid
-                                            Padding="12"
-                                            HorizontalAlignment="Stretch"
-                                            RowSpacing="8">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
+                                        <Border
+                                            BorderBrush="{StaticResource VolvoAccentBrush}"
+                                            BorderThickness="4,0,0,0"
+                                            CornerRadius="8,0,0,8">
+                                            <Grid
+                                                Padding="12"
+                                                HorizontalAlignment="Stretch"
+                                                RowSpacing="8">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
 
                                             <Grid Grid.Row="0" ColumnSpacing="12">
                                                 <Grid.ColumnDefinitions>
@@ -186,6 +190,7 @@
                                                     Tag="{x:Bind}" />
                                             </Grid>
                                         </Grid>
+                                        </Border>
                                     </Expander.Header>
 
                                     <Grid

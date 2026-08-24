@@ -21,7 +21,6 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 	private const uint ModNoRepeat = 0x4000;
 
 	private const int HotkeySendId = 0x4D54; // "MT"
-	private const int HotkeyStopId = 0x4D55; // "MU"
 
 	private static readonly SubclassProcDelegate _subclassProcedure = SubclassProc;
 	private static Service_ScannerHotkey? _activeInstance;
@@ -31,11 +30,10 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 	private bool _isRegistered;
 
 	public event EventHandler? SendShortcutPressed;
-	public event EventHandler? StopShortcutPressed;
 
 	public bool IsRegistered => _isRegistered;
 
-	public bool TryRegister(IntPtr hwnd, string sendChord, string stopChord)
+	public bool TryRegister(IntPtr hwnd, string sendChord)
 	{
 		Unregister();
 
@@ -49,21 +47,10 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 			return false;
 		}
 
-		if (!TryParseChord(stopChord, out var stopModifiers, out var stopKey))
-		{
-			return false;
-		}
-
 		_hwnd = hwnd;
 
-		if (
-			!RegisterHotKey(hwnd, HotkeySendId, sendModifiers | ModNoRepeat, sendKey)
-			|| !RegisterHotKey(hwnd, HotkeyStopId, stopModifiers | ModNoRepeat, stopKey)
-		)
+		if (!RegisterHotKey(hwnd, HotkeySendId, sendModifiers | ModNoRepeat, sendKey))
 		{
-			// Roll back any partial registration so callers never observe a half-registered state.
-			UnregisterHotKey(hwnd, HotkeySendId);
-			UnregisterHotKey(hwnd, HotkeyStopId);
 			_hwnd = IntPtr.Zero;
 			return false;
 		}
@@ -80,7 +67,6 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 		if (!_subclassInstalled)
 		{
 			UnregisterHotKey(hwnd, HotkeySendId);
-			UnregisterHotKey(hwnd, HotkeyStopId);
 			_hwnd = IntPtr.Zero;
 			return false;
 		}
@@ -101,7 +87,6 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 		if (_hwnd != IntPtr.Zero)
 		{
 			UnregisterHotKey(_hwnd, HotkeySendId);
-			UnregisterHotKey(_hwnd, HotkeyStopId);
 			_hwnd = IntPtr.Zero;
 		}
 
@@ -243,10 +228,6 @@ public sealed class Service_ScannerHotkey : IService_ScannerHotkey
 				if (id == HotkeySendId)
 				{
 					instance.SendShortcutPressed?.Invoke(instance, EventArgs.Empty);
-				}
-				else if (id == HotkeyStopId)
-				{
-					instance.StopShortcutPressed?.Invoke(instance, EventArgs.Empty);
 				}
 			}
 		}

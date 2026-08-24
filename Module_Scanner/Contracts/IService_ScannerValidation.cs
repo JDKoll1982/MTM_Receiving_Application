@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,4 +54,21 @@ public interface IService_ScannerValidation
 	/// becomes "R-05". Returns the uppercased input when no rule applies.
 	/// </summary>
 	string FormatLocation(string location);
+
+	/// <summary>
+	/// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
+	/// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
+	/// quantity) was recorded at or after <paramref name="afterUtc"/>.
+	/// Polled by the scanner workbench to auto-confirm a send instead of asking "Saved?".
+	/// </summary>
+	Task<Model_Dao_Result<bool>> TransferSavedSinceAsync(
+		string partId,
+		string fromWarehouse,
+		string fromLocation,
+		string toWarehouse,
+		string toLocation,
+		decimal quantity,
+		DateTime afterUtc,
+		CancellationToken cancellationToken = default
+	);
 }

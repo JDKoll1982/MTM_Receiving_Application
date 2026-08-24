@@ -1,6 +1,6 @@
 # Scanner View Bindings Reference
 
-Last Updated: 2026-07-21
+Last Updated: 2026-08-24
 
 This document defines the required x:Bind map for scanner views and is used as the implementation baseline for Step 5.
 
@@ -30,12 +30,12 @@ Source ViewModel: ViewModel_Scanner_Workbench
 
 Session control bindings:
 
-- Owner user id input: ViewModel.OwnerUserId (TwoWay)
-- Owner display name input: ViewModel.OwnerDisplayName (TwoWay)
-- Target window title input: ViewModel.AppWindowTitleSnapshot (TwoWay)
-- Session status indicator visibility: ViewModel.HasActiveSession
-- Start draft command: ViewModel.StartDraftSessionCommand
-- Build run snapshot command: ViewModel.BuildRunSnapshotCommand
+- Owner user id input: ViewModel.OwnerUserId (TwoWay) — removed from workbench UI 2026-08-24; value still populated by ViewModel/session start
+- Owner display name input: ViewModel.OwnerDisplayName (TwoWay) — removed from workbench UI 2026-08-24; value still populated by ViewModel/session start
+- Target window title input: ViewModel.AppWindowTitleSnapshot (TwoWay) — removed from workbench UI 2026-08-24; value still captured by ViewModel
+- Session status indicator visibility: ViewModel.HasActiveSession — removed from workbench UI 2026-08-24
+- Start draft command: ViewModel.StartDraftSessionCommand (bottom action bar, right of Export)
+- Build run snapshot command: ViewModel.BuildRunSnapshotCommand (bottom action bar, right of Start Draft)
 
 Draft item entry bindings:
 
@@ -63,7 +63,7 @@ Workbench detail and control bindings:
 - Manage items command: ViewModel.ManageItemsDialogCommand
 - Selected item detail fields: SelectedSessionItem.PayloadPartId, PayloadFromWarehouse, PayloadFromLocation, PayloadToWarehouse, PayloadToLocation, ValidationNotes
 - Progress counters: CurrentSession.SentItems, CurrentSession.FailedItems, CurrentSession.WaitingItems
-- Send control commands: ViewModel.CheckAllCommand, SendNextCommand, SendAllCommand, StopAfterThisCommand, ClearHistoryCommand, ExportCommand
+- Send control commands: ViewModel.CheckAllCommand, SendNextCommand, ClearHistoryCommand, ExportCommand
 
 Bottom navigation bindings:
 
@@ -125,7 +125,6 @@ Profile editor bindings:
 - Popup timeout: ViewModel.PopupTimeoutMs (TwoWay)
 - Popup close timeout: ViewModel.PopupCloseTimeoutMs (TwoWay)
 - Send hotkey chord: ViewModel.SendShortcutChord (TwoWay)
-- Stop hotkey chord: ViewModel.StopShortcutChord (TwoWay)
 - Allow advanced timing: ViewModel.AllowAdvancedTiming (TwoWay)
 
 Profile command bindings:

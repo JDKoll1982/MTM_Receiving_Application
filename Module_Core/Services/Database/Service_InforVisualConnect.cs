@@ -1105,6 +1105,41 @@ public class Service_InforVisualConnect : IService_InforVisual
         return await _dao.LocationExistsAsync(locationId, warehouseCode);
     }
 
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<bool>> ScannerTransferExistsAsync(
+        string partId,
+        string fromWarehouse,
+        string fromLocation,
+        string toWarehouse,
+        string toLocation,
+        decimal quantity,
+        DateTime afterUtc
+    )
+    {
+        if (string.IsNullOrWhiteSpace(partId))
+            return Model_Dao_Result_Factory.Failure<bool>("Part ID cannot be empty");
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Simulating scanner transfer lookup for part: {partId}"
+            );
+            // In mock mode there is no live ERP to confirm against; treat the transfer as
+            // recorded so the scanner auto-confirm flow can be exercised end to end.
+            return Model_Dao_Result_Factory.Success(true);
+        }
+
+        return await _dao.ScannerTransferExistsAsync(
+            partId,
+            fromWarehouse,
+            fromLocation,
+            toWarehouse,
+            toLocation,
+            quantity,
+            afterUtc
+        );
+    }
+
     public async Task<
         Model_Dao_Result<List<Model_InforVisualMaterialLocationRow>>
     > GetMaterialAvailabilityCurrentStockAsync(

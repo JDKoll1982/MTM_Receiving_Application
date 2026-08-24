@@ -178,7 +178,7 @@
                             </StackPanel>
 
                             <TextBlock
-                                Foreground="{ThemeResource SystemAccentColor}"
+                                Foreground="{StaticResource ReceivingAccentBrush}"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind ViewModel.PackageType, Mode=OneWay}" />
                         </StackPanel>

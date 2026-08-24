@@ -11,9 +11,38 @@
 
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_InverseBooleanToVisibility x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:Converter_DecimalToString x:Key="DecimalToStringConverter" />
+        <converters:Converter_DateTimeToString x:Key="DateTimeToStringConverter" />
+
+        <!--  Removes the default 40px row height and keeps content aligned with the column headers.  -->
+        <Style x:Key="ReprintHistoryItemContainerStyle" TargetType="ListViewItem">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
     </Page.Resources>
 
-    <Grid Padding="20,18,20,20" RowSpacing="12">
+    <Grid x:Name="RootGrid" Padding="20,18,20,20" RowSpacing="12">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReprintModuleAdaptiveStates">
+                <!--  Default (narrow) layout  -->
+                <VisualState x:Name="ReprintModuleNarrowState" />
+                <!--  Wider windows get more breathing room  -->
+                <VisualState x:Name="ReprintModuleWideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1000" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootGrid.Padding" Value="28,22,28,24" />
+                        <Setter Target="RootGrid.RowSpacing" Value="16" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -51,16 +80,20 @@
                     Width="34"
                     Height="34"
                     Padding="0"
+                    AutomationProperties.Name="More date ranges"
                     Command="{x:Bind ViewModel.ToggleDatePresetsCommand}"
                     ToolTipService.ToolTip="More date ranges">
                     <FontIcon
                         FontSize="12"
                         Glyph="{x:Bind ViewModel.DatePresetsToggleGlyph, Mode=OneWay}" />
                 </Button>
+
+                <!--  Presets are collapsed by default, so defer their creation with x:Load.  -->
                 <StackPanel
+                    x:Name="DatePresetsPanel"
+                    x:Load="{x:Bind ViewModel.DatePresetsExpanded, Mode=OneWay}"
                     Orientation="Horizontal"
-                    Spacing="6"
-                    Visibility="{x:Bind ViewModel.DatePresetsExpanded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    Spacing="6">
                     <Button Content="Today" Command="{x:Bind ViewModel.LoadTodayCommand}" />
                     <Button Content="Yesterday" Command="{x:Bind ViewModel.LoadYesterdayCommand}" />
                     <Button Content="Week" Command="{x:Bind ViewModel.LoadThisWeekCommand}" />
@@ -77,10 +110,12 @@
                 SelectedItem="{x:Bind ViewModel.SelectedSearchBy, Mode=TwoWay}" />
 
             <TextBox
+                x:Name="SearchBox"
                 Grid.Column="4"
                 Header="Search"
-                PlaceholderText="Type to search history..."
-                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}" />
+                KeyDown="SearchBox_KeyDown"
+                PlaceholderText="Type to search history...  (Enter to search)"
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Button
                 Grid.Column="5"
@@ -91,6 +126,7 @@
             <Button
                 Grid.Column="6"
                 VerticalAlignment="Bottom"
+                AutomationProperties.Name="Pick a part to search by"
                 Click="SearchPickerButton_Click"
                 Content="Pick"
                 ToolTipService.ToolTip="Pick a part from the loaded history to search by" />
@@ -98,7 +134,8 @@
             <Button
                 Grid.Column="7"
                 VerticalAlignment="Bottom"
-                Click="ColumnsButton_Click"
+                AutomationProperties.Name="Choose visible columns"
+                Command="{x:Bind ViewModel.ShowColumnChooserCommand}"
                 ToolTipService.ToolTip="Choose visible columns">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE71D;" />
@@ -114,8 +151,22 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8">
-            <Grid RowDefinitions="Auto,*">
-                <Grid Grid.Row="0" ColumnSpacing="8" Padding="8,6" Background="{ThemeResource LayerFillColorDefaultBrush}">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <!--  Legend for rows already queued for reprint  -->
+                <InfoBar
+                    Grid.Row="0"
+                    IsClosable="True"
+                    IsOpen="{x:Bind ViewModel.HasAlreadyQueuedRows, Mode=OneWay}"
+                    Message="Rows shown in red are already queued for reprint and can't be selected again."
+                    Severity="Informational"
+                    Title="Already queued" />
+
+                <!--  Column headers  -->
+                <Grid
+                    Grid.Row="1"
+                    Padding="8,6"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="36" />
                         <ColumnDefinition Width="*" />
@@ -123,58 +174,108 @@
                         <ColumnDefinition Width="90" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="" />
                     <TextBlock x:Name="DateHeader" Grid.Column="1" FontWeight="SemiBold" Text="Date" />
                     <TextBlock x:Name="PartHeader" Grid.Column="2" FontWeight="SemiBold" Text="Part" />
-                    <TextBlock x:Name="QtyHeader" Grid.Column="3" FontWeight="SemiBold" Text="Qty" HorizontalAlignment="Right" />
+                    <TextBlock x:Name="QtyHeader" Grid.Column="3" HorizontalAlignment="Right" FontWeight="SemiBold" Text="Qty" />
                     <TextBlock x:Name="ReferenceHeader" Grid.Column="4" FontWeight="SemiBold" Text="Reference" />
                 </Grid>
 
-                <ListView
-                    x:Name="HistoryListView"
-                    Grid.Row="1"
-                    ItemsSource="{x:Bind ViewModel.HistoryRows, Mode=OneWay}"
-                    SelectionMode="None">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="previewModels:Model_ReprintSelectableRow">
-                            <Border Background="{x:Bind RowBackground}">
-                                <Grid
-                                    ColumnSpacing="8"
-                                    Padding="8,4"
-                                    ColumnDefinitions="36,*,*,90,*">
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
-                                        IsEnabled="{x:Bind CanSelect}"
-                                        Visibility="{x:Bind CanSelect, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind RecordDate}"
-                                        Visibility="{x:Bind ShowDateColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock
-                                        Grid.Column="2"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Part}"
-                                        Visibility="{x:Bind ShowPartColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock
-                                        Grid.Column="3"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Quantity}"
-                                        Visibility="{x:Bind ShowQtyColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock
-                                        Grid.Column="4"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Reference}"
-                                        TextTrimming="CharacterEllipsis"
-                                        Visibility="{x:Bind ShowReferenceColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid Grid.Row="2">
+                    <ListView
+                        x:Name="HistoryListView"
+                        ItemContainerStyle="{StaticResource ReprintHistoryItemContainerStyle}"
+                        ItemsSource="{x:Bind ViewModel.HistoryRows, Mode=OneWay}"
+                        SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="previewModels:Model_ReprintSelectableRow">
+                                <Border Background="{x:Bind RowBackground}">
+                                    <Grid
+                                        Padding="8,4"
+                                        ColumnDefinitions="36,*,*,90,*"
+                                        ColumnSpacing="8">
+                                        <CheckBox
+                                            x:Phase="0"
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            AutomationProperties.Name="{x:Bind Part}"
+                                            IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
+                                            IsEnabled="{x:Bind CanSelect}"
+                                            Visibility="{x:Bind CanSelect, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock
+                                            x:Phase="0"
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind RecordDate, Converter={StaticResource DateTimeToStringConverter}}"
+                                            Visibility="{x:Bind ShowDateColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock
+                                            x:Phase="0"
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind Part}"
+                                            Visibility="{x:Bind ShowPartColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock
+                                            x:Phase="1"
+                                            Grid.Column="3"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind Quantity, Converter={StaticResource DecimalToStringConverter}}"
+                                            Visibility="{x:Bind ShowQtyColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock
+                                            x:Phase="1"
+                                            Grid.Column="4"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind Reference}"
+                                            TextTrimming="CharacterEllipsis"
+                                            Visibility="{x:Bind ShowReferenceColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!--  Empty state  -->
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="8"
+                        Visibility="{x:Bind ViewModel.HasRows, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <FontIcon
+                                HorizontalAlignment="Center"
+                                FontSize="40"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Glyph="&#xE71D;" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontWeight="SemiBold"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="No history found" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                MaxWidth="320"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="Try a wider date range, clear the search, or load the full history."
+                                TextAlignment="Center"
+                                TextWrapping="WrapWholeWords" />
+                            <Button
+                                HorizontalAlignment="Center"
+                                Command="{x:Bind ViewModel.LoadAllCommand}"
+                                Content="Load All" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  Busy indicator  -->
+                    <ProgressRing
+                        Width="28"
+                        Height="28"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
             </Grid>
         </Border>
 
@@ -198,8 +299,10 @@
             <TextBlock
                 Grid.Column="1"
                 VerticalAlignment="Center"
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Text="{x:Bind ViewModel.SelectedCount, Mode=OneWay}" />
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                <Run Text="{x:Bind ViewModel.SelectedCount, Mode=OneWay}" />
+                <Run Text=" selected" />
+            </TextBlock>
 
             <Button
                 Grid.Column="3"

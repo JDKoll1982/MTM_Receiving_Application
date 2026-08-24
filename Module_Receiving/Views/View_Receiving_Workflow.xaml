@@ -276,7 +276,7 @@
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
                     Background="Transparent"
-                    BorderBrush="{ThemeResource SystemAccentColor}"
+                    BorderBrush="{StaticResource ReceivingAccentBrush}"
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                     Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />

@@ -48,6 +48,29 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 		return result.FormattedValue;
 	}
 
+	public Task<Model_Dao_Result<bool>> TransferSavedSinceAsync(
+		string partId,
+		string fromWarehouse,
+		string fromLocation,
+		string toWarehouse,
+		string toLocation,
+		decimal quantity,
+		DateTime afterUtc,
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+		return _inforVisualService.ScannerTransferExistsAsync(
+			partId,
+			fromWarehouse,
+			fromLocation,
+			toWarehouse,
+			toLocation,
+			quantity,
+			afterUtc
+		);
+	}
+
 	public Task<Model_Dao_Result<Model_ScannerItemValidationResult>> ValidateNewItemAsync(
 		Model_ScannerItemValidationRequest request,
 		CancellationToken cancellationToken = default

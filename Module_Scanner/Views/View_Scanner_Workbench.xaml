@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:models="using:MTM_Receiving_Application.Module_Scanner.Models"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -94,66 +95,6 @@
                         <ColumnDefinition x:Name="WorkbenchPrimaryColumn" Width="2*" />
                         <ColumnDefinition x:Name="WorkbenchDetailsColumn" Width="*" />
                     </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid ColumnSpacing="12" RowSpacing="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Header="Session Owner"
-                                Text="{x:Bind ViewModel.OwnerUserId, Mode=TwoWay}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Header="Display Name"
-                                Text="{x:Bind ViewModel.OwnerDisplayName, Mode=TwoWay}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="2"
-                                Header="Target Window"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.AppWindowTitleSnapshot, Mode=TwoWay}" />
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="3"
-                                Style="{StaticResource ScannerActionButtonStyle}"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.StartDraftSessionCommand}"
-                                Content="Start Draft" />
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="4"
-                                Style="{StaticResource ScannerActionButtonStyle}"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.BuildRunSnapshotCommand}"
-                                Content="Save For Later" />
-
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="5"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Session Active"
-                                Visibility="{x:Bind ViewModel.HasActiveSession, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        </Grid>
-                    </Border>
 
                     <Border
                         Grid.Row="0"
@@ -268,8 +209,9 @@
 
                     <Border
                         x:Name="ItemsToSendCard"
-                        Grid.Row="1"
+                        Grid.Row="0"
                         Grid.Column="0"
+                        Grid.RowSpan="2"
                         Padding="12"
                         Background="{ThemeResource LayerFillColorAltBrush}"
                         CornerRadius="8">
@@ -318,12 +260,15 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox
-                                    x:Name="PartIdTextBox"
+                                <sharedControls:Control_Shared_TypedLookupTextBox
+                                    x:Name="PartIdLookupControl"
                                     Grid.Column="0"
-                                    Header="Part"
-                                    LostFocus="PartTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    AutoResolveFuzzyMatches="False"
+                                    HeaderText="Part"
+                                    InputValue="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    LookupType="PartNumber"
+                                    PlaceholderText="Enter part number"
+                                    ValidationCompleted="PartIdLookupControl_ValidationCompleted" />
                                 <TextBox
                                     Grid.Column="1"
                                     Header="From Loc"
@@ -410,44 +355,49 @@
             Padding="12"
             Background="{ThemeResource LayerFillColorAltBrush}"
             CornerRadius="8">
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.CheckAllCommand}" Content="Check All" />
-                <StackPanel
-                    Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="6">
+            <StackPanel Spacing="8">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.CheckAllCommand}" Content="Check All" />
                     <Button
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
                         Style="{StaticResource ScannerPrimaryActionButtonStyle}"
                         Command="{x:Bind ViewModel.SendNextCommand}"
-                        Content="Send Next" />
+                        Content="Send" />
+                    <Button Grid.Column="2" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearHistoryCommand}" Content="Clear History" />
+                    <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ExportCommand}" Content="Export" />
+                    <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.StartDraftSessionCommand}" Content="Start Draft" />
+                    <Button Grid.Column="5" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.BuildRunSnapshotCommand}" Content="Save For Later" />
+                </Grid>
+
+                <!--  Saved? manual confirmation row: only shown when the transfer was not auto-detected  -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6"
+                    Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock
                         VerticalAlignment="Center"
                         FontWeight="SemiBold"
-                        Text="Saved?"
-                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Text="Was the transaction saved in Infor Visual?" />
                     <Button
+                        Style="{StaticResource ScannerActionButtonStyle}"
                         Command="{x:Bind ViewModel.ConfirmSavedCommand}"
-                        Content="Yes"
-                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Content="Yes" />
                     <Button
+                        Style="{StaticResource ScannerActionButtonStyle}"
                         Command="{x:Bind ViewModel.ConfirmNotSavedCommand}"
-                        Content="No"
-                        Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Content="No" />
                 </StackPanel>
-                <Button Grid.Column="2" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendAllCommand}" Content="Send All" />
-                <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.StopAfterThisCommand}" Content="Stop After This" />
-                <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearHistoryCommand}" Content="Clear History" />
-                <Button Grid.Column="5" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ExportCommand}" Content="Export" />
-            </Grid>
+            </StackPanel>
         </Border>
 
         <Border

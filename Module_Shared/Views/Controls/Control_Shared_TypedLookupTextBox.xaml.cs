@@ -228,6 +228,14 @@ public sealed partial class Control_Shared_TypedLookupTextBox : UserControl
         set => SetValue(IsValidationInProgressProperty, value);
     }
 
+    /// <summary>
+    /// Moves keyboard focus to the inner lookup textbox.
+    /// </summary>
+    public void FocusInput()
+    {
+        LookupTextBox?.Focus(FocusState.Programmatic);
+    }
+
     public async Task ValidateAsync()
     {
         SyncInputFromTextBox();

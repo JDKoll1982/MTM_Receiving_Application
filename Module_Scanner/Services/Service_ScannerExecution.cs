@@ -81,83 +81,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		return await ExecuteItemAsync(session, next, profile, cancellationToken);
 	}
 
-	public async Task<Model_Dao_Result<Model_ScannerExecutionOutcome>> SendAllAsync(
-		Model_ScannerBatchSession session,
-		Model_ScannerProfile profile,
-		CancellationToken cancellationToken = default
-	)
-	{
-		if (session is null)
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerExecutionOutcome>(
-				"Session is required."
-			);
-		}
-
-		if (profile is null)
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerExecutionOutcome>(
-				"Profile is required."
-			);
-		}
-
-		var outcome = new Model_ScannerExecutionOutcome();
-
-		// Snapshot the ordered candidate list up front so execution cannot mutate the iteration.
-		var candidates = new System.Collections.Generic.List<Model_ScannerBatchItem>();
-		foreach (var item in session.Items)
-		{
-			if (Helper_ScannerSequence.IsEligibleForSend(item))
-			{
-				candidates.Add(item);
-			}
-		}
-
-		candidates.Sort((left, right) => left.SequenceNumber.CompareTo(right.SequenceNumber));
-
-		foreach (var item in candidates)
-		{
-			if (session.StopRequested)
-			{
-				outcome.Stopped = true;
-				break;
-			}
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				break;
-			}
-
-			var result = await ExecuteItemAsync(session, item, profile, cancellationToken);
-			if (!result.Success)
-			{
-				return result;
-			}
-
-			if (result.Data is null)
-			{
-				continue;
-			}
-
-			outcome.SentCount += result.Data.SentCount;
-			outcome.FailedCount += result.Data.FailedCount;
-			outcome.SkippedCount += result.Data.SkippedCount;
-
-			// Stop on first failure: earlier rows stay sent, the failed row is marked failed,
-			// and the remaining rows stay waiting for operator review.
-			if (result.Data.FailedCount > 0)
-			{
-				outcome.FirstFailureItemId = result.Data.FirstFailureItemId;
-				outcome.FailureMessage = result.Data.FailureMessage;
-				outcome.Stopped = true;
-				break;
-			}
-		}
-
-		session.RecalculateItemCounters();
-		return Model_Dao_Result_Factory.Success(outcome);
-	}
-
 	public async Task<Model_Dao_Result<Model_ScannerExecutionOutcome>> SendSpecificItemAsync(
 		Model_ScannerBatchSession session,
 		Model_ScannerBatchItem item,
@@ -198,19 +121,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		}
 
 		return await ExecuteItemAsync(session, item, profile, cancellationToken);
-	}
-
-	public Task<Model_Dao_Result> RequestStopAsync(Model_ScannerBatchSession session)
-	{
-		if (session is null)
-		{
-			return Task.FromResult(Model_Dao_Result_Factory.Failure("Session is required."));
-		}
-
-		session.StopRequested = true;
-		session.StopReason = Enum_ScannerStopReason.UserStop;
-		session.LastUpdatedUtc = DateTime.UtcNow;
-		return Task.FromResult(Model_Dao_Result_Factory.Success());
 	}
 
 	public Task<Model_Dao_Result> ClearTargetFormAsync(
@@ -265,6 +175,19 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 			if (profile.ActivationDelayMs > 0)
 			{
 				await Task.Delay(profile.ActivationDelayMs, cancellationToken);
+			}
+
+			// First step: clear the Inventory Transfers form (Alt+L) so the emitted fields start
+			// on a clean record instead of appending to a stale one.
+			var clearResult = await ClearTargetFormAsync(cancellationToken);
+			if (!clearResult.Success)
+			{
+				return await MarkFailedAsync(
+					session,
+					item,
+					Enum_ScannerIssueType.Integrity,
+					"Could not clear the target Inventory Transfers form before sending."
+				);
 			}
 
 			var emitted = await EmitFieldSequenceAsync(item, profile, cancellationToken);

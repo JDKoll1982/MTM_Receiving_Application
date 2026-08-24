@@ -8,9 +8,10 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <SolidColorBrush x:Key="ReceivingAccentBrush" Color="#0B6157" />
-        <SolidColorBrush x:Key="DunnageAccentBrush" Color="#8A5E00" />
-        <SolidColorBrush x:Key="VolvoAccentBrush" Color="#1E4F7A" />
+        <!--
+            ReceivingAccentBrush / DunnageAccentBrush / VolvoAccentBrush are
+            resolved from the shared Module_Core/Themes/ModuleAccentBrushes.xaml.
+        -->
 
         <!--
             Card-style button for the Reprint mode cards. Uses a custom template so the

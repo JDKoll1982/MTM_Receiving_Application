@@ -49,8 +49,6 @@ public sealed partial class Model_ScannerProfile
 
 	public string SendShortcutChord { get; set; } = "Ctrl+Alt+M";
 
-	public string StopShortcutChord { get; set; } = "Ctrl+Alt+N";
-
 	public bool StopBetweenSendsOnly { get; set; } = true;
 
 	public bool AllowAdvancedTiming { get; set; }

@@ -16,7 +16,7 @@ The page must resize with the main window, and only the item list region should 
 - Header region: session identity, selected profile, application status
 - Items region: ordered items with status badges and a clear entry point to open the manage-items dialog
 - Manage Items dialog: batch editor for add, duplicate, move, and delete actions, with apply/cancel behavior
-- Send Control region: Check All, Send Next, Send All, Stop After This
+- Send Control region: Check All, Send, Send All, Stop After This
 - Status region: inline issues, current message, progress counters (Sent, Failed, Waiting)
 - Footer region: save for later state and last persistence result
 - Item details region: visible from/to warehouse and location values, with warehouse values shown as settings-controlled and read-only
@@ -46,7 +46,7 @@ Main Body Right:
 Bottom Action Strip:
 
 - Check All
-- Send Next
+- Send
 - Send All
 - Stop After This
 - Clear History

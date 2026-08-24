@@ -1721,5 +1721,66 @@ public class Dao_InforVisualConnection
         }
     }
 
+    /// <summary>
+    /// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
+    /// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
+    /// quantity) was recorded at or after <paramref name="afterUtc"/>.
+    /// Uses: 28_ScannerTransferTransactionLookup.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="partId">Exact part ID.</param>
+    /// <param name="fromWarehouse">Source warehouse code.</param>
+    /// <param name="fromLocation">Source location ID.</param>
+    /// <param name="toWarehouse">Destination warehouse code.</param>
+    /// <param name="toLocation">Destination location ID.</param>
+    /// <param name="quantity">Expected transfer quantity (matched on absolute value).</param>
+    /// <param name="afterUtc">Only consider transactions recorded at/after this instant.</param>
+    public async Task<Model_Dao_Result<bool>> ScannerTransferExistsAsync(
+        string partId,
+        string fromWarehouse,
+        string fromLocation,
+        string toWarehouse,
+        string toLocation,
+        decimal quantity,
+        DateTime afterUtc
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Checking for recorded scanner transfer for part '{partId}' after {afterUtc:O}"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "28_ScannerTransferTransactionLookup.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartId", partId);
+            command.Parameters.AddWithValue("@FromWarehouse", fromWarehouse);
+            command.Parameters.AddWithValue("@FromLocation", fromLocation);
+            command.Parameters.AddWithValue("@ToWarehouse", toWarehouse);
+            command.Parameters.AddWithValue("@ToLocation", toLocation);
+            command.Parameters.AddWithValue("@Quantity", quantity);
+            command.Parameters.AddWithValue("@AfterUtc", afterUtc);
+
+            var found = (int)(await command.ExecuteScalarAsync() ?? 0);
+            return Model_Dao_Result_Factory.Success(found > 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error checking for recorded scanner transfer for part '{partId}': {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<bool>(
+                $"Error checking for recorded scanner transfer: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     #endregion
 }

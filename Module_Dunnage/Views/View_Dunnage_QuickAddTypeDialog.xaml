@@ -51,11 +51,11 @@
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <FontIcon
                         FontSize="14"
-                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Foreground="{StaticResource DunnageAccentBrush}"
                         Glyph="&#xE946;" />
                     <TextBlock
                         FontSize="12"
-                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Foreground="{StaticResource DunnageAccentBrush}"
                         Text="Help" />
                 </StackPanel>
                 <Button.Flyout>
@@ -66,14 +66,14 @@
                             Spacing="16">
                             <StackPanel Spacing="8">
                                 <TextBlock
-                                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                    Foreground="{StaticResource DunnageAccentBrush}"
                                     Style="{StaticResource SubtitleTextBlockStyle}"
                                     Text="Dunnage Types" />
                                 <Border
                                     Width="60"
                                     Height="2"
                                     HorizontalAlignment="Left"
-                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                    Background="{StaticResource DunnageAccentBrush}"
                                     CornerRadius="1" />
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">Define categories of dunnage materials for receiving classification.</TextBlock>
                             </StackPanel>
@@ -214,7 +214,7 @@
                                     <materialIcons:MaterialIcon
                                         Width="24"
                                         Height="24"
-                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Foreground="{StaticResource DunnageAccentBrush}"
                                         Kind="{x:Bind ViewModel.SelectedIconKind, Mode=OneWay}" />
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock FontWeight="SemiBold" Text="Click to select icon" />

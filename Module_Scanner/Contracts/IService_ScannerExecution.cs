@@ -25,17 +25,6 @@ public interface IService_ScannerExecution
 	);
 
 	/// <summary>
-	/// Sends all waiting, valid items in sequence order. Stops before the next item when a
-	/// stop is requested, and stops on the first failed item (previously sent rows stay sent,
-	/// the failed row is marked failed, and the remainder stays waiting for operator review).
-	/// </summary>
-	Task<Model_Dao_Result<Model_ScannerExecutionOutcome>> SendAllAsync(
-		Model_ScannerBatchSession session,
-		Model_ScannerProfile profile,
-		CancellationToken cancellationToken = default
-	);
-
-	/// <summary>
 	/// Sends a specific item regardless of sequence position (used for retry or manual send).
 	/// The item must still be eligible (waiting and valid) to be emitted.
 	/// </summary>
@@ -45,12 +34,6 @@ public interface IService_ScannerExecution
 		Model_ScannerProfile profile,
 		CancellationToken cancellationToken = default
 	);
-
-	/// <summary>
-	/// Requests a stop that takes effect between send cycles rather than interrupting a live
-	/// input sequence.
-	/// </summary>
-	Task<Model_Dao_Result> RequestStopAsync(Model_ScannerBatchSession session);
 
 	/// <summary>
 	/// Sends Alt+L to the foreground Infor Visual window to clear the active Inventory

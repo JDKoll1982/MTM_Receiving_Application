@@ -47,7 +47,6 @@ This view-model manages sending profile editing, keyboard shortcut policy, and s
 
 ## Validation Responsibilities
 
-- ensure send and stop shortcuts are distinct
 - ensure timing values remain within configured safe limits
 - require target window title before save
 - enforce unique profile name per user

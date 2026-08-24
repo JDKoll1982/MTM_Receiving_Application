@@ -66,7 +66,6 @@ public sealed class Dao_ScannerProfileAndRunHistoryTests
         table.Columns.Add("popup_timeout_ms", typeof(int));
         table.Columns.Add("popup_close_timeout_ms", typeof(int));
         table.Columns.Add("send_shortcut_chord", typeof(string));
-        table.Columns.Add("stop_shortcut_chord", typeof(string));
         table.Columns.Add("allow_advanced_timing", typeof(bool));
         table.Columns.Add("created_at", typeof(DateTime));
         table.Columns.Add("updated_at", typeof(DateTime));
@@ -90,7 +89,6 @@ public sealed class Dao_ScannerProfileAndRunHistoryTests
             3000,
             1200,
             "Ctrl+Alt+M",
-            "Ctrl+Alt+N",
             false,
             DateTime.UtcNow.AddDays(-1),
             DateTime.UtcNow

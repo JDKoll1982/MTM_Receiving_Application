@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Reprint.Dialogs;
 using MTM_Receiving_Application.Module_Reprint.ViewModels;
+using Windows.System;
 
 namespace MTM_Receiving_Application.Module_Reprint.Views;
 
@@ -125,9 +127,14 @@ public sealed partial class View_Reprint_ModulePage : Page
         await ViewModel.ReloadCommand.ExecuteAsync(null);
     }
 
-    private void ColumnsButton_Click(object sender, RoutedEventArgs e)
+    /// <summary>Pressing Enter in the search box runs the search immediately.</summary>
+    private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        ViewModel.ShowColumnChooserCommand.Execute(null);
+        if (e.Key == VirtualKey.Enter)
+        {
+            e.Handled = true;
+            ViewModel.ReloadCommand.Execute(null);
+        }
     }
 
     private async void OnShowColumnChooserRequested(object? sender, EventArgs e)

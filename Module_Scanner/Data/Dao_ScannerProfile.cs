@@ -62,7 +62,6 @@ public sealed class Dao_ScannerProfile
 			{ "popup_timeout_ms", profile.PopupTimeoutMs },
 			{ "popup_close_timeout_ms", profile.PopupCloseTimeoutMs },
 			{ "send_shortcut_chord", profile.SendShortcutChord },
-			{ "stop_shortcut_chord", profile.StopShortcutChord },
 			{ "allow_advanced_timing", profile.AllowAdvancedTiming },
 		};
 
@@ -157,7 +156,6 @@ public sealed class Dao_ScannerProfile
 			PopupTimeoutMs = ParseInt(reader["popup_timeout_ms"]),
 			PopupCloseTimeoutMs = ParseInt(reader["popup_close_timeout_ms"]),
 			SendShortcutChord = reader["send_shortcut_chord"]?.ToString() ?? string.Empty,
-			StopShortcutChord = reader["stop_shortcut_chord"]?.ToString() ?? string.Empty,
 			AllowAdvancedTiming = ParseBool(reader["allow_advanced_timing"]),
 			CreatedUtc = ParseDateTime(reader["created_at"]),
 			LastUpdatedUtc = ParseDateTime(reader["updated_at"]),

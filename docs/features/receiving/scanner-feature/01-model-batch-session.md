@@ -1,6 +1,6 @@
 # Batch Session Model
 
-Last Updated: 2026-07-21
+Last Updated: 2026-08-24
 
 This model is the root aggregate for one scanner context. It represents ownership, lifecycle state, and the ordered set of items.
 
@@ -25,7 +25,7 @@ This model is the root aggregate for one scanner context. It represents ownershi
 - SentItems: count of successfully sent items
 - FailedItems: count of failed items
 - WaitingItems: count of items not yet sent
-- StopRequested: flag raised by stop keyboard shortcut and honored between sends
+- StopRequested: persisted from earlier sessions; no longer raised by the UI since Send All / Stop After This were removed (2026-08-24), still honored by SendNextItemAsync when present
 - StopReason: UserStop, ValidationFailure, AppNotInFocus, IntegrityBlock, Unknown
 - LastSendStartedUtc: when current or last send started
 - LastSendEndedUtc: when current or last send ended

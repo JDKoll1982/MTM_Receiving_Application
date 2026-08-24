@@ -276,5 +276,28 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             string locationId,
             string warehouseCode
         );
+
+        /// <summary>
+        /// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
+        /// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
+        /// quantity) was recorded at or after <paramref name="afterUtc"/>.
+        /// Polled by the scanner workbench to auto-confirm a send.
+        /// </summary>
+        /// <param name="partId">Exact part ID.</param>
+        /// <param name="fromWarehouse">Source warehouse code.</param>
+        /// <param name="fromLocation">Source location ID.</param>
+        /// <param name="toWarehouse">Destination warehouse code.</param>
+        /// <param name="toLocation">Destination location ID.</param>
+        /// <param name="quantity">Expected transfer quantity (matched on absolute value).</param>
+        /// <param name="afterUtc">Only consider transactions recorded at/after this instant.</param>
+        public Task<Model_Dao_Result<bool>> ScannerTransferExistsAsync(
+            string partId,
+            string fromWarehouse,
+            string fromLocation,
+            string toWarehouse,
+            string toLocation,
+            decimal quantity,
+            DateTime afterUtc
+        );
     }
 }

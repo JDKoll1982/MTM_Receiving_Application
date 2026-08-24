@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Material.Icons;
 using Material.Icons.WinUI3;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
@@ -379,9 +380,9 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
-        /// Registers the global scanner hotkeys (Ctrl+Alt+M send, Ctrl+Alt+N stop) against the
-        /// main window and unregisters them when the window closes. The shortcuts are active
-        /// for the app lifetime so the operator can trigger a send while VMINVENT is focused.
+        /// Registers the global scanner send hotkey (Ctrl+Alt+M) against the main window and
+        /// unregisters it when the window closes. The shortcut is active for the app lifetime
+        /// so the operator can trigger a send while VMINVENT is focused.
         /// </summary>
         private void InitializeScannerHotkeys()
         {
@@ -394,7 +395,7 @@ namespace MTM_Receiving_Application
                 }
 
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                var registered = hotkey.TryRegister(hwnd, "Ctrl+Alt+M", "Ctrl+Alt+N");
+                var registered = hotkey.TryRegister(hwnd, "Ctrl+Alt+M");
                 if (!registered)
                 {
                     _logger.LogWarning(
@@ -2149,6 +2150,100 @@ namespace MTM_Receiving_Application
             });
         }
 
+        /// <summary>
+        /// Colors the shell header with the active module's accent (Receiving,
+        /// Dunnage, or Volvo). Pages outside those modules keep the neutral theme
+        /// header. Driven by the page type so settings pages for a module match
+        /// their module too.
+        /// </summary>
+        private void ApplyHeaderAccent(Type? pageType)
+        {
+            if (HeaderBarBorder is null)
+            {
+                return;
+            }
+
+            var accentBrush = GetModuleAccentBrush(pageType);
+            if (accentBrush is not null)
+            {
+                HeaderBarBorder.Background = accentBrush;
+                PageTitleTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                HeaderBackButton.BorderBrush = new SolidColorBrush(
+                    ColorHelper.FromArgb(64, 255, 255, 255)
+                );
+                if (HeaderBackButtonIcon is not null)
+                {
+                    HeaderBackButtonIcon.Foreground = new SolidColorBrush(Colors.White);
+                }
+
+                return;
+            }
+
+            HeaderBarBorder.Background = ResolveAppBrush("LayerFillColorDefaultBrush");
+            PageTitleTextBlock.ClearValue(TextBlock.ForegroundProperty);
+            HeaderBackButton.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            HeaderBackButtonIcon?.ClearValue(IconElement.ForegroundProperty);
+        }
+
+        /// <summary>
+        /// Maps a page type to its module brand accent brush, or null when the
+        /// page does not belong to a branded module.
+        /// </summary>
+        private static SolidColorBrush? GetModuleAccentBrush(Type? pageType)
+        {
+            if (pageType?.FullName is not string fullName)
+            {
+                return null;
+            }
+
+            if (
+                fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Receiving",
+                    StringComparison.Ordinal
+                )
+                || fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Settings.Receiving",
+                    StringComparison.Ordinal
+                )
+            )
+            {
+                return ResolveAppBrush("ReceivingAccentBrush");
+            }
+
+            if (
+                fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Dunnage",
+                    StringComparison.Ordinal
+                )
+                || fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Settings.Dunnage",
+                    StringComparison.Ordinal
+                )
+            )
+            {
+                return ResolveAppBrush("DunnageAccentBrush");
+            }
+
+            if (
+                fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Volvo",
+                    StringComparison.Ordinal
+                )
+                || fullName.StartsWith(
+                    "MTM_Receiving_Application.Module_Settings.Volvo",
+                    StringComparison.Ordinal
+                )
+            )
+            {
+                return ResolveAppBrush("VolvoAccentBrush");
+            }
+
+            return null;
+        }
+
+        private static SolidColorBrush? ResolveAppBrush(string key) =>
+            App.Current.Resources[key] as SolidColorBrush;
+
         private void ResetHeaderContext() { }
 
         private void UpdateHeader(IViewModel_HeaderTitleProvider viewModel)
@@ -2180,6 +2275,8 @@ namespace MTM_Receiving_Application
         {
             ClearHeaderSubscription();
             _headerBackNavigation.ClearBackAction();
+
+            ApplyHeaderAccent(content?.GetType());
 
             var headerProvider = ResolveHeaderProvider(content);
             if (headerProvider != null)

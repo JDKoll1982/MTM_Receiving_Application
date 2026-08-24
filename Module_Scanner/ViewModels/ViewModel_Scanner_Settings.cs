@@ -72,9 +72,6 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
     private string _sendShortcutChord = "Ctrl+Alt+M";
 
     [ObservableProperty]
-    private string _stopShortcutChord = "Ctrl+Alt+N";
-
-    [ObservableProperty]
     private bool _allowAdvancedTiming;
 
     public ViewModel_Scanner_Settings(
@@ -156,12 +153,6 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
         if (string.IsNullOrWhiteSpace(TargetChildWindowTitle))
         {
             ShowStatus("Target child screen title is required.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (string.Equals(SendShortcutChord, StopShortcutChord, StringComparison.OrdinalIgnoreCase))
-        {
-            ShowStatus("Send and stop shortcut chords must be different.", InfoBarSeverity.Warning);
             return;
         }
 
@@ -356,7 +347,6 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
         PopupTimeoutMs = profile.PopupTimeoutMs;
         PopupCloseTimeoutMs = profile.PopupCloseTimeoutMs;
         SendShortcutChord = profile.SendShortcutChord;
-        StopShortcutChord = profile.StopShortcutChord;
         AllowAdvancedTiming = profile.AllowAdvancedTiming;
     }
 
@@ -380,7 +370,6 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
             PopupTimeoutMs = Convert.ToInt32(PopupTimeoutMs),
             PopupCloseTimeoutMs = Convert.ToInt32(PopupCloseTimeoutMs),
             SendShortcutChord = SendShortcutChord,
-            StopShortcutChord = StopShortcutChord,
             AllowAdvancedTiming = AllowAdvancedTiming,
         };
     }

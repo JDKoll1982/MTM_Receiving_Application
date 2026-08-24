@@ -334,6 +334,7 @@ public abstract partial class ViewModel_Reprint_ModuleBase : ViewModel_Shared_Ba
 
         OnPropertyChanged(nameof(CanReprint));
         OnPropertyChanged(nameof(IsSelectAllEnabled));
+        OnPropertyChanged(nameof(HasAlreadyQueuedRows));
         ReprintCommand.NotifyCanExecuteChanged();
     }
 

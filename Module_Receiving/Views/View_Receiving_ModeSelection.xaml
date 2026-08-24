@@ -57,7 +57,7 @@
                     <StackPanel VerticalAlignment="Center" Spacing="12">
                         <FontIcon
                             FontSize="48"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Foreground="{StaticResource ReceivingAccentBrush}"
                             Glyph="&#xE771;" />
                         <TextBlock
                             HorizontalAlignment="Center"
@@ -111,7 +111,7 @@
                     <StackPanel VerticalAlignment="Center" Spacing="12">
                         <FontIcon
                             FontSize="48"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Foreground="{StaticResource ReceivingAccentBrush}"
                             Glyph="&#xE7F0;" />
                         <TextBlock
                             HorizontalAlignment="Center"
@@ -165,7 +165,7 @@
                     <StackPanel VerticalAlignment="Center" Spacing="12">
                         <FontIcon
                             FontSize="48"
-                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Foreground="{StaticResource ReceivingAccentBrush}"
                             Glyph="&#xE70F;" />
                         <TextBlock
                             HorizontalAlignment="Center"
@@ -208,7 +208,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <FontIcon
                         FontSize="28"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Foreground="{StaticResource ReceivingAccentBrush}"
                         Glyph="&#xE895;" />
                     <StackPanel Spacing="4">
                         <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Reconcile Saved Locations from InforVisual" />

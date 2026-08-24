@@ -1,5 +1,0 @@
-TotalMatches
-------------
-       17287
-Msg 208, Level 16, State 1, Server VISUAL, Line 45
-Invalid object name 'CandidateSpecs'.

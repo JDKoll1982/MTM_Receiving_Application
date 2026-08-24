@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,9 +34,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasActiveSession))]
+    [NotifyCanExecuteChangedFor(nameof(SendNextCommand))]
     private Model_ScannerBatchSession? _currentSession;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SendNextCommand))]
     private ObservableCollection<Model_ScannerBatchItem> _sessionItems = [];
 
     [ObservableProperty]
@@ -111,11 +114,18 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     partial void OnIsSendPromptVisibleChanged(bool value)
     {
         SendNextCommand.NotifyCanExecuteChanged();
-        SendAllCommand.NotifyCanExecuteChanged();
     }
 
+    /// <summary>
+    /// Maximum time to poll Infor Visual for a recorded transfer before falling back to the
+    /// manual Saved? Yes/No prompt. Configurable so tests can keep the poll short.
+    /// </summary>
+    public TimeSpan TransferConfirmTimeout { get; set; } = TimeSpan.FromSeconds(5);
+
+    /// <summary>Delay between transfer-confirmation polls.</summary>
+    public TimeSpan TransferConfirmPollInterval { get; set; } = TimeSpan.FromSeconds(1);
+
     private Model_ScannerBatchItem? _pendingSendItem;
-    private bool _sendAllInProgress;
 
     public bool HasActiveSession => CurrentSession is not null;
 
@@ -462,6 +472,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// for example "VA101" becomes "V-A1-01" and "R5" becomes "R-05". Used as the first
     /// step for both the From and To location fields.
     /// </summary>
+    /// <param name="location"></param>
     public string FormatLocation(string location)
     {
         return _validationService.FormatLocation(location);
@@ -471,6 +482,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// Called once the From location is validated against stock: enables the Qty field and
     /// records the maximum quantity that can be entered for that location.
     /// </summary>
+    /// <param name="available"></param>
     public void SetFromQuantityLimit(decimal available)
     {
         MaxQuantity = available;
@@ -488,6 +500,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// True when the validation message indicates the source (From) location is the problem:
     /// the location was not found, or it cannot supply the requested quantity.
     /// </summary>
+    /// <param name="message"></param>
     private static bool IsSourceLocationIssue(string? message)
     {
         return string.Equals(
@@ -738,12 +751,13 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
             RefreshSessionAfterExecution(result.Data);
 
-            // After a line is emitted, wait for the operator to confirm it was saved in the
-            // ERP before the next send is enabled.
+            // After a line is emitted, poll Infor Visual for the recorded transfer. As soon as
+            // the transaction appears, auto-confirm it (same as the operator answering "Yes").
+            // If it never appears within the timeout, fall back to the manual Saved? prompt.
             if (result.Data.SentCount > 0 && next is not null)
             {
                 _pendingSendItem = next;
-                IsSendPromptVisible = true;
+                await WaitForTransferConfirmationAsync(next);
             }
         }
         finally
@@ -752,45 +766,63 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
     }
 
+    /// <summary>
+    /// Polls Infor Visual until the scanner-emitted inventory transfer is recorded, then
+    /// auto-confirms the line as saved. When the transaction is not seen within
+    /// <see cref="TransferConfirmTimeout"/>, shows the manual Saved? Yes/No prompt instead.
+    /// </summary>
+    private async Task WaitForTransferConfirmationAsync(Model_ScannerBatchItem item)
+    {
+        var deadlineUtc = DateTime.UtcNow + TransferConfirmTimeout;
+        var afterUtc = item.SentUtc ?? DateTime.UtcNow.AddSeconds(-1);
+
+        if (
+            !decimal.TryParse(
+                item.PayloadQuantity,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var quantity
+            )
+        )
+        {
+            quantity = 0m;
+        }
+
+        ShowStatus(
+            "Verifying transfer in Infor Visual...",
+            Module_Core.Models.Enums.InfoBarSeverity.Informational
+        );
+
+        while (DateTime.UtcNow < deadlineUtc)
+        {
+            var check = await _validationService.TransferSavedSinceAsync(
+                item.PayloadPartId,
+                item.PayloadFromWarehouse,
+                item.PayloadFromLocation,
+                item.PayloadToWarehouse,
+                item.PayloadToLocation,
+                quantity,
+                afterUtc
+            );
+
+            if (check.Success && check.Data)
+            {
+                await ConfirmSavedAsync();
+                return;
+            }
+
+            await Task.Delay(TransferConfirmPollInterval);
+        }
+
+        // No transaction was seen in time; ask the operator.
+        IsSendPromptVisible = true;
+    }
+
     private bool CanSendNext()
     {
         return !IsSendPromptVisible
             && !IsBusy
             && CurrentSession?.Items.Count > 0;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSendNext))]
-    private async Task SendAllAsync()
-    {
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (CurrentSession.Items.Count == 0)
-        {
-            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (IsBusy || IsSendPromptVisible)
-        {
-            return;
-        }
-
-        if (CurrentSession.StopRequested)
-        {
-            CurrentSession.StopRequested = false;
-            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
-            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
-            ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        // Send items one at a time; each line is confirmed (Saved? Yes/No) before moving on.
-        _sendAllInProgress = true;
-        await SendNextAsync();
     }
 
     [RelayCommand]
@@ -837,18 +869,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             }
         }
 
-        // In "send all" mode, continue automatically with the next eligible item.
-        if (_sendAllInProgress)
-        {
-            if (CurrentSession?.Items.Any(Helper_ScannerSequence.IsEligibleForSend) == true)
-            {
-                await SendNextAsync();
-            }
-            else
-            {
-                _sendAllInProgress = false;
-            }
-        }
     }
 
     [RelayCommand]
@@ -861,43 +881,12 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             _pendingSendItem.LastUpdatedUtc = DateTime.UtcNow;
         }
 
-        _sendAllInProgress = false;
         _pendingSendItem = null;
         IsSendPromptVisible = false;
 
         await _executionService.ClearTargetFormAsync();
         PartIdFocusRequested?.Invoke();
         ShowStatus("Form cleared. Re-enter the part and try again.", InfoBarSeverity.Warning);
-    }
-
-    [RelayCommand]
-    private async Task StopAfterThisAsync()
-    {
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start a session before requesting a stop.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        // Cancel any in-progress "send all" loop so it stops after the current confirmation.
-        _sendAllInProgress = false;
-
-        var result = await _executionService.RequestStopAsync(CurrentSession);
-        if (!result.Success)
-        {
-            ShowStatus(
-                string.IsNullOrWhiteSpace(result.ErrorMessage)
-                    ? "Unable to request a stop."
-                    : result.ErrorMessage,
-                InfoBarSeverity.Error
-            );
-            return;
-        }
-
-        CurrentSession.Status = CurrentSession.Status == Enum_ScannerSessionStatus.Running
-            ? Enum_ScannerSessionStatus.Stopped
-            : CurrentSession.Status;
-        ShowStatus("Stop requested. The current batch will stop after the next completed item.", InfoBarSeverity.Warning);
     }
 
     [RelayCommand]
@@ -972,14 +961,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     {
         _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
         _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
-        _hotkeyService.StopShortcutPressed -= OnStopShortcutPressed;
-        _hotkeyService.StopShortcutPressed += OnStopShortcutPressed;
     }
 
     private void UnsubscribeHotkeys()
     {
         _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
-        _hotkeyService.StopShortcutPressed -= OnStopShortcutPressed;
     }
 
     private void OnSendShortcutPressed(object? sender, EventArgs e)
@@ -987,11 +973,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         // Fire and forget: the command reports its own status. Runs on the UI thread because
         // WM_HOTKEY is dispatched through the window message loop.
         _ = SendNextCommand.ExecuteAsync(null);
-    }
-
-    private void OnStopShortcutPressed(object? sender, EventArgs e)
-    {
-        _ = StopAfterThisCommand.ExecuteAsync(null);
     }
 
     private async Task<Model_ScannerProfile> ResolveActiveProfileAsync()

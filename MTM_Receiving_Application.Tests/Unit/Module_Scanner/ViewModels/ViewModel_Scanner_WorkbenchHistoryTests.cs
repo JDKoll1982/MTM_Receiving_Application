@@ -394,6 +394,8 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+        SetupTransferLookup(validation, found: false);
+        SetShortTransferConfirmTimeout(viewModel);
 
         await viewModel.SendNextCommand.ExecuteAsync(null);
 
@@ -457,12 +459,164 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+        SetupTransferLookup(validation, found: false);
+        SetShortTransferConfirmTimeout(viewModel);
 
         await viewModel.SendNextCommand.ExecuteAsync(null);
 
         viewModel.IsSendPromptVisible.Should().BeTrue();
         viewModel.SendNextCommand.CanExecute(null).Should().BeFalse();
-        viewModel.SendAllCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SendNextCommand_ShouldAutoConfirm_WhenTransferRecorded()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.SendNextItemAsync(session, It.IsAny<Model_ScannerProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                () =>
+                {
+                    validItem.ExecutionState = Enum_ScannerExecutionState.Sent;
+                    validItem.SentUtc = DateTime.UtcNow;
+                    validItem.LastUpdatedUtc = DateTime.UtcNow;
+                    session.RecalculateItemCounters();
+                    return Model_Dao_Result_Factory.Success(
+                        new Model_ScannerExecutionOutcome { SentCount = 1 }
+                    );
+                }
+            );
+        workflow
+            .Setup(service => service.ReplaceSessionItemsAsync(session, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(session));
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            execution.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+        SetupTransferLookup(validation, found: true);
+        SetShortTransferConfirmTimeout(viewModel);
+
+        await viewModel.SendNextCommand.ExecuteAsync(null);
+
+        viewModel.IsSendPromptVisible.Should().BeFalse();
+        viewModel.SessionItems.Should().BeEmpty();
+        viewModel.CurrentSession!.Items.Should().BeEmpty();
+        viewModel.StatusMessage.Should().Contain("saved to history");
+    }
+
+    [Fact]
+    public async Task SendNextCommand_ShouldEnable_WhenSessionHasItems()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000850",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "A01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "B01",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+
+        session.Items.Add(validItem);
+        session.RecalculateItemCounters();
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+
+        viewModel.SendNextCommand.CanExecute(null).Should().BeFalse();
+        viewModel.CurrentSession = session;
+        viewModel.SendNextCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task SendNextCommand_ShouldEnable_WhenItemAddedToSameSessionInstance()
+    {
+        // Reproduces the real AddDraftItem flow: UpsertBatchItemAsync mutates and returns the
+        // SAME session instance, and AddDraftItemAsync then reassigns SessionItems to a new
+        // collection. The Send command must re-evaluate on the SessionItems reassignment because
+        // reassigning CurrentSession to the same reference raises no PropertyChanged.
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var validation = new Mock<IService_ScannerValidation>();
+        var session = new Model_ScannerBatchSession
+        {
+            SessionId = Guid.NewGuid(),
+            OwnerUserId = "u-1",
+            OwnerDisplayName = "Operator A",
+            SessionName = "Draft",
+            ActiveProfileId = Guid.NewGuid(),
+        };
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+
+        viewModel.SendNextCommand.CanExecute(null).Should().BeFalse();
+
+        session.Items.Add(
+            new Model_ScannerBatchItem
+            {
+                ItemId = Guid.NewGuid(),
+                SessionId = session.SessionId,
+                SequenceNumber = 1,
+                PayloadPartId = "MMC0000850",
+                PayloadFromWarehouse = "002",
+                PayloadFromLocation = "A01",
+                PayloadToWarehouse = "002",
+                PayloadToLocation = "B01",
+                PayloadQuantity = "1",
+                ValidationState = Enum_ScannerValidationState.Valid,
+            }
+        );
+        session.RecalculateItemCounters();
+
+        viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+
+        viewModel.SendNextCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Fact]
@@ -521,6 +675,8 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+        SetupTransferLookup(validation, found: false);
+        SetShortTransferConfirmTimeout(viewModel);
 
         await viewModel.SendNextCommand.ExecuteAsync(null);
         viewModel.IsSendPromptVisible.Should().BeTrue();
@@ -589,6 +745,8 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         );
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [.. session.Items.OrderBy(item => item.SequenceNumber)];
+        SetupTransferLookup(validation, found: false);
+        SetShortTransferConfirmTimeout(viewModel);
 
         await viewModel.SendNextCommand.ExecuteAsync(null);
         viewModel.IsSendPromptVisible.Should().BeTrue();
@@ -632,47 +790,6 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
 
         viewModel.IsQuantityEnabled.Should().BeFalse();
         viewModel.MaxQuantity.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task StopAfterThisCommand_ShouldRequestStopAndPreserveCurrentBatch()
-    {
-        var workflow = new Mock<IService_ScannerWorkflow>();
-        var validation = new Mock<IService_ScannerValidation>();
-        var session = new Model_ScannerBatchSession
-        {
-            SessionId = Guid.NewGuid(),
-            OwnerUserId = "u-1",
-            OwnerDisplayName = "Operator A",
-            SessionName = "Draft",
-            ActiveProfileId = Guid.NewGuid(),
-        };
-
-        var execution = new Mock<IService_ScannerExecution>();
-        execution
-            .Setup(service => service.RequestStopAsync(session))
-            .ReturnsAsync(
-                () =>
-                {
-                    session.StopRequested = true;
-                    session.StopReason = Enum_ScannerStopReason.UserStop;
-                    return Model_Dao_Result_Factory.Success();
-                }
-            );
-
-        var viewModel = CreateWorkbenchViewModel(
-            workflow.Object,
-            validation.Object,
-            execution.Object
-        );
-        viewModel.CurrentSession = session;
-        viewModel.SessionItems = [.. session.Items];
-
-        await viewModel.StopAfterThisCommand.ExecuteAsync(null);
-
-        viewModel.CurrentSession!.StopRequested.Should().BeTrue();
-        viewModel.CurrentSession!.StopReason.Should().Be(Enum_ScannerStopReason.UserStop);
-        viewModel.StatusMessage.Should().Contain("Stop requested");
     }
 
     [Fact]
@@ -828,6 +945,33 @@ public sealed class ViewModel_Scanner_WorkbenchHistoryTests
         // The quantity/stock match in the view relies on the canonical (DB) location id, so the
         // ViewModel must replace the display-formatted value ("V-A1-01") with the canonical form.
         viewModel.NewFromLocation.Should().Be("VA101");
+    }
+
+    private static void SetupTransferLookup(
+        Mock<IService_ScannerValidation> validation,
+        bool found
+    )
+    {
+        validation
+            .Setup(service =>
+                service.TransferSavedSinceAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<decimal>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(found));
+    }
+
+    private static void SetShortTransferConfirmTimeout(ViewModel_Scanner_Workbench viewModel)
+    {
+        viewModel.TransferConfirmTimeout = TimeSpan.FromMilliseconds(20);
+        viewModel.TransferConfirmPollInterval = TimeSpan.FromMilliseconds(1);
     }
 
     private static ViewModel_Scanner_Workbench CreateWorkbenchViewModel(

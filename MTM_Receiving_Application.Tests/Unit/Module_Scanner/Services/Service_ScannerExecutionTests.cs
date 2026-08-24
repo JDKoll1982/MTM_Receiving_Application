@@ -109,30 +109,6 @@ public sealed class Service_ScannerExecutionTests
     }
 
     [Fact]
-    public async Task RequestStopAsync_ShouldSetStopRequested()
-    {
-        var service = CreateExecutionService();
-        var session = CreateSession();
-
-        var result = await service.RequestStopAsync(session);
-
-        result.Success.Should().BeTrue();
-        session.StopRequested.Should().BeTrue();
-        session.StopReason.Should().Be(Enum_ScannerStopReason.UserStop);
-    }
-
-    [Fact]
-    public async Task RequestStopAsync_ShouldFail_WhenSessionIsNull()
-    {
-        var service = CreateExecutionService();
-
-        var result = await service.RequestStopAsync(null!);
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Session is required.");
-    }
-
-    [Fact]
     public async Task ClearTargetFormAsync_ShouldSendAltL()
     {
         var engine = new Mock<IService_ScannerInputEngine>();

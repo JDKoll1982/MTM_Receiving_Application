@@ -228,25 +228,10 @@
 
                         <StackPanel Grid.Row="4" Spacing="8">
                             <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Keyboard Shortcuts" />
-                            <Grid ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox Grid.Column="0" Header="Start/Send" Text="{x:Bind ViewModel.SendShortcutChord, Mode=TwoWay}" />
-                                <TextBox Grid.Column="1" Header="Stop" Text="{x:Bind ViewModel.StopShortcutChord, Mode=TwoWay}" />
-                            </Grid>
+                            <TextBox Header="Start/Send" Text="{x:Bind ViewModel.SendShortcutChord, Mode=TwoWay}" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Keys must be different. Stop works between items." />
-                            <Border
-                                Padding="10"
-                                Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
-                                CornerRadius="6">
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Use distinct shortcuts to prevent accidental stop/start overlap." />
-                            </Border>
+                                Text="Hotkey that triggers a manual send." />
                         </StackPanel>
 
                         <StackPanel

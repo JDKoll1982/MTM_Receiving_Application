@@ -44,7 +44,7 @@
                 <Border
                     Grid.Row="0"
                     Padding="12,6"
-                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                    Background="{StaticResource DunnageAccentBrush}"
                     CornerRadius="8,8,0,0">
                     <StackPanel
                         HorizontalAlignment="Center"

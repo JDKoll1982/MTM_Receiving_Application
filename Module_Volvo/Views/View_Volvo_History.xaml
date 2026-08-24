@@ -30,6 +30,7 @@
             </Button>
             <TextBlock
                 VerticalAlignment="Center"
+                Foreground="{StaticResource VolvoAccentBrush}"
                 Style="{StaticResource TitleTextBlockStyle}"
                 Text="Volvo Shipment History" />
         </StackPanel>

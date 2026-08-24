@@ -18,6 +18,8 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
+using MTM_Receiving_Application.Module_Shared.Views.Controls;
 
 namespace MTM_Receiving_Application.Module_Scanner.Views;
 
@@ -72,7 +74,7 @@ public sealed partial class View_Scanner_Workbench : Page
 
     private void FocusPartIdTextBox()
     {
-        PartIdTextBox?.Focus(FocusState.Programmatic);
+        PartIdLookupControl?.FocusInput();
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -119,6 +121,7 @@ public sealed partial class View_Scanner_Workbench : Page
                 _paddingRules = rules?.Where(static rule => rule is not null).ToList() ?? [];
             }
 
+            ApplyPartPaddingRulesToLookupControl();
             _paddingSettingsLoaded = true;
         }
         catch (Exception ex)
@@ -126,47 +129,126 @@ public sealed partial class View_Scanner_Workbench : Page
             Debug.WriteLine($"[ScannerWorkbench] Failed to load part padding settings: {ex.Message}");
             _isPaddingEnabled = false;
             _paddingRules = [];
+            ApplyPartPaddingRulesToLookupControl();
             _paddingSettingsLoaded = true;
         }
     }
 
-    private async void PartTextBox_LostFocus(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Feeds the loaded part-number padding rules into the shared lookup control so it applies
+    /// the same prefix padding before running exact-match/fuzzy validation.
+    /// </summary>
+    private void ApplyPartPaddingRulesToLookupControl()
     {
-        if (sender is not TextBox textBox)
+        if (PartIdLookupControl is null)
         {
             return;
         }
 
+        if (!_isPaddingEnabled || _paddingRules.Count == 0)
+        {
+            PartIdLookupControl.PrefixPaddingRules = Array.Empty<Model_SharedLookupPrefixPaddingRule>();
+            return;
+        }
+
+        PartIdLookupControl.PrefixPaddingRules = _paddingRules
+            .Where(rule => rule.IsEnabled)
+            .Select(rule => new Model_SharedLookupPrefixPaddingRule
+            {
+                Prefix = rule.Prefix,
+                MaxLength = rule.MaxLength,
+                PadCharacter = rule.PadChar,
+                IsEnabled = rule.IsEnabled,
+            })
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Runs after the shared lookup control validates the typed part. When the part has no exact
+    /// match but fuzzy candidates exist, prompts the operator with the fuzzy-search picker and
+    /// commits the chosen part into the NewPartId field (mirrors Receiving part entry).
+    /// </summary>
+    private async void PartIdLookupControl_ValidationCompleted(
+        object sender,
+        Model_SharedLookupValidationCompletedEventArgs e
+    )
+    {
         if (!_paddingSettingsLoaded)
         {
             await LoadPaddingSettingsAsync();
-        }
-
-        var value = textBox.Text?.Trim();
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            ViewModel.NewPartId = string.Empty;
+            await PartIdLookupControl.ValidateAsync();
             return;
         }
 
-        var formattedPartId = ApplyPartNumberPadding(value);
-        if (string.Equals(formattedPartId, value, StringComparison.Ordinal))
+        if (!e.Result.IsValid)
         {
+            ViewModel.ShowStatus(
+                e.Result.Message,
+                MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
             return;
         }
 
-        ViewModel.NewPartId = formattedPartId;
-        textBox.Text = formattedPartId;
+        if (e.Result.UsedFuzzyFallback && e.Result.HasExactMatch is false)
+        {
+            var selectedResult = await ShowPartFuzzyPickerAsync(
+                e.Result.FormattedValue,
+                e.Result.FuzzyCandidates
+            );
+
+            if (selectedResult is null)
+            {
+                PartIdLookupControl.InputValue = string.Empty;
+                ViewModel.NewPartId = string.Empty;
+                return;
+            }
+
+            var selectedValue = (selectedResult.Key ?? selectedResult.Label ?? string.Empty)
+                .Trim();
+            if (string.IsNullOrWhiteSpace(selectedValue))
+            {
+                PartIdLookupControl.InputValue = string.Empty;
+                ViewModel.NewPartId = string.Empty;
+                return;
+            }
+
+            PartIdLookupControl.InputValue = selectedValue;
+            ViewModel.NewPartId = selectedValue;
+        }
     }
 
-    private string ApplyPartNumberPadding(string input)
+    private async Task<Model_FuzzySearchResult?> ShowPartFuzzyPickerAsync(
+        string searchTerm,
+        IReadOnlyList<Model_FuzzySearchResult> items
+    )
     {
-        if (!_paddingSettingsLoaded || !_isPaddingEnabled || _paddingRules.Count == 0)
+        if (items.Count == 0)
         {
-            return input;
+            return null;
         }
 
-        return Model_PartNumberPrefixRule.ApplyBestMatchingRule(_paddingRules.ToArray(), input);
+        var xamlRoot = XamlRoot;
+        if (xamlRoot is null)
+        {
+            return null;
+        }
+
+        var dialog = new Dialog_FuzzySearchPicker(
+            items,
+            "Select Part",
+            $"No exact part match was found for '{searchTerm}'. Select a similar part to continue."
+        )
+        {
+            XamlRoot = xamlRoot,
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return null;
+        }
+
+        return dialog.SelectedResult;
     }
 
     private async void FromLocationTextBox_LostFocus(object sender, RoutedEventArgs e)

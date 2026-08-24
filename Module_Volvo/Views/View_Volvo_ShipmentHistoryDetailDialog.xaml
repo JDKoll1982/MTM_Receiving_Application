@@ -51,7 +51,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Spacing="4">
-                                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.WindowTitle, Mode=OneWay}" />
+                                <TextBlock Foreground="{StaticResource VolvoAccentBrush}" Style="{StaticResource TitleTextBlockStyle}" Text="{x:Bind ViewModel.WindowTitle, Mode=OneWay}" />
                                 <TextBlock Opacity="0.75" Text="Read-only shipment detail from the Volvo history archive." />
                             </StackPanel>
 

@@ -218,6 +218,7 @@
                     </Grid.RowDefinitions>
 
                     <Border
+                        x:Name="HeaderBarBorder"
                         Grid.Row="0"
                         Padding="12,10"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
@@ -247,7 +248,7 @@
                                     Click="HeaderBackButton_Click"
                                     CornerRadius="8"
                                     Visibility="Collapsed">
-                                    <FontIcon FontSize="14" Glyph="&#xE72B;" />
+                                    <FontIcon x:Name="HeaderBackButtonIcon" FontSize="14" Glyph="&#xE72B;" />
                                 </Button>
 
                                 <TextBlock

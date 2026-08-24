@@ -103,7 +103,7 @@
   <rect x="308" y="748" width="960" height="104" rx="10" class="card"/>
   <text x="328" y="776" class="text-h2">Send Controls</text>
   <rect x="328" y="792" width="122" height="36" rx="6" class="btn"/><text x="352" y="815" class="text-btn">Check All</text>
-  <rect x="460" y="792" width="138" height="36" rx="6" class="btn-accent"/><text x="485" y="815" class="text-btn-accent">Send Next</text>
+  <rect x="460" y="792" width="138" height="36" rx="6" class="btn-accent"/><text x="485" y="815" class="text-btn-accent">Send</text>
   <rect x="608" y="792" width="142" height="36" rx="6" class="btn-accent"/><text x="646" y="815" class="text-btn-accent">Send All</text>
   <rect x="760" y="792" width="188" height="36" rx="6" class="btn"/><text x="788" y="815" class="text-btn">Stop After This</text>
   <rect x="958" y="792" width="130" height="36" rx="6" class="btn"/><text x="986" y="815" class="text-btn">Clear History</text>
