@@ -54,7 +54,9 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IRes
             || string.IsNullOrWhiteSpace(load.PoNumber) is false
             || string.IsNullOrWhiteSpace(load.Location) is false
             || string.IsNullOrWhiteSpace(load.HomeLocation) is false
-            || load.SpecValues is { Count: > 0 }
+            || Enumerable.Range(1, 10).Any(slot =>
+                !string.IsNullOrWhiteSpace(load.GetUdcValue(slot))
+            )
         );
 
     public void ResetToDefaults()
@@ -266,10 +268,16 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IRes
                 load.Location = lastLoad.Location;
             }
 
-            // Copy specs if they exist
-            if (load.SpecValues == null && lastLoad.SpecValues != null)
+            // Copy udc values if they exist
+            for (var slot = 1; slot <= 10; slot++)
             {
-                load.SpecValues = new Dictionary<string, object>(lastLoad.SpecValues);
+                if (
+                    string.IsNullOrWhiteSpace(load.GetUdcValue(slot))
+                    && lastLoad.GetUdcValue(slot) is not null
+                )
+                {
+                    load.SetUdcValue(slot, lastLoad.GetUdcValue(slot));
+                }
             }
         }
 
@@ -336,17 +344,15 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IRes
                 SelectedLoad.DunnageType = type.TypeName;
             }
 
-            // Auto-fill Spec Values from part master data
-            if (part.SpecValuesDict?.Count > 0 || part.PartSpecificSpecDefinitions.Count > 0)
+            // Auto-fill udc values from part master data
+            var partUdc = Helper_Dunnage_PartSpecs.ExtractUdc(part);
+            for (var slot = 1; slot <= 10; slot++)
             {
-                SelectedLoad.SpecValues = Helper_Dunnage_PartSpecs.BuildRuntimeValues(
-                    part.SpecValuesDict ?? new Dictionary<string, object>(),
-                    part.PartSpecificSpecDefinitions
-                );
-                _logger.LogInfo(
-                    $"Auto-filled {SelectedLoad.SpecValues.Count} runtime spec values for Part ID: {SelectedLoad.PartId}",
-                    "ManualEntry"
-                );
+                var value = Helper_Dunnage_PartSpecs.GetValueForSlot(partUdc, slot);
+                if (string.IsNullOrWhiteSpace(value) is false)
+                {
+                    SelectedLoad.SetUdcValue(slot, value);
+                }
             }
 
             // Set default values
@@ -590,10 +596,34 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IRes
     {
         try
         {
-            var specKeys = await _dunnageService.GetAllSpecKeysAsync();
-            SpecColumnHeaders = specKeys;
+            var columnNames = new List<string>();
+            var typesResult = await _dunnageService.GetAllTypesAsync();
+            if (typesResult.IsSuccess && typesResult.Data != null)
+            {
+                foreach (var type in typesResult.Data)
+                {
+                    var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(type.Id);
+                    if (fieldsResult.IsSuccess && fieldsResult.Data != null)
+                    {
+                        foreach (var field in fieldsResult.Data)
+                        {
+                            if (
+                                columnNames.Contains(
+                                    field.FieldName,
+                                    StringComparer.OrdinalIgnoreCase
+                                ) is false
+                            )
+                            {
+                                columnNames.Add(field.FieldName);
+                            }
+                        }
+                    }
+                }
+            }
+
+            SpecColumnHeaders = columnNames;
             _logger.LogInfo(
-                $"Loaded {SpecColumnHeaders.Count} dynamic spec columns",
+                $"Loaded {SpecColumnHeaders.Count} custom-field columns",
                 "ManualEntry"
             );
         }
@@ -628,13 +658,15 @@ public partial class ViewModel_Dunnage_ManualEntry : ViewModel_Shared_Base, IRes
                     load.DunnageType = type.TypeName;
                 }
 
-                // Auto-fill specs from part master
-                if (part.SpecValuesDict?.Count > 0 || part.PartSpecificSpecDefinitions.Count > 0)
+                // Auto-fill udc values from part master
+                var partUdc = Helper_Dunnage_PartSpecs.ExtractUdc(part);
+                for (var slot = 1; slot <= 10; slot++)
                 {
-                    load.SpecValues = Helper_Dunnage_PartSpecs.BuildRuntimeValues(
-                        part.SpecValuesDict ?? new Dictionary<string, object>(),
-                        part.PartSpecificSpecDefinitions
-                    );
+                    var value = Helper_Dunnage_PartSpecs.GetValueForSlot(partUdc, slot);
+                    if (string.IsNullOrWhiteSpace(value) is false)
+                    {
+                        load.SetUdcValue(slot, value);
+                    }
                 }
 
                 _logger.LogInfo($"Auto-populated data for Part ID: {load.PartId}", "ManualEntry");

@@ -13,6 +13,22 @@
                 <ResourceDictionary Source="ms-appx:///Module_Core/Themes/ModuleAccentBrushes.xaml" />
                 <!--  Other merged dictionaries here  -->
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <!--
+                    Header user avatar (PersonPicture): keep the initials circle and its
+                    initials readable in both themes. Overrides the WinUI defaults so the
+                    initials are white on a mid-gray circle, visible on the light/dark
+                    user card fill.
+                -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="White" />
+                    <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="#5A5A5A" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="White" />
+                    <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="#5A5A5A" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
             <!--  Other app resources here  -->
             <!--  Horizontal content can scroll freely while vertical scrolling stays locked.  -->
             <Style x:Key="SharedScrollViewerHorizontalOnVerticalOffHiddenStyle" TargetType="ScrollViewer">

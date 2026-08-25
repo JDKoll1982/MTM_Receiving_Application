@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentLine_Insert
 -- =====================================================
 -- Purpose: Insert shipment line with calculated piece count
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

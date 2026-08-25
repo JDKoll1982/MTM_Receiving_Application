@@ -84,7 +84,7 @@
 -- Last Modified: December 16, 2025
 -- Modified By: System Setup
 -- ============================================================================
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_GetByWindowsUsername`;
 

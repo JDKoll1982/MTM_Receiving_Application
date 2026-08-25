@@ -73,8 +73,7 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
             "BIN-200",
             "Each",
             "Pallets",
-            "{\"color\":\"Blue\"}",
-            "{\"color\":\"Red\"}",
+            true,
             "Images/old.png",
             "Images/new.png"
         );
@@ -93,8 +92,7 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
             "BIN-100",
             "Each",
             "Each",
-            "{\"color\":\"Blue\"}",
-            "{\"color\":\"Blue\"}",
+            false,
             "Images/same.png",
             "Images/same.png"
         );
@@ -107,8 +105,7 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
         string updatedPartId,
         string originalQuantityType,
         string updatedQuantityType,
-        string originalSpecValuesJson,
-        string updatedSpecValuesJson,
+        bool specValuesChanged,
         string? originalImagePath,
         string? updatedImagePath
     )
@@ -128,8 +125,7 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
                     updatedPartId,
                     originalQuantityType,
                     updatedQuantityType,
-                    originalSpecValuesJson,
-                    updatedSpecValuesJson,
+                    specValuesChanged,
                     originalImagePath,
                     updatedImagePath,
                 ]

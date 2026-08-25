@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -25,7 +24,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly Dao_DunnageType _daoDunnageType;
         private readonly Dao_DunnagePart _daoDunnagePart;
         private readonly Dao_DunnageQuantityType _daoDunnageQuantityType;
-        private readonly Dao_DunnageSpec _daoDunnageSpec;
         private readonly Dao_InventoriedDunnage _daoInventoriedDunnage;
         private readonly Dao_DunnageCustomField _daoCustomField;
         private readonly Dao_DunnageUserPreference _daoUserPreference;
@@ -44,7 +42,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Dao_DunnageType daoDunnageType,
             Dao_DunnagePart daoDunnagePart,
             Dao_DunnageQuantityType daoDunnageQuantityType,
-            Dao_DunnageSpec daoDunnageSpec,
             Dao_InventoriedDunnage daoInventoriedDunnage,
             Dao_DunnageCustomField daoCustomField,
             Dao_DunnageUserPreference daoUserPreference,
@@ -60,7 +57,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _daoDunnageType = daoDunnageType;
             _daoDunnagePart = daoDunnagePart;
             _daoDunnageQuantityType = daoDunnageQuantityType;
-            _daoDunnageSpec = daoDunnageSpec;
             _daoInventoriedDunnage = daoInventoriedDunnage;
             _daoCustomField = daoCustomField;
             _daoUserPreference = daoUserPreference;
@@ -323,15 +319,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
-                var deleteSpecsResult = await _daoDunnageSpec.DeleteByTypeAsync(typeId);
-                if (!deleteSpecsResult.IsSuccess)
-                {
-                    await _logger.LogErrorAsync(
-                        $"Failed to delete specs for dunnage type ID {typeId}: {deleteSpecsResult.ErrorMessage}"
-                    );
-                    return deleteSpecsResult;
-                }
-
                 var result = await _daoDunnageType.DeleteAsync(typeId, CurrentUser);
                 if (result.IsSuccess)
                 {
@@ -387,160 +374,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 return Model_Dao_Result_Factory.Failure<int>(
                     $"Error checking duplicate type name: {ex.Message}"
                 );
-            }
-        }
-
-        // ==================== Spec Operations ====================
-
-        public async Task<Model_Dao_Result<List<Model_DunnageSpec>>> GetSpecsForTypeAsync(
-            int typeId
-        )
-        {
-            try
-            {
-                return await _daoDunnageSpec.GetByTypeAsync(typeId);
-            }
-            catch (Exception ex)
-            {
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Error,
-                    nameof(GetSpecsForTypeAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return Model_Dao_Result_Factory.Failure<List<Model_DunnageSpec>>(
-                    $"Error retrieving specs: {ex.Message}"
-                );
-            }
-        }
-
-        public async Task<Model_Dao_Result> InsertSpecAsync(Model_DunnageSpec spec)
-        {
-            try
-            {
-                await _logger.LogInfoAsync(
-                    $"Inserting spec '{spec.SpecKey}' for type ID {spec.TypeId} by user: {CurrentUser}"
-                );
-                var result = await _daoDunnageSpec.InsertAsync(
-                    spec.TypeId,
-                    spec.SpecKey,
-                    spec.SpecValue,
-                    CurrentUser
-                );
-                if (result.IsSuccess)
-                {
-                    spec.Id = result.Data;
-                    await _logger.LogInfoAsync(
-                        $"Successfully inserted spec '{spec.SpecKey}' with ID: {spec.Id}"
-                    );
-                    return Model_Dao_Result_Factory.Success();
-                }
-                await _logger.LogErrorAsync(
-                    $"Failed to insert spec '{spec.SpecKey}' for type ID {spec.TypeId}: {result.ErrorMessage}"
-                );
-                return Model_Dao_Result_Factory.Failure(result.ErrorMessage);
-            }
-            catch (Exception ex)
-            {
-                await _logger.LogErrorAsync(
-                    $"Exception in InsertSpecAsync for spec '{spec.SpecKey}': {ex.Message}"
-                );
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Error,
-                    nameof(InsertSpecAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return Model_Dao_Result_Factory.Failure($"Error inserting spec: {ex.Message}");
-            }
-        }
-
-        public async Task<Model_Dao_Result> UpdateSpecAsync(Model_DunnageSpec spec)
-        {
-            try
-            {
-                await _logger.LogInfoAsync(
-                    $"Updating spec ID {spec.Id}: {spec.SpecKey} = {spec.SpecValue} by user: {CurrentUser}"
-                );
-                var result = await _daoDunnageSpec.UpdateAsync(
-                    spec.Id,
-                    spec.SpecValue,
-                    CurrentUser
-                );
-                if (result.IsSuccess)
-                {
-                    await _logger.LogInfoAsync(
-                        $"Successfully updated spec ID {spec.Id}: {spec.SpecKey}"
-                    );
-                }
-                else
-                {
-                    await _logger.LogErrorAsync(
-                        $"Failed to update spec ID {spec.Id}: {result.ErrorMessage}"
-                    );
-                }
-                return result;
-            }
-            catch (Exception ex)
-            {
-                await _logger.LogErrorAsync(
-                    $"Exception in UpdateSpecAsync for spec ID {spec.Id}: {ex.Message}"
-                );
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Error,
-                    nameof(UpdateSpecAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return Model_Dao_Result_Factory.Failure($"Error updating spec: {ex.Message}");
-            }
-        }
-
-        public async Task<Model_Dao_Result> DeleteSpecAsync(int specId)
-        {
-            try
-            {
-                return await _daoDunnageSpec.DeleteByIdAsync(specId);
-            }
-            catch (Exception ex)
-            {
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Error,
-                    nameof(DeleteSpecAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return Model_Dao_Result_Factory.Failure($"Error deleting spec: {ex.Message}");
-            }
-        }
-
-        public async Task<Model_Dao_Result> DeleteSpecsByTypeIdAsync(int typeId)
-        {
-            // Not implemented in DAO yet, but typically handled by cascade delete in DB
-            return Model_Dao_Result_Factory.Success();
-        }
-
-        public async Task<List<string>> GetAllSpecKeysAsync()
-        {
-            try
-            {
-                var result = await _daoDunnageSpec.GetAllAsync();
-                if (result.IsSuccess && result.Data != null)
-                {
-                    return result.Data.Select(s => s.SpecKey).Distinct().Order().ToList();
-                }
-
-                return new List<string>();
-            }
-            catch (Exception ex)
-            {
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Error,
-                    nameof(GetAllSpecKeysAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return new List<string>();
             }
         }
 
@@ -629,11 +462,19 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 var persistedImagePath = persistedImagePathResult.Data;
-                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertAsync(
                     part.PartId,
                     part.TypeId,
-                    part.SpecValues,
+                    part.Udc1,
+                    part.Udc2,
+                    part.Udc3,
+                    part.Udc4,
+                    part.Udc5,
+                    part.Udc6,
+                    part.Udc7,
+                    part.Udc8,
+                    part.Udc9,
+                    part.Udc10,
                     persistedImagePath,
                     part.QuantityType,
                     part.HomeLocation,
@@ -699,11 +540,19 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 var persistedImagePath = persistedImagePathResult.Data;
-                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.InsertWithInventoryAsync(
                     part.PartId,
                     part.TypeId,
-                    part.SpecValues,
+                    part.Udc1,
+                    part.Udc2,
+                    part.Udc3,
+                    part.Udc4,
+                    part.Udc5,
+                    part.Udc6,
+                    part.Udc7,
+                    part.Udc8,
+                    part.Udc9,
+                    part.Udc10,
                     persistedImagePath,
                     part.QuantityType,
                     part.HomeLocation,
@@ -756,11 +605,19 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 var persistedImagePath = persistedImagePathResult.Data;
-                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
                 var result = await _daoDunnagePart.UpdateAsync(
                     part.Id,
                     part.PartId,
-                    part.SpecValues,
+                    part.Udc1,
+                    part.Udc2,
+                    part.Udc3,
+                    part.Udc4,
+                    part.Udc5,
+                    part.Udc6,
+                    part.Udc7,
+                    part.Udc8,
+                    part.Udc9,
+                    part.Udc10,
                     persistedImagePath,
                     part.QuantityType,
                     part.HomeLocation,
@@ -834,13 +691,21 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 var persistedImagePath = persistedImagePathResult.Data;
-                part.SpecValues = BuildSpecValuesWithImagePath(part.SpecValues, persistedImagePath);
 
                 var updateResult = await _daoDunnagePart.UpdateWithInventoryAndReferencesAsync(
                     part.Id,
                     originalPartId,
                     part.PartId,
-                    part.SpecValues,
+                    part.Udc1,
+                    part.Udc2,
+                    part.Udc3,
+                    part.Udc4,
+                    part.Udc5,
+                    part.Udc6,
+                    part.Udc7,
+                    part.Udc8,
+                    part.Udc9,
+                    part.Udc10,
                     persistedImagePath,
                     part.QuantityType,
                     part.HomeLocation,
@@ -1762,29 +1627,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
-        public async Task<Model_Dao_Result<int>> GetPartCountBySpecKeyAsync(
-            int typeId,
-            string specKey
-        )
-        {
-            try
-            {
-                return await _daoDunnageSpec.CountPartsUsingSpecAsync(typeId, specKey);
-            }
-            catch (Exception ex)
-            {
-                HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Warning,
-                    nameof(GetPartCountBySpecKeyAsync),
-                    nameof(Service_MySQL_Dunnage)
-                );
-                return Model_Dao_Result_Factory.Failure<int>(
-                    $"Error counting parts using spec: {ex.Message}"
-                );
-            }
-        }
-
         // ==================== Custom Field Operations ====================
 
         public async Task<Model_Dao_Result> InsertCustomFieldAsync(
@@ -1877,6 +1719,71 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure(
                     $"Error deleting custom field: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result> InsertCustomFieldChoiceAsync(
+            int customFieldId,
+            string choice,
+            int sortOrder
+        )
+        {
+            try
+            {
+                return await _daoCustomField.InsertChoiceAsync(customFieldId, choice, sortOrder);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(InsertCustomFieldChoiceAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error inserting custom field choice: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result> DeleteCustomFieldChoicesAsync(int customFieldId)
+        {
+            try
+            {
+                return await _daoCustomField.DeleteChoicesByFieldAsync(customFieldId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(DeleteCustomFieldChoicesAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error deleting custom field choices: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result<List<Model_DunnageCustomFieldChoice>>>
+            GetCustomFieldChoicesAsync(int customFieldId)
+        {
+            try
+            {
+                return await _daoCustomField.GetChoicesByFieldAsync(customFieldId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(GetCustomFieldChoicesAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<List<Model_DunnageCustomFieldChoice>>(
+                    $"Error retrieving custom field choices: {ex.Message}"
                 );
             }
         }
@@ -2116,42 +2023,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
 
             return Model_Dao_Result_Factory.Success<string?>(importResult.Data);
-        }
-
-        private string BuildSpecValuesWithImagePath(string? specValuesJson, string? imagePath)
-        {
-            Dictionary<string, JsonElement> specValues;
-
-            try
-            {
-                specValues =
-                    JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
-                        string.IsNullOrWhiteSpace(specValuesJson) ? "{}" : specValuesJson
-                    ) ?? new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-            }
-            catch (JsonException)
-            {
-                specValues = new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-            }
-
-            var payload = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-            foreach (var pair in specValues)
-            {
-                if (string.Equals(pair.Key, "image_path", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                payload[pair.Key] = pair.Value.Clone();
-            }
-
-            var normalizedImagePath = _imageStorage.GetNormalizedFullPath(imagePath);
-            if (string.IsNullOrWhiteSpace(normalizedImagePath) is false)
-            {
-                payload["image_path"] = normalizedImagePath;
-            }
-
-            return payload.Count == 0 ? "{}" : JsonSerializer.Serialize(payload);
         }
 
         private async Task CleanupReplacedImageAsync(

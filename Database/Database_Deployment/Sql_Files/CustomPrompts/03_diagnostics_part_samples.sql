@@ -1,4 +1,4 @@
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 -- Total rows
 SELECT COUNT(*) AS receiving_history_rows FROM receiving_history;

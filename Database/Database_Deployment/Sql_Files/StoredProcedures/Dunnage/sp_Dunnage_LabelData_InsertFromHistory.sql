@@ -6,7 +6,7 @@
 --              PRIMARY KEY on dunnage_label_data.load_uuid plus the duplicate guard below
 --              prevent double-queuing.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_InsertFromHistory`;
 
@@ -48,7 +48,16 @@ BEGIN
             label_number,
             part_skid_sequence,
             part_skid_total,
-            specs_json,
+            udc1,
+            udc2,
+            udc3,
+            udc4,
+            udc5,
+            udc6,
+            udc7,
+            udc8,
+            udc9,
+            udc10,
             is_reprint
         )
         SELECT
@@ -67,7 +76,16 @@ BEGIN
             dh.label_number,
             dh.part_skid_sequence,
             dh.part_skid_total,
-            dh.specs_json,
+            dh.udc1,
+            dh.udc2,
+            dh.udc3,
+            dh.udc4,
+            dh.udc5,
+            dh.udc6,
+            dh.udc7,
+            dh.udc8,
+            dh.udc9,
+            dh.udc10,
             1
         FROM dunnage_history dh
         WHERE dh.load_uuid = p_load_uuid;

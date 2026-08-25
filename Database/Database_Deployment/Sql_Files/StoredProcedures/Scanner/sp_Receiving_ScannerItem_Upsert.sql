@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_Upsert
 -- Description: Adds or updates one ordered scanner item for a session.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_Upsert`;
 

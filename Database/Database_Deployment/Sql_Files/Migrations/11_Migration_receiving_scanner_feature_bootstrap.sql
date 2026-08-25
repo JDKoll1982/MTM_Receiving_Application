@@ -5,7 +5,7 @@
 --          scanner feature support.
 -- ============================================================================
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 -- NOTE:
 -- Execute files in this folder set in the order documented by

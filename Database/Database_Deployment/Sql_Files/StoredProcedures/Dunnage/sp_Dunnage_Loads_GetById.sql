@@ -24,7 +24,16 @@ BEGIN
         l.label_number,
         l.part_skid_sequence,
         l.part_skid_total,
-        l.specs_json
+        l.udc1,
+        l.udc2,
+        l.udc3,
+        l.udc4,
+        l.udc5,
+        l.udc6,
+        l.udc7,
+        l.udc8,
+        l.udc9,
+        l.udc10
     FROM dunnage_history l
     LEFT JOIN dunnage_parts p ON l.part_id = p.part_id
     LEFT JOIN dunnage_types t ON p.type_id = t.id

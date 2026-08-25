@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,17 +20,15 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 {
-    private const int WizardStepCount = 4;
+    private const int WizardStepCount = 3;
     private const int ConfiguredSpecsPerPage = 6;
     private const int QuantityTypeWizardStep = 2;
-    private const int PartSpecificWizardStep = 3;
 
     public bool WasAccepted { get; private set; }
 
     public string PartId { get; private set; } = string.Empty;
     public int TypeId { get; }
     public string TypeName { get; }
-    public string SpecValuesJson { get; private set; } = "{}";
     public string HomeLocation { get; private set; } = string.Empty;
     public string ResolvedQuantityType { get; private set; } = "Quantity";
     public string SelectedInventoryMethod { get; private set; } = "Not Inventoried";
@@ -39,12 +37,12 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     public bool RequestDelete { get; private set; }
     public bool RequestSaveQuantityTypeForFutureUse { get; private set; }
 
-    private readonly List<Model_DunnageSpec> _specs;
+    private readonly List<Model_CustomFieldDefinition> _customFields;
     private readonly List<Model_DunnageQuantityType> _availableQuantityTypes;
     private readonly List<FrameworkElement> _specPanels = new();
     private readonly Dictionary<string, Control> _specInputs = new();
-    private readonly ObservableCollection<Model_SpecItem> _partSpecificSpecs = new();
-    private readonly ObservableCollection<string> _partSpecificChoices = new();
+    private readonly Dictionary<int, Model_CustomFieldDefinition> _fieldsBySlot = new();
+    private readonly string?[] _udcValues = new string?[10];
     private readonly ObservableCollection<Model_DunnageQuantityType> _quantityTypes = new();
     private readonly IService_DunnageImageStorage _imageStorage;
     private string _initialResolvedQuantityType = "Quantity";
@@ -58,16 +56,12 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             ? Visibility.Collapsed
             : Visibility.Visible;
 
-    public ObservableCollection<Model_SpecItem> PartSpecificSpecs => _partSpecificSpecs;
-
-    public ObservableCollection<string> PartSpecificChoices => _partSpecificChoices;
-
     public ObservableCollection<Model_DunnageQuantityType> QuantityTypes => _quantityTypes;
 
     public View_Dunnage_QuickAddPartDialog(
         int typeId,
         string typeName,
-        List<Model_DunnageSpec> specs,
+        List<Model_CustomFieldDefinition> customFields,
         List<Model_DunnageQuantityType> quantityTypes,
         Model_DunnagePartDialogDraft? initialDraft = null,
         bool canDelete = false
@@ -83,12 +77,12 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         TypeId = typeId;
         TypeName = typeName;
         TypeNameTextBlock.Text = typeName;
-        _specs = specs;
+        _customFields =
+            customFields ?? new List<Model_CustomFieldDefinition>();
         _availableQuantityTypes = quantityTypes ?? new List<Model_DunnageQuantityType>();
 
         GenerateSpecFields();
         InitializeQuantityTypes();
-        InitializePartSpecificSpecEditor();
         _currentWizardStep = 0;
         UpdateWizardStepVisibility();
         UpdateWizardNavigation();
@@ -130,7 +124,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
     public Model_DunnagePartDialogDraft GetDraft()
     {
-        var specValues = BuildDraftSpecValues();
+        CopyInputValuesToUdc();
         var draft = new Model_DunnagePartDialogDraft
         {
             PartId = PartIdTextBox.Text.Trim(),
@@ -140,11 +134,26 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             SelectedQuantityType = GetSelectedQuantityType(),
             Notes = NotesTextBox.Text.Trim(),
             SelectedInventoryMethod = GetSelectedInventoryMethod(),
-            SpecValues = new Dictionary<string, object?>(specValues),
         };
 
-        draft.SpecValues.Remove("Notes");
+        for (var slot = 1; slot <= 10; slot++)
+        {
+            draft.SetUdcValue(slot, _udcValues[slot - 1]);
+        }
+
         return draft;
+    }
+
+    private void CopyInputValuesToUdc()
+    {
+        Array.Clear(_udcValues);
+        foreach (var pair in _fieldsBySlot)
+        {
+            if (_specInputs.TryGetValue(pair.Value.FieldName, out var control))
+            {
+                _udcValues[pair.Key - 1] = GetControlValue(control);
+            }
+        }
     }
 
     private void ApplyDraft(Model_DunnagePartDialogDraft draft)
@@ -157,80 +166,55 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         SelectInventoryMethod(draft.SelectedInventoryMethod);
         UpdateImagePreview();
 
-        foreach (var pair in _specInputs)
+        foreach (var pair in _fieldsBySlot)
         {
-            if (!draft.SpecValues.TryGetValue(pair.Key, out var rawValue))
+            var value = draft.GetUdcValue(pair.Key);
+            if (value is null || !_specInputs.TryGetValue(pair.Value.FieldName, out var control))
             {
                 continue;
             }
 
-            if (Helper_Dunnage_PartSpecs.TryGetSpecDefinition(rawValue, out _))
-            {
-                continue;
-            }
-
-            ApplyControlValue(pair.Value, rawValue);
+            ApplyControlValue(control, value);
         }
-
-        LoadPartSpecificSpecDefinitions(draft.SpecValues);
     }
 
     private void GenerateSpecFields()
     {
         _specPanels.Clear();
         _specInputs.Clear();
+        _fieldsBySlot.Clear();
+        Array.Clear(_udcValues);
 
-        for (var index = 0; index < _specs.Count; index++)
+        foreach (var field in _customFields.OrderBy(field => field.DisplayOrder))
         {
-            var spec = _specs[index];
-            var definition = ParseDefinition(spec.SpecValue);
-            var panel = CreateSpecPanel(spec.SpecKey, definition, out var inputControl);
+            var panel = CreateSpecPanel(field, out var inputControl);
             _specPanels.Add(panel);
-            _specInputs[spec.SpecKey] = inputControl;
+            _specInputs[field.FieldName] = inputControl;
+            if (field.DisplayOrder is >= 1 and <= 10)
+            {
+                _fieldsBySlot[field.DisplayOrder] = field;
+            }
         }
 
         _currentSpecPage = 0;
         RenderSpecPage();
     }
 
-    private static SpecDefinition ParseDefinition(string json)
-    {
-        try
-        {
-            var definition =
-                JsonSerializer.Deserialize<SpecDefinition>(json)
-                ?? new SpecDefinition { DataType = "Text" };
-
-            definition.DataType = string.IsNullOrWhiteSpace(definition.DataType)
-                ? "Text"
-                : definition.DataType;
-            definition.Unit ??= string.Empty;
-            definition.Choices ??= new List<string>();
-
-            return definition;
-        }
-        catch
-        {
-            return new SpecDefinition { DataType = "Text" };
-        }
-    }
-
     private StackPanel CreateSpecPanel(
-        string specKey,
-        SpecDefinition definition,
+        Model_CustomFieldDefinition field,
         out Control inputControl
     )
     {
         var panel = new StackPanel { Spacing = 4 };
-        var labelText = specKey;
-        if (definition.Required)
+        var labelText = field.FieldName;
+        if (field.IsRequired)
         {
             labelText += " *";
         }
 
-        if (!string.IsNullOrWhiteSpace(definition.Unit))
+        if (!string.IsNullOrWhiteSpace(field.Unit))
         {
-            labelText += $" ({definition.Unit})";
+            labelText += $" ({field.Unit})";
         }
 
         panel.Children.Add(
@@ -241,47 +225,47 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             }
         );
 
-        inputControl = CreateInputControl(specKey, definition);
+        inputControl = CreateInputControl(field);
         panel.Children.Add(inputControl);
         return panel;
     }
 
-    private static Control CreateInputControl(string specKey, SpecDefinition definition)
+    private static Control CreateInputControl(Model_CustomFieldDefinition field)
     {
-        if (string.Equals(definition.DataType, "Number", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(field.FieldType, "Number", StringComparison.OrdinalIgnoreCase))
         {
             var numberBox = new NumberBox
             {
                 PlaceholderText = "0",
                 SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
             };
-            if (definition.MinValue.HasValue)
+            if (field.MinValue.HasValue)
             {
-                numberBox.Minimum = definition.MinValue.Value;
+                numberBox.Minimum = (double)field.MinValue.Value;
             }
 
-            if (definition.MaxValue.HasValue)
+            if (field.MaxValue.HasValue)
             {
-                numberBox.Maximum = definition.MaxValue.Value;
+                numberBox.Maximum = (double)field.MaxValue.Value;
             }
 
             return numberBox;
         }
 
-        if (string.Equals(definition.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(field.FieldType, "Boolean", StringComparison.OrdinalIgnoreCase))
         {
             return new CheckBox { Content = "Yes" };
         }
 
-        if (string.Equals(definition.DataType, "Choices", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(field.FieldType, "Choices", StringComparison.OrdinalIgnoreCase))
         {
             var comboBox = new ComboBox
             {
-                PlaceholderText = $"Select {specKey.ToLowerInvariant()}",
+                PlaceholderText = $"Select {field.FieldName.ToLowerInvariant()}",
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
 
-            foreach (var choice in definition.Choices ?? new List<string>())
+            foreach (var choice in field.Choices ?? new List<string>())
             {
                 comboBox.Items.Add(choice);
             }
@@ -291,7 +275,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
         return new TextBox
         {
-            PlaceholderText = $"Enter {specKey.ToLowerInvariant()}",
+            PlaceholderText = $"Enter {field.FieldName.ToLowerInvariant()}",
             MaxLength = 100,
         };
     }
@@ -353,48 +337,24 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         NextSpecPageButton.IsEnabled = _currentSpecPage < pageCount - 1;
     }
 
-    private Dictionary<string, object?> GetConfiguredSpecValues()
+    private List<KeyValuePair<string, string?>> GetConfiguredSpecValues()
     {
-        var specValues = new Dictionary<string, object?>();
-        foreach (var pair in _specInputs)
+        var values = new List<KeyValuePair<string, string?>>();
+        foreach (var pair in _fieldsBySlot.OrderBy(item => item.Key))
         {
-            if (pair.Value is TextBox textBox && !string.IsNullOrWhiteSpace(textBox.Text))
+            if (!_specInputs.TryGetValue(pair.Value.FieldName, out var control))
             {
-                specValues[pair.Key] = textBox.Text.Trim();
+                continue;
             }
-            else if (pair.Value is NumberBox numberBox && !double.IsNaN(numberBox.Value))
+
+            var value = GetControlValue(control);
+            if (string.IsNullOrWhiteSpace(value) is false)
             {
-                specValues[pair.Key] = numberBox.Value;
-            }
-            else if (pair.Value is CheckBox checkBox)
-            {
-                specValues[pair.Key] = checkBox.IsChecked ?? false;
-            }
-            else if (pair.Value is ComboBox comboBox && comboBox.SelectedItem is string choice)
-            {
-                specValues[pair.Key] = choice.Trim();
+                values.Add(new KeyValuePair<string, string?>(pair.Value.FieldName, value));
             }
         }
 
-        return specValues;
-    }
-
-    private Dictionary<string, object?> BuildDraftSpecValues()
-    {
-        return Helper_Dunnage_PartSpecs.BuildCombinedSpecPayload(
-            GetConfiguredSpecValues(),
-            _partSpecificSpecs,
-            NotesTextBox.Text
-        );
-    }
-
-    private void InitializePartSpecificSpecEditor()
-    {
-        PartSpecificChoicesListView.ItemsSource = _partSpecificChoices;
-        PartSpecificSpecsListView.ItemsSource = _partSpecificSpecs;
-        PartSpecificSpecTypeComboBox.SelectedIndex = 0;
-        UpdatePartSpecificSpecOptionVisibility();
-        ResetPartSpecificSpecEditor();
+        return values;
     }
 
     private void InitializeQuantityTypes()
@@ -595,67 +555,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         return (false, string.Empty, false);
     }
 
-    private void LoadPartSpecificSpecDefinitions(IReadOnlyDictionary<string, object?> specValues)
-    {
-        _partSpecificSpecs.Clear();
-
-        foreach (var pair in specValues.OrderBy(item => item.Key))
-        {
-            if (string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            if (
-                _specInputs.Keys.Any(key =>
-                    string.Equals(key, pair.Key, StringComparison.OrdinalIgnoreCase)
-                )
-            )
-            {
-                continue;
-            }
-
-            if (!Helper_Dunnage_PartSpecs.TryGetSpecDefinition(pair.Value, out var definition))
-            {
-                continue;
-            }
-
-            _partSpecificSpecs.Add(Helper_Dunnage_PartSpecs.CreateSpecItem(pair.Key, definition));
-        }
-    }
-
-    private void UpdatePartSpecificSpecOptionVisibility()
-    {
-        var selectedType = PartSpecificSpecTypeComboBox.SelectedItem?.ToString() ?? "Text";
-        PartSpecificNumberOptionsBorder.Visibility = string.Equals(
-            selectedType,
-            "Number",
-            StringComparison.OrdinalIgnoreCase
-        )
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-        PartSpecificChoicesBorder.Visibility = string.Equals(
-            selectedType,
-            "Choices",
-            StringComparison.OrdinalIgnoreCase
-        )
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-    }
-
-    private void ResetPartSpecificSpecEditor()
-    {
-        PartSpecificSpecNameTextBox.Text = string.Empty;
-        PartSpecificSpecTypeComboBox.SelectedItem = "Text";
-        PartSpecificRequiredCheckBox.IsChecked = false;
-        PartSpecificUnitTextBox.Text = string.Empty;
-        PartSpecificMinValueNumberBox.Value = double.NaN;
-        PartSpecificMaxValueNumberBox.Value = double.NaN;
-        PartSpecificChoiceTextBox.Text = string.Empty;
-        _partSpecificChoices.Clear();
-        UpdatePartSpecificSpecOptionVisibility();
-    }
-
     private string BuildSuggestedPartId()
     {
         return Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
@@ -759,134 +658,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         );
     }
 
-    private void PartSpecificSpecTypeComboBox_SelectionChanged(
-        object sender,
-        SelectionChangedEventArgs e
-    )
-    {
-        UpdatePartSpecificSpecOptionVisibility();
-    }
-
-    private void AddPartSpecificChoiceButton_Click(object sender, RoutedEventArgs e)
-    {
-        var choice = PartSpecificChoiceTextBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(choice))
-        {
-            return;
-        }
-
-        if (
-            _partSpecificChoices.Any(existing =>
-                existing.Equals(choice, StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            return;
-        }
-
-        _partSpecificChoices.Add(choice);
-        PartSpecificChoiceTextBox.Text = string.Empty;
-        HideCustomSpecValidation();
-    }
-
-    private void RemovePartSpecificChoiceButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: string choice })
-        {
-            _partSpecificChoices.Remove(choice);
-        }
-    }
-
-    private void AddPartSpecificSpecButton_Click(object sender, RoutedEventArgs e)
-    {
-        var name = PartSpecificSpecNameTextBox.Text.Trim();
-        var selectedType = PartSpecificSpecTypeComboBox.SelectedItem?.ToString() ?? "Text";
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            ShowCustomSpecValidation("Enter a label before adding this prompt.");
-            PartSpecificSpecNameTextBox.Focus(FocusState.Programmatic);
-            return;
-        }
-
-        if (string.Equals(name, "Notes", StringComparison.OrdinalIgnoreCase))
-        {
-            ShowCustomSpecValidation("'Notes' is already used by the notes box.");
-            PartSpecificSpecNameTextBox.Focus(FocusState.Programmatic);
-            return;
-        }
-
-        if (
-            _specInputs.Keys.Any(key =>
-                string.Equals(key, name, StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            ShowCustomSpecValidation($"'{name}' is already listed in the saved part details.");
-            PartSpecificSpecNameTextBox.Focus(FocusState.Programmatic);
-            return;
-        }
-
-        if (
-            _partSpecificSpecs.Any(spec =>
-                string.Equals(spec.Name, name, StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            ShowCustomSpecValidation($"'{name}' is already in the extra details list.");
-            PartSpecificSpecNameTextBox.Focus(FocusState.Programmatic);
-            return;
-        }
-
-        if (
-            string.Equals(selectedType, "Choices", StringComparison.OrdinalIgnoreCase)
-            && _partSpecificChoices.Count == 0
-        )
-        {
-            ShowCustomSpecValidation("Add at least one option before saving this prompt.");
-            PartSpecificChoiceTextBox.Focus(FocusState.Programmatic);
-            return;
-        }
-
-        _partSpecificSpecs.Add(
-            new Model_SpecItem
-            {
-                Name = name,
-                DataType = selectedType,
-                IsRequired = PartSpecificRequiredCheckBox.IsChecked == true,
-                Unit = string.Equals(selectedType, "Number", StringComparison.OrdinalIgnoreCase)
-                    ? PartSpecificUnitTextBox.Text.Trim()
-                    : string.Empty,
-                MinValue =
-                    string.Equals(selectedType, "Number", StringComparison.OrdinalIgnoreCase)
-                    && !double.IsNaN(PartSpecificMinValueNumberBox.Value)
-                        ? PartSpecificMinValueNumberBox.Value
-                        : null,
-                MaxValue =
-                    string.Equals(selectedType, "Number", StringComparison.OrdinalIgnoreCase)
-                    && !double.IsNaN(PartSpecificMaxValueNumberBox.Value)
-                        ? PartSpecificMaxValueNumberBox.Value
-                        : null,
-                Choices = string.Equals(selectedType, "Choices", StringComparison.OrdinalIgnoreCase)
-                    ? _partSpecificChoices.ToList()
-                    : new List<string>(),
-            }
-        );
-
-        HideCustomSpecValidation();
-        ResetPartSpecificSpecEditor();
-        PartSpecificSpecNameTextBox.Focus(FocusState.Programmatic);
-    }
-
-    private void RemovePartSpecificSpecButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: Model_SpecItem spec })
-        {
-            _partSpecificSpecs.Remove(spec);
-            HideCustomSpecValidation();
-        }
-    }
-
     private void ChooseExistingSpecsButton_Click(object sender, RoutedEventArgs e)
     {
         WasAccepted = false;
@@ -916,29 +687,36 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             ?? "Not Inventoried";
     }
 
-    private static void ApplyControlValue(Control control, object? rawValue)
+    private void ApplyControlValue(Control control, object? rawValue)
     {
+        var stringValue = rawValue?.ToString();
         if (control is TextBox textBox)
         {
-            textBox.Text = GetString(rawValue);
+            textBox.Text = stringValue ?? string.Empty;
             return;
         }
 
         if (control is NumberBox numberBox)
         {
-            numberBox.Value = GetDouble(rawValue);
+            numberBox.Value = double.TryParse(
+                stringValue,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var parsed
+            )
+                ? parsed
+                : double.NaN;
             return;
         }
 
         if (control is CheckBox checkBox)
         {
-            checkBox.IsChecked = GetBool(rawValue);
+            checkBox.IsChecked = bool.TryParse(stringValue, out var parsedBool) && parsedBool;
             return;
         }
 
         if (control is ComboBox comboBox)
         {
-            var stringValue = GetString(rawValue);
             foreach (var item in comboBox.Items)
             {
                 if (
@@ -952,49 +730,31 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         }
     }
 
-    private static string GetString(object? rawValue)
+    private static string? GetControlValue(Control control)
     {
-        if (rawValue is JsonElement element)
+        if (control is TextBox textBox)
         {
-            return element.ValueKind == JsonValueKind.String
-                ? element.GetString() ?? string.Empty
-                : element.ToString();
+            return string.IsNullOrWhiteSpace(textBox.Text) ? null : textBox.Text.Trim();
         }
 
-        return rawValue?.ToString() ?? string.Empty;
-    }
-
-    private static double GetDouble(object? rawValue)
-    {
-        if (rawValue is JsonElement element)
+        if (control is NumberBox numberBox)
         {
-            return element.ValueKind switch
-            {
-                JsonValueKind.Number => element.GetDouble(),
-                JsonValueKind.String when double.TryParse(element.GetString(), out var parsed) =>
-                    parsed,
-                _ => double.NaN,
-            };
+            return double.IsNaN(numberBox.Value)
+                ? null
+                : numberBox.Value.ToString(CultureInfo.InvariantCulture);
         }
 
-        return rawValue is null ? double.NaN : Convert.ToDouble(rawValue);
-    }
-
-    private static bool GetBool(object? rawValue)
-    {
-        if (rawValue is JsonElement element)
+        if (control is CheckBox checkBox)
         {
-            return element.ValueKind switch
-            {
-                JsonValueKind.True => true,
-                JsonValueKind.False => false,
-                JsonValueKind.String => bool.TryParse(element.GetString(), out var parsed)
-                    && parsed,
-                _ => false,
-            };
+            return checkBox.IsChecked == true ? "true" : "false";
         }
 
-        return rawValue is not null && Convert.ToBoolean(rawValue);
+        if (control is ComboBox comboBox)
+        {
+            return comboBox.SelectedItem?.ToString();
+        }
+
+        return null;
     }
 
     private async Task<bool> TryCommitAsync()
@@ -1021,8 +781,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             return false;
         }
 
-        var specValues = BuildDraftSpecValues();
-        SpecValuesJson = specValues.Count > 0 ? JsonSerializer.Serialize(specValues) : "{}";
         HomeLocation = HomeLocationTextBox.Text.Trim();
         ResolvedQuantityType = quantityTypeResolution.QuantityType;
         SelectedInventoryMethod = GetSelectedInventoryMethod();
@@ -1089,10 +847,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             _currentWizardStep == QuantityTypeWizardStep
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-        StepPartSpecificSpecsPanel.Visibility =
-            _currentWizardStep == PartSpecificWizardStep
-                ? Visibility.Visible
-                : Visibility.Collapsed;
     }
 
     private void UpdateWizardNavigation()
@@ -1115,10 +869,9 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         FooterPrimaryButton.IsEnabled = isRequiredFieldsValid;
         StepSummaryTextBlock.Text = selectedIndex switch
         {
-            0 => "Step 1 of 4 • Part Setup",
-            1 => "Step 2 of 4 • Type Specs",
-            2 => "Step 3 of 4 • Quantity Type",
-            3 => "Step 4 of 4 • Part-Specific Spec Definitions",
+            0 => "Step 1 of 3 • Part Setup",
+            1 => "Step 2 of 3 • Type Specs",
+            2 => "Step 3 of 3 • Quantity Type",
             _ => string.Empty,
         };
 
@@ -1167,18 +920,6 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             _currentSpecPage++;
             RenderSpecPage();
         }
-    }
-
-    private void ShowCustomSpecValidation(string message)
-    {
-        CustomSpecsValidationTextBlock.Text = message;
-        CustomSpecsValidationTextBlock.Visibility = Visibility.Visible;
-    }
-
-    private void HideCustomSpecValidation()
-    {
-        CustomSpecsValidationTextBlock.Text = string.Empty;
-        CustomSpecsValidationTextBlock.Visibility = Visibility.Collapsed;
     }
 
     private void UpdateImagePreview()

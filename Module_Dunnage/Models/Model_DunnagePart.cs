@@ -12,9 +12,7 @@ public class Model_DunnagePart : INotifyPropertyChanged
     private int _id;
     private string _partId = string.Empty;
     private int _typeId;
-    private string _specValues = string.Empty; // JSON string
-    private Dictionary<string, object> _specValuesDict = new();
-    private Dictionary<string, SpecDefinition> _partSpecificSpecDefinitions = new();
+    private readonly string?[] _udcValues = new string?[10];
     private string _dunnageTypeName = string.Empty;
     private string _quantityType = "Quantity";
     private string? _imagePath;
@@ -42,28 +40,45 @@ public class Model_DunnagePart : INotifyPropertyChanged
         set => SetField(ref _typeId, value);
     }
 
-    public string SpecValues
+    /// <summary>User Defined Column slot 1 - display name from dunnage_custom_fields.</summary>
+    public string? Udc1 { get => _udcValues[0]; set => SetField(ref _udcValues[0], value); }
+    public string? Udc2 { get => _udcValues[1]; set => SetField(ref _udcValues[1], value); }
+    public string? Udc3 { get => _udcValues[2]; set => SetField(ref _udcValues[2], value); }
+    public string? Udc4 { get => _udcValues[3]; set => SetField(ref _udcValues[3], value); }
+    public string? Udc5 { get => _udcValues[4]; set => SetField(ref _udcValues[4], value); }
+    public string? Udc6 { get => _udcValues[5]; set => SetField(ref _udcValues[5], value); }
+    public string? Udc7 { get => _udcValues[6]; set => SetField(ref _udcValues[6], value); }
+    public string? Udc8 { get => _udcValues[7]; set => SetField(ref _udcValues[7], value); }
+    public string? Udc9 { get => _udcValues[8]; set => SetField(ref _udcValues[8], value); }
+    public string? Udc10 { get => _udcValues[9]; set => SetField(ref _udcValues[9], value); }
+
+    public string? GetUdcValue(int slot) =>
+        slot >= 1 && slot <= 10 ? _udcValues[slot - 1] : null;
+
+    public void SetUdcValue(int slot, string? value)
     {
-        get => _specValues;
-        set
+        if (slot >= 1 && slot <= 10)
         {
-            if (SetField(ref _specValues, value))
-            {
-                DeserializeSpecValues();
-            }
+            SetField(ref _udcValues[slot - 1], value);
         }
     }
 
-    public Dictionary<string, object> SpecValuesDict
+    /// <summary>
+    /// Builds the labeled FieldName -> udc value pairs for this part using the
+    /// type's custom-field definitions (DisplayOrder is the udc slot).
+    /// </summary>
+    public IEnumerable<KeyValuePair<string, string?>> BuildLabeledValues(
+        IEnumerable<Model_CustomFieldDefinition> fields
+    )
     {
-        get => _specValuesDict;
-        set => SetField(ref _specValuesDict, value);
-    }
-
-    public Dictionary<string, SpecDefinition> PartSpecificSpecDefinitions
-    {
-        get => _partSpecificSpecDefinitions;
-        set => SetField(ref _partSpecificSpecDefinitions, value);
+        foreach (var field in fields)
+        {
+            var value = GetUdcValue(field.DisplayOrder);
+            if (value is not null)
+            {
+                yield return new KeyValuePair<string, string?>(field.FieldName, value);
+            }
+        }
     }
 
     private string _homeLocation = string.Empty;
@@ -157,11 +172,6 @@ public class Model_DunnagePart : INotifyPropertyChanged
 
     public bool HasPreferredVisual => PreferredVisualSource is not null;
 
-    public string DunnageSpecValuesJson =>
-        string.IsNullOrWhiteSpace(SpecValues) ? "{}" : SpecValues;
-
-    public bool UsesDefinitionBasedPartSpecificSpecs => PartSpecificSpecDefinitions.Count > 0;
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -179,49 +189,5 @@ public class Model_DunnagePart : INotifyPropertyChanged
         field = value;
         OnPropertyChanged(propertyName);
         return true;
-    }
-
-    private void DeserializeSpecValues()
-    {
-        var rawElements = Helper_Dunnage_PartSpecs.DeserializeRawElements(SpecValues);
-        if (rawElements.Count == 0)
-        {
-            SpecValuesDict = new Dictionary<string, object>();
-            PartSpecificSpecDefinitions = new Dictionary<string, SpecDefinition>();
-            return;
-        }
-
-        var scalarValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-        var definitionValues = new Dictionary<string, SpecDefinition>(
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        foreach (var pair in rawElements)
-        {
-            if (Helper_Dunnage_PartSpecs.TryGetSpecDefinition(pair.Value, out var definition))
-            {
-                definitionValues[pair.Key] = definition;
-                continue;
-            }
-
-            var plainValue = Helper_Dunnage_PartSpecs.ConvertJsonElementToPlainObject(pair.Value);
-            if (
-                string.Equals(pair.Key, "image_path", StringComparison.OrdinalIgnoreCase)
-                && plainValue is string imagePath
-                && string.IsNullOrWhiteSpace(ImagePath)
-            )
-            {
-                ImagePath = imagePath;
-                continue;
-            }
-
-            if (plainValue is not null)
-            {
-                scalarValues[pair.Key] = plainValue;
-            }
-        }
-
-        SpecValuesDict = scalarValues;
-        PartSpecificSpecDefinitions = definitionValues;
     }
 }

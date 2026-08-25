@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_GetBySession
 -- Description: Returns ordered scanner items for a session.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_GetBySession`;
 

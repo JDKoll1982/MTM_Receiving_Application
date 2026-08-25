@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_DeleteBySession
 -- Description: Clears session items, typically before reload/import.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_DeleteBySession`;
 

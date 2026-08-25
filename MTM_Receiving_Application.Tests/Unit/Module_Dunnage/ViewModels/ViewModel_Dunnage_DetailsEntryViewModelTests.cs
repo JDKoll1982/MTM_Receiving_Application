@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Text.Json;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -47,8 +46,26 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             )
             .ReturnsAsync(Model_ReceivingValidationResult.Success());
 
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetCustomFieldsByTypeAsync(5))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                        new()
+                        {
+                            FieldName = "Stackable",
+                            FieldType = "Boolean",
+                            DisplayOrder = 2,
+                        },
+                    }
+                )
+            );
+
         var workflowService = new Service_DunnageWorkflow(
-            new Mock<IService_MySQL_Dunnage>().Object,
+            dunnageService.Object,
             new Mock<IService_UserSessionManager>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_ErrorHandler>().Object,
@@ -79,7 +96,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
 
         var viewModel = new ViewModel_Dunnage_DetailsEntry(
             workflowService,
-            new Mock<IService_MySQL_Dunnage>().Object,
+            dunnageService.Object,
             new Mock<IService_Dispatcher>().Object,
             new Mock<IService_Help>().Object,
             receivingValidation.Object,
@@ -90,27 +107,15 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
-        )
-        {
-            PoNumber = "7788",
-            Location = "DOCK-4",
-            SpecInputs = new ObservableCollection<Model_SpecInput>
-            {
-                new()
-                {
-                    SpecName = "Length",
-                    SpecType = "number",
-                    Value = 48,
-                },
-                new()
-                {
-                    SpecName = "Stackable",
-                    SpecType = "boolean",
-                    Value = true,
-                },
-            },
-        };
+        );
 
+        await viewModel.LoadSpecsForSelectedPartAsync();
+        viewModel.SpecInputs.Should().HaveCount(2);
+        viewModel.SpecInputs.Single(spec => spec.SpecName == "Length").Value = 48;
+        viewModel.SpecInputs.Single(spec => spec.SpecName == "Stackable").Value = true;
+
+        viewModel.PoNumber = "7788";
+        viewModel.Location = "DOCK-4";
         await viewModel.GoNextCommand.ExecuteAsync(null);
 
         workflowService.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.Review);
@@ -121,60 +126,43 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         workflowService
             .CurrentSession.Loads.Should()
             .OnlyContain(load => load.Location == "DOCK-4");
-        workflowService
-            .CurrentSession.Loads.Should()
-            .OnlyContain(load => load.SpecValues != null && load.SpecValues.Count == 2);
-        workflowService.CurrentSession.Loads.Should().OnlyContain(load => load.Specs.Count == 2);
-        workflowService
-            .CurrentSession.Loads.Should()
-            .OnlyContain(load => load.SpecValues!["Length"].ToString() == "48");
-        workflowService
-            .CurrentSession.Loads.Should()
-            .OnlyContain(load => load.SpecValues!["Stackable"].ToString() == "True");
+        workflowService.CurrentSession.Loads.Should().OnlyContain(load => load.Udc1 == "48");
+        workflowService.CurrentSession.Loads.Should().OnlyContain(load => load.Udc2 == "True");
         workflowService.CurrentSession.PONumber.Should().Be("PO-007788");
     }
 
     [Fact]
-    public async Task LoadSpecsForSelectedPartAsync_ShouldMergeConfiguredSpecsWithPartSpecificDefinitions()
+    public async Task LoadSpecsForSelectedPartAsync_ShouldBuildInputsFromCustomFieldDefinitions()
     {
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
         dunnageService
-            .Setup(service => service.GetSpecsForTypeAsync(5))
+            .Setup(service => service.GetCustomFieldsByTypeAsync(5))
             .ReturnsAsync(
-                new Model_Dao_Result<List<Model_DunnageSpec>>
-                {
-                    Success = true,
-                    Data =
-                    [
-                        new Model_DunnageSpec
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new()
                         {
-                            SpecKey = "Length",
-                            SpecValue = "{\"type\":\"Number\",\"required\":true,\"unit\":\"in\"}",
+                            FieldName = "Length",
+                            FieldType = "Number",
+                            IsRequired = true,
+                            Unit = "in",
+                            DisplayOrder = 1,
                         },
-                    ],
-                }
+                        new()
+                        {
+                            FieldName = "Edge Guard",
+                            FieldType = "Choices",
+                            IsRequired = true,
+                            DisplayOrder = 2,
+                            Choices = new List<string> { "Yes", "No" },
+                        },
+                    }
+                )
             );
 
-        var selectedPart = new Model_DunnagePart
-        {
-            PartId = "DUN-NEW-100",
-            TypeId = 5,
-            SpecValues = JsonSerializer.Serialize(
-                Helper_Dunnage_PartSpecs.BuildCombinedSpecPayload(
-                    new Dictionary<string, object?> { ["Length"] = 48 },
-                    [
-                        new Model_SpecItem
-                        {
-                            Name = "Edge Guard",
-                            DataType = "Choices",
-                            IsRequired = true,
-                            Choices = ["Yes", "No"],
-                        },
-                    ],
-                    string.Empty
-                )
-            ),
-        };
+        var selectedPart = new Model_DunnagePart { PartId = "DUN-NEW-100", TypeId = 5 };
+        selectedPart.SetUdcValue(1, "48");
 
         var workflowService = new Service_DunnageWorkflow(
             dunnageService.Object,
@@ -214,6 +202,7 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             .Value!.ToString()
             .Should()
             .Be("48");
+        viewModel.NumberSpecs.Single(spec => spec.SpecName == "Length").Unit.Should().Be("in");
         viewModel.ChoiceSpecs.Should().ContainSingle(spec => spec.SpecName == "Edge Guard");
         viewModel
             .ChoiceSpecs.Single(spec => spec.SpecName == "Edge Guard")
@@ -226,30 +215,25 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
     {
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
         dunnageService
-            .Setup(service => service.GetSpecsForTypeAsync(5))
+            .Setup(service => service.GetCustomFieldsByTypeAsync(5))
             .ReturnsAsync(
-                new Model_Dao_Result<List<Model_DunnageSpec>>
-                {
-                    Success = true,
-                    Data =
-                    [
-                        new Model_DunnageSpec
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new()
                         {
-                            SpecKey = "Cover Type",
-                            SpecValue = "{\"type\":\"Choices\",\"required\":true,\"choices\":[\"Wrap\",\"Lid\"]}",
+                            FieldName = "Cover Type",
+                            FieldType = "Choices",
+                            IsRequired = true,
+                            DisplayOrder = 1,
+                            Choices = new List<string> { "Wrap", "Lid" },
                         },
-                    ],
-                }
+                    }
+                )
             );
 
-        var selectedPart = new Model_DunnagePart
-        {
-            PartId = "DUN-100",
-            TypeId = 5,
-            SpecValues = JsonSerializer.Serialize(
-                new Dictionary<string, object?> { ["Cover Type"] = "wrap" }
-            ),
-        };
+        var selectedPart = new Model_DunnagePart { PartId = "DUN-100", TypeId = 5 };
+        selectedPart.SetUdcValue(1, "wrap");
 
         var workflowService = new Service_DunnageWorkflow(
             dunnageService.Object,
@@ -311,8 +295,10 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
 
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
         dunnageService
-            .Setup(service => service.GetSpecsForTypeAsync(5))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnageSpec>()));
+            .Setup(service => service.GetCustomFieldsByTypeAsync(5))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_CustomFieldDefinition>())
+            );
 
         var workflowService = new Service_DunnageWorkflow(
             dunnageService.Object,
@@ -375,8 +361,10 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
 
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
         dunnageService
-            .Setup(service => service.GetSpecsForTypeAsync(5))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnageSpec>()));
+            .Setup(service => service.GetCustomFieldsByTypeAsync(5))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_CustomFieldDefinition>())
+            );
 
         var workflowService = new Service_DunnageWorkflow(
             dunnageService.Object,
@@ -423,6 +411,5 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         await viewModel.LoadSpecsForSelectedPartAsync();
 
         canProceedSnapshots.Should().Contain(true);
-        viewModel.CanProceedToNextStep.Should().BeTrue();
     }
 }

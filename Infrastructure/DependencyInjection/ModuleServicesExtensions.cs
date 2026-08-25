@@ -249,7 +249,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_DunnageType(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnagePart(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageQuantityType(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_DunnageSpec(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_InventoriedDunnage(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageCustomField(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageUserPreference(mySqlConnectionString));

@@ -51,6 +51,7 @@ namespace MTM_Receiving_Application
         private readonly List<object> _applicationFooterItems = new();
         private readonly List<object> _settingsMenuItems = new();
         private bool _hasNavigatedOnStartup = false;
+        private bool _isWindowActive = true;
         private bool _isUpdatingNavSelection;
         private bool _isSettingsMode;
         private int _labelButtonsPageIndex;
@@ -261,6 +262,7 @@ namespace MTM_Receiving_Application
                 contentElement.ActualThemeChanged += (s, e) =>
                 {
                     UpdateTitleBarColors();
+                    UpdateTitleBarTextColor(_isWindowActive);
                     ApplyHeaderAccent(ContentFrame.Content?.GetType());
                 };
             }
@@ -355,9 +357,10 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
-        /// Enables the Scanner navigation entry only for developer users. The scanner
-        /// automation engine is implemented but not yet verified against a real VMINVENT
-        /// terminal, so non-developers keep the disabled entry with the caution tooltip.
+        /// Shows the Scanner navigation entry only for developer users; for everyone else the
+        /// entry is hidden entirely from the nav bar. The scanner automation engine is
+        /// implemented but not yet verified against a real VMINVENT terminal, so it is
+        /// restricted to developers during rollout.
         /// </summary>
         private void ApplyScannerNavigationGate()
         {
@@ -373,6 +376,9 @@ namespace MTM_Receiving_Application
                     _sessionManager.CurrentSession?.User,
                     Environment.UserName
                 );
+                scannerItem.Visibility = isDeveloper
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
                 scannerItem.IsEnabled = isDeveloper;
             }
             catch (Exception ex)
@@ -422,17 +428,12 @@ namespace MTM_Receiving_Application
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
-            // Update title bar text color based on activation state
-            if (args.WindowActivationState == WindowActivationState.Deactivated)
-            {
-                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
-                    App.Current.Resources["WindowCaptionForegroundDisabled"];
-            }
-            else
-            {
-                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
-                    App.Current.Resources["WindowCaptionForeground"];
-            }
+            // Update the app title color based on activation state using the
+            // standard theme-aware text brushes so it stays readable in both
+            // light and dark mode. Re-resolved on theme changes so a live
+            // light/dark toggle updates the title immediately.
+            _isWindowActive = args.WindowActivationState != WindowActivationState.Deactivated;
+            UpdateTitleBarTextColor(_isWindowActive);
 
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
@@ -2224,6 +2225,12 @@ namespace MTM_Receiving_Application
                 }
 
                 ApplyUserCardAccentBorder(ResolveThemeAwareBrush(accent.BorderKey));
+
+                // Blend the user card into the accent fill and render the user
+                // name in white so the whole header reads consistently on the
+                // accent in both light and dark themes.
+                UserMenuButton.Background = new SolidColorBrush(Colors.Transparent);
+                UserDisplayTextBlock.Foreground = new SolidColorBrush(Colors.White);
                 return;
             }
 
@@ -2233,6 +2240,8 @@ namespace MTM_Receiving_Application
             PageTitleTextBlock.ClearValue(TextBlock.ForegroundProperty);
             HeaderBackButton.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
             HeaderBackButtonIcon?.ClearValue(IconElement.ForegroundProperty);
+            UserMenuButton.ClearValue(Button.BackgroundProperty);
+            UserDisplayTextBlock.ClearValue(TextBlock.ForegroundProperty);
             ApplyUserCardNeutralBorder();
         }
 
@@ -2638,6 +2647,23 @@ namespace MTM_Receiving_Application
                 titleBar.ButtonPressedForegroundColor = foregroundColor;
                 titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 96, 96, 96);
             }
+        }
+
+        /// <summary>
+        /// Applies a theme-aware color to the title-bar app title: the primary
+        /// text fill for an active window (near-black in Light mode, near-white
+        /// in Dark mode) and a muted secondary fill when the window is
+        /// deactivated.
+        /// </summary>
+        private void UpdateTitleBarTextColor(bool isActive)
+        {
+            var brush = isActive
+                ? ResolveAppBrush("TextFillColorPrimaryBrush")
+                    ?? new SolidColorBrush(Colors.Black)
+                : ResolveAppBrush("TextFillColorSecondaryBrush")
+                    ?? ResolveAppBrush("TextFillColorDisabledBrush")
+                    ?? new SolidColorBrush(Colors.Gray);
+            TitleBarTextBlock.Foreground = brush;
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_LabelData_Update
 -- Description: Updates one row in receiving_label_data (active print queue)
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_Update`;
 

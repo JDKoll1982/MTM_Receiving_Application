@@ -17,7 +17,7 @@
 --   if the table already contains duplicate load_id values from the bug.
 -- ============================================================================
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 -- Step 1: Remove duplicate rows, keeping the earliest inserted row (lowest id)
 -- for each load_id that has been duplicated.

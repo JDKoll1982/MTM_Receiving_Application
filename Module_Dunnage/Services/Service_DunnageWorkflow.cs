@@ -362,7 +362,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 return true;
             }
 
-            return CurrentSession.SpecValues is { Count: > 0 };
+            return Enumerable.Range(1, 10).Any(slot =>
+                !string.IsNullOrWhiteSpace(CurrentSession.GetUdcValue(slot))
+            );
         }
 
         public void SetNavigationLock(bool isLocked)
@@ -551,7 +553,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             var poNumber = string.IsNullOrWhiteSpace(normalizedPoNumber)
                 ? "Nothing Entered"
                 : normalizedPoNumber;
-            var specs = CurrentSession.SpecValues ?? new Dictionary<string, object>();
             var createdBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown";
             var employeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber;
             var inventoryMethod = string.IsNullOrWhiteSpace(CurrentSession.InventoryMethod)
@@ -572,8 +573,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 load.DunnageType = CurrentSession.SelectedTypeName;
                 load.TypeId = CurrentSession.SelectedTypeId;
                 load.QuantityType = CurrentSession.SelectedPart?.QuantityType ?? "Quantity";
-                load.Specs = new Dictionary<string, object>(specs);
-                load.SpecValues = new Dictionary<string, object>(specs);
+                for (var slot = 1; slot <= 10; slot++)
+                {
+                    load.SetUdcValue(slot, CurrentSession.GetUdcValue(slot));
+                }
+
                 load.InventoryMethod = inventoryMethod;
                 load.CreatedBy = createdBy;
                 load.EmployeeNumber = employeeNumber;
@@ -585,7 +589,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         {
             var normalizedPoNumber = Helper_DunnagePoNumber.FormatForEntry(CurrentSession.PONumber);
 
-            return new Model_DunnageLoad
+            var load = new Model_DunnageLoad
             {
                 LoadUuid = Guid.NewGuid(),
                 PartId = CurrentSession.SelectedPart?.PartId ?? "Unknown",
@@ -600,15 +604,18 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 PartImagePath = CurrentSession.SelectedPart?.ImagePath,
                 TypeId = CurrentSession.SelectedTypeId,
                 QuantityType = CurrentSession.SelectedPart?.QuantityType ?? "Quantity",
-                Specs = CurrentSession.SpecValues ?? new Dictionary<string, object>(),
-                SpecValues = CurrentSession.SpecValues is null
-                    ? null
-                    : new Dictionary<string, object>(CurrentSession.SpecValues),
                 ReceivedDate = DateTime.Now,
                 CreatedBy = _sessionManager.CurrentSession?.User?.WindowsUsername ?? "Unknown",
                 EmployeeNumber = _sessionManager.CurrentSession?.User?.EmployeeNumber,
                 LoadNumber = loadNumber,
             };
+
+            for (var slot = 1; slot <= 10; slot++)
+            {
+                load.SetUdcValue(slot, CurrentSession.GetUdcValue(slot));
+            }
+
+            return load;
         }
 
         private async Task<Model_ReceivingValidationResult> EnsureDefaultAndValidatedLocationAsync()

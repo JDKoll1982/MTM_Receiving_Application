@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentHistory_Delete
 -- =====================================================
 -- Purpose: Delete an archived shipment history header and its archived lines (CASCADE)
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

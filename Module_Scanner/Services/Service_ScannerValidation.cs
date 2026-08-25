@@ -522,7 +522,7 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 				InvalidResult(
 					request,
 					"Source quantity is insufficient.",
-					$"Requested {quantity.ToString(CultureInfo.InvariantCulture)} exceeds available {availableQuantity.ToString(CultureInfo.InvariantCulture)} at {canonicalFromLocation}.",
+					$"Requested {quantity.ToString("0.####", CultureInfo.InvariantCulture)} exceeds available {availableQuantity.ToString("0.####", CultureInfo.InvariantCulture)} at {canonicalFromLocation}.",
 					canonicalPartId,
 					canonicalFromLocation,
 					canonicalToLocation

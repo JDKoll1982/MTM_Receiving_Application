@@ -65,7 +65,7 @@ public sealed class Service_DunnageWorkflowTests
             PartId = "DUN-100",
             HomeLocation = "RACK-A1",
         };
-        service.CurrentSession.SpecValues = new Dictionary<string, object> { ["Length"] = 48 };
+        service.CurrentSession.SetUdcValue(1, "48");
         service.NumberOfLoads = 3;
         service.CurrentSession.LoadQuantities.Add(10m);
         service.CurrentSession.LoadQuantities.Add(20m);
@@ -92,7 +92,7 @@ public sealed class Service_DunnageWorkflowTests
         service.CurrentSession.Loads.Should().OnlyContain(load => load.Location == "DOCK-4");
         service.CurrentSession.Loads.Should().OnlyContain(load => load.TypeName == "Pallet");
         service.CurrentSession.Loads.Should().OnlyContain(load => load.TypeId == 5);
-        service.CurrentSession.Loads.Should().OnlyContain(load => load.Specs.ContainsKey("Length"));
+        service.CurrentSession.Loads.Should().OnlyContain(load => load.GetUdcValue(1) == "48");
     }
 
     [Fact]

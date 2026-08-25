@@ -9,9 +9,9 @@
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
-CREATE DATABASE IF NOT EXISTS `mtm_receiving_application` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `mtm_receiving_application_test` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE `mtm_receiving_application`;
+USE `mtm_receiving_application_test`;
 
 START TRANSACTION;
 
@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 ;
 
 --
--- Database: `mtm_receiving_application`
+-- Database: `mtm_receiving_application_test`
 --
 
 DELIMITER $$
@@ -2635,7 +2635,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_Receiving_PackageTypeMappings_GetAll` (I
         created_at,
         updated_at,
         created_by
-    FROM mtm_receiving_application.receiving_package_type_mapping
+    FROM mtm_receiving_application_test.receiving_package_type_mapping
     WHERE (is_active = TRUE) OR (p_includeInactive = TRUE)
     ORDER BY display_order, part_prefix;
 END$$

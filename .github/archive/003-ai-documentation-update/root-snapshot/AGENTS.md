@@ -380,7 +380,7 @@ When implementing features:
 **Architecture**: MVVM with CommunityToolkit.Mvvm
 **Databases**:
 
-- MySQL 5.7 (mtm_receiving_application) - READ/WRITE
+- MySQL 5.7 (mtm_receiving_application_test) - READ/WRITE
 - SQL Server (Infor Visual) - READ ONLY
   **Testing**: xUnit with FluentAssertions
   **DI**: Built-in .NET dependency injection
@@ -401,10 +401,10 @@ dotnet test --filter "FullyQualifiedName~Integration" # Integration tests
 
 ```powershell
 # MySQL connection test
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application_test
 
 # Deploy stored procedure
-mysql -h localhost -P 3306 -u root -p mtm_receiving_application < sp_name.sql
+mysql -h localhost -P 3306 -u root -p mtm_receiving_application_test < sp_name.sql
 ```
 
 ### XAML Troubleshooting

@@ -1,6 +1,6 @@
 -- Stored Procedure: sp_Settings_ScheduledReport_GetById
 -- Compatible with MySQL 5.7
--- Run in the mtm_receiving_application database (e.g., USE mtm_receiving_application;)
+-- Run in the mtm_receiving_application_test database (e.g., USE mtm_receiving_application_test;)
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS `sp_Settings_ScheduledReport_GetById`$$

@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentLine_Update
 -- =====================================================
 -- Purpose: Update an existing shipment line
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

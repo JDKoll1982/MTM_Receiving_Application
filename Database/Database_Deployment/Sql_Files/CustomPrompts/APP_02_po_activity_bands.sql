@@ -1,7 +1,7 @@
 -- =============================================================================
 -- APP_02: POs in app that are NOT in recent Visual receivers (reconciliation gap)
 -- Server  : 172.16.1.104 (MySQL / MAMP)
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- Run in  : phpMyAdmin or MAMP mysql client
 -- Purpose : Shows PO numbers for MMC coil parts that appear in the receiving app
 --           but have not been received in the app recently (> 30 days ago).

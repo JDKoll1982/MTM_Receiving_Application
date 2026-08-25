@@ -4,7 +4,7 @@
 --              All rows moved in one call share the same archive_batch_id.
 -- Lifecycle: Clear Label Data -> Queue to History + Queue Delete
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_ClearToHistory`;
 
@@ -78,7 +78,16 @@ BEGIN
                 label_number,
                 part_skid_sequence,
                 part_skid_total,
-                specs_json,
+                udc1,
+                udc2,
+                udc3,
+                udc4,
+                udc5,
+                udc6,
+                udc7,
+                udc8,
+                udc9,
+                udc10,
                 archived_at,
                 archived_by,
                 archive_batch_id
@@ -104,7 +113,16 @@ BEGIN
                 dld.label_number,
                 dld.part_skid_sequence,
                 dld.part_skid_total,
-                dld.specs_json,
+                dld.udc1,
+                dld.udc2,
+                dld.udc3,
+                dld.udc4,
+                dld.udc5,
+                dld.udc6,
+                dld.udc7,
+                dld.udc8,
+                dld.udc9,
+                dld.udc10,
                 NOW()                               AS archived_at,
                 p_archived_by                       AS archived_by,
                 p_archive_batch_id                  AS archive_batch_id

@@ -2,7 +2,7 @@
 -- Description: Atomically moves all rows from receiving_label_data (queue) to receiving_history (archive)
 -- Lifecycle: Clear Label Data -> Queue to History + Queue Delete
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_ClearToHistory`;
 

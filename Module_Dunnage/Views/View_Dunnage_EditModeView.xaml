@@ -354,8 +354,8 @@
                     Visibility="Collapsed" />
                 <controls:DataGridTextColumn
                     Width="Auto"
-                    Binding="{Binding SpecsJsonDisplay}"
-                    Header="Specs JSON"
+                    Binding="{Binding SpecSummaryDisplay}"
+                    Header="Specs"
                     IsReadOnly="True"
                     Visibility="Collapsed" />
                 <controls:DataGridTextColumn

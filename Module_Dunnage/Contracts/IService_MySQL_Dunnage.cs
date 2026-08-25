@@ -27,15 +27,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result> DeleteTypeAsync(int typeId);
         public Task<Model_Dao_Result<int>> CheckDuplicateTypeNameAsync(string typeName);
 
-        // ==================== Spec Operations (6 methods) ====================
-
-        public Task<Model_Dao_Result<List<Model_DunnageSpec>>> GetSpecsForTypeAsync(int typeId);
-        public Task<Model_Dao_Result> InsertSpecAsync(Model_DunnageSpec spec);
-        public Task<Model_Dao_Result> UpdateSpecAsync(Model_DunnageSpec spec);
-        public Task<Model_Dao_Result> DeleteSpecAsync(int specId);
-        public Task<Model_Dao_Result> DeleteSpecsByTypeIdAsync(int typeId);
-        public Task<List<string>> GetAllSpecKeysAsync();
-
         // ==================== Part Operations (7 methods) ====================
 
         public Task<Model_Dao_Result<List<Model_DunnagePart>>> GetAllPartsAsync();
@@ -113,12 +104,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         );
         public Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id);
 
-        // ==================== Impact Analysis (4 methods) ====================
+        // ==================== Impact Analysis (3 methods) ====================
 
         public Task<Model_Dao_Result<int>> GetPartCountByTypeIdAsync(int typeId);
         public Task<Model_Dao_Result<int>> GetTransactionCountByPartIdAsync(string partId);
         public Task<Model_Dao_Result<int>> GetTransactionCountByTypeIdAsync(int typeId);
-        public Task<Model_Dao_Result<int>> GetPartCountBySpecKeyAsync(int typeId, string specKey);
 
         // Aliases for compatibility (spec 010-dunnage-complete)
         public Task<Model_Dao_Result<int>> GetPartCountByTypeAsync(int typeId) =>
@@ -142,6 +132,14 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
             int typeId
         );
         public Task<Model_Dao_Result> DeleteCustomFieldAsync(int fieldId);
+        public Task<Model_Dao_Result> InsertCustomFieldChoiceAsync(
+            int customFieldId,
+            string choice,
+            int sortOrder
+        );
+        public Task<Model_Dao_Result> DeleteCustomFieldChoicesAsync(int customFieldId);
+        public Task<Model_Dao_Result<List<Model_DunnageCustomFieldChoice>>>
+            GetCustomFieldChoicesAsync(int customFieldId);
 
         // ==================== User Preference Operations (2 methods) ====================
 

@@ -6,7 +6,7 @@
 --              corresponding settings role assignment if it is not already present.
 -- =============================================
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 

@@ -48,5 +48,5 @@ and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (
 
 | Database                                | Connection                                        | Access                              |
 | --------------------------------------- | ------------------------------------------------- | ----------------------------------- |
-| MySQL 5.7 (`mtm_receiving_application`) | `Helper_Database_Variables.GetConnectionString()` | READ/WRITE via stored procedures    |
+| MySQL 5.7 (`mtm_receiving_application_test`) | `Helper_Database_Variables.GetConnectionString()` | READ/WRITE via stored procedures    |
 | SQL Server (Infor Visual MTMFG)         | `ApplicationIntent=ReadOnly` required             | READ ONLY — no INSERT/UPDATE/DELETE |

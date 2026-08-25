@@ -1,4 +1,4 @@
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 CREATE OR REPLACE VIEW view_receiving_scanner_run_summary AS
 SELECT

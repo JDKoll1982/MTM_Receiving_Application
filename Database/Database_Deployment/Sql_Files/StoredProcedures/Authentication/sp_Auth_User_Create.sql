@@ -103,7 +103,7 @@
 --   SELECT @error_msg;
 --
 -- ============================================================================
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_Create`;
 

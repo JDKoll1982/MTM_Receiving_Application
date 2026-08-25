@@ -61,7 +61,6 @@ public class Dao_DunnageLoad
 
     public virtual async Task<Model_Dao_Result> UpdateAsync(Model_DunnageLoad load, string user)
     {
-        var specsJson = SerializeSpecValues(load);
         var parameters = new MySqlParameter[]
         {
             new("@p_load_uuid", MySqlDbType.VarChar, 36) { Value = load.LoadUuid.ToString() },
@@ -118,10 +117,16 @@ public class Dao_DunnageLoad
                     ? (object)load.PartSkidTotal.Value
                     : DBNull.Value,
             },
-            new("@p_specs_json", MySqlDbType.JSON)
-            {
-                Value = specsJson is null ? DBNull.Value : (object)specsJson,
-            },
+            new("@p_udc1", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc1 ?? DBNull.Value },
+            new("@p_udc2", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc2 ?? DBNull.Value },
+            new("@p_udc3", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc3 ?? DBNull.Value },
+            new("@p_udc4", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc4 ?? DBNull.Value },
+            new("@p_udc5", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc5 ?? DBNull.Value },
+            new("@p_udc6", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc6 ?? DBNull.Value },
+            new("@p_udc7", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc7 ?? DBNull.Value },
+            new("@p_udc8", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc8 ?? DBNull.Value },
+            new("@p_udc9", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc9 ?? DBNull.Value },
+            new("@p_udc10", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc10 ?? DBNull.Value },
             new("@p_user", MySqlDbType.VarChar, 50) { Value = user },
         };
 
@@ -192,8 +197,28 @@ public class Dao_DunnageLoad
             PartSkidTotal = reader.IsDBNull(reader.GetOrdinal("part_skid_total"))
                 ? null
                 : reader.GetInt32(reader.GetOrdinal("part_skid_total")),
-            SpecValues = DeserializeSpecValues(reader),
+            Udc1 = ReadUdc(reader, "udc1"),
+            Udc2 = ReadUdc(reader, "udc2"),
+            Udc3 = ReadUdc(reader, "udc3"),
+            Udc4 = ReadUdc(reader, "udc4"),
+            Udc5 = ReadUdc(reader, "udc5"),
+            Udc6 = ReadUdc(reader, "udc6"),
+            Udc7 = ReadUdc(reader, "udc7"),
+            Udc8 = ReadUdc(reader, "udc8"),
+            Udc9 = ReadUdc(reader, "udc9"),
+            Udc10 = ReadUdc(reader, "udc10"),
         };
+    }
+
+    private static string? ReadUdc(IDataReader reader, string columnName)
+    {
+        if (!HasColumn(reader, columnName))
+        {
+            return null;
+        }
+
+        var ordinal = reader.GetOrdinal(columnName);
+        return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
     }
 
     private static bool HasColumn(IDataReader reader, string columnName)
@@ -209,40 +234,5 @@ public class Dao_DunnageLoad
         }
 
         return false;
-    }
-
-    private static string? SerializeSpecValues(Model_DunnageLoad load)
-    {
-        var specs = load.SpecValues ?? load.Specs;
-        if (specs == null || specs.Count == 0)
-        {
-            return null;
-        }
-
-        return JsonSerializer.Serialize(specs);
-    }
-
-    private static Dictionary<string, object>? DeserializeSpecValues(IDataReader reader)
-    {
-        var ordinal = reader.GetOrdinal("specs_json");
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        var json = reader.GetString(ordinal);
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return null;
-        }
-
-        try
-        {
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
     }
 }

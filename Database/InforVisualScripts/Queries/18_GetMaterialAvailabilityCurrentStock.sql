@@ -51,6 +51,7 @@ INNER JOIN dbo.PART p
 INNER JOIN dbo.CR_PART_LOCATION cpl
     ON cpl.ID = rp.PartId
    AND cpl.WAREHOUSE_ID = np.WarehouseCode
+   AND (np.LocationId IS NULL OR cpl.LOCATION_ID = np.LocationId)
    AND NULLIF(LTRIM(RTRIM(cpl.LOCATION_ID)), '') IS NOT NULL
    AND COALESCE(cpl.QTY, 0) > 0
 ORDER BY

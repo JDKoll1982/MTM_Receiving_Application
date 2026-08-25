@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerSession_Delete
 -- Description: Deletes a scanner session and its child items.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerSession_Delete`;
 

@@ -7,7 +7,7 @@
 -- Lifecycle: Clear Label Data -> Active Queue to History + Active Queue Delete
 -- Note: This clears the full active Volvo queue, matching the Receiving and Dunnage workflows.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Volvo_LabelData_ClearToHistory`;
 

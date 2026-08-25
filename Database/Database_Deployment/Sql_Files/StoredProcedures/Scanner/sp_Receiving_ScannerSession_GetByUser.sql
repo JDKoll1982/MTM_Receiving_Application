@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerSession_GetByUser
 -- Description: Returns scanner sessions for a user.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerSession_GetByUser`;
 

@@ -1,242 +1,166 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Helpers;
 
+/// <summary>
+/// Bridges custom-field definitions (dunnage_custom_fields, backed by the udc1..udc10
+/// columns) with the UI input models (Model_SpecItem / Model_SpecInput) and udc value
+/// storage on parts, loads, and sessions.
+/// </summary>
 public static class Helper_Dunnage_PartSpecs
 {
-    public static Dictionary<string, JsonElement> DeserializeRawElements(string? specValuesJson)
-    {
-        if (string.IsNullOrWhiteSpace(specValuesJson))
-        {
-            return new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-        }
+    /// <summary>Number of user-defined columns available per dunnage row.</summary>
+    public const int MaxUdcCount = 10;
 
-        try
-        {
-            using var document = JsonDocument.Parse(specValuesJson);
-            if (document.RootElement.ValueKind != JsonValueKind.Object)
-            {
-                return new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-            }
+    /// <summary>Extracts the 10 udc values from a part into a fixed-length array.</summary>
+    public static string?[] ExtractUdc(Model_DunnagePart part) =>
+        new[] { part.Udc1, part.Udc2, part.Udc3, part.Udc4, part.Udc5, part.Udc6, part.Udc7, part.Udc8, part.Udc9, part.Udc10 };
 
-            var values = new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-            foreach (var property in document.RootElement.EnumerateObject())
-            {
-                values[property.Name] = property.Value.Clone();
-            }
+    /// <summary>Extracts the 10 udc values from a load into a fixed-length array.</summary>
+    public static string?[] ExtractUdc(Model_DunnageLoad load) =>
+        new[] { load.Udc1, load.Udc2, load.Udc3, load.Udc4, load.Udc5, load.Udc6, load.Udc7, load.Udc8, load.Udc9, load.Udc10 };
 
-            return values;
-        }
-        catch (JsonException)
-        {
-            return new Dictionary<string, JsonElement>(StringComparer.OrdinalIgnoreCase);
-        }
-    }
+    /// <summary>Extracts the 10 udc values from a session into a fixed-length array.</summary>
+    public static string?[] ExtractUdc(Model_DunnageSession session) =>
+        new[] { session.Udc1, session.Udc2, session.Udc3, session.Udc4, session.Udc5, session.Udc6, session.Udc7, session.Udc8, session.Udc9, session.Udc10 };
 
-    public static bool TryGetSpecDefinition(object? rawValue, out SpecDefinition definition)
-    {
-        if (rawValue is SpecDefinition directDefinition)
-        {
-            definition = directDefinition;
-            NormalizeDefinition(definition);
-            return true;
-        }
-
-        if (rawValue is JsonElement element)
-        {
-            return TryGetSpecDefinition(element, out definition);
-        }
-
-        definition = new SpecDefinition();
-        return false;
-    }
-
-    public static bool TryGetSpecDefinition(JsonElement element, out SpecDefinition definition)
-    {
-        definition = new SpecDefinition();
-        if (element.ValueKind != JsonValueKind.Object)
-        {
-            return false;
-        }
-
-        if (!LooksLikeSpecDefinition(element))
-        {
-            return false;
-        }
-
-        try
-        {
-            definition =
-                JsonSerializer.Deserialize<SpecDefinition>(element.GetRawText())
-                ?? new SpecDefinition();
-            NormalizeDefinition(definition);
-            return true;
-        }
-        catch (JsonException)
-        {
-            definition = new SpecDefinition();
-            return false;
-        }
-    }
-
-    public static object? ConvertJsonElementToPlainObject(JsonElement element)
-    {
-        return element.ValueKind switch
-        {
-            JsonValueKind.String => element.GetString(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            JsonValueKind.Number when element.TryGetInt64(out var integerValue) => integerValue,
-            JsonValueKind.Number => element.GetDouble(),
-            JsonValueKind.Null => null,
-            JsonValueKind.Undefined => null,
-            _ => element.GetRawText(),
-        };
-    }
-
-    public static Dictionary<string, object?> BuildCombinedSpecPayload(
-        IReadOnlyDictionary<string, object?> configuredValues,
-        IEnumerable<Model_SpecItem> partSpecificSpecs,
-        string notes
+    /// <summary>
+    /// Builds a slot-keyed array of default values from the type's custom fields.
+    /// Values outside slots 1-10 are ignored.
+    /// </summary>
+    public static string?[] CreateDefaultUdcValues(
+        IEnumerable<Model_CustomFieldDefinition> fields
     )
     {
-        var payload = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var pair in configuredValues)
+        var values = new string?[MaxUdcCount];
+        foreach (var field in fields)
         {
-            payload[pair.Key] = pair.Value;
+            if (field.DisplayOrder is >= 1 and <= MaxUdcCount)
+            {
+                values[field.DisplayOrder - 1] = field.DefaultValue;
+            }
         }
 
-        foreach (var spec in partSpecificSpecs)
-        {
-            payload[spec.Name] = CreateDefinition(spec);
-        }
-
-        if (!string.IsNullOrWhiteSpace(notes))
-        {
-            payload["Notes"] = notes.Trim();
-        }
-
-        return payload;
+        return values;
     }
 
-    public static Dictionary<string, object> BuildRuntimeValues(
-        IReadOnlyDictionary<string, object> configuredValues,
-        IReadOnlyDictionary<string, SpecDefinition> partSpecificDefinitions
+    /// <summary>Copies slot-keyed values onto a part for each custom field slot.</summary>
+    public static void ApplyUdcValues(
+        Model_DunnagePart part,
+        IEnumerable<Model_CustomFieldDefinition> fields,
+        string?[] values
     )
     {
-        var runtimeValues = new Dictionary<string, object>(
-            configuredValues,
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        foreach (var pair in partSpecificDefinitions)
+        foreach (var field in fields)
         {
-            runtimeValues[pair.Key] = GetDefaultRuntimeValue(pair.Value) ?? string.Empty;
+            part.SetUdcValue(field.DisplayOrder, GetValueForSlot(values, field.DisplayOrder));
         }
-
-        runtimeValues.Remove("Notes");
-        return runtimeValues;
     }
 
-    public static object? GetDefaultRuntimeValue(SpecDefinition definition)
+    /// <summary>Copies slot-keyed values onto a load for each custom field slot.</summary>
+    public static void ApplyUdcValues(
+        Model_DunnageLoad load,
+        IEnumerable<Model_CustomFieldDefinition> fields,
+        string?[] values
+    )
     {
-        NormalizeDefinition(definition);
-
-        if (!string.IsNullOrWhiteSpace(definition.DefaultValue))
+        foreach (var field in fields)
         {
-            if (
-                string.Equals(definition.DataType, "Number", StringComparison.OrdinalIgnoreCase)
-                && double.TryParse(definition.DefaultValue, out var numericDefault)
-            )
-            {
-                return numericDefault;
-            }
-
-            if (
-                string.Equals(definition.DataType, "Boolean", StringComparison.OrdinalIgnoreCase)
-                && bool.TryParse(definition.DefaultValue, out var boolDefault)
-            )
-            {
-                return boolDefault;
-            }
-
-            return definition.DefaultValue;
+            load.SetUdcValue(field.DisplayOrder, GetValueForSlot(values, field.DisplayOrder));
         }
-
-        if (string.Equals(definition.DataType, "Boolean", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        return string.Empty;
     }
 
-    public static Model_SpecItem CreateSpecItem(string name, SpecDefinition definition)
+    /// <summary>Copies slot-keyed values onto a session for each custom field slot.</summary>
+    public static void ApplyUdcValues(
+        Model_DunnageSession session,
+        IEnumerable<Model_CustomFieldDefinition> fields,
+        string?[] values
+    )
     {
-        NormalizeDefinition(definition);
-
-        return new Model_SpecItem
+        foreach (var field in fields)
         {
-            Name = name,
-            DataType = definition.DataType,
-            IsRequired = definition.Required,
-            Unit = definition.Unit,
-            MinValue = definition.MinValue,
-            MaxValue = definition.MaxValue,
-            Choices = definition.Choices?.ToList() ?? new List<string>(),
+            session.SetUdcValue(field.DisplayOrder, GetValueForSlot(values, field.DisplayOrder));
+        }
+    }
+
+    /// <summary>Gets the value at the 1-based slot, or null when out of range.</summary>
+    public static string? GetValueForSlot(string?[] values, int slot) =>
+        slot >= 1 && slot <= values.Length ? values[slot - 1] : null;
+
+    /// <summary>
+    /// Builds labeled FieldName -> value pairs for UI display, ordered by slot.
+    /// Empty values are omitted.
+    /// </summary>
+    public static List<KeyValuePair<string, string?>> BuildLabeledPairs(
+        IEnumerable<Model_CustomFieldDefinition> fields,
+        string?[] udcValues
+    ) =>
+        fields
+            .Where(field => field.DisplayOrder is >= 1 and <= MaxUdcCount)
+            .OrderBy(field => field.DisplayOrder)
+            .Select(field => new KeyValuePair<string, string?>(
+                field.FieldName,
+                GetValueForSlot(udcValues, field.DisplayOrder)
+            ))
+            .Where(pair => !string.IsNullOrWhiteSpace(pair.Value))
+            .ToList();
+
+    /// <summary>Converts a custom-field definition to a dialog spec row.</summary>
+    public static Model_SpecItem CreateSpecItem(Model_CustomFieldDefinition field) =>
+        new()
+        {
+            Name = field.FieldName,
+            DataType = field.FieldType,
+            IsRequired = field.IsRequired,
+            Unit = field.Unit ?? string.Empty,
+            MinValue = field.MinValue.HasValue ? (double)field.MinValue.Value : null,
+            MaxValue = field.MaxValue.HasValue ? (double)field.MaxValue.Value : null,
+            Choices = field.Choices?.ToList() ?? new List<string>(),
         };
-    }
 
-    public static SpecDefinition CreateDefinition(Model_SpecItem spec)
-    {
-        var definition = new SpecDefinition
+    /// <summary>Converts a dialog spec row back to a custom-field definition.</summary>
+    public static Model_CustomFieldDefinition CreateDefinition(
+        Model_SpecItem spec,
+        int displayOrder = 0
+    ) =>
+        new()
         {
-            DataType = spec.DataType,
-            Required = spec.IsRequired,
+            FieldName = spec.Name,
+            FieldType = spec.DataType,
+            IsRequired = spec.IsRequired,
             Unit = spec.Unit,
-            MinValue = spec.MinValue,
-            MaxValue = spec.MaxValue,
+            MinValue = spec.MinValue.HasValue ? (decimal)spec.MinValue.Value : null,
+            MaxValue = spec.MaxValue.HasValue ? (decimal)spec.MaxValue.Value : null,
             Choices = spec.Choices?.ToList() ?? new List<string>(),
+            DisplayOrder = displayOrder,
         };
 
-        NormalizeDefinition(definition);
-        return definition;
-    }
-
-    private static bool LooksLikeSpecDefinition(JsonElement element)
-    {
-        foreach (var property in element.EnumerateObject())
+    /// <summary>Creates a details-entry input row from a definition plus the current value.</summary>
+    public static Model_SpecInput CreateSpecInput(
+        Model_CustomFieldDefinition field,
+        object? value = null
+    ) =>
+        new()
         {
-            if (
-                property.NameEquals("dataType")
-                || property.NameEquals("type")
-                || property.NameEquals("required")
-                || property.NameEquals("defaultValue")
-                || property.NameEquals("minValue")
-                || property.NameEquals("maxValue")
-                || property.NameEquals("unit")
-                || property.NameEquals("choices")
-            )
-            {
-                return true;
-            }
-        }
+            SpecName = field.FieldName,
+            SpecType = NormalizeSpecType(field.FieldType),
+            Value = value,
+            Unit = field.Unit,
+            IsRequired = field.IsRequired,
+            Choices = field.Choices?.ToList() ?? new List<string>(),
+        };
 
-        return false;
-    }
-
-    private static void NormalizeDefinition(SpecDefinition definition)
+    private static string NormalizeSpecType(string? specType)
     {
-        definition.DataType = string.IsNullOrWhiteSpace(definition.DataType)
-            ? "Text"
-            : definition.DataType.Trim();
-        definition.Unit ??= string.Empty;
-        definition.DefaultValue ??= string.Empty;
-        definition.Choices ??= new List<string>();
+        return specType?.Trim().ToLowerInvariant() switch
+        {
+            "number" => "number",
+            "boolean" => "boolean",
+            "choices" => "choices",
+            _ => "text",
+        };
     }
 }

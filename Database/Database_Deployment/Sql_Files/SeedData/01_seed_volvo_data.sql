@@ -2,7 +2,7 @@
 -- Seed: Volvo Module Master Data
 -- =====================================================
 -- Purpose: Initial Volvo master data and component relationships.
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 INSERT INTO
     volvo_masterdata (part_number, quantity_per_skid)

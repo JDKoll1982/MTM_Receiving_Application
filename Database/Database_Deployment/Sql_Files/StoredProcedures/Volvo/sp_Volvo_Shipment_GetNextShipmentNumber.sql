@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Shipment_GetNextShipmentNumber
 -- =====================================================
 -- Purpose: Get the next available shipment number
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

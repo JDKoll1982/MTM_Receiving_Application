@@ -44,9 +44,33 @@ public partial class Model_DunnageLoad : ObservableObject
     [ObservableProperty]
     private int? _typeId;
 
+    private readonly string?[] _udcValues = new string?[10];
+
+    public string? Udc1 { get => _udcValues[0]; set => SetProperty(ref _udcValues[0], value); }
+    public string? Udc2 { get => _udcValues[1]; set => SetProperty(ref _udcValues[1], value); }
+    public string? Udc3 { get => _udcValues[2]; set => SetProperty(ref _udcValues[2], value); }
+    public string? Udc4 { get => _udcValues[3]; set => SetProperty(ref _udcValues[3], value); }
+    public string? Udc5 { get => _udcValues[4]; set => SetProperty(ref _udcValues[4], value); }
+    public string? Udc6 { get => _udcValues[5]; set => SetProperty(ref _udcValues[5], value); }
+    public string? Udc7 { get => _udcValues[6]; set => SetProperty(ref _udcValues[6], value); }
+    public string? Udc8 { get => _udcValues[7]; set => SetProperty(ref _udcValues[7], value); }
+    public string? Udc9 { get => _udcValues[8]; set => SetProperty(ref _udcValues[8], value); }
+    public string? Udc10 { get => _udcValues[9]; set => SetProperty(ref _udcValues[9], value); }
+
+    public string? GetUdcValue(int slot) =>
+        slot >= 1 && slot <= 10 ? _udcValues[slot - 1] : null;
+
+    public void SetUdcValue(int slot, string? value)
+    {
+        if (slot >= 1 && slot <= 10)
+        {
+            SetProperty(ref _udcValues[slot - 1], value);
+        }
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SpecSummaryDisplay))]
-    private Dictionary<string, object> _specs = new();
+    private IReadOnlyList<Model_CustomFieldDefinition>? _udcFields;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LocationButtonDisplayText))]
@@ -103,10 +127,6 @@ public partial class Model_DunnageLoad : ObservableObject
 
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SpecSummaryDisplay))]
-    private Dictionary<string, object>? _specValues;
 
     [ObservableProperty]
     private DateTime _receivedDate = DateTime.Now;
@@ -225,44 +245,36 @@ public partial class Model_DunnageLoad : ObservableObject
                 .Replace("AM", "A.M.", StringComparison.Ordinal)
                 .Replace("PM", "P.M.", StringComparison.Ordinal);
 
-    public string SpecsJsonDisplay
-    {
-        get
-        {
-            if (SpecValues is { Count: > 0 })
-            {
-                return JsonSerializer.Serialize(SpecValues);
-            }
-
-            if (Specs.Count > 0)
-            {
-                return JsonSerializer.Serialize(Specs);
-            }
-
-            return string.Empty;
-        }
-    }
-
     public string SpecSummaryDisplay
     {
         get
         {
-            var activeSpecs = SpecValues ?? Specs;
-            if (activeSpecs == null || activeSpecs.Count == 0)
+            var pairs = new List<string>();
+            var labels = UdcFields;
+            if (labels is { Count: > 0 })
             {
-                return "No specs";
+                foreach (var customField in labels)
+                {
+                    var value = GetUdcValue(customField.DisplayOrder);
+                    if (value is not null)
+                    {
+                        pairs.Add($"{customField.FieldName}: {value}");
+                    }
+                }
+            }
+            else
+            {
+                for (var i = 1; i <= 10; i++)
+                {
+                    var value = GetUdcValue(i);
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        pairs.Add($"UDC{i}: {value}");
+                    }
+                }
             }
 
-            return string.Join(
-                " | ",
-                activeSpecs
-                    .Where(pair =>
-                        string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase)
-                            is false
-                    )
-                    .OrderBy(pair => pair.Key)
-                    .Select(pair => $"{pair.Key}: {pair.Value}")
-            );
+            return pairs.Count > 0 ? string.Join(" | ", pairs) : "No specs";
         }
     }
 

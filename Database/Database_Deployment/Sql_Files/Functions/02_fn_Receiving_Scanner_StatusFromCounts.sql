@@ -1,7 +1,7 @@
 -- Function: fn_Receiving_Scanner_StatusFromCounts
 -- Description: Derives session/run status from sent, failed, and waiting counts.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP FUNCTION IF EXISTS `fn_Receiving_Scanner_StatusFromCounts`;
 

@@ -2,8 +2,9 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
+  <Project Path="../../../AppData/Local/Temp/mtm_verify/verify.csproj" />
   <Project Path="MTM_Receiving_Application.csproj">
-    <Platform Solution="*|x64" Project="x64" />
+    <Platform Project="x64" />
     <Deploy />
   </Project>
 </Solution>

@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerRunItem_Insert
 -- Description: Writes one per-item run outcome row.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerRunItem_Insert`;
 

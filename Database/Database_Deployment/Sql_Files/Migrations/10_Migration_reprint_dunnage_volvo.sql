@@ -11,10 +11,10 @@
 -- Note: sp_Dunnage_LabelData_ClearToHistory and
 --       sp_Volvo_GeneratedLabelData_ClearToHistory are updated in their source files
 --       to skip is_reprint rows and are installed by the normal SP deployment.
--- Run this single file against mtm_receiving_application to apply everything.
+-- Run this single file against mtm_receiving_application_test to apply everything.
 -- ============================================================================
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 -- ---------------------------------------------------------------------------
 -- Step 1: Add is_reprint columns (idempotent — skipped if already present)

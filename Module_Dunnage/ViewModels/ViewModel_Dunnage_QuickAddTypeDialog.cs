@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -143,11 +144,11 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         string typeName,
         string iconName,
         string? imagePath,
-        Dictionary<string, SpecDefinition> specs
+        List<Model_CustomFieldDefinition> customFields
     )
     {
         DialogTitle = "Edit Dunnage Type";
-        DialogDescription = "Update the type name, visual mode, and specification fields.";
+        DialogDescription = "Update the type name, visual mode, and custom fields.";
         PrimaryButtonText = "Save Changes";
         TypeName = typeName;
         ValidationMessage = string.Empty;
@@ -162,20 +163,9 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         SelectedIconKind = parsedIcon;
 
         Specs.Clear();
-        foreach (KeyValuePair<string, SpecDefinition> pair in specs.OrderBy(pair => pair.Key))
+        foreach (var field in customFields.OrderBy(field => field.DisplayOrder))
         {
-            Specs.Add(
-                new Model_SpecItem
-                {
-                    Name = pair.Key,
-                    DataType = pair.Value.DataType,
-                    IsRequired = pair.Value.Required,
-                    Unit = pair.Value.Unit,
-                    MinValue = pair.Value.MinValue,
-                    MaxValue = pair.Value.MaxValue,
-                    Choices = pair.Value.Choices?.ToList() ?? new List<string>(),
-                }
-            );
+            Specs.Add(Helper_Dunnage_PartSpecs.CreateSpecItem(field));
         }
 
         ResetSpecEditor();

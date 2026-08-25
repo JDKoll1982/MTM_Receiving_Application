@@ -27,9 +27,6 @@ public partial class Model_DunnageType : ObservableObject
     private string? _imagePath;
 
     [ObservableProperty]
-    private string _specsJson = string.Empty;
-
-    [ObservableProperty]
     private string _createdBy = string.Empty;
 
     [ObservableProperty]

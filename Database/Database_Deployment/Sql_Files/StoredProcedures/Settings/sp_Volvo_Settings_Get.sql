@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Settings_Get
 -- =====================================================
 -- Purpose: Get a specific Volvo setting by key
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

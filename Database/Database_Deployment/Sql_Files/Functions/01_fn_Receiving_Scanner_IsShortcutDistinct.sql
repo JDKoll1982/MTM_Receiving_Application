@@ -1,7 +1,7 @@
 -- Function: fn_Receiving_Scanner_IsShortcutDistinct
 -- Description: Returns 1 when send and stop shortcuts are different.
 
-USE mtm_receiving_application;
+USE mtm_receiving_application_test;
 
 DROP FUNCTION IF EXISTS `fn_Receiving_Scanner_IsShortcutDistinct`;
 

@@ -467,7 +467,7 @@ public sealed partial class View_Scanner_Workbench : Page
                 {
                     Key = row.LocationId,
                     Label = row.LocationId,
-                    Detail = $"On hand: {row.Quantity.ToString(CultureInfo.InvariantCulture)}",
+                    Detail = $"On hand: {row.Quantity.ToString("0.####", CultureInfo.InvariantCulture)}",
                 })
                 .ToList();
 

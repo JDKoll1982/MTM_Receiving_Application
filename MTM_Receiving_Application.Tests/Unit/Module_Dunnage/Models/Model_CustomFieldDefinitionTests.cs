@@ -6,18 +6,17 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Models;
 public sealed class Model_CustomFieldDefinitionTests
 {
     [Theory]
-    [InlineData("Weight (lbs)", "weight_lbs")]
-    [InlineData("  Part Length  ", "part_length")]
-    [InlineData("Width/Height+Depth", "width_height_depth")]
-    [InlineData("Already__Clean", "already_clean")]
-    [InlineData("", "")]
-    public void BuildDatabaseColumnName_ShouldNormalizeFieldNames(
-        string fieldName,
+    [InlineData(1, "udc1")]
+    [InlineData(10, "udc10")]
+    [InlineData(0, "")]
+    [InlineData(11, "")]
+    public void UdcColumnName_ShouldMapDisplayOrderToSlotColumn(
+        int displayOrder,
         string expectedColumnName
     )
     {
-        var result = Model_CustomFieldDefinition.BuildDatabaseColumnName(fieldName);
+        var field = new Model_CustomFieldDefinition { DisplayOrder = displayOrder };
 
-        result.Should().Be(expectedColumnName);
+        field.UdcColumnName.Should().Be(expectedColumnName);
     }
 }

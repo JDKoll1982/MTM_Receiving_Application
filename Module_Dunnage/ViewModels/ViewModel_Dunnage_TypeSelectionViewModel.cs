@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -382,26 +383,33 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 {
                     _logger.LogInfo($"Successfully added type: {typeName}", "TypeSelection");
 
-                    // Insert specs
+                    // Insert custom fields (UDC slots) for the new type
+                    var slot = 1;
                     foreach (var specItem in dialog.Specs)
                     {
-                        var specDef = new SpecDefinition
+                        if (slot > 10)
                         {
-                            DataType = specItem.DataType,
-                            Required = specItem.IsRequired,
-                            Unit = specItem.Unit,
-                            MinValue = specItem.MinValue,
-                            MaxValue = specItem.MaxValue,
-                            Choices = specItem.Choices,
-                        };
+                            break;
+                        }
 
-                        var specModel = new Model_DunnageSpec
+                        var field = Helper_Dunnage_PartSpecs.CreateDefinition(specItem, slot);
+                        var fieldResult = await _dunnageService.InsertCustomFieldAsync(
+                            newType.Id,
+                            field
+                        );
+                        if (fieldResult.IsSuccess && field.Id > 0)
                         {
-                            TypeId = newType.Id,
-                            SpecKey = specItem.Name,
-                            SpecValue = JsonSerializer.Serialize(specDef),
-                        };
-                        await _dunnageService.InsertSpecAsync(specModel);
+                            for (var index = 0; index < field.Choices.Count; index++)
+                            {
+                                await _dunnageService.InsertCustomFieldChoiceAsync(
+                                    field.Id,
+                                    field.Choices[index],
+                                    index + 1
+                                );
+                            }
+                        }
+
+                        slot++;
                     }
 
                     // Reload types to show new type
@@ -452,44 +460,18 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 return;
             }
 
-            // Load existing specs
-            var specsResult = await _dunnageService.GetSpecsForTypeAsync(type.Id);
-            var existingSpecsDict = new Dictionary<string, SpecDefinition>();
-
-            if (specsResult.IsSuccess && specsResult.Data != null)
-            {
-                foreach (var s in specsResult.Data)
-                {
-                    try
-                    {
-                        var def = JsonSerializer.Deserialize<SpecDefinition>(s.SpecValue);
-                        if (def != null)
-                        {
-                            def.DataType = string.IsNullOrWhiteSpace(def.DataType)
-                                ? "Text"
-                                : def.DataType.Trim();
-                            def.Unit ??= string.Empty;
-                            def.DefaultValue ??= string.Empty;
-                            def.Choices ??= new List<string>();
-                            existingSpecsDict[s.SpecKey] = def;
-                        }
-                        else
-                        {
-                            existingSpecsDict[s.SpecKey] = new SpecDefinition(); // Fallback
-                        }
-                    }
-                    catch
-                    {
-                        existingSpecsDict[s.SpecKey] = new SpecDefinition(); // Fallback for empty/invalid JSON
-                    }
-                }
-            }
+            // Load existing custom fields
+            var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(type.Id);
+            var existingFields =
+                fieldsResult.IsSuccess && fieldsResult.Data != null
+                    ? fieldsResult.Data
+                    : new List<Model_CustomFieldDefinition>();
 
             dialog.InitializeForEdit(
                 type.TypeName,
                 type.Icon,
                 type.ImagePath,
-                existingSpecsDict,
+                existingFields,
                 CanManageDefinitions
             );
             dialog.PrepareDialogSize();
@@ -508,7 +490,6 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 var originalIcon = type.Icon;
                 var newName = dialog.TypeName;
                 var newIcon = dialog.SelectedIconKind.ToString();
-                var newSpecs = dialog.Specs; // Collection of SpecItem
 
                 // Update Type info
                 if (
@@ -548,59 +529,73 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                     }
                 }
 
-                // Update Specs
-                // 1. Find removed specs
-                var newSpecNames = newSpecs.Select(s => s.Name).ToList();
-                var removedSpecKeys = existingSpecsDict.Keys.Except(newSpecNames).ToList();
+                // Update custom fields (UDC slots)
+                var newSpecs = dialog.Specs;
+                var newFieldNames = newSpecs.Select(s => s.Name).ToList();
+                var removedFields = existingFields
+                    .Where(field =>
+                        !newFieldNames.Contains(
+                            field.FieldName,
+                            StringComparer.OrdinalIgnoreCase
+                        )
+                    )
+                    .ToList();
 
-                foreach (var specKey in removedSpecKeys)
+                foreach (var removedField in removedFields)
                 {
-                    var specToDelete = specsResult.Data?.FirstOrDefault(s => s.SpecKey == specKey);
-                    if (specToDelete != null)
-                    {
-                        await _dunnageService.DeleteSpecAsync(specToDelete.Id);
-                    }
+                    await _dunnageService.DeleteCustomFieldAsync(removedField.Id);
                 }
 
-                // 2. Find added or updated specs
+                var slot = 1;
                 foreach (var specItem in newSpecs)
                 {
-                    var specDef = new SpecDefinition
+                    if (slot > 10)
                     {
-                        DataType = specItem.DataType,
-                        Required = specItem.IsRequired,
-                        Unit = specItem.Unit,
-                        MinValue = specItem.MinValue,
-                        MaxValue = specItem.MaxValue,
-                        Choices = specItem.Choices,
-                    };
-                    var json = JsonSerializer.Serialize(specDef);
+                        break;
+                    }
 
-                    if (existingSpecsDict.ContainsKey(specItem.Name))
+                    var field = Helper_Dunnage_PartSpecs.CreateDefinition(specItem, slot);
+                    var existingField = existingFields.FirstOrDefault(field =>
+                        string.Equals(
+                            field.FieldName,
+                            specItem.Name,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+
+                    if (existingField is not null)
                     {
-                        // Update existing?
-                        // We need to check if definition changed.
-                        // For simplicity, we can just update the value if it's different.
-                        var existingModel = specsResult.Data?.FirstOrDefault(s =>
-                            s.SpecKey == specItem.Name
-                        );
-                        if (existingModel != null && existingModel.SpecValue != json)
+                        await _dunnageService.UpdateCustomFieldAsync(existingField.Id, field);
+                        await _dunnageService.DeleteCustomFieldChoicesAsync(existingField.Id);
+                        for (var index = 0; index < field.Choices.Count; index++)
                         {
-                            existingModel.SpecValue = json;
-                            await _dunnageService.UpdateSpecAsync(existingModel);
+                            await _dunnageService.InsertCustomFieldChoiceAsync(
+                                existingField.Id,
+                                field.Choices[index],
+                                index + 1
+                            );
                         }
                     }
                     else
                     {
-                        // Insert new
-                        var specModel = new Model_DunnageSpec
+                        var fieldResult = await _dunnageService.InsertCustomFieldAsync(
+                            type.Id,
+                            field
+                        );
+                        if (fieldResult.IsSuccess && field.Id > 0)
                         {
-                            TypeId = type.Id,
-                            SpecKey = specItem.Name,
-                            SpecValue = json,
-                        };
-                        await _dunnageService.InsertSpecAsync(specModel);
+                            for (var index = 0; index < field.Choices.Count; index++)
+                            {
+                                await _dunnageService.InsertCustomFieldChoiceAsync(
+                                    field.Id,
+                                    field.Choices[index],
+                                    index + 1
+                                );
+                            }
+                        }
                     }
+
+                    slot++;
                 }
 
                 _logger.LogInfo($"Successfully updated type: {type.TypeName}", "TypeSelection");

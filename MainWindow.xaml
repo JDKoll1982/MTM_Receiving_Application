@@ -98,13 +98,14 @@
                                         <VisualState x:Name="Normal" />
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
-                                                <Setter Target="UserCardBorder.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                                <!--  Translucent white keeps the white header text readable on the accent fill.  -->
+                                                <Setter Target="UserCardBorder.Background" Value="#26FFFFFF" />
                                                 <Setter Target="UserCardBorder.BorderBrush" Value="{TemplateBinding BorderBrush}" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="Pressed">
                                             <VisualState.Setters>
-                                                <Setter Target="UserCardBorder.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                                <Setter Target="UserCardBorder.Background" Value="#3DFFFFFF" />
                                                 <Setter Target="UserCardBorder.BorderBrush" Value="{TemplateBinding BorderBrush}" />
                                             </VisualState.Setters>
                                         </VisualState>
@@ -291,6 +292,7 @@
                                     <TextBlock
                                         x:Name="UserDisplayTextBlock"
                                         VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                         Style="{StaticResource BodyStrongTextBlockStyle}"
                                         Text="Not Logged In"
                                         TextTrimming="CharacterEllipsis" />

@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Shipment_GetPending
 -- =====================================================
 -- Purpose: Get pending shipment if one exists
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$

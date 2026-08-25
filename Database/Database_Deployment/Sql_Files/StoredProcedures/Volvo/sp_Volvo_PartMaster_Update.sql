@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartMaster_Update
 -- =====================================================
 -- Purpose: Update an existing Volvo part
--- Database: mtm_receiving_application
+-- Database: mtm_receiving_application_test
 -- =====================================================
 
 DELIMITER $$
