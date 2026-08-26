@@ -48,6 +48,17 @@ public interface IService_ScannerValidation
 	);
 
 	/// <summary>
+	/// Returns every part that currently holds stock (quantity &gt; 0) at the given warehouse
+	/// location. Used by the Workbench location-search modal so the operator can choose which
+	/// parts to transfer from that location.
+	/// </summary>
+	Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetPartsAtLocationAsync(
+		string locationId,
+		string warehouseCode,
+		CancellationToken cancellationToken = default
+	);
+
+	/// <summary>
 	/// Returns true when the part exists in Infor Visual (used by the Step 6b part
 	/// focus-lost validation).
 	/// </summary>

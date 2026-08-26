@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -144,6 +145,76 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 			: Task.FromResult(
 				Model_Dao_Result_Factory.Failure("Could not clear the target form.")
 			);
+	}
+
+	/// <summary>Shortcut that opens the Inventory Transfers window inside VMINVENT.</summary>
+	private const string OpenWindowShortcutChord = "Alt+I";
+
+	public async Task<Model_Dao_Result> OpenInventoryWindowAsync(
+		Model_ScannerProfile profile,
+		CancellationToken cancellationToken = default
+	)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		if (profile is null)
+		{
+			return Model_Dao_Result_Factory.Failure("Profile is required.");
+		}
+
+		// Already running -> activate the target window and send the open shortcut.
+		if (TryFindAndActivateTarget(profile, out var existing) && existing != IntPtr.Zero)
+		{
+			return SendOpenWindowShortcut();
+		}
+
+		// Launch VMINVENT (resolved via PATH / App Paths / shell association).
+		try
+		{
+			Process.Start(
+				new ProcessStartInfo(profile.TargetExecutableName) { UseShellExecute = true }
+			);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogWarning(
+				$"Could not launch {profile.TargetExecutableName}: {ex.Message}",
+				nameof(Service_ScannerExecution)
+			);
+			return Model_Dao_Result_Factory.Failure(
+				$"Could not launch {profile.TargetExecutableName}. Add it to PATH or App Paths and try again."
+			);
+		}
+
+		// Wait for the window to appear, then activate and open it.
+		for (var attempt = 0; attempt < 20; attempt++)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			await Task.Delay(250, cancellationToken);
+
+			if (TryFindAndActivateTarget(profile, out var hwnd) && hwnd != IntPtr.Zero)
+			{
+				return SendOpenWindowShortcut();
+			}
+		}
+
+		return Model_Dao_Result_Factory.Failure(
+			$"{profile.TargetExecutableName} started, but the Inventory Transfers window could not be found."
+		);
+	}
+
+	private Model_Dao_Result SendOpenWindowShortcut()
+	{
+		if (!Service_ScannerHotkey.TryParseChord(OpenWindowShortcutChord, out var modifiers, out var virtualKey))
+		{
+			return Model_Dao_Result_Factory.Failure(
+				$"The open-window shortcut '{OpenWindowShortcutChord}' is not a valid chord."
+			);
+		}
+
+		return _engine.SendChord(modifiers, virtualKey)
+			? Model_Dao_Result_Factory.Success()
+			: Model_Dao_Result_Factory.Failure("Could not send the open-window shortcut.");
 	}
 
 	private async Task<Model_Dao_Result<Model_ScannerExecutionOutcome>> ExecuteItemAsync(

@@ -19,6 +19,7 @@ using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Views;
+using MTM_Receiving_Application.Module_Shared.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
@@ -37,7 +38,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerHotkey _hotkeyService;
     private readonly IService_Window _windowService;
 
-    // ── Entry fields (baseline state per ScannerUpdate.md Task 6) ─────────────────
+    // ── Entry fields ─────────────────────────────────────────────────────────────
     [ObservableProperty]
     private string _newPartId = string.Empty;
 
@@ -45,52 +46,38 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private string _newFromWarehouse = "002";
 
     [ObservableProperty]
-    private string _newFromLocation = string.Empty;
-
-    [ObservableProperty]
     private string _newToWarehouse = "002";
 
-    [ObservableProperty]
-    private string _newToLocation = string.Empty;
-
-    [ObservableProperty]
-    private string _newQuantity = "1";
-
-    [ObservableProperty]
-    private string _lastValidationStatus = string.Empty;
-
-    [ObservableProperty]
-    private string _lastValidationNotes = string.Empty;
-
-    // ── Baseline input states (Task 6) ───────────────────────────────────────────
+    // ── Input states ─────────────────────────────────────────────────────────────
     /// <summary>Part Number is always editable unless automation is running.</summary>
     [ObservableProperty]
     private bool _isPartEditable = true;
 
-    /// <summary>From Location is read-only at all times.</summary>
-    public bool IsFromLocationReadOnly => true;
-
-    /// <summary>To Location is read-only at all times.</summary>
-    public bool IsToLocationReadOnly => true;
-
-    /// <summary>To Location is disabled until a source resolves (Step 6b-a1-c).</summary>
+    /// <summary>Search mode toggle: false = by part number, true = by location.</summary>
     [ObservableProperty]
-    private bool _isToLocationEnabled;
+    private bool _isLocationModeEnabled;
 
-    /// <summary>Quantity is read-only at all times.</summary>
-    public bool IsQuantityReadOnly => true;
+    public Enum_ScannerSearchMode SearchMode =>
+        IsLocationModeEnabled ? Enum_ScannerSearchMode.Location : Enum_ScannerSearchMode.PartNumber;
 
-    /// <summary>Quantity is enabled once the From location resolves.</summary>
-    [ObservableProperty]
-    private bool _isQuantityEnabled;
+    public Enum_SharedLookupType LookupType =>
+        IsLocationModeEnabled ? Enum_SharedLookupType.Location : Enum_SharedLookupType.PartNumber;
 
-    /// <summary>Add button is disabled at baseline; enabled when the row is complete.</summary>
-    [ObservableProperty]
-    private bool _isAddEnabled;
+    public string LookupHeaderText => IsLocationModeEnabled ? "Location" : "Part";
 
-    /// <summary>Maximum quantity for the resolved From location.</summary>
-    [ObservableProperty]
-    private decimal? _maxQuantity;
+    public string LookupPlaceholderText =>
+        IsLocationModeEnabled ? "Enter location" : "Enter part number";
+
+    partial void OnIsLocationModeEnabledChanged(bool value)
+    {
+        // Clear the lookup input so a stale value is not re-validated in the other mode.
+        NewPartId = string.Empty;
+        PartIdClearRequested?.Invoke();
+        OnPropertyChanged(nameof(SearchMode));
+        OnPropertyChanged(nameof(LookupType));
+        OnPropertyChanged(nameof(LookupHeaderText));
+        OnPropertyChanged(nameof(LookupPlaceholderText));
+    }
 
     // ── Header error area (non-blocking, 5-second auto-clear) ────────────────────
     [ObservableProperty]
@@ -109,10 +96,13 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private ObservableCollection<Model_ScannerBatchItem> _sessionItems = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedSessionItem))]
+    [NotifyPropertyChangedFor(nameof(IsSendEnabled))]
     private Model_ScannerBatchItem? _selectedSessionItem;
 
     // ── Send confirmation ────────────────────────────────────────────────────────
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSendEnabled))]
     private bool _isSendPromptVisible;
 
     private Model_ScannerBatchItem? _pendingSendItem;
@@ -120,6 +110,19 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public bool HasActiveSession => CurrentSession is not null;
 
     public bool HasSelectedSessionItem => SelectedSessionItem is not null;
+
+    /// <summary>
+    /// Send is enabled only when the selected line has validated (Valid state) and no
+    /// automation, confirmation prompt, or busy state is active.
+    /// </summary>
+    public bool IsSendEnabled =>
+        SelectedSessionItem is { ValidationState: Enum_ScannerValidationState.Valid }
+        && !_executionService.IsAutomationRunning
+        && !IsSendPromptVisible
+        && !IsBusy;
+
+    /// <summary>Primary button label: "Send" when the selected line is ready, else "Validate".</summary>
+    public string SendButtonText => IsSendEnabled ? "Send" : "Validate";
 
     public string OwnerUserId { get; } = Environment.UserName;
 
@@ -130,13 +133,19 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public TimeSpan TransferConfirmPollInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     /// <summary>Raised so the view can show the stock-location picker (Step 6b-a1-a).</summary>
-    public event Func<string, string, string, Task<Model_ScannerStockPick?>>? FromLocationInventoryPickerRequested;
+    public event Func<string, string, string, Task<IReadOnlyList<Model_ScannerStockPick>>>? FromLocationInventoryPickerRequested;
+
+    /// <summary>Raised so the view can show the parts-at-location picker (location search mode).</summary>
+    public event Func<string, string, Task<IReadOnlyList<Model_ScannerStockPick>>>? LocationPartsPickerRequested;
 
     /// <summary>Raised so the view can return focus to the Part lookup (Step 6b-a2).</summary>
     public event Action? PartIdFocusRequested;
 
-    /// <summary>Raised so the view can enable, focus, and select all on the To Location (Step 6b-a1-c).</summary>
-    public event Action? ToLocationFocusRequested;
+    /// <summary>Raised so the view can clear the Part lookup input (prevents modal reopen).</summary>
+    public event Action? PartIdClearRequested;
+
+    /// <summary>Raised so the view can focus the first row's destination cell after the modal populates the list.</summary>
+    public event Action? FirstRowToCellFocusRequested;
 
     public ViewModel_Scanner_Workbench(
         IService_ScannerNavigation navigationService,
@@ -166,6 +175,9 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
         // Input lockout while automation runs (ScannerUpdate.md Task 1).
         _executionService.PropertyChanged += OnExecutionPropertyChanged;
+
+        // Keep Send enablement in sync with the busy state (base-class observable).
+        PropertyChanged += OnWorkbenchPropertyChanged;
     }
 
     private void OnExecutionPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -173,22 +185,28 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         if (e.PropertyName == nameof(IService_ScannerExecution.IsAutomationRunning))
         {
             IsPartEditable = !_executionService.IsAutomationRunning;
-            IsToLocationEnabled = !_executionService.IsAutomationRunning && IsToLocationEnabled;
-            IsQuantityEnabled = !_executionService.IsAutomationRunning && IsQuantityEnabled;
-            RecomputeAddEnabled();
+            RecomputeSendEnabled();
         }
     }
 
-    partial void OnNewToLocationChanged(string value)
+    private void OnWorkbenchPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        RecomputeAddEnabled();
+        if (e.PropertyName == nameof(IsBusy))
+        {
+            RecomputeSendEnabled();
+        }
     }
 
-    private void RecomputeAddEnabled()
+    partial void OnSelectedSessionItemChanged(Model_ScannerBatchItem? value)
     {
-        IsAddEnabled = !_executionService.IsAutomationRunning
-            && CurrentSession is not null
-            && !string.IsNullOrWhiteSpace(NewToLocation);
+        RecomputeSendEnabled();
+    }
+
+    private void RecomputeSendEnabled()
+    {
+        OnPropertyChanged(nameof(IsSendEnabled));
+        OnPropertyChanged(nameof(SendButtonText));
+        SendSelectedCommand.NotifyCanExecuteChanged();
     }
 
     // ── Page lifecycle ───────────────────────────────────────────────────────────
@@ -281,82 +299,230 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        // Step 6b-a1-a: the view shows the stock-location modal.
+        // Step 6b-a1-a: the view shows the stock-location modal (multi-select).
         if (FromLocationInventoryPickerRequested is null)
         {
             await ShowNoStockErrorAsync();
             return;
         }
 
-        var picked = await FromLocationInventoryPickerRequested(
+        var picks = await FromLocationInventoryPickerRequested(
             NewPartId,
             NewFromWarehouse,
-            NewFromLocation
+            string.Empty
         );
 
-        if (picked is null || string.IsNullOrWhiteSpace(picked.Location))
+        if (picks is null || picks.Count == 0)
         {
-            // Step 6b-a1-b: user cancelled the modal -> treat as no stock.
-            await ShowNoStockErrorAsync();
+            // Step 6b-a1-b: user cancelled the modal -> clear the part input so the shared
+            // lookup cannot re-validate and reopen the modal.
+            ClearPartInput();
+            ShowStatus("Stock selection cancelled.", InfoBarSeverity.Informational);
             return;
         }
 
-        await ApplyStockLocationSelectionAsync(picked);
+        await ApplyStockLocationSelectionAsync(picks);
     }
-
-    private async Task ApplyStockLocationSelectionAsync(Model_ScannerStockPick pick)
-    {
-        // Step 6b-a1-c: fill From Loc + Qty, then enable/focus To Location.
-        NewFromLocation = pick.Location;
-        if (decimal.TryParse(pick.Quantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity))
-        {
-            SetFromQuantityLimit(quantity);
-        }
-        else
-        {
-            ClearFromQuantityLimit();
-            quantity = 0m;
-        }
-
-        NewQuantity = quantity.ToString("0.####", CultureInfo.InvariantCulture);
-
-        IsToLocationEnabled = true;
-        NewToLocation = string.Empty;
-        RecomputeAddEnabled();
-        ToLocationFocusRequested?.Invoke();
-
-        ShowStatus("Source location resolved. Enter the destination location.", InfoBarSeverity.Success);
-        await Task.CompletedTask;
-    }
-
-    private async Task ShowNoStockErrorAsync()
-    {
-        ShowHeaderError("The part number does not have any quantity in-house.");
-        PartIdFocusRequested?.Invoke();
-        await Task.CompletedTask;
-    }
-
-    // ── Step 6b-a1-c-a: To Location format sanitization ──────────────────────────
 
     /// <summary>
-    /// Sanitizes the To Location on focus-lost (Step 6b-a1-c-b). Returns true when the
-    /// format is valid; on failure shows a non-blocking header error and re-focuses.
+    /// Runs the location-search validation: location exists? -> parts at that location ->
+    /// parts modal -> populate rows with that source location (mirror of the part workflow).
     /// </summary>
-    public async Task<bool> ValidateToLocationFormatAsync()
+    public async Task LocationValidationCompletedAsync(string location)
     {
-        var rawValue = NewToLocation?.Trim() ?? string.Empty;
-        var sanitized = Helper_ScannerLocationFormat.SanitizeLocationFormat(rawValue);
+        ClearHeaderError();
 
-        if (!string.IsNullOrEmpty(sanitized))
+        NewPartId = location?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(NewPartId))
         {
-            NewToLocation = sanitized;
-            RecomputeAddEnabled();
-            return true;
+            return;
         }
 
-        ShowHeaderError("Invalid location layout entered. Please check your format.");
+        var locationResult = await _validationService.ValidateLocationAsync(NewPartId, NewFromWarehouse);
+        if (!locationResult.Success || locationResult.Data is null || !locationResult.Data.IsValid)
+        {
+            ShowHeaderError(
+                string.IsNullOrWhiteSpace(locationResult.ErrorMessage)
+                    ? "Location is not valid. Please check the format."
+                    : locationResult.ErrorMessage
+            );
+            PartIdFocusRequested?.Invoke();
+            return;
+        }
+
+        var canonicalLocation = locationResult.Data.CanonicalLocation;
+        NewPartId = canonicalLocation;
+
+        var parts = await _validationService.GetPartsAtLocationAsync(canonicalLocation, NewFromWarehouse);
+        if (!parts.Success || parts.Data is null || parts.Data.Count == 0)
+        {
+            await ShowNoStockErrorAsync("No parts have quantity at this location.");
+            return;
+        }
+
+        if (LocationPartsPickerRequested is null)
+        {
+            await ShowNoStockErrorAsync("No parts have quantity at this location.");
+            return;
+        }
+
+        var picks = await LocationPartsPickerRequested(canonicalLocation, NewFromWarehouse);
+        if (picks is null || picks.Count == 0)
+        {
+            ClearPartInput();
+            ShowStatus("Part selection cancelled.", InfoBarSeverity.Informational);
+            return;
+        }
+
+        await ApplyLocationPartsSelectionAsync(picks, canonicalLocation);
+    }
+
+    private async Task ApplyStockLocationSelectionAsync(IReadOnlyList<Model_ScannerStockPick> picks)
+    {
+        await PopulateLinesAsync(picks, fallbackPartId: NewPartId, fallbackFromLocation: string.Empty);
+    }
+
+    private async Task ApplyLocationPartsSelectionAsync(IReadOnlyList<Model_ScannerStockPick> picks, string location)
+    {
+        await PopulateLinesAsync(picks, fallbackPartId: string.Empty, fallbackFromLocation: location);
+    }
+
+    private async Task PopulateLinesAsync(
+        IReadOnlyList<Model_ScannerStockPick> picks,
+        string fallbackPartId,
+        string fallbackFromLocation
+    )
+    {
+        if (CurrentSession is null)
+        {
+            ShowStatus("The current list is not ready.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var lines = ExpandStockPicks(picks, fallbackPartId, fallbackFromLocation);
+
+        IsBusy = true;
+        try
+        {
+            var addedCount = 0;
+            foreach (var line in lines)
+            {
+                var item = new Model_ScannerBatchItem
+                {
+                    SessionId = CurrentSession.SessionId,
+                    SequenceNumber = CurrentSession.Items.Count + 1,
+                    PayloadPartId = line.PartId,
+                    PayloadFromWarehouse = NewFromWarehouse,
+                    PayloadFromLocation = line.FromLocation,
+                    PayloadToWarehouse = NewToWarehouse,
+                    PayloadQuantity = line.Quantity,
+                    MaxQuantity = line.MaxQuantity,
+                    ValidationState = Enum_ScannerValidationState.NotValidated,
+                };
+
+                var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
+                if (!save.Success || save.Data is null)
+                {
+                    ShowStatus(
+                        string.IsNullOrWhiteSpace(save.ErrorMessage)
+                            ? "Unable to add the selected line."
+                            : save.ErrorMessage,
+                        InfoBarSeverity.Error
+                    );
+                    return;
+                }
+
+                CurrentSession = save.Data;
+                addedCount++;
+            }
+
+            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+            SelectedSessionItem = SessionItems.LastOrDefault();
+
+            // Clear the lookup input so it cannot re-validate and reopen the modal.
+            ClearPartInput();
+
+            RecomputeSendEnabled();
+            FirstRowToCellFocusRequested?.Invoke();
+            ShowStatus(
+                addedCount == 1
+                    ? "Line added to the current list. Enter the destination in the table."
+                    : $"{addedCount} line(s) added to the current list. Enter each destination in the table.",
+                InfoBarSeverity.Success
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private static string NormalizeQuantity(string? raw)
+    {
+        if (
+            decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity)
+            && quantity > 0
+        )
+        {
+            return quantity.ToString("0.########", CultureInfo.InvariantCulture);
+        }
+
+        return "1";
+    }
+
+    /// <summary>One concrete current-list line produced from a modal pick.</summary>
+    private sealed record StockLine(string PartId, string FromLocation, string Quantity, decimal? MaxQuantity);
+
+    /// <summary>
+    /// Expands the stock picks into concrete current-list lines: one line per pick when a
+    /// single transaction, or <see cref="Model_ScannerStockPick.TransactionCount"/> lines
+    /// (quantity 1 each) when multiple transactions are requested. Each line carries the
+    /// source location's on-hand as its maximum quantity guard.
+    /// </summary>
+    private static IReadOnlyList<StockLine> ExpandStockPicks(
+        IReadOnlyList<Model_ScannerStockPick> picks,
+        string fallbackPartId,
+        string fallbackFromLocation
+    )
+    {
+        var lines = new List<StockLine>();
+
+        foreach (var pick in picks)
+        {
+            var count = Math.Max(1, pick.TransactionCount);
+            var max = pick.OnHand > 0 ? pick.OnHand : (decimal?)null;
+            var partId = string.IsNullOrWhiteSpace(pick.PartId) ? fallbackPartId : pick.PartId;
+            var fromLocation = string.IsNullOrWhiteSpace(pick.Location) ? fallbackFromLocation : pick.Location;
+
+            if (count == 1)
+            {
+                lines.Add(new StockLine(partId, fromLocation, NormalizeQuantity(pick.Quantity), max));
+            }
+            else
+            {
+                for (var index = 0; index < count; index++)
+                {
+                    lines.Add(new StockLine(partId, fromLocation, "1", max));
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    private void ClearPartInput()
+    {
+        NewPartId = string.Empty;
+        PartIdClearRequested?.Invoke();
+    }
+
+    private async Task ShowNoStockErrorAsync(
+        string message = "The part number does not have any quantity in-house."
+    )
+    {
+        ShowHeaderError(message);
+        PartIdFocusRequested?.Invoke();
         await Task.CompletedTask;
-        return false;
     }
 
     // ── Non-blocking header error (5-second auto-clear) ──────────────────────────
@@ -401,80 +567,101 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         return _validationService.FormatLocation(location);
     }
 
-    public async Task<Model_ScannerLocationValidationResult> ValidateFromLocationAsync()
-    {
-        var validation = await _validationService.ValidateLocationAsync(
-            NewFromLocation,
-            NewFromWarehouse
-        );
-
-        if (!validation.Success || validation.Data is null)
-        {
-            return new Model_ScannerLocationValidationResult
-            {
-                IsValid = false,
-                Message = string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                    ? "Location validation is currently unavailable."
-                    : validation.ErrorMessage,
-            };
-        }
-
-        if (validation.Data.IsValid)
-        {
-            NewFromLocation = validation.Data.CanonicalLocation;
-        }
-
-        return validation.Data;
-    }
-
-    public async Task<Model_ScannerLocationValidationResult> ValidateToLocationAsync()
-    {
-        var validation = await _validationService.ValidateLocationAsync(NewToLocation, NewToWarehouse);
-
-        if (!validation.Success || validation.Data is null)
-        {
-            return new Model_ScannerLocationValidationResult
-            {
-                IsValid = false,
-                Message = string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                    ? "Location validation is currently unavailable."
-                    : validation.ErrorMessage,
-            };
-        }
-
-        if (validation.Data.IsValid)
-        {
-            NewToLocation = validation.Data.CanonicalLocation;
-        }
-
-        return validation.Data;
-    }
-
-    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetFromLocationSuggestionsAsync()
-    {
-        return _validationService.GetLocationSuggestionsAsync(NewFromLocation, NewFromWarehouse);
-    }
-
-    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetToLocationSuggestionsAsync()
-    {
-        return _validationService.GetLocationSuggestionsAsync(NewToLocation, NewToWarehouse);
-    }
-
     public Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetFromInventoryLocationsAsync()
     {
         return _validationService.GetLocationsWithStockAsync(NewPartId, NewFromWarehouse);
     }
 
-    public void SetFromQuantityLimit(decimal available)
+    public Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetPartsAtLocationForPickerAsync(
+        string location,
+        string warehouseCode
+    )
     {
-        MaxQuantity = available;
-        IsQuantityEnabled = true;
+        return _validationService.GetPartsAtLocationAsync(location, warehouseCode);
     }
 
-    public void ClearFromQuantityLimit()
+    // ── Per-row validation (editable To / Qty columns) ──────────────────────────
+
+    /// <summary>
+    /// Sanitizes and validates one current-list row after the operator edits its
+    /// destination or quantity, updates the row's Status, persists it, and refreshes
+    /// whether Send is available. A row is not send-eligible until it validates.
+    /// </summary>
+    public async Task<Model_ScannerItemValidationResult?> ValidateSessionItemAsync(
+        Model_ScannerBatchItem item
+    )
     {
-        IsQuantityEnabled = false;
-        MaxQuantity = null;
+        if (item is null || CurrentSession is null)
+        {
+            return null;
+        }
+
+        // Step 6b-a1-c-b: sanitize the destination format before validation.
+        var sanitizedTo = Helper_ScannerLocationFormat.SanitizeLocationFormat(item.PayloadToLocation);
+        if (!string.IsNullOrEmpty(sanitizedTo))
+        {
+            item.PayloadToLocation = sanitizedTo;
+        }
+
+        Model_ScannerItemValidationResult? validationResult = null;
+
+        // Quantity-too-high guard using the on-hand captured from the stock-location modal.
+        if (
+            item.MaxQuantity is decimal maxQuantity
+            && decimal.TryParse(item.PayloadQuantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity)
+            && quantity > maxQuantity
+        )
+        {
+            item.ValidationState = Enum_ScannerValidationState.Invalid;
+            item.ValidationMessage = "Qty too High";
+            item.ValidationNotes = $"Quantity cannot exceed the on-hand of {maxQuantity}.";
+        }
+        else
+        {
+            var validation = await _validationService.ValidateNewItemAsync(
+                new Model_ScannerItemValidationRequest
+                {
+                    SessionId = CurrentSession.SessionId,
+                    ItemId = item.ItemId,
+                    PartId = item.PayloadPartId,
+                    FromWarehouse = item.PayloadFromWarehouse,
+                    FromLocation = item.PayloadFromLocation,
+                    ToWarehouse = item.PayloadToWarehouse,
+                    ToLocation = item.PayloadToLocation,
+                    Quantity = item.PayloadQuantity,
+                }
+            );
+
+            if (validation.Success && validation.Data is not null)
+            {
+                item.ApplyValidationResult(validation.Data);
+                validationResult = validation.Data;
+            }
+            else
+            {
+                item.ValidationState = Enum_ScannerValidationState.Invalid;
+                item.ValidationMessage = "Validation unavailable.";
+                item.ValidationNotes =
+                    string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                        ? "Validation failed due to service error."
+                        : validation.ErrorMessage;
+            }
+        }
+
+        // Persist the edited row so the change survives navigation and app restarts. The
+        // model is observable, so the Status column updates in place; do NOT rebuild the
+        // SessionItems collection here or the focus the operator was moving to is lost.
+        if (CurrentSession.Items.Any(candidate => candidate.ItemId == item.ItemId))
+        {
+            var persist = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
+            if (persist.Success && persist.Data is not null)
+            {
+                CurrentSession = persist.Data;
+            }
+        }
+
+        RecomputeSendEnabled();
+        return validationResult;
     }
 
     // ── Commands ─────────────────────────────────────────────────────────────────
@@ -497,100 +684,28 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         _navigationService.ShowSettings();
     }
 
+    /// <summary>
+    /// Launches (or activates) VMINVENT and sends the open-window shortcut so the operator
+    /// can reach the Inventory Transfers window from the Scanner Workbench.
+    /// </summary>
     [RelayCommand]
-    private async Task AddItemAsync()
+    private async Task OpenInventoryAsync()
     {
-        if (!IsAddEnabled)
+        if (_executionService.IsAutomationRunning)
         {
+            ShowStatus("Wait for the current send to finish before opening the inventory window.", InfoBarSeverity.Warning);
             return;
         }
 
-        if (CurrentSession is null)
-        {
-            ShowStatus("The current list is not ready.", InfoBarSeverity.Warning);
-            return;
-        }
+        var profile = await ResolveActiveProfileAsync();
+        var result = await _executionService.OpenInventoryWindowAsync(profile);
 
-        var item = new Model_ScannerBatchItem
-        {
-            SessionId = CurrentSession.SessionId,
-            SequenceNumber = CurrentSession.Items.Count + 1,
-            PayloadPartId = NewPartId,
-            PayloadFromWarehouse = NewFromWarehouse,
-            PayloadFromLocation = NewFromLocation,
-            PayloadToWarehouse = NewToWarehouse,
-            PayloadToLocation = NewToLocation,
-            PayloadQuantity = NewQuantity,
-        };
-
-        var validation = await _validationService.ValidateNewItemAsync(
-            new Model_ScannerItemValidationRequest
-            {
-                SessionId = CurrentSession.SessionId,
-                ItemId = item.ItemId,
-                PartId = item.PayloadPartId,
-                FromWarehouse = item.PayloadFromWarehouse,
-                FromLocation = item.PayloadFromLocation,
-                ToWarehouse = item.PayloadToWarehouse,
-                ToLocation = item.PayloadToLocation,
-                Quantity = item.PayloadQuantity,
-            }
-        );
-
-        if (validation.Success && validation.Data is not null)
-        {
-            item.ApplyValidationResult(validation.Data);
-            LastValidationStatus = validation.Data.State.ToString();
-            LastValidationNotes = validation.Data.Notes;
-        }
-        else
-        {
-            item.ValidationState = Enum_ScannerValidationState.Invalid;
-            item.ValidationMessage = "Validation unavailable.";
-            item.ValidationNotes =
-                string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                    ? "Validation failed due to service error."
-                    : validation.ErrorMessage;
-            LastValidationStatus = item.ValidationState.ToString();
-            LastValidationNotes = item.ValidationNotes;
-        }
-
-        var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
-        if (!save.Success || save.Data is null)
-        {
-            ShowStatus(
-                string.IsNullOrWhiteSpace(save.ErrorMessage)
-                    ? "Unable to stage scanner item."
-                    : save.ErrorMessage,
-                InfoBarSeverity.Error
-            );
-            return;
-        }
-
-        CurrentSession = save.Data;
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-        SelectedSessionItem = SessionItems.LastOrDefault();
-
-        ResetEntryFields();
         ShowStatus(
-            item.ValidationState == Enum_ScannerValidationState.Valid
-                ? "Item added to the current list."
-                : "Item added with validation issues. Review Status/Notes before sending.",
-            item.ValidationState == Enum_ScannerValidationState.Valid
-                ? InfoBarSeverity.Success
-                : InfoBarSeverity.Warning
+            string.IsNullOrWhiteSpace(result.ErrorMessage)
+                ? "Inventory window opened."
+                : result.ErrorMessage,
+            result.Success ? InfoBarSeverity.Success : InfoBarSeverity.Warning
         );
-    }
-
-    private void ResetEntryFields()
-    {
-        NewPartId = string.Empty;
-        NewFromLocation = string.Empty;
-        NewToLocation = string.Empty;
-        NewQuantity = "1";
-        ClearFromQuantityLimit();
-        IsToLocationEnabled = false;
-        RecomputeAddEnabled();
     }
 
     [RelayCommand]
@@ -629,10 +744,10 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         ShowStatus("Selected item removed.", InfoBarSeverity.Success);
     }
 
-    [RelayCommand(CanExecute = nameof(CanSendNext))]
-    private async Task SendNextAsync()
+    [RelayCommand(CanExecute = nameof(CanSendSelected))]
+    private async Task SendSelectedAsync()
     {
-        if (CurrentSession is null || CurrentSession.Items.Count == 0)
+        if (CurrentSession is null || SelectedSessionItem is null)
         {
             return;
         }
@@ -642,12 +757,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
-        if (CurrentSession.StopRequested)
+        // When the selected line is not valid the button is labeled "Validate": surface the
+        // issues instead of sending.
+        if (SelectedSessionItem.ValidationState != Enum_ScannerValidationState.Valid)
         {
-            CurrentSession.StopRequested = false;
-            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
-            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
-            ShowStatus("Stop requested. The current list remains intact.", InfoBarSeverity.Warning);
+            await ShowFixIssuesDialogAsync(SelectedSessionItem);
             return;
         }
 
@@ -655,13 +769,17 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         try
         {
             var profile = await ResolveActiveProfileAsync();
-            var result = await _executionService.SendNextItemAsync(CurrentSession, profile);
+            var result = await _executionService.SendSpecificItemAsync(
+                CurrentSession,
+                SelectedSessionItem,
+                profile
+            );
 
             if (!result.Success || result.Data is null)
             {
                 ShowStatus(
                     string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to send the next scanner item."
+                        ? "Unable to send the selected scanner item."
                         : result.ErrorMessage,
                     InfoBarSeverity.Error
                 );
@@ -674,11 +792,21 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                 return;
             }
 
-            var sentItem = FindNextSentItem();
-            if (result.Data.SentCount > 0 && sentItem is not null)
+            if (result.Data.SentCount > 0)
             {
-                _pendingSendItem = sentItem;
-                await WaitForTransferConfirmationAsync(sentItem);
+                _pendingSendItem = SelectedSessionItem;
+                await WaitForTransferConfirmationAsync(_pendingSendItem);
+                return;
+            }
+
+            if (result.Data.SkippedCount > 0)
+            {
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(result.Data.FailureMessage)
+                        ? "The selected line is not ready to send."
+                        : result.Data.FailureMessage,
+                    InfoBarSeverity.Warning
+                );
             }
         }
         finally
@@ -687,12 +815,31 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
     }
 
-    private Model_ScannerBatchItem? FindNextSentItem()
+    private bool CanSendSelected()
     {
-        return CurrentSession?.Items
-            .Where(item => item.ExecutionState == Enum_ScannerExecutionState.Sent)
-            .OrderByDescending(item => item.SentUtc)
-            .FirstOrDefault();
+        return SelectedSessionItem is not null
+            && !IsSendPromptVisible
+            && !_executionService.IsAutomationRunning;
+    }
+
+    private async Task ShowFixIssuesDialogAsync(Model_ScannerBatchItem item)
+    {
+        var xamlRoot = _windowService.GetXamlRoot();
+        if (xamlRoot is null)
+        {
+            ShowStatus($"Fix the issues before sending: {item.StatusText}", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
+        {
+            Title = "Fix the issues before sending",
+            Content = item.StatusText,
+            CloseButtonText = "OK",
+            XamlRoot = xamlRoot,
+        };
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
+        await dialog.ShowAsync();
     }
 
     private async Task WaitForTransferConfirmationAsync(Model_ScannerBatchItem item)
@@ -729,13 +876,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         IsSendPromptVisible = true;
-    }
-
-    private bool CanSendNext()
-    {
-        return !IsSendPromptVisible
-            && !IsBusy
-            && CurrentSession?.Items.Count > 0;
     }
 
     [RelayCommand]
@@ -817,6 +957,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                     : $"Validated {validation.Data.Count} scanner items. {invalidCount} item(s) still require review.",
                 invalidCount == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
             );
+
+            RecomputeSendEnabled();
         }
         finally
         {
@@ -886,21 +1028,36 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private Task ClearListAsync()
+    private async Task ClearListAsync()
     {
-        if (CurrentSession is null)
+        if (CurrentSession is null || CurrentSession.Items.Count == 0)
         {
             ShowStatus("The current list is already empty.", InfoBarSeverity.Informational);
-            return Task.CompletedTask;
+            return;
         }
 
         CurrentSession.Items.Clear();
         CurrentSession.RecalculateItemCounters();
         SessionItems = [];
         SelectedSessionItem = null;
-        ResetEntryFields();
-        ShowStatus("Current list cleared. Add items to build a new list.", InfoBarSeverity.Informational);
-        return Task.CompletedTask;
+        RecomputeSendEnabled();
+
+        // Persist the empty list so the clear survives navigation and app restarts.
+        var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+        if (!persist.Success || persist.Data is null)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(persist.ErrorMessage)
+                    ? "The list was cleared locally but could not be saved."
+                    : persist.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        CurrentSession = persist.Data;
+        SessionItems = [];
+        ShowStatus("Current list cleared.", InfoBarSeverity.Success);
     }
 
     [RelayCommand]
@@ -977,6 +1134,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     private void OnSendShortcutPressed(object? sender, EventArgs e)
     {
-        _ = SendNextCommand.ExecuteAsync(null);
+        _ = SendSelectedCommand.ExecuteAsync(null);
     }
 }

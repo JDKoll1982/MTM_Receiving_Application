@@ -117,8 +117,7 @@ public sealed class WorkbenchInputLockoutTests
 
         // Task 2b: inputs toggle Enabled = false while the background process is active.
         viewModel.IsPartEditable.Should().BeFalse();
-        viewModel.IsToLocationEnabled.Should().BeFalse();
-        viewModel.IsAddEnabled.Should().BeFalse();
+        viewModel.IsSendEnabled.Should().BeFalse();
 
         // Release the send cycle and let it complete.
         gate.SetResult();

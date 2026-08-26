@@ -23,11 +23,9 @@
     - **Files to update/add:** `Module_Scanner/Views/View_Scanner_ManageItemsDialog.xaml`
 - [ ] 6) Update Workbench inputs to the following baseline state:
     - **Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml`, `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs`
-    - **Part Number:** Editable. (`PartIdLookupControl`)
-    - **From Location:** Read-Only at all times. (bound to `ViewModel.NewFromLocation`)
-    - **To Location:** Read-Only at all times and Disabled. (bound to `ViewModel.NewToLocation`)
-    - **Quantity:** Read-Only at all times. (`QuantityTextBox`, bound to `ViewModel.NewQuantity`)
-    - **Add Button:** Disabled. (`AddDraftItemCommand`)
+    - **Part Number:** Editable. (`PartIdLookupControl`) — the only top-bar input.
+    - **From / To / Qty:** Edited per-row in the current-list table; no top-bar textboxes.
+    - **Send Button:** Disabled until the selected row validates. (`IsSendEnabled`)
 
 ---
 
@@ -49,15 +47,15 @@ flowchart TD
         W6b_ModalChoice -- Cancels Modal --> W6b_Canceled[Step 6b-a1-b: Treat as False / Divert to Error]
         W6b_Canceled --> W6b_Error
 
-        W6b_ModalChoice -- Confirms / Selects Row --> W6b_Apply[Step 6b-a1-c: Close Modal & Update Workbench]
-        W6b_Apply --> W6b_FillFrom[Fill From Loc Box]
-        W6b_FillFrom --> W6b_FillQty[Fill Qty Textbox]
-        W6b_FillQty --> W6b_FocusTo[Enable -> Focus -> Select All To Location Textbox]
+        W6b_ModalChoice -- Confirms / Selects Rows --> W6b_Apply[Step 6b-a1-c: Close Modal & Populate Current List]
+        W6b_Apply --> W6b_Populate[Add selected picks x # Trans as rows]
+        W6b_Populate --> W6b_EditRow[Edit To / Qty in the table row]
+        W6b_EditRow --> W6b_FocusTo[Focus the first row's To cell]
     end
 
     %% STEP 2: TO LOCATION FORMAT SANITIZATION FLOW
-    subgraph Step_2["Step 2: To Location Validation"]
-        W6b_FocusTo --> W6b_ToLostFocus[Step 6b-a1-c-a: To Location Focus Lost]
+    subgraph Step_2["Step 2: Row Edit Validation"]
+        W6b_EditRow --> W6b_ToLostFocus[Step 6b-a1-c-a: To / Qty Cell Focus Lost]
         W6b_ToLostFocus --> W6b_CheckFormat[Check format of Location string]
         W6b_CheckFormat --> W6b_RegexMatch{Matches layout regex?}
 
@@ -82,17 +80,19 @@ flowchart TD
 
 #### [Step 6b-a1] Case A: Part Number Exists & Has Stock
 
-**Files to update/add:** `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`FromLocationInventoryPickerRequested` event), `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`OnFromLocationInventoryPickerRequestedAsync` — `ContentDialog` picker).
+**Files to update/add:** `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`FromLocationInventoryPickerRequested` event, `ApplyStockLocationSelectionAsync`, `ValidateSessionItemAsync`, `IsSendEnabled`, `SendSelectedAsync`), `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`OnFromLocationInventoryPickerRequestedAsync` — `ContentDialog` picker, `SessionItemToTextBox_LostFocus`, `SessionItemQtyTextBox_LostFocus`), `Module_Scanner/Models/Model_ScannerStockPick.cs` (`TransactionCount`), `Module_Scanner/Models/Model_ScannerBatchItem.cs` (`ObservableObject` for the editable table columns).
 
 * **[Step 6b-a1-a] Display Modal Window:** Show a modal listing all current locations holding `> 0` on hand.
-  * Each row must include a **Quantity Textbox** auto-filled with the full quantity of that location.
-  * Allow editing of this textbox as the user types, validating the value in real-time.
-  * Enforce boundaries instantly: cannot go below `0` or above the location's maximum quantity. An entered value of `0` is treated as a valid choice (0 unit transfer).
-* **[Step 6b-a1-b] User Cancels Modal:** Treat as if the part number had no stock. Divert immediately to **[Step 6b-a2]**.
-* **[Step 6b-a1-c] Close Modal / Confirm Action:** Perform the following automatic updates back on the main Workbench view:
-  1. Fill **From Loc** box with the location selected by the user.
-  2. Fill **Qty** textbox with the quantity value from the selected row.
-  3. Enable -> Focus -> Select All on the **To Location** textbox.
+  * Column-header row above the list: **Location**, **Total Qty**, **Qty**, **# Trans**.
+  * Each row has a **checkbox** (multi-select), the location, the **Total Qty** formatted without trailing zeros (e.g. `16452.0000000` → `16452`, `12554.5` stays `12554.5`), an editable **Qty** textbox auto-filled with that location's on-hand, and a **# of Transactions** `NumberBox` (default `1`, minimum `1`).
+  * The **# Trans** value states how many transaction lines that location produces in the current list. When `# Trans > 1`, every created line is added with quantity `1` (the operator sets them later in the table).
+  * Quantity boundaries are clamped to `0`..on-hand before the lines are created.
+* **[Step 6b-a1-b] User Cancels Modal:** Treat as if the part number had no stock, show an informational status, and **clear the Part Number input** on the Workbench so the shared lookup cannot re-validate and reopen the modal. No lines are added.
+* **[Step 6b-a1-c] Close Modal / Confirm Action (Use Selected):** Populate the current list immediately (no Add step):
+  1. Add one row per checked location (picks × # transactions) with the source location and quantity; the destination is left empty.
+  2. Clear the **Part Number** input (prevents modal reopen) and focus the first row's destination cell.
+  3. The operator edits **To** and **Qty** directly in the table; each edit re-validates the row on focus loss and updates its **Status**.
+  4. **Send** is enabled only when the selected row has validated (`Valid`) and sends that selected row only.
 
 #### [Step 6b-a2] Case B: Part Number Has No Stock / Invalid
 
@@ -104,12 +104,49 @@ flowchart TD
 
 ---
 
-## To Location Focus Lost Workflow (Step 6b-a1-c-a)
+## Workbench Table Interaction (headers, navigation, status)
 
-**Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml`, `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`ToLocationTextBox_LostFocus`), `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`ValidateToLocationAsync`), `Module_Scanner/Services/Service_ScannerValidation.cs` (`FormatLocation`).
+**Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml` (`ItemContainerStyle`, editable To/Qty columns, status column), `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`SessionItemTextBox_KeyDown`, `MoveFocusToCell`), `Module_Scanner/Models/Model_ScannerBatchItem.cs` (`StatusText`, `StatusIsValid`, `MaxQuantity`), `Module_Core/Converters/Converter_ValidationStatusToBrush.cs`.
 
-* **[Step 6b-a1-c-a] Format Verification:** When focus is lost on the **To Location** textbox, parse and check the format of the location string.
-  * If validation fails, do not use blocking modal popups. Print the error message directly inside the **Workbench header/status area** with an automatic **5-second clearing timeout**.
+* **Column header alignment:** Rows were shifted off the header because `ListViewItem` defaults to left-aligned content with horizontal padding. The `ListView.ItemContainerStyle` now sets `HorizontalContentAlignment=Stretch` and `Padding=0,2`, so the row grids line up exactly with the header grid.
+* **Cell navigation:**
+  * **Tab:** `To` -> `Qty` (same row) -> next row's `To` -> `Qty` (repeat). Past the last row focus returns to the Part lookup.
+  * **Enter:** goes down to the next line — `To` -> next row's `Qty`; `Qty` -> next row's `To`. Past the last row focus returns to the Part lookup.
+  * **Click:** normal behavior — focus goes wherever clicked.
+* **Focus preservation:** Row validation on focus loss persists silently and does NOT rebuild `SessionItems` (the row model is observable), so the control you were tabbing/entering to keeps focus.
+* **Friendly status (colored):**
+  * `✅ Ready!` — green when the row validates.
+  * `! Qty too High` — red (checked against the on-hand captured from the stock modal).
+  * `! Qty less than 1` — red.
+  * `! To location required` — red.
+  * `⏳ Enter destination` — gray before a destination is entered.
+  * The reason is derived from the row's own data first (so it states the actual issue even after an app restart), then falls back to the stored validation message.
+* **Send / Validate button:** The primary button label is **Validate** whenever the selected row is not valid; clicking it shows a **"Fix the issues before sending"** popup listing the issue instead of sending. When the selected row validates, the button becomes **Send** and sends that row only.
+* **Remove Selected** lives in the top bar (beside the Part lookup), not the table header, so the header grid has exactly the same columns as the rows.
+
+## Search Mode Toggle (Part / Location)
+
+**Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml` (`ToggleSwitch`, `LookupType`), `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`IsLocationModeEnabled`, `SearchMode`, `LookupType`, `LocationValidationCompletedAsync`, `GetPartsAtLocationForPickerAsync`), `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`OnLocationPartsPickerRequestedAsync`, `ShowLocationPartsPickerDialogAsync`), `Module_Scanner/Services/Service_ScannerValidation.cs` (`GetPartsAtLocationAsync`), `Module_Scanner/Models/Enum_ScannerSearchMode.cs`.
+
+* A **Part / Location** `ToggleSwitch` next to the Part lookup switches the search domain. The shared lookup control auto-updates its header/placeholder from `LookupType`.
+* **Part mode** (default): the existing workflow — enter a part, pick source locations from the stock modal.
+* **Location mode**: works exactly the same but in reverse — enter a location, it is validated, and a modal lists every part with stock at that location. The modal supports **Select All / Select None** (the button toggles label when all parts are checked). Chosen parts are added as rows with that source location.
+* Switching modes clears the lookup input so a stale value is not re-validated in the other mode.
+
+## Open Inventory (VMINVENT) Button
+
+**Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml` (footer button), `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`OpenInventoryCommand`), `Module_Scanner/Services/Service_ScannerExecution.cs` (`OpenInventoryWindowAsync`), `Module_Scanner/Contracts/IService_ScannerExecution.cs`.
+
+* Footer **Open Inventory** button launches VMINVENT when it is not running, activates the target window, and sends the open-window shortcut (`Alt+I`) so the operator can reach the Inventory Transfers window.
+* If VMINVENT is already running, the existing window is activated and the shortcut is sent.
+* Failures (could not launch, window not found) are reported as a friendly status.
+
+## To Location / Qty Row Edit Workflow (Step 6b-a1-c-a)
+
+**Files to update/add:** `Module_Scanner/Views/View_Scanner_Workbench.xaml` (editable To/Qty columns), `Module_Scanner/Views/View_Scanner_Workbench.xaml.cs` (`SessionItemToTextBox_LostFocus`, `SessionItemQtyTextBox_BeforeTextChanging`, `SessionItemQtyTextBox_LostFocus`), `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs` (`ValidateSessionItemAsync`, `Helper_ScannerLocationFormat`), `Module_Scanner/Models/Model_ScannerBatchItem.cs` (`ObservableObject`).
+
+* **[Step 6b-a1-c-a] Format Verification:** When focus is lost on a row's **To** cell, the value is sanitized (`PREFIX-MID-SUFFIX`), the row is re-validated, its **Status** column updates, and Send enablement refreshes.
+  * If validation fails, no blocking modal popup is used; the row's Status shows the failure.
 * **[Step 6b-a1-c-b] Sanitation Logic:** Use the following reference tables to automatically sanitize and fix improper user formatting layouts:
 
 ### Standard 2-Digit Padded Group
@@ -198,14 +235,19 @@ selection.
 **View (`Module_Scanner/Views/View_Scanner_Workbench.xaml`):**
 
 ```xaml
-<!-- To Location input: baseline read-only + disabled until a valid source resolves -->
+<!-- Table row: editable To and Qty columns, validated on focus loss -->
 <TextBox
-    Grid.Column="2"
-    Header="To Loc"
-    IsReadOnly="{x:Bind ViewModel.IsToLocationReadOnly, Mode=OneWay}"
-    IsEnabled="{x:Bind ViewModel.IsToLocationEnabled, Mode=OneWay}"
-    LostFocus="ToLocationTextBox_LostFocus"
-    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+    Grid.Column="3"
+    PlaceholderText="To"
+    Text="{x:Bind PayloadToLocation, Mode=TwoWay}"
+    LostFocus="SessionItemToTextBox_LostFocus" />
+<TextBox
+    Grid.Column="4"
+    PlaceholderText="Qty"
+    Text="{x:Bind PayloadQuantity, Mode=TwoWay}"
+    BeforeTextChanging="SessionItemQtyTextBox_BeforeTextChanging"
+    LostFocus="SessionItemQtyTextBox_LostFocus" />
+<TextBlock Grid.Column="5" Text="{x:Bind ValidationState}" />
 
 <!-- Non-blocking header/status error area (5-second auto-clear) -->
 <TextBlock
@@ -216,27 +258,23 @@ selection.
 **Code-behind (`Module_Scanner/Views/View_Scanner_Workbench.xaml.cs`) — focus/selection only:**
 
 ```csharp
-private async void ToLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+private async void SessionItemToTextBox_LostFocus(object sender, RoutedEventArgs e)
 {
-    if (sender is not TextBox toLocBox)
+    if (sender is not TextBox toBox || toBox.DataContext is not Model_ScannerBatchItem item)
     {
         return;
     }
 
-    ViewModel.NewToLocation = toLocBox.Text;
+    item.PayloadToLocation = toBox.Text;
 
-    // Returns true when the format is valid; on failure re-focus and select all.
-    bool isValid = await ViewModel.ValidateToLocationAsync();
-    if (!isValid)
-    {
-        toLocBox.Focus(FocusState.Programmatic);
-        toLocBox.SelectAll();
-    }
+    // Sanitizes the destination, re-validates the row, updates its Status, and refreshes
+    // whether Send is enabled.
+    await ViewModel.ValidateSessionItemAsync(item);
 }
 ```
 
-**Viewmodel (`Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs`) — logic and the
-5-second auto-clear timer:**
+**Viewmodel (`Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs`) — per-row
+validation and Send gating:**
 
 ```csharp
 [ObservableProperty]
@@ -245,49 +283,25 @@ private string _headerErrorText = string.Empty;
 [ObservableProperty]
 private bool _isHeaderErrorVisible;
 
-[ObservableProperty]
-private bool _isToLocationReadOnly = true;
-
-[ObservableProperty]
-private bool _isToLocationEnabled;
-
 private CancellationTokenSource? _headerErrorTokenSource;
 
-public async Task<bool> ValidateToLocationAsync()
+// Send is enabled only when the selected row has validated.
+public bool IsSendEnabled =>
+    SelectedSessionItem is { ValidationState: Enum_ScannerValidationState.Valid }
+    && !_executionService.IsAutomationRunning
+    && !IsSendPromptVisible
+    && !IsBusy;
+
+public async Task<Model_ScannerItemValidationResult?> ValidateSessionItemAsync(
+    Model_ScannerBatchItem item)
 {
-    string rawValue = NewToLocation?.Trim() ?? string.Empty;
-
-    // Existing viewmodel method that delegates to Service_ScannerValidation.FormatLocation.
-    string sanitized = FormatLocation(rawValue);
-
-    if (!string.IsNullOrEmpty(sanitized))
-    {
-        NewToLocation = sanitized;
-        return true;
-    }
-
-    // Cancel any pending auto-clear so a newer error wins.
-    _headerErrorTokenSource?.Cancel();
-    _headerErrorTokenSource = new CancellationTokenSource();
-
-    HeaderErrorText = "Invalid location layout entered. Please check your format.";
-    IsHeaderErrorVisible = true;
-
-    try
-    {
-        await Task.Delay(TimeSpan.FromSeconds(5), _headerErrorTokenSource.Token);
-        HeaderErrorText = string.Empty;
-        IsHeaderErrorVisible = false;
-    }
-    catch (TaskCanceledException)
-    {
-        // Superseded by a newer input/error evaluation loop.
-    }
-
-    return false;
+    // Sanitize the destination, validate the row via ValidateNewItemAsync, persist it, and
+    // refresh Send enablement. The row's ValidationState is observable, so the Status
+    // column updates in place.
+    ...
 }
 
-// Call when the operator resumes typing a new Part Number to clear the warning early.
+// 5-second auto-clear for the non-blocking header/status error area.
 public void ClearHeaderError()
 {
     _headerErrorTokenSource?.Cancel();

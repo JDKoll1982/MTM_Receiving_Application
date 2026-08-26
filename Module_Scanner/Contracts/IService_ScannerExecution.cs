@@ -42,6 +42,16 @@ public interface IService_ScannerExecution : INotifyPropertyChanged
 	Task<Model_Dao_Result> ClearTargetFormAsync(CancellationToken cancellationToken = default);
 
 	/// <summary>
+	/// Opens the Infor Visual Inventory Transfers window: launches <see cref="Model_ScannerProfile.TargetExecutableName"/>
+	/// (VMINVENT) when it is not already running, activates it, and sends the configured
+	/// open-window shortcut (Alt+I) so the operator can reach the window.
+	/// </summary>
+	Task<Model_Dao_Result> OpenInventoryWindowAsync(
+		Model_ScannerProfile profile,
+		CancellationToken cancellationToken = default
+	);
+
+	/// <summary>
 	/// True while an automated background send cycle is running. The Workbench binds this to
 	/// lock out operator inputs (Enabled = false) during automation.
 	/// </summary>
