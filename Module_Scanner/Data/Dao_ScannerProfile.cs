@@ -9,7 +9,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Data;
 
 /// <summary>
-/// Persists scanner user profiles through stored procedures.
+/// Persists user-scoped scanner profiles through stored procedures.
 /// </summary>
 public sealed class Dao_ScannerProfile
 {
@@ -19,6 +19,25 @@ public sealed class Dao_ScannerProfile
 	{
 		_connectionString =
 			connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+	}
+
+	public async Task<Model_Dao_Result<List<Model_ScannerProfile>>> GetProfilesByUserAsync(
+		string ownerUserId
+	)
+	{
+		if (string.IsNullOrWhiteSpace(ownerUserId))
+		{
+			return Model_Dao_Result_Factory.Failure<List<Model_ScannerProfile>>(
+				"Owner user id is required."
+			);
+		}
+
+		return await Helper_Database_StoredProcedure.ExecuteListAsync(
+			_connectionString,
+			"sp_Receiving_ScannerProfile_GetByUser",
+			MapProfile,
+			new Dictionary<string, object> { { "user_id", ownerUserId } }
+		);
 	}
 
 	public async Task<Model_Dao_Result> UpsertProfileAsync(Model_ScannerProfile profile)
@@ -36,11 +55,6 @@ public sealed class Dao_ScannerProfile
 		if (string.IsNullOrWhiteSpace(profile.ProfileName))
 		{
 			return Model_Dao_Result_Factory.Failure("Profile name is required.");
-		}
-
-		if (string.IsNullOrWhiteSpace(profile.AppWindowTitle))
-		{
-			return Model_Dao_Result_Factory.Failure("App window title is required.");
 		}
 
 		var parameters = new Dictionary<string, object>
@@ -62,6 +76,7 @@ public sealed class Dao_ScannerProfile
 			{ "popup_timeout_ms", profile.PopupTimeoutMs },
 			{ "popup_close_timeout_ms", profile.PopupCloseTimeoutMs },
 			{ "send_shortcut_chord", profile.SendShortcutChord },
+			{ "stop_shortcut_chord", profile.StopShortcutChord },
 			{ "allow_advanced_timing", profile.AllowAdvancedTiming },
 		};
 
@@ -69,23 +84,6 @@ public sealed class Dao_ScannerProfile
 			_connectionString,
 			"sp_Receiving_ScannerProfile_Upsert",
 			parameters
-		);
-	}
-
-	public async Task<Model_Dao_Result<List<Model_ScannerProfile>>> GetProfilesByUserAsync(string ownerUserId)
-	{
-		if (string.IsNullOrWhiteSpace(ownerUserId))
-		{
-			return Model_Dao_Result_Factory.Failure<List<Model_ScannerProfile>>(
-				"Owner user id is required."
-			);
-		}
-
-		return await Helper_Database_StoredProcedure.ExecuteListAsync(
-			_connectionString,
-			"sp_Receiving_ScannerProfile_GetByUser",
-			MapProfile,
-			new Dictionary<string, object> { { "user_id", ownerUserId } }
 		);
 	}
 
@@ -143,19 +141,20 @@ public sealed class Dao_ScannerProfile
 			OwnerUserId = reader["user_id"]?.ToString() ?? string.Empty,
 			ProfileName = reader["profile_name"]?.ToString() ?? string.Empty,
 			IsDefaultForUser = ParseBool(reader["is_default"]),
-			TargetExecutableName = reader["target_executable_name"]?.ToString() ?? string.Empty,
+			TargetExecutableName = reader["target_executable_name"]?.ToString() ?? "VMINVENT.exe",
 			AppWindowTitle = reader["app_window_title"]?.ToString() ?? string.Empty,
-			TargetChildWindowTitle = reader["target_child_window_title"]?.ToString() ?? string.Empty,
+			TargetChildWindowTitle = reader["target_child_window_title"]?.ToString() ?? "Inventory Transfers",
 			AppWindowClass = reader["app_window_class"]?.ToString() ?? string.Empty,
 			RequireExactTitleMatch = ParseBool(reader["require_exact_title_match"]),
-			FromWarehouseDefault = reader["from_warehouse_default"]?.ToString() ?? string.Empty,
-			ToWarehouseDefault = reader["to_warehouse_default"]?.ToString() ?? string.Empty,
+			FromWarehouseDefault = reader["from_warehouse_default"]?.ToString() ?? "002",
+			ToWarehouseDefault = reader["to_warehouse_default"]?.ToString() ?? "002",
 			ActivationDelayMs = ParseInt(reader["activation_delay_ms"]),
 			DelayBetweenFieldsMs = ParseInt(reader["delay_between_fields_ms"]),
 			PauseAfterItemMs = ParseInt(reader["pause_after_item_ms"]),
 			PopupTimeoutMs = ParseInt(reader["popup_timeout_ms"]),
 			PopupCloseTimeoutMs = ParseInt(reader["popup_close_timeout_ms"]),
-			SendShortcutChord = reader["send_shortcut_chord"]?.ToString() ?? string.Empty,
+			SendShortcutChord = reader["send_shortcut_chord"]?.ToString() ?? "Ctrl+Alt+M",
+			StopShortcutChord = reader["stop_shortcut_chord"]?.ToString() ?? "Ctrl+Alt+N",
 			AllowAdvancedTiming = ParseBool(reader["allow_advanced_timing"]),
 			CreatedUtc = ParseDateTime(reader["created_at"]),
 			LastUpdatedUtc = ParseDateTime(reader["updated_at"]),
@@ -164,7 +163,16 @@ public sealed class Dao_ScannerProfile
 
 	private static Guid ParseGuid(object value)
 	{
-		return value == DBNull.Value ? Guid.Empty : Guid.TryParse(value.ToString(), out var guid) ? guid : Guid.Empty;
+		return value == DBNull.Value
+			? Guid.Empty
+			: Guid.TryParse(value.ToString(), out var guid)
+				? guid
+				: Guid.Empty;
+	}
+
+	private static bool ParseBool(object value)
+	{
+		return value != DBNull.Value && Convert.ToBoolean(value);
 	}
 
 	private static int ParseInt(object value)
@@ -175,10 +183,5 @@ public sealed class Dao_ScannerProfile
 	private static DateTime ParseDateTime(object value)
 	{
 		return value == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(value);
-	}
-
-	private static bool ParseBool(object value)
-	{
-		return value != DBNull.Value && Convert.ToBoolean(value);
 	}
 }

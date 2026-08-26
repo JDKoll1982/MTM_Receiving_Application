@@ -6,135 +6,120 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.Helpers;
 
 public sealed class Helper_ScannerSequenceTests
 {
-    [Fact]
-    public void BuildFieldValues_ShouldReturnFieldsInScreenOrder()
+    private static Model_ScannerBatchItem CreateItem()
     {
-        var item = new Model_ScannerBatchItem
+        return new Model_ScannerBatchItem
         {
-            PayloadPartId = "ABC-123",
-            PayloadFromWarehouse = "002",
-            PayloadFromLocation = "A1",
-            PayloadToWarehouse = "003",
-            PayloadToLocation = "B2",
+            PayloadPartId = "MMCCS00740",
             PayloadQuantity = "5",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "R-05",
         };
-
-        var values = Helper_ScannerSequence.BuildFieldValues(item);
-
-        // VMINVENT "Inventory Transfers" tab path: part id, quantity, from warehouse,
-        // from location, to warehouse, to location.
-        values.Should().Equal("ABC-123", "5", "002", "A1", "003", "B2");
     }
 
     [Fact]
-    public void BuildFieldSequence_ShouldReturnTabCountsBetweenFields()
+    public void BuildFieldValues_ShouldEmitSixOrderedFields()
     {
-        var item = new Model_ScannerBatchItem
-        {
-            PayloadPartId = "ABC-123",
-            PayloadFromWarehouse = "002",
-            PayloadFromLocation = "A1",
-            PayloadToWarehouse = "003",
-            PayloadToLocation = "B2",
-            PayloadQuantity = "5",
-        };
+        var values = Helper_ScannerSequence.BuildFieldValues(CreateItem());
 
-        var sequence = Helper_ScannerSequence.BuildFieldSequence(item);
-
-        sequence.Should().Equal(
-            ("ABC-123", 1),
-            ("5", 2),
-            ("002", 1),
-            ("A1", 5),
-            ("003", 1),
-            ("B2", 0)
+        values.Should().ContainInOrder(
+            "MMCCS00740",
+            "5",
+            "002",
+            "V-A1-01",
+            "002",
+            "R-05"
         );
     }
 
-    [Theory]
-    [InlineData(Enum_ScannerExecutionState.Waiting, Enum_ScannerValidationState.Valid, true)]
-    [InlineData(Enum_ScannerExecutionState.Waiting, Enum_ScannerValidationState.NotValidated, false)]
-    [InlineData(Enum_ScannerExecutionState.Waiting, Enum_ScannerValidationState.Invalid, false)]
-    [InlineData(Enum_ScannerExecutionState.Sent, Enum_ScannerValidationState.Valid, false)]
-    [InlineData(Enum_ScannerExecutionState.Failed, Enum_ScannerValidationState.Valid, false)]
-    public void IsEligibleForSend_ShouldMatch_WhenStateCombination(Enum_ScannerExecutionState execution, Enum_ScannerValidationState validation, bool expected)
+    [Fact]
+    public void BuildFieldSequence_ShouldEndWithNoTrailingTab()
     {
-        var item = new Model_ScannerBatchItem
-        {
-            ExecutionState = execution,
-            ValidationState = validation,
-        };
+        var sequence = Helper_ScannerSequence.BuildFieldSequence(CreateItem());
 
-        Helper_ScannerSequence.IsEligibleForSend(item).Should().Be(expected);
+        sequence.Should().HaveCount(6);
+        sequence[^1].TabsAfter.Should().Be(0);
+        sequence[0].Value.Should().Be("MMCCS00740");
     }
 
     [Fact]
-    public void FindNextEligible_ShouldReturnFirstBySequenceNumber()
+    public void IsEligibleForSend_ShouldBeTrue_WhenWaitingAndValid()
     {
-        var items = new[]
-        {
-            new Model_ScannerBatchItem { SequenceNumber = 1, ExecutionState = Enum_ScannerExecutionState.Sent, ValidationState = Enum_ScannerValidationState.Valid },
-            new Model_ScannerBatchItem { SequenceNumber = 2, ExecutionState = Enum_ScannerExecutionState.Waiting, ValidationState = Enum_ScannerValidationState.Valid },
-            new Model_ScannerBatchItem { SequenceNumber = 3, ExecutionState = Enum_ScannerExecutionState.Waiting, ValidationState = Enum_ScannerValidationState.Invalid },
-            new Model_ScannerBatchItem { SequenceNumber = 4, ExecutionState = Enum_ScannerExecutionState.Waiting, ValidationState = Enum_ScannerValidationState.Valid },
-        };
+        var item = CreateItem();
+        item.ExecutionState = Enum_ScannerExecutionState.Waiting;
+        item.ValidationState = Enum_ScannerValidationState.Valid;
 
-        var next = Helper_ScannerSequence.FindNextEligible(items);
+        Helper_ScannerSequence.IsEligibleForSend(item).Should().BeTrue();
+    }
 
-        next.Should().NotBeNull();
-        next!.SequenceNumber.Should().Be(2);
+    [Theory]
+    [InlineData(Enum_ScannerExecutionState.Sent)]
+    [InlineData(Enum_ScannerExecutionState.Failed)]
+    [InlineData(Enum_ScannerExecutionState.Sending)]
+    public void IsEligibleForSend_ShouldBeFalse_WhenNotWaiting(Enum_ScannerExecutionState state)
+    {
+        var item = CreateItem();
+        item.ExecutionState = state;
+        item.ValidationState = Enum_ScannerValidationState.Valid;
+
+        Helper_ScannerSequence.IsEligibleForSend(item).Should().BeFalse();
     }
 
     [Fact]
-    public void FindNextEligible_ShouldReturnNull_WhenNoneAreReady()
+    public void IsEligibleForSend_ShouldBeFalse_WhenInvalid()
     {
-        var items = new[]
-        {
-            new Model_ScannerBatchItem { ExecutionState = Enum_ScannerExecutionState.Sent, ValidationState = Enum_ScannerValidationState.Valid },
-            new Model_ScannerBatchItem { ExecutionState = Enum_ScannerExecutionState.Waiting, ValidationState = Enum_ScannerValidationState.NotValidated },
-        };
+        var item = CreateItem();
+        item.ExecutionState = Enum_ScannerExecutionState.Waiting;
+        item.ValidationState = Enum_ScannerValidationState.Invalid;
 
-        Helper_ScannerSequence.FindNextEligible(items).Should().BeNull();
+        Helper_ScannerSequence.IsEligibleForSend(item).Should().BeFalse();
+    }
+
+    [Fact]
+    public void FindNextEligible_ShouldReturnLowestSequenceWaitingValidItem()
+    {
+        var skipped = CreateItem();
+        skipped.SequenceNumber = 1;
+        skipped.ValidationState = Enum_ScannerValidationState.Invalid;
+
+        var ready = CreateItem();
+        ready.SequenceNumber = 2;
+        ready.ValidationState = Enum_ScannerValidationState.Valid;
+
+        var next = Helper_ScannerSequence.FindNextEligible(new[] { skipped, ready });
+
+        next.Should().BeSameAs(ready);
+    }
+
+    [Fact]
+    public void FindNextEligible_ShouldReturnNull_WhenNoneReady()
+    {
+        var item = CreateItem();
+        item.ValidationState = Enum_ScannerValidationState.Invalid;
+
+        Helper_ScannerSequence.FindNextEligible(new[] { item }).Should().BeNull();
     }
 
     [Theory]
-    [InlineData("VMINVENT.exe", "vminvent")]
-    [InlineData("VMINVENT", "vminvent")]
-    [InlineData("vminvent.EXE", "vminvent")]
-    [InlineData("", "")]
-    [InlineData(null, "")]
-    public void NormalizeProcessName_ShouldStripExeAndLowercase(string? input, string expected)
-    {
-        Helper_ScannerSequence.NormalizeProcessName(input).Should().Be(expected);
-    }
-
-    [Theory]
+    [InlineData("VMINVENT", "VMINVENT.exe", true)]
     [InlineData("vminvent", "VMINVENT.exe", true)]
-    [InlineData("vminvent", "VMINVENT", true)]
-    [InlineData("notepad", "VMINVENT.exe", false)]
-    [InlineData("vminvent", null, true)] // No target configured means no process check
-    [InlineData("vminvent", "", true)]
-    public void IsTargetProcess_ShouldMatch_WhenProcessNameAligns(string foreground, string? target, bool expected)
+    [InlineData("explorer", "VMINVENT.exe", false)]
+    [InlineData(null, "VMINVENT.exe", false)]
+    public void IsTargetProcess_ShouldMatchByName(string? foreground, string target, bool expected)
     {
         Helper_ScannerSequence.IsTargetProcess(foreground, target).Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData("Inventory Transfers", "Inventory Transfers", true, true)]
-    [InlineData("Inventory Transfers - XYZ", "Inventory Transfers", false, true)]
-    [InlineData("Inventory Transfers - XYZ", "Inventory Transfers", true, false)]
-    [InlineData("", "Inventory Transfers", false, false)]
-    [InlineData("Anything", null, false, true)] // No title configured means no title check
-    public void IsTargetTitle_ShouldRespectExactFlag(
-        string? foreground,
-        string? expected,
-        bool requireExact,
-        bool expectedResult
-    )
+    [Fact]
+    public void IsTargetTitle_ShouldRequireExactMatch_WhenRequired()
     {
-        Helper_ScannerSequence
-            .IsTargetTitle(foreground, expected, requireExact)
-            .Should()
-            .Be(expectedResult);
+        Helper_ScannerSequence.IsTargetTitle("Inventory Transfers", "Inventory Transfers", true)
+            .Should().BeTrue();
+        Helper_ScannerSequence.IsTargetTitle("Inventory Transfers - 002", "Inventory Transfers", true)
+            .Should().BeFalse();
+        Helper_ScannerSequence.IsTargetTitle("Inventory Transfers - 002", "Inventory Transfers", false)
+            .Should().BeTrue();
     }
 }

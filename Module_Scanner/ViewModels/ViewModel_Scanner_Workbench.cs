@@ -5,9 +5,11 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ContentDialogResult = Microsoft.UI.Xaml.Controls.ContentDialogResult;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -22,7 +24,9 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 /// <summary>
-/// Placeholder ViewModel for the scanner workbench page.
+/// Workbench ViewModel: the current list entry form, part/location validation workflow
+/// (ScannerUpdate.md Step 6b), non-blocking header errors, and input lockout during
+/// automation. The current list is auto-created when the page loads.
 /// </summary>
 public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 {
@@ -33,47 +37,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerHotkey _hotkeyService;
     private readonly IService_Window _windowService;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasActiveSession))]
-    [NotifyCanExecuteChangedFor(nameof(SendNextCommand))]
-    private Model_ScannerBatchSession? _currentSession;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SendNextCommand))]
-    private ObservableCollection<Model_ScannerBatchItem> _sessionItems = [];
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasSelectedSessionItem))]
-    private Model_ScannerBatchItem? _selectedSessionItem;
-
-    private Model_ScannerProfile? _activeProfile;
-
-    /// <summary>
-    /// Raised so the view can show the source-location inventory picker (locations holding
-    /// stock for the part). Receives (partId, fromWarehouse, currentLocation) and returns the
-    /// chosen location, or null when the operator cancels. Only set while the workbench view
-    /// is loaded.
-    /// </summary>
-    public event Func<string, string, string, Task<string?>>? FromLocationInventoryPickerRequested;
-
-    /// <summary>
-    /// Raised so the view can move focus to the Part ID text box, e.g. after a failed send
-    /// where the operator must retry the entry.
-    /// </summary>
-    public event Action? PartIdFocusRequested;
-
-    [ObservableProperty]
-    private string _ownerUserId = Environment.UserName;
-
-    [ObservableProperty]
-    private string _ownerDisplayName = Environment.UserName;
-
-    [ObservableProperty]
-    private string _appWindowTitleSnapshot = "Inventory Transfers";
-
-    [ObservableProperty]
-    private string _appWindowClassSnapshot = string.Empty;
-
+    // ── Entry fields (baseline state per ScannerUpdate.md Task 6) ─────────────────
     [ObservableProperty]
     private string _newPartId = string.Empty;
 
@@ -98,39 +62,81 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     [ObservableProperty]
     private string _lastValidationNotes = string.Empty;
 
-    // ------------------------------------------------------------------ quantity state
-    /// <summary>True once the From location is filled and validated; enables the Qty field.</summary>
+    // ── Baseline input states (Task 6) ───────────────────────────────────────────
+    /// <summary>Part Number is always editable unless automation is running.</summary>
+    [ObservableProperty]
+    private bool _isPartEditable = true;
+
+    /// <summary>From Location is read-only at all times.</summary>
+    public bool IsFromLocationReadOnly => true;
+
+    /// <summary>To Location is read-only at all times.</summary>
+    public bool IsToLocationReadOnly => true;
+
+    /// <summary>To Location is disabled until a source resolves (Step 6b-a1-c).</summary>
+    [ObservableProperty]
+    private bool _isToLocationEnabled;
+
+    /// <summary>Quantity is read-only at all times.</summary>
+    public bool IsQuantityReadOnly => true;
+
+    /// <summary>Quantity is enabled once the From location resolves.</summary>
     [ObservableProperty]
     private bool _isQuantityEnabled;
 
-    /// <summary>Maximum quantity that can be entered, based on the validated From location's on-hand stock.</summary>
+    /// <summary>Add button is disabled at baseline; enabled when the row is complete.</summary>
+    [ObservableProperty]
+    private bool _isAddEnabled;
+
+    /// <summary>Maximum quantity for the resolved From location.</summary>
     [ObservableProperty]
     private decimal? _maxQuantity;
 
-    // ------------------------------------------------------------------ send confirmation
-    /// <summary>True while the workbench waits for the operator to confirm the sent line (Saved? Yes/No).</summary>
+    // ── Header error area (non-blocking, 5-second auto-clear) ────────────────────
+    [ObservableProperty]
+    private string _headerErrorText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isHeaderErrorVisible;
+
+    private CancellationTokenSource? _headerErrorTokenSource;
+
+    // ── Current list ─────────────────────────────────────────────────────────────
+    [ObservableProperty]
+    private Model_ScannerBatchSession? _currentSession;
+
+    [ObservableProperty]
+    private ObservableCollection<Model_ScannerBatchItem> _sessionItems = [];
+
+    [ObservableProperty]
+    private Model_ScannerBatchItem? _selectedSessionItem;
+
+    // ── Send confirmation ────────────────────────────────────────────────────────
     [ObservableProperty]
     private bool _isSendPromptVisible;
-
-    partial void OnIsSendPromptVisibleChanged(bool value)
-    {
-        SendNextCommand.NotifyCanExecuteChanged();
-    }
-
-    /// <summary>
-    /// Maximum time to poll Infor Visual for a recorded transfer before falling back to the
-    /// manual Saved? Yes/No prompt. Configurable so tests can keep the poll short.
-    /// </summary>
-    public TimeSpan TransferConfirmTimeout { get; set; } = TimeSpan.FromSeconds(5);
-
-    /// <summary>Delay between transfer-confirmation polls.</summary>
-    public TimeSpan TransferConfirmPollInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     private Model_ScannerBatchItem? _pendingSendItem;
 
     public bool HasActiveSession => CurrentSession is not null;
 
     public bool HasSelectedSessionItem => SelectedSessionItem is not null;
+
+    public string OwnerUserId { get; } = Environment.UserName;
+
+    public string OwnerDisplayName { get; } = Environment.UserName;
+
+    public TimeSpan TransferConfirmTimeout { get; set; } = TimeSpan.FromSeconds(5);
+
+    public TimeSpan TransferConfirmPollInterval { get; set; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>Raised so the view can show the stock-location picker (Step 6b-a1-a).</summary>
+    public event Func<string, string, string, Task<Model_ScannerStockPick?>>? FromLocationInventoryPickerRequested;
+
+    /// <summary>Raised so the view can return focus to the Part lookup (Step 6b-a2).</summary>
+    public event Action? PartIdFocusRequested;
+
+    /// <summary>Raised so the view can enable, focus, and select all on the To Location (Step 6b-a1-c).</summary>
+    public event Action? ToLocationFocusRequested;
 
     public ViewModel_Scanner_Workbench(
         IService_ScannerNavigation navigationService,
@@ -158,268 +164,241 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         _hotkeyService = hotkeyService;
         _windowService = windowService;
 
-        _navigationService.PropertyChanged += OnNavigationChanged;
+        // Input lockout while automation runs (ScannerUpdate.md Task 1).
+        _executionService.PropertyChanged += OnExecutionPropertyChanged;
     }
 
-    private void OnNavigationChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnExecutionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // When the operator returns from the Advanced Bulk Move page with completed
-        // destination rows, stage them into the current session.
-        if (
-            e.PropertyName == nameof(IService_ScannerNavigation.CurrentPage)
-            && _navigationService.CurrentPage == Enum_ScannerPage.Workbench
-            && _navigationService.PendingBulkMoveDestinations is { Count: > 0 } destinations
-        )
+        if (e.PropertyName == nameof(IService_ScannerExecution.IsAutomationRunning))
         {
-            _navigationService.PendingBulkMoveDestinations = null;
-            _ = StageAdvancedBulkMoveDestinationsAsync(destinations);
+            IsPartEditable = !_executionService.IsAutomationRunning;
+            IsToLocationEnabled = !_executionService.IsAutomationRunning && IsToLocationEnabled;
+            IsQuantityEnabled = !_executionService.IsAutomationRunning && IsQuantityEnabled;
+            RecomputeAddEnabled();
         }
     }
 
-    [RelayCommand]
-    private void NavigateToWorkbench()
+    partial void OnNewToLocationChanged(string value)
     {
-        _navigationService.ShowWorkbench();
+        RecomputeAddEnabled();
     }
 
-    [RelayCommand]
-    private void NavigateToHistory()
+    private void RecomputeAddEnabled()
     {
-        _navigationService.ShowHistory();
+        IsAddEnabled = !_executionService.IsAutomationRunning
+            && CurrentSession is not null
+            && !string.IsNullOrWhiteSpace(NewToLocation);
     }
 
-    [RelayCommand]
-    private void NavigateToSettings()
+    // ── Page lifecycle ───────────────────────────────────────────────────────────
+
+    /// <summary>Auto-creates (or resumes) the current list when the Workbench loads.</summary>
+    public async Task<Model_Dao_Result<Model_ScannerBatchSession>> EnsureCurrentSessionAsync()
     {
-        _navigationService.ShowSettings();
+        var result = await _workflowService.EnsureCurrentSessionAsync(
+            OwnerUserId,
+            OwnerDisplayName,
+            await ResolveActiveProfileIdAsync()
+        );
+
+        if (result.Success && result.Data is not null)
+        {
+            CurrentSession = result.Data;
+            SessionItems = [.. result.Data.Items.OrderBy(item => item.SequenceNumber)];
+        }
+
+        return result;
     }
 
-    [RelayCommand]
-    private async Task StartDraftSessionAsync()
+    private async Task<Guid> ResolveActiveProfileIdAsync()
     {
-        IsBusy = true;
-        try
+        var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
+        if (profiles is not null && profiles.Success && profiles.Data is { Count: > 0 })
         {
-            var result = await _workflowService.StartSessionAsync(new Model_ScannerSessionStartRequest
-            {
-                OwnerUserId = OwnerUserId,
-                OwnerDisplayName = OwnerDisplayName,
-                AppWindowTitleSnapshot = AppWindowTitleSnapshot,
-                AppWindowClassSnapshot = AppWindowClassSnapshot,
-            });
-
-            if (!result.Success || result.Data is null)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to start scanner session."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            CurrentSession = new Model_ScannerBatchSession
-            {
-                SessionId = result.Data.SessionId,
-                OwnerUserId = OwnerUserId,
-                OwnerDisplayName = OwnerDisplayName,
-                AppWindowTitleSnapshot = AppWindowTitleSnapshot,
-                AppWindowClassSnapshot = AppWindowClassSnapshot,
-                Status = result.Data.Status,
-                CreatedUtc = result.Data.CreatedUtc,
-                LastUpdatedUtc = result.Data.CreatedUtc,
-                SessionName = $"{OwnerDisplayName} Draft {result.Data.CreatedUtc:yyyy-MM-dd HH:mm:ss}",
-            };
-            SessionItems = [];
-            ShowStatus(result.Data.Message, InfoBarSeverity.Success);
+            return (profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
+                ?? profiles.Data[0]).ProfileId;
         }
-        finally
-        {
-            IsBusy = false;
-        }
+
+        return Guid.Empty;
     }
 
-    [RelayCommand]
-    private async Task AddDraftItemAsync()
+    public async Task<Model_ScannerProfile> ResolveActiveProfileAsync()
     {
-        if (!await EnsureSessionAsync())
+        var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
+        if (profiles is not null && profiles.Success && profiles.Data is { Count: > 0 })
         {
-            return;
+            return profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
+                ?? profiles.Data[0];
         }
 
-        if (CurrentSession is null)
+        return new Model_ScannerProfile
         {
-            return;
-        }
-
-        var item = new Model_ScannerBatchItem
-        {
-            SessionId = CurrentSession.SessionId,
-            SequenceNumber = CurrentSession.Items.Count + 1,
-            PayloadPartId = NewPartId,
-            PayloadFromWarehouse = NewFromWarehouse,
-            PayloadFromLocation = NewFromLocation,
-            PayloadToWarehouse = NewToWarehouse,
-            PayloadToLocation = NewToLocation,
-            PayloadQuantity = NewQuantity,
+            OwnerUserId = OwnerUserId,
+            ProfileName = "Default",
+            IsDefaultForUser = true,
         };
+    }
 
-        var validation = await _validationService.ValidateNewItemAsync(new Model_ScannerItemValidationRequest
-        {
-            SessionId = CurrentSession.SessionId,
-            ItemId = item.ItemId,
-            PartId = item.PayloadPartId,
-            FromWarehouse = item.PayloadFromWarehouse,
-            FromLocation = item.PayloadFromLocation,
-            ToWarehouse = item.PayloadToWarehouse,
-            ToLocation = item.PayloadToLocation,
-            Quantity = item.PayloadQuantity,
-        });
+    // ── Step 6b: Part focus-lost validation ──────────────────────────────────────
 
-        if (validation.Success && validation.Data is not null)
+    /// <summary>
+    /// Runs the Step 6b part validation: part exists? -> stock locations -> modal ->
+    /// apply selection (or header error + refocus when no stock).
+    /// </summary>
+    public async Task PartValidationCompletedAsync(string partId)
+    {
+        ClearHeaderError();
+
+        NewPartId = partId?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(NewPartId))
         {
-            item.ApplyValidationResult(validation.Data);
-            LastValidationStatus = validation.Data.State.ToString();
-            LastValidationNotes = validation.Data.Notes;
+            return;
+        }
+
+        var exists = await _validationService.PartExistsAsync(NewPartId);
+        if (!exists.Success)
+        {
+            ShowHeaderError(
+                string.IsNullOrWhiteSpace(exists.ErrorMessage)
+                    ? "Part lookup is currently unavailable."
+                    : exists.ErrorMessage
+            );
+            PartIdFocusRequested?.Invoke();
+            return;
+        }
+
+        if (!exists.Data)
+        {
+            await ShowNoStockErrorAsync();
+            return;
+        }
+
+        var stock = await _validationService.GetLocationsWithStockAsync(NewPartId, NewFromWarehouse);
+        if (!stock.Success || stock.Data is null || stock.Data.Count == 0)
+        {
+            await ShowNoStockErrorAsync();
+            return;
+        }
+
+        // Step 6b-a1-a: the view shows the stock-location modal.
+        if (FromLocationInventoryPickerRequested is null)
+        {
+            await ShowNoStockErrorAsync();
+            return;
+        }
+
+        var picked = await FromLocationInventoryPickerRequested(
+            NewPartId,
+            NewFromWarehouse,
+            NewFromLocation
+        );
+
+        if (picked is null || string.IsNullOrWhiteSpace(picked.Location))
+        {
+            // Step 6b-a1-b: user cancelled the modal -> treat as no stock.
+            await ShowNoStockErrorAsync();
+            return;
+        }
+
+        await ApplyStockLocationSelectionAsync(picked);
+    }
+
+    private async Task ApplyStockLocationSelectionAsync(Model_ScannerStockPick pick)
+    {
+        // Step 6b-a1-c: fill From Loc + Qty, then enable/focus To Location.
+        NewFromLocation = pick.Location;
+        if (decimal.TryParse(pick.Quantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity))
+        {
+            SetFromQuantityLimit(quantity);
         }
         else
         {
-            item.ValidationState = Enum_ScannerValidationState.Invalid;
-            item.ValidationMessage = "Validation unavailable.";
-            item.ValidationNotes =
-                string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                    ? "Validation failed due to service error."
-                    : validation.ErrorMessage;
-            LastValidationStatus = item.ValidationState.ToString();
-            LastValidationNotes = item.ValidationNotes;
+            ClearFromQuantityLimit();
+            quantity = 0m;
         }
 
-        // When the source location cannot fulfill the item (not found, or insufficient stock),
-        // let the operator pick a location that actually holds stock for the part and re-validate.
-        if (
-            validation.Success
-            && validation.Data is not null
-            && validation.Data.State == Enum_ScannerValidationState.Invalid
-            && IsSourceLocationIssue(validation.Data.Message)
-            && FromLocationInventoryPickerRequested is not null
-        )
-        {
-            var picked = await FromLocationInventoryPickerRequested(
-                NewPartId,
-                NewFromWarehouse,
-                NewFromLocation
-            );
-            if (string.IsNullOrWhiteSpace(picked) is false)
-            {
-                NewFromLocation = picked!;
-                item.PayloadFromLocation = picked!;
+        NewQuantity = quantity.ToString("0.####", CultureInfo.InvariantCulture);
 
-                var revalidation = await _validationService.ValidateNewItemAsync(
-                    new Model_ScannerItemValidationRequest
-                    {
-                        SessionId = CurrentSession.SessionId,
-                        ItemId = item.ItemId,
-                        PartId = item.PayloadPartId,
-                        FromWarehouse = item.PayloadFromWarehouse,
-                        FromLocation = item.PayloadFromLocation,
-                        ToWarehouse = item.PayloadToWarehouse,
-                        ToLocation = item.PayloadToLocation,
-                        Quantity = item.PayloadQuantity,
-                    }
-                );
+        IsToLocationEnabled = true;
+        NewToLocation = string.Empty;
+        RecomputeAddEnabled();
+        ToLocationFocusRequested?.Invoke();
 
-                if (revalidation.Success && revalidation.Data is not null)
-                {
-                    item.ApplyValidationResult(revalidation.Data);
-                    LastValidationStatus = revalidation.Data.State.ToString();
-                    LastValidationNotes = revalidation.Data.Notes;
-                }
-            }
-        }
-
-        var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
-        if (!save.Success || save.Data is null)
-        {
-            ShowStatus(
-                string.IsNullOrWhiteSpace(save.ErrorMessage)
-                    ? "Unable to stage scanner item."
-                    : save.ErrorMessage,
-                InfoBarSeverity.Error
-            );
-            return;
-        }
-
-        CurrentSession = save.Data;
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-        SelectedSessionItem = SessionItems.LastOrDefault();
-
-        var severity = item.ValidationState == Enum_ScannerValidationState.Valid
-            ? InfoBarSeverity.Success
-            : InfoBarSeverity.Warning;
-        var message = item.ValidationState == Enum_ScannerValidationState.Valid
-            ? "Item added to draft session."
-            : "Item added with validation issues. Review Status/Notes before sending.";
-        ShowStatus(message, severity);
+        ShowStatus("Source location resolved. Enter the destination location.", InfoBarSeverity.Success);
+        await Task.CompletedTask;
     }
 
-    [RelayCommand]
-    private async Task RemoveSelectedSessionItemAsync()
+    private async Task ShowNoStockErrorAsync()
     {
-        if (CurrentSession is null)
+        ShowHeaderError("The part number does not have any quantity in-house.");
+        PartIdFocusRequested?.Invoke();
+        await Task.CompletedTask;
+    }
+
+    // ── Step 6b-a1-c-a: To Location format sanitization ──────────────────────────
+
+    /// <summary>
+    /// Sanitizes the To Location on focus-lost (Step 6b-a1-c-b). Returns true when the
+    /// format is valid; on failure shows a non-blocking header error and re-focuses.
+    /// </summary>
+    public async Task<bool> ValidateToLocationFormatAsync()
+    {
+        var rawValue = NewToLocation?.Trim() ?? string.Empty;
+        var sanitized = Helper_ScannerLocationFormat.SanitizeLocationFormat(rawValue);
+
+        if (!string.IsNullOrEmpty(sanitized))
         {
-            ShowStatus("Start a session before removing items.", InfoBarSeverity.Warning);
-            return;
+            NewToLocation = sanitized;
+            RecomputeAddEnabled();
+            return true;
         }
 
-        if (SelectedSessionItem is null)
+        ShowHeaderError("Invalid location layout entered. Please check your format.");
+        await Task.CompletedTask;
+        return false;
+    }
+
+    // ── Non-blocking header error (5-second auto-clear) ──────────────────────────
+
+    public void ShowHeaderError(string message)
+    {
+        _headerErrorTokenSource?.Cancel();
+        _headerErrorTokenSource = new CancellationTokenSource();
+        var token = _headerErrorTokenSource.Token;
+
+        HeaderErrorText = message;
+        IsHeaderErrorVisible = true;
+
+        _ = AutoClearHeaderErrorAsync(token);
+    }
+
+    public void ClearHeaderError()
+    {
+        _headerErrorTokenSource?.Cancel();
+        HeaderErrorText = string.Empty;
+        IsHeaderErrorVisible = false;
+    }
+
+    private async Task AutoClearHeaderErrorAsync(CancellationToken token)
+    {
+        try
         {
-            ShowStatus("Select an item before removing.", InfoBarSeverity.Warning);
-            return;
+            await Task.Delay(TimeSpan.FromSeconds(5), token);
+            HeaderErrorText = string.Empty;
+            IsHeaderErrorVisible = false;
         }
-
-        var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
-            candidate.ItemId == SelectedSessionItem.ItemId
-        );
-        if (itemToRemove is null)
+        catch (TaskCanceledException)
         {
-            ShowStatus("The selected item could not be found in the session.", InfoBarSeverity.Warning);
-            return;
+            // A newer input/error evaluation loop superseded this one.
         }
+    }
 
-        CurrentSession.Items.Remove(itemToRemove);
+    // ── Location helpers (used by the view code-behind) ──────────────────────────
 
-        var orderedItems = CurrentSession.Items
-            .OrderBy(candidate => candidate.SequenceNumber)
-            .ToList();
-        CurrentSession.Items.Clear();
-
-        for (var index = 0; index < orderedItems.Count; index++)
-        {
-            orderedItems[index].SequenceNumber = index + 1;
-            orderedItems[index].LastUpdatedUtc = DateTime.UtcNow;
-            CurrentSession.Items.Add(orderedItems[index]);
-        }
-
-        CurrentSession.RecalculateItemCounters();
-        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
-
-        var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
-        if (!persist.Success || persist.Data is null)
-        {
-            ShowStatus(
-                string.IsNullOrWhiteSpace(persist.ErrorMessage)
-                    ? "Unable to remove the selected item."
-                    : persist.ErrorMessage,
-                InfoBarSeverity.Error
-            );
-            return;
-        }
-
-        CurrentSession = persist.Data;
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-        SelectedSessionItem = SessionItems.FirstOrDefault();
-        ShowStatus("Selected item removed.", InfoBarSeverity.Success);
+    public string FormatLocation(string location)
+    {
+        return _validationService.FormatLocation(location);
     }
 
     public async Task<Model_ScannerLocationValidationResult> ValidateFromLocationAsync()
@@ -476,106 +455,367 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         return _validationService.GetLocationSuggestionsAsync(NewFromLocation, NewFromWarehouse);
     }
 
-    /// <summary>
-    /// Returns every warehouse location that currently holds stock for the entered part,
-    /// scoped to the From warehouse. Used when the entered From location does not resolve.
-    /// </summary>
+    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetToLocationSuggestionsAsync()
+    {
+        return _validationService.GetLocationSuggestionsAsync(NewToLocation, NewToWarehouse);
+    }
+
     public Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetFromInventoryLocationsAsync()
     {
         return _validationService.GetLocationsWithStockAsync(NewPartId, NewFromWarehouse);
     }
 
-    /// <summary>
-    /// Applies the shared warehouse-location autocomplete (dash rule) to a typed location,
-    /// for example "VA101" becomes "V-A1-01" and "R5" becomes "R-05". Used as the first
-    /// step for both the From and To location fields.
-    /// </summary>
-    /// <param name="location"></param>
-    public string FormatLocation(string location)
-    {
-        return _validationService.FormatLocation(location);
-    }
-
-    /// <summary>
-    /// Called once the From location is validated against stock: enables the Qty field and
-    /// records the maximum quantity that can be entered for that location.
-    /// </summary>
-    /// <param name="available"></param>
     public void SetFromQuantityLimit(decimal available)
     {
         MaxQuantity = available;
         IsQuantityEnabled = true;
     }
 
-    /// <summary>Disables the Qty field and clears the maximum when the From location is not usable.</summary>
     public void ClearFromQuantityLimit()
     {
         IsQuantityEnabled = false;
         MaxQuantity = null;
     }
 
-    /// <summary>
-    /// True when the validation message indicates the source (From) location is the problem:
-    /// the location was not found, or it cannot supply the requested quantity.
-    /// </summary>
-    /// <param name="message"></param>
-    private static bool IsSourceLocationIssue(string? message)
-    {
-        return string.Equals(
-                message,
-                "Source quantity is insufficient.",
-                StringComparison.Ordinal
-            )
-            || string.Equals(
-                message,
-                "From location was not found.",
-                StringComparison.Ordinal
-            );
-    }
+    // ── Commands ─────────────────────────────────────────────────────────────────
 
-    public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetToLocationSuggestionsAsync()
+    [RelayCommand]
+    private void NavigateToWorkbench()
     {
-        return _validationService.GetLocationSuggestionsAsync(NewToLocation, NewToWarehouse);
+        _navigationService.ShowWorkbench();
     }
 
     [RelayCommand]
-    private async Task BuildRunSnapshotAsync()
+    private void NavigateToHistory()
     {
-        if (CurrentSession is null)
+        _navigationService.ShowHistory();
+    }
+
+    [RelayCommand]
+    private void NavigateToSettings()
+    {
+        _navigationService.ShowSettings();
+    }
+
+    [RelayCommand]
+    private async Task AddItemAsync()
+    {
+        if (!IsAddEnabled)
         {
-            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
             return;
         }
 
-        if (CurrentSession.Items.Count == 0)
+        if (CurrentSession is null)
         {
-            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
+            ShowStatus("The current list is not ready.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var item = new Model_ScannerBatchItem
+        {
+            SessionId = CurrentSession.SessionId,
+            SequenceNumber = CurrentSession.Items.Count + 1,
+            PayloadPartId = NewPartId,
+            PayloadFromWarehouse = NewFromWarehouse,
+            PayloadFromLocation = NewFromLocation,
+            PayloadToWarehouse = NewToWarehouse,
+            PayloadToLocation = NewToLocation,
+            PayloadQuantity = NewQuantity,
+        };
+
+        var validation = await _validationService.ValidateNewItemAsync(
+            new Model_ScannerItemValidationRequest
+            {
+                SessionId = CurrentSession.SessionId,
+                ItemId = item.ItemId,
+                PartId = item.PayloadPartId,
+                FromWarehouse = item.PayloadFromWarehouse,
+                FromLocation = item.PayloadFromLocation,
+                ToWarehouse = item.PayloadToWarehouse,
+                ToLocation = item.PayloadToLocation,
+                Quantity = item.PayloadQuantity,
+            }
+        );
+
+        if (validation.Success && validation.Data is not null)
+        {
+            item.ApplyValidationResult(validation.Data);
+            LastValidationStatus = validation.Data.State.ToString();
+            LastValidationNotes = validation.Data.Notes;
+        }
+        else
+        {
+            item.ValidationState = Enum_ScannerValidationState.Invalid;
+            item.ValidationMessage = "Validation unavailable.";
+            item.ValidationNotes =
+                string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                    ? "Validation failed due to service error."
+                    : validation.ErrorMessage;
+            LastValidationStatus = item.ValidationState.ToString();
+            LastValidationNotes = item.ValidationNotes;
+        }
+
+        var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, item);
+        if (!save.Success || save.Data is null)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(save.ErrorMessage)
+                    ? "Unable to stage scanner item."
+                    : save.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        CurrentSession = save.Data;
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        SelectedSessionItem = SessionItems.LastOrDefault();
+
+        ResetEntryFields();
+        ShowStatus(
+            item.ValidationState == Enum_ScannerValidationState.Valid
+                ? "Item added to the current list."
+                : "Item added with validation issues. Review Status/Notes before sending.",
+            item.ValidationState == Enum_ScannerValidationState.Valid
+                ? InfoBarSeverity.Success
+                : InfoBarSeverity.Warning
+        );
+    }
+
+    private void ResetEntryFields()
+    {
+        NewPartId = string.Empty;
+        NewFromLocation = string.Empty;
+        NewToLocation = string.Empty;
+        NewQuantity = "1";
+        ClearFromQuantityLimit();
+        IsToLocationEnabled = false;
+        RecomputeAddEnabled();
+    }
+
+    [RelayCommand]
+    private async Task RemoveSelectedSessionItemAsync()
+    {
+        if (CurrentSession is null || SelectedSessionItem is null)
+        {
+            return;
+        }
+
+        var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
+            candidate.ItemId == SelectedSessionItem.ItemId);
+        if (itemToRemove is null)
+        {
+            return;
+        }
+
+        CurrentSession.Items.Remove(itemToRemove);
+        ReorderSessionItems();
+
+        var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+        if (!persist.Success || persist.Data is null)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(persist.ErrorMessage)
+                    ? "Unable to remove the selected item."
+                    : persist.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        CurrentSession = persist.Data;
+        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        SelectedSessionItem = SessionItems.FirstOrDefault();
+        ShowStatus("Selected item removed.", InfoBarSeverity.Success);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSendNext))]
+    private async Task SendNextAsync()
+    {
+        if (CurrentSession is null || CurrentSession.Items.Count == 0)
+        {
+            return;
+        }
+
+        if (IsSendPromptVisible)
+        {
+            return;
+        }
+
+        if (CurrentSession.StopRequested)
+        {
+            CurrentSession.StopRequested = false;
+            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
+            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
+            ShowStatus("Stop requested. The current list remains intact.", InfoBarSeverity.Warning);
             return;
         }
 
         IsBusy = true;
         try
         {
-            CurrentSession.Status = Enum_ScannerSessionStatus.Running;
-            CurrentSession.LastSendStartedUtc = DateTime.UtcNow;
+            var profile = await ResolveActiveProfileAsync();
+            var result = await _executionService.SendNextItemAsync(CurrentSession, profile);
 
-            var run = await _workflowService.BuildRunSnapshotAsync(CurrentSession);
-            if (!run.Success || run.Data is null)
+            if (!result.Success || result.Data is null)
             {
-                CurrentSession.Status = Enum_ScannerSessionStatus.Failed;
-                CurrentSession.LastFailureMessage = run.ErrorMessage ?? "Failed to create run snapshot.";
-                ShowStatus(CurrentSession.LastFailureMessage, InfoBarSeverity.Error);
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(result.ErrorMessage)
+                        ? "Unable to send the next scanner item."
+                        : result.ErrorMessage,
+                    InfoBarSeverity.Error
+                );
                 return;
             }
 
-            CurrentSession.Status = run.Data.FailedItems > 0
-                ? Enum_ScannerSessionStatus.Failed
-                : Enum_ScannerSessionStatus.Completed;
-            CurrentSession.LastSendEndedUtc = run.Data.EndedUtc ?? DateTime.UtcNow;
-            CurrentSession.LastFailureMessage = run.Data.FailureSummary;
+            if (result.Data.Stopped && result.Data.FailedCount > 0)
+            {
+                ShowStatus(result.Data.FailureMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            var sentItem = FindNextSentItem();
+            if (result.Data.SentCount > 0 && sentItem is not null)
+            {
+                _pendingSendItem = sentItem;
+                await WaitForTransferConfirmationAsync(sentItem);
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private Model_ScannerBatchItem? FindNextSentItem()
+    {
+        return CurrentSession?.Items
+            .Where(item => item.ExecutionState == Enum_ScannerExecutionState.Sent)
+            .OrderByDescending(item => item.SentUtc)
+            .FirstOrDefault();
+    }
+
+    private async Task WaitForTransferConfirmationAsync(Model_ScannerBatchItem item)
+    {
+        var deadlineUtc = DateTime.UtcNow + TransferConfirmTimeout;
+        var afterUtc = item.SentUtc ?? DateTime.UtcNow.AddSeconds(-1);
+
+        if (!decimal.TryParse(item.PayloadQuantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity))
+        {
+            quantity = 0m;
+        }
+
+        ShowStatus("Verifying transfer in Infor Visual...", InfoBarSeverity.Informational);
+
+        while (DateTime.UtcNow < deadlineUtc)
+        {
+            var check = await _validationService.TransferSavedSinceAsync(
+                item.PayloadPartId,
+                item.PayloadFromWarehouse,
+                item.PayloadFromLocation,
+                item.PayloadToWarehouse,
+                item.PayloadToLocation,
+                quantity,
+                afterUtc
+            );
+
+            if (check.Success && check.Data)
+            {
+                await ConfirmSavedAsync();
+                return;
+            }
+
+            await Task.Delay(TransferConfirmPollInterval);
+        }
+
+        IsSendPromptVisible = true;
+    }
+
+    private bool CanSendNext()
+    {
+        return !IsSendPromptVisible
+            && !IsBusy
+            && CurrentSession?.Items.Count > 0;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmSavedAsync()
+    {
+        var savedItem = _pendingSendItem;
+        _pendingSendItem = null;
+        IsSendPromptVisible = false;
+
+        if (CurrentSession is not null && savedItem is not null)
+        {
+            var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
+                candidate.ItemId == savedItem.ItemId);
+            if (itemToRemove is not null)
+            {
+                CurrentSession.Items.Remove(itemToRemove);
+                ReorderSessionItems();
+
+                var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
+                if (persist.Success && persist.Data is not null)
+                {
+                    CurrentSession = persist.Data;
+                }
+
+                SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+                ShowStatus($"Line {savedItem.SequenceNumber} saved to history.", InfoBarSeverity.Success);
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task ConfirmNotSavedAsync()
+    {
+        if (_pendingSendItem is not null)
+        {
+            _pendingSendItem.ExecutionState = Enum_ScannerExecutionState.Waiting;
+            _pendingSendItem.LastUpdatedUtc = DateTime.UtcNow;
+        }
+
+        _pendingSendItem = null;
+        IsSendPromptVisible = false;
+
+        await _executionService.ClearTargetFormAsync();
+        PartIdFocusRequested?.Invoke();
+        ShowStatus("Form cleared. Re-enter the part and try again.", InfoBarSeverity.Warning);
+    }
+
+    [RelayCommand]
+    private async Task CheckAllAsync()
+    {
+        if (CurrentSession is null || CurrentSession.Items.Count == 0)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var validation = await _validationService.ValidateSessionItemsAsync(CurrentSession);
+            if (!validation.Success || validation.Data is null)
+            {
+                ShowStatus(
+                    string.IsNullOrWhiteSpace(validation.ErrorMessage)
+                        ? "Unable to validate scanner items."
+                        : validation.ErrorMessage,
+                    InfoBarSeverity.Error
+                );
+                return;
+            }
+
+            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+            SelectedSessionItem = SessionItems.FirstOrDefault(candidate =>
+                SelectedSessionItem is not null && candidate.ItemId == SelectedSessionItem.ItemId);
+
+            var invalidCount = validation.Data.Count(result => result.State == Enum_ScannerValidationState.Invalid);
             ShowStatus(
-                $"Run snapshot created. Sent: {run.Data.SentItems}, Failed: {run.Data.FailedItems}, Waiting: {run.Data.WaitingItems}.",
-                run.Data.FailedItems > 0 ? InfoBarSeverity.Warning : InfoBarSeverity.Success
+                invalidCount == 0
+                    ? $"Validated {validation.Data.Count} scanner items. All items are ready for send review."
+                    : $"Validated {validation.Data.Count} scanner items. {invalidCount} item(s) still require review.",
+                invalidCount == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
             );
         }
         finally
@@ -585,29 +825,18 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private Task ManageItemsDialogAsync()
+    private async Task ManageItemsDialogAsync()
     {
         if (CurrentSession is null)
         {
-            ShowStatus("Start a session before managing the batch.", InfoBarSeverity.Warning);
-            return Task.CompletedTask;
+            ShowStatus("There is no current list to manage.", InfoBarSeverity.Warning);
+            return;
         }
 
-        return ManageItemsDialogCoreAsync();
-    }
-
-    private async Task ManageItemsDialogCoreAsync()
-    {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot is null)
         {
             ShowStatus("Unable to open Manage Items because the window root is unavailable.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start a session before managing the batch.", InfoBarSeverity.Warning);
             return;
         }
 
@@ -619,7 +848,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
 
         var result = await dialog.ShowAsync();
-        if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
+        if (result != ContentDialogResult.Primary)
         {
             ShowStatus("Manage Items closed without changes.", InfoBarSeverity.Informational);
             return;
@@ -633,7 +862,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         CurrentSession.RecalculateItemCounters();
-        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
         SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
         SelectedSessionItem = SessionItems.FirstOrDefault(candidate =>
             SelectedSessionItem is not null && candidate.ItemId == SelectedSessionItem.ItemId);
@@ -658,369 +886,20 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private void AdvancedBulkMove()
+    private Task ClearListAsync()
     {
         if (CurrentSession is null)
         {
-            ShowStatus("Start a session before using Advanced bulk move.", InfoBarSeverity.Warning);
-            return;
+            ShowStatus("The current list is already empty.", InfoBarSeverity.Informational);
+            return Task.CompletedTask;
         }
 
-        _navigationService.ShowAdvancedBulkMove();
-    }
-
-    private async Task StageAdvancedBulkMoveDestinationsAsync(
-        IReadOnlyList<Model_ScannerBulkMoveDestination> destinations
-    )
-    {
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start a session before using Advanced bulk move.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (destinations.Count == 0)
-        {
-            ShowStatus("No destination rows were produced by Advanced bulk move.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            var sequence = CurrentSession.Items.Count + 1;
-            foreach (var destination in destinations)
-            {
-                var item = new Model_ScannerBatchItem
-                {
-                    SessionId = CurrentSession.SessionId,
-                    SequenceNumber = sequence++,
-                    PayloadPartId = destination.PartId,
-                    PayloadFromWarehouse = destination.FromWarehouse,
-                    PayloadFromLocation = destination.FromLocation,
-                    PayloadToWarehouse = destination.FromWarehouse,
-                    PayloadToLocation = destination.ToLocation,
-                    PayloadQuantity = destination.Quantity,
-                };
-
-                var validation = await _validationService.ValidateNewItemAsync(
-                    new Model_ScannerItemValidationRequest
-                    {
-                        SessionId = CurrentSession.SessionId,
-                        ItemId = item.ItemId,
-                        PartId = item.PayloadPartId,
-                        FromWarehouse = item.PayloadFromWarehouse,
-                        FromLocation = item.PayloadFromLocation,
-                        ToWarehouse = item.PayloadToWarehouse,
-                        ToLocation = item.PayloadToLocation,
-                        Quantity = item.PayloadQuantity,
-                    }
-                );
-
-                if (validation.Success && validation.Data is not null)
-                {
-                    item.ApplyValidationResult(validation.Data);
-                }
-                else
-                {
-                    item.ValidationState = Enum_ScannerValidationState.Invalid;
-                    item.ValidationMessage = "Validation unavailable.";
-                    item.ValidationNotes =
-                        string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                            ? "Validation failed due to service error."
-                            : validation.ErrorMessage;
-                }
-
-                CurrentSession.Items.Add(item);
-            }
-
-            CurrentSession.RecalculateItemCounters();
-            CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
-            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-
-            var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
-            if (!persist.Success || persist.Data is null)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(persist.ErrorMessage)
-                        ? "Advanced bulk move rows were added locally but could not be saved."
-                        : persist.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            CurrentSession = persist.Data;
-            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-            SelectedSessionItem = SessionItems.LastOrDefault();
-            ShowStatus(
-                $"Advanced bulk move added {destinations.Count} item(s) to the draft session.",
-                InfoBarSeverity.Success
-            );
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task CheckAllAsync()
-    {
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start or load a session before validating items.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (CurrentSession.Items.Count == 0)
-        {
-            ShowStatus("Add at least one item before validating the batch.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            var validation = await _validationService.ValidateSessionItemsAsync(CurrentSession);
-            if (!validation.Success || validation.Data is null)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                        ? "Unable to validate scanner items."
-                        : validation.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-
-            if (SelectedSessionItem is not null)
-            {
-                SelectedSessionItem = SessionItems.FirstOrDefault(candidate => candidate.ItemId == SelectedSessionItem.ItemId);
-            }
-
-            var invalidCount = validation.Data.Count(result => result.State == Enum_ScannerValidationState.Invalid);
-            var firstIssue = validation.Data.FirstOrDefault(result => result.State == Enum_ScannerValidationState.Invalid)
-                ?? validation.Data.FirstOrDefault();
-
-            if (firstIssue is not null)
-            {
-                LastValidationStatus = firstIssue.State.ToString();
-                LastValidationNotes = firstIssue.Notes;
-            }
-
-            ShowStatus(
-                invalidCount == 0
-                    ? $"Validated {validation.Data.Count} scanner items. All items are ready for send review."
-                    : $"Validated {validation.Data.Count} scanner items. {invalidCount} item(s) still require review.",
-                invalidCount == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
-            );
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSendNext))]
-    private async Task SendNextAsync()
-    {
-        if (CurrentSession is null)
-        {
-            ShowStatus("Start a session before sending items.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (CurrentSession.Items.Count == 0)
-        {
-            ShowStatus("Add at least one item before sending.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        if (IsBusy || IsSendPromptVisible)
-        {
-            return;
-        }
-
-        // A pending stop is acknowledged on the next explicit send so the operator controls
-        // exactly when the batch resumes after stopping between send cycles.
-        if (CurrentSession.StopRequested)
-        {
-            CurrentSession.StopRequested = false;
-            CurrentSession.StopReason = Enum_ScannerStopReason.UserStop;
-            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
-            ShowStatus("Stop requested. The current batch remains intact.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        var next = Helper_ScannerSequence.FindNextEligible(CurrentSession.Items);
-
-        IsBusy = true;
-        try
-        {
-            var profile = await ResolveActiveProfileAsync();
-            var result = await _executionService.SendNextItemAsync(CurrentSession, profile);
-
-            if (!result.Success || result.Data is null)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to send the next scanner item."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            RefreshSessionAfterExecution(result.Data);
-
-            // After a line is emitted, poll Infor Visual for the recorded transfer. As soon as
-            // the transaction appears, auto-confirm it (same as the operator answering "Yes").
-            // If it never appears within the timeout, fall back to the manual Saved? prompt.
-            if (result.Data.SentCount > 0 && next is not null)
-            {
-                _pendingSendItem = next;
-                await WaitForTransferConfirmationAsync(next);
-            }
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    /// <summary>
-    /// Polls Infor Visual until the scanner-emitted inventory transfer is recorded, then
-    /// auto-confirms the line as saved. When the transaction is not seen within
-    /// <see cref="TransferConfirmTimeout"/>, shows the manual Saved? Yes/No prompt instead.
-    /// </summary>
-    private async Task WaitForTransferConfirmationAsync(Model_ScannerBatchItem item)
-    {
-        var deadlineUtc = DateTime.UtcNow + TransferConfirmTimeout;
-        var afterUtc = item.SentUtc ?? DateTime.UtcNow.AddSeconds(-1);
-
-        if (
-            !decimal.TryParse(
-                item.PayloadQuantity,
-                NumberStyles.Any,
-                CultureInfo.InvariantCulture,
-                out var quantity
-            )
-        )
-        {
-            quantity = 0m;
-        }
-
-        ShowStatus(
-            "Verifying transfer in Infor Visual...",
-            Module_Core.Models.Enums.InfoBarSeverity.Informational
-        );
-
-        while (DateTime.UtcNow < deadlineUtc)
-        {
-            var check = await _validationService.TransferSavedSinceAsync(
-                item.PayloadPartId,
-                item.PayloadFromWarehouse,
-                item.PayloadFromLocation,
-                item.PayloadToWarehouse,
-                item.PayloadToLocation,
-                quantity,
-                afterUtc
-            );
-
-            if (check.Success && check.Data)
-            {
-                await ConfirmSavedAsync();
-                return;
-            }
-
-            await Task.Delay(TransferConfirmPollInterval);
-        }
-
-        // No transaction was seen in time; ask the operator.
-        IsSendPromptVisible = true;
-    }
-
-    private bool CanSendNext()
-    {
-        return !IsSendPromptVisible
-            && !IsBusy
-            && CurrentSession?.Items.Count > 0;
-    }
-
-    [RelayCommand]
-    private async Task ConfirmSavedAsync()
-    {
-        var savedItem = _pendingSendItem;
-        _pendingSendItem = null;
-        IsSendPromptVisible = false;
-
-        if (CurrentSession is not null && savedItem is not null)
-        {
-            var itemToRemove = CurrentSession.Items.FirstOrDefault(candidate =>
-                candidate.ItemId == savedItem.ItemId
-            );
-            if (itemToRemove is not null)
-            {
-                CurrentSession.Items.Remove(itemToRemove);
-
-                var orderedItems = CurrentSession.Items
-                    .OrderBy(candidate => candidate.SequenceNumber)
-                    .ToList();
-                CurrentSession.Items.Clear();
-                for (var index = 0; index < orderedItems.Count; index++)
-                {
-                    orderedItems[index].SequenceNumber = index + 1;
-                    orderedItems[index].LastUpdatedUtc = DateTime.UtcNow;
-                    CurrentSession.Items.Add(orderedItems[index]);
-                }
-
-                CurrentSession.RecalculateItemCounters();
-                CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
-
-                var persist = await _workflowService.ReplaceSessionItemsAsync(CurrentSession);
-                if (persist.Success && persist.Data is not null)
-                {
-                    CurrentSession = persist.Data;
-                }
-
-                SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-                ShowStatus(
-                    $"Line {savedItem.SequenceNumber} saved to history.",
-                    InfoBarSeverity.Success
-                );
-            }
-        }
-
-    }
-
-    [RelayCommand]
-    private async Task ConfirmNotSavedAsync()
-    {
-        if (_pendingSendItem is not null)
-        {
-            // The line was not saved in the ERP; return it to the waiting queue for retry.
-            _pendingSendItem.ExecutionState = Enum_ScannerExecutionState.Waiting;
-            _pendingSendItem.LastUpdatedUtc = DateTime.UtcNow;
-        }
-
-        _pendingSendItem = null;
-        IsSendPromptVisible = false;
-
-        await _executionService.ClearTargetFormAsync();
-        PartIdFocusRequested?.Invoke();
-        ShowStatus("Form cleared. Re-enter the part and try again.", InfoBarSeverity.Warning);
-    }
-
-    [RelayCommand]
-    private Task ClearHistoryAsync()
-    {
-        CurrentSession = null;
+        CurrentSession.Items.Clear();
+        CurrentSession.RecalculateItemCounters();
         SessionItems = [];
         SelectedSessionItem = null;
-        ShowStatus("Workbench state cleared. Start a new scanner session to continue.", InfoBarSeverity.Informational);
+        ResetEntryFields();
+        ShowStatus("Current list cleared. Add items to build a new list.", InfoBarSeverity.Informational);
         return Task.CompletedTask;
     }
 
@@ -1029,7 +908,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     {
         if (CurrentSession is null)
         {
-            ShowStatus("Start a session before exporting the current batch.", InfoBarSeverity.Warning);
+            ShowStatus("There is no current list to export.", InfoBarSeverity.Warning);
             return Task.CompletedTask;
         }
 
@@ -1039,7 +918,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             $"scanner-export-{DateTime.UtcNow:yyyyMMdd-HHmmss}.txt"
         );
 
-        var lines = new List<string>
+        var lines = new System.Collections.Generic.List<string>
         {
             "Scanner workbench export",
             $"Session: {CurrentSession.SessionName}",
@@ -1060,133 +939,44 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         return Task.CompletedTask;
     }
 
-    private async Task<bool> EnsureSessionAsync()
-    {
-        if (CurrentSession is not null)
-        {
-            return true;
-        }
-
-        await StartDraftSessionAsync();
-        return CurrentSession is not null;
-    }
-
-    // ── Hotkey integration ──────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Subscribes the workbench to the global scanner hotkeys. Called from the page Loaded
-    /// event so subscription lifetime matches the page lifetime and never leaks.
-    /// </summary>
-    public void Activate() => SubscribeHotkeys();
-
-    /// <summary>Unsubscribes the workbench from the global scanner hotkeys. Called from page Unloaded.</summary>
-    public void Deactivate() => UnsubscribeHotkeys();
-
-    private void SubscribeHotkeys()
-    {
-        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
-        _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
-    }
-
-    private void UnsubscribeHotkeys()
-    {
-        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
-    }
-
-    private void OnSendShortcutPressed(object? sender, EventArgs e)
-    {
-        // Fire and forget: the command reports its own status. Runs on the UI thread because
-        // WM_HOTKEY is dispatched through the window message loop.
-        _ = SendNextCommand.ExecuteAsync(null);
-    }
-
-    private async Task<Model_ScannerProfile> ResolveActiveProfileAsync()
-    {
-        if (_activeProfile is not null)
-        {
-            return _activeProfile;
-        }
-
-        var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
-        var resolved =
-            profiles is { Success: true, Data: { Count: > 0 } }
-                ? profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
-                    ?? profiles.Data[0]
-                : new Model_ScannerProfile
-                {
-                    OwnerUserId = OwnerUserId,
-                    ProfileName = "Default",
-                    TargetExecutableName = "VMINVENT.exe",
-                    AppWindowTitle = AppWindowTitleSnapshot,
-                    TargetChildWindowTitle = AppWindowTitleSnapshot,
-                    FromWarehouseDefault = NewFromWarehouse,
-                    ToWarehouseDefault = NewToWarehouse,
-                };
-
-        _activeProfile = resolved;
-        return resolved;
-    }
-
-    private void RefreshSessionAfterExecution(Model_ScannerExecutionOutcome outcome)
+    private void ReorderSessionItems()
     {
         if (CurrentSession is null)
         {
             return;
         }
 
-        SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+        var orderedItems = CurrentSession.Items
+            .OrderBy(candidate => candidate.SequenceNumber)
+            .ToList();
+        CurrentSession.Items.Clear();
 
-        if (outcome.FailedCount > 0)
+        for (var index = 0; index < orderedItems.Count; index++)
         {
-            CurrentSession.Status = Enum_ScannerSessionStatus.Failed;
-            ShowStatus(
-                string.IsNullOrWhiteSpace(outcome.FailureMessage)
-                    ? "A scanner item failed to send."
-                    : outcome.FailureMessage,
-                InfoBarSeverity.Error
-            );
-            return;
+            orderedItems[index].SequenceNumber = index + 1;
+            orderedItems[index].LastUpdatedUtc = DateTime.UtcNow;
+            CurrentSession.Items.Add(orderedItems[index]);
         }
 
-        if (outcome.Stopped)
-        {
-            CurrentSession.Status = Enum_ScannerSessionStatus.Stopped;
-            ShowStatus(
-                outcome.SentCount > 0
-                    ? $"Sent {outcome.SentCount} scanner item(s), then stopped at the operator request."
-                    : "Stop requested. The current batch remains intact.",
-                InfoBarSeverity.Warning
-            );
-            return;
-        }
-
-        if (outcome.SentCount > 0)
-        {
-            CurrentSession.Status = CurrentSession.WaitingItems > 0
-                ? Enum_ScannerSessionStatus.Running
-                : Enum_ScannerSessionStatus.Completed;
-            ShowStatus(
-                CurrentSession.WaitingItems > 0
-                    ? $"Sent {outcome.SentCount} scanner item(s). More items remain waiting."
-                    : $"Sent {outcome.SentCount} scanner item(s). The batch is complete.",
-                CurrentSession.WaitingItems > 0
-                    ? InfoBarSeverity.Informational
-                    : InfoBarSeverity.Success
-            );
-            return;
-        }
-
-        CurrentSession.Status = Enum_ScannerSessionStatus.Ready;
-        ShowStatus(
-            string.IsNullOrWhiteSpace(outcome.FailureMessage)
-                ? "No waiting items are ready to send yet."
-                : outcome.FailureMessage,
-            InfoBarSeverity.Warning
-        );
+        CurrentSession.RecalculateItemCounters();
+        CurrentSession.LastUpdatedUtc = DateTime.UtcNow;
     }
 
-    partial void OnSelectedSessionItemChanged(Model_ScannerBatchItem? value)
+    // ── Hotkey integration ───────────────────────────────────────────────────────
+
+    public void Activate()
     {
-        RemoveSelectedSessionItemCommand.NotifyCanExecuteChanged();
+        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
+        _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
+    }
+
+    public void Deactivate()
+    {
+        _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
+    }
+
+    private void OnSendShortcutPressed(object? sender, EventArgs e)
+    {
+        _ = SendNextCommand.ExecuteAsync(null);
     }
 }

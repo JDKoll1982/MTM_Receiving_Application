@@ -24,8 +24,6 @@ public static class Helper_ScannerAccess
 	/// domain-stripped Windows username of jkoll/johnk, or a Developer department). When the
 	/// session user is unavailable, falls back to the raw Windows user name.
 	/// </summary>
-	/// <param name="user">The authenticated session user, or null.</param>
-	/// <param name="fallbackWindowsUserName">Raw Environment.UserName used when user is null.</param>
 	public static bool IsDeveloperUser(Model_User? user, string? fallbackWindowsUserName = null)
 	{
 		if (user is not null)

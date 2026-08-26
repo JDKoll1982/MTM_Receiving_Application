@@ -13,7 +13,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 /// <summary>
-/// Placeholder ViewModel for the scanner settings page.
+/// ViewModel for the scanner Settings page (sending profiles).
 /// </summary>
 public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
 {
@@ -108,7 +108,7 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task LoadProfilesAsync()
+    public async Task LoadProfilesAsync()
     {
         IsBusy = true;
         try
@@ -125,7 +125,9 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
                 return;
             }
 
-            Profiles = [.. result.Data.OrderByDescending(profile => profile.IsDefaultForUser).ThenBy(profile => profile.ProfileName)];
+            Profiles = [.. result.Data
+                .OrderByDescending(profile => profile.IsDefaultForUser)
+                .ThenBy(profile => profile.ProfileName)];
 
             SelectedProfile = Profiles.FirstOrDefault();
             if (SelectedProfile is not null)
@@ -158,110 +160,51 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
 
         var normalizedProfileName = ProfileName.Trim();
         var duplicateProfileExists = Profiles.Any(profile =>
-            !string.Equals(profile.ProfileId.ToString(), SelectedProfile?.ProfileId.ToString(), StringComparison.OrdinalIgnoreCase)
-            && string.Equals(profile.OwnerUserId, OwnerUserId, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(profile.ProfileName.Trim(), normalizedProfileName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(profile.ProfileName, normalizedProfileName, StringComparison.OrdinalIgnoreCase)
+            && (SelectedProfile is null || profile.ProfileId != SelectedProfile.ProfileId));
 
         if (duplicateProfileExists)
         {
-            ShowStatus("Profile name must be unique for the current user.", InfoBarSeverity.Warning);
+            ShowStatus("A profile with this name already exists.", InfoBarSeverity.Warning);
             return;
         }
 
-        var profile = BuildProfileFromEditor();
-
-        IsBusy = true;
-        try
+        var profile = new Model_ScannerProfile
         {
-            var result = await _workflowService.SaveProfileAsync(profile);
-            if (!result.Success || result.Data is null)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to save scanner profile."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
+            ProfileId = SelectedProfile?.ProfileId ?? Guid.NewGuid(),
+            OwnerUserId = OwnerUserId,
+            ProfileName = normalizedProfileName,
+            IsDefaultForUser = SelectedProfile?.IsDefaultForUser ?? Profiles.Count == 0,
+            TargetExecutableName = TargetExecutableName.Trim(),
+            AppWindowTitle = AppWindowTitle.Trim(),
+            TargetChildWindowTitle = TargetChildWindowTitle.Trim(),
+            AppWindowClass = AppWindowClass.Trim(),
+            RequireExactTitleMatch = RequireExactTitleMatch,
+            FromWarehouseDefault = FromWarehouseDefault.Trim(),
+            ToWarehouseDefault = ToWarehouseDefault.Trim(),
+            ActivationDelayMs = Convert.ToInt32(ActivationDelayMs),
+            DelayBetweenFieldsMs = Convert.ToInt32(DelayBetweenFieldsMs),
+            PauseAfterItemMs = Convert.ToInt32(PauseAfterItemMs),
+            PopupTimeoutMs = Convert.ToInt32(PopupTimeoutMs),
+            PopupCloseTimeoutMs = Convert.ToInt32(PopupCloseTimeoutMs),
+            SendShortcutChord = SendShortcutChord.Trim(),
+            AllowAdvancedTiming = AllowAdvancedTiming,
+        };
 
-            SelectedProfile = result.Data;
-            await LoadProfilesAsync();
-            ShowStatus("Scanner profile saved.", InfoBarSeverity.Success);
-        }
-        finally
+        var result = await _workflowService.SaveProfileAsync(profile);
+        if (!result.Success || result.Data is null)
         {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task SetDefaultProfileAsync()
-    {
-        if (SelectedProfile is null)
-        {
-            ShowStatus("Select a profile before setting default.", InfoBarSeverity.Warning);
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            var result = await _workflowService.SetDefaultProfileAsync(
-                SelectedProfile.ProfileId,
-                OwnerUserId
+            ShowStatus(
+                string.IsNullOrWhiteSpace(result.ErrorMessage)
+                    ? "Unable to save scanner profile."
+                    : result.ErrorMessage,
+                InfoBarSeverity.Error
             );
-            if (!result.Success)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to set default profile."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            await LoadProfilesAsync();
-            ShowStatus("Default scanner profile updated.", InfoBarSeverity.Success);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private void NewProfile()
-    {
-        SelectedProfile = null;
-        ProfileName = "New Profile";
-        TargetExecutableName = "VMINVENT.exe";
-        AppWindowTitle = "Inventory Transfers";
-        TargetChildWindowTitle = "Inventory Transfers";
-        AppWindowClass = string.Empty;
-        FromWarehouseDefault = "002";
-        ToWarehouseDefault = "002";
-        RequireExactTitleMatch = false;
-        ApplySafeDefaults();
-        ShowStatus("New scanner profile initialized.", InfoBarSeverity.Informational);
-    }
-
-    [RelayCommand]
-    private void DuplicateProfile()
-    {
-        if (SelectedProfile is null)
-        {
-            ShowStatus("Select a profile before duplicating.", InfoBarSeverity.Warning);
             return;
         }
 
-        var duplicate = BuildProfileFromEditor();
-        duplicate.ProfileId = Guid.NewGuid();
-        duplicate.ProfileName = $"{SelectedProfile.ProfileName} Copy";
-        SelectedProfile = duplicate;
-        ApplyProfileToEditor(duplicate);
-        ShowStatus("Profile duplicated in editor. Save to persist.", InfoBarSeverity.Informational);
+        await LoadProfilesAsync();
+        ShowStatus("Scanner profile saved.", InfoBarSeverity.Success);
     }
 
     [RelayCommand]
@@ -273,62 +216,60 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
             return;
         }
 
-        IsBusy = true;
-        try
+        var result = await _workflowService.DeleteProfileAsync(
+            SelectedProfile.ProfileId,
+            OwnerUserId
+        );
+        if (!result.Success)
         {
-            var result = await _workflowService.DeleteProfileAsync(SelectedProfile.ProfileId, OwnerUserId);
-            if (!result.Success)
-            {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(result.ErrorMessage)
-                        ? "Unable to delete scanner profile."
-                        : result.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
-            }
-
-            await LoadProfilesAsync();
-            ShowStatus("Scanner profile deleted.", InfoBarSeverity.Success);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private void ResetEditor()
-    {
-        if (SelectedProfile is not null)
-        {
-            ApplyProfileToEditor(SelectedProfile);
-            ShowStatus("Editor reset to selected profile values.", InfoBarSeverity.Informational);
+            ShowStatus(
+                string.IsNullOrWhiteSpace(result.ErrorMessage)
+                    ? "Unable to delete scanner profile."
+                    : result.ErrorMessage,
+                InfoBarSeverity.Error
+            );
             return;
         }
 
-        NewProfile();
+        SelectedProfile = null;
+        await LoadProfilesAsync();
+        ShowStatus("Scanner profile deleted.", InfoBarSeverity.Success);
     }
 
     [RelayCommand]
-    private void ApplySafeDefaults()
+    private async Task SetDefaultProfileAsync()
     {
-        ActivationDelayMs = 250;
-        DelayBetweenFieldsMs = 50;
-        PauseAfterItemMs = 150;
-        PopupTimeoutMs = 1500;
-        PopupCloseTimeoutMs = 1500;
-        AllowAdvancedTiming = false;
+        if (SelectedProfile is null)
+        {
+            ShowStatus("Select a profile before setting it as default.", InfoBarSeverity.Warning);
+            return;
+        }
+
+        var result = await _workflowService.SetDefaultProfileAsync(
+            SelectedProfile.ProfileId,
+            OwnerUserId
+        );
+        if (!result.Success)
+        {
+            ShowStatus(
+                string.IsNullOrWhiteSpace(result.ErrorMessage)
+                    ? "Unable to set the default scanner profile."
+                    : result.ErrorMessage,
+                InfoBarSeverity.Error
+            );
+            return;
+        }
+
+        await LoadProfilesAsync();
+        ShowStatus("Default scanner profile updated.", InfoBarSeverity.Success);
     }
 
     partial void OnSelectedProfileChanged(Model_ScannerProfile? value)
     {
-        if (value is null)
+        if (value is not null)
         {
-            return;
+            ApplyProfileToEditor(value);
         }
-
-        ApplyProfileToEditor(value);
     }
 
     private void ApplyProfileToEditor(Model_ScannerProfile profile)
@@ -338,9 +279,9 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
         AppWindowTitle = profile.AppWindowTitle;
         TargetChildWindowTitle = profile.TargetChildWindowTitle;
         AppWindowClass = profile.AppWindowClass;
+        RequireExactTitleMatch = profile.RequireExactTitleMatch;
         FromWarehouseDefault = profile.FromWarehouseDefault;
         ToWarehouseDefault = profile.ToWarehouseDefault;
-        RequireExactTitleMatch = profile.RequireExactTitleMatch;
         ActivationDelayMs = profile.ActivationDelayMs;
         DelayBetweenFieldsMs = profile.DelayBetweenFieldsMs;
         PauseAfterItemMs = profile.PauseAfterItemMs;
@@ -348,29 +289,5 @@ public partial class ViewModel_Scanner_Settings : ViewModel_Shared_Base
         PopupCloseTimeoutMs = profile.PopupCloseTimeoutMs;
         SendShortcutChord = profile.SendShortcutChord;
         AllowAdvancedTiming = profile.AllowAdvancedTiming;
-    }
-
-    private Model_ScannerProfile BuildProfileFromEditor()
-    {
-        return new Model_ScannerProfile
-        {
-            ProfileId = SelectedProfile?.ProfileId ?? Guid.NewGuid(),
-            OwnerUserId = OwnerUserId,
-            ProfileName = ProfileName,
-            TargetExecutableName = TargetExecutableName,
-            AppWindowTitle = AppWindowTitle,
-            TargetChildWindowTitle = TargetChildWindowTitle,
-            AppWindowClass = AppWindowClass,
-            FromWarehouseDefault = FromWarehouseDefault,
-            ToWarehouseDefault = ToWarehouseDefault,
-            RequireExactTitleMatch = RequireExactTitleMatch,
-            ActivationDelayMs = Convert.ToInt32(ActivationDelayMs),
-            DelayBetweenFieldsMs = Convert.ToInt32(DelayBetweenFieldsMs),
-            PauseAfterItemMs = Convert.ToInt32(PauseAfterItemMs),
-            PopupTimeoutMs = Convert.ToInt32(PopupTimeoutMs),
-            PopupCloseTimeoutMs = Convert.ToInt32(PopupCloseTimeoutMs),
-            SendShortcutChord = SendShortcutChord,
-            AllowAdvancedTiming = AllowAdvancedTiming,
-        };
     }
 }

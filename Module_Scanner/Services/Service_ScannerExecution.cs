@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
@@ -13,29 +14,34 @@ namespace MTM_Receiving_Application.Module_Scanner.Services;
 /// <summary>
 /// Batch send orchestration for the scanner feature.
 /// Verifies the target window, emits the configured input sequence through the native input
-/// engine, applies configurable settle delays, and records per-item results. Persistence is
-/// performed after each emission so database latency never stalls the input stream.
+/// engine, applies configurable settle delays, and records per-item results. While a send
+/// cycle runs, <see cref="IsAutomationRunning"/> is raised so the Workbench can lock out
+/// operator inputs (Enabled = false).
 /// </summary>
-public sealed class Service_ScannerExecution : IService_ScannerExecution
+public sealed partial class Service_ScannerExecution : ObservableObject, IService_ScannerExecution
 {
 	private const ushort VkTab = 0x09;
 
 	private readonly IService_ScannerInputEngine _engine;
 	private readonly Dao_ScannerBatchItem _itemDao;
-	private readonly Dao_ScannerRunHistory _runHistoryDao;
 	private readonly IService_LoggingUtility _logger;
 	private readonly SemaphoreSlim _executionGate = new(1, 1);
+
+	/// <summary>
+	/// True while an automated send cycle is active. The Workbench binds inputs to the
+	/// inverse of this value so operator edits are blocked during automation.
+	/// </summary>
+	[ObservableProperty]
+	private bool _isAutomationRunning;
 
 	public Service_ScannerExecution(
 		IService_ScannerInputEngine engine,
 		Dao_ScannerBatchItem itemDao,
-		Dao_ScannerRunHistory runHistoryDao,
 		IService_LoggingUtility logger
 	)
 	{
 		_engine = engine ?? throw new ArgumentNullException(nameof(engine));
 		_itemDao = itemDao ?? throw new ArgumentNullException(nameof(itemDao));
-		_runHistoryDao = runHistoryDao ?? throw new ArgumentNullException(nameof(runHistoryDao));
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
 
@@ -149,6 +155,7 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 	{
 		// Serialize execution so a hotkey press and a button click cannot overlap.
 		await _executionGate.WaitAsync(cancellationToken);
+		IsAutomationRunning = true;
 		try
 		{
 			if (!Helper_ScannerSequence.IsEligibleForSend(item))
@@ -177,8 +184,8 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 				await Task.Delay(profile.ActivationDelayMs, cancellationToken);
 			}
 
-			// First step: clear the Inventory Transfers form (Alt+L) so the emitted fields start
-			// on a clean record instead of appending to a stale one.
+			// Clear the Inventory Transfers form (Alt+L) so the emitted fields start on a
+			// clean record instead of appending to a stale one.
 			var clearResult = await ClearTargetFormAsync(cancellationToken);
 			if (!clearResult.Success)
 			{
@@ -212,7 +219,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 
 			session.RecalculateItemCounters();
 			await PersistItemResultAsync(item);
-			await RecordRunItemAsync(session, item, profile);
 
 			_logger.LogInfo(
 				$"Scanner item {item.SequenceNumber} sent for session {session.SessionId}.",
@@ -235,6 +241,7 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		finally
 		{
 			_executionGate.Release();
+			IsAutomationRunning = false;
 		}
 	}
 
@@ -257,9 +264,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 				return false;
 			}
 
-			// Emit the configured number of Tab presses to reach the next field. Tab gaps skip
-			// fields that are not part of the payload (e.g. Reason after Quantity, From
-			// Type/Status after From Location). The last field has no trailing tab.
 			for (var tab = 0; tab < tabsAfter; tab++)
 			{
 				if (profile.DelayBetweenFieldsMs > 0)
@@ -299,8 +303,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 
 		if (processMatches)
 		{
-			// Process match is authoritative. A strict child-title requirement can still fail
-			// the check so the operator corrects focus before we inject.
 			if (
 				profile.RequireExactTitleMatch
 				&& !Helper_ScannerSequence.IsTargetTitle(
@@ -316,8 +318,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 			return true;
 		}
 
-		// The foreground window is not the target. If activation is allowed, try to find and
-		// bring the target window forward, then re-verify by process.
 		if (!profile.ActivateAppBeforeSend)
 		{
 			return false;
@@ -377,7 +377,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		session.LastUpdatedUtc = DateTime.UtcNow;
 
 		await PersistItemResultAsync(item);
-		await RecordRunItemAsync(session, item, profile: null);
 
 		_logger.LogWarning(
 			$"Scanner item {item.SequenceNumber} failed for session {session.SessionId}: {message}",
@@ -402,65 +401,6 @@ public sealed class Service_ScannerExecution : IService_ScannerExecution
 		{
 			_logger.LogWarning(
 				$"Unable to persist scanner item result: {result.ErrorMessage}",
-				nameof(Service_ScannerExecution)
-			);
-		}
-	}
-
-	private async Task RecordRunItemAsync(
-		Model_ScannerBatchSession session,
-		Model_ScannerBatchItem item,
-		Model_ScannerProfile? profile
-	)
-	{
-		// The run history tables key on the persisted session item id, which is not populated
-		// until the stored procedure returns it. Until then, run history recording is
-		// best-effort and skipped without failing the send.
-		if (!item.SessionItemId.HasValue || item.SessionItemId.Value <= 0)
-		{
-			return;
-		}
-
-		try
-		{
-			var run = new Model_ScannerRun
-			{
-				RunId = Guid.NewGuid(),
-				SessionId = session.SessionId,
-				ProfileId = profile?.ProfileId ?? session.ActiveProfileId,
-				OwnerUserId = session.OwnerUserId,
-				OwnerDisplayName = session.OwnerDisplayName,
-				StartedUtc = item.LastAttemptUtc ?? DateTime.UtcNow,
-				EndedUtc = DateTime.UtcNow,
-				FinalStatus = session.Status,
-				StopReason = session.StopReason,
-				TotalItems = 1,
-				SentItems = item.ExecutionState == Enum_ScannerExecutionState.Sent ? 1 : 0,
-				FailedItems = item.ExecutionState == Enum_ScannerExecutionState.Failed ? 1 : 0,
-				WaitingItems = 0,
-				FailureSummary = item.IssueMessage,
-				CreatedUtc = DateTime.UtcNow,
-			};
-
-			var start = await _runHistoryDao.StartRunAsync(run);
-			if (!start.Success)
-			{
-				return;
-			}
-
-			var runItem = item.ToRunItem(run.RunId);
-			var insert = await _runHistoryDao.InsertRunItemAsync(runItem);
-			if (!insert.Success)
-			{
-				return;
-			}
-
-			_ = await _runHistoryDao.CompleteRunAsync(run);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogWarning(
-				$"Unable to record scanner run history: {ex.Message}",
 				nameof(Service_ScannerExecution)
 			);
 		}

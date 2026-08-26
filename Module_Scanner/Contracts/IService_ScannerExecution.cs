@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -8,13 +9,12 @@ namespace MTM_Receiving_Application.Module_Scanner.Contracts;
 /// <summary>
 /// Batch send orchestration for the scanner feature.
 /// Coordinates foreground-window verification, native input emission, per-item result
-/// recording, and stop-between-cycles behavior. Persistence stays outside the active input
-/// emission path so database latency never stalls the automation stream.
+/// recording, input lockout, and stop-between-cycles behavior.
 /// </summary>
-public interface IService_ScannerExecution
+public interface IService_ScannerExecution : INotifyPropertyChanged
 {
 	/// <summary>
-	/// Sends the next waiting, valid item in the session. Returns immediately with a
+	/// Sends the next waiting, valid item in the current list. Returns immediately with a
 	/// no-op outcome when no eligible item exists or a stop is pending. On failure the item
 	/// is marked failed and processing does not continue.
 	/// </summary>
@@ -40,4 +40,10 @@ public interface IService_ScannerExecution
 	/// Transfers form so the operator can re-enter a line after a failed send.
 	/// </summary>
 	Task<Model_Dao_Result> ClearTargetFormAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// True while an automated background send cycle is running. The Workbench binds this to
+	/// lock out operator inputs (Enabled = false) during automation.
+	/// </summary>
+	bool IsAutomationRunning { get; }
 }

@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 /// <summary>
-/// Main host ViewModel for the scanner module placeholder scaffold.
+/// Main host ViewModel for the scanner module.
 /// </summary>
 public partial class ViewModel_Scanner_Main
     : ViewModel_Shared_Base,
@@ -30,9 +30,6 @@ public partial class ViewModel_Scanner_Main
 
     [ObservableProperty]
     private bool _isSettingsVisible;
-
-    [ObservableProperty]
-    private bool _isAdvancedBulkMoveVisible;
 
     public string CurrentHeaderTitle => CurrentPageTitle;
 
@@ -63,15 +60,12 @@ public partial class ViewModel_Scanner_Main
         IsWorkbenchVisible = _navigationService.CurrentPage == Enum_ScannerPage.Workbench;
         IsHistoryVisible = _navigationService.CurrentPage == Enum_ScannerPage.History;
         IsSettingsVisible = _navigationService.CurrentPage == Enum_ScannerPage.Settings;
-        IsAdvancedBulkMoveVisible =
-            _navigationService.CurrentPage == Enum_ScannerPage.AdvancedBulkMove;
 
         CurrentPageTitle = _navigationService.CurrentPage switch
         {
             Enum_ScannerPage.Workbench => "Scanner - Workbench",
             Enum_ScannerPage.History => "Scanner - History",
             Enum_ScannerPage.Settings => "Scanner - Settings",
-            Enum_ScannerPage.AdvancedBulkMove => "Scanner - Advanced Bulk Move",
             _ => "Scanner",
         };
     }

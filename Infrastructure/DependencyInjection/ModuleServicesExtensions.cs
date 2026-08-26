@@ -115,7 +115,6 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_ScannerBatchSession(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_ScannerBatchItem(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_ScannerProfile(mySqlConnectionString));
-        services.AddSingleton(_ => new Dao_ScannerRunHistory(mySqlConnectionString));
 
         services.AddSingleton<IService_ScannerNavigation, Service_ScannerNavigation>();
         services.AddSingleton<IService_ScannerWorkflow, Service_ScannerWorkflow>();
@@ -128,13 +127,11 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Scanner_Workbench>();
         services.AddTransient<ViewModel_Scanner_History>();
         services.AddTransient<ViewModel_Scanner_Settings>();
-        services.AddTransient<ViewModel_Scanner_AdvancedBulkMove>();
 
         services.AddTransient<Module_Scanner.Views.View_Scanner_Main>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_Workbench>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_History>();
         services.AddTransient<Module_Scanner.Views.View_Scanner_Settings>();
-        services.AddTransient<Module_Scanner.Views.View_Scanner_AdvancedBulkMove>();
 
         return services;
     }

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+
     <Page.Resources>
         <Style x:Key="ScannerSectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -19,334 +20,93 @@
         </Style>
     </Page.Resources>
 
-    <Grid
-        x:Name="HistoryRootGrid"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState x:Name="ScannerDefaultState">
-                    <VisualState.Setters>
-                        <Setter Target="HistoryRunsColumn.Width" Value="1.05*" />
-                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
-                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="12" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ScannerCompactState">
-                    <VisualState.Setters>
-                        <Setter Target="HistoryRunsColumn.Width" Value="*" />
-                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
-                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="8" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ScannerWideState">
-                    <VisualState.Setters>
-                        <Setter Target="HistoryRunsColumn.Width" Value="1.2*" />
-                        <Setter Target="HistoryDetailsColumn.Width" Value="*" />
-                        <Setter Target="HistoryTopSplitGrid.ColumnSpacing" Value="14" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+    <Grid Padding="16" RowSpacing="12">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer
-            x:Name="HistoryPageScrollViewer"
-            Grid.Row="0"
-            HorizontalScrollMode="Disabled"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollMode="Auto"
-            VerticalScrollBarVisibility="Auto">
-            <Grid
-                x:Name="HistoryContentGrid"
-                Padding="16"
-                RowSpacing="12">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+        <!-- Filters -->
+        <Grid Grid.Row="0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <CalendarDatePicker
+                Grid.Column="0"
+                Header="From"
+                Date="{x:Bind ViewModel.DateFromUtc, Mode=TwoWay}" />
+            <CalendarDatePicker
+                Grid.Column="1"
+                Header="To"
+                Date="{x:Bind ViewModel.DateToUtc, Mode=TwoWay}" />
+            <ComboBox
+                Grid.Column="2"
+                MinWidth="140"
+                Header="Status"
+                ItemsSource="{x:Bind ViewModel.StatusOptions, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
+            <Button
+                Grid.Column="3"
+                VerticalAlignment="Bottom"
+                Style="{StaticResource ScannerActionButtonStyle}"
+                Command="{x:Bind ViewModel.RefreshHistoryCommand}"
+                Content="Refresh" />
+            <Button
+                Grid.Column="4"
+                VerticalAlignment="Bottom"
+                Style="{StaticResource ScannerActionButtonStyle}"
+                Command="{x:Bind ViewModel.ClearFiltersCommand}"
+                Content="Clear Filters" />
+        </Grid>
 
-                <Border
-                    Grid.Row="0"
-                    Padding="16"
-                    Background="{ThemeResource LayerFillColorAltBrush}"
-                    CornerRadius="8">
-                    <StackPanel Spacing="4">
-                        <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="History" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="See what was sent and retry items that failed." />
-                    </StackPanel>
-                </Border>
+        <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                <Border
-                    Grid.Row="1"
-                    Padding="12"
-                    Background="{ThemeResource LayerFillColorAltBrush}"
-                    CornerRadius="8">
-                    <Grid ColumnSpacing="10" RowSpacing="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.6*" />
-                            <ColumnDefinition Width="1.3*" />
-                            <ColumnDefinition Width="1.3*" />
-                            <ColumnDefinition Width="1.1*" />
-                            <ColumnDefinition Width="0.9*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+            <ListView
+                Grid.Column="0"
+                ItemsSource="{x:Bind ViewModel.Entries, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.SelectedEntry, Mode=TwoWay}"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_ScannerHistoryEntry">
+                        <StackPanel Spacing="4" Padding="4">
+                            <TextBlock FontWeight="SemiBold" Text="{x:Bind SessionName}" />
+                            <TextBlock Opacity="0.7" Text="{x:Bind FinalStatus}" />
+                            <TextBlock Opacity="0.7" Text="{x:Bind CreatedUtc}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource ScannerSectionHeaderStyle}" Text="Filters" />
-
-                        <TextBox Grid.Row="1" Grid.Column="0" Header="Owner User" Text="{x:Bind ViewModel.OwnerUserId, Mode=TwoWay}" />
-                        <DatePicker Grid.Row="1" Grid.Column="1" Header="Date From" Date="{x:Bind ViewModel.DateFromUtc, Mode=TwoWay}" />
-                        <DatePicker Grid.Row="1" Grid.Column="2" Header="Date To" Date="{x:Bind ViewModel.DateToUtc, Mode=TwoWay}" />
-                        <ComboBox
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            Header="Status"
-                            ItemsSource="{x:Bind ViewModel.StatusOptions, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
-                        <NumberBox
-                            Grid.Row="1"
-                            Grid.Column="4"
-                            Header="Max"
-                            Minimum="1"
-                            Value="{x:Bind ViewModel.MaxResults, Mode=TwoWay}" />
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="5"
-                            Style="{StaticResource ScannerActionButtonStyle}"
-                            VerticalAlignment="Bottom"
-                            Command="{x:Bind ViewModel.RefreshHistoryCommand}"
-                            Content="Apply" />
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="6"
-                            Style="{StaticResource ScannerActionButtonStyle}"
-                            VerticalAlignment="Bottom"
-                            Command="{x:Bind ViewModel.ClearFiltersCommand}"
-                            Content="Clear" />
-                    </Grid>
-                </Border>
-
-                <Grid
-                    x:Name="HistoryTopSplitGrid"
-                    Grid.Row="2"
-                    ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="HistoryRunsColumn" Width="1.05*" />
-                        <ColumnDefinition x:Name="HistoryDetailsColumn" Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Column="0"
-                        Padding="10"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid
-                            x:Name="HistoryRunsPanelGrid"
-                            RowSpacing="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                                x:Name="HistoryRunsHeaderTextBlock"
-                                Style="{StaticResource ScannerSectionHeaderStyle}"
-                                Text="Send History" />
-
-                            <Grid
-                                Grid.Row="1"
-                                ColumnSpacing="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="1.1*" />
-                                    <ColumnDefinition Width="0.9*" />
-                                    <ColumnDefinition Width="0.9*" />
-                                    <ColumnDefinition Width="1*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Time" />
-                                <TextBlock Grid.Column="1" Text="Status" />
-                                <TextBlock Grid.Column="2" Text="Sent" />
-                                <TextBlock Grid.Column="3" Text="Fail" />
-                                <TextBlock Grid.Column="4" Text="Waiting" />
-                            </Grid>
-
-                            <ListView
-                                x:Name="RunHistoryListView"
-                                Grid.Row="2"
-                                ItemsSource="{x:Bind ViewModel.Runs, Mode=OneWay}"
-                                SelectedItem="{x:Bind ViewModel.SelectedRun, Mode=TwoWay}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Model_ScannerRun">
-                                        <Grid ColumnSpacing="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="2*" />
-                                                <ColumnDefinition Width="1.1*" />
-                                                <ColumnDefinition Width="0.9*" />
-                                                <ColumnDefinition Width="0.9*" />
-                                                <ColumnDefinition Width="1*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{x:Bind StartedUtc}" />
-                                            <TextBlock Grid.Column="1" Text="{x:Bind FinalStatus}" />
-                                            <TextBlock Grid.Column="2" Text="{x:Bind SentItems}" />
-                                            <TextBlock Grid.Column="3" Text="{x:Bind FailedItems}" />
-                                            <TextBlock Grid.Column="4" Text="{x:Bind WaitingItems}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </Grid>
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Padding="10"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid RowSpacing="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Details" />
-
-                            <Border
-                                Grid.Row="1"
-                                Padding="10"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                CornerRadius="6">
-                                <StackPanel Spacing="4">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Selected Run" />
-                                    <TextBlock Text="{x:Bind ViewModel.SelectedRun.OwnerDisplayName, Mode=OneWay}" />
-                                    <TextBlock Text="{x:Bind ViewModel.SelectedRun.OwnerUserId, Mode=OneWay}" />
-                                    <TextBlock Text="{x:Bind ViewModel.SelectedRun.FailureSummary, Mode=OneWay}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border
-                                Grid.Row="2"
-                                Padding="10"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                CornerRadius="6">
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="History details are read-only and support retry decisions in workbench." />
-                            </Border>
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <Border
-                    Grid.Row="3"
-                    Padding="10"
-                    Background="{ThemeResource LayerFillColorAltBrush}"
-                    CornerRadius="8">
-                    <Grid
-                        x:Name="ItemResultsPanelGrid"
-                        RowSpacing="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            x:Name="ItemResultsHeaderTextBlock"
-                            Style="{StaticResource ScannerSectionHeaderStyle}"
-                            Text="Item Results" />
-
-                        <Grid
-                            Grid.Row="1"
-                            ColumnSpacing="8">
+            <ListView
+                Grid.Column="1"
+                Header="Items"
+                ItemsSource="{x:Bind ViewModel.SelectedEntryItems, Mode=OneWay}"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_ScannerHistoryItem">
+                        <Grid ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.5*" />
-                                <ColumnDefinition Width="1.2*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="1.1*" />
-                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="#" />
-                            <TextBlock Grid.Column="1" Text="Item ID" />
-                            <TextBlock Grid.Column="2" Text="From WH" />
-                            <TextBlock Grid.Column="3" Text="From Loc" />
-                            <TextBlock Grid.Column="4" Text="To WH" />
-                            <TextBlock Grid.Column="5" Text="To Loc" />
-                            <TextBlock Grid.Column="6" Text="Status" />
-                            <TextBlock Grid.Column="7" Text="Attempts" />
-                            <TextBlock Grid.Column="8" Text="Issue" />
-                            <TextBlock Grid.Column="9" Text="Details" />
+                            <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind PartId}" />
+                            <TextBlock Grid.Column="2" Text="{x:Bind FromLocation}" />
+                            <TextBlock Grid.Column="3" Text="{x:Bind ToLocation}" />
                         </Grid>
-
-                        <ListView
-                            x:Name="ItemResultsListView"
-                            Grid.Row="2"
-                            ItemsSource="{x:Bind ViewModel.SelectedRunItems, Mode=OneWay}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="models:Model_ScannerRunItem">
-                                    <Grid ColumnSpacing="8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.5*" />
-                                            <ColumnDefinition Width="1.2*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="0.9*" />
-                                            <ColumnDefinition Width="1.1*" />
-                                            <ColumnDefinition Width="2*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" />
-                                        <TextBlock Grid.Column="1" Text="{x:Bind PartId}" />
-                                        <TextBlock Grid.Column="2" Text="{x:Bind FromWarehouse}" />
-                                        <TextBlock Grid.Column="3" Text="{x:Bind FromLocation}" />
-                                        <TextBlock Grid.Column="4" Text="{x:Bind ToWarehouse}" />
-                                        <TextBlock Grid.Column="5" Text="{x:Bind ToLocation}" />
-                                        <TextBlock Grid.Column="6" Text="{x:Bind ExecutionState}" />
-                                        <TextBlock Grid.Column="7" Text="{x:Bind ValidationState}" />
-                                        <TextBlock Grid.Column="8" Text="{x:Bind IssueType}" />
-                                        <TextBlock Grid.Column="9" Text="{x:Bind IssueMessage}" TextWrapping="WrapWholeWords" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Grid>
-                </Border>
-            </Grid>
-        </ScrollViewer>
-
-        <Border
-            Grid.Row="1"
-            Padding="24,12,24,16"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0">
-            <StackPanel
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToWorkbenchCommand}" Content="Workbench" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToHistoryCommand}" Content="History" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToSettingsCommand}" Content="Settings" />
-            </StackPanel>
-        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Page>

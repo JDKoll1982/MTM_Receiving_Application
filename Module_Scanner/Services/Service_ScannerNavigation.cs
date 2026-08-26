@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
@@ -6,15 +5,12 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Services;
 
 /// <summary>
-/// Tracks which placeholder scanner page is active inside the module host.
+/// Tracks which scanner page is active inside the module host.
 /// </summary>
 public partial class Service_ScannerNavigation : ObservableObject, IService_ScannerNavigation
 {
     [ObservableProperty]
     private Enum_ScannerPage _currentPage = Enum_ScannerPage.Workbench;
-
-    [ObservableProperty]
-    private IReadOnlyList<Model_ScannerBulkMoveDestination>? _pendingBulkMoveDestinations;
 
     /// <inheritdoc />
     public void ShowWorkbench()
@@ -32,11 +28,5 @@ public partial class Service_ScannerNavigation : ObservableObject, IService_Scan
     public void ShowSettings()
     {
         CurrentPage = Enum_ScannerPage.Settings;
-    }
-
-    /// <inheritdoc />
-    public void ShowAdvancedBulkMove()
-    {
-        CurrentPage = Enum_ScannerPage.AdvancedBulkMove;
     }
 }

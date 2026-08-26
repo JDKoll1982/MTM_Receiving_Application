@@ -13,7 +13,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 /// <summary>
-/// Placeholder ViewModel for the scanner history page.
+/// ViewModel for the scanner History page (prior sessions).
 /// </summary>
 public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
 {
@@ -21,13 +21,13 @@ public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
     private readonly IService_ScannerWorkflow _workflowService;
 
     [ObservableProperty]
-    private ObservableCollection<Model_ScannerRun> _runs = [];
+    private ObservableCollection<Model_ScannerHistoryEntry> _entries = [];
 
     [ObservableProperty]
-    private ObservableCollection<Model_ScannerRunItem> _selectedRunItems = [];
+    private ObservableCollection<Model_ScannerHistoryItem> _selectedEntryItems = [];
 
     [ObservableProperty]
-    private Model_ScannerRun? _selectedRun;
+    private Model_ScannerHistoryEntry? _selectedEntry;
 
     [ObservableProperty]
     private string _ownerUserId = Environment.UserName;
@@ -47,7 +47,6 @@ public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
     public ObservableCollection<Enum_ScannerSessionStatus?> StatusOptions { get; } =
     [
         null,
-        Enum_ScannerSessionStatus.Draft,
         Enum_ScannerSessionStatus.Ready,
         Enum_ScannerSessionStatus.Running,
         Enum_ScannerSessionStatus.Completed,
@@ -89,12 +88,12 @@ public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
     }
 
     [RelayCommand]
-    private async Task RefreshHistoryAsync()
+    public async Task RefreshHistoryAsync()
     {
         IsBusy = true;
         try
         {
-            var result = await _workflowService.GetRunHistoryAsync(new Model_ScannerRunHistoryQueryRequest
+            var result = await _workflowService.GetHistoryAsync(new Model_ScannerHistoryQueryRequest
             {
                 OwnerUserId = OwnerUserId,
                 DateFromUtc = DateFromUtc.UtcDateTime,
@@ -114,13 +113,13 @@ public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
                 return;
             }
 
-            Runs =
+            Entries =
             [
                 .. result
-                    .Data.Runs.OrderByDescending(run => run.StartedUtc)
+                    .Data.Entries.OrderByDescending(entry => entry.StartedUtc)
             ];
-            SelectedRun = Runs.FirstOrDefault();
-            ShowStatus($"Loaded {Runs.Count} scanner run records.", InfoBarSeverity.Success);
+            SelectedEntry = Entries.FirstOrDefault();
+            ShowStatus($"Loaded {Entries.Count} scanner history records.", InfoBarSeverity.Success);
         }
         finally
         {
@@ -138,9 +137,9 @@ public partial class ViewModel_Scanner_History : ViewModel_Shared_Base
         ShowStatus("History filters reset.", InfoBarSeverity.Informational);
     }
 
-    partial void OnSelectedRunChanged(Model_ScannerRun? value)
+    partial void OnSelectedEntryChanged(Model_ScannerHistoryEntry? value)
     {
-        SelectedRunItems = value is null
+        SelectedEntryItems = value is null
             ? []
             : [.. value.Items.OrderBy(item => item.SequenceNumber)];
     }

@@ -1,5 +1,5 @@
 -- Stored Procedure: sp_Receiving_ScannerSession_GetByUser
--- Description: Returns scanner sessions for a user.
+-- Description: Returns scanner sessions for a user (drives History).
 
 USE mtm_receiving_application_test;
 

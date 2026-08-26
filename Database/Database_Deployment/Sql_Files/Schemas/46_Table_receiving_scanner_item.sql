@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS receiving_scanner_item (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     session_id CHAR(36) NOT NULL COMMENT 'Parent scanner session id',
-    item_order INT NOT NULL COMMENT 'Stable ordered position in batch',
+    item_order INT NOT NULL COMMENT 'Stable ordered position in current list',
     part_id VARCHAR(50) NOT NULL,
     from_warehouse_id VARCHAR(10) NOT NULL,
     from_location_id VARCHAR(50) NULL,
@@ -23,4 +23,4 @@ CREATE TABLE IF NOT EXISTS receiving_scanner_item (
     INDEX idx_receiving_scanner_item_session (session_id),
     INDEX idx_receiving_scanner_item_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Ordered scanner items tied to a scanner session, including transfer fields and item-entry validation results.';
+COMMENT='Ordered scanner items in a current list session.';

@@ -259,9 +259,6 @@ public sealed class Service_ScannerInputEngine : IService_ScannerInputEngine
 	[DllImport("user32.dll")]
 	private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-	[DllImport("kernel32.dll")]
-	private static extern uint GetCurrentProcessId();
-
 	[StructLayout(LayoutKind.Sequential)]
 	private struct INPUT
 	{

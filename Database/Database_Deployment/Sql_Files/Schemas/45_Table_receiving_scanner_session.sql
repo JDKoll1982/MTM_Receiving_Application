@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS receiving_scanner_session (
     user_id VARCHAR(100) NOT NULL COMMENT 'Owner application user id',
     profile_id CHAR(36) NULL COMMENT 'Selected scanner profile id',
     session_name VARCHAR(120) NOT NULL COMMENT 'User-facing session name',
-    status VARCHAR(24) NOT NULL COMMENT 'Draft, Ready, Running, Stopped, Completed, Failed',
+    status VARCHAR(24) NOT NULL DEFAULT 'Ready' COMMENT 'Ready, Running, Stopped, Completed, Failed',
     stop_requested TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Stop flag honored between item sends',
     sent_count INT NOT NULL DEFAULT 0,
     failed_count INT NOT NULL DEFAULT 0,
@@ -14,4 +14,4 @@ CREATE TABLE IF NOT EXISTS receiving_scanner_session (
     INDEX idx_receiving_scanner_session_user (user_id),
     INDEX idx_receiving_scanner_session_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='Active scanner sessions for Receiving feature.';
+COMMENT='Scanner current-list sessions for Receiving feature.';

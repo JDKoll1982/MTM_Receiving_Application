@@ -4,18 +4,20 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 
 namespace MTM_Receiving_Application.Module_Scanner.Views;
 
+/// <summary>
+/// Manage Items dialog for the current list: reorder, duplicate, add, and delete rows.
+/// Applies the validated snapshot back to the Workbench on "Apply".
+/// </summary>
 public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
 {
     private readonly Model_ScannerBatchSession _session;
     private readonly IService_ScannerValidation _validationService;
-    private bool _isLocationPickerOpen;
 
     public ObservableCollection<Model_ScannerBatchItem> Items { get; } = [];
 
@@ -153,20 +155,12 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
             SessionItemId = source.SessionItemId,
             SessionId = source.SessionId,
             SequenceNumber = source.SequenceNumber,
-            ExternalRecordKey = source.ExternalRecordKey,
             PayloadPartId = source.PayloadPartId,
             PayloadFromWarehouse = source.PayloadFromWarehouse,
             PayloadFromLocation = source.PayloadFromLocation,
             PayloadToWarehouse = source.PayloadToWarehouse,
             PayloadToLocation = source.PayloadToLocation,
             PayloadQuantity = source.PayloadQuantity,
-            PayloadUnitOfMeasure = source.PayloadUnitOfMeasure,
-            PayloadLotOrSerial = source.PayloadLotOrSerial,
-            PayloadReferenceText = source.PayloadReferenceText,
-            NavigationPattern = source.NavigationPattern,
-            PreSendDelayMs = source.PreSendDelayMs,
-            DelayBetweenFieldsMs = source.DelayBetweenFieldsMs,
-            PostSendDelayMs = source.PostSendDelayMs,
             ValidationState = source.ValidationState,
             ValidationMessage = source.ValidationMessage,
             ValidationNotes = source.ValidationNotes,
@@ -180,7 +174,6 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
             IssueMessage = source.IssueMessage,
             RetryCount = source.RetryCount,
             LastAttemptUtc = source.LastAttemptUtc,
-            IsLockedAfterSend = source.IsLockedAfterSend,
             CreatedUtc = source.CreatedUtc,
             LastUpdatedUtc = source.LastUpdatedUtc,
         };
@@ -204,17 +197,7 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
 
     private async void LocationTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        if (_isLocationPickerOpen)
-        {
-            return;
-        }
-
-        if (sender is not TextBox textBox)
-        {
-            return;
-        }
-
-        if (textBox.DataContext is not Model_ScannerBatchItem item)
+        if (sender is not TextBox textBox || textBox.DataContext is not Model_ScannerBatchItem item)
         {
             return;
         }
@@ -229,17 +212,7 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
         }
 
         var validation = await _validationService.ValidateLocationAsync(rawLocation, warehouseCode);
-        if (!validation.Success)
-        {
-            item.ValidationState = Enum_ScannerValidationState.Invalid;
-            item.ValidationMessage = "Location validation unavailable.";
-            item.ValidationNotes = string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                ? "Location validation is currently unavailable."
-                : validation.ErrorMessage;
-            return;
-        }
-
-        if (validation.Data?.IsValid == true)
+        if (validation.Success && validation.Data?.IsValid == true)
         {
             var canonicalLocation = validation.Data.CanonicalLocation.Trim();
             if (isFromLocation)
@@ -251,58 +224,14 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
                 item.PayloadToLocation = canonicalLocation;
             }
 
+            item.ValidationState = Enum_ScannerValidationState.Valid;
             return;
         }
 
-        var suggestionsResult = await _validationService.GetLocationSuggestionsAsync(rawLocation, warehouseCode);
-        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
-        {
-            _isLocationPickerOpen = true;
-            try
-            {
-                var dialog = new Dialog_FuzzySearchPicker(
-                    suggestionsResult.Data,
-                    "Select Location",
-                    $"No exact match was found for '{rawLocation}'. Select a matching location."
-                )
-                {
-                    XamlRoot = textBox.XamlRoot,
-                };
-
-                var dialogResult = await dialog.ShowAsync();
-                if (
-                    dialogResult == ContentDialogResult.Primary
-                    && dialog.SelectedResult is not null
-                    && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
-                )
-                {
-                    var selectedLocation = dialog.SelectedResult.Label.Trim();
-                    if (isFromLocation)
-                    {
-                        item.PayloadFromLocation = selectedLocation;
-                    }
-                    else
-                    {
-                        item.PayloadToLocation = selectedLocation;
-                    }
-
-                    return;
-                }
-            }
-            finally
-            {
-                _isLocationPickerOpen = false;
-            }
-        }
-
-        var message = validation.Data?.Message ?? "Location is invalid.";
-        if (!suggestionsResult.IsSuccess && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false)
-        {
-            message = $"{message} {suggestionsResult.ErrorMessage}";
-        }
-
         item.ValidationState = Enum_ScannerValidationState.Invalid;
-        item.ValidationMessage = "Location validation failed.";
-        item.ValidationNotes = message;
+        item.ValidationMessage = "Location was not found.";
+        item.ValidationNotes = string.IsNullOrWhiteSpace(validation.ErrorMessage)
+            ? "Location validation is currently unavailable."
+            : validation.ErrorMessage;
     }
 }

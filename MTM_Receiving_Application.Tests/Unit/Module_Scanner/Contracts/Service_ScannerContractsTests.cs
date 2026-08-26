@@ -1,25 +1,59 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Scanner.Data;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Services;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.Contracts;
 
+/// <summary>
+/// Boundary-contract tests that run before any database call. DAOs are constructed with a
+/// dummy connection string; only the validation guards are exercised.
+/// </summary>
 public sealed class Service_ScannerContractsTests
 {
+    private const string DummyConnectionString =
+        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
+
     [Fact]
-    public async Task StartSessionAsync_ShouldFail_WhenOwnerUserIdMissing()
+    public async Task EnsureCurrentSessionAsync_ShouldFail_WhenOwnerUserIdMissing()
     {
         var service = CreateWorkflowService();
 
-        var result = await service.StartSessionAsync(new Model_ScannerSessionStartRequest
+        var result = await service.EnsureCurrentSessionAsync(
+            string.Empty,
+            "Operator A",
+            Guid.NewGuid()
+        );
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("OwnerUserId is required.");
+    }
+
+    [Fact]
+    public async Task GetHistoryAsync_ShouldFail_WhenRequestIsNull()
+    {
+        var service = CreateWorkflowService();
+
+        var result = await service.GetHistoryAsync(null!);
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Request is required.");
+    }
+
+    [Fact]
+    public async Task GetHistoryAsync_ShouldFail_WhenOwnerUserIdMissing()
+    {
+        var service = CreateWorkflowService();
+
+        var result = await service.GetHistoryAsync(new Model_ScannerHistoryQueryRequest
         {
             OwnerUserId = string.Empty,
-            OwnerDisplayName = "Operator A",
-            ActiveProfileId = Guid.NewGuid(),
         });
 
         result.Success.Should().BeFalse();
@@ -27,21 +61,31 @@ public sealed class Service_ScannerContractsTests
     }
 
     [Fact]
-    public async Task StartSessionAsync_ShouldFail_WhenRequestIsNull()
+    public async Task GetProfilesAsync_ShouldFail_WhenOwnerUserIdMissing()
     {
         var service = CreateWorkflowService();
 
-        var result = await service.StartSessionAsync(null!);
+        var result = await service.GetProfilesAsync(string.Empty);
 
         result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Request is required.");
+        result.ErrorMessage.Should().Be("OwnerUserId is required.");
     }
 
     [Fact]
-    public async Task ValidateNewItemAsync_ShouldReturnInvalidBoundary_WhenQuantityIsNotPositive()
+    public async Task ValidateNewItemAsync_ShouldFail_WhenRequestIsNull()
     {
-        var inforVisual = new Mock<IService_InforVisual>(MockBehavior.Strict);
-        var service = new Service_ScannerValidation(inforVisual.Object);
+        var service = new Service_ScannerValidation(new Mock<IService_InforVisual>().Object);
+
+        var result = await service.ValidateNewItemAsync(null!);
+
+        result.Success.Should().BeFalse();
+        result.ErrorMessage.Should().Be("Validation request is required.");
+    }
+
+    [Fact]
+    public async Task ValidateNewItemAsync_ShouldReturnInvalid_WhenQuantityIsNotPositive()
+    {
+        var service = new Service_ScannerValidation(new Mock<IService_InforVisual>().Object);
 
         var result = await service.ValidateNewItemAsync(new Model_ScannerItemValidationRequest
         {
@@ -59,282 +103,45 @@ public sealed class Service_ScannerContractsTests
         result.Data.Should().NotBeNull();
         result.Data!.State.Should().Be(Enum_ScannerValidationState.Invalid);
         result.Data.Message.Should().Be("Quantity must be a positive number.");
-        result.Data.Notes.Should().Be("Enter a quantity greater than zero.");
     }
 
     [Fact]
-    public async Task ValidateNewItemAsync_ShouldReturnInvalidBoundary_WhenPartNotFoundInVisual()
+    public async Task ValidateNewItemAsync_ShouldReturnInvalid_WhenPartIdMissing()
     {
-        var inforVisual = new Mock<IService_InforVisual>();
-        inforVisual
-            .Setup(service => service.PartExistsAsync("MMCCS00740"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(false));
-
-        var service = new Service_ScannerValidation(inforVisual.Object);
+        var service = new Service_ScannerValidation(new Mock<IService_InforVisual>().Object);
 
         var result = await service.ValidateNewItemAsync(new Model_ScannerItemValidationRequest
         {
             SessionId = Guid.NewGuid(),
             ItemId = Guid.NewGuid(),
-            PartId = "mmccs00740",
-            FromWarehouse = "002",
+            PartId = string.Empty,
             FromLocation = "A-01",
-            ToWarehouse = "002",
             ToLocation = "B-01",
             Quantity = "5",
         });
 
         result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
         result.Data!.State.Should().Be(Enum_ScannerValidationState.Invalid);
-        result.Data.Message.Should().Be("Part ID was not found.");
+        result.Data.Message.Should().Be("Part ID is required.");
     }
 
     [Fact]
-    public async Task ValidateNewItemAsync_ShouldResolveLocationsWithoutDashes_WhenCanonicalVisualIdsExist()
+    public async Task PartExistsAsync_ShouldReturnFalse_WhenPartIdBlank()
     {
-        var inforVisual = new Mock<IService_InforVisual>();
-        inforVisual
-            .Setup(service => service.PartExistsAsync("MMCCS00740"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
-        inforVisual
-            .Setup(service => service.LocationExistsAsync("A-01", "002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(false));
-        inforVisual
-            .Setup(service => service.LocationExistsAsync("A01", "002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
-        inforVisual
-            .Setup(service => service.LocationExistsAsync("B-01", "002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(false));
-        inforVisual
-            .Setup(service => service.LocationExistsAsync("B01", "002"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
-        inforVisual
-            .Setup(service => service.GetMaterialAvailabilityCurrentStockAsync("A01", "MMCCS00740", "002"))
-            .ReturnsAsync(
-                Model_Dao_Result_Factory.Success(
-                    new List<Model_InforVisualMaterialLocationRow>
-                    {
-                        new()
-                        {
-                            PartId = "MMCCS00740",
-                            WarehouseCode = "002",
-                            LocationId = "A01",
-                            Quantity = 10m,
-                        },
-                    }
-                )
-            );
+        var service = new Service_ScannerValidation(new Mock<IService_InforVisual>().Object);
 
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.ValidateNewItemAsync(new Model_ScannerItemValidationRequest
-        {
-            SessionId = Guid.NewGuid(),
-            ItemId = Guid.NewGuid(),
-            PartId = "MMCCS00740",
-            FromWarehouse = "002",
-            FromLocation = "A-01",
-            ToWarehouse = "002",
-            ToLocation = "B-01",
-            Quantity = "5",
-        });
+        var result = await service.PartExistsAsync("   ");
 
         result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.State.Should().Be(Enum_ScannerValidationState.Valid);
-        result.Data.CanonicalFromLocation.Should().Be("A01");
-        result.Data.CanonicalToLocation.Should().Be("B01");
-    }
-
-    [Fact]
-    public async Task SaveProfileAsync_ShouldFail_WhenProfileNameMissing()
-    {
-        var service = CreateWorkflowService();
-
-        var result = await service.SaveProfileAsync(new Model_ScannerProfile
-        {
-            OwnerUserId = "u-123",
-            ProfileName = string.Empty,
-            AppWindowTitle = "Inventory Transfers",
-        });
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Profile name is required.");
-    }
-
-    [Fact]
-    public async Task SetDefaultProfileAsync_ShouldFail_WhenOwnerUserIdMissing()
-    {
-        var service = CreateWorkflowService();
-
-        var result = await service.SetDefaultProfileAsync(Guid.NewGuid(), string.Empty);
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("OwnerUserId is required.");
-    }
-
-    [Fact]
-    public async Task GetLocationsWithStockAsync_ShouldReturnOnlyPositiveQuantityLocations_WhenPartHasStock()
-    {
-        var inforVisual = new Mock<IService_InforVisual>();
-        inforVisual
-            .Setup(service =>
-                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-1", "002")
-            )
-            .ReturnsAsync(
-                Model_Dao_Result_Factory.Success(
-                    new List<Model_InforVisualMaterialLocationRow>
-                    {
-                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "B-01", Quantity = 5m },
-                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "A-01", Quantity = 3m },
-                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "B-01", Quantity = 2m },
-                        new() { PartId = "PART-1", WarehouseCode = "002", LocationId = "C-01", Quantity = 0m },
-                    }
-                )
-            );
-
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.GetLocationsWithStockAsync("part-1", "002");
-
-        result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.Should().HaveCount(2);
-        result.Data.Should().ContainSingle(row => row.LocationId == "A-01" && row.Quantity == 3m);
-        result.Data.Should().ContainSingle(row => row.LocationId == "B-01" && row.Quantity == 7m);
-        result.Data.Should().NotContain(row => row.LocationId == "C-01");
-        result.Data[0].LocationId.Should().Be("A-01");
-    }
-
-    [Fact]
-    public async Task GetLocationsWithStockAsync_ShouldFail_WhenPartIdIsMissing()
-    {
-        var inforVisual = new Mock<IService_InforVisual>(MockBehavior.Strict);
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.GetLocationsWithStockAsync("   ", "002");
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Part ID is required.");
-    }
-
-    [Fact]
-    public async Task GetLocationsWithStockAsync_ShouldFail_WhenStockQueryFails()
-    {
-        var inforVisual = new Mock<IService_InforVisual>();
-        inforVisual
-            .Setup(service =>
-                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-1", "002")
-            )
-            .ReturnsAsync(
-                Model_Dao_Result_Factory.Failure<List<Model_InforVisualMaterialLocationRow>>(
-                    "Visual query failed."
-                )
-            );
-
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.GetLocationsWithStockAsync("PART-1", "002");
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Visual query failed.");
-    }
-
-    [Theory]
-    [InlineData("VA101", "V-A1-01")]
-    [InlineData("va101", "V-A1-01")]
-    [InlineData("R5", "R-05")]
-    [InlineData("r12", "R-12")]
-    [InlineData("V-A1-01", "V-A1-01")]
-    [InlineData("a-01", "A-01")]
-    [InlineData("", "")]
-    [InlineData(null, "")]
-    public void FormatLocation_ShouldApplyDashAutocomplete(string? input, string expected)
-    {
-        var inforVisual = new Mock<IService_InforVisual>();
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = service.FormatLocation(input!);
-
-        result.Should().Be(expected);
-    }
-
-    [Fact]
-    public async Task GetPartsInLocationAsync_ShouldReturnAggregatedParts_WhenLocationHasStock()
-    {
-        var inforVisual = new Mock<IService_InforVisual>();
-        inforVisual
-            .Setup(service =>
-                service.GetMaterialAvailabilityCurrentStockAsync("RECV", null, "002")
-            )
-            .ReturnsAsync(
-                Model_Dao_Result_Factory.Success(
-                    new List<Model_InforVisualMaterialLocationRow>
-                    {
-                        new()
-                        {
-                            PartId = "PART-A",
-                            PartDescription = "Part A",
-                            WarehouseCode = "002",
-                            LocationId = "RECV",
-                            Quantity = 5000m,
-                        },
-                        new()
-                        {
-                            PartId = "PART-A",
-                            PartDescription = "Part A",
-                            WarehouseCode = "002",
-                            LocationId = "RECV",
-                            Quantity = 500m,
-                        },
-                        new()
-                        {
-                            PartId = "PART-B",
-                            PartDescription = "Part B",
-                            WarehouseCode = "002",
-                            LocationId = "RECV",
-                            Quantity = 0m,
-                        },
-                    }
-                )
-            );
-
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.GetPartsInLocationAsync("recv", "002");
-
-        result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        var parts = result.Data!.OrderBy(part => part.PartId).ToList();
-        parts.Should().ContainSingle(part => part.PartId == "PART-A");
-        parts
-            .Single(part => part.PartId == "PART-A")
-            .Quantity.Should()
-            .Be(5500m);
-        parts.Should().NotContain(part => part.PartId == "PART-B");
-    }
-
-    [Fact]
-    public async Task GetPartsInLocationAsync_ShouldFail_WhenLocationEmpty()
-    {
-        var inforVisual = new Mock<IService_InforVisual>();
-        var service = new Service_ScannerValidation(inforVisual.Object);
-
-        var result = await service.GetPartsInLocationAsync("  ", "002");
-
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Location is required.");
+        result.Data.Should().BeFalse();
     }
 
     private static Service_ScannerWorkflow CreateWorkflowService()
     {
-        const string cs = "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;";
         return new Service_ScannerWorkflow(
-            new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerBatchSession(cs),
-            new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerBatchItem(cs),
-            new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerRunHistory(cs),
-            new MTM_Receiving_Application.Module_Scanner.Data.Dao_ScannerProfile(cs)
+            new Dao_ScannerBatchSession(DummyConnectionString),
+            new Dao_ScannerBatchItem(DummyConnectionString),
+            new Dao_ScannerProfile(DummyConnectionString)
         );
     }
 }

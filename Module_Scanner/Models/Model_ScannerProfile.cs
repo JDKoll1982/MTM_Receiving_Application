@@ -49,13 +49,11 @@ public sealed partial class Model_ScannerProfile
 
 	public string SendShortcutChord { get; set; } = "Ctrl+Alt+M";
 
-	public bool StopBetweenSendsOnly { get; set; } = true;
-
-	public bool AllowAdvancedTiming { get; set; }
+    public string StopShortcutChord { get; set; } = "Ctrl+Alt+N";
 
 	public int? MaxItemsPerSend { get; set; }
 
-	public bool EnforceFocusEveryItem { get; set; }
+    public bool AllowAdvancedTiming { get; set; }
 
 	public string Notes { get; set; } = string.Empty;
 

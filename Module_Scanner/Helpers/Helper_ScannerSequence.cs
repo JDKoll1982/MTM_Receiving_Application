@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MTM_Receiving_Application.Module_Scanner.Models;
 
 namespace MTM_Receiving_Application.Module_Scanner.Helpers;
@@ -33,9 +34,7 @@ public static class Helper_ScannerSequence
 	/// <summary>
 	/// Emission sequence for one Infor Visual Inventory Transfer record: each field value plus
 	/// the number of Tab presses required to reach the next field on the VMINVENT
-	/// "Inventory Transfers" screen. Tab gaps skip fields that are not part of the payload
-	/// (e.g. Reason after Quantity, From Type/Status after From Location). The last field has
-	/// no trailing tab.
+	/// "Inventory Transfers" screen. The last field has no trailing tab.
 	/// </summary>
 	public static IReadOnlyList<(string Value, int TabsAfter)> BuildFieldSequence(
 		Model_ScannerBatchItem item
@@ -71,15 +70,7 @@ public static class Helper_ScannerSequence
 	{
 		ArgumentNullException.ThrowIfNull(items);
 
-		foreach (var item in items)
-		{
-			if (IsEligibleForSend(item))
-			{
-				return item;
-			}
-		}
-
-		return null;
+		return items.OrderBy(item => item.SequenceNumber).FirstOrDefault(IsEligibleForSend);
 	}
 
 	/// <summary>

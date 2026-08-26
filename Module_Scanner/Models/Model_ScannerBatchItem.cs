@@ -3,7 +3,7 @@ using System;
 namespace MTM_Receiving_Application.Module_Scanner.Models;
 
 /// <summary>
-/// Represents one staged scanner transfer row.
+/// Represents one staged scanner transfer row in the current list.
 /// </summary>
 public sealed partial class Model_ScannerBatchItem
 {
@@ -14,8 +14,6 @@ public sealed partial class Model_ScannerBatchItem
 	public Guid SessionId { get; set; }
 
 	public int SequenceNumber { get; set; }
-
-	public string ExternalRecordKey { get; set; } = string.Empty;
 
 	public string PayloadPartId { get; set; } = string.Empty;
 
@@ -28,20 +26,6 @@ public sealed partial class Model_ScannerBatchItem
 	public string PayloadToLocation { get; set; } = string.Empty;
 
 	public string PayloadQuantity { get; set; } = string.Empty;
-
-	public string PayloadUnitOfMeasure { get; set; } = string.Empty;
-
-	public string PayloadLotOrSerial { get; set; } = string.Empty;
-
-	public string PayloadReferenceText { get; set; } = string.Empty;
-
-	public string NavigationPattern { get; set; } = string.Empty;
-
-	public int? PreSendDelayMs { get; set; }
-
-	public int? DelayBetweenFieldsMs { get; set; }
-
-	public int? PostSendDelayMs { get; set; }
 
 	public Enum_ScannerValidationState ValidationState { get; set; } =
 		Enum_ScannerValidationState.NotValidated;
@@ -70,8 +54,6 @@ public sealed partial class Model_ScannerBatchItem
 
 	public DateTime? LastAttemptUtc { get; set; }
 
-	public bool IsLockedAfterSend { get; set; }
-
 	public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 
 	public DateTime? LastUpdatedUtc { get; set; }
@@ -86,12 +68,12 @@ public sealed partial class Model_ScannerBatchItem
 		FuzzyMatchedToLocation = result.CanonicalToLocation;
 	}
 
-	public Model_ScannerRunItem ToRunItem(Guid runId)
+	public Model_ScannerHistoryItem ToHistoryItem(Guid historyEntryId)
 	{
-		return new Model_ScannerRunItem
+		return new Model_ScannerHistoryItem
 		{
-			RunItemId = Guid.NewGuid(),
-			RunId = runId,
+			HistoryItemId = Guid.NewGuid(),
+			HistoryEntryId = historyEntryId,
 			SessionId = SessionId,
 			SessionItemId = SessionItemId,
 			ItemId = ItemId,
@@ -110,7 +92,7 @@ public sealed partial class Model_ScannerBatchItem
 			IssueMessage = IssueMessage,
 			SentUtc = SentUtc,
 			FailedUtc = FailedUtc,
-			CreatedUtc = DateTime.UtcNow,
+			CreatedUtc = CreatedUtc,
 		};
 	}
 }

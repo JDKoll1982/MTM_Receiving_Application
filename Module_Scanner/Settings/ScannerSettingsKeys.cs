@@ -1,7 +1,7 @@
 namespace MTM_Receiving_Application.Module_Scanner.Settings;
 
 /// <summary>
-/// Placeholder scanner settings key container for future implementation.
+/// Scanner settings key container. Populated when scanner-specific user settings are added.
 /// </summary>
 public static class ScannerSettingsKeys
 {

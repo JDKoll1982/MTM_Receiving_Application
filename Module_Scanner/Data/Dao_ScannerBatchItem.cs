@@ -11,7 +11,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Data;
 
 /// <summary>
-/// Persists scanner session items through stored procedures.
+/// Persists scanner current-list items through stored procedures.
 /// </summary>
 public sealed class Dao_ScannerBatchItem
 {
@@ -63,6 +63,9 @@ public sealed class Dao_ScannerBatchItem
 			{ "payload_json", BuildPayloadJson(item) },
 			{ "validation_state", item.ValidationState.ToString() },
 			{ "validation_notes", string.IsNullOrWhiteSpace(item.ValidationNotes) ? DBNull.Value : item.ValidationNotes },
+			{ "status", item.ExecutionState.ToString() },
+			{ "failure_code", item.IssueType == Enum_ScannerIssueType.None ? DBNull.Value : item.IssueType.ToString() },
+			{ "failure_message", string.IsNullOrWhiteSpace(item.IssueMessage) ? DBNull.Value : item.IssueMessage },
 		};
 
 		return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
@@ -113,10 +116,6 @@ public sealed class Dao_ScannerBatchItem
 			item.PayloadToWarehouse,
 			item.PayloadToLocation,
 			item.PayloadQuantity,
-			item.PayloadUnitOfMeasure,
-			item.PayloadLotOrSerial,
-			item.PayloadReferenceText,
-			item.NavigationPattern,
 		};
 
 		return JsonSerializer.Serialize(payload);
@@ -146,17 +145,21 @@ public sealed class Dao_ScannerBatchItem
 
 	private static Guid ParseGuid(object value)
 	{
-		return value == DBNull.Value ? Guid.Empty : Guid.TryParse(value.ToString(), out var guid) ? guid : Guid.Empty;
+		return value == DBNull.Value
+			? Guid.Empty
+			: Guid.TryParse(value.ToString(), out var guid)
+				? guid
+				: Guid.Empty;
+	}
+
+	private static long ParseLong(object value)
+	{
+		return value == DBNull.Value ? 0 : Convert.ToInt64(value);
 	}
 
 	private static int ParseInt(object value)
 	{
 		return value == DBNull.Value ? 0 : Convert.ToInt32(value);
-	}
-
-	private static long? ParseLong(object value)
-	{
-		return value == DBNull.Value ? null : Convert.ToInt64(value);
 	}
 
 	private static DateTime? ParseDateTimeOrNull(object value)
@@ -178,9 +181,9 @@ public sealed class Dao_ScannerBatchItem
 			: Enum_ScannerExecutionState.Waiting;
 	}
 
-	private static Enum_ScannerIssueType ParseIssueType(string? failureCode)
+	private static Enum_ScannerIssueType ParseIssueType(string? value)
 	{
-		return Enum.TryParse<Enum_ScannerIssueType>(failureCode, true, out var parsed)
+		return Enum.TryParse<Enum_ScannerIssueType>(value, true, out var parsed)
 			? parsed
 			: Enum_ScannerIssueType.None;
 	}

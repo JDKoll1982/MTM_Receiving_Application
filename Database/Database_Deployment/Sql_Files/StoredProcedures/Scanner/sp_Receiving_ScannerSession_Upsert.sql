@@ -1,5 +1,5 @@
 -- Stored Procedure: sp_Receiving_ScannerSession_Upsert
--- Description: Creates or updates a scanner session header.
+-- Description: Creates or updates a scanner current-list session header.
 
 USE mtm_receiving_application_test;
 

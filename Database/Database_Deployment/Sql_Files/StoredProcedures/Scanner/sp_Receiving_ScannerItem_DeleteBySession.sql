@@ -1,5 +1,5 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_DeleteBySession
--- Description: Clears session items, typically before reload/import.
+-- Description: Clears all items from a current-list session (used on reorder/clear).
 
 USE mtm_receiving_application_test;
 

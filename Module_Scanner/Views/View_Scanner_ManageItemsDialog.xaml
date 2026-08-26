@@ -19,7 +19,9 @@
         </Style>
     </ContentDialog.Resources>
 
-    <Grid RowSpacing="12" MinWidth="980">
+    <!-- Task 5 fix: explicit MinWidth/MinHeight plus a constrained, scrollable list so
+         content is never cut off regardless of the number of rows. -->
+    <Grid RowSpacing="12" MinWidth="1000" MinHeight="480">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -41,74 +43,81 @@
             <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Click="DeleteItem_Click" Content="Delete" />
         </Grid>
 
-        <ListView
-            x:Name="ItemsListView"
+        <ScrollViewer
             Grid.Row="1"
-            SelectionMode="Single"
-            ItemsSource="{x:Bind Items, Mode=OneWay}"
-            SelectedItem="{x:Bind SelectedItem, Mode=TwoWay}">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Model_ScannerBatchItem">
-                    <Border
-                        Margin="0,0,0,8"
-                        Padding="10"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="6">
-                        <Grid ColumnSpacing="8" RowSpacing="6">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="48" />
-                                <ColumnDefinition Width="1.7*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="0.7*" />
-                                <ColumnDefinition Width="0.8*" />
-                                <ColumnDefinition Width="1.4*" />
-                            </Grid.ColumnDefinitions>
+            MaxHeight="420"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollMode="Enabled"
+            HorizontalScrollMode="Enabled">
+            <ListView
+                x:Name="ItemsListView"
+                SelectionMode="Single"
+                ItemsSource="{x:Bind Items, Mode=OneWay}"
+                SelectedItem="{x:Bind SelectedItem, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Model_ScannerBatchItem">
+                        <Border
+                            Margin="0,0,0,8"
+                            Padding="10"
+                            Background="{ThemeResource LayerFillColorAltBrush}"
+                            CornerRadius="6">
+                            <Grid ColumnSpacing="8" RowSpacing="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="48" />
+                                    <ColumnDefinition Width="1.7*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                    <ColumnDefinition Width="0.7*" />
+                                    <ColumnDefinition Width="0.8*" />
+                                    <ColumnDefinition Width="1.4*" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind SequenceNumber}" />
-                            <TextBox Grid.Row="0" Grid.Column="1" Header="Part" Text="{x:Bind PayloadPartId, Mode=TwoWay}" />
-                            <TextBox Grid.Row="0" Grid.Column="2" Header="From WH" IsReadOnly="True" Text="{x:Bind PayloadFromWarehouse, Mode=OneTime}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="3"
-                                Header="From Loc"
-                                LostFocus="LocationTextBox_LostFocus"
-                                Tag="From"
-                                Text="{x:Bind PayloadFromLocation, Mode=TwoWay}" />
-                            <TextBox Grid.Row="0" Grid.Column="4" Header="To WH" IsReadOnly="True" Text="{x:Bind PayloadToWarehouse, Mode=OneTime}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="5"
-                                Header="To Loc"
-                                LostFocus="LocationTextBox_LostFocus"
-                                Tag="To"
-                                Text="{x:Bind PayloadToLocation, Mode=TwoWay}" />
-                            <TextBox Grid.Row="0" Grid.Column="6" Header="Qty" Text="{x:Bind PayloadQuantity, Mode=TwoWay}" />
-                            <TextBlock Grid.Row="0" Grid.Column="7" VerticalAlignment="Center" Text="{x:Bind ValidationState}" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind SequenceNumber}" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Header="Part" Text="{x:Bind PayloadPartId, Mode=TwoWay}" />
+                                <TextBox Grid.Row="0" Grid.Column="2" Header="From WH" IsReadOnly="True" Text="{x:Bind PayloadFromWarehouse, Mode=OneTime}" />
+                                <TextBox
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    Header="From Loc"
+                                    LostFocus="LocationTextBox_LostFocus"
+                                    Tag="From"
+                                    Text="{x:Bind PayloadFromLocation, Mode=TwoWay}" />
+                                <TextBox Grid.Row="0" Grid.Column="4" Header="To WH" IsReadOnly="True" Text="{x:Bind PayloadToWarehouse, Mode=OneTime}" />
+                                <TextBox
+                                    Grid.Row="0"
+                                    Grid.Column="5"
+                                    Header="To Loc"
+                                    LostFocus="LocationTextBox_LostFocus"
+                                    Tag="To"
+                                    Text="{x:Bind PayloadToLocation, Mode=TwoWay}" />
+                                <TextBox Grid.Row="0" Grid.Column="6" Header="Qty" Text="{x:Bind PayloadQuantity, Mode=TwoWay}" />
+                                <TextBlock Grid.Row="0" Grid.Column="7" VerticalAlignment="Center" Text="{x:Bind ValidationState}" />
 
-                            <TextBox
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Grid.ColumnSpan="8"
-                                Header="Notes"
-                                IsReadOnly="True"
-                                Text="{x:Bind ValidationNotes, Mode=OneTime}"
-                                TextWrapping="Wrap" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="8"
+                                    Header="Notes"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ValidationNotes, Mode=OneTime}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
 
         <TextBlock
             Grid.Row="2"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            Text="Warehouse values stay read-only. Apply saves the reordered batch back to the active session." />
+            Text="Warehouse values stay read-only. Apply saves the reordered batch back to the current list." />
     </Grid>
 </ContentDialog>

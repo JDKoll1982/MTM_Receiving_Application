@@ -8,6 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="ScannerSectionHeaderStyle" TargetType="TextBlock">
@@ -26,338 +27,137 @@
             <Setter Property="Padding" Value="16,0" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
-        <Style x:Key="ScannerChipTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
     </Page.Resources>
 
-    <Grid
-        x:Name="WorkbenchRootGrid"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState x:Name="ScannerDefaultState">
-                    <VisualState.Setters>
-                        <Setter Target="WorkbenchPrimaryColumn.Width" Value="2*" />
-                        <Setter Target="WorkbenchDetailsColumn.Width" Value="*" />
-                        <Setter Target="WorkbenchBodyGrid.ColumnSpacing" Value="16" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ScannerCompactState">
-                    <VisualState.Setters>
-                        <Setter Target="WorkbenchPrimaryColumn.Width" Value="1.45*" />
-                        <Setter Target="WorkbenchDetailsColumn.Width" Value="*" />
-                        <Setter Target="WorkbenchBodyGrid.ColumnSpacing" Value="10" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="ScannerWideState">
-                    <VisualState.Setters>
-                        <Setter Target="WorkbenchPrimaryColumn.Width" Value="2.35*" />
-                        <Setter Target="WorkbenchDetailsColumn.Width" Value="*" />
-                        <Setter Target="WorkbenchBodyGrid.ColumnSpacing" Value="18" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+    <Grid x:Name="WorkbenchRootGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid
-            x:Name="WorkbenchContentGrid"
+        <!-- Non-blocking header error area (ScannerUpdate.md Step 6b-a2) -->
+        <InfoBar
+            x:Name="HeaderErrorBar"
             Grid.Row="0"
+            Margin="16,8,16,0"
+            IsClosable="False"
+            IsOpen="{x:Bind ViewModel.IsHeaderErrorVisible, Mode=OneWay}"
+            Message="{x:Bind ViewModel.HeaderErrorText, Mode=OneWay}"
+            Severity="Error" />
+
+        <Grid
+            Grid.Row="1"
             Padding="16"
             ColumnSpacing="16"
-            RowSpacing="16"
-            VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch">
+            RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-               
+            <!-- Entry form (baseline states per ScannerUpdate.md Task 6) -->
+            <Grid x:Name="ItemEntryGrid" ColumnSpacing="10" RowSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.2*" />
+                    <ColumnDefinition Width="1.3*" />
+                    <ColumnDefinition Width="1.3*" />
+                    <ColumnDefinition Width="0.8*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <Grid
-                    x:Name="WorkbenchBodyGrid"
-                    Grid.Row="1"
-                    ColumnSpacing="16"
-                    RowSpacing="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                <sharedControls:Control_Shared_TypedLookupTextBox
+                    x:Name="PartIdLookupControl"
+                    Grid.Column="0"
+                    IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
+                    AutoResolveFuzzyMatches="False"
+                    HeaderText="Part"
+                    InputValue="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    LookupType="PartNumber"
+                    PlaceholderText="Enter part number"
+                    ValidationCompleted="PartIdLookupControl_ValidationCompleted" />
+                <TextBox
+                    Grid.Column="1"
+                    Header="From Loc"
+                    IsReadOnly="{x:Bind ViewModel.IsFromLocationReadOnly, Mode=OneWay}"
+                    Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    Grid.Column="2"
+                    Header="To Loc"
+                    IsEnabled="{x:Bind ViewModel.IsToLocationEnabled, Mode=OneWay}"
+                    IsReadOnly="{x:Bind ViewModel.IsToLocationReadOnly, Mode=OneWay}"
+                    LostFocus="ToLocationTextBox_LostFocus"
+                    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    x:Name="QuantityTextBox"
+                    Grid.Column="3"
+                    Header="Qty"
+                    IsEnabled="{x:Bind ViewModel.IsQuantityEnabled, Mode=OneWay}"
+                    IsReadOnly="{x:Bind ViewModel.IsQuantityReadOnly, Mode=OneWay}"
+                    BeforeTextChanging="QuantityTextBox_BeforeTextChanging"
+                    Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Grid.Column="4"
+                    Style="{StaticResource ScannerActionButtonStyle}"
+                    VerticalAlignment="Bottom"
+                    Command="{x:Bind ViewModel.AddItemCommand}"
+                    Content="Add"
+                    IsEnabled="{x:Bind ViewModel.IsAddEnabled, Mode=OneWay}" />
+            </Grid>
+
+            <!-- Current list -->
+            <Grid Grid.Row="1" RowSpacing="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="WorkbenchPrimaryColumn" Width="2*" />
-                        <ColumnDefinition x:Name="WorkbenchDetailsColumn" Width="*" />
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="1.8*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="0.9*" />
                     </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.RowSpan="2"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid RowSpacing="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource ScannerSectionHeaderStyle}" Text="Item Details" />
-
-                            <TextBox
-                                Grid.Row="1"
-                                Header="Part ID"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.SelectedSessionItem.PayloadPartId, Mode=OneWay}" />
-
-                            <Grid Grid.Row="2" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox
-                                    Grid.Column="0"
-                                    Header="From Warehouse"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadFromWarehouse, Mode=OneWay}" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Header="From Location"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadFromLocation, Mode=OneWay}" />
-                            </Grid>
-
-                            <Grid Grid.Row="3" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox
-                                    Grid.Column="0"
-                                    Header="To Warehouse"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadToWarehouse, Mode=OneWay}" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Header="To Location"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadToLocation, Mode=OneWay}" />
-                            </Grid>
-
-                            <TextBox
-                                Grid.Row="4"
-                                Header="Issues"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.SelectedSessionItem.ValidationNotes, Mode=OneWay}"
-                                TextWrapping="Wrap" />
-
-                            <Grid Grid.Row="5" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Sent" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.SentItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Grid.Column="1"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Failed" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.FailedItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Grid.Column="2"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Waiting" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.WaitingItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-
-                            
-
-                            </Grid>
-                    </Border>
-
-                    <Border
-                        x:Name="ItemsToSendCard"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Grid.RowSpan="2"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid
-                            x:Name="ItemsCardContentGrid"
-                            RowSpacing="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <Grid
-                                x:Name="ItemsHeaderGrid"
-                                Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Items To Send" />
-                                <Button
-                                    Grid.Column="1"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    Command="{x:Bind ViewModel.AdvancedBulkMoveCommand}"
-                                    Content="Advanced" />
-                                <Button
-                                    Grid.Column="2"
-                                    Margin="8,0,0,0"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
-                                    Content="Manage Items" />
-                                <Button
-                                    Grid.Column="3"
-                                    Margin="8,0,0,0"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    Click="RemoveSelectedItemButton_Click"
-                                    Content="Remove Selected"
-                                    IsEnabled="{x:Bind ViewModel.HasSelectedSessionItem, Mode=OneWay}" />
-                            </Grid>
-
-                            <Grid
-                                x:Name="ItemEntryGrid"
-                                Grid.Row="1"
-                                ColumnSpacing="10"
-                                RowSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2.2*" />
-                                    <ColumnDefinition Width="1.3*" />
-                                    <ColumnDefinition Width="1.3*" />
-                                    <ColumnDefinition Width="0.8*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <sharedControls:Control_Shared_TypedLookupTextBox
-                                    x:Name="PartIdLookupControl"
-                                    Grid.Column="0"
-                                    AutoResolveFuzzyMatches="False"
-                                    HeaderText="Part"
-                                    InputValue="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    LookupType="PartNumber"
-                                    PlaceholderText="Enter part number"
-                                    ValidationCompleted="PartIdLookupControl_ValidationCompleted" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Header="From Loc"
-                                    LostFocus="FromLocationTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBox
-                                    Grid.Column="2"
-                                    Header="To Loc"
-                                    LostFocus="ToLocationTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBox
-                                    x:Name="QuantityTextBox"
-                                    Grid.Column="3"
-                                    Header="Qty"
-                                    IsEnabled="{x:Bind ViewModel.IsQuantityEnabled, Mode=OneWay}"
-                                    BeforeTextChanging="QuantityTextBox_BeforeTextChanging"
-                                    Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Button
-                                    Grid.Column="4"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    VerticalAlignment="Bottom"
-                                    Command="{x:Bind ViewModel.AddDraftItemCommand}"
-                                    Content="Add" />
-                            </Grid>
-
-                            <Grid Grid.Row="2" RowSpacing="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="0.5*" />
-                                        <ColumnDefinition Width="1.8*" />
-                                        <ColumnDefinition Width="1.2*" />
-                                        <ColumnDefinition Width="1.2*" />
-                                        <ColumnDefinition Width="0.9*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="#" />
-                                    <TextBlock Grid.Column="1" Text="Part" />
-                                    <TextBlock Grid.Column="2" Text="From" />
-                                    <TextBlock Grid.Column="3" Text="To" />
-                                    <TextBlock Grid.Column="4" Text="Status" />
-                                </Grid>
-
-                                <ListView
-                                    x:Name="SessionItemsListView"
-                                    Grid.Row="1"
-                                    VerticalAlignment="Stretch"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    ItemsSource="{x:Bind ViewModel.SessionItems, Mode=OneWay}"
-                                    SelectedItem="{x:Bind ViewModel.SelectedSessionItem, Mode=TwoWay}">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="models:Model_ScannerBatchItem">
-                                            <Grid ColumnSpacing="12">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="0.5*" />
-                                                    <ColumnDefinition Width="1.8*" />
-                                                    <ColumnDefinition Width="1.2*" />
-                                                    <ColumnDefinition Width="1.2*" />
-                                                    <ColumnDefinition Width="0.9*" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" />
-                                                <TextBlock Grid.Column="1" Text="{x:Bind PayloadPartId}" />
-                                                <TextBlock Grid.Column="2" Text="{x:Bind PayloadFromLocation}" />
-                                                <TextBlock Grid.Column="3" Text="{x:Bind PayloadToLocation}" />
-                                                <TextBlock Grid.Column="4" Text="{x:Bind ValidationState}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Grid>
-                        </Grid>
-                    </Border>
+                    <TextBlock Grid.Column="0" Text="#" />
+                    <TextBlock Grid.Column="1" Text="Part" />
+                    <TextBlock Grid.Column="2" Text="From" />
+                    <TextBlock Grid.Column="3" Text="To" />
+                    <TextBlock Grid.Column="4" Text="Status" />
                 </Grid>
-
+                <ListView
+                    x:Name="SessionItemsListView"
+                    Grid.Row="1"
+                    VerticalAlignment="Stretch"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{x:Bind ViewModel.SessionItems, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedSessionItem, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_ScannerBatchItem">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.5*" />
+                                    <ColumnDefinition Width="1.8*" />
+                                    <ColumnDefinition Width="1.2*" />
+                                    <ColumnDefinition Width="1.2*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind PayloadPartId}" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind PayloadFromLocation}" />
+                                <TextBlock Grid.Column="3" Text="{x:Bind PayloadToLocation}" />
+                                <TextBlock Grid.Column="4" Text="{x:Bind ValidationState}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
 
+        <!-- Footer action bar -->
         <Border
-            Grid.Row="1"
+            Grid.Row="2"
             Margin="16,0,16,12"
             Padding="12"
             Background="{ThemeResource LayerFillColorAltBrush}"
@@ -370,56 +170,24 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.CheckAllCommand}" Content="Check All" />
-                    <Button
-                        Grid.Column="1"
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource ScannerPrimaryActionButtonStyle}"
-                        Command="{x:Bind ViewModel.SendNextCommand}"
-                        Content="Send" />
-                    <Button Grid.Column="2" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearHistoryCommand}" Content="Clear History" />
+                    <Button Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendNextCommand}" Content="Send" />
+                    <Button Grid.Column="2" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearListCommand}" Content="Clear List" />
                     <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ExportCommand}" Content="Export" />
-                    <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.StartDraftSessionCommand}" Content="Start Draft" />
-                    <Button Grid.Column="5" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.BuildRunSnapshotCommand}" Content="Save For Later" />
+                    <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ManageItemsDialogCommand}" Content="Manage Items" />
                 </Grid>
 
-                <!--  Saved? manual confirmation row: only shown when the transfer was not auto-detected  -->
+                <!-- Saved? manual confirmation row -->
                 <StackPanel
                     HorizontalAlignment="Center"
                     Orientation="Horizontal"
                     Spacing="6"
                     Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontWeight="SemiBold"
-                        Text="Was the transaction saved in Infor Visual?" />
-                    <Button
-                        Style="{StaticResource ScannerActionButtonStyle}"
-                        Command="{x:Bind ViewModel.ConfirmSavedCommand}"
-                        Content="Yes" />
-                    <Button
-                        Style="{StaticResource ScannerActionButtonStyle}"
-                        Command="{x:Bind ViewModel.ConfirmNotSavedCommand}"
-                        Content="No" />
+                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Was the transaction saved in Infor Visual?" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmSavedCommand}" Content="Yes" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmNotSavedCommand}" Content="No" />
                 </StackPanel>
-            </StackPanel>
-        </Border>
-
-        <Border
-            Grid.Row="2"
-            Padding="24,12,24,16"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0">
-            <StackPanel
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToWorkbenchCommand}" Content="Workbench" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToHistoryCommand}" Content="History" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToSettingsCommand}" Content="Settings" />
             </StackPanel>
         </Border>
     </Grid>

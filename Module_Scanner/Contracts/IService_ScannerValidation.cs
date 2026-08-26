@@ -9,8 +9,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Contracts;
 
 /// <summary>
-/// Placeholder validation contract for the scanner module scaffold.
-/// Feature behavior will be added in a later implementation pass.
+/// Scanner item and location validation backed by Infor Visual checks.
 /// </summary>
 public interface IService_ScannerValidation
 {
@@ -39,8 +38,8 @@ public interface IService_ScannerValidation
 	/// <summary>
 	/// Returns every warehouse location that currently holds stock for
 	/// <paramref name="partId"/> (quantity &gt; 0), scoped to the given warehouse.
-	/// Used by the workbench From-location picker when the entered source location
-	/// does not resolve, so the operator can choose the real source location.
+	/// Used by the Workbench stock-location modal (Step 6b-a1-a) so the operator can
+	/// choose the real source location and quantity.
 	/// </summary>
 	Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetLocationsWithStockAsync(
 		string partId,
@@ -49,13 +48,11 @@ public interface IService_ScannerValidation
 	);
 
 	/// <summary>
-	/// Returns every part that currently holds on-hand stock (quantity &gt; 0) at
-	/// <paramref name="location"/> in <paramref name="warehouseCode"/>. Backs the Advanced
-	/// bulk-move dialog Step 1 list so the operator can select parts to move out of a location.
+	/// Returns true when the part exists in Infor Visual (used by the Step 6b part
+	/// focus-lost validation).
 	/// </summary>
-	Task<Model_Dao_Result<IReadOnlyList<Model_InforVisualMaterialLocationRow>>> GetPartsInLocationAsync(
-		string location,
-		string warehouseCode,
+	Task<Model_Dao_Result<bool>> PartExistsAsync(
+		string partId,
 		CancellationToken cancellationToken = default
 	);
 
@@ -69,8 +66,8 @@ public interface IService_ScannerValidation
 	/// <summary>
 	/// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
 	/// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
-	/// quantity) was recorded at or after <paramref name="afterUtc"/>.
-	/// Polled by the scanner workbench to auto-confirm a send instead of asking "Saved?".
+	/// quantity) was recorded at or after <paramref name="afterUtc"/>. Polled by the
+	/// scanner Workbench to auto-confirm a send instead of asking "Saved?".
 	/// </summary>
 	Task<Model_Dao_Result<bool>> TransferSavedSinceAsync(
 		string partId,
