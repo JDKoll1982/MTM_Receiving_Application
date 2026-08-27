@@ -20,6 +20,17 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber);
 
         /// <summary>
+        /// Retrieves a purchase order with one entry per unique part number, each
+        /// with the total on-hand quantity (PO site) and current location display
+        /// (a single location, "Multiple Locations", or blank).
+        /// </summary>
+        /// <param name="poNumber">6-digit PO number</param>
+        /// <returns>Result containing the PO header with unique parts, or null if not found</returns>
+        public Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOUniquePartsWithOnHandAsync(
+            string poNumber
+        );
+
+        /// <summary>
         /// Retrieves part information by Part ID for non-PO items.
         /// </summary>
         /// <param name="partID">Part identifier</param>

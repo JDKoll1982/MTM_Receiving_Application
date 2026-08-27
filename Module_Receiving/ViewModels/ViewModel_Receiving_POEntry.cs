@@ -120,6 +120,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _columnLineNumberHeaderText = "Line #";
 
+        [ObservableProperty]
+        private string _columnOnHandHeaderText = "On Hand";
+
+        [ObservableProperty]
+        private string _columnLocationHeaderText = "Location";
+
         // Accessibility Properties
         [ObservableProperty]
         private string _poNumberAccessibilityName = "Purchase Order Number";
@@ -225,6 +231,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber
                 );
+                ColumnOnHandHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnOnHand
+                );
+                ColumnLocationHeaderText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PoEntryColumnLocation
+                );
 
                 PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.PoEntryPONumber
@@ -298,7 +310,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsLoading = true;
             try
             {
-                var result = await _inforVisualService.GetPOWithPartsAsync(PoNumber);
+                var result = await _inforVisualService.GetPOUniquePartsWithOnHandAsync(PoNumber);
                 if (result.IsSuccess && result.Data != null)
                 {
                     var parts = result.Data.Parts.ToList();

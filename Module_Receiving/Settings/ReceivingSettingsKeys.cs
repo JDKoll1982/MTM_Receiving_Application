@@ -125,6 +125,8 @@ public static class ReceivingSettingsKeys
             "Receiving.UiText.PoEntry.Column.RemainingQty";
         public const string PoEntryColumnQtyOrdered = "Receiving.UiText.PoEntry.Column.QtyOrdered";
         public const string PoEntryColumnLineNumber = "Receiving.UiText.PoEntry.Column.LineNumber";
+        public const string PoEntryColumnOnHand = "Receiving.UiText.PoEntry.Column.OnHand";
+        public const string PoEntryColumnLocation = "Receiving.UiText.PoEntry.Column.Location";
 
         public const string LoadEntryHeader = "Receiving.UiText.LoadEntry.Header";
         public const string LoadEntryInstruction = "Receiving.UiText.LoadEntry.Instruction";

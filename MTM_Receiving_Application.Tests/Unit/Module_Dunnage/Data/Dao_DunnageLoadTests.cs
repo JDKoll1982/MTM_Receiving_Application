@@ -29,6 +29,7 @@ public sealed class Dao_DunnageLoadTests
         load.PartSkidTotal.Should().Be(7);
         load.LabelNumber.Should().Be("LBL-44");
         load.CreatedBy.Should().Be("archiver");
+        load.Udc1.Should().Be("Blue");
     }
 
     private static IDataReader CreateHistoryReader()
@@ -50,7 +51,16 @@ public sealed class Dao_DunnageLoadTests
         table.Columns.Add("label_number", typeof(string));
         table.Columns.Add("part_skid_sequence", typeof(int));
         table.Columns.Add("part_skid_total", typeof(int));
-        table.Columns.Add("specs_json", typeof(string));
+        table.Columns.Add("udc1", typeof(string));
+        table.Columns.Add("udc2", typeof(string));
+        table.Columns.Add("udc3", typeof(string));
+        table.Columns.Add("udc4", typeof(string));
+        table.Columns.Add("udc5", typeof(string));
+        table.Columns.Add("udc6", typeof(string));
+        table.Columns.Add("udc7", typeof(string));
+        table.Columns.Add("udc8", typeof(string));
+        table.Columns.Add("udc9", typeof(string));
+        table.Columns.Add("udc10", typeof(string));
 
         table.Rows.Add(
             Guid.Parse("00000000-0000-0000-0000-000000000044"),
@@ -69,7 +79,16 @@ public sealed class Dao_DunnageLoadTests
             "LBL-44",
             4,
             7,
-            "{\"Color\":\"Blue\"}"
+            "Blue",
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value,
+            DBNull.Value
         );
 
         return table.CreateDataReader();

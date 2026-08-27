@@ -20,4 +20,6 @@ public class Model_InforVisualMockDataCatalog
     public List<Model_InforVisualAssociatedPartRunRow> AssociatedPartRuns { get; set; } = [];
 
     public List<Model_OutsideServiceHistory> OutsideServiceHistory { get; set; } = [];
+
+    public List<Model_InforVisualMockCustomer> Customers { get; set; } = [];
 }

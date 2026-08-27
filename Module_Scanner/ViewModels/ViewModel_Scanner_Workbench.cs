@@ -232,7 +232,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private async Task<Guid> ResolveActiveProfileIdAsync()
     {
         var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
-        if (profiles is not null && profiles.Success && profiles.Data is { Count: > 0 })
+        if (profiles?.Success == true && profiles.Data is { Count: > 0 })
         {
             return (profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
                 ?? profiles.Data[0]).ProfileId;
@@ -244,7 +244,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public async Task<Model_ScannerProfile> ResolveActiveProfileAsync()
     {
         var profiles = await _workflowService.GetProfilesAsync(OwnerUserId);
-        if (profiles is not null && profiles.Success && profiles.Data is { Count: > 0 })
+        if (profiles?.Success == true && profiles.Data is { Count: > 0 })
         {
             return profiles.Data.FirstOrDefault(profile => profile.IsDefaultForUser)
                 ?? profiles.Data[0];
@@ -264,6 +264,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// Runs the Step 6b part validation: part exists? -> stock locations -> modal ->
     /// apply selection (or header error + refocus when no stock).
     /// </summary>
+    /// <param name="partId"></param>
     public async Task PartValidationCompletedAsync(string partId)
     {
         ClearHeaderError();
@@ -328,6 +329,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// Runs the location-search validation: location exists? -> parts at that location ->
     /// parts modal -> populate rows with that source location (mirror of the part workflow).
     /// </summary>
+    /// <param name="location"></param>
     public async Task LocationValidationCompletedAsync(string location)
     {
         ClearHeaderError();
@@ -339,7 +341,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         var locationResult = await _validationService.ValidateLocationAsync(NewPartId, NewFromWarehouse);
-        if (!locationResult.Success || locationResult.Data is null || !locationResult.Data.IsValid)
+        if (!locationResult.Success || locationResult.Data?.IsValid != true)
         {
             ShowHeaderError(
                 string.IsNullOrWhiteSpace(locationResult.ErrorMessage)
@@ -471,6 +473,10 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     }
 
     /// <summary>One concrete current-list line produced from a modal pick.</summary>
+    /// <param name="PartId"></param>
+    /// <param name="FromLocation"></param>
+    /// <param name="Quantity"></param>
+    /// <param name="MaxQuantity"></param>
     private sealed record StockLine(string PartId, string FromLocation, string Quantity, decimal? MaxQuantity);
 
     /// <summary>
@@ -479,6 +485,9 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// (quantity 1 each) when multiple transactions are requested. Each line carries the
     /// source location's on-hand as its maximum quantity guard.
     /// </summary>
+    /// <param name="picks"></param>
+    /// <param name="fallbackPartId"></param>
+    /// <param name="fallbackFromLocation"></param>
     private static IReadOnlyList<StockLine> ExpandStockPicks(
         IReadOnlyList<Model_ScannerStockPick> picks,
         string fallbackPartId,
@@ -587,6 +596,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// destination or quantity, updates the row's Status, persists it, and refreshes
     /// whether Send is available. A row is not send-eligible until it validates.
     /// </summary>
+    /// <param name="item"></param>
     public async Task<Model_ScannerItemValidationResult?> ValidateSessionItemAsync(
         Model_ScannerBatchItem item
     )

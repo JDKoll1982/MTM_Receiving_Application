@@ -620,13 +620,17 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         private async Task<Model_ReceivingValidationResult> EnsureDefaultAndValidatedLocationAsync()
         {
-            await Task.CompletedTask;
-
             var resolvedLocation = CurrentSession.Location?.Trim() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(resolvedLocation))
             {
                 return Model_ReceivingValidationResult.Error("Please enter a location.");
+            }
+
+            var validation = await _receivingValidation.ValidateLocationAsync(resolvedLocation);
+            if (!validation.IsValid)
+            {
+                return validation;
             }
 
             CurrentSession.Location = resolvedLocation.ToUpperInvariant();

@@ -278,16 +278,12 @@
                             Header="{x:Bind ViewModel.ColumnDescriptionHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
-                            Binding="{Binding RemainingQuantity}"
-                            Header="{x:Bind ViewModel.ColumnRemainingQtyHeaderText, Mode=OneWay}" />
+                            Binding="{Binding OnHandQtyDisplay}"
+                            Header="{x:Bind ViewModel.ColumnOnHandHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
-                            Binding="{Binding QtyOrdered, Converter={StaticResource DecimalToIntConverter}}"
-                            Header="{x:Bind ViewModel.ColumnQtyOrderedHeaderText, Mode=OneWay}" />
-                        <controls:DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding POLineNumber}"
-                            Header="{x:Bind ViewModel.ColumnLineNumberHeaderText, Mode=OneWay}" />
+                            Binding="{Binding Location}"
+                            Header="{x:Bind ViewModel.ColumnLocationHeaderText, Mode=OneWay}" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

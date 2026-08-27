@@ -32,9 +32,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _hasWarning;
 
-        [ObservableProperty]
-        private string _poQuantityInfo = string.Empty;
-
         private string _currentTotal = string.Empty;
 
         public string CurrentTotal
@@ -139,7 +136,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
-            await UpdatePOQuantityInfoAsync();
+            UpdateCurrentTotal();
             await CheckSameDayReceivingAsync();
         }
 
@@ -152,26 +149,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             CurrentPartId = part?.PartID ?? string.Empty;
             CurrentPartDescription = part?.Description ?? string.Empty;
             CurrentNumberOfLoads = _workflowService.NumberOfLoads;
-        }
-
-        private async Task UpdatePOQuantityInfoAsync()
-        {
-            if (_workflowService.CurrentSession.IsNonPO)
-            {
-                PoQuantityInfo = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Messages.InfoNonPoItem
-                );
-            }
-            else if (_workflowService.CurrentPart != null)
-            {
-                PoQuantityInfo = _workflowService.CurrentPart.QtyOrdered.ToString("N2");
-            }
-            else
-            {
-                PoQuantityInfo = string.Empty;
-            }
-
-            UpdateCurrentTotal();
         }
 
         private async Task CheckSameDayReceivingAsync()

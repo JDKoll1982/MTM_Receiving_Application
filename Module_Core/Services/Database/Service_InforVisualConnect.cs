@@ -127,6 +127,71 @@ public class Service_InforVisualConnect : IService_InforVisual
         }
     }
 
+    public async Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOUniquePartsWithOnHandAsync(
+        string poNumber
+    )
+    {
+        if (string.IsNullOrWhiteSpace(poNumber))
+        {
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(
+                "PO number cannot be null or empty"
+            );
+        }
+
+        // Use the PO number as provided - Infor Visual IDs include the prefix (e.g. "PO-123456")
+        string cleanPoNumber = poNumber;
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning mock unique parts for PO: {cleanPoNumber}"
+            );
+            return CreateMockPOUniqueParts(cleanPoNumber);
+        }
+
+        try
+        {
+            _logger?.LogInfo($"Querying Infor Visual for unique parts of PO: {cleanPoNumber}");
+
+            var result = await _dao.GetPOUniquePartsWithOnHandAsync(cleanPoNumber);
+
+            if (!result.IsSuccess)
+            {
+                _logger?.LogError(
+                    $"Failed to retrieve unique parts for PO {cleanPoNumber}: {result.ErrorMessage}"
+                );
+                return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(
+                    result.ErrorMessage
+                );
+            }
+
+            if (result.Data == null || result.Data.Count == 0)
+            {
+                _logger?.LogWarning($"PO {cleanPoNumber} not found");
+                return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(null);
+            }
+
+            // Convert flat DAO model to hierarchical service model
+            var po = ConvertUniquePartsToServiceModel(result.Data);
+            _logger?.LogInfo(
+                $"Successfully retrieved PO {cleanPoNumber} with {po.Parts.Count} unique parts"
+            );
+
+            return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(po);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Unexpected error querying unique parts for PO {cleanPoNumber}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<Model_InforVisualPO?>(
+                $"Unexpected error: {ex.Message}",
+                ex
+            );
+        }
+    }
+
     #endregion
 
     #region Part Operations
@@ -221,25 +286,35 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         if (UseMockData)
         {
-            var matchingLine = _mockDataCatalog
+            var matchingPo = _mockDataCatalog
                 .GetCatalog()
                 .PurchaseOrders.FirstOrDefault(po =>
                     string.Equals(po.PONumber, poNumber, StringComparison.OrdinalIgnoreCase)
-                )
-                ?.Parts.FirstOrDefault(part =>
-                    string.Equals(part.PartID, partID, StringComparison.OrdinalIgnoreCase)
                 );
 
-            if (matchingLine == null)
+            if (matchingPo == null)
+            {
+                _logger?.LogWarning($"Mock PO {poNumber} not found");
+                return Model_Dao_Result_Factory.Failure<int>("PO not found");
+            }
+
+            var matchingLines = matchingPo.Parts
+                .Where(part =>
+                    string.Equals(part.PartID, partID, StringComparison.OrdinalIgnoreCase)
+                )
+                .ToList();
+
+            if (matchingLines.Count == 0)
             {
                 _logger?.LogWarning($"Mock part {partID} not found on mock PO {poNumber}");
                 return Model_Dao_Result_Factory.Failure<int>("Part not found on PO");
             }
 
+            int remaining = matchingLines.Sum(line => line.RemainingQuantity);
             _logger?.LogInfo(
-                $"[MOCK DATA MODE] Returning mock remaining quantity: {matchingLine.RemainingQuantity}"
+                $"[MOCK DATA MODE] Returning mock remaining quantity: {remaining}"
             );
-            return Model_Dao_Result_Factory.Success<int>(matchingLine.RemainingQuantity);
+            return Model_Dao_Result_Factory.Success<int>(remaining);
         }
 
         try
@@ -637,6 +712,36 @@ public class Service_InforVisualConnect : IService_InforVisual
     }
 
     /// <summary>
+    /// Converts flat unique-part DAO rows to a service model whose Parts collection
+    /// contains one entry per unique part with on-hand quantity and location.
+    /// </summary>
+    private Model_InforVisualPO ConvertUniquePartsToServiceModel(
+        List<Model_InforVisualPOUniquePart> rows
+    )
+    {
+        var firstRow = rows[0];
+
+        return new Model_InforVisualPO
+        {
+            PONumber = firstRow.PoNumber,
+            Vendor = firstRow.VendorName,
+            Status = firstRow.PoStatus,
+            HeaderPromiseDate = firstRow.HeaderPromiseDate,
+            HeaderDesiredReceiveDate = firstRow.HeaderDesiredReceiveDate,
+            FreeOnBoard = firstRow.FreeOnBoard,
+            Parts = rows.ConvertAll(row => new Model_InforVisualPart
+            {
+                PartID = row.PartNumber,
+                Description = row.PartDescription,
+                POLineNumber = row.PoLineNumber,
+                PartType = "FG", // Default - could be enhanced with additional query
+                OnHandQty = row.OnHandQty,
+                Location = row.Location,
+            }),
+        };
+    }
+
+    /// <summary>
     /// Converts DAO part model to service model
     /// </summary>
     /// <param name="daoPart"></param>
@@ -672,6 +777,32 @@ public class Service_InforVisualConnect : IService_InforVisual
         return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(
             match is null ? null : ClonePurchaseOrder(match)
         );
+    }
+
+    private Model_Dao_Result<Model_InforVisualPO?> CreateMockPOUniqueParts(string poNumber)
+    {
+        var baseResult = CreateMockPO(poNumber);
+        if (baseResult.Data is null)
+        {
+            return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(null);
+        }
+
+        var uniqueParts = baseResult.Data.Parts
+            .GroupBy(part => part.PartID, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.First())
+            .Select(part => new Model_InforVisualPart
+            {
+                PartID = part.PartID,
+                Description = part.Description,
+                POLineNumber = part.POLineNumber,
+                PartType = part.PartType,
+                OnHandQty = 0,
+                Location = string.Empty,
+            })
+            .ToList();
+
+        baseResult.Data.Parts = uniqueParts;
+        return Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(baseResult.Data);
     }
 
     private Model_Dao_Result<Model_InforVisualPart?> CreateMockPart(string partID)
@@ -767,6 +898,29 @@ public class Service_InforVisualConnect : IService_InforVisual
                         !string.IsNullOrWhiteSpace(value)
                     )
                 ),
+            })
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(results);
+    }
+
+    private Model_Dao_Result<List<Model_FuzzySearchResult>> CreateMockFuzzyCustomers(string term)
+    {
+        var normalizedTerm = term.Trim();
+        var results = _mockDataCatalog
+            .GetCatalog()
+            .Customers.Where(customer =>
+                customer.CustomerId.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+                || customer.Name.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase)
+            )
+            .GroupBy(customer => new { customer.CustomerId, customer.Name })
+            .OrderBy(group => group.Key.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(10)
+            .Select(group => new Model_FuzzySearchResult
+            {
+                Key = group.Key.CustomerId,
+                Label = $"{group.Key.CustomerId} - {group.Key.Name}",
+                Detail = string.Empty,
             })
             .ToList();
 
@@ -970,12 +1124,10 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         if (UseMockData)
         {
-            _logger?.LogWarning(
-                $"[MOCK DATA MODE] Customer fuzzy search is unavailable for term: {term}"
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Returning mock fuzzy customer results for: {term}"
             );
-            return Model_Dao_Result_Factory.Failure<List<Model_FuzzySearchResult>>(
-                "Customer fuzzy search is unavailable in mock data mode."
-            );
+            return CreateMockFuzzyCustomers(term);
         }
 
         return await _dao.FuzzySearchCustomersByIdOrNameAsync(term);

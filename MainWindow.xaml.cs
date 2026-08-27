@@ -263,7 +263,7 @@ namespace MTM_Receiving_Application
                 {
                     UpdateTitleBarColors();
                     UpdateTitleBarTextColor(_isWindowActive);
-                    ApplyHeaderAccent(ContentFrame.Content?.GetType());
+                    ApplyHeaderAccent(ContentFrame?.Content?.GetType());
                 };
             }
 

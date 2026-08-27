@@ -133,6 +133,75 @@ public sealed class Service_InforVisualConnectTests
     }
 
     [Fact]
+    public async Task GetPOUniquePartsWithOnHandAsync_ShouldReturnOneRowPerUniquePart_WhenMockPOContainsDuplicateLines()
+    {
+        var service = CreateService(
+            useMockData: true,
+            catalog: new Model_InforVisualMockDataCatalog
+            {
+                Locations = new List<string> { "RECV" },
+                PurchaseOrders = new List<Model_InforVisualPO>
+                {
+                    new()
+                    {
+                        PONumber = "PO-068202",
+                        Vendor = "Stern Steel LLC",
+                        Status = "R",
+                        Parts = new List<Model_InforVisualPart>
+                        {
+                            new()
+                            {
+                                PartID = "MMC0000850",
+                                POLineNumber = "1",
+                                QtyOrdered = 172000,
+                                RemainingQuantity = 36220,
+                                Description = "Coil, .312 X 14.330",
+                            },
+                            new()
+                            {
+                                PartID = "MMC0000850",
+                                POLineNumber = "2",
+                                QtyOrdered = 156000,
+                                RemainingQuantity = 156000,
+                                Description = "Coil, .312 X 14.330",
+                            },
+                            new()
+                            {
+                                PartID = "MMC0000875",
+                                POLineNumber = "3",
+                                QtyOrdered = 5000,
+                                RemainingQuantity = 5000,
+                                Description = "Second part",
+                            },
+                        },
+                    },
+                },
+            }
+        );
+
+        var result = await service.GetPOUniquePartsWithOnHandAsync("PO-068202");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.PONumber.Should().Be("PO-068202");
+        result.Data.Status.Should().Be("R");
+        result.Data.Parts.Should().HaveCount(2);
+        result
+            .Data.Parts.Select(part => part.PartID)
+            .Should()
+            .BeEquivalentTo("MMC0000850", "MMC0000875");
+        result.Data.Parts.Should().OnlyContain(part => part.OnHandQty == 0);
+        result
+            .Data.Parts.Single(part => part.PartID == "MMC0000850")
+            .POLineNumber.Should()
+            .Be("1");
+        result
+            .Data.Parts.Single(part => part.PartID == "MMC0000875")
+            .POLineNumber.Should()
+            .Be("3");
+    }
+
+    [Fact]
     public async Task GetReceivingLocationEvidenceAsync_ShouldReturnMockTransactions_WhenCatalogContainsSavedReceivingRows()
     {
         var service = CreateService(useMockData: true);
@@ -295,6 +364,16 @@ public sealed class Service_InforVisualConnectTests
         return new Model_InforVisualMockDataCatalog
         {
             Locations = new List<string>(locations),
+            Customers = new List<Model_InforVisualMockCustomer>
+            {
+                new()
+                {
+                    CustomerId = "VOLVO",
+                    Name = "Volvo Trucks",
+                    City = "Greensboro",
+                    State = "NC",
+                },
+            },
             Parts = new List<Model_InforVisualPart>
             {
                 new()

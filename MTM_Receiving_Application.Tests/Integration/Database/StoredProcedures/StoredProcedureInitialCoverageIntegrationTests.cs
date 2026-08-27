@@ -7519,13 +7519,22 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 2, 'Quan
                 new MySqlParameter("p_label_number", "LBL-1"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 1),
-                new MySqlParameter("p_specs_json", "{\"color\":\"green\"}")
+                new MySqlParameter("p_udc1", "green"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value)
             );
 
             var savedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND part_id = @partId;",
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND part_id = @partId AND udc1 = 'green';",
                     new MySqlParameter("@loadUuid", loadUuid),
                     new MySqlParameter("@partId", partId)
                 )
@@ -7636,13 +7645,22 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 new MySqlParameter("p_label_number", "L9"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 2),
-                new MySqlParameter("p_specs_json", "{\"size\":\"XL\"}")
+                new MySqlParameter("p_udc1", "XL"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value)
             );
 
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND quantity = 9 AND location = 'LABEL-NEW-LOC' AND quantity_type = 'Boxes';",
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND quantity = 9 AND location = 'LABEL-NEW-LOC' AND quantity_type = 'Boxes' AND udc1 = 'XL';",
                     new MySqlParameter("@loadUuid", loadUuid)
                 )
             );
@@ -8008,14 +8026,23 @@ VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, N
                 new MySqlParameter("p_label_number", "NEW"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 1),
-                new MySqlParameter("p_specs_json", "{\"batch\":1}"),
+                new MySqlParameter("p_udc1", "batch"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_user", "integration.user")
             );
 
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = 'DLU-HIST-NEW' AND quantity = 7 AND location = 'LOAD-NEW-LOC';",
+                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = 'DLU-HIST-NEW' AND quantity = 7 AND location = 'LOAD-NEW-LOC' AND udc1 = 'batch';",
                     new MySqlParameter("@loadUuid", loadUuid)
                 )
             );

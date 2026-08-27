@@ -109,6 +109,8 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty] = "Remaining Qty",
             [ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered] = "Qty Ordered",
             [ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber] = "Line #",
+            [ReceivingSettingsKeys.UiText.PoEntryColumnOnHand] = "On Hand",
+            [ReceivingSettingsKeys.UiText.PoEntryColumnLocation] = "Location",
 
             // Load entry
             [ReceivingSettingsKeys.UiText.LoadEntryHeader] = "Number of Loads (1-99)",

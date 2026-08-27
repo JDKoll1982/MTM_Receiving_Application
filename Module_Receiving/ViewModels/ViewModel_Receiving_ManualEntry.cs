@@ -1450,7 +1450,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (matchingParts.Count > 1)
             {
                 var selectedPart = await ShowPurchaseOrderPartSelectionAsync(
-                    poResult.Data.Parts,
+                    poResult.Data,
                     $"Part {resolvedPart.PartID} appears on multiple lines for {normalizedPo}. Select the correct PO line."
                 );
 
@@ -1477,7 +1477,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         )
         {
             var selectedPart = await ShowPurchaseOrderPartSelectionAsync(
-                purchaseOrder.Parts,
+                purchaseOrder,
                 $"The entered Part ID '{enteredPart.PartID}' was not found on {purchaseOrder.PONumber}. Select a part from this PO to continue."
             );
 
@@ -1497,23 +1497,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         private async Task<Model_InforVisualPart?> ShowPurchaseOrderPartSelectionAsync(
-            IReadOnlyList<Model_InforVisualPart> parts,
+            Model_InforVisualPO purchaseOrder,
             string subtitle
         )
         {
-            if (parts.Count == 0)
+            if (purchaseOrder.Parts.Count == 0)
             {
                 return null;
             }
 
-            var pickerItems = parts
-                .Select(part => new Model_FuzzySearchResult
-                {
-                    Key = part.POLineNumber,
-                    Label = part.DisplayText,
-                    Detail = BuildPartSelectionDetail(part),
-                })
-                .ToList();
+            var uniqueParts = await LoadPOUniquePartsForPickerAsync(purchaseOrder);
+            if (uniqueParts.Count == 0)
+            {
+                return null;
+            }
+
+            var pickerItems = BuildPOUniquePartPickerItems(uniqueParts);
 
             var selectedResult = await ShowFuzzyPickerAsync(pickerItems, "Select Part", subtitle);
 
@@ -1522,13 +1521,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return null;
             }
 
-            return parts.FirstOrDefault(part =>
-                string.Equals(
-                    part.POLineNumber,
-                    selectedResult.Key,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
+            return ResolveSelectedUniquePartToLine(purchaseOrder, selectedResult.Key);
         }
 
         private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
@@ -1759,14 +1752,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return false;
             }
 
-            var parts = poResult.Data.Parts.ToList();
+            var uniqueParts = await LoadPOUniquePartsForPickerAsync(poResult.Data);
 
-            var pickerItems = parts.ConvertAll(part => new Model_FuzzySearchResult
-            {
-                Key = part.POLineNumber,
-                Label = part.DisplayText,
-                Detail = BuildPartSelectionDetail(part),
-            });
+            var pickerItems = BuildPOUniquePartPickerItems(uniqueParts);
 
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot is null)
@@ -1813,12 +1801,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ExitManualEntryDialog();
             }
 
-            var selectedPart = parts.Find(part =>
-                string.Equals(
-                    part.POLineNumber,
-                    dialog!.SelectedResult!.Key,
-                    StringComparison.OrdinalIgnoreCase
-                )
+            var selectedPart = ResolveSelectedUniquePartToLine(
+                poResult.Data,
+                dialog!.SelectedResult!.Key
             );
 
             if (selectedPart is null)
@@ -1838,13 +1823,77 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             return true;
         }
 
+        private async Task<List<Model_InforVisualPart>> LoadPOUniquePartsForPickerAsync(
+            Model_InforVisualPO purchaseOrder
+        )
+        {
+            var uniqueResult = await _inforVisualService.GetPOUniquePartsWithOnHandAsync(
+                purchaseOrder.PONumber
+            );
+            if (
+                uniqueResult.IsSuccess
+                && uniqueResult.Data is { } uniquePo
+                && uniquePo.Parts.Count > 0
+            )
+            {
+                return uniquePo.Parts;
+            }
+
+            // Fallback: dedupe the line list by part ID.
+            return purchaseOrder.Parts
+                .GroupBy(part => part.PartID, StringComparer.OrdinalIgnoreCase)
+                .Select(group => group.First())
+                .ToList();
+        }
+
+        private static List<Model_FuzzySearchResult> BuildPOUniquePartPickerItems(
+            IReadOnlyList<Model_InforVisualPart> uniqueParts
+        ) =>
+            uniqueParts
+                .Select(part => new Model_FuzzySearchResult
+                {
+                    Key = part.PartID,
+                    Label = $"{part.PartID} - {part.Description}",
+                    Detail = BuildPartSelectionDetail(part),
+                })
+                .ToList();
+
+        private static Model_InforVisualPart? ResolveSelectedUniquePartToLine(
+            Model_InforVisualPO purchaseOrder,
+            string partId
+        ) =>
+            purchaseOrder.Parts.FirstOrDefault(part =>
+                string.Equals(part.PartID, partId, StringComparison.OrdinalIgnoreCase)
+            );
+
         private static string BuildPartSelectionDetail(Model_InforVisualPart part)
         {
-            var location = string.IsNullOrWhiteSpace(part.DefaultLocationId)
-                ? "No default location"
-                : $"Default location: {part.DefaultLocationId.Trim()}";
+            var details = new List<string>();
 
-            return $"Ordered: {part.QtyOrdered:F0} {part.UnitOfMeasure} | Remaining: {part.RemainingQuantity} | {location}";
+            if (part.OnHandQty != 0)
+            {
+                details.Add($"On Hand: {part.OnHandQty:F0}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(part.Location))
+            {
+                details.Add($"Location: {part.Location.Trim()}");
+            }
+            else if (!string.IsNullOrWhiteSpace(part.DefaultLocationId))
+            {
+                details.Add($"Default location: {part.DefaultLocationId.Trim()}");
+            }
+            else
+            {
+                details.Add("No location");
+            }
+
+            if (part.QtyOrdered != 0)
+            {
+                details.Add($"Ordered: {part.QtyOrdered:F0} {part.UnitOfMeasure}");
+            }
+
+            return string.Join(" | ", details);
         }
 
         private async Task<bool> ApplySelectedPoPartAsync(

@@ -198,6 +198,33 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
             _currentCustomFields = fields.OrderBy(field => field.DisplayOrder).ToList();
 
+            // Choices live in a separate table and are not returned by
+            // GetCustomFieldsByTypeAsync. Hydrate them per field so the
+            // Choices combobox has its options to display.
+            foreach (var field in _currentCustomFields)
+            {
+                if (
+                    string.Equals(
+                        field.FieldType,
+                        "Choices",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && field.Choices.Count == 0
+                )
+                {
+                    var choicesResult = await _dunnageService.GetCustomFieldChoicesAsync(
+                        field.Id
+                    );
+                    if (choicesResult.IsSuccess && choicesResult.Data != null)
+                    {
+                        field.Choices = choicesResult.Data
+                            .OrderBy(choice => choice.SortOrder)
+                            .Select(choice => choice.Choice)
+                            .ToList();
+                    }
+                }
+            }
+
             // Get the selected part's udc values as defaults
             var selectedPart = _workflowService.CurrentSession.SelectedPart;
 

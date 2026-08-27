@@ -374,9 +374,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
                 EnsureDisplayLoadNumbers();
                 CaptureOriginalSnapshots();
                 _hasLoadedData = true;
+                ApplySearchFilter(1);
 
             _logger.LogInfo(
-                $"Loaded {TotalRecords} active labels from dunnage_label_data queue",
+                $"Loaded {_allLoads.Count} active labels from dunnage_label_data queue",
                 "EditMode"
             );
         }
@@ -422,9 +423,10 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
                 EnsureDisplayLoadNumbers();
                 CaptureOriginalSnapshots();
                 _hasLoadedData = true;
+                ApplySearchFilter(1);
 
             _logger.LogInfo(
-                $"Loaded {TotalRecords} historical loads from {startDate:d} to {endDate:d}",
+                $"Loaded {_allLoads.Count} historical loads from {startDate:d} to {endDate:d}",
                 "EditMode"
             );
         }

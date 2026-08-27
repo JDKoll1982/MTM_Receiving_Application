@@ -149,6 +149,65 @@ public class Dao_InforVisualConnection
     }
 
     /// <summary>
+    /// Retrieves the PO header plus one row per unique part number on the PO,
+    /// with total on-hand quantity (PO site) and current location display.
+    /// Uses: 28_GetPOUniquePartsWithOnHand.sql
+    /// </summary>
+    /// <param name="poNumber"></param>
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOUniquePart>>> GetPOUniquePartsWithOnHandAsync(
+        string poNumber
+    )
+    {
+        try
+        {
+            _logger?.LogInfo($"Retrieving unique parts with on-hand for PO: {poNumber}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "28_GetPOUniquePartsWithOnHand.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PoNumber", poNumber);
+
+            var rows = new List<Model_InforVisualPOUniquePart>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualPOUniquePart
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        HeaderPromiseDate = reader["HeaderPromiseDate"] as DateTime?,
+                        HeaderDesiredReceiveDate = reader["HeaderDesiredRecvDate"] as DateTime?,
+                        FreeOnBoard = reader["FreeOnBoard"].ToString() ?? string.Empty,
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        PoLineNumber = reader["FirstLineNumber"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        OnHandQty = Math.Round(Convert.ToDecimal(reader["OnHandQty"]), 2),
+                        Location = reader["Location"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Retrieved {rows.Count} unique parts for PO {poNumber}");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error retrieving unique parts for PO {poNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOUniquePart>>(
+                $"Error retrieving unique parts for PO {poNumber}: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
     /// Validates if a PO number exists
     /// Uses: 02_ValidatePONumber.sql
     /// </summary>
