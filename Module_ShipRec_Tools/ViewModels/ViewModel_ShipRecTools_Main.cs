@@ -43,6 +43,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isDunnageBookVisible;
 
+    [ObservableProperty]
+    private bool _isWeldedCoilsVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -100,6 +103,12 @@ public partial class ViewModel_ShipRecTools_Main
                     ShowHeaderBackButton();
                     break;
 
+                case "WeldedCoils":
+                    IsWeldedCoilsVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
                 default:
                     _logger.LogInfo($"Unknown tool key '{toolKey}' - returning to tool selection.");
                     ShowToolSelection();
@@ -149,5 +158,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsMaterialAvailabilityBoardVisible = false;
         IsPOLineSpecSearchVisible = false;
         IsDunnageBookVisible = false;
+        IsWeldedCoilsVisible = false;
     }
 }

@@ -30,6 +30,7 @@ using MTM_Receiving_Application.Module_Scanner.Data;
 using MTM_Receiving_Application.Module_Scanner.Services;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Data;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using MTM_Receiving_Application.Module_Volvo.Contracts;
@@ -63,7 +64,7 @@ public static class ModuleServicesExtensions
         services.AddReportingModule(configuration);
         services.AddSettingsModule(configuration);
         services.AddSharedModule(configuration);
-        services.AddShipRecToolsModule();
+        services.AddShipRecToolsModule(configuration);
         services.AddReprintModule();
 
         return services;
@@ -579,10 +580,26 @@ public static class ModuleServicesExtensions
     /// Uses the InforVisual connection string for read-only Infor Visual queries.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
+    /// <param name="configuration">The application configuration.</param>
     private static IServiceCollection AddShipRecToolsModule(
-        this IServiceCollection services
+        this IServiceCollection services,
+        IConfiguration configuration
     )
     {
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+
+        // Welded Coils tool: DAO, service, ViewModel, and View.
+        services.AddSingleton(_ => new Dao_Tool_WeldedCoil(mySqlConnectionString));
+        services.AddSingleton<IService_Tool_WeldedCoils>(sp =>
+        {
+            var dao = sp.GetRequiredService<Dao_Tool_WeldedCoil>();
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_WeldedCoils(dao, inforVisual, logger);
+        });
+
         // Services (Singleton)
         services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
         services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
@@ -618,6 +635,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
         services.AddTransient<ViewModel_Tool_POLineSpecSearch>();
         services.AddTransient<ViewModel_Tool_DunnageBook>();
+        services.AddTransient<ViewModel_Tool_WeldedCoils>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
@@ -626,6 +644,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_POLineSpecSearch>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DunnageBook>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_WeldedCoils>();
 
         return services;
     }

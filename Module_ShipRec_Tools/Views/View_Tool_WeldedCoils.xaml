@@ -1,0 +1,163 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_WeldedCoils"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:models="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Padding="16,8,16,24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Search  -->
+        <TextBox
+            Grid.Row="0"
+            PlaceholderText="Search parts..."
+            Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!--  Add / Delete Selected  -->
+        <Grid Grid.Row="1" ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="Part #" />
+            <TextBox
+                Grid.Column="1"
+                KeyDown="AddBox_KeyDown"
+                PlaceholderText="e.g. 21-28841"
+                Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button
+                Grid.Column="2"
+                Command="{x:Bind ViewModel.AddCoilCommand}"
+                Content="Add Coil"
+                Style="{StaticResource AccentButtonStyle}" />
+            <Button
+                Grid.Column="3"
+                Command="{x:Bind ViewModel.DeleteSelectedCommand}"
+                Content="Delete Selected" />
+            <TextBlock
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="Coils that need the inner diameter welded before they go on the press cradle."
+                TextTrimming="CharacterEllipsis" />
+        </Grid>
+
+        <!--  Counts  -->
+        <StackPanel
+            Grid.Row="2"
+            Orientation="Horizontal"
+            Spacing="16">
+            <TextBlock
+                FontWeight="SemiBold"
+                Text="{x:Bind ViewModel.ActiveCountText, Mode=OneWay}" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="{x:Bind ViewModel.InactiveCountText, Mode=OneWay}" />
+            <ProgressRing
+                Width="20"
+                Height="20"
+                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+        </StackPanel>
+
+        <!--  Coil list  -->
+        <Border
+            Grid.Row="3"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid RowSpacing="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  Column header (kept in sync with the row template below)  -->
+                <Grid Grid.Row="0" ColumnSpacing="12" Padding="4,0,4,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.6*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Part" />
+                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Status" />
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <ListView
+                        ItemsSource="{x:Bind ViewModel.FilteredCoils, Mode=OneWay}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single"
+                        SelectedItem="{x:Bind ViewModel.SelectedCoil, Mode=TwoWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_Tool_WeldedCoil">
+                                <Grid ColumnSpacing="12" Padding="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.6*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind PartId}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind StatusLabel}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        Click="ToggleActiveButton_Click"
+                                        Content="{x:Bind ToggleLabel}"
+                                        Tag="{x:Bind}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <!-- Stretch + no horizontal padding so row columns line up with the
+                                     header grid (ListViewItem defaults to left-aligned content). -->
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="0,2" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+
+                    <!--  Empty state  -->
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsHitTestVisible="False"
+                        Text="{x:Bind ViewModel.EmptyStateText, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.IsFilteredEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

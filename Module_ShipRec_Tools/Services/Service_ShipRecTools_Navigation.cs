@@ -118,5 +118,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "WeldedCoils",
+                Title = "Welded Coils",
+                Description =
+                    "Maintain the list of coils that need the inner diameter welded before they go on the press cradle.",
+                IconGlyph = "\uE7BA",
+                Category = Enum_ToolCategory.Utilities,
+                IsAvailable = true,
+            }
+        );
     }
 }
