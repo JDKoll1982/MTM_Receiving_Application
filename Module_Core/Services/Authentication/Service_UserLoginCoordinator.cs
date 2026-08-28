@@ -21,7 +21,6 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
     private readonly IService_UserPrivileges _userPrivileges;
     private readonly IService_SettingsCoreFacade _settingsCoreFacade;
     private readonly IService_Window _windowService;
-    private readonly IService_ApplicationShutdown _applicationShutdown;
     private readonly IService_LoggingUtility _logger;
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IServiceProvider _serviceProvider;
@@ -32,7 +31,6 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
         IService_UserPrivileges userPrivileges,
         IService_SettingsCoreFacade settingsCoreFacade,
         IService_Window windowService,
-        IService_ApplicationShutdown applicationShutdown,
         IService_LoggingUtility logger,
         IService_ErrorHandler errorHandler,
         IServiceProvider serviceProvider
@@ -45,8 +43,6 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
         _settingsCoreFacade =
             settingsCoreFacade ?? throw new ArgumentNullException(nameof(settingsCoreFacade));
         _windowService = windowService ?? throw new ArgumentNullException(nameof(windowService));
-        _applicationShutdown =
-            applicationShutdown ?? throw new ArgumentNullException(nameof(applicationShutdown));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         _serviceProvider =
@@ -143,8 +139,7 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
 
             if (loginDialog.ViewModel.IsLockedOut)
             {
-                _applicationShutdown.RequestShutdown("manual_logout_locked_out");
-                App.MainWindow?.Close();
+                _ = App.RequestShutdownAsync("manual_logout_locked_out");
 
                 return Model_Dao_Result_Factory.Failure<Model_UserSession>(
                     "Maximum login attempts exceeded after logout. The application is closing."
@@ -153,8 +148,7 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
 
             if (loginDialog.ViewModel.IsCancelled)
             {
-                _applicationShutdown.RequestShutdown("manual_logout_login_cancelled");
-                App.MainWindow?.Close();
+                _ = App.RequestShutdownAsync("manual_logout_login_cancelled");
 
                 return Model_Dao_Result_Factory.Failure<Model_UserSession>(
                     "Login was cancelled after logout. The application is closing."

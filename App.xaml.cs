@@ -24,6 +24,13 @@ public partial class App : Application
     private System.Threading.Tasks.Task? _shutdownTask;
 
     /// <summary>
+    /// Upper bound for graceful shutdown cleanup. If session-end / host-stop / pool
+    /// clearing does not finish in this window, the app fails fast to Exit() so the
+    /// process can never linger after the last window closes.
+    /// </summary>
+    private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(8);
+
+    /// <summary>
     /// Gets the main window for the application.
     /// </summary>
     public static Window? MainWindow { get; internal set; }
@@ -107,11 +114,7 @@ public partial class App : Application
     /// <param name="e"></param>
     private void OnSessionTimedOut(object? sender, Model_SessionTimedOutEventArgs e)
     {
-        _host
-            .Services.GetRequiredService<IService_ApplicationShutdown>()
-            .RequestShutdown("session_timeout");
-
-        MainWindow?.Close();
+        _ = RequestShutdownAsync("session_timeout");
     }
 
     /// <summary>
@@ -140,6 +143,34 @@ public partial class App : Application
         var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
         shutdownService.RequestShutdown(reason, exitCode);
 
+        // Every close-point converges on this method, so close the main window here
+        // (a no-op when it is already closed or closing).
+        try
+        {
+            MainWindow?.Close();
+        }
+        catch
+        {
+            // Window is already closed or closing.
+        }
+
+        // Bound the graceful cleanup: a slow or hung step must never keep the process
+        // alive after the last window closes, so fail-fast to Exit() below.
+        var cleanup = RunShutdownCleanupAsync(reason);
+        var completed = await Task.WhenAny(cleanup, Task.Delay(ShutdownTimeout));
+        if (completed != cleanup)
+        {
+            Log.Warning(
+                $"App shutdown cleanup did not finish within {ShutdownTimeout.TotalSeconds:0} seconds; forcing exit."
+            );
+        }
+
+        Environment.ExitCode = exitCode;
+        Exit();
+    }
+
+    private async Task RunShutdownCleanupAsync(string reason)
+    {
         try
         {
             _host.Services.GetService<IService_SoftwareVersionMonitor>()?.StopMonitoring();
@@ -208,9 +239,6 @@ public partial class App : Application
         {
             Log.Error(ex, "Error disposing host during shutdown");
         }
-
-        Environment.ExitCode = exitCode;
-        Exit();
     }
 
     /// <summary>

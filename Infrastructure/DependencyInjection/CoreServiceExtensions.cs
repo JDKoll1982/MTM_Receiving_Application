@@ -165,7 +165,6 @@ public static class CoreServiceExtensions
             var userPrivileges = sp.GetRequiredService<IService_UserPrivileges>();
             var settingsCoreFacade = sp.GetRequiredService<IService_SettingsCoreFacade>();
             var windowService = sp.GetRequiredService<IService_Window>();
-            var applicationShutdown = sp.GetRequiredService<IService_ApplicationShutdown>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
 
@@ -175,7 +174,6 @@ public static class CoreServiceExtensions
                 userPrivileges,
                 settingsCoreFacade,
                 windowService,
-                applicationShutdown,
                 logger,
                 errorHandler,
                 sp
