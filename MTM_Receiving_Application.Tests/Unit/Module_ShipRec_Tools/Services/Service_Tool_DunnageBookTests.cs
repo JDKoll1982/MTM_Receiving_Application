@@ -3,6 +3,7 @@ using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
@@ -188,5 +189,72 @@ public sealed class Service_Tool_DunnageBookTests
         result.IsSuccess.Should().BeTrue();
         result.Data!.HtmlFragment.Should().Contain("data:image/");
         result.Data.HtmlFragment.Should().Contain("class='card-image'");
+    }
+
+    [Fact]
+    public async Task BuildBookAsync_ShouldEmbedSharedRootImage_WhenCachedCopyIsStale()
+    {
+        var sharedRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-book-shared-{Guid.NewGuid():N}"
+        );
+        var cacheRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"dunnage-book-cache-{Guid.NewGuid():N}"
+        );
+        var sharedImagePath = Path.Combine(sharedRoot, "Parts", "Test.png");
+        var cachedImagePath = Path.Combine(cacheRoot, "Parts", "Test.png");
+
+        try
+        {
+            Helper_DunnageImagePaths.SetRootFolder(sharedRoot);
+            Helper_DunnageImagePaths.SetLocalCacheRootFolder(cacheRoot);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(sharedImagePath)!);
+            Directory.CreateDirectory(Path.GetDirectoryName(cachedImagePath)!);
+            var sharedBytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+            var staleCachedBytes = new byte[] { 0x09, 0x08, 0x07, 0x06 };
+            File.WriteAllBytes(sharedImagePath, sharedBytes);
+            File.WriteAllBytes(cachedImagePath, staleCachedBytes);
+
+            var dunnageService = CreateDunnageServiceMock(
+                [CreateType(1, "Pallets")],
+                [CreatePart(1, "PLT-001", 1, "Pallets")]
+            );
+            var service = CreateService(dunnageService);
+            var groupsResult = await service.LoadDunnageGroupsAsync();
+            var entry = groupsResult.Data![0].Entries[0];
+            entry.IsSelected = true;
+            entry.Part.ImagePath = "Parts/Test.png";
+
+            var result = await service.BuildBookAsync(
+                groupsResult.Data!,
+                new Model_Tool_DunnageBook_Config
+                {
+                    IncludeCoverPage = false,
+                    IncludeTableOfContents = false,
+                }
+            );
+
+            result.IsSuccess.Should().BeTrue();
+            result
+                .Data!.HtmlFragment.Should()
+                .Contain($"data:image/png;base64,{Convert.ToBase64String(sharedBytes)}");
+            result.Data.HtmlFragment.Should().NotContain(Convert.ToBase64String(staleCachedBytes));
+        }
+        finally
+        {
+            Helper_DunnageImagePaths.SetRootFolder(null);
+            Helper_DunnageImagePaths.SetLocalCacheRootFolder(null);
+            if (Directory.Exists(sharedRoot))
+            {
+                Directory.Delete(sharedRoot, true);
+            }
+
+            if (Directory.Exists(cacheRoot))
+            {
+                Directory.Delete(cacheRoot, true);
+            }
+        }
     }
 }

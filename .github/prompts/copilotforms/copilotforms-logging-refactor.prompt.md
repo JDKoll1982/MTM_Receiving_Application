@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link a logging refactor export from docs/CopilotForms/outputs/logging-refactor and note any compliance or privacy requirements'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-logging-refactor.prompt.md
+- Description: Read a saved CopilotForms logging refactor export and adjust logging behavior accordingly.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Logging Refactor
+  - Line 12: ## Workflow
+  - Line 21: ## Output Expectations
+- Critical Notes: Preserve privacy and avoid logging sensitive values; keep severity choices deliberate.
+[DOC-META-END]
+-->
+
 # CopilotForms Logging Refactor
 
 Read the linked export from `docs/CopilotForms/outputs/logging-refactor/` and modify logging behavior accordingly.

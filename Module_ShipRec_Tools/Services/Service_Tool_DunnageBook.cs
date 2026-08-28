@@ -442,8 +442,12 @@ public class Service_Tool_DunnageBook : IService_Tool_DunnageBook
 
     private static string BuildCard(Model_Tool_DunnageBook_Entry entry, string fallbackImage)
     {
+        // Read from the shared root (source of truth) rather than the cache-preferring
+        // display lookup: the local cache is only refreshed at startup, so after a part
+        // image is rotated and re-imported in place it would still resolve the stale,
+        // unrotated cached copy. The book must always show the current image.
         var imageDataUri = Helper_ImageDataUri.TryGetDataUri(
-            Helper_DunnageImagePaths.GetDisplayAbsolutePath(entry.ImagePath)
+            Helper_DunnageImagePaths.GetAbsolutePath(entry.ImagePath)
         ) ?? fallbackImage;
 
         var html = new StringBuilder();

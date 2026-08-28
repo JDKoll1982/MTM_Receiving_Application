@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link a debugging export from docs/CopilotForms/outputs/debugging and add any current observations'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-debugging.prompt.md
+- Description: Read a saved CopilotForms debugging export and diagnose or fix the reported issue.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Debugging
+  - Line 12: ## Workflow
+  - Line 21: ## Output Expectations
+- Critical Notes: Prefer root-cause fixes over broad defensive edits and preserve unrelated behavior.
+[DOC-META-END]
+-->
+
 # CopilotForms Debugging
 
 Read the linked export from `docs/CopilotForms/outputs/debugging/` and use it as the structured input for diagnosis and repair.

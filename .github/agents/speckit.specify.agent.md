@@ -10,6 +10,20 @@ handoffs:
     send: true
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.specify.agent.md
+- Description: Create or update the feature specification from a natural language feature description.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 13-20: ## User Input
+  - Line 21-370: ## Outline
+  - Line 371-372: ## General Guidelines
+  - Line 373-432: ## Quick Guidelines
+- Critical Notes: Creates/updates the feature spec from natural language descriptions and hands off to plan/clarify.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

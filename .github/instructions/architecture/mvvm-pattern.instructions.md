@@ -3,6 +3,21 @@ description: 'MVVM rules for MTM WinUI 3 views and viewmodels, including binding
 applyTo: 'Module_*/ViewModels/**/*.cs,Module_*/Views/**/*.xaml,Module_Shared/**/*.{cs,xaml}'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mvvm-pattern.instructions.md
+- Description: MVVM rules for MTM WinUI 3 views and viewmodels, including binding, layering, command, and dependency boundaries.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # MVVM Pattern
+  - Line 10: ## ViewModel Rules
+  - Line 18: ## View Rules
+  - Line 25: ## Forbidden Patterns
+  - Line 32: ## Validation
+- Critical Notes: Never call DAOs from ViewModels; use x:Bind only — no runtime {Binding} in new XAML.
+[DOC-META-END]
+-->
+
 # MVVM Pattern
 
 Use this file when changing WinUI views or ViewModels.

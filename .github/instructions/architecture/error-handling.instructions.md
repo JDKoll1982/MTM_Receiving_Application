@@ -3,6 +3,20 @@ description: 'Error handling guidance for MTM viewmodels, services, and DAOs, in
 applyTo: 'Module_*/ViewModels/**/*.cs,Module_*/Services/**/*.cs,Module_*/Data/**/*.cs'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: error-handling.instructions.md
+- Description: Error handling guidance for MTM viewmodels, services, and DAOs, including escalation boundaries and user-facing error flow.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # Error Handling
+  - Line 8: ## Responsibility Split
+  - Line 14: ## Rules
+  - Line 21: ## Preferred Pattern
+- Critical Notes: DAOs return failure results for expected problems; use IService_ErrorHandler for user-facing error display.
+[DOC-META-END]
+-->
+
 # Error Handling
 
 ## Responsibility Split

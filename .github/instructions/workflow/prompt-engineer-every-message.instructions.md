@@ -7,6 +7,22 @@ description: >
   proceeds only with the confirmed prompt.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: prompt-engineer-every-message.instructions.md
+- Description: Prompt Engineering Auto-Enhancer — Intercepts every user message, applies MasterPrompting.net principles to construct an optimized prompt, presents it for approval using vscode_askQuestions BEFORE executing any task, then proceeds only with the confirmed prompt.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 10-16: # Prompt Engineering Auto-Enhancer
+  - Line 17-222: ## Mandatory Workflow — Apply to EVERY User Message
+  - Line 223-247: ## When to Apply the Full Workflow vs. Lightweight Mode
+  - Line 248-295: ## Specialized Pattern — Rewriting Rough Notes Into Implementation Prompts
+  - Line 296-345: ## Prompt Engineering Quick Reference (From All Tracks)
+  - Line 346-382: ## Example Enhancement (Before vs. After)
+  - Line 383-397: ## Implementation Note
+[DOC-META-END]
+-->
+
 # Prompt Engineering Auto-Enhancer
 
 **Source:** Principles synthesized from all 69 lessons across Beginner, Intermediate, Advanced,

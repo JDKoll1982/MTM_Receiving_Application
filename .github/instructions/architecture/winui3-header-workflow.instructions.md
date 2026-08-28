@@ -3,6 +3,26 @@ description: 'MTM main-window header workflow covering the shell header anatomy,
 applyTo: 'MainWindow.xaml,MainWindow.xaml.cs,Module_Core/Contracts/ViewModels/IViewModel_HeaderTitleProvider.cs,Module_Core/Contracts/Services/IService_HeaderBackNavigation.cs,Module_Core/Services/Service_HeaderBackNavigation.cs,Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs,Module_Core/Themes/ModuleAccentBrushes.xaml,Module_*/ViewModels/**/*.cs'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: winui3-header-workflow.instructions.md
+- Description: MTM main-window header workflow covering the shell header anatomy, title resolution (IViewModel_HeaderTitleProvider + fallback titles), the shared back action (IService_HeaderBackNavigation), per-module accent coloring, settings drill-down back state, and the sync rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # WinUI 3 Main-Window Header Workflow
+  - Line 14: ## Header Anatomy (MainWindow.xaml)
+  - Line 29: ## The Sync Chokepoint
+  - Line 51: ## Title Resolution
+  - Line 103: ## Module Accent Coloring
+  - Line 151: ## Shared Back Action
+  - Line 177: ## Settings Drill-Down Back State
+  - Line 193: ## Rules And Guardrails
+  - Line 223: ## Validation
+  - Line 235: ## See Also
+- Critical Notes: Every header refresh flows through MainWindow.SyncPageHeader — views and viewmodels never set header elements directly.
+[DOC-META-END]
+-->
+
 # WinUI 3 Main-Window Header Workflow
 
 The shell header is the persistent bar rendered inside `MainWindow`'s

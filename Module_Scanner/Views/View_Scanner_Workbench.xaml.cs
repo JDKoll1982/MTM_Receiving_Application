@@ -242,6 +242,7 @@ public sealed partial class View_Scanner_Workbench : Page
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
         };
+        ApplyPickerDialogSizing(dialog);
 
         var result = await dialog.ShowAsync();
         if (result != ContentDialogResult.Primary)
@@ -304,6 +305,7 @@ public sealed partial class View_Scanner_Workbench : Page
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
         };
+        ApplyPickerDialogSizing(dialog);
 
         var result = await dialog.ShowAsync();
         if (result != ContentDialogResult.Primary)
@@ -355,6 +357,18 @@ public sealed partial class View_Scanner_Workbench : Page
     }
 
     /// <summary>
+    /// Applies the repo-standard ContentDialog sizing used by the larger list/detail
+    /// dialogs (e.g. Module_Receiving EditModeColumnChooser, Module_Dunnage dialogs).
+    /// Without this, ContentDialog clamps to its default 548px max width.
+    /// </summary>
+    private static void ApplyPickerDialogSizing(ContentDialog dialog)
+    {
+        dialog.Resources["ContentDialogMinWidth"] = 900d;
+        dialog.Resources["ContentDialogMaxWidth"] = 1600d;
+        dialog.Resources["ContentDialogMaxHeight"] = 760d;
+    }
+
+    /// <summary>
     /// Builds the modal body: a Select All/None toggle, a column-header row, and the list.
     /// </summary>
     private static (StackPanel Panel, Button SelectAllButton) BuildPickerContent(
@@ -368,7 +382,7 @@ public sealed partial class View_Scanner_Workbench : Page
             Margin = new Thickness(4, 0, 4, 6),
         };
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(40) });
-        header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star) });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(90) });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120) });
         header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(110) });
@@ -385,7 +399,9 @@ public sealed partial class View_Scanner_Workbench : Page
             Padding = new Thickness(12, 4, 12, 4),
         };
 
-        var panel = new StackPanel { Spacing = 6 };
+        // Content floor matching ContentDialogMinWidth so rows never collapse below a
+        // usable Part column (mirrors the reference dialogs' content MinWidth).
+        var panel = new StackPanel { Spacing = 6, MinWidth = 900 };
         panel.Children.Add(selectAllButton);
         panel.Children.Add(header);
         panel.Children.Add(listView);
@@ -414,7 +430,7 @@ public sealed partial class View_Scanner_Workbench : Page
                 <Grid Padding="4,4" ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1.5*" />
                         <ColumnDefinition Width="90" />
                         <ColumnDefinition Width="120" />
                         <ColumnDefinition Width="110" />

@@ -19,6 +19,22 @@ tools:
 argument-hint: 'Optionally provide a specific test area to focus on (e.g., "validation", "vendor logic", "package count")'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: outside-service-setup-vm-tests.prompt.md
+- Description: Generate comprehensive xUnit tests for ViewModel_OutsideService_Setup covering all commands, computed properties, validation paths, and service interactions
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 22-26: # Outside Service Setup ViewModel — Unit Tests
+  - Line 27-34: ## References
+  - Line 35-40: ## Scope & Preconditions
+  - Line 41-118: ## Test Inventory — Implement All Missing Cases
+  - Line 119-127: ## Workflow
+  - Line 128-134: ## Output Expectations
+- Critical Notes: Read the ViewModel source fully first; do NOT regenerate existing tests — only add the missing cases enumerated in the Test Inventory.
+[DOC-META-END]
+-->
+
 # Outside Service Setup ViewModel — Unit Tests
 
 Generate and maintain unit tests for `ViewModel_OutsideService_Setup` in

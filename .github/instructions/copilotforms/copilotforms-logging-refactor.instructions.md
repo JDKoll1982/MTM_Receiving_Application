@@ -3,6 +3,17 @@ description: 'Interpret CopilotForms logging refactor exports linked from docs/C
 applyTo: 'docs/CopilotForms/outputs/logging-refactor/**/*.{md,json}'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-logging-refactor.instructions.md
+- Description: Interpret CopilotForms logging refactor exports linked from docs/CopilotForms/outputs/logging-refactor and use them to adjust logging safely and intentionally.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-15: # CopilotForms Logging Refactor Exports
+- Critical Notes: Never introduce sensitive data into logs; keep enough signal to preserve diagnosability when removing logs.
+[DOC-META-END]
+-->
+
 # CopilotForms Logging Refactor Exports
 
 When a linked file from `docs/CopilotForms/outputs/logging-refactor/` is present:

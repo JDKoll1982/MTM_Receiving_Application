@@ -1,3 +1,22 @@
+<!-- 
+[DOC-META-START]
+- File Name: cqrs.instructions.md
+- Description: Module_Core CQRS infrastructure overview — MediatR, FluentValidation, Serilog, global pipeline behaviors, and how to use CQRS in feature modules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1: # Module_Core - CQRS Infrastructure Added
+  - Line 3: ## ✅ What Was Added
+  - Line 40: ## 📁 New Files Created
+  - Line 55: ## 🎯 How to Use CQRS in Your Feature Modules
+  - Line 264: ## 🔄 Global Pipeline Behaviors (Automatic for ALL Handlers)
+  - Line 293: ## 📊 Logging Output Examples
+  - Line 319: ## ✅ Next Steps
+  - Line 358: ## 🎓 Learning Resources
+  - Line 374: ## 🚀 You're Ready
+- Critical Notes: Logging, validation, and audit pipeline behaviors apply automatically to all handlers.
+[DOC-META-END]
+-->
+
 # Module_Core - CQRS Infrastructure Added
 
 ## ✅ What Was Added

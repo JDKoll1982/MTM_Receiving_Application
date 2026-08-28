@@ -2,6 +2,18 @@
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.implement.agent.md
+- Description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-12: ## User Input
+  - Line 13-149: ## Outline
+- Critical Notes: Execute the implementation plan by processing and executing every task defined in tasks.md.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

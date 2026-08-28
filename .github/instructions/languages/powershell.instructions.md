@@ -2,6 +2,23 @@
 applyTo: "**/*.ps1,**/*.psm1"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: powershell.instructions.md
+- Description: PowerShell cmdlet development guidelines for generating idiomatic, safe, and maintainable scripts aligned with Microsoft cmdlet conventions.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-9: # PowerShell Cmdlet Development Guidelines
+  - Line 10-55: ## Naming Conventions
+  - Line 56-108: ## Parameter Design
+  - Line 109-179: ## Pipeline and Output
+  - Line 180-277: ## Error Handling and Safety
+  - Line 278-308: ## Documentation and Style
+  - Line 309-355: ## Full Example: End-to-End Cmdlet Pattern
+- Critical Notes: Use approved PowerShell verbs and full cmdlet names; avoid aliases in scripts.
+[DOC-META-END]
+-->
+
 # PowerShell Cmdlet Development Guidelines
 
 This guide provides PowerShell-specific instructions to help GitHub Copilot generate idiomatic,

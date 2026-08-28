@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a naming cleanup export from docs/CopilotForms/outputs/naming-consistency-cleanup and add any extra rename constraints"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-naming-consistency-cleanup.prompt.md
+- Description: Read a saved CopilotForms naming cleanup export and align names without changing intended behavior.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Naming / Consistency Cleanup
+  - Line 12: ## Workflow
+- Critical Notes: Apply safe, semantics-aware cleanup while preserving behavior.
+[DOC-META-END]
+-->
+
 # CopilotForms Naming / Consistency Cleanup
 
 Read the linked export from `docs/CopilotForms/outputs/naming-consistency-cleanup/` and use it as the structured input for semantic cleanup.

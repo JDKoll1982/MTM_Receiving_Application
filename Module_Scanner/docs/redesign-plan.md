@@ -57,16 +57,21 @@ Infor Visual (SQL Server) remains read-only.
 - Task 1/2/2b: `Service_ScannerExecution` raises automation state; Workbench binds
   `IsAutomationRunning` and disables inputs; integration tests verify `Enabled = false`.
 - Task 3/4: buttons and commands removed.
-- Task 5: `View_Scanner_ManageItemsDialog` sized via `MinWidth`/`MinHeight` + `ScrollViewer`.
+- Task 5: `View_Scanner_ManageItemsDialog` sized via `ContentDialogMinWidth` (1000) /
+  `ContentDialogMaxWidth` (1600) / `ContentDialogMaxHeight` (760) resources + a
+  `ScrollViewer`-capped list.
 - Task 6: baseline input states in `View_Scanner_Workbench.xaml`.
 - Step 6b: part focus-lost validation -> stock-location `ContentDialog` -> header error with
   5s auto-clear; per-row To/Qty `LostFocus` -> `Helper_ScannerLocationFormat.Sanitize` +
   `ValidateSessionItemAsync`.
 - Step 6b-a1 modal: multi-select rows (checkbox), column headers (Location / Total Qty / Qty /
   # Trans), Total Qty formatted without trailing zeros, editable Qty clamped to on-hand, and a
-  # of Transactions `NumberBox` (min 1). Cancel or Use Selected clears the Part Number input to
-  prevent modal reopen. Use Selected populates the current list immediately (picks x # trans),
-  leaving destinations empty.
+  # of Transactions `NumberBox` (min 1). The picker dialog uses the same ContentDialog sizing
+  resources as the larger repo dialogs (`ContentDialogMinWidth` 900 / `ContentDialogMaxWidth`
+  1600 / `ContentDialogMaxHeight` 760) so the primary Part/Location column (star-weighted
+  `1.5*`) stays readable instead of collapsing to the default 548px width. Cancel or Use
+  Selected clears the Part Number input to prevent modal reopen. Use Selected populates the
+  current list immediately (picks x # trans), leaving destinations empty.
 - Top bar reduced to the Part lookup only; From / To / Qty are edited per-row in the table
   (`Model_ScannerBatchItem` is observable). Each row edit re-validates on focus loss and updates
   its Status column. Row validation persists silently WITHOUT rebuilding `SessionItems`, so the

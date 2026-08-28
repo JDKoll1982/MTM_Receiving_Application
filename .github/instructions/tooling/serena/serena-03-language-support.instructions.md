@@ -5,6 +5,22 @@ description: >
   for the MTM project, and the JetBrains plugin alternative.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-03-language-support.instructions.md
+- Description: Serena language support — which languages are supported, C# Roslyn setup for the MTM project, and the JetBrains plugin alternative.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-21: # Serena Language Support
+  - Line 22-64: ## C# Support (MTM Primary Language)
+  - Line 65-97: ## JetBrains Plugin Alternative
+  - Line 98-122: ## All Supported Languages
+  - Line 123-139: ## Adding Language Support for Polyglot Projects
+  - Line 140-171: ## Common Troubleshooting
+- Critical Notes: Use Roslyn (default) for MTM — it requires .NET 10+ and pwsh on Windows.
+[DOC-META-END]
+-->
+
 # Serena Language Support
 
 Serena provides semantic code understanding through two alternative backends:

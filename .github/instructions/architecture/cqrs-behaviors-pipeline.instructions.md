@@ -3,6 +3,19 @@ description: 'CQRS pipeline behavior guidance for MTM covering MediatR behaviors
 applyTo: 'Module_Core/Behaviors/**/*.cs,Infrastructure/DependencyInjection/**/*Cqrs*.cs,Module_*/Services/**/*.cs'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: cqrs-behaviors-pipeline.instructions.md
+- Description: CQRS pipeline behavior guidance for MTM covering MediatR behaviors, registration order, and cross-cutting concerns.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # CQRS Behaviors And Pipeline
+  - Line 10: ## Current Pattern
+  - Line 17: ## Rules
+- Critical Notes: Behavior registration order matters — validation should fail early and logging keeps enough context.
+[DOC-META-END]
+-->
+
 # CQRS Behaviors And Pipeline
 
 Use this file when changing MediatR pipeline behaviors or handler wiring.

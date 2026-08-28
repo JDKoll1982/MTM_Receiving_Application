@@ -3,6 +3,17 @@ description: "Interpret CopilotForms performance issue exports linked from docs/
 applyTo: "docs/CopilotForms/outputs/performance-issue-optimization/**/*.{md,json}"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-performance-issue-optimization.instructions.md
+- Description: Interpret CopilotForms performance issue exports linked from docs/CopilotForms/outputs/performance-issue-optimization and use them for targeted diagnosis and optimization.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-15: # CopilotForms Performance Issue / Optimization Exports
+- Critical Notes: Distinguish measured impact from guesses; prefer root-cause improvements over cosmetic micro-optimizations.
+[DOC-META-END]
+-->
+
 # CopilotForms Performance Issue / Optimization Exports
 
 When a linked file from `docs/CopilotForms/outputs/performance-issue-optimization/` is present:

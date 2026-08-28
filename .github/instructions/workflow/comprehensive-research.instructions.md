@@ -2,6 +2,26 @@
 applyTo: "**/*"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: comprehensive-research.instructions.md
+- Description: Workflow for conducting thorough research across multiple authoritative sources before generating documentation, code examples, or other artifacts.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Comprehensive Research Before Creation
+  - Line 9-20: ## When to Apply This Workflow
+  - Line 21-83: ## Research Methodology
+  - Line 131-149: ## Research Quality Checklist
+  - Line 150-187: ## Example Research Topics
+  - Line 188-209: ## Common Research Mistakes to Avoid
+  - Line 210-220: ## Token Management
+  - Line 221-231: ## After Research - Before Creation
+  - Line 232-243: ## Creating After Research
+  - Line 244-276: ## Example Workflow
+  - Line 277-287: ## Summary
+[DOC-META-END]
+-->
+
 # Comprehensive Research Before Creation
 
 Instructions for conducting thorough research across multiple authoritative sources before generating documentation, code examples, or other artifacts.

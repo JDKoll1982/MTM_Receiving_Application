@@ -15,6 +15,21 @@ handoffs:
     send: true
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.module-specify.agent.md
+- Description: Generate feature specification for module modernization/creation based on module-agent workflow analysis.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 18-19: # Module Specification Generator
+  - Line 20-33: ## User Input
+  - Line 34-394: ## Outline
+  - Line 395-485: ## Error Handling
+  - Line 486-495: ## Notes
+- Critical Notes: Generates feature specs for module modernization/creation from module-agent workflow analysis.
+[DOC-META-END]
+-->
+
 # Module Specification Generator
 
 ## User Input

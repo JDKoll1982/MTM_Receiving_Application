@@ -4,6 +4,25 @@ name: 'Prompt Builder'
 tools: [vscode, execute, read, edit, search, web, 'context7/*']
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: prompt-builder.agent.md
+- Description: Expert prompt engineering and validation system for creating high-quality prompts - Brought to you by microsoft/edge-ai
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 7-8: # Prompt Builder Instructions
+  - Line 9-17: ## Core Directives
+  - Line 18-93: ## Requirements
+  - Line 94-143: ## Process Overview
+  - Line 144-179: ## Core Principles
+  - Line 180-224: ## Response Format
+  - Line 225-302: ## Conversation Flow
+  - Line 303-340: ## Quality Standards
+  - Line 341-353: ## Quick Reference: Imperative Prompting Terms
+- Critical Notes: Never complete a prompt improvement without Prompt Tester validation (max 3 cycles).
+[DOC-META-END]
+-->
+
 # Prompt Builder Instructions
 
 ## Core Directives

@@ -5,6 +5,21 @@ description: >
   Links to token-friendly and full-detail files covering installation, tools, workflow, memories, and configuration.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-tools.instructions.md
+- Description: Serena semantic coding tools index for MTM Receiving Application — start here. Links to token-friendly and full-detail files covering installation, tools, workflow, memories, and configuration.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-22: # Serena Semantic Coding Tools — Index
+  - Line 23-37: ## Quick Reference — When to Use Serena
+  - Line 38-61: ## MTM Memory Catalog (Quick Reference)
+  - Line 62-158: ## Detail File Index
+  - Line 159-164: ## Official References
+- Critical Notes: Start here — read serena-01-overview first; use symbol tools for 80-90% token savings.
+[DOC-META-END]
+-->
+
 # Serena Semantic Coding Tools — Index
 
 **Serena** is an IDE-like MCP server that provides symbol-level code navigation and editing

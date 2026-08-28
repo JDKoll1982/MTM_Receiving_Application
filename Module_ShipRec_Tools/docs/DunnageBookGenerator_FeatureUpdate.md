@@ -25,6 +25,10 @@ as a PDF through the browser.
   (labels come from `dunnage_custom_fields`).
 - Part images are embedded as base64 data URIs; parts without an image use
   `Assets\DunnageBookNoImage.png`. The cover logo uses `Assets\MTMLogo.jpg`.
+- Card images are read from the **shared image root** (the source of truth), not the local
+  display cache. The cache is only refreshed at startup, so reading from it could show a stale,
+  unrotated copy after a part image is rotated and re-imported in place; the book must always
+  show the current image.
 - The book is a deterministic paged HTML document: each sheet is a fixed `.page` block, so the
   table of contents page numbers and the running `Title — Page X of Y` footer are exact.
 - The print pipeline follows the Material Availability Board pattern (HTML to a temp file,

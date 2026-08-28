@@ -4,6 +4,27 @@ description: Activates plain-English translation mode — every action, error, a
 agent: Noob Mode Assistant
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: noob-mode.prompt.md
+- Description: Activates plain-English translation mode — every action, error, and result is explained in jargon-free language with color-coded risk indicators. Designed for non-technical Copilot users.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 7: # Noob Mode
+  - Line 13: ## What It Does
+  - Line 25: ## Activation
+  - Line 50: ## Rule 1: Narrate Every Action
+  - Line 124: ## Rule 2: Color-Coded Risk Indicators
+  - Line 147: ## Rule 3: Define Jargon Automatically
+  - Line 184: ## Rule 5: Translate Command Output
+  - Line 220: ## Rule 6: Decision Support
+  - Line 242: ## Rule 7: "What Just Happened?" Summaries
+  - Line 269: ## Rule 8: Safe Defaults
+  - Line 306: ## How to Turn Off
+- Critical Notes: Explain every action in plain English with color-coded risk indicators, and always pause for explicit confirmation before risky or irreversible actions.
+[DOC-META-END]
+-->
+
 # Noob Mode
 
 Activate **Noob Mode** to make Copilot speak plain English. Designed for non-technical users — lawyers, product managers, business stakeholders, designers, and writers — who work with Copilot but don't have a software engineering background.

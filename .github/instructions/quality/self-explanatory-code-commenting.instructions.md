@@ -2,6 +2,24 @@
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: self-explanatory-code-commenting.instructions.md
+- Description: Self-explanatory code commenting instructions — write code that speaks for itself and comment only when necessary to explain WHY.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # Self-explanatory Code Commenting Instructions
+  - Line 7-10: ## Core Principle
+  - Line 11-74: ## Commenting Guidelines
+  - Line 75-82: ## Decision Framework
+  - Line 83-121: ## Special Cases for Comments
+  - Line 122-148: ## Anti-Patterns to Avoid
+  - Line 149-158: ## Quality Checklist
+  - Line 159-161: ## Summary
+- Critical Notes: The best comment is the one you don't need to write because the code is self-documenting.
+[DOC-META-END]
+-->
+
 # Self-explanatory Code Commenting Instructions
 
 ## Core Principle

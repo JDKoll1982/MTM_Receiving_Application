@@ -1,3 +1,19 @@
+<!-- 
+[DOC-META-START]
+- File Name: commit-message.prompt.md
+- Description: Examine all uncommitted changes in the workspace and generate a well-structured Git commit message.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-2: # Commit Message Generation Prompt
+  - Line 3-8: ## Task
+  - Line 9-26: ## Step 1 — Inventory All Changes
+  - Line 27-51: ## Step 2 — Analyze the Changes
+  - Line 52-72: ## Step 3 — Determine the Commit Type
+  - Line 73-95: ## Step 4 — Compose the Commit Message
+- Critical Notes: Use Conventional Commits format with an imperative subject line under 72 characters.
+[DOC-META-END]
+-->
+
 # Commit Message Generation Prompt
 
 ## Task

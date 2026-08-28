@@ -19,6 +19,17 @@ tools:
   - playwright/*
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-mcp-implement.prompt.md
+- Description: Implement changes using MCP-first workflows (Serena + filesystem + optional GitHub/Playwright).
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 22: # MCP Implement
+- Critical Notes: Use MCP-first tooling (Serena for symbols, filesystem for reads/writes, GitHub/Playwright when relevant) and verify after editing.
+[DOC-META-END]
+-->
+
 # MCP Implement
 
 You are implementing a change in this workspace.

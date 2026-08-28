@@ -3,6 +3,17 @@ description: "Interpret CopilotForms logic plus tests exports linked from docs/C
 applyTo: "docs/CopilotForms/outputs/logic-change-test-generation/**/*.{md,json}"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-logic-change-test-generation.instructions.md
+- Description: Interpret CopilotForms logic plus tests exports linked from docs/CopilotForms/outputs/logic-change-test-generation and use them to align behavior and coverage.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-15: # CopilotForms Logic Change + Test Generation Exports
+- Critical Notes: Fix the root behavior issue first, then add the smallest focused test set guarding against regression.
+[DOC-META-END]
+-->
+
 # CopilotForms Logic Change + Test Generation Exports
 
 When a linked file from `docs/CopilotForms/outputs/logic-change-test-generation/` is present:

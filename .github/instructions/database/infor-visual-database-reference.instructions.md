@@ -6,6 +6,22 @@ description: >
   inventory with known limitations (encrypted definitions, missing headers, V_ naming).
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: infor-visual-database-reference.instructions.md
+- Description: Infor Visual (MTMFG) SQL Server database reference files — what each CSV file contains, how to use them when generating SQL queries or C# models, and the complete verified file inventory with known limitations (encrypted definitions, missing headers, V_ naming).
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-20: # Infor Visual Database Reference Files
+  - Line 21-31: ## Critical Rules Before Writing Any SQL
+  - Line 32-118: ## Existing Reference Files
+  - Line 119-253: ## Additional Reference Files
+  - Line 254-310: ## Common Query Patterns
+  - Line 311-328: ## File Inventory
+- Critical Notes: MTMFG Infor Visual is strictly READ ONLY with no stored procedures — verify column names against the CSV reference files before writing any SQL.
+[DOC-META-END]
+-->
+
 # Infor Visual Database Reference Files
 
 The `docs/InforVisual/DatabaseCSVFiles/` folder contains CSV exports of the MTMFG SQL

@@ -19,6 +19,27 @@ tools:
   ]
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-generate-all-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for a single file or entire module with Serena memory tracking
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 22-25: # Generate Comprehensive Unit Tests for File or Module
+  - Line 26-34: ## Mission
+  - Line 35-54: ## Scope & Preconditions
+  - Line 55-65: ## Inputs
+  - Line 66-69: ## Instructions
+  - Line 70-157: ## Workflow
+  - Line 346-347: ## File Type Detection (Detailed)
+  - Line 348-397: ## Universal Requirements
+  - Line 398-451: ## Layer-Specific Guidelines
+  - Line 452-467: ## Output Format
+  - Line 578-588: ## Serena Memory Integration
+- Critical Notes: For module-wide generation, write a Serena memory progress entry (test_generation_{modulename}) and wait for user confirmation before generating tests.
+[DOC-META-END]
+-->
+
 # Generate Comprehensive Unit Tests for File or Module
 
 You are an expert C# unit test developer for .NET 10, WinUI 3, and MVVM applications using xUnit and FluentAssertions with Serena memory integration for progress tracking.

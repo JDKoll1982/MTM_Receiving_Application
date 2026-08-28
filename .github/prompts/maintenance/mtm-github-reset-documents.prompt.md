@@ -6,6 +6,23 @@ tools: ['read_file', 'grep_search', 'list_dir', 'apply_patch', 'run_in_terminal'
 argument-hint: 'Describe which .github surfaces to reset or modernize.'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-github-reset-documents.prompt.md
+- Description: Reset or modernize the repository AI-documentation surfaces using the active taxonomy and archive-first workflow.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-12: # Reset MTM AI Documentation
+  - Line 13-17: ## Mission
+  - Line 18-24: ## Scope And Preconditions
+  - Line 25-29: ## Inputs
+  - Line 30-39: ## Workflow
+  - Line 40-45: ## Output Expectations
+  - Line 46-50: ## Quality Assurance
+- Critical Notes: Archive first — confirm an archive snapshot exists before deleting or replacing active duplicates.
+[DOC-META-END]
+-->
+
 # Reset MTM AI Documentation
 
 Archive first, then simplify and modernize the active `.github` documentation surfaces.

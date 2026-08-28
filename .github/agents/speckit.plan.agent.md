@@ -10,6 +10,20 @@ handoffs:
     prompt: Create a checklist for the following domain...
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.plan.agent.md
+- Description: Execute the implementation planning workflow using the plan template to generate design artifacts.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 13-20: ## User Input
+  - Line 21-56: ## Outline
+  - Line 57-109: ## Phases
+  - Line 110-113: ## Key rules
+- Critical Notes: Use the plan template to generate design artifacts before breaking work into tasks.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

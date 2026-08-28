@@ -1,3 +1,21 @@
+<!-- 
+[DOC-META-START]
+- File Name: mtm-module-models-optimize-and-test.prompt.md
+- Description: Optimizes Module models incrementally and adds/updates xUnit tests one model file at a time, verifying tests pass after each iteration.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-4: # Module Models Optimize + Test (Incremental)
+  - Line 5-8: ## Input
+  - Line 9-14: ## Objective
+  - Line 15-22: ## Foldering rule for defaults
+  - Line 23-32: ## Non-negotiable constraints
+  - Line 33-41: ## Step 0 — Load required context with tools
+  - Line 42-52: ## Step 1 — Produce tips + task list (before editing code)
+  - Line 53-86: ## Step 2 — Iterate changes “one model at a time”
+- Critical Notes: Keep changes additive/backward-compatible and iterate one model file at a time, verifying tests pass before moving to the next file.
+[DOC-META-END]
+-->
+
 # Module Models Optimize + Test (Incremental)
 
 You are GitHub Copilot operating inside the current solution (WinUI 3, .NET 10, C# 13, MVVM). Start fresh: assume no prior changes.

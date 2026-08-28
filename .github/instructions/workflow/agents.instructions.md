@@ -2,6 +2,26 @@
 applyTo: "**/*.agent.md"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: agents.instructions.md
+- Description: Guidelines for creating effective and maintainable custom agent files (.agent.md) that provide specialized expertise for GitHub Copilot development tasks.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Custom Agent File Guidelines
+  - Line 9-17: ## Project Context
+  - Line 18-93: ## Required Frontmatter
+  - Line 94-260: ## Handoffs Configuration
+  - Line 261-332: ## Tool Configuration
+  - Line 333-455: ## Sub-Agent Invocation (Agent Orchestration)
+  - Line 456-473: ## Agent Prompt Structure
+  - Line 474-555: ## Variable Definition and Extraction
+  - Line 793-842: ## MCP Server Configuration (Organization/Enterprise Only)
+  - Line 971-1002: ## Common Mistakes to Avoid
+  - Line 1050-1070: ## Version Compatibility Notes
+[DOC-META-END]
+-->
+
 # Custom Agent File Guidelines
 
 Instructions for creating effective and maintainable custom agent files that provide specialized expertise for specific development tasks in GitHub Copilot.

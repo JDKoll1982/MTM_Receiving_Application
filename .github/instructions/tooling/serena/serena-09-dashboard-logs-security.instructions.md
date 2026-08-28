@@ -5,6 +5,20 @@ description: >
   and security considerations for using Serena safely in the MTM project.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-09-dashboard-logs-security.instructions.md
+- Description: Serena dashboard and GUI tool overview, accessing and reading logs, and security considerations for using Serena safely in the MTM project.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Serena Dashboard, Logs, and Security
+  - Line 12-84: ## Dashboard
+  - Line 85-137: ## Logs
+  - Line 138-258: ## Security Considerations
+- Critical Notes: Always start from a committed git state, review every tool execution, and keep SQL Server read-only.
+[DOC-META-END]
+-->
+
 # Serena Dashboard, Logs, and Security
 
 ---

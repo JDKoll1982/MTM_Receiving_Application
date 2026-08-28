@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link a database issue export from docs/CopilotForms/outputs/database-issue and add any current observations'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-database-issue.prompt.md
+- Description: Read a saved CopilotForms database issue export and diagnose or fix the database-related problem.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Database Issue
+  - Line 12: ## Workflow
+  - Line 20: ## Output Expectations
+- Critical Notes: Respect stored-procedure and read-only Infor Visual database rules.
+[DOC-META-END]
+-->
+
 # CopilotForms Database Issue
 
 Read the linked export from `docs/CopilotForms/outputs/database-issue/` and use it as the brief for diagnosis and repair.

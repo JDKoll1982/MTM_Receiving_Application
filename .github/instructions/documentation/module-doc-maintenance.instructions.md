@@ -2,6 +2,24 @@
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: module-doc-maintenance.instructions.md
+- Description: Ensures every module has a consistent Documentation/ subfolder with required documents, fresh Last Updated stamps, and plain-language content.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # Module Documentation Maintenance
+  - Line 7-11: ## Purpose and Scope
+  - Line 12-21: ## Required Folder Structure (per module)
+  - Line 22-38: ## Mandatory Files (per module)
+  - Line 39-46: ## Content Expectations (plain language)
+  - Line 47-53: ## Creation and Update Workflow
+  - Line 54-58: ## Freshness and Logging Rules
+  - Line 59-64: ## Validation Checklist
+- Critical Notes: Every documentation file must include a 'Last Updated: YYYY-MM-DD' line within the first five lines.
+[DOC-META-END]
+-->
+
 # Module Documentation Maintenance
 
 ## Purpose and Scope

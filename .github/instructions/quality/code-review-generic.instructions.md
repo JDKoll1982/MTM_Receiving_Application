@@ -3,6 +3,27 @@ applyTo: "**"
 excludeAgent: ["coding-agent"]
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: code-review-generic.instructions.md
+- Description: Generic code review instructions adaptable to any project covering priorities, principles, quality, security, testing, performance, and architecture.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-9: # Generic Code Review Instructions
+  - Line 10-15: ## Review Language
+  - Line 16-37: ## Review Priorities
+  - Line 38-49: ## General Review Principles
+  - Line 50-114: ## Code Quality Standards
+  - Line 115-146: ## Security Review
+  - Line 147-177: ## Testing Standards
+  - Line 178-201: ## Performance Considerations
+  - Line 202-212: ## Architecture and Design
+  - Line 213-222: ## Documentation Standards
+  - Line 223-321: ## Comment Format Template
+- Critical Notes: Prioritize issues as CRITICAL (block merge), IMPORTANT (discussion), and SUGGESTION (non-blocking).
+[DOC-META-END]
+-->
+
 # Generic Code Review Instructions
 
 Comprehensive code review guidelines for GitHub Copilot that can be adapted to any project. These instructions follow best practices from prompt engineering and provide a structured approach to code quality, security, testing, and architecture review.

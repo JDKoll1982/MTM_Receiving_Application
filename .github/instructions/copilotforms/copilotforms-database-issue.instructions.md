@@ -3,6 +3,17 @@ description: 'Interpret CopilotForms database issue exports linked from docs/Cop
 applyTo: 'docs/CopilotForms/outputs/database-issue/**/*.{md,json}'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-database-issue.instructions.md
+- Description: Interpret CopilotForms database issue exports linked from docs/CopilotForms/outputs/database-issue and use them for SQL, stored procedure, schema, or data-mapping diagnosis.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-14: # CopilotForms Database Issue Exports
+- Critical Notes: MySQL writes go through stored procedures; Infor Visual SQL Server stays read only.
+[DOC-META-END]
+-->
+
 # CopilotForms Database Issue Exports
 
 When a linked file from `docs/CopilotForms/outputs/database-issue/` is present:

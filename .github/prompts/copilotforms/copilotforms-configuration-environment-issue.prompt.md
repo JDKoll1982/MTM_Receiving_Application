@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a configuration/environment export from docs/CopilotForms/outputs/configuration-environment-issue and add any current observations"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-configuration-environment-issue.prompt.md
+- Description: Read a saved CopilotForms configuration or environment export and diagnose the reported setup issue.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Configuration / Environment Issue
+  - Line 12: ## Workflow
+- Critical Notes: Fix the smallest root cause that explains the mismatch; validate with the export steps.
+[DOC-META-END]
+-->
+
 # CopilotForms Configuration / Environment Issue
 
 Read the linked export from `docs/CopilotForms/outputs/configuration-environment-issue/` and use it as the structured input for diagnosis and repair.

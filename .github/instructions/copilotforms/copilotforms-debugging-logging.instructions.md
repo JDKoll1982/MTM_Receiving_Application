@@ -3,6 +3,17 @@ description: "Interpret CopilotForms debugging plus logging exports linked from 
 applyTo: "docs/CopilotForms/outputs/debugging-logging/**/*.{md,json}"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-debugging-logging.instructions.md
+- Description: Interpret CopilotForms debugging plus logging exports linked from docs/CopilotForms/outputs/debugging-logging and use them for diagnosis with intentional observability changes.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-15: # CopilotForms Debugging + Logging Exports
+- Critical Notes: Distinguish root-cause fixes from logging improvements; do not hide the real defect with logs alone.
+[DOC-META-END]
+-->
+
 # CopilotForms Debugging + Logging Exports
 
 When a linked file from `docs/CopilotForms/outputs/debugging-logging/` is present:

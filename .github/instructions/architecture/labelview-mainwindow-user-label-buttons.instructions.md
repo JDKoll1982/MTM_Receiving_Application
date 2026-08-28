@@ -3,6 +3,26 @@ applyTo: "MainWindow.xaml,MainWindow.xaml.cs,Module_Settings.*/*.{cs,xaml},Modul
 description: "MainWindow footer label-button behavior: user-scoped label path persistence, launch flow, edge cases, and extension rules."
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: labelview-mainwindow-user-label-buttons.instructions.md
+- Description: MainWindow footer label-button behavior: user-scoped label path persistence, launch flow, edge cases, and extension rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # MainWindow Label Buttons
+  - Line 8: ## Purpose
+  - Line 12: ## Current Buttons
+  - Line 17: ## Persistence Model
+  - Line 27: ## User Label Keys
+  - Line 39: ## Launch Workflow
+  - Line 47: ## Edge Cases
+  - Line 61: ## Important Behavior Split
+  - Line 67: ## Rules For Adding Dynamic Buttons
+  - Line 77: ## File Anchors
+- Critical Notes: MainWindow footer buttons use user-scoped settings_personal keys; do not assume the same storage keys as system-scoped workflow commands.
+[DOC-META-END]
+-->
+
 # MainWindow Label Buttons
 
 ## Purpose

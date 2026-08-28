@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a logic/test export from docs/CopilotForms/outputs/logic-change-test-generation and add any extra testing constraints"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-logic-change-test-generation.prompt.md
+- Description: Read a saved CopilotForms logic-plus-tests export and implement the logic change together with focused test coverage.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Logic Change + Test Generation
+  - Line 12: ## Workflow
+- Critical Notes: Implement the smallest reliable behavior fix with focused regression tests.
+[DOC-META-END]
+-->
+
 # CopilotForms Logic Change + Test Generation
 
 Read the linked export from `docs/CopilotForms/outputs/logic-change-test-generation/` and use it as the structured input for behavior correction and test creation.

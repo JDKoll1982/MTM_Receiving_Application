@@ -3,6 +3,20 @@ description: 'Module dependency guidance for MTM covering shared code placement,
 applyTo: 'Module_*/**/*.{cs,xaml},Infrastructure/DependencyInjection/**/*.cs'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: module-coupling-constraints.instructions.md
+- Description: Module dependency guidance for MTM covering shared code placement, module boundaries, and cross-module communication constraints.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # Module Coupling Constraints
+  - Line 8: ## Core Rules
+  - Line 15: ## Preferred Pattern
+  - Line 21: ## Avoid
+- Critical Notes: Keep Module_Core foundational and route cross-module behavior through explicit service or facade boundaries.
+[DOC-META-END]
+-->
+
 # Module Coupling Constraints
 
 ## Core Rules

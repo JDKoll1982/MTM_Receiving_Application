@@ -1,6 +1,23 @@
 ---
 applyTo: "**/*.{cs,ts,java}"
 ---
+
+<!-- 
+[DOC-META-START]
+- File Name: object-calisthenics.instructions.md
+- Description: Object Calisthenics rules enforcing clean, maintainable, robust code primarily for business domain code.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 4-8: # Object Calisthenics Rules
+  - Line 9-11: ## Objective
+  - Line 12-21: ## Scope and Application
+  - Line 22-284: ## Key Principles
+  - Line 285-306: ## Implementation Guidelines
+  - Line 307-310: ## References
+- Critical Notes: Contains the 9 original Object Calisthenics rules; no additional rules may be added or existing ones removed.
+[DOC-META-END]
+-->
+
 # Object Calisthenics Rules
 
 > ⚠️ **Warning:** This file contains the 9 original Object Calisthenics rules. No additional rules must be added, and none of these rules should be replaced or removed.

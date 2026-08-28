@@ -2,6 +2,21 @@
 description: Generate a custom checklist for the current feature based on user requirements.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.checklist.agent.md
+- Description: Generate a custom checklist for the current feature based on user requirements.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-25: ## Checklist Purpose: "Unit Tests for English"
+  - Line 26-33: ## User Input
+  - Line 34-222: ## Execution Steps
+  - Line 223-265: ## Example Checklist Types & Sample Items
+  - Line 266-295: ## Anti-Examples: What NOT To Do
+- Critical Notes: Checklists are unit tests for requirements writing, not code/implementation verification.
+[DOC-META-END]
+-->
+
 ## Checklist Purpose: "Unit Tests for English"
 
 **CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** - they validate the quality, clarity, and completeness of requirements in a given domain.

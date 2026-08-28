@@ -2,6 +2,20 @@
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: taming-copilot.instructions.md
+- Description: Core directives and philosophy for coding agents covering directive hierarchy, interaction style, minimal code generation, surgical modification, and tool usage.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-12: ## Core Directives & Hierarchy
+  - Line 13-19: ## General Interaction & Philosophy
+  - Line 20-26: ## Minimalist & Standard Code Generation
+  - Line 27-33: ## Surgical Code Modification
+  - Line 34-41: ## Intelligent Tool Usage
+[DOC-META-END]
+-->
+
 ## Core Directives & Hierarchy
 
 This section outlines the absolute order of operations. These rules have the highest priority and must not be violated.

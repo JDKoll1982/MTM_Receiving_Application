@@ -5,6 +5,27 @@ argument-hint: "Select the model class file to test (e.g., Model_ReceivingLine.c
 agent: agent
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-model-unit-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for C# model classes following MTM Receiving Application standards
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Generate Unit Tests for Data Models
+  - Line 12-19: ## Context
+  - Line 20-25: ## Test File Naming
+  - Line 26-94: ## Test Coverage Requirements
+  - Line 95-96: ## Test Class Template
+  - Line 97-100: ## FluentAssertions Best Practices
+  - Line 101-112: ## Test Naming Convention
+  - Line 113-132: ## Organization Guidelines
+  - Line 133-147: ## Output Requirements
+  - Line 148-149: ## Example: Complete Test Class
+  - Line 150-175: ## Verification Checklist
+- Critical Notes: Test every property for null/edge/default values, all constructor overloads, and Equals/GetHashCode behavior when implemented.
+[DOC-META-END]
+-->
+
 # Generate Unit Tests for Data Models
 
 You are an expert C# unit test developer specializing in .NET 10, xUnit, and the MTM Receiving Application architecture.

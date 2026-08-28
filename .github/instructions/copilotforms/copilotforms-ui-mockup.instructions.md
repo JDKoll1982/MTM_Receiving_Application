@@ -3,6 +3,17 @@ description: 'Interpret CopilotForms UI mockup exports linked from docs/CopilotF
 applyTo: 'docs/CopilotForms/outputs/ui-mockup/**/*.{md,json}'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-ui-mockup.instructions.md
+- Description: Interpret CopilotForms UI mockup exports linked from docs/CopilotForms/outputs/ui-mockup and use them to generate visual mockup artifacts intentionally.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-14: # CopilotForms UI Mockup Exports
+- Critical Notes: Do not silently convert a mockup request into implementation work unless the user explicitly asks for code.
+[DOC-META-END]
+-->
+
 # CopilotForms UI Mockup Exports
 
 When a linked file from `docs/CopilotForms/outputs/ui-mockup/` is present:

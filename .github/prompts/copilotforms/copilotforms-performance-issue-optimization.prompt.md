@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a performance export from docs/CopilotForms/outputs/performance-issue-optimization and add any current measurements"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-performance-issue-optimization.prompt.md
+- Description: Read a saved CopilotForms performance export and diagnose or improve the reported performance issue.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Performance Issue / Optimization
+  - Line 12: ## Workflow
+- Critical Notes: Distinguish observed impact from guessed causes; make the smallest reliable improvement.
+[DOC-META-END]
+-->
+
 # CopilotForms Performance Issue / Optimization
 
 Read the linked export from `docs/CopilotForms/outputs/performance-issue-optimization/` and use it as the structured input for diagnosis and optimization.

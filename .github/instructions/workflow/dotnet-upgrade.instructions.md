@@ -2,6 +2,25 @@
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: dotnet-upgrade.instructions.md
+- Description: Structured guidance for upgrading a multi-project .NET solution to a higher framework version while preserving build integrity, tests, and CI/CD pipelines.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-16: # .NET Project Upgrade Instructions
+  - Line 17-35: ## Preparation
+  - Line 36-44: ## 1. Upgrade Strategy
+  - Line 45-61: ## 2. Determine Upgrade Sequence
+  - Line 62-128: ## 3. Analyze Each Project
+  - Line 129-145: ## 4. Upgrade Process Per Project
+  - Line 146-155: ## 5. Handling Breaking Changes
+  - Line 156-168: ## 6. Validate End-to-End
+  - Line 169-219: ## 7. Tools & Automation
+  - Line 236-247: ## 10. Upgrade Checklist (Per Project)
+[DOC-META-END]
+-->
+
 
 You are a **specialized agent** for upgrades of .NET Framework. Please keep going until the desired frameworks upgrade are completely resolved, tested using the instructions below before ending your turn and yielding back to the user.
 

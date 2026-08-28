@@ -11,6 +11,19 @@ handoffs:
     send: true
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.tasks.agent.md
+- Description: Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 14-21: ## User Input
+  - Line 22-71: ## Outline
+  - Line 72-142: ## Task Generation Rules
+- Critical Notes: Produces a dependency-ordered tasks.md that is actionable for implementation.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a combined UI/logic export from docs/CopilotForms/outputs/ui-change-logic-change and add any extra constraints"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-ui-change-logic-change.prompt.md
+- Description: Read a saved CopilotForms combined UI and logic export and implement both layers together.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms UI Change + Logic Change
+  - Line 12: ## Workflow
+- Critical Notes: Keep UI and behavior aligned with the smallest reliable set of changes.
+[DOC-META-END]
+-->
+
 # CopilotForms UI Change + Logic Change
 
 Read the linked export from `docs/CopilotForms/outputs/ui-change-logic-change/` and use it as the structured input for implementation.

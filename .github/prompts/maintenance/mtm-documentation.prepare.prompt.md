@@ -6,6 +6,23 @@ tools: ['read_file', 'grep_search', 'semantic_search', 'runSubagent']
 argument-hint: 'Describe the documentation target, scope, and any files to prioritize.'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-documentation.prepare.prompt.md
+- Description: Prepare repository-aware context before creating or rewriting MTM documentation.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-12: # Prepare MTM Documentation Work
+  - Line 13-16: ## Mission
+  - Line 17-23: ## Scope And Preconditions
+  - Line 24-29: ## Inputs
+  - Line 30-42: ## Workflow
+  - Line 43-48: ## Output Expectations
+  - Line 49-54: ## Quality Assurance
+- Critical Notes: Grounded current-state summary only — never cite nonexistent instruction files or start broad rewrites without owning code anchors.
+[DOC-META-END]
+-->
+
 # Prepare MTM Documentation Work
 
 Prepare the minimum accurate context needed before creating or rewriting repository documentation.

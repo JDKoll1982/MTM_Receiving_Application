@@ -3,6 +3,17 @@ description: "Interpret CopilotForms combined UI and logic exports linked from d
 applyTo: "docs/CopilotForms/outputs/ui-change-logic-change/**/*.{md,json}"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-ui-change-logic-change.instructions.md
+- Description: Interpret CopilotForms combined UI and logic exports linked from docs/CopilotForms/outputs/ui-change-logic-change and use them to keep both layers aligned.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-15: # CopilotForms UI Change + Logic Change Exports
+- Critical Notes: Treat as one combined request and keep the UI and underlying logic aligned in the final implementation.
+[DOC-META-END]
+-->
+
 # CopilotForms UI Change + Logic Change Exports
 
 When a linked file from `docs/CopilotForms/outputs/ui-change-logic-change/` is present:

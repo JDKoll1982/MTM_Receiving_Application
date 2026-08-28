@@ -2,6 +2,26 @@
 applyTo: "**/*.instructions.md"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: instructions.instructions.md
+- Description: Guidelines for creating effective and maintainable custom instruction files that guide GitHub Copilot in generating domain-specific code and following project conventions.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Custom Instructions File Guidelines
+  - Line 9-17: ## Project Context
+  - Line 18-67: ## Required Frontmatter
+  - Line 68-115: ## File Structure
+  - Line 116-144: ## Content Guidelines
+  - Line 145-149: ## Patterns to Follow
+  - Line 162-197: ## Common Issues
+  - Line 198-204: ## Framework Selection
+  - Line 205-213: ## Patterns to Avoid
+  - Line 214-221: ## Testing Your Instructions
+  - Line 283-289: ## Additional Resources
+[DOC-META-END]
+-->
+
 # Custom Instructions File Guidelines
 
 Instructions for creating effective and maintainable custom instruction files that guide GitHub Copilot in generating domain-specific code and following project conventions.

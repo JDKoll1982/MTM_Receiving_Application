@@ -2,6 +2,25 @@
 description: "Analyze uncommitted MTM changes, choose the best semantic version bump, update the application version plus software_version SQL artifacts, and create an end-user HTML update page."
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-update-application-version.prompt.md
+- Description: Analyze uncommitted MTM changes, choose the best semantic version bump, update the application version plus software_version SQL artifacts, and create an end-user HTML update page.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5: # MTM Application Version Update
+  - Line 7: ## Task
+  - Line 11: ## Step 1 - Inspect Current Changes
+  - Line 23: ## Step 2 - Choose The Best Semantic Version
+  - Line 33: ## Step 3 - Update All Version Sources
+  - Line 54: ## Step 4 - Create The End-User Update Page
+  - Line 103: ## Step 5 - Validate Consistency
+  - Line 114: ## Step 6 - Summarize
+  - Line 125: ## Guardrails
+- Critical Notes: Choose the highest required semantic bump from the actual uncommitted diff and keep every version source consistent; do not invent user-facing changes or bump when no meaningful change exists.
+[DOC-META-END]
+-->
+
 # MTM Application Version Update
 
 ## Task

@@ -2,6 +2,27 @@
 applyTo: "**/*.Tests.ps1"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: powershell-pester-5.instructions.md
+- Description: PowerShell Pester v5 testing guidelines for creating automated tests using the Pester v5 module.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # PowerShell Pester v5 Testing Guidelines
+  - Line 9-15: ## File Naming and Structure
+  - Line 16-28: ## Test Structure Hierarchy
+  - Line 29-37: ## Core Keywords
+  - Line 38-45: ## Setup and Teardown
+  - Line 46-55: ## Assertions (Should)
+  - Line 56-69: ## Mocking
+  - Line 70-82: ## Test Cases (Data-Driven Tests)
+  - Line 83-101: ## Data-Driven Tests
+  - Line 102-117: ## Tags
+  - Line 118-128: ## Skip
+- Critical Notes: Put all code inside Pester blocks and use BeforeAll to import tested functions.
+[DOC-META-END]
+-->
+
 # PowerShell Pester v5 Testing Guidelines
 
 This guide provides PowerShell-specific instructions for creating automated tests using PowerShell Pester v5 module. Follow PowerShell cmdlet development guidelines in [powershell.instructions.md](./powershell.instructions.md) for general PowerShell scripting best practices.

@@ -2,6 +2,27 @@
 applyTo: "**/*.{md,js,mjs,cjs,ts,tsx,jsx,py,java,cs,go,rb,php,rs,cpp,c,h,hpp}"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: update-docs-on-code-change.instructions.md
+- Description: Keeps documentation synchronized with code changes by detecting when README, API documentation, configuration guides, and other documentation files need updates, with configurable instruction sections.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # Update Documentation on Code Change
+  - Line 7-12: ## Overview
+  - Line 13-94: ## Instruction Sections and Configuration
+  - Line 95-109: ## When to Update Documentation
+  - Line 110-211: ## Documentation Update Rules
+  - Line 212-256: ## Documentation File Structure `apply-doc-file-structure`
+  - Line 257-289: ## Documentation Verification `apply-doc-verification`
+  - Line 290-345: ## Documentation Quality Standards `apply-doc-quality-standard`
+  - Line 346-380: ## Automation and Tooling `apply-automation-tooling`
+  - Line 381-435: ## Common Documentation Patterns `apply-doc-patterns`
+  - Line 436-459: ## Best Practices `apply-best-practices`
+- Critical Notes: Documentation must be updated in the same change as the code it describes; instruction sections are configurable via backtick configurable properties.
+[DOC-META-END]
+-->
+
 # Update Documentation on Code Change
 
 ## Overview
