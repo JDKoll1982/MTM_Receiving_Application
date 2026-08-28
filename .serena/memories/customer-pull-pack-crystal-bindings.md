@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: customer-pull-pack-crystal-bindings.md
+- Description: Crystal report binding notes for the Customer Pull n' Pack report.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-18: # Customer Pull n' Pack Crystal Bindings
+- Critical Notes: None
+[DOC-META-END]
+-->
+
 # Customer Pull n' Pack Crystal Bindings
 
 - Customer Pull n' Pack crystal report control is fed by `ViewModel_Tool_CustomerPullPackReport.CrystalReportGroups`, not placeholder groups.

@@ -41,5 +41,12 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsPOLineSpecSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Dunnage Book Tool  -->
+        <ContentControl
+            x:Name="DunnageBookHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsDunnageBookVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

@@ -40,6 +40,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isPOLineSpecSearchVisible;
 
+    [ObservableProperty]
+    private bool _isDunnageBookVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -87,6 +90,12 @@ public partial class ViewModel_ShipRecTools_Main
 
                 case "POLineSpecSearch":
                     IsPOLineSpecSearchVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "DunnageBook":
+                    IsDunnageBookVisible = true;
                     CurrentToolTitle = toolTitle;
                     ShowHeaderBackButton();
                     break;
@@ -139,5 +148,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsOutsideServiceHistoryVisible = false;
         IsMaterialAvailabilityBoardVisible = false;
         IsPOLineSpecSearchVisible = false;
+        IsDunnageBookVisible = false;
     }
 }

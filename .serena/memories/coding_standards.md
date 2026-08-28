@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: coding_standards.md
+- Description: Naming, class, and code conventions for ViewModels, DAOs, services, and models.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-53: # Coding Standards & Conventions
+- Critical Notes: DAOs are instance-based; use Async suffix; nullable enabled.
+[DOC-META-END]
+-->
+
 # Coding Standards & Conventions
 
 Last Updated: 2026-03-21

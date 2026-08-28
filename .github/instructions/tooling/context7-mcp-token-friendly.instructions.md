@@ -3,6 +3,24 @@ description: 'Token-friendly Context7 MCP usage guide for resolving libraries, p
 applyTo: '**'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: context7-mcp-token-friendly.instructions.md
+- Description: Token-friendly Context7 MCP usage guide for resolving libraries and pulling targeted docs.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 24-27: # Context7 MCP Token-Friendly Guide
+  - Line 28-33: ## Core Workflow
+  - Line 34-38: ## Mandatory Rule
+  - Line 39-45: ## High-Value Patterns
+  - Line 46-51: ## Advanced Usage
+  - Line 52-57: ## Reliability and Limits
+  - Line 58-62: ## Security and Governance
+  - Line 63-66: ## Use With Other MCP Servers
+- Critical Notes: Call resolve-library-id before get-library-docs.
+[DOC-META-END]
+-->
+
 # Context7 MCP Token-Friendly Guide
 
 Use this file when you need fast, up-to-date external library docs with minimal token usage.

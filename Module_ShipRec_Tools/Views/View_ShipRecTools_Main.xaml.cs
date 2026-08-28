@@ -20,6 +20,7 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_Tool_OutsideServiceHistory _outsideServiceHistoryViewModel;
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
     private readonly ViewModel_Tool_POLineSpecSearch _poLineSpecSearchViewModel;
+    private readonly ViewModel_Tool_DunnageBook _dunnageBookViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
@@ -28,7 +29,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         View_ShipRecTools_ToolSelection toolSelectionView,
         View_Tool_OutsideServiceHistory outsideServiceHistoryView,
         View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
-        View_Tool_POLineSpecSearch poLineSpecSearchView
+        View_Tool_POLineSpecSearch poLineSpecSearchView,
+        View_Tool_DunnageBook dunnageBookView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -36,18 +38,21 @@ public sealed partial class View_ShipRecTools_Main : Page
         ArgumentNullException.ThrowIfNull(outsideServiceHistoryView);
         ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
         ArgumentNullException.ThrowIfNull(poLineSpecSearchView);
+        ArgumentNullException.ThrowIfNull(dunnageBookView);
 
         ViewModel = viewModel;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
         _outsideServiceHistoryViewModel = outsideServiceHistoryView.ViewModel;
         _materialAvailabilityBoardViewModel = materialAvailabilityBoardView.ViewModel;
         _poLineSpecSearchViewModel = poLineSpecSearchView.ViewModel;
+        _dunnageBookViewModel = dunnageBookView.ViewModel;
         InitializeComponent();
 
         ToolSelectionHost.Content = toolSelectionView;
         OutsideServiceHistoryHost.Content = outsideServiceHistoryView;
         MaterialAvailabilityBoardHost.Content = materialAvailabilityBoardView;
         POLineSpecSearchHost.Content = poLineSpecSearchView;
+        DunnageBookHost.Content = dunnageBookView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -63,6 +68,7 @@ public sealed partial class View_ShipRecTools_Main : Page
                 or nameof(ViewModel_ShipRecTools_Main.IsOutsideServiceHistoryVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsMaterialAvailabilityBoardVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsPOLineSpecSearchVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsDunnageBookVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -96,6 +102,13 @@ public sealed partial class View_ShipRecTools_Main : Page
         {
             RestoreMainWindowSize();
             _poLineSpecSearchViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsDunnageBookVisible)
+        {
+            RestoreMainWindowSize();
+            _dunnageBookViewModel.ActivateView();
         }
     }
 

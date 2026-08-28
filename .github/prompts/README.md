@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: README.md
+- Description: Index of the .github/prompts library: categories, start points, standards, and maintenance rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-20: # GitHub Copilot Prompts
+  - Line 21-30: ## Categories
+  - Line 31-43: ## Start Points
+  - Line 44-49: ## Standards
+  - Line 50-56: ## Maintenance Rules
+- Critical Notes: Archive superseded prompts instead of leaving them as active drift.
+[DOC-META-END]
+-->
+
 # GitHub Copilot Prompts
 
 This directory contains the active prompt library for the repository. Prompt files are now grouped

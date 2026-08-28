@@ -1,3 +1,20 @@
+<!-- 
+[DOC-META-START]
+- File Name: constitution_summary.md
+- Description: Condensed non-negotiable architecture principles and quality gates.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 18-21: # Constitution Summary v1.2.0
+  - Line 22-98: ## Core Non-Negotiable Principles
+  - Line 99-111: ## Forbidden Practices (Must Prevent)
+  - Line 112-119: ## Technology Constraints
+  - Line 120-127: ## Key NuGet Packages
+  - Line 128-154: ## Development Workflow
+  - Line 155-159: ## Amendment History
+- Critical Notes: All diagrams use PlantUML; 80% minimum coverage for services/ViewModels.
+[DOC-META-END]
+-->
+
 # Constitution Summary v1.2.0
 
 **Last Updated**: 2026-03-21

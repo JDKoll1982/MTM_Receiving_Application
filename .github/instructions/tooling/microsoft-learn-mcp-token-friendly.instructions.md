@@ -3,6 +3,24 @@ description: 'Token-friendly Microsoft Learn MCP guide covering search-fetch-sam
 applyTo: '**'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: microsoft-learn-mcp-token-friendly.instructions.md
+- Description: Token-friendly Microsoft Learn MCP guide for search-fetch-sample workflow.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 24-27: # Microsoft Learn MCP Token-Friendly Guide
+  - Line 28-33: ## Core Workflow
+  - Line 34-39: ## Mandatory Rules
+  - Line 40-45: ## High-Value Features
+  - Line 46-51: ## Advanced Usage
+  - Line 52-57: ## Release-Aware Notes
+  - Line 58-63: ## Security and Reliability
+  - Line 64-67: ## Use With Other MCP Servers
+- Critical Notes: Treat Learn MCP as a dynamic surface; do not hardcode tool schemas.
+[DOC-META-END]
+-->
+
 # Microsoft Learn MCP Token-Friendly Guide
 
 Use this file for Microsoft and Azure documentation retrieval grounded in official Learn sources.

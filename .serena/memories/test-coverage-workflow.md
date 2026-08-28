@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: test-coverage-workflow.md
+- Description: How coverage is generated via coverlet and Scripts/Generate-TestCoverage.ps1.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-18: # Test Coverage Workflow
+- Critical Notes: Coverage Gutters reads coverage/coverage.cobertura.xml.
+[DOC-META-END]
+-->
+
 # Test Coverage Workflow
 
 - Test project already uses `coverlet.collector` in `MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj`.

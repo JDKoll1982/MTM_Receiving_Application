@@ -3,6 +3,23 @@ description: 'Token-friendly Serena MCP quick guide for symbol-first exploration
 applyTo: '**'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-token-friendly.instructions.md
+- Description: Token-friendly Serena MCP quick guide for symbol-first exploration and safe edits.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 23-26: # Serena Token-Friendly Guide
+  - Line 27-33: ## Core Workflow
+  - Line 34-39: ## Mandatory Rules
+  - Line 40-45: ## High-Value Features
+  - Line 46-51: ## Advanced Usage
+  - Line 52-57: ## Practical Guardrails
+  - Line 58-62: ## Use With Other MCP Servers
+- Critical Notes: Prefer symbol tools over whole-file reads for C# work.
+[DOC-META-END]
+-->
+
 # Serena Token-Friendly Guide
 
 Use this file when you need high-precision local code analysis and editing with low token cost.

@@ -99,6 +99,9 @@
     <None Include="Assets\MTMLogo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\DunnageBookNoImage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- Exclude .github folder from PRI generation -->
   <ItemGroup>

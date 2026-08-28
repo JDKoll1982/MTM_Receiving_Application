@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: README.md
+- Description: Map of active AI customization surfaces under .github (instructions, prompts, agents, archive) and maintenance rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-19: # AI Customization Map
+  - Line 20-28: ## Active Surfaces
+  - Line 29-42: ## Taxonomy
+  - Line 43-49: ## Maintenance Rules
+  - Line 50-53: ## Historical Snapshot
+- Critical Notes: Keep archive content out of search and active instruction discovery.
+[DOC-META-END]
+-->
+
 # AI Customization Map
 
 This directory contains the active AI customization surfaces for the repository.

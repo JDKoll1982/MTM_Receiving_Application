@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: agent_memory_convention.md
+- Description: Convention for what belongs in agent memory files vs instruction files.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-17: # Agent Memory Convention
+- Critical Notes: Keep memories short; put durable rules in instruction files.
+[DOC-META-END]
+-->
+
 # Agent Memory Convention
 
 - Durable, repo-scoped project knowledge lives in this folder (`.serena/memories/`) so it is **git-committed and repo-bound** — it travels with the repo to any machine/clone and is shareable with the team.

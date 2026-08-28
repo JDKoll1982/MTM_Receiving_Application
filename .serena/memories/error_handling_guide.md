@@ -1,3 +1,19 @@
+<!-- 
+[DOC-META-START]
+- File Name: error_handling_guide.md
+- Description: Error severity, Service_ErrorHandler usage, user-facing messages, and logging standards.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 17-20: # Error Handling Guide
+  - Line 21-34: ## Error Severity Levels
+  - Line 35-103: ## Service_ErrorHandler Usage
+  - Line 104-126: ## User-Facing Error Messages
+  - Line 127-154: ## Logging Standards
+  - Line 155-196: ## Error Recovery Patterns
+- Critical Notes: DAOs return failure results; never throw.
+[DOC-META-END]
+-->
+
 # Error Handling Guide
 
 Last Updated: 2026-03-21

@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: dunnage-seed-data-signatures.md
+- Description: Seed data signatures for 03_seed_dunnage_data.sql.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-21: # Dunnage Seed Data (03_seed_dunnage_data.sql)
+- Critical Notes: None
+[DOC-META-END]
+-->
+
 # Dunnage Seed Data (03_seed_dunnage_data.sql)
 
 - `Database/Database_Deployment/Sql_Files/SeedData/03_seed_dunnage_data.sql` is the dunnage master-data seed.

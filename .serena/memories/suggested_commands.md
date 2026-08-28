@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: suggested_commands.md
+- Description: Build, test, run, deploy, and architecture-validation commands.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-19: # Suggested Commands
+  - Line 20-38: ## Build & Test
+  - Line 39-42: ## Run the Application
+  - Line 43-50: ## Database Deployment
+  - Line 51-64: ## Architecture Validation Searches
+- Critical Notes: Tests run via the test csproj, not the .slnx.
+[DOC-META-END]
+-->
+
 # Suggested Commands
 
 Last Updated: 2026-03-21
@@ -12,13 +27,13 @@ dotnet build MTM_Receiving_Application.slnx
 dotnet build MTM_Receiving_Application.slnx -c Release /p:Platform=x64
 
 # Run all tests
-dotnet test MTM_Receiving_Application.slnx
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 
 # Run only unit tests
-dotnet test MTM_Receiving_Application.slnx --filter "FullyQualifiedName~Unit"
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter "FullyQualifiedName~Unit"
 
 # Run only integration tests
-dotnet test MTM_Receiving_Application.slnx --filter "FullyQualifiedName~Integration"
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter "FullyQualifiedName~Integration"
 ```
 
 ## Run the Application

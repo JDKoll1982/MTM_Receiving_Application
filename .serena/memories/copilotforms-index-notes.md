@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-index-notes.md
+- Description: Index notes for CopilotForms export handlers.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-18: # CopilotForms Index Notes
+- Critical Notes: None
+[DOC-META-END]
+-->
+
 # CopilotForms Index Notes
 
 - CopilotForms landing page now supports search, grouped category filters (Build/Debug/Review/Data/Docs), sort modes, result counts, quick jump links, empty-state reset, and keyboard shortcuts (`/` focuses search, `Esc` clears it).

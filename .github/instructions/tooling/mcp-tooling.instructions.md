@@ -3,6 +3,22 @@ description: 'Tool-selection guidance for MCP and workspace tools in MTM, includ
 applyTo: '**'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mcp-tooling.instructions.md
+- Description: Tool-selection guidance for MCP and workspace tools (Serena, Context7, Microsoft Learn MCP, WinApp, terminal).
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 22-23: # MCP Tooling Guidance
+  - Line 24-34: ## Preferred Tool Order
+  - Line 35-48: ## MCP Deep-Research Pattern
+  - Line 49-63: ## High-Leverage MCP Features
+  - Line 64-73: ## Rules
+  - Line 74-81: ## Documentation Work
+- Critical Notes: Preserve SQL files under Database/ as source of truth.
+[DOC-META-END]
+-->
+
 # MCP Tooling Guidance
 
 ## Preferred Tool Order
@@ -59,6 +75,7 @@ applyTo: '**'
 
 - When changing prompt or instruction layout, update the matching README and workspace settings.
 - Use official docs before adding or changing VS Code Copilot settings.
+- For non-Markdown config files (JSON/XAML/YAML/MSBuild), see `tooling/non-markdown-config-files.instructions.md`.
 - For quick MCP usage guidance, prefer token-friendly files:
   - `tooling/context7-mcp-token-friendly.instructions.md`
   - `tooling/microsoft-learn-mcp-token-friendly.instructions.md`

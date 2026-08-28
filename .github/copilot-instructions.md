@@ -1,3 +1,30 @@
+<!-- 
+[DOC-META-START]
+- File Name: copilot-instructions.md
+- Description: Repository-wide source of truth for coding agents: MVVM/DAO/DB rules, workflow, module map, build/test commands.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 28-31: # MTM Receiving Application Instructions
+  - Line 32-36: ## Reply Style
+  - Line 37-45: ## Read Order
+  - Line 46-57: ## Non-Negotiables
+  - Line 58-66: ## Major Assumptions
+  - Line 67-74: ## Required Workflow
+  - Line 75-82: ## Ask User Before
+  - Line 83-88: ## Validation
+  - Line 89-94: ## Key Architecture Rules
+  - Line 95-103: ## Database Rules
+  - Line 104-116: ## Testing Rules
+  - Line 117-126: ## Module Map
+  - Line 127-137: ## Quick Debug Checklist
+  - Line 138-141: ## Docs Maintenance
+  - Line 142-146: ## Build/Test Commands
+  - Line 147-151: ## Environment Notes
+  - Line 152-156: ## Azure Notes
+- Critical Notes: Non-negotiable rules apply to all modules; ignore .github/archive/ for active work.
+[DOC-META-END]
+-->
+
 # MTM Receiving Application Instructions
 
 Repository-wide source of truth for coding agents.
@@ -114,8 +141,8 @@ If code changes invalidate source-of-truth docs, update matching files under .gi
 
 ## Build/Test Commands
 
-- dotnet build MTM_Receiving_Application.sln
-- dotnet test MTM_Receiving_Application.sln
+- dotnet build MTM_Receiving_Application.slnx
+- dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 
 ## Environment Notes
 

@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: database-deployment-migration-mode.md
+- Description: Notes on database deployment migration mode.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 12-17: # Database Deployment Migration Mode
+- Critical Notes: None
+[DOC-META-END]
+-->
+
 # Database Deployment Migration Mode
 
 - `Database/Database_Deployment/Deploy-Database-GUI-Workbench.ps1` now exposes both full deployment and non-destructive migration modes.

@@ -1,3 +1,20 @@
+<!-- 
+[DOC-META-START]
+- File Name: architectural_patterns.md
+- Description: MVVM layer rules, DAO/service delegation, DI registration, and Model_Dao_Result patterns.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 18-21: # Architectural Patterns
+  - Line 22-47: ## MVVM Architecture (NON-NEGOTIABLE)
+  - Line 48-78: ## Service to DAO Delegation Pattern (MANDATORY)
+  - Line 79-111: ## Instance-Based DAO Pattern (MANDATORY)
+  - Line 112-134: ## Dependency Injection Registration
+  - Line 135-162: ## Model_Dao_Result Pattern
+  - Line 163-171: ## Pre-Commit Validation
+- Critical Notes: ViewModels must never call DAOs; services delegate to DAOs.
+[DOC-META-END]
+-->
+
 # Architectural Patterns
 
 Last Updated: 2026-03-21

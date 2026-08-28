@@ -1,3 +1,17 @@
+<!-- 
+[DOC-META-START]
+- File Name: README.md
+- Description: Index of the .github/instructions library: categories, recommended starting files, maintenance rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 15-18: # Instruction Library
+  - Line 19-30: ## Categories
+  - Line 31-42: ## Recommended Starting Files
+  - Line 43-47: ## Maintenance Rules
+- Critical Notes: Use category folders for new files; referenced instruction paths must exist.
+[DOC-META-END]
+-->
+
 # Instruction Library
 
 Instruction files are grouped by topic so agents can load only the guidance that matches the task.

@@ -106,16 +106,17 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
     public bool HasUnsavedChanges => GetEditedLoads().Count > 0 || _removedLoads.Count > 0;
 
-    private static readonly Brush ActiveFilterButtonBrush = new SolidColorBrush(
-        Colors.DodgerBlue
+    // Lazy brushes avoid WinRT Colors/Brush init in non-XAML hosts (unit tests).
+    private static readonly Lazy<Brush> ActiveFilterButtonBrush = new(
+        () => new SolidColorBrush(Colors.DodgerBlue)
     );
-    private static readonly Brush InactiveFilterButtonBrush = new SolidColorBrush(
-        Colors.Transparent
+    private static readonly Lazy<Brush> InactiveFilterButtonBrush = new(
+        () => new SolidColorBrush(Colors.Transparent)
     );
 
     private static Brush ResolveFilterButtonBackground(bool isActive)
     {
-        return isActive ? ActiveFilterButtonBrush : InactiveFilterButtonBrush;
+        return isActive ? ActiveFilterButtonBrush.Value : InactiveFilterButtonBrush.Value;
     }
 
     public void ResetToDefaults()

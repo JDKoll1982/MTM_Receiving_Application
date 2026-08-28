@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: mvvm_guide.md
+- Description: ViewModel and XAML requirements, x:Bind modes, code-behind rules, common mistakes.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-19: # MVVM Guide
+  - Line 20-83: ## ViewModel Requirements
+  - Line 84-129: ## View (XAML) Requirements
+  - Line 130-153: ## Code-Behind Pattern
+  - Line 154-175: ## Common Mistakes
+- Critical Notes: ViewModels must be partial and inherit ViewModel_Shared_Base.
+[DOC-META-END]
+-->
+
 # MVVM Guide
 
 Last Updated: 2026-03-21

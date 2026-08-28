@@ -7,6 +7,31 @@ target: "vscode"
 infer: true
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: AGENTS.md
+- Description: MTM Receiving Application WinUI 3 MVVM implementation agent (core rules, DAO/XAML patterns, tech snapshot, commands).
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 35-36: # MTM Receiving Application Agent
+  - Line 37-40: ## Mission
+  - Line 41-51: ## Source Of Truth
+  - Line 52-62: ## Core Rules
+  - Line 63-70: ## Ask User Before
+  - Line 71-74: ## Major Assumptions
+  - Line 75-79: ## Validation
+  - Line 80-85: ## DAO Pattern (Required)
+  - Line 86-90: ## XAML Pattern (Required)
+  - Line 91-98: ## Documentation Expectations
+  - Line 99-104: ## Communication Style
+  - Line 105-113: ## Tech Snapshot
+  - Line 114-118: ## Common Commands
+  - Line 119-125: ## Quick Guardrails
+  - Line 126-131: ## MySQL Testing Workflow (Required)
+- Critical Notes: Preserve MVVM/DAO/XAML rules; ask user before schema, DI, or NuGet changes.
+[DOC-META-END]
+-->
+
 # MTM Receiving Application Agent
 
 ## Mission
@@ -88,8 +113,8 @@ When needed by task impact:
 
 ## Common Commands
 
-- dotnet build
-- dotnet test
+- dotnet build MTM_Receiving_Application.slnx
+- dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 
 ## Quick Guardrails
 

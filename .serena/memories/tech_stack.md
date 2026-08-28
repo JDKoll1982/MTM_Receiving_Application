@@ -1,3 +1,19 @@
+<!-- 
+[DOC-META-START]
+- File Name: tech_stack.md
+- Description: Language, framework, NuGet packages, databases, and key helper classes.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 17-20: # Tech Stack
+  - Line 21-26: ## Core
+  - Line 27-37: ## Libraries
+  - Line 38-46: ## Testing
+  - Line 47-53: ## Databases
+  - Line 54-59: ## Key Helper Classes
+- Critical Notes: WinUI 3 on .NET 10; MySQL 5.7 read/write; Infor Visual read-only.
+[DOC-META-END]
+-->
+
 # Tech Stack
 
 Last Updated: 2026-03-21

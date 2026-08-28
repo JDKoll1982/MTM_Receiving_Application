@@ -603,6 +603,12 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_POLineSpecSearch(inforVisual, logger);
         });
+        services.AddSingleton<IService_Tool_DunnageBook>(sp =>
+        {
+            var dunnage = sp.GetRequiredService<IService_MySQL_Dunnage>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_DunnageBook(dunnage, logger);
+        });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
 
         // ViewModels (Transient - Per-navigation instances)
@@ -611,6 +617,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_OutsideServiceHistory>();
         services.AddTransient<ViewModel_Tool_MaterialAvailabilityBoard>();
         services.AddTransient<ViewModel_Tool_POLineSpecSearch>();
+        services.AddTransient<ViewModel_Tool_DunnageBook>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
@@ -618,6 +625,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_OutsideServiceHistory>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_MaterialAvailabilityBoard>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_POLineSpecSearch>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DunnageBook>();
 
         return services;
     }
