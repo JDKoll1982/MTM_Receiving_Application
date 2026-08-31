@@ -46,6 +46,12 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isWeldedCoilsVisible;
 
+    [ObservableProperty]
+    private bool _isReceivingAnalyticsVisible;
+
+    [ObservableProperty]
+    private bool _isDeliveryScheduleVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -109,6 +115,18 @@ public partial class ViewModel_ShipRecTools_Main
                     ShowHeaderBackButton();
                     break;
 
+                case "ReceivingAnalytics":
+                    IsReceivingAnalyticsVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "DeliverySchedule":
+                    IsDeliveryScheduleVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
                 default:
                     _logger.LogInfo($"Unknown tool key '{toolKey}' - returning to tool selection.");
                     ShowToolSelection();
@@ -159,5 +177,7 @@ public partial class ViewModel_ShipRecTools_Main
         IsPOLineSpecSearchVisible = false;
         IsDunnageBookVisible = false;
         IsWeldedCoilsVisible = false;
+        IsReceivingAnalyticsVisible = false;
+        IsDeliveryScheduleVisible = false;
     }
 }

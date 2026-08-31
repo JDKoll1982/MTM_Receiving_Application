@@ -1780,5 +1780,219 @@ public class Service_InforVisualConnect : IService_InforVisual
         };
     }
 
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualDeliveryScheduleLine>>
+    > GetDeliveryScheduleLinesAsync(Model_InforVisualDeliveryScheduleFilter filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo("[MOCK DATA MODE] Returning mock delivery schedule lines.");
+            return Model_Dao_Result_Factory.Success(CreateMockDeliveryScheduleLines(filter));
+        }
+
+        return await _dao.GetDeliveryScheduleLinesAsync(filter);
+    }
+
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsHistoryAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo("[MOCK DATA MODE] Returning mock receiving analytics history.");
+            return Model_Dao_Result_Factory.Success(
+                CreateMockAnalyticsByDate(filter, isForecast: false)
+            );
+        }
+
+        return await _dao.GetReceivingAnalyticsHistoryAsync(filter);
+    }
+
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo("[MOCK DATA MODE] Returning mock receiving analytics forecast.");
+            return Model_Dao_Result_Factory.Success(
+                CreateMockAnalyticsByDate(filter, isForecast: true)
+            );
+        }
+
+        return await _dao.GetReceivingAnalyticsForecastAsync(filter);
+    }
+
+    private static List<Model_InforVisualDeliveryScheduleLine> CreateMockDeliveryScheduleLines(
+        Model_InforVisualDeliveryScheduleFilter filter
+    )
+    {
+        var from = filter.FromDate ?? DateTime.Today.AddDays(-3);
+        var to = filter.ToDate ?? DateTime.Today;
+
+        var mock = new List<Model_InforVisualDeliveryScheduleLine>
+        {
+            new()
+            {
+                PoNumber = "PO-064008",
+                VendorName = "Basic Metals",
+                PoDesiredDate = from,
+                PoPromiseDate = from,
+                PartNumber = "MMC0000367",
+                OrderQty = 125884,
+                ReceivedQty = 125884,
+                RemainingQty = 0,
+                LineDesiredDate = from,
+                LinePromiseDate = from,
+                PoStatus = "R",
+                LineStatus = "A",
+                ReceivedBy = "JK0LL",
+                DueDate = from,
+                Category = "MMC Coils",
+                DeliveryState = "Closed",
+                PoState = "OnTime",
+            },
+            new()
+            {
+                PoNumber = "PO-064008",
+                VendorName = "Basic Metals",
+                PoDesiredDate = from,
+                PoPromiseDate = from,
+                PartNumber = "MMC0001161",
+                OrderQty = 84000,
+                ReceivedQty = 0,
+                RemainingQty = 84000,
+                LineDesiredDate = from,
+                LinePromiseDate = from,
+                PoStatus = "R",
+                LineStatus = "A",
+                ReceivedBy = string.Empty,
+                DueDate = from,
+                Category = "MMC Coils",
+                DeliveryState = "Open",
+                PoState = "Late",
+            },
+            new()
+            {
+                PoNumber = "PO-069969",
+                VendorName = "Basic Metals",
+                PoDesiredDate = from,
+                PoPromiseDate = from,
+                PartNumber = "MMF0000650",
+                OrderQty = 85000,
+                ReceivedQty = 60350,
+                RemainingQty = 24650,
+                LineDesiredDate = from,
+                LinePromiseDate = from,
+                PoStatus = "R",
+                LineStatus = "A",
+                ReceivedBy = "JK0LL",
+                DueDate = from,
+                Category = "MMF Flat",
+                DeliveryState = "Partial",
+                PoState = "OnTime",
+            },
+            new()
+            {
+                PoNumber = "PO-071231",
+                VendorName = "Hamann Co",
+                PoDesiredDate = from,
+                PoPromiseDate = to,
+                PartNumber = string.Empty,
+                OrderQty = 1,
+                ReceivedQty = 0,
+                RemainingQty = 1,
+                LineDesiredDate = from,
+                LinePromiseDate = to,
+                PoStatus = "R",
+                LineStatus = "A",
+                ReceivedBy = string.Empty,
+                DueDate = from,
+                Category = "Outside Service",
+                DeliveryState = "Open",
+                PoState = "Late",
+            },
+        };
+
+        return mock.Where(
+                row =>
+                    row.OrderQty > 0
+                    && (filter.ScopeParts || row.Category != "Parts")
+                    && (filter.ScopeCoils || row.Category != "MMC Coils")
+                    && (filter.ScopeFlat || row.Category != "MMF Flat")
+                    && (filter.ScopeOutside || row.Category != "Outside Service")
+                    && (filter.ShowOpen || row.DeliveryState != "Open")
+                    && (filter.ShowClosed || row.DeliveryState != "Closed")
+                    && (filter.ShowOnTime || row.PoState != "OnTime")
+                    && (filter.ShowLate || row.PoState != "Late")
+                    && (
+                        (filter.ShowNearFilled && row.DeliveryState == "Partial" && row.OrderQty > 0
+                            && (row.ReceivedQty * 100m / row.OrderQty) < filter.NearFillPct)
+                        || (!filter.ShowNearFilled && row.ReceivedQty == 0)
+                    )
+            )
+            .ToList();
+    }
+
+    private static List<Model_InforVisualReceivingAnalyticsPoint> CreateMockAnalyticsByDate(
+        Model_InforVisualReceivingAnalyticsFilter filter,
+        bool isForecast
+    )
+    {
+        var from = filter.FromDate ?? DateTime.Today.AddDays(-4);
+        var to = filter.ToDate ?? DateTime.Today;
+
+        var categories = new[]
+        {
+            (Name: "Parts", Value: 12),
+            (Name: "MMC Coils", Value: 30),
+            (Name: "MMF Flat", Value: 18),
+            (Name: "Outside Service", Value: 8),
+            (Name: "Uninventoried", Value: 11),
+        };
+
+        var rows = new List<Model_InforVisualReceivingAnalyticsPoint>();
+        for (var day = from.Date; day <= to.Date; day = day.AddDays(1))
+        {
+            foreach (var category in categories)
+            {
+                if (
+                    (category.Name == "Parts" && !filter.ScopeParts)
+                    || (category.Name == "MMC Coils" && !filter.ScopeCoils)
+                    || (category.Name == "MMF Flat" && !filter.ScopeFlat)
+                    || (category.Name == "Outside Service" && !filter.ScopeOutside)
+                    || (category.Name == "Uninventoried" && !filter.ScopeUninventoried)
+                )
+                {
+                    continue;
+                }
+
+                // Forecast uses the same categories; keep the forecast counts slightly
+                // higher so the History/Incoming toggle visibly changes the chart.
+                var baseValue = isForecast ? category.Value + 5 : category.Value;
+                var count = Math.Max(1, baseValue + ((day.DayOfYear + category.Value) % 9) - 4);
+                rows.Add(
+                    new Model_InforVisualReceivingAnalyticsPoint
+                    {
+                        ActivityDate = day,
+                        Category = category.Name,
+                        LineCount = count,
+                    }
+                );
+            }
+        }
+
+        return rows;
+    }
+
     #endregion
 }

@@ -131,5 +131,31 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "ReceivingAnalytics",
+                Title = "Receiving Analytics",
+                Description =
+                    "Chart receiving history (past received) vs incoming items by date and category.",
+                IconGlyph = "\uE9D9",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "DeliverySchedule",
+                Title = "Delivery Schedule",
+                Description =
+                    "Review the receiving schedule by PO line with date, scope, and state filters.",
+                IconGlyph = "\uE9D2",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
     }
 }

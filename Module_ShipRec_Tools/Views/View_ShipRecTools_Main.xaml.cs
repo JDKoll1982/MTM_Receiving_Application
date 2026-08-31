@@ -22,6 +22,8 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_Tool_POLineSpecSearch _poLineSpecSearchViewModel;
     private readonly ViewModel_Tool_DunnageBook _dunnageBookViewModel;
     private readonly ViewModel_Tool_WeldedCoils _weldedCoilsViewModel;
+    private readonly ViewModel_Tool_ReceivingAnalytics _receivingAnalyticsViewModel;
+    private readonly ViewModel_Tool_DeliverySchedule _deliveryScheduleViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
@@ -32,7 +34,9 @@ public sealed partial class View_ShipRecTools_Main : Page
         View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
         View_Tool_POLineSpecSearch poLineSpecSearchView,
         View_Tool_DunnageBook dunnageBookView,
-        View_Tool_WeldedCoils weldedCoilsView
+        View_Tool_WeldedCoils weldedCoilsView,
+        View_Tool_ReceivingAnalytics receivingAnalyticsView,
+        View_Tool_DeliverySchedule deliveryScheduleView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -42,6 +46,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         ArgumentNullException.ThrowIfNull(poLineSpecSearchView);
         ArgumentNullException.ThrowIfNull(dunnageBookView);
         ArgumentNullException.ThrowIfNull(weldedCoilsView);
+        ArgumentNullException.ThrowIfNull(receivingAnalyticsView);
+        ArgumentNullException.ThrowIfNull(deliveryScheduleView);
 
         ViewModel = viewModel;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
@@ -50,6 +56,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         _poLineSpecSearchViewModel = poLineSpecSearchView.ViewModel;
         _dunnageBookViewModel = dunnageBookView.ViewModel;
         _weldedCoilsViewModel = weldedCoilsView.ViewModel;
+        _receivingAnalyticsViewModel = receivingAnalyticsView.ViewModel;
+        _deliveryScheduleViewModel = deliveryScheduleView.ViewModel;
         InitializeComponent();
 
         ToolSelectionHost.Content = toolSelectionView;
@@ -58,6 +66,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         POLineSpecSearchHost.Content = poLineSpecSearchView;
         DunnageBookHost.Content = dunnageBookView;
         WeldedCoilsHost.Content = weldedCoilsView;
+        ReceivingAnalyticsHost.Content = receivingAnalyticsView;
+        DeliveryScheduleHost.Content = deliveryScheduleView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -75,6 +85,8 @@ public sealed partial class View_ShipRecTools_Main : Page
                 or nameof(ViewModel_ShipRecTools_Main.IsPOLineSpecSearchVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsDunnageBookVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsWeldedCoilsVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsReceivingAnalyticsVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsDeliveryScheduleVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -122,6 +134,20 @@ public sealed partial class View_ShipRecTools_Main : Page
         {
             RestoreMainWindowSize();
             _weldedCoilsViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsReceivingAnalyticsVisible)
+        {
+            RestoreMainWindowSize();
+            _receivingAnalyticsViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsDeliveryScheduleVisible)
+        {
+            RestoreMainWindowSize();
+            _deliveryScheduleViewModel.ActivateView();
         }
     }
 

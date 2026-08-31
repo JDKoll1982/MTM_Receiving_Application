@@ -1,0 +1,328 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_DeliverySchedule"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_DeliveryStatusToBrush x:Key="DeliveryStatusToBrushConverter" />
+    </Page.Resources>
+
+    <Grid Padding="16,8,16,24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Compact filter hotbar  -->
+        <Border
+            Grid.Row="0"
+            Padding="16,10"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Date range  -->
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Date:" />
+                    <CalendarDatePicker
+                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                        PlaceholderText="From" />
+                    <TextBlock VerticalAlignment="Center" Text="to" />
+                    <CalendarDatePicker
+                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                        PlaceholderText="To" />
+                </StackPanel>
+
+                <!--  Quick search (PO, part, supplier, carrier)  -->
+                <TextBox
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    PlaceholderText="Search PO, Part, Supplier, Carrier..."
+                    Text="{x:Bind ViewModel.QuickSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  Search / Clear  -->
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button
+                        Command="{x:Bind ViewModel.SearchCommand}"
+                        Content="Search"
+                        Style="{StaticResource AccentButtonStyle}" />
+                    <Button Command="{x:Bind ViewModel.ClearCommand}" Content="Clear" />
+                </StackPanel>
+
+                <!--  Filters popover + Export  -->
+                <StackPanel
+                    Grid.Column="3"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button x:Name="FiltersButton">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon FontSize="14" Glyph="&#xE71E;" />
+                            <TextBlock Text="Filters" />
+                        </StackPanel>
+                        <Button.Flyout>
+                            <Flyout Placement="BottomEdgeAlignedRight">
+                                <Border
+                                    Padding="16"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <StackPanel Width="360" Spacing="14">
+                                        <Grid ColumnSpacing="24">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!--  Receiving scope  -->
+                                            <StackPanel Grid.Column="0" Spacing="6">
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="RECEIVING SCOPE" />
+                                                <CheckBox
+                                                    Content="Only Part Numbers"
+                                                    IsChecked="{x:Bind ViewModel.ScopeParts, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Only Coils (MMC)"
+                                                    IsChecked="{x:Bind ViewModel.ScopeCoils, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Only Flat Stock (MMF)"
+                                                    IsChecked="{x:Bind ViewModel.ScopeFlat, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Show Outside Service"
+                                                    IsChecked="{x:Bind ViewModel.ScopeOutside, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Uninventoried (No Part)"
+                                                    IsChecked="{x:Bind ViewModel.ScopeUninventoried, Mode=TwoWay}" />
+                                            </StackPanel>
+
+                                            <!--  Delivery + PO states  -->
+                                            <StackPanel Grid.Column="1" Spacing="6">
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="DELIVERY STATES" />
+                                                <CheckBox
+                                                    Content="Show Open"
+                                                    IsChecked="{x:Bind ViewModel.ShowOpen, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Show Closed"
+                                                    IsChecked="{x:Bind ViewModel.ShowClosed, Mode=TwoWay}" />
+                                                <TextBlock
+                                                    Margin="0,10,0,0"
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="PO STATES" />
+                                                <CheckBox
+                                                    Content="Show On Time"
+                                                    IsChecked="{x:Bind ViewModel.ShowOnTime, Mode=TwoWay}" />
+                                                <CheckBox
+                                                    Content="Show Late"
+                                                    IsChecked="{x:Bind ViewModel.ShowLate, Mode=TwoWay}" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!--  Near-filled (replaces Show Partial): partials below the threshold  -->
+                                        <StackPanel
+                                            Orientation="Horizontal"
+                                            Spacing="8">
+                                            <CheckBox
+                                                Content="Show Partials Below"
+                                                IsChecked="{x:Bind ViewModel.ShowNearFilled, Mode=TwoWay}" />
+                                            <TextBox
+                                                Width="56"
+                                                MaxLength="2"
+                                                PlaceholderText="%"
+                                                Text="{x:Bind ViewModel.NearFillPctText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBlock VerticalAlignment="Center" Text="% received" />
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            HorizontalAlignment="Right"
+                                            Orientation="Horizontal"
+                                            Spacing="8">
+                                            <Button
+                                                Click="ApplyFiltersButton_Click"
+                                                Content="Apply Filters"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button Command="{x:Bind ViewModel.ExportCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon FontSize="14" Glyph="&#xE74E;" />
+                            <TextBlock Text="Export" />
+                        </StackPanel>
+                    </Button>
+                    <ProgressRing
+                        Width="20"
+                        Height="20"
+                        IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  Table container  -->
+        <Border
+            Grid.Row="1"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid RowSpacing="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  Legend + result count  -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+                        Grid.Column="0"
+                        Orientation="Horizontal"
+                        Spacing="16">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Legend:" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Ellipse Width="10" Height="10" Fill="#0D6EFD" />
+                            <TextBlock VerticalAlignment="Center" Text="Closed" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Ellipse Width="10" Height="10" Fill="#D90429" />
+                            <TextBlock VerticalAlignment="Center" Text="Late" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Ellipse Width="10" Height="10" Fill="#FFC107" />
+                            <TextBlock VerticalAlignment="Center" Text="Partial" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Ellipse Width="10" Height="10" Fill="#28A745" />
+                            <TextBlock VerticalAlignment="Center" Text="On Time / Open" />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{x:Bind ViewModel.ResultCountText, Mode=OneWay}" />
+                </Grid>
+
+                <!--  Results grid  -->
+                <Grid Grid.Row="1">
+                    <controls:DataGrid
+                        x:Name="ResultsGrid"
+                        AutoGenerateColumns="False"
+                        AutomationProperties.Name="Delivery Schedule Results"
+                        GridLinesVisibility="Horizontal"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        ItemsSource="{x:Bind ViewModel.Rows, Mode=OneWay}"
+                        SelectionMode="Single">
+                        <controls:DataGrid.CellStyle>
+                            <Style TargetType="controls:DataGridCell">
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                            </Style>
+                        </controls:DataGrid.CellStyle>
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTemplateColumn Width="120" Header="PO Number">
+                                <controls:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse
+                                                Width="10"
+                                                Height="10"
+                                                VerticalAlignment="Center"
+                                                Fill="{Binding StatusDotKey, Converter={StaticResource DeliveryStatusToBrushConverter}}" />
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding PoNumber}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </controls:DataGridTemplateColumn.CellTemplate>
+                            </controls:DataGridTemplateColumn>
+                            <controls:DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding VendorName}"
+                                Header="Vendor"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding DueDateText}"
+                                Header="Due Date"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding PartNumber}"
+                                Header="Part / Tag #"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding OrderQtyText}"
+                                Header="Order Qty"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding ReceivedQtyText}"
+                                Header="Recv Qty"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding RemainingQtyText}"
+                                Header="Open Qty"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding ReceivedBy}"
+                                Header="Last Receiver"
+                                IsReadOnly="True" />
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+
+                    <!--  Empty state  -->
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{x:Bind ViewModel.EmptyStateText, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

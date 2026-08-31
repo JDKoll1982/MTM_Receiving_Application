@@ -310,5 +310,34 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             decimal quantity,
             DateTime afterUtc
         );
+
+        /// <summary>
+        /// Returns receiving-schedule grid rows (per PO line) within an optional date
+        /// window, applying search, scope, delivery-state, and PO-state filters.
+        /// Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualDeliveryScheduleLine>>
+        > GetDeliveryScheduleLinesAsync(Model_InforVisualDeliveryScheduleFilter filter);
+
+        /// <summary>
+        /// Returns aggregated receiving-history line counts by date and category
+        /// (past received items) for the Receiving Analytics chart.
+        /// Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+        > GetReceivingAnalyticsHistoryAsync(Model_InforVisualReceivingAnalyticsFilter filter);
+
+        /// <summary>
+        /// Returns aggregated incoming (forecast) line counts by due date and category
+        /// (open PO lines) for the Receiving Analytics chart. Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+        > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter);
     }
 }

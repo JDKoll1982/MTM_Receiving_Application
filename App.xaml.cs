@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +45,10 @@ public partial class App : Application
     {
         InitializeComponent();
         DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
+
+        // LiveCharts2 SkiaSharp renderer setup (used by the Delivery Schedule tool
+        // both for the on-screen CartesianChart and for headless chart-image export).
+        LiveCharts.Configure(settings => settings.AddSkiaSharp());
 
         _host = Host.CreateDefaultBuilder()
             .UseSerilog(

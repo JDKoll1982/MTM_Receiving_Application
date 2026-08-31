@@ -1842,4 +1842,218 @@ public class Dao_InforVisualConnection
     }
 
     #endregion
+
+    #region Delivery Schedule & Receiving Analytics
+
+    /// <summary>
+    /// Returns receiving-schedule grid rows (per PO line) within an optional date
+    /// window, applying search, scope, delivery-state, and PO-state filters.
+    /// Uses: 29_GetDeliveryScheduleLines.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualDeliveryScheduleLine>>
+    > GetDeliveryScheduleLinesAsync(Model_InforVisualDeliveryScheduleFilter filter)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            _logger?.LogInfo(
+                $"Querying delivery schedule lines (from {filter.FromDate?.ToShortDateString() ?? "-"} "
+                    + $"to {filter.ToDate?.ToShortDateString() ?? "-"}, max {filter.MaxResults})"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "29_GetDeliveryScheduleLines.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FromDate", (object?)filter.FromDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ToDate", (object?)filter.ToDate ?? DBNull.Value);
+            command.Parameters.AddWithValue(
+                "@PartSearch",
+                (object?)ToLikePattern(filter.PartSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@PoSearch",
+                (object?)ToLikePattern(filter.PoSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@SupplierSearch",
+                (object?)ToLikePattern(filter.SupplierSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@CarrierSearch",
+                (object?)ToLikePattern(filter.CarrierSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue("@SearchAll", filter.SearchAll);
+            command.Parameters.AddWithValue("@ScopeParts", filter.ScopeParts);
+            command.Parameters.AddWithValue("@ScopeCoils", filter.ScopeCoils);
+            command.Parameters.AddWithValue("@ScopeFlat", filter.ScopeFlat);
+            command.Parameters.AddWithValue("@ScopeOutside", filter.ScopeOutside);
+            command.Parameters.AddWithValue("@ScopeUninv", filter.ScopeUninventoried);
+            command.Parameters.AddWithValue("@ShowNearFilled", filter.ShowNearFilled);
+            command.Parameters.AddWithValue("@NearFillPct", Math.Clamp(filter.NearFillPct, 1, 99));
+            command.Parameters.AddWithValue("@ShowOpen", filter.ShowOpen);
+            command.Parameters.AddWithValue("@ShowClosed", filter.ShowClosed);
+            command.Parameters.AddWithValue("@ShowOnTime", filter.ShowOnTime);
+            command.Parameters.AddWithValue("@ShowLate", filter.ShowLate);
+            command.Parameters.AddWithValue("@Today", filter.Today);
+            command.Parameters.AddWithValue("@MaxResults", Math.Max(1, filter.MaxResults));
+
+            var rows = new List<Model_InforVisualDeliveryScheduleLine>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualDeliveryScheduleLine
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        PoDesiredDate = reader["PoDesiredDate"] as DateTime?,
+                        PoPromiseDate = reader["PoPromiseDate"] as DateTime?,
+                        OrderDate = reader["OrderDate"] as DateTime?,
+                        Carrier = reader["Carrier"].ToString() ?? string.Empty,
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        OrderQty = Convert.ToDecimal(reader["OrderQty"]),
+                        ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
+                        RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
+                        LineDesiredDate = reader["LineDesiredDate"] as DateTime?,
+                        LinePromiseDate = reader["LinePromiseDate"] as DateTime?,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        LineStatus = reader["LineStatus"].ToString() ?? string.Empty,
+                        ReceivedBy = reader["ReceivedBy"].ToString() ?? string.Empty,
+                        DueDate = reader["DueDate"] as DateTime?,
+                        Category = reader["Category"].ToString() ?? string.Empty,
+                        DeliveryState = reader["DeliveryState"].ToString() ?? string.Empty,
+                        PoState = reader["PoState"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Returned {rows.Count} delivery schedule lines.");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying delivery schedule lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualDeliveryScheduleLine>>(
+                $"Error querying delivery schedule lines: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Returns aggregated receiving-history line counts by date and category
+    /// (past received items) for the Receiving Analytics chart.
+    /// Uses: 30_GetReceivingAnalyticsHistory.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsHistoryAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        return await QueryReceivingAnalyticsByDateAsync(
+            "30_GetReceivingAnalyticsHistory.sql",
+            "receiving history",
+            filter
+        );
+    }
+
+    /// <summary>
+    /// Returns aggregated incoming (forecast) line counts by due date and category
+    /// (open PO lines) for the Receiving Analytics chart.
+    /// Uses: 31_GetReceivingAnalyticsForecast.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        return await QueryReceivingAnalyticsByDateAsync(
+            "31_GetReceivingAnalyticsForecast.sql",
+            "receiving forecast",
+            filter
+        );
+    }
+
+    private async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > QueryReceivingAnalyticsByDateAsync(
+        string queryFile,
+        string label,
+        Model_InforVisualReceivingAnalyticsFilter filter
+    )
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            _logger?.LogInfo(
+                $"Querying {label} by date (from {filter.FromDate?.ToShortDateString() ?? "-"} "
+                    + $"to {filter.ToDate?.ToShortDateString() ?? "-"}, max {filter.MaxResults})"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(queryFile);
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FromDate", (object?)filter.FromDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ToDate", (object?)filter.ToDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ScopeParts", filter.ScopeParts);
+            command.Parameters.AddWithValue("@ScopeCoils", filter.ScopeCoils);
+            command.Parameters.AddWithValue("@ScopeFlat", filter.ScopeFlat);
+            command.Parameters.AddWithValue("@ScopeOutside", filter.ScopeOutside);
+            command.Parameters.AddWithValue("@ScopeUninv", filter.ScopeUninventoried);
+            command.Parameters.AddWithValue("@MaxResults", Math.Max(1, filter.MaxResults));
+
+            var rows = new List<Model_InforVisualReceivingAnalyticsPoint>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualReceivingAnalyticsPoint
+                    {
+                        ActivityDate = Convert.ToDateTime(reader["ActivityDate"]),
+                        Category = reader["Category"].ToString() ?? string.Empty,
+                        LineCount = Convert.ToInt32(reader["LineCount"]),
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Returned {rows.Count} {label} data points.");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying {label} by date: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualReceivingAnalyticsPoint>>(
+                $"Error querying {label} by date: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static string? ToLikePattern(string term)
+    {
+        var trimmed = term?.Trim() ?? string.Empty;
+        if (trimmed.Length == 0)
+        {
+            return null;
+        }
+
+        return $"%{trimmed}%";
+    }
+
+    #endregion
 }

@@ -626,6 +626,18 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_DunnageBook(dunnage, logger);
         });
+        services.AddSingleton<IService_Tool_ReceivingAnalytics>(sp =>
+        {
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_ReceivingAnalytics(inforVisual, logger);
+        });
+        services.AddSingleton<IService_Tool_DeliverySchedule>(sp =>
+        {
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_DeliverySchedule(inforVisual, logger);
+        });
         services.AddSingleton<IService_ShipRecToolsSettings, Service_ShipRecToolsSettings>();
 
         // ViewModels (Transient - Per-navigation instances)
@@ -636,6 +648,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_POLineSpecSearch>();
         services.AddTransient<ViewModel_Tool_DunnageBook>();
         services.AddTransient<ViewModel_Tool_WeldedCoils>();
+        services.AddTransient<ViewModel_Tool_ReceivingAnalytics>();
+        services.AddTransient<ViewModel_Tool_DeliverySchedule>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
@@ -645,6 +659,8 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_POLineSpecSearch>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DunnageBook>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_WeldedCoils>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalytics>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DeliverySchedule>();
 
         return services;
     }

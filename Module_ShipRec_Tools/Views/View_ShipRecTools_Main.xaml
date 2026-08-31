@@ -55,5 +55,19 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsWeldedCoilsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Receiving Analytics Tool  -->
+        <ContentControl
+            x:Name="ReceivingAnalyticsHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsReceivingAnalyticsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Delivery Schedule Tool  -->
+        <ContentControl
+            x:Name="DeliveryScheduleHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsDeliveryScheduleVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

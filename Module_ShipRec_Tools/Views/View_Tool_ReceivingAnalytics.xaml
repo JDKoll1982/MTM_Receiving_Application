@@ -1,0 +1,268 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalytics"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="16,8,16,24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Stat cards  -->
+        <Grid Grid.Row="0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Column="0"
+                Padding="16"
+                Background="#7B1FA2"
+                CornerRadius="8">
+                <StackPanel Spacing="4">
+                    <TextBlock Foreground="White" Text="Total Lines" />
+                    <TextBlock
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{x:Bind ViewModel.TotalLinesText, Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Grid.Column="1"
+                Padding="16"
+                Background="#E91E63"
+                CornerRadius="8">
+                <StackPanel Spacing="4">
+                    <TextBlock Foreground="White" Text="Avg/Day" />
+                    <TextBlock
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{x:Bind ViewModel.AvgPerDayText, Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Grid.Column="2"
+                Padding="16"
+                Background="#00BCD4"
+                CornerRadius="8">
+                <StackPanel Spacing="4">
+                    <TextBlock Foreground="White" Text="Peak Day" />
+                    <TextBlock
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{x:Bind ViewModel.PeakDayText, Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Grid.Column="3"
+                Padding="16"
+                Background="#4CAF50"
+                CornerRadius="8">
+                <StackPanel Spacing="4">
+                    <TextBlock Foreground="White" Text="Trend vs Last Week" />
+                    <TextBlock
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{x:Bind ViewModel.TrendText, Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!--  Compact controls hotbar  -->
+        <Border
+            Grid.Row="1"
+            Padding="16,10"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  View mode: History vs Incoming  -->
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="View Mode:" />
+                    <ComboBox
+                        MinWidth="110"
+                        SelectedIndex="{x:Bind ViewModel.SelectedViewModeIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="History" />
+                        <ComboBoxItem Content="Incoming" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!--  Date range  -->
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Date:" />
+                    <CalendarDatePicker
+                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                        PlaceholderText="From" />
+                    <TextBlock VerticalAlignment="Center" Text="to" />
+                    <CalendarDatePicker
+                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                        PlaceholderText="To" />
+                </StackPanel>
+
+                <!--  View period  -->
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Period:" />
+                    <ComboBox
+                        MinWidth="100"
+                        SelectedIndex="{x:Bind ViewModel.SelectedPeriodIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="Day" />
+                        <ComboBoxItem Content="Week" />
+                        <ComboBoxItem Content="Month" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!--  Chart type  -->
+                <StackPanel
+                    Grid.Column="3"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Chart:" />
+                    <ComboBox
+                        MinWidth="100"
+                        SelectedIndex="{x:Bind ViewModel.SelectedChartTypeIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="Line" />
+                        <ComboBoxItem Content="Bar" />
+                        <ComboBoxItem Content="Stacked" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!--  Filters popover + actions  -->
+                <StackPanel
+                    Grid.Column="5"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button x:Name="FiltersButton">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon FontSize="14" Glyph="&#xE71E;" />
+                            <TextBlock Text="Filters" />
+                        </StackPanel>
+                        <Button.Flyout>
+                            <Flyout Placement="BottomEdgeAlignedRight">
+                                <Border
+                                    Padding="16"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <StackPanel Width="320" Spacing="12">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="CATEGORIES" />
+                                        <CheckBox Content="Parts" IsChecked="{x:Bind ViewModel.ScopeParts, Mode=TwoWay}" />
+                                        <CheckBox Content="MMC (Coils)" IsChecked="{x:Bind ViewModel.ScopeCoils, Mode=TwoWay}" />
+                                        <CheckBox Content="MMF (Flat)" IsChecked="{x:Bind ViewModel.ScopeFlat, Mode=TwoWay}" />
+                                        <CheckBox Content="Outside Service" IsChecked="{x:Bind ViewModel.ScopeOutside, Mode=TwoWay}" />
+                                        <CheckBox Content="Uninventoried" IsChecked="{x:Bind ViewModel.ScopeUninventoried, Mode=TwoWay}" />
+                                        <CheckBox
+                                            Content="Compare Previous Period"
+                                            IsChecked="{x:Bind ViewModel.ComparePreviousPeriod, Mode=TwoWay}" />
+                                        <StackPanel
+                                            HorizontalAlignment="Right"
+                                            Orientation="Horizontal"
+                                            Spacing="8">
+                                            <Button
+                                                Click="ApplyFiltersButton_Click"
+                                                Content="Apply Filters"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button
+                        Command="{x:Bind ViewModel.LoadCommand}"
+                        Content="Refresh"
+                        Style="{StaticResource AccentButtonStyle}" />
+                    <Button Command="{x:Bind ViewModel.ClearCommand}" Content="Reset" />
+                    <Button Command="{x:Bind ViewModel.ExportCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon FontSize="14" Glyph="&#xE74E;" />
+                            <TextBlock Text="Export" />
+                        </StackPanel>
+                    </Button>
+                    <ProgressRing
+                        Width="20"
+                        Height="20"
+                        IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  Chart  -->
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid RowSpacing="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    Text="Receiving Analytics" />
+
+                <lvc:CartesianChart
+                    Grid.Row="1"
+                    Series="{x:Bind ViewModel.Series, Mode=OneWay}"
+                    XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}"
+                    YAxes="{x:Bind ViewModel.YAxes, Mode=OneWay}" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
