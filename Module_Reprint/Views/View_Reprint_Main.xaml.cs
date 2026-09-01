@@ -46,4 +46,10 @@ public sealed partial class View_Reprint_Main : Page
         var page = new View_Reprint_ModulePage(moduleViewModel);
         mainWindow.SetContentPage(page, $"Reprint Labels - {mode}");
     }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Reprint.Main");
+    }
 }

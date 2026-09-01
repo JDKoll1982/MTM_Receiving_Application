@@ -32,4 +32,10 @@ public sealed partial class View_Scanner_Main : Page
         HistoryHost.Content = historyView;
         SettingsHost.Content = settingsView;
     }
+
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Scanner.Main");
+    }
 }

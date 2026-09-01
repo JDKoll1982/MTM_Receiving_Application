@@ -75,6 +75,12 @@ public sealed partial class View_ShipRecTools_Main : Page
         UpdateActiveViewStatus();
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.Main");
+    }
+
     private void OnMainViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (

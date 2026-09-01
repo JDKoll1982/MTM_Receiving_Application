@@ -1108,6 +1108,14 @@ namespace MTM_Receiving_Application
                     "appearance"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_System),
+                    "System Settings",
+                    "Core system settings and defaults",
+                    "system",
+                    "system settings",
+                    "core system"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_SharedPaths),
                     "Shared Paths",
                     "Shared file paths and output locations",
@@ -1190,6 +1198,14 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts receiving"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                    "Receiving Label Files",
+                    "Configure the LabelView template paths used by Receiving workflow label buttons",
+                    "receiving label paths",
+                    "receiving label files",
+                    "receiving labelview paths"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
                     "Dunnage Settings",
                     "Dunnage settings categories",
@@ -1237,6 +1253,14 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts dunnage"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
+                    "Dunnage Label Files",
+                    "Configure the LabelView template path used for Dunnage labels",
+                    "dunnage label paths",
+                    "dunnage label files",
+                    "dunnage labelview paths"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
                     "Reporting Settings",
                     "Reporting settings placeholder",
@@ -1273,6 +1297,14 @@ namespace MTM_Receiving_Application
                     "volvo email",
                     "volvo email recipients",
                     "volvo notifications"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
+                    "Volvo Label Files",
+                    "Configure the LabelView template path used for Volvo labels",
+                    "volvo label paths",
+                    "volvo label files",
+                    "volvo labelview paths"
                 ),
             ];
         }

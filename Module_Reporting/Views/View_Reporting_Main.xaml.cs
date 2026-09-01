@@ -40,4 +40,10 @@ public sealed partial class View_Reporting_Main : Page
         ViewModel.PreviewRequested -= OnPreviewRequested;
         Unloaded -= OnUnloaded;
     }
+
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Reporting.Main");
+    }
 }

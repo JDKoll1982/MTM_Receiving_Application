@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using Windows.Foundation;
@@ -70,6 +72,12 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
 
         AlwaysVisibleTextBlock.Text = BuildAlwaysVisibleText();
         BuildGroupedColumnOptions();
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        await helpService.ShowHelpAsync("Receiving.EditModeColumnChooser");
     }
 
     public void PrepareDialogSize()

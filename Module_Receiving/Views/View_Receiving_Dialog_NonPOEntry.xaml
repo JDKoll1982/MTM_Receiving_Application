@@ -19,11 +19,29 @@
         <x:Double x:Key="ContentDialogMaxHeight">600</x:Double>
     </ContentDialog.Resources>
     <StackPanel Width="400" Spacing="16">
-        <TextBlock
-            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            Style="{StaticResource BodyTextBlockStyle}"
-            Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this receiving batch and shown on the review page."
-            TextWrapping="WrapWholeWords" />
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this receiving batch and shown on the review page."
+                TextWrapping="WrapWholeWords" />
+            <Button
+                Grid.Column="1"
+                Width="34"
+                Height="34"
+                Padding="0"
+                VerticalAlignment="Top"
+                AutomationProperties.Name="Help for Non-PO reference"
+                Click="OnHelpClick"
+                ToolTipService.ToolTip="Help">
+                <FontIcon FontSize="16" Glyph="&#xE946;" />
+            </Button>
+        </Grid>
 
         <TextBox
             x:Name="ReferenceTextBox"

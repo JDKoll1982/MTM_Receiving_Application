@@ -29,24 +29,39 @@
                 Text="Choose which columns appear in Edit Mode. Related fields are grouped together so the list is easier to scan and update."
                 TextWrapping="Wrap" />
 
-            <Border
-                Padding="12"
+            <StackPanel
                 HorizontalAlignment="Right"
-                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="6">
-                <StackPanel Spacing="4">
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Always Shown" />
-                    <TextBlock
-                        x:Name="AlwaysVisibleTextBlock"
-                        FontWeight="SemiBold"
-                        TextWrapping="WrapWholeWords" />
-                </StackPanel>
-            </Border>
+                Orientation="Horizontal"
+                Spacing="8">
+                <Border
+                    Padding="12"
+                    VerticalAlignment="Center"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Always Shown" />
+                        <TextBlock
+                            x:Name="AlwaysVisibleTextBlock"
+                            FontWeight="SemiBold"
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Border>
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    AutomationProperties.Name="Help for column chooser"
+                    Click="OnHelpClick"
+                    ToolTipService.ToolTip="Help">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
+            </StackPanel>
         </Grid>
 
         <Border

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -30,6 +31,12 @@ public sealed partial class View_Receiving_Dialog_NonPOEntry : ContentDialog
         _receivingService = App.GetService<IService_MySQL_Receiving>();
         _partId = string.IsNullOrWhiteSpace(partId) ? null : partId.Trim();
         _ = LoadSavedEntriesAsync();
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        await helpService.ShowHelpAsync("Receiving.NonPOEntry");
     }
 
     private async Task LoadSavedEntriesAsync()

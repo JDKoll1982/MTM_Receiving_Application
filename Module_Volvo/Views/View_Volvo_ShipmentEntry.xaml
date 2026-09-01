@@ -361,5 +361,22 @@
                 </StackPanel>
             </Button>
         </Grid>
+
+        <Button
+            Width="36"
+            Height="36"
+            Margin="0,8,16,0"
+            Padding="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            AutomationProperties.Name="Help"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            Click="OnHelpClick"
+            CornerRadius="4"
+            ToolTipService.ToolTip="Help">
+            <FontIcon FontSize="16" Glyph="&#xE946;" />
+        </Button>
     </Grid>
 </Page>
