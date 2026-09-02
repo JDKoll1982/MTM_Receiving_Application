@@ -11,6 +11,7 @@
     IsPrimaryButtonEnabled="False"
     PrimaryButtonText="Use Selected Details">
     <StackPanel Padding="8" Spacing="16">
+        
         <TextBlock
             Style="{StaticResource BodyTextBlockStyle}"
             Text="Choose an existing part to copy its saved details. You can still change the part ID, inventory type, and home location in the main window."

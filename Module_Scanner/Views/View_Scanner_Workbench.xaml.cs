@@ -13,6 +13,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
 using Windows.System;
+using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
@@ -127,9 +129,18 @@ public sealed partial class View_Scanner_Workbench : Page
         ViewModel.PartIdFocusRequested += OnPartIdFocusRequested;
         ViewModel.PartIdClearRequested += OnPartIdClearRequested;
         ViewModel.FirstRowToCellFocusRequested += OnFirstRowToCellFocusRequested;
+        ViewModel.DuplicateAddConfirmationRequested += OnDuplicateAddConfirmationRequestedAsync;
 
         ViewModel.Activate();
         await ViewModel.EnsureCurrentSessionAsync();
+
+        // Edge-case fix: rows resumed as "valid" after an app restart have no in-memory
+        // on-hand guard (MaxQuantity is not persisted). Revalidate them once against current
+        // stock in the background to restore the guard.
+        if (ViewModel.SessionItems.Count > 0)
+        {
+            _ = ViewModel.RevalidateResumedValidItemsAsync();
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -139,7 +150,29 @@ public sealed partial class View_Scanner_Workbench : Page
         ViewModel.PartIdFocusRequested -= OnPartIdFocusRequested;
         ViewModel.PartIdClearRequested -= OnPartIdClearRequested;
         ViewModel.FirstRowToCellFocusRequested -= OnFirstRowToCellFocusRequested;
+        ViewModel.DuplicateAddConfirmationRequested -= OnDuplicateAddConfirmationRequestedAsync;
         ViewModel.Deactivate();
+    }
+
+    private async Task<bool> OnDuplicateAddConfirmationRequestedAsync(string message)
+    {
+        var xamlRoot = XamlRoot ?? this.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return true;
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = "Add duplicate lines?",
+            Content = message,
+            PrimaryButtonText = "Add Anyway",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = xamlRoot,
+        };
+        Helper_UI_ContentDialogTheme.ApplyTheme(dialog, xamlRoot);
+        return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
     // ── Step 6b-a1-a: stock-location modal ───────────────────────────────────────
@@ -230,7 +263,7 @@ public sealed partial class View_Scanner_Workbench : Page
         listView.ItemsSource = pickRows;
         listView.ItemTemplate = BuildStockPickTemplate();
 
-        var (panel, selectAllButton) = BuildPickerContent(listView, "Location");
+        var (panel, selectAllButton, pickerErrorText) = BuildPickerContent(listView, "Location");
         WireSelectAll(selectAllButton, pickRows);
 
         var dialog = new ContentDialog
@@ -243,6 +276,16 @@ public sealed partial class View_Scanner_Workbench : Page
             XamlRoot = xamlRoot,
         };
         ApplyPickerDialogSizing(dialog);
+        dialog.PrimaryButtonClick += (_, clickArgs) =>
+        {
+            var message = ValidatePickRowsForSubmit(pickRows);
+            if (message is not null)
+            {
+                clickArgs.Cancel = true;
+                pickerErrorText.Text = message;
+                pickerErrorText.Visibility = Visibility.Visible;
+            }
+        };
 
         var result = await dialog.ShowAsync();
         if (result != ContentDialogResult.Primary)
@@ -293,7 +336,7 @@ public sealed partial class View_Scanner_Workbench : Page
         listView.ItemsSource = pickRows;
         listView.ItemTemplate = BuildStockPickTemplate();
 
-        var (panel, selectAllButton) = BuildPickerContent(listView, "Part");
+        var (panel, selectAllButton, pickerErrorText) = BuildPickerContent(listView, "Part");
         WireSelectAll(selectAllButton, pickRows);
 
         var dialog = new ContentDialog
@@ -306,6 +349,16 @@ public sealed partial class View_Scanner_Workbench : Page
             XamlRoot = xamlRoot,
         };
         ApplyPickerDialogSizing(dialog);
+        dialog.PrimaryButtonClick += (_, clickArgs) =>
+        {
+            var message = ValidatePickRowsForSubmit(pickRows);
+            if (message is not null)
+            {
+                clickArgs.Cancel = true;
+                pickerErrorText.Text = message;
+                pickerErrorText.Visibility = Visibility.Visible;
+            }
+        };
 
         var result = await dialog.ShowAsync();
         if (result != ContentDialogResult.Primary)
@@ -357,6 +410,58 @@ public sealed partial class View_Scanner_Workbench : Page
     }
 
     /// <summary>
+    /// Returns an error message when the submitted picker rows have no selection or a checked
+    /// row has a non-numeric, non-positive, or over-on-hand quantity; otherwise returns null.
+    /// The dialog is kept open (PrimaryButtonClick is cancelled) until the rows are valid.
+    /// </summary>
+    private static string? ValidatePickRowsForSubmit(IReadOnlyList<StockPickRow> pickRows)
+    {
+        var checkedRows = pickRows.Where(row => row.IsChecked).ToList();
+        if (checkedRows.Count == 0)
+        {
+            return "Select at least one row to continue.";
+        }
+
+        foreach (var row in checkedRows)
+        {
+            if (!TryParseDecimalOnly(row.Quantity, out var quantity))
+            {
+                return $"Quantity for {row.DisplayValue} must be a number (decimals only, e.g. 10 or 2.5).";
+            }
+
+            if (quantity <= 0)
+            {
+                return $"Quantity for {row.DisplayValue} must be greater than zero.";
+            }
+
+            if (quantity > row.OnHand)
+            {
+                return $"Quantity for {row.DisplayValue} cannot exceed the on-hand amount of {FormatDecimal(row.OnHand)}.";
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Parses a quantity as a plain decimal using the period as the decimal point. Thousands
+    /// separators (commas) and exponent notation are not accepted, so a comma-decimal entry
+    /// like "1,5" is rejected rather than silently read as 15.
+    /// </summary>
+    private static bool TryParseDecimalOnly(string? raw, out decimal value)
+    {
+        return decimal.TryParse(
+            raw?.Trim(),
+            NumberStyles.AllowLeadingSign
+                | NumberStyles.AllowDecimalPoint
+                | NumberStyles.AllowLeadingWhite
+                | NumberStyles.AllowTrailingWhite,
+            CultureInfo.InvariantCulture,
+            out value
+        );
+    }
+
+    /// <summary>
     /// Applies the repo-standard ContentDialog sizing used by the larger list/detail
     /// dialogs (e.g. Module_Receiving EditModeColumnChooser, Module_Dunnage dialogs).
     /// Without this, ContentDialog clamps to its default 548px max width.
@@ -369,9 +474,10 @@ public sealed partial class View_Scanner_Workbench : Page
     }
 
     /// <summary>
-    /// Builds the modal body: a Select All/None toggle, a column-header row, and the list.
+    /// Builds the modal body: a Select All/None toggle, a column-header row, the list, and an
+    /// inline validation error line shown when submitted quantities are not valid.
     /// </summary>
-    private static (StackPanel Panel, Button SelectAllButton) BuildPickerContent(
+    private static (StackPanel Panel, Button SelectAllButton, TextBlock ErrorText) BuildPickerContent(
         ListView listView,
         string firstColumnHeader
     )
@@ -399,13 +505,29 @@ public sealed partial class View_Scanner_Workbench : Page
             Padding = new Thickness(12, 4, 12, 4),
         };
 
+        var errorText = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Visibility = Visibility.Collapsed,
+        };
+        if (
+            Application.Current.Resources.TryGetValue(
+                "SystemFillColorCriticalBrush",
+                out var criticalBrush
+            ) && criticalBrush is Brush criticalBrushBrush
+        )
+        {
+            errorText.Foreground = criticalBrushBrush;
+        }
+
         // Content floor matching ContentDialogMinWidth so rows never collapse below a
         // usable Part column (mirrors the reference dialogs' content MinWidth).
         var panel = new StackPanel { Spacing = 6, MinWidth = 900 };
         panel.Children.Add(selectAllButton);
         panel.Children.Add(header);
         panel.Children.Add(listView);
-        return (panel, selectAllButton);
+        panel.Children.Add(errorText);
+        return (panel, selectAllButton, errorText);
     }
 
     private static void AddHeader(Grid header, int column, string text)
@@ -561,9 +683,51 @@ public sealed partial class View_Scanner_Workbench : Page
             return;
         }
 
-        var resolved = args.Result.ResolvedValue
-            ?? args.Result.FormattedValue
-            ?? args.Result.RawInput
+        var result = args.Result;
+
+        // Edge-case fix: when no exact part/location matched but close matches exist, present
+        // them for the operator to choose instead of silently passing the (wrong) typed value
+        // down to the "part not found" path.
+        if (
+            result.UsedFuzzyFallback
+            && result.HasExactMatch is false
+            && result.FuzzyCandidates.Count > 0
+        )
+        {
+            var searchTerm = result.FormattedValue ?? result.RawInput ?? string.Empty;
+            var selectedResult = await ShowFuzzyPickerAsync(searchTerm, result.FuzzyCandidates);
+
+            if (selectedResult is null)
+            {
+                ClearLookupInput();
+                return;
+            }
+
+            var selectedValue = (selectedResult.Key ?? selectedResult.Label ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(selectedValue))
+            {
+                ClearLookupInput();
+                return;
+            }
+
+            PartIdLookupControl.InputValue = selectedValue;
+            ViewModel.NewPartId = selectedValue;
+
+            if (ViewModel.SearchMode == Enum_ScannerSearchMode.Location)
+            {
+                await ViewModel.LocationValidationCompletedAsync(selectedValue);
+            }
+            else
+            {
+                await ViewModel.PartValidationCompletedAsync(selectedValue);
+            }
+
+            return;
+        }
+
+        var resolved = result.ResolvedValue
+            ?? result.FormattedValue
+            ?? result.RawInput
             ?? ViewModel.NewPartId;
 
         if (ViewModel.SearchMode == Enum_ScannerSearchMode.Location)
@@ -574,6 +738,49 @@ public sealed partial class View_Scanner_Workbench : Page
         {
             await ViewModel.PartValidationCompletedAsync(resolved);
         }
+    }
+
+    private void ClearLookupInput()
+    {
+        PartIdLookupControl.InputValue = string.Empty;
+        ViewModel.NewPartId = string.Empty;
+    }
+
+    private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerAsync(
+        string searchTerm,
+        IReadOnlyList<Model_FuzzySearchResult> candidates
+    )
+    {
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        var xamlRoot = XamlRoot ?? this.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return null;
+        }
+
+        var isLocationMode = ViewModel.SearchMode == Enum_ScannerSearchMode.Location;
+        var dialog = new Dialog_FuzzySearchPicker(
+            candidates,
+            isLocationMode ? "Select Location" : "Select Part",
+            isLocationMode
+                ? $"No exact location match was found for '{searchTerm}'. Select a similar location to continue."
+                : $"No exact part match was found for '{searchTerm}'. Select a similar part to continue."
+        )
+        {
+            XamlRoot = xamlRoot,
+        };
+
+        var outcome = await dialog.ShowAsync();
+        if (outcome != ContentDialogResult.Primary)
+        {
+            return null;
+        }
+
+        return dialog.SelectedResult;
     }
 
     /// <summary>
@@ -592,14 +799,19 @@ public sealed partial class View_Scanner_Workbench : Page
     }
 
     /// <summary>Blocks non-numeric or negative quantities while typing in the table row.</summary>
-    private void SessionItemQtyTextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+    private void SessionItemQtyTextBox_BeforeTextChanging(
+        TextBox sender,
+        TextBoxBeforeTextChangingEventArgs args
+    )
     {
         if (args is null || args.NewText.Length == 0)
         {
             return;
         }
 
-        if (!decimal.TryParse(args.NewText, NumberStyles.Any, CultureInfo.InvariantCulture, out var value) || value < 0)
+        // Decimals only: reject commas (thousands separators) and exponent forms so entries
+        // like "1,5" cannot be misread, and reject negatives while typing.
+        if (!TryParseDecimalOnly(args.NewText, out var value) || value < 0)
         {
             args.Cancel = true;
         }

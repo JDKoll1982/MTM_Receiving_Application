@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
 
@@ -19,6 +20,12 @@ public sealed partial class View_Volvo_ShipmentHistoryDetailDialog : Page
     {
         ViewModel = App.GetService<ViewModel_Volvo_ShipmentHistoryDetailDialog>();
         InitializeComponent();
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        await helpService.ShowHelpAsync("Volvo.ShipmentHistoryDetail", XamlRoot);
     }
 
     /// <summary>

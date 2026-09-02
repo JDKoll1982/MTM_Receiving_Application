@@ -38,6 +38,12 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         ViewModel.ShowWorkOrderDetailsDialogAsync = ShowWorkOrderDetailsDialogAsync;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.MaterialAvailabilityBoard", XamlRoot);
+    }
+
     private async Task<bool?> SelectLocationPrintModeAsync()
     {
         var dialog = new ContentDialog

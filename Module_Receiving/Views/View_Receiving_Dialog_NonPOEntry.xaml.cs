@@ -33,12 +33,7 @@ public sealed partial class View_Receiving_Dialog_NonPOEntry : ContentDialog
         _ = LoadSavedEntriesAsync();
     }
 
-    private async void OnHelpClick(object sender, RoutedEventArgs e)
-    {
-        var helpService = App.GetService<IService_Help>();
-        await helpService.ShowHelpAsync("Receiving.NonPOEntry");
-    }
-
+    
     private async Task LoadSavedEntriesAsync()
     {
         var result = await _receivingService.GetNonPOEntriesAsync();

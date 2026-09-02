@@ -20,6 +20,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views
             _focusService.AttachFocusOnVisibility(this, RowCountNumberBox);
         }
 
+        
         private void ContentDialog_PrimaryButtonClick(
             ContentDialog sender,
             ContentDialogButtonClickEventArgs args

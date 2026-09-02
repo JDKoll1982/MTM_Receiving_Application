@@ -208,6 +208,13 @@ public sealed partial class Model_ScannerBatchItem : ObservableObject
 		FuzzyMatchedPartId = result.CanonicalPartId;
 		FuzzyMatchedFromLocation = result.CanonicalFromLocation;
 		FuzzyMatchedToLocation = result.CanonicalToLocation;
+
+		// Restore the in-memory on-hand guard whenever live validation knows the source
+		// location's available quantity (e.g., after an app restart revalidation).
+		if (result.MaxQuantity.HasValue)
+		{
+			MaxQuantity = result.MaxQuantity;
+		}
 	}
 
 	public Model_ScannerHistoryItem ToHistoryItem(Guid historyEntryId)

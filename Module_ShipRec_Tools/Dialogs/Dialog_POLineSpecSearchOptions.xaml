@@ -12,6 +12,7 @@
         MaxHeight="640"
         Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
         <StackPanel Spacing="14">
+            
             <TextBlock
                 Style="{StaticResource BodyStrongTextBlockStyle}"
                 Text="Search options" />

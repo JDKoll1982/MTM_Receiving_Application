@@ -74,12 +74,7 @@ public sealed partial class Dialog_Receiving_EditModeColumnChooser : ContentDial
         BuildGroupedColumnOptions();
     }
 
-    private async void OnHelpClick(object sender, RoutedEventArgs e)
-    {
-        var helpService = App.GetService<IService_Help>();
-        await helpService.ShowHelpAsync("Receiving.EditModeColumnChooser");
-    }
-
+    
     public void PrepareDialogSize()
     {
         if (XamlRoot is null)

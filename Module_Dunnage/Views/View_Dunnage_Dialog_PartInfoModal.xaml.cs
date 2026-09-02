@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -16,4 +17,5 @@ public sealed partial class View_Dunnage_Dialog_PartInfoModal : ContentDialog
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
         Title = ViewModel.Heading;
     }
-}
+
+    }

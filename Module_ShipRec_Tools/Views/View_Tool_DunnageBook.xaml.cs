@@ -22,6 +22,12 @@ public sealed partial class View_Tool_DunnageBook : Page
         ViewModel.ShowPreviewDialogAsync = ShowPreviewDialogAsync;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.DunnageBook", XamlRoot);
+    }
+
     private async Task ShowPreviewDialogAsync(
         ViewModel_Dialog_DunnageBookPreview dialogViewModel
     )

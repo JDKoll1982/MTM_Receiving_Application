@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
@@ -34,6 +36,10 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
         InitializeComponent();
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
 
+        // Edge-case fix: block Apply when any row is incomplete so blank parts or bad values
+        // cannot be saved into the current list.
+        PrimaryButtonClick += OnApplyPrimaryButtonClick;
+
         foreach (var item in session.Items.OrderBy(candidate => candidate.SequenceNumber))
         {
             Items.Add(CloneItem(item));
@@ -43,10 +49,80 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
         SelectedItem = Items.FirstOrDefault();
     }
 
+    
     public IReadOnlyList<Model_ScannerBatchItem> GetItemsSnapshot()
     {
         RefreshSequenceNumbers();
         return Items.Select(CloneItem).ToList();
+    }
+
+    private void OnApplyPrimaryButtonClick(
+        ContentDialog sender,
+        ContentDialogButtonClickEventArgs args
+    )
+    {
+        RefreshSequenceNumbers();
+        var error = ValidateRowsForApply();
+        if (error is not null)
+        {
+            args.Cancel = true;
+            ApplyErrorText.Text = error;
+            ApplyErrorText.Visibility = Visibility.Visible;
+            return;
+        }
+
+        ApplyErrorText.Text = string.Empty;
+        ApplyErrorText.Visibility = Visibility.Collapsed;
+    }
+
+    /// <summary>
+    /// Returns an error message when any row cannot be saved into the current list (blank
+    /// part/source or invalid quantity); otherwise returns null. Keeps the dialog open so the
+    /// operator fixes or deletes the offending row before applying.
+    /// </summary>
+    private string? ValidateRowsForApply()
+    {
+        if (Items.Count == 0)
+        {
+            return null;
+        }
+
+        foreach (var item in Items)
+        {
+            if (string.IsNullOrWhiteSpace(item.PayloadPartId))
+            {
+                return $"Row {item.SequenceNumber} is missing a part number. Enter one or delete the row before applying.";
+            }
+
+            if (string.IsNullOrWhiteSpace(item.PayloadFromLocation))
+            {
+                return $"Row {item.SequenceNumber} is missing a source (From) location. Enter one or delete the row before applying.";
+            }
+
+            if (!TryParseDecimalOnly(item.PayloadQuantity, out var quantity) || quantity <= 0)
+            {
+                return $"Row {item.SequenceNumber} has an invalid quantity. Use a number greater than zero (decimals only).";
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Parses a quantity as a plain decimal with the period as the decimal point. Commas
+    /// (thousands separators) and exponent notation are rejected.
+    /// </summary>
+    private static bool TryParseDecimalOnly(string? raw, out decimal value)
+    {
+        return decimal.TryParse(
+            raw?.Trim(),
+            NumberStyles.AllowLeadingSign
+                | NumberStyles.AllowDecimalPoint
+                | NumberStyles.AllowLeadingWhite
+                | NumberStyles.AllowTrailingWhite,
+            CultureInfo.InvariantCulture,
+            out value
+        );
     }
 
     private void AddItem_Click(object sender, RoutedEventArgs e)

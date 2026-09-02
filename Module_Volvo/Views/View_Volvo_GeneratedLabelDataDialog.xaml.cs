@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Volvo.ViewModels;
 using Windows.System;
@@ -22,6 +23,7 @@ public sealed partial class View_Volvo_GeneratedLabelDataDialog : ContentDialog
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
     }
 
+    
     public async Task InitializeAsync()
     {
         await ViewModel.LoadAsync();

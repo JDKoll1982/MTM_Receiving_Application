@@ -28,6 +28,12 @@ public sealed partial class View_Tool_ReceivingAnalytics : Page
         ViewModel.RequestExportAsync = OpenExportDocumentAsync;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.ReceivingAnalytics", XamlRoot);
+    }
+
     /// <summary>
     /// Applies the popover filter selections: closes the flyout and re-runs the load.
     /// </summary>

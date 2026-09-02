@@ -35,6 +35,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             _focusService.AttachFocusOnVisibility(this, UsernameTextBox);
         }
 
+        
         /// <summary>
         /// Handles the Login button click
         /// </summary>

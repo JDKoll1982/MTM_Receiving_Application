@@ -51,16 +51,7 @@
                             TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </Border>
-                <Button
-                    Width="34"
-                    Height="34"
-                    Padding="0"
-                    VerticalAlignment="Center"
-                    AutomationProperties.Name="Help for column chooser"
-                    Click="OnHelpClick"
-                    ToolTipService.ToolTip="Help">
-                    <FontIcon FontSize="16" Glyph="&#xE946;" />
-                </Button>
+                
             </StackPanel>
         </Grid>
 

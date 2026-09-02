@@ -107,6 +107,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     private Model_ScannerBatchItem? _pendingSendItem;
 
+    // Reentrancy guard: Enter + LostFocus (or a double scan) can trigger the part/location
+    // add flow twice. Ignore a second run while the first is still in flight so the part is
+    // not validated/added twice.
+    private bool _isValidationFlowRunning;
+
     public bool HasActiveSession => CurrentSession is not null;
 
     public bool HasSelectedSessionItem => SelectedSessionItem is not null;
@@ -121,8 +126,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         && !IsSendPromptVisible
         && !IsBusy;
 
-    /// <summary>Primary button label: "Send" when the selected line is ready, else "Validate".</summary>
-    public string SendButtonText => IsSendEnabled ? "Send" : "Validate";
+    /// <summary>
+    /// Primary button label. Always reads "Send"; whether the selected line is ready is shown
+    /// by the row status and the fix-issues dialog, not by the button text.
+    /// </summary>
+    public string SendButtonText => "Send";
 
     public string OwnerUserId { get; } = Environment.UserName;
 
@@ -146,6 +154,13 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     /// <summary>Raised so the view can focus the first row's destination cell after the modal populates the list.</summary>
     public event Action? FirstRowToCellFocusRequested;
+
+    /// <summary>
+    /// Raised when the operator is about to add one or more lines that already match rows
+    /// in the current list (same part and source location). The view shows a confirmation
+    /// dialog and returns true to add anyway, false to cancel.
+    /// </summary>
+    public event Func<string, Task<bool>>? DuplicateAddConfirmationRequested;
 
     public ViewModel_Scanner_Workbench(
         IService_ScannerNavigation navigationService,
@@ -267,6 +282,24 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// <param name="partId"></param>
     public async Task PartValidationCompletedAsync(string partId)
     {
+        if (_isValidationFlowRunning)
+        {
+            return;
+        }
+
+        _isValidationFlowRunning = true;
+        try
+        {
+            await RunPartValidationCoreAsync(partId);
+        }
+        finally
+        {
+            _isValidationFlowRunning = false;
+        }
+    }
+
+    private async Task RunPartValidationCoreAsync(string partId)
+    {
         ClearHeaderError();
 
         NewPartId = partId?.Trim() ?? string.Empty;
@@ -289,7 +322,9 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
         if (!exists.Data)
         {
-            await ShowNoStockErrorAsync();
+            // Edge-case fix: say the part was not found, not that it has no stock.
+            ShowHeaderError($"Part number '{NewPartId}' was not found. Please check the part number.");
+            PartIdFocusRequested?.Invoke();
             return;
         }
 
@@ -331,6 +366,24 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// </summary>
     /// <param name="location"></param>
     public async Task LocationValidationCompletedAsync(string location)
+    {
+        if (_isValidationFlowRunning)
+        {
+            return;
+        }
+
+        _isValidationFlowRunning = true;
+        try
+        {
+            await RunLocationValidationCoreAsync(location);
+        }
+        finally
+        {
+            _isValidationFlowRunning = false;
+        }
+    }
+
+    private async Task RunLocationValidationCoreAsync(string location)
     {
         ClearHeaderError();
 
@@ -402,6 +455,37 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         var lines = ExpandStockPicks(picks, fallbackPartId, fallbackFromLocation);
+
+        // Edge-case fix: warn before adding rows that duplicate an existing part + source
+        // location already in the list, so an accidental double scan is caught.
+        var existingRows = CurrentSession.Items.ToList();
+        var duplicateLineCount = lines.Count(line =>
+            existingRows.Any(row =>
+                string.Equals(row.PayloadPartId, line.PartId, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(
+                    row.PayloadFromLocation,
+                    line.FromLocation,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+        );
+
+        if (duplicateLineCount > 0 && DuplicateAddConfirmationRequested is not null)
+        {
+            var proceed = await DuplicateAddConfirmationRequested(
+                $"{duplicateLineCount} of the selected line(s) match rows already in the current "
+                + "list (same part and source location). Add them anyway?"
+            );
+            if (!proceed)
+            {
+                ClearPartInput();
+                ShowStatus(
+                    "Add cancelled - the selected line(s) are already in the list.",
+                    InfoBarSeverity.Informational
+                );
+                return;
+            }
+        }
 
         IsBusy = true;
         try
@@ -674,6 +758,33 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         return validationResult;
     }
 
+    /// <summary>
+    /// Revalidates rows resumed from the database that were previously marked valid so the
+    /// in-memory on-hand quantity guard is restored against current stock. The on-hand
+    /// amount is intentionally not persisted; this runs after an app restart when the guard
+    /// is missing. Rows already re-guarded this session (or not yet valid) are skipped.
+    /// </summary>
+    public async Task RevalidateResumedValidItemsAsync()
+    {
+        if (CurrentSession is null)
+        {
+            return;
+        }
+
+        var rowsToRevalidate = CurrentSession.Items
+            .Where(item =>
+                item.ExecutionState == Enum_ScannerExecutionState.Waiting
+                && item.MaxQuantity is null
+                && item.ValidationState == Enum_ScannerValidationState.Valid
+            )
+            .ToList();
+
+        foreach (var item in rowsToRevalidate)
+        {
+            await ValidateSessionItemAsync(item);
+        }
+    }
+
     // ── Commands ─────────────────────────────────────────────────────────────────
 
     [RelayCommand]
@@ -804,8 +915,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
             if (result.Data.SentCount > 0)
             {
+                // Edge-case fix: never auto-confirm a send. The operator states whether the
+                // transaction actually saved in Infor Visual (Yes/No) after returning to the
+                // app, so a line is only cleared from the list on an explicit Yes.
                 _pendingSendItem = SelectedSessionItem;
-                await WaitForTransferConfirmationAsync(_pendingSendItem);
+                IsSendPromptVisible = true;
                 return;
             }
 
@@ -852,42 +966,6 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         await dialog.ShowAsync();
     }
 
-    private async Task WaitForTransferConfirmationAsync(Model_ScannerBatchItem item)
-    {
-        var deadlineUtc = DateTime.UtcNow + TransferConfirmTimeout;
-        var afterUtc = item.SentUtc ?? DateTime.UtcNow.AddSeconds(-1);
-
-        if (!decimal.TryParse(item.PayloadQuantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity))
-        {
-            quantity = 0m;
-        }
-
-        ShowStatus("Verifying transfer in Infor Visual...", InfoBarSeverity.Informational);
-
-        while (DateTime.UtcNow < deadlineUtc)
-        {
-            var check = await _validationService.TransferSavedSinceAsync(
-                item.PayloadPartId,
-                item.PayloadFromWarehouse,
-                item.PayloadFromLocation,
-                item.PayloadToWarehouse,
-                item.PayloadToLocation,
-                quantity,
-                afterUtc
-            );
-
-            if (check.Success && check.Data)
-            {
-                await ConfirmSavedAsync();
-                return;
-            }
-
-            await Task.Delay(TransferConfirmPollInterval);
-        }
-
-        IsSendPromptVisible = true;
-    }
-
     [RelayCommand]
     private async Task ConfirmSavedAsync()
     {
@@ -901,6 +979,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                 candidate.ItemId == savedItem.ItemId);
             if (itemToRemove is not null)
             {
+                // Edge-case fix: clear exactly the one line the operator confirmed was saved.
+                // No history record is written; all other lines stay untouched (one per click).
                 CurrentSession.Items.Remove(itemToRemove);
                 ReorderSessionItems();
 
@@ -911,7 +991,15 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                 }
 
                 SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-                ShowStatus($"Line {savedItem.SequenceNumber} saved to history.", InfoBarSeverity.Success);
+
+                // Edge-case fix: move the selection to the next remaining line so the main
+                // button is ready to send it (and never gets stuck on "Validate").
+                SelectedSessionItem = SessionItems.FirstOrDefault();
+                RecomputeSendEnabled();
+                ShowStatus(
+                    $"Line {savedItem.SequenceNumber} cleared from the current list.",
+                    InfoBarSeverity.Success
+                );
             }
         }
     }
@@ -919,18 +1007,26 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     [RelayCommand]
     private async Task ConfirmNotSavedAsync()
     {
-        if (_pendingSendItem is not null)
-        {
-            _pendingSendItem.ExecutionState = Enum_ScannerExecutionState.Waiting;
-            _pendingSendItem.LastUpdatedUtc = DateTime.UtcNow;
-        }
-
+        var keptItem = _pendingSendItem;
         _pendingSendItem = null;
         IsSendPromptVisible = false;
 
-        await _executionService.ClearTargetFormAsync();
-        PartIdFocusRequested?.Invoke();
-        ShowStatus("Form cleared. Re-enter the part and try again.", InfoBarSeverity.Warning);
+        // Edge-case fix: treat the line as never sent - keep it in the list, restore its
+        // Waiting state, and persist so it can be sent again on a retry.
+        if (CurrentSession is not null && keptItem is not null)
+        {
+            keptItem.ExecutionState = Enum_ScannerExecutionState.Waiting;
+            keptItem.SentUtc = null;
+            keptItem.LastUpdatedUtc = DateTime.UtcNow;
+
+            await _workflowService.UpsertBatchItemAsync(CurrentSession, keptItem);
+
+            SelectedSessionItem = CurrentSession.Items.FirstOrDefault(item =>
+                item.ItemId == keptItem.ItemId);
+        }
+
+        RecomputeSendEnabled();
+        ShowStatus("Line kept as not sent. You can send it again.", InfoBarSeverity.Warning);
     }
 
     [RelayCommand]
@@ -941,34 +1037,41 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
             return;
         }
 
+        // Edge-case fix: only validate rows that are not already valid. Rows the operator
+        // already validated are left untouched (e.g., 3 validated rows are not re-checked
+        // when a new row is added).
+        var rowsToValidate = CurrentSession.Items
+            .Where(item => item.ValidationState != Enum_ScannerValidationState.Valid)
+            .ToList();
+
+        if (rowsToValidate.Count == 0)
+        {
+            ShowStatus(
+                "All items in the current list are already validated.",
+                InfoBarSeverity.Informational
+            );
+            return;
+        }
+
         IsBusy = true;
         try
         {
-            var validation = await _validationService.ValidateSessionItemsAsync(CurrentSession);
-            if (!validation.Success || validation.Data is null)
+            foreach (var item in rowsToValidate)
             {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(validation.ErrorMessage)
-                        ? "Unable to validate scanner items."
-                        : validation.ErrorMessage,
-                    InfoBarSeverity.Error
-                );
-                return;
+                await ValidateSessionItemAsync(item);
             }
 
-            SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
-            SelectedSessionItem = SessionItems.FirstOrDefault(candidate =>
-                SelectedSessionItem is not null && candidate.ItemId == SelectedSessionItem.ItemId);
-
-            var invalidCount = validation.Data.Count(result => result.State == Enum_ScannerValidationState.Invalid);
-            ShowStatus(
-                invalidCount == 0
-                    ? $"Validated {validation.Data.Count} scanner items. All items are ready for send review."
-                    : $"Validated {validation.Data.Count} scanner items. {invalidCount} item(s) still require review.",
-                invalidCount == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
+            var invalidCount = rowsToValidate.Count(item =>
+                item.ValidationState == Enum_ScannerValidationState.Invalid
             );
 
             RecomputeSendEnabled();
+            ShowStatus(
+                invalidCount == 0
+                    ? $"Validated {rowsToValidate.Count} scanner item(s). All are ready for send review."
+                    : $"Validated {rowsToValidate.Count} scanner item(s). {invalidCount} still require review.",
+                invalidCount == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning
+            );
         }
         finally
         {

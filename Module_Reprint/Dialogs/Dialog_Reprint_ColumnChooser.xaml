@@ -29,23 +29,29 @@
                 Text="Choose which columns appear in the reprint history grid. The selection checkbox column is always shown."
                 TextWrapping="Wrap" />
 
-            <Border
-                Padding="12"
+            <StackPanel
                 HorizontalAlignment="Right"
-                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="6">
-                <StackPanel Spacing="4">
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Always Shown" />
-                    <TextBlock
-                        FontWeight="SemiBold"
-                        Text="Selection checkbox" />
-                </StackPanel>
-            </Border>
+                Orientation="Horizontal"
+                Spacing="8">
+                <Border
+                    Padding="12"
+                    VerticalAlignment="Center"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Always Shown" />
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="Selection checkbox" />
+                    </StackPanel>
+                </Border>
+                
+            </StackPanel>
         </Grid>
 
         <Border

@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -84,6 +85,43 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "Manage core system defaults, users, and infrastructure settings."
         );
         UpdateHeaderActions();
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        var pageType = SettingsFrame.Content?.GetType() ?? _currentNestedSettingsPageType;
+
+        Model_HelpContent content;
+        if (pageType is null)
+        {
+            content = new Model_HelpContent
+            {
+                Key = "Settings.General",
+                Title = "Settings",
+                Content =
+                    "Browse settings by module using the left navigation. Each page applies changes when you navigate away or use its save action.",
+            };
+        }
+        else
+        {
+            var (title, description) = GetPageHeader(pageType);
+            content = new Model_HelpContent
+            {
+                Key = $"Settings.{pageType.Name}",
+                Title = string.IsNullOrWhiteSpace(title) ? "Settings" : title,
+                Content =
+                    (string.IsNullOrWhiteSpace(description)
+                        ? "Configure this settings page."
+                        : description)
+                    + "\n\n"
+                    + "• Changes made here are saved when you leave the page or use the page's save action.\n"
+                    + "• Use Back or the module list on the left to move between pages.\n"
+                    + "• Some settings are user-specific; others apply to all users.",
+            };
+        }
+
+        await helpService.ShowHelpAsync(content, Content?.XamlRoot);
     }
 
     /// <summary>

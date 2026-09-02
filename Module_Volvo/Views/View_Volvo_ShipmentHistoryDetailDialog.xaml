@@ -37,6 +37,20 @@
 
         <ScrollViewer Grid.Row="1">
             <StackPanel Padding="24,16,24,24" Spacing="16">
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    AutomationProperties.Name="Help"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Click="OnHelpClick"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="Help">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
                 <Border
                     Padding="20"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"

@@ -28,6 +28,12 @@ public sealed partial class View_Tool_DeliverySchedule : Page
         ViewModel.RequestExportAsync = OpenExportDocumentAsync;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.DeliverySchedule", XamlRoot);
+    }
+
     /// <summary>
     /// Applies the popover filter selections: closes the flyout and re-runs the search.
     /// </summary>

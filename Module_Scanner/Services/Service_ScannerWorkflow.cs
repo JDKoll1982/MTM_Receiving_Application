@@ -121,19 +121,27 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>("Item is required.");
 		}
 
-		var existing = session.Items.FirstOrDefault(candidate => candidate.ItemId == item.ItemId);
-		if (existing is null)
+		var existingIndex = -1;
+		for (var index = 0; index < session.Items.Count; index++)
+		{
+			if (session.Items[index].ItemId == item.ItemId)
+			{
+				existingIndex = index;
+				break;
+			}
+		}
+
+		var isNew = existingIndex < 0;
+
+		if (isNew)
 		{
 			item.SessionId = session.SessionId;
 			item.SequenceNumber = session.Items.Count + 1;
-			session.Items.Add(item);
 		}
 		else
 		{
-			var index = session.Items.IndexOf(existing);
 			item.SessionId = session.SessionId;
-			item.SequenceNumber = existing.SequenceNumber;
-			session.Items[index] = item;
+			item.SequenceNumber = session.Items[existingIndex].SequenceNumber;
 		}
 
 		var persistItem = await _itemDao.UpsertItemAsync(item);
@@ -143,6 +151,17 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 				persistItem.ErrorMessage,
 				persistItem.Exception
 			);
+		}
+
+		// Only mutate the in-memory session after the database write succeeded so a failed
+		// save cannot leave a "ghost" row in the current list.
+		if (isNew)
+		{
+			session.Items.Add(item);
+		}
+		else
+		{
+			session.Items[existingIndex] = item;
 		}
 
 		session.RecalculateItemCounters();

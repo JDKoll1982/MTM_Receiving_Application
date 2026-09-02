@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -23,4 +24,5 @@ public sealed partial class Dialog_POLineSpecTextViewer : ContentDialog
         SpecTextEditor.Document.SetText(TextSetOptions.None, row.SpecText ?? string.Empty);
         SpecTextEditor.IsReadOnly = true;
     }
-}
+
+    }

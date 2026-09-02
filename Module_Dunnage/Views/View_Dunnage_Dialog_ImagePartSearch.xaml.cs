@@ -1,6 +1,7 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -20,6 +21,7 @@ public sealed partial class View_Dunnage_Dialog_ImagePartSearch : UserControl
     public View_Dunnage_Dialog_ImagePartSearch()
         : this(App.GetService<ViewModel_Dunnage_ImagePartSearchDialog>()) { }
 
+    
     private async void PartGridView_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is not Model_DunnagePart part)

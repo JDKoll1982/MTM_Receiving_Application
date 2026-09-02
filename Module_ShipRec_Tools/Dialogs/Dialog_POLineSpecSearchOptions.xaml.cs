@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
@@ -86,6 +87,7 @@ public sealed partial class Dialog_POLineSpecSearchOptions : ContentDialog
         PrimaryButtonClick += OnPrimaryButtonClick;
     }
 
+    
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         var selectedKeys = _columnCheckboxes

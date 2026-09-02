@@ -73,6 +73,12 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
         };
     }
 
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        await helpService.ShowHelpAsync("Shared.IconSelector", Content?.XamlRoot);
+    }
+
     /// <summary>
     /// Sets the initial icon selection in the grid
     /// </summary>

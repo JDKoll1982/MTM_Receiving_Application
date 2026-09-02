@@ -24,6 +24,7 @@
         MaxWidth="940">
         <ScrollViewer MaxHeight="720" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Spacing="16">
+                
                 <Border
                     Padding="18"
                     Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"

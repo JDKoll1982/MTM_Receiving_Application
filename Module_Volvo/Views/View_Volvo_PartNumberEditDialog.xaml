@@ -13,6 +13,7 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </ContentDialog.Resources>
     <StackPanel Width="440" Spacing="12">
+        
         <TextBlock Text="Select a replacement part number for this card." TextWrapping="WrapWholeWords" />
         <TextBlock
             Foreground="Red"

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Reprint.Models;
 using Windows.Foundation;
@@ -37,6 +38,7 @@ public sealed partial class Dialog_Reprint_ColumnChooser : ContentDialog
         BuildColumnOptions();
     }
 
+    
     public void PrepareDialogSize()
     {
         if (XamlRoot is null)

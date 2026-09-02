@@ -23,5 +23,6 @@
             FontFamily="Consolas"
             FontSize="13"
             TextWrapping="NoWrap" />
+        
     </Grid>
 </ContentDialog>

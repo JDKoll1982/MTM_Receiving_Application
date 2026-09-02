@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
@@ -37,6 +38,7 @@ public sealed partial class View_Dunnage_Dialog_NonPOEntry : ContentDialog
         _ = LoadSavedEntriesAsync();
     }
 
+    
     private async Task LoadSavedEntriesAsync()
     {
         var result = await _dunnageService.GetNonPOEntriesAsync();

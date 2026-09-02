@@ -6,6 +6,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using Windows.Foundation;
 
@@ -95,6 +96,7 @@ public sealed partial class View_Dunnage_EditModeColumnChooserDialog : ContentDi
         BuildGroupedColumnOptions();
     }
 
+    
     public void PrepareDialogSize()
     {
         if (XamlRoot is null)

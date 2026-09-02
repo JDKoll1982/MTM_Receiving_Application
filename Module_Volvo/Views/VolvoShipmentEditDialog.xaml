@@ -381,5 +381,7 @@
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </Grid>
+
+        
     </Grid>
 </ContentDialog>

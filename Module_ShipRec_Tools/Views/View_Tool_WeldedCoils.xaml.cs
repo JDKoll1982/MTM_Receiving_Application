@@ -24,6 +24,12 @@ public sealed partial class View_Tool_WeldedCoils : Page
         DataContext = ViewModel;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.WeldedCoils", XamlRoot);
+    }
+
     private async void ToggleActiveButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is Model_Tool_WeldedCoil coil)

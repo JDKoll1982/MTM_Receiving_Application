@@ -15,7 +15,18 @@ public interface IService_Help
     /// Displays help dialog with content for the specified key
     /// </summary>
     /// <param name="helpKey">The unique key for the help content</param>
-    public Task ShowHelpAsync(string helpKey);
+    /// <param name="xamlRoot">Optional XamlRoot used to show the dialog; defaults to the main window root</param>
+    public Task ShowHelpAsync(string helpKey, Microsoft.UI.Xaml.XamlRoot? xamlRoot = null);
+
+    /// <summary>
+    /// Displays help dialog with the given content
+    /// </summary>
+    /// <param name="content">The help content to display</param>
+    /// <param name="xamlRoot">Optional XamlRoot used to show the dialog; defaults to the main window root</param>
+    public Task ShowHelpAsync(
+        Model_HelpContent content,
+        Microsoft.UI.Xaml.XamlRoot? xamlRoot = null
+    );
 
     /// <summary>
     /// Shows help for specific dunnage workflow step

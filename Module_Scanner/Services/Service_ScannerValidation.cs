@@ -540,7 +540,8 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 					$"Requested {quantity.ToString("0.####", CultureInfo.InvariantCulture)} exceeds available {availableQuantity.ToString("0.####", CultureInfo.InvariantCulture)} at {canonicalFromLocation}.",
 					canonicalPartId,
 					canonicalFromLocation,
-					canonicalToLocation
+					canonicalToLocation,
+					availableQuantity
 				)
 			);
 		}
@@ -556,6 +557,7 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 				CanonicalPartId = canonicalPartId,
 				CanonicalFromLocation = canonicalFromLocation,
 				CanonicalToLocation = canonicalToLocation,
+				MaxQuantity = availableQuantity,
 			}
 		);
 	}
@@ -611,7 +613,8 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 		string notes,
 		string canonicalPartId,
 		string canonicalFromLocation,
-		string canonicalToLocation
+		string canonicalToLocation,
+		decimal? maxQuantity = null
 	)
 	{
 		return new Model_ScannerItemValidationResult
@@ -624,6 +627,7 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 			CanonicalPartId = canonicalPartId,
 			CanonicalFromLocation = canonicalFromLocation,
 			CanonicalToLocation = canonicalToLocation,
+			MaxQuantity = maxQuantity,
 		};
 	}
 }

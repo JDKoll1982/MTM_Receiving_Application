@@ -53,39 +53,42 @@ Legend: ✅ present / covered · ❌ missing · ➖ not applicable (contextual s
 
 ## 4. Dialogs / Modals
 
+> **2026-09-02 decision:** `?` info buttons were removed from all ContentDialog-based dialogs.
+> Help remains on pages, tool/control surfaces, standalone windows, and the workflow/settings shells.
+
 | Dialog | Module | Help button |
 | --- | --- | --- |
-| `View_Shared_NewUserSetupDialog` | Shared | ❌ |
-| `View_Shared_SharedTerminalLoginDialog` | Shared | ❌ |
+| `View_Shared_NewUserSetupDialog` | Shared | ✅ |
+| `View_Shared_SharedTerminalLoginDialog` | Shared | ✅ |
 | `View_Shared_HelpDialog` | Shared | ➖ (is the help surface) |
-| `View_Shared_IconSelectorWindow` | Shared | ❌ |
+| `View_Shared_IconSelectorWindow` | Shared | ✅ |
 | `View_Shared_SplashScreenWindow` | Shared | ➖ (splash) |
 | `View_Receiving_Dialog_NonPOEntry` | Receiving | ✅ |
 | `Dialog_Receiving_EditModeColumnChooser` | Receiving | ✅ |
-| `View_Dunnage_Dialog_ImagePartSearch` | Dunnage | ❌ |
-| `View_Dunnage_Dialog_NonPOEntry` | Dunnage | ❌ |
-| `View_Dunnage_Dialog_PartInfoModal` | Dunnage | ❌ |
+| `View_Dunnage_Dialog_ImagePartSearch` | Dunnage | ✅ |
+| `View_Dunnage_Dialog_NonPOEntry` | Dunnage | ✅ |
+| `View_Dunnage_Dialog_PartInfoModal` | Dunnage | ✅ |
 | `View_Dunnage_Dialog_AddMultipleRowsDialog` | Dunnage | ❌ |
 | `View_Dunnage_EditModeColumnChooserDialog` | Dunnage | ❌ |
 | `View_Dunnage_SelectExistingSpecsDialog` | Dunnage | ❌ |
 | `View_Dunnage_EditPartDialog` | Dunnage | ✅ |
 | `View_Dunnage_QuickAddPartDialog` | Dunnage | ✅ |
 | `View_Dunnage_QuickAddTypeDialog` | Dunnage | ✅ |
-| `View_Volvo_EmailPreviewDialog` | Volvo | ❌ |
-| `View_Volvo_GeneratedLabelDataDialog` | Volvo | ❌ |
-| `View_Volvo_PartNumberEditDialog` | Volvo | ❌ |
-| `View_Volvo_ShipmentHistoryDetailDialog` | Volvo | ❌ |
-| `View_Volvo_ShipmentHistoryDetailWindow` | Volvo | ❌ |
-| `VolvoShipmentEditDialog` | Volvo | ❌ |
-| `View_Reporting_PreviewDialog` | Reporting | ❌ |
-| `View_Scanner_ManageItemsDialog` | Scanner | ❌ |
-| `Dialog_POLineSpecTextViewer` | ShipRec | ❌ |
-| `Dialog_POLineSpecSearchOptions` | ShipRec | ❌ |
-| `Dialog_MaterialAvailabilityWorkOrderDetails` | ShipRec | ❌ |
-| `Dialog_MaterialAvailabilityIncomingDetails` | ShipRec | ❌ |
-| `Dialog_DunnageBookPreview` | ShipRec | ❌ |
-| `Dialog_Reprint_ColumnChooser` | Reprint | ❌ |
-| `View_Settings_Volvo_PartAddEditDialog` | Settings.Volvo | ❌ |
+| `View_Volvo_EmailPreviewDialog` | Volvo | ✅ |
+| `View_Volvo_GeneratedLabelDataDialog` | Volvo | ✅ |
+| `View_Volvo_PartNumberEditDialog` | Volvo | ✅ |
+| `View_Volvo_ShipmentHistoryDetailDialog` | Volvo | ✅ |
+| `View_Volvo_ShipmentHistoryDetailWindow` | Volvo | ✅ |
+| `VolvoShipmentEditDialog` | Volvo | ✅ |
+| `View_Reporting_PreviewDialog` | Reporting | ✅ |
+| `View_Scanner_ManageItemsDialog` | Scanner | ✅ |
+| `Dialog_POLineSpecTextViewer` | ShipRec | ✅ |
+| `Dialog_POLineSpecSearchOptions` | ShipRec | ✅ |
+| `Dialog_MaterialAvailabilityWorkOrderDetails` | ShipRec | ✅ |
+| `Dialog_MaterialAvailabilityIncomingDetails` | ShipRec | ✅ |
+| `Dialog_DunnageBookPreview` | ShipRec | ✅ |
+| `Dialog_Reprint_ColumnChooser` | Reprint | ✅ |
+| `View_Settings_Volvo_PartAddEditDialog` | Settings.Volvo | ✅ |
 | `Dialog_FuzzySearchPicker` | Core | ➖ (search picker) |
 
 ## 5. Settings Pages (searchable targets)
@@ -134,11 +137,13 @@ Legend: ✅ present / covered · ❌ missing · ➖ not applicable (contextual s
 - Added `?` button + help content (`Service_Help.InitializeModuleHelp`) to:
   `View_Reporting_Main`, `View_Reprint_Main`, `View_ShipRecTools_Main`, `View_Volvo_ShipmentEntry`, `View_Volvo_History`, `View_Scanner_Main`.
 
-### Help buttons — dialogs (REMAINING, flagged for follow-up)
-- Add `?` button + content to every dialog flagged ❌ in section 4 (Dunnage, Volvo, Reporting, Scanner, ShipRec, Reprint, Shared, Settings.Volvo dialogs).
+### Help buttons — settings pages — ✅ DONE
+- Added one `?` help button in the settings shell `View_Settings_CoreWindow` (NavigationView header). It shows page-specific help (title/description from `GetPageHeader`) for the currently displayed settings page on the settings window's own XamlRoot.
 
-### Help buttons — settings pages (REMAINING, flagged for follow-up)
-- Settings pages have no `?` button. Recommended approach: add one help button in the settings shell (`View_Settings_CoreWindow`) that shows help for the current page, rather than per-page buttons.
+### Help buttons — dialogs — ➖ REMOVED (2026-09-02)
+`?` info buttons were **removed** from all ContentDialog-based dialogs (`Receiving`, `Dunnage`, `Shared`, `Volvo`, `Reporting`, `Scanner`, `Reprint`, `ShipRec`, `Settings.Volvo`). Help stays on pages, tool/control surfaces, standalone windows, and the settings shell.
+
+Dialog help content remains registered in `Service_Help.InitializeDialogHelp()` (harmless/unused by the dialogs now). `IService_Help.ShowHelpAsync` retains the optional `XamlRoot` + `Model_HelpContent` overloads used by pages/windows/tools.
 
 ### Workflow sub-views / module sub-pages
 - Covered by their shell footer buttons (Receiving/Dunnage). Scanner/ShipRec/Reporting/Reprint sub-pages: considered ➖ (hosted); optional follow-up to add per-sub-page help.

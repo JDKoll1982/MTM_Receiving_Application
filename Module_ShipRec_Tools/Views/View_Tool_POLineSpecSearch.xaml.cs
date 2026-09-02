@@ -48,6 +48,12 @@ public sealed partial class View_Tool_POLineSpecSearch : Page
         ApplyColumnVisibility(Model_Tool_POLineSpecSearchOptions.DefaultVisibleColumnKeys);
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.POLineSpecSearch", XamlRoot);
+    }
+
     private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == Windows.System.VirtualKey.Enter && ViewModel.SearchCommand.CanExecute(null))

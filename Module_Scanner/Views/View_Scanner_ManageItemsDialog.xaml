@@ -31,6 +31,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        
+
         <Grid ColumnSpacing="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -118,9 +120,15 @@
             </ListView>
         </ScrollViewer>
 
-        <TextBlock
-            Grid.Row="2"
-            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            Text="Warehouse values stay read-only. Apply saves the reordered batch back to the current list." />
+        <StackPanel Grid.Row="2" Spacing="4">
+            <TextBlock
+                x:Name="ApplyErrorText"
+                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                TextWrapping="Wrap"
+                Visibility="Collapsed" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="Warehouse values stay read-only. Apply saves the reordered batch back to the current list." />
+        </StackPanel>
     </Grid>
 </ContentDialog>

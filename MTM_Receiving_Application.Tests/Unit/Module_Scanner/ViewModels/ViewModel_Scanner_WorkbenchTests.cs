@@ -557,15 +557,18 @@ public sealed class ViewModel_Scanner_WorkbenchTests
     }
 
     [Fact]
-    public void SendButtonText_ShouldBeValidate_WhenSelectedLineInvalid_AndSend_WhenValid()
+    public void SendButtonText_ShouldAlwaysBeSend()
     {
         var viewModel = CreateWorkbenchViewModel();
 
         var item = new Model_ScannerBatchItem { ValidationState = Enum_ScannerValidationState.Invalid };
         viewModel.SelectedSessionItem = item;
-        viewModel.SendButtonText.Should().Be("Validate");
+        viewModel.SendButtonText.Should().Be("Send");
 
         item.ValidationState = Enum_ScannerValidationState.Valid;
+        viewModel.SendButtonText.Should().Be("Send");
+
+        viewModel.SelectedSessionItem = null;
         viewModel.SendButtonText.Should().Be("Send");
     }
 
@@ -850,6 +853,481 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.SessionItems.Should().HaveCount(1);
         viewModel.SessionItems.Should().NotContain(item => item.ItemId == removedId);
         viewModel.HasSelectedSessionItem.Should().BeTrue();
+    }
+
+    // ── Edge-case fixes: part-not-found message, duplicates, reentrancy, skip-valid ──
+
+    [Fact]
+    public async Task PartValidationCompletedAsync_WhenPartDoesNotExist_ShouldShowPartNotFoundMessage()
+    {
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.PartExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(false));
+
+        var viewModel = CreateWorkbenchViewModel(validation: validation.Object);
+        var partFocusRaised = false;
+        viewModel.PartIdFocusRequested += () => partFocusRaised = true;
+
+        await viewModel.PartValidationCompletedAsync("NOPE123");
+
+        // "Part not found" is a distinct message from "no stock in-house", and the part box
+        // regains focus so the operator can correct the number.
+        viewModel.IsHeaderErrorVisible.Should().BeTrue();
+        viewModel.HeaderErrorText.Should().Contain("was not found");
+        partFocusRaised.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task PartValidationCompletedAsync_WithDuplicatePicksDeclined_ShouldNotAddLines()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        session.Items.Add(
+            new Model_ScannerBatchItem
+            {
+                ItemId = Guid.NewGuid(),
+                SessionId = session.SessionId,
+                SequenceNumber = 1,
+                PayloadPartId = "MMC0000650",
+                PayloadFromWarehouse = "002",
+                PayloadFromLocation = "V-A1-01",
+                PayloadToWarehouse = "002",
+                PayloadQuantity = "25",
+            }
+        );
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.PartExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+        validation
+            .Setup(service =>
+                service.GetLocationsWithStockAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+                    [new Model_InforVisualMaterialLocationRow { LocationId = "V-A1-01", Quantity = 25m }]
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(validation: validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.FromLocationInventoryPickerRequested += (_, _, _) =>
+            Task.FromResult<IReadOnlyList<Model_ScannerStockPick>>(
+                [new Model_ScannerStockPick { Location = "V-A1-01", Quantity = "25", OnHand = 25m }]
+            );
+        viewModel.DuplicateAddConfirmationRequested += _ => Task.FromResult(false);
+
+        await viewModel.PartValidationCompletedAsync("MMC0000650");
+
+        // The duplicate warning is declined, so nothing is added and the part box is cleared.
+        viewModel.SessionItems.Should().HaveCount(1);
+        viewModel.NewPartId.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task PartValidationCompletedAsync_WithDuplicatePicksConfirmed_ShouldAddLines()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        session.Items.Add(
+            new Model_ScannerBatchItem
+            {
+                ItemId = Guid.NewGuid(),
+                SessionId = session.SessionId,
+                SequenceNumber = 1,
+                PayloadPartId = "MMC0000650",
+                PayloadFromWarehouse = "002",
+                PayloadFromLocation = "V-A1-01",
+                PayloadToWarehouse = "002",
+                PayloadQuantity = "25",
+            }
+        );
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.PartExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+        validation
+            .Setup(service =>
+                service.GetLocationsWithStockAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+                    [new Model_InforVisualMaterialLocationRow { LocationId = "V-A1-01", Quantity = 25m }]
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.FromLocationInventoryPickerRequested += (_, _, _) =>
+            Task.FromResult<IReadOnlyList<Model_ScannerStockPick>>(
+                [new Model_ScannerStockPick { Location = "V-A1-01", Quantity = "25", OnHand = 25m }]
+            );
+        viewModel.DuplicateAddConfirmationRequested += _ => Task.FromResult(true);
+
+        await viewModel.PartValidationCompletedAsync("MMC0000650");
+
+        // The duplicate warning is accepted, so the new line is added alongside the existing one.
+        viewModel.SessionItems.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task PartValidationCompletedAsync_ShouldIgnoreSecondRun_WhileFirstIsRunning()
+    {
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service => service.PartExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+        validation
+            .Setup(service =>
+                service.GetLocationsWithStockAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+                    [new Model_InforVisualMaterialLocationRow { LocationId = "V-A1-01", Quantity = 25m }]
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(validation: validation.Object);
+        var pickerGate = new TaskCompletionSource<IReadOnlyList<Model_ScannerStockPick>>(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
+        viewModel.FromLocationInventoryPickerRequested += (_, _, _) => pickerGate.Task;
+
+        // Start the first validation; it reaches the picker and suspends (guard is now set).
+        var firstRun = viewModel.PartValidationCompletedAsync("MMC0000650");
+
+        // A second trigger while the first is in flight must be ignored entirely.
+        await viewModel.PartValidationCompletedAsync("MMC0000650");
+
+        pickerGate.SetResult([]);
+        await firstRun;
+
+        validation.Verify(
+            service => service.PartExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task CheckAllCommand_ShouldOnlyValidateRowsNotAlreadyValid()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var validItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000650",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        var newItem = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 2,
+            PayloadPartId = "MMC0000651",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-02",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "R-06",
+            PayloadQuantity = "2",
+            ValidationState = Enum_ScannerValidationState.NotValidated,
+        };
+        session.Items.Add(validItem);
+        session.Items.Add(newItem);
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerItemValidationResult { State = Enum_ScannerValidationState.Valid }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+
+        await viewModel.CheckAllCommand.ExecuteAsync(null);
+
+        // Only the not-yet-valid row is validated; the already-valid row is left untouched.
+        validation.Verify(
+            service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        newItem.ValidationState.Should().Be(Enum_ScannerValidationState.Valid);
+        validItem.ValidationState.Should().Be(Enum_ScannerValidationState.Valid);
+    }
+
+    [Fact]
+    public async Task RevalidateResumedValidItemsAsync_ShouldRevalidateOnlyPreviouslyValidWaitingRows()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var resumedValid = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMC0000650",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = Enum_ScannerValidationState.Valid,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+            MaxQuantity = null,
+        };
+        var notValidated = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 2,
+            PayloadPartId = "MMC0000651",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-02",
+            PayloadToWarehouse = "002",
+            PayloadQuantity = "1",
+            ValidationState = Enum_ScannerValidationState.NotValidated,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+            MaxQuantity = null,
+        };
+        session.Items.Add(resumedValid);
+        session.Items.Add(notValidated);
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerItemValidationResult
+                    {
+                        State = Enum_ScannerValidationState.Valid,
+                        MaxQuantity = 25m,
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+
+        await viewModel.RevalidateResumedValidItemsAsync();
+
+        // Only the resumed-valid waiting row is rechecked; it regains its on-hand guard.
+        validation.Verify(
+            service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        resumedValid.MaxQuantity.Should().Be(25m);
+        notValidated.MaxQuantity.Should().BeNull();
+        notValidated.ValidationState.Should().Be(Enum_ScannerValidationState.NotValidated);
+    }
+
+    // ── Send confirmation: always ask Yes/No, one line per click ────────────────
+
+    [Fact]
+    public async Task SendSelectedCommand_WhenSent_ShouldShowPromptAndNotAutoRemove()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var item = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = Enum_ScannerValidationState.Valid,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+        };
+        session.Items.Add(item);
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new Model_ScannerExecutionOutcome { SentCount = 1 }));
+
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, execution: execution.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.SelectedSessionItem = item;
+
+        await viewModel.SendSelectedCommand.ExecuteAsync(null);
+
+        // After a successful send the app must ask the operator (Yes/No) instead of
+        // auto-removing the line or polling Infor Visual to decide for them.
+        viewModel.IsSendPromptVisible.Should().BeTrue();
+        viewModel.SessionItems.Should().HaveCount(1);
+        workflow.Verify(
+            service =>
+                service.ReplaceSessionItemsAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task ConfirmSavedCommand_ShouldClearOnlyTheSentLineAndSelectTheNext()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var first = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = Enum_ScannerValidationState.Valid,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+        };
+        var second = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 2,
+            PayloadPartId = "MMC0000650",
+            PayloadFromLocation = "V-A1-02",
+            PayloadToLocation = "R-06",
+            PayloadQuantity = "2",
+            ValidationState = Enum_ScannerValidationState.Valid,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+        };
+        session.Items.Add(first);
+        session.Items.Add(second);
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new Model_ScannerExecutionOutcome { SentCount = 1 }));
+
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        workflow
+            .Setup(service =>
+                service.ReplaceSessionItemsAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                (Model_ScannerBatchSession current, CancellationToken _) =>
+                    Model_Dao_Result_Factory.Success(current)
+            );
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, execution: execution.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.SelectedSessionItem = first;
+
+        await viewModel.SendSelectedCommand.ExecuteAsync(null);
+        await viewModel.ConfirmSavedCommand.ExecuteAsync(null);
+
+        // Yes clears only the sent line, keeps the rest, and selects the next line.
+        viewModel.IsSendPromptVisible.Should().BeFalse();
+        viewModel.SessionItems.Should().HaveCount(1);
+        viewModel.SessionItems.Should().ContainSingle().Which.ItemId.Should().Be(second.ItemId);
+        viewModel.SelectedSessionItem.Should().NotBeNull();
+        viewModel.SelectedSessionItem!.ItemId.Should().Be(second.ItemId);
+    }
+
+    [Fact]
+    public async Task ConfirmNotSavedCommand_ShouldKeepTheLineWaitingForRetry()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var first = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = Enum_ScannerValidationState.Valid,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+        };
+        session.Items.Add(first);
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new Model_ScannerExecutionOutcome { SentCount = 1 }));
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, execution: execution.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.SelectedSessionItem = first;
+
+        await viewModel.SendSelectedCommand.ExecuteAsync(null);
+
+        // Simulate the real execution service having marked the line sent before the operator
+        // reported the transfer did not save in Infor Visual.
+        first.ExecutionState = Enum_ScannerExecutionState.Sent;
+        first.SentUtc = DateTime.UtcNow;
+
+        await viewModel.ConfirmNotSavedCommand.ExecuteAsync(null);
+
+        // No keeps the line, restores it to never-sent so it can be sent again, and keeps the
+        // rest of the list untouched.
+        viewModel.IsSendPromptVisible.Should().BeFalse();
+        viewModel.SessionItems.Should().HaveCount(1);
+        first.ExecutionState.Should().Be(Enum_ScannerExecutionState.Waiting);
+        first.SentUtc.Should().BeNull();
+        viewModel.SelectedSessionItem.Should().BeSameAs(first);
     }
 
     // ── Helpers ─────────────────────────────────────────────────────────────────

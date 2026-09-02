@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -36,6 +37,7 @@ namespace MTM_Receiving_Application.Module_Shared.Views
             Loaded += OnDialogLoaded;
         }
 
+        
         private void InitializeCardBorders()
         {
             _cardBorders[FirstNameTextBox] = NameCardBorder;

@@ -30,17 +30,7 @@
                 Style="{StaticResource BodyTextBlockStyle}"
                 Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this receiving batch and shown on the review page."
                 TextWrapping="WrapWholeWords" />
-            <Button
-                Grid.Column="1"
-                Width="34"
-                Height="34"
-                Padding="0"
-                VerticalAlignment="Top"
-                AutomationProperties.Name="Help for Non-PO reference"
-                Click="OnHelpClick"
-                ToolTipService.ToolTip="Help">
-                <FontIcon FontSize="16" Glyph="&#xE946;" />
-            </Button>
+            
         </Grid>
 
         <TextBox
