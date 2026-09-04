@@ -401,6 +401,17 @@
                             Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                             <StackPanel Spacing="12">
 
+                                <!--  Default value (auto per type: Boolean=false, Number=0, Text=blank unless typed)  -->
+                                <StackPanel
+                                    Spacing="4"
+                                    Visibility="{x:Bind ViewModel.ShowDefaultValueEditor, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBox
+                                        Header="Default Value"
+                                        PlaceholderText="Optional - value pre-filled on new parts and labels"
+                                        Text="{x:Bind ViewModel.NewSpecDefaultValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        ToolTipService.ToolTip="Pre-filled when a new part or label row is created. Leave blank for Text, Boolean defaults to false, Number defaults to 0." />
+                                </StackPanel>
+
                                 <!--  Number validation  -->
                                 <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.ShowNumberOptions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <TextBlock
@@ -454,6 +465,12 @@
                                             Style="{StaticResource CaptionTextBlockStyle}"
                                             Text="Add the allowed values for this field. Example: Tall, Short."
                                             TextWrapping="Wrap" />
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="The first choice is used as the default value for new parts and labels."
+                                            TextWrapping="Wrap" />
                                         <Grid ColumnSpacing="12">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
@@ -500,12 +517,13 @@
                             </StackPanel>
                         </ScrollViewer>
 
-                        <!--  Required field + Add button  -->
+                        <!--  Required field, inline error + Add button  -->
                         <Grid
                             Grid.Row="2"
                             Padding="16,12,16,16"
                             ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
@@ -514,8 +532,17 @@
                                 Content="Required Field"
                                 IsChecked="{x:Bind ViewModel.NewSpecRequired, Mode=TwoWay}"
                                 ToolTipService.ToolTip="Check if this field is required" />
-                            <Button
+                            <TextBlock
                                 Grid.Column="1"
+                                Margin="8,0"
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.SpecEditorError, Mode=OneWay}"
+                                TextWrapping="Wrap"
+                                Visibility="{x:Bind ViewModel.HasSpecEditorError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Button
+                                Grid.Column="2"
                                 Command="{x:Bind ViewModel.AddSpecCommand}"
                                 Content="Add Field"
                                 Style="{StaticResource AccentButtonStyle}"

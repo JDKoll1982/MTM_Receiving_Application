@@ -75,13 +75,16 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
             "Pallets",
             true,
             "Images/old.png",
-            "Images/new.png"
+            "Images/new.png",
+            "RECV",
+            "DOCK-4"
         );
 
         message.Should().Contain("current label data and history rows");
         message.Should().Contain("part number from 'BIN-100' to 'BIN-200'");
         message.Should().Contain("quantity type from 'Each' to 'Pallets'");
         message.Should().Contain("saved spec values");
+        message.Should().Contain("default location from 'RECV' to 'DOCK-4'");
     }
 
     [Fact]
@@ -94,7 +97,27 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
             "Each",
             false,
             "Images/same.png",
-            "Images/same.png"
+            "Images/same.png",
+            "RECV",
+            "RECV"
+        );
+
+        message.Should().BeNull();
+    }
+
+    [Fact]
+    public void BuildSavedRowRewriteWarning_ShouldIgnoreHomeLocationWhenNewValueIsBlank()
+    {
+        var message = InvokeSavedRowRewriteWarning(
+            "BIN-100",
+            "BIN-100",
+            "Each",
+            "Each",
+            false,
+            "Images/same.png",
+            "Images/same.png",
+            "RECV",
+            ""
         );
 
         message.Should().BeNull();
@@ -107,7 +130,9 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
         string updatedQuantityType,
         bool specValuesChanged,
         string? originalImagePath,
-        string? updatedImagePath
+        string? updatedImagePath,
+        string? originalHomeLocation,
+        string? updatedHomeLocation
     )
     {
         var method = typeof(ViewModel_Dunnage_PartSelection).GetMethod(
@@ -128,9 +153,57 @@ public sealed class ViewModel_Dunnage_PartSelectionViewModelTests
                     specValuesChanged,
                     originalImagePath,
                     updatedImagePath,
+                    originalHomeLocation,
+                    updatedHomeLocation,
                 ]
             )
             .As<string?>();
+    }
+
+    [Fact]
+    public void BuildPartDeleteWarning_ShouldListAffectedCounts()
+    {
+        var message = InvokePartDeleteWarning(
+            "BIN-100",
+            new Model_DunnagePartDeleteImpact
+            {
+                LabelDataCount = 3,
+                HistoryCount = 2,
+                InventoryCount = 1,
+            }
+        );
+
+        message.Should().Contain("'BIN-100'");
+        message.Should().Contain("3 current label data entries");
+        message.Should().Contain("2 history entries");
+        message.Should().Contain("1 inventory record");
+        message.Should().Contain("All existing label data and history entries");
+    }
+
+    [Fact]
+    public void BuildPartDeleteWarning_ShouldMentionNoReferences_WhenNoImpact()
+    {
+        var message = InvokePartDeleteWarning(
+            "BIN-100",
+            new Model_DunnagePartDeleteImpact()
+        );
+
+        message.Should().Contain("No label data or history entries currently reference this part.");
+    }
+
+    private static string InvokePartDeleteWarning(
+        string partId,
+        Model_DunnagePartDeleteImpact impact
+    )
+    {
+        var method = typeof(ViewModel_Dunnage_PartSelection).GetMethod(
+            "BuildPartDeleteWarning",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+
+        return method!.Invoke(null, [partId, impact]).As<string>();
     }
 
     private static ViewModel_Dunnage_PartSelection CreateViewModel(

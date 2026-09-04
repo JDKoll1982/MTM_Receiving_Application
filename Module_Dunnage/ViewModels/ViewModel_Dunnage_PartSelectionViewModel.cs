@@ -186,6 +186,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     public bool CanDeleteSelectedPart => CanManageDefinitions && IsPartSelected;
 
+    public bool CanChangeSelectedPartType => CanManageDefinitions && IsPartSelected;
+
     public bool HasSelectedTypeImage => SelectedTypeImageSource is not null;
 
     public ImageSource? SelectedTypeImageSource =>
@@ -626,12 +628,15 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         SelectPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
         DeletePartCommand.NotifyCanExecuteChanged();
+        ChangePartTypeCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnCanManageDefinitionsChanged(bool value)
     {
         OnPropertyChanged(nameof(CanDeleteSelectedPart));
+        OnPropertyChanged(nameof(CanChangeSelectedPartType));
         DeletePartCommand.NotifyCanExecuteChanged();
+        ChangePartTypeCommand.NotifyCanExecuteChanged();
     }
 
     private async Task CheckInventoryStatusAsync(Model_DunnagePart part)
@@ -773,12 +778,14 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 "PartSelection"
             );
 
-            // Fetch custom-field definitions for the selected type
+            // Fetch custom-field definitions for the selected type and hydrate
+            // their Choice lists so the dialog's Choice comboboxes are populated.
             var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(SelectedTypeId);
             var customFields =
                 fieldsResult.IsSuccess && fieldsResult.Data != null
                     ? fieldsResult.Data
                     : new List<Model_CustomFieldDefinition>();
+            await HydrateCustomFieldChoicesAsync(customFields);
 
             var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
             var existingParts =
@@ -924,6 +931,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 fieldsResult.IsSuccess && fieldsResult.Data != null
                     ? fieldsResult.Data
                     : new List<Model_CustomFieldDefinition>();
+            await HydrateCustomFieldChoicesAsync(customFields);
 
             var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
             var existingParts =
@@ -996,6 +1004,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
                 var partIdToReselect = SelectedPart.PartId;
                 var originalQuantityType = SelectedPart.QuantityType;
+                var originalHomeLocation = SelectedPart.HomeLocation;
                 var originalImagePath = SelectedPart.ImagePath;
                 var updatedPartId = dialog.UpdatedPartId;
                 var editDraft = dialog.GetDraft();
@@ -1026,7 +1035,9 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     dialog.ResolvedQuantityType,
                     specValuesChanged,
                     originalImagePath,
-                    dialog.SelectedImagePath
+                    dialog.SelectedImagePath,
+                    originalHomeLocation,
+                    updatedPart.HomeLocation
                 );
 
                 if (await ConfirmSavedRowRewriteAsync(savedRowRewriteWarning) is false)
@@ -1092,6 +1103,198 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanChangeSelectedPartType))]
+    private async Task ChangePartTypeAsync()
+    {
+        if (SelectedPart is null || !CanManageDefinitions || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+
+            var typesResult = await _dunnageService.GetAllTypesAsync();
+            if (!typesResult.IsSuccess || typesResult.Data is null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(
+                    typesResult,
+                    nameof(ChangePartTypeAsync),
+                    true
+                );
+                return;
+            }
+
+            var availableTypes = typesResult.Data
+                .Where(type => type.Id != SelectedPart.TypeId)
+                .OrderBy(type => type.TypeName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (availableTypes.Count == 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No other dunnage types are available to move this part to.",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+            if (xamlRoot is null)
+            {
+                return;
+            }
+
+            var currentTypeName = string.IsNullOrWhiteSpace(SelectedPart.DunnageTypeName)
+                ? SelectedTypeName
+                : SelectedPart.DunnageTypeName;
+
+            var dialog = new Module_Dunnage.Views.View_Dunnage_ChangeTypeDialog(
+                SelectedPart,
+                currentTypeName,
+                availableTypes,
+                _dunnageService
+            )
+            {
+                XamlRoot = xamlRoot,
+            };
+
+            await dialog.ShowAsync();
+
+            if (dialog.WasAccepted is false || dialog.SelectedTargetTypeId is null)
+            {
+                return;
+            }
+
+            var targetTypeId = dialog.SelectedTargetTypeId.Value;
+            var targetType = availableTypes.FirstOrDefault(type => type.Id == targetTypeId);
+
+            var impactResult = await _dunnageService.GetPartDeleteImpactAsync(
+                SelectedPart.PartId
+            );
+            var impact =
+                impactResult.IsSuccess && impactResult.Data is not null
+                    ? impactResult.Data
+                    : new Model_DunnagePartDeleteImpact();
+
+            var message = BuildChangeTypeWarning(
+                SelectedPart.PartId,
+                currentTypeName,
+                targetType?.TypeName ?? "the selected type",
+                impact
+            );
+
+            if (await ConfirmTypeChangeAsync(message) is false)
+            {
+                return;
+            }
+
+            var changeResult = await _dunnageService.ChangePartTypeAsync(
+                SelectedPart,
+                targetTypeId,
+                dialog.ProvidedValues
+            );
+
+            if (changeResult.IsSuccess)
+            {
+                var targetName = changeResult.Data ?? targetType?.TypeName ?? "the new type";
+                _workflowService.CurrentSession.SelectedPart = null;
+                SelectedPart = null;
+                ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
+                HasSelectedPartSpecs = false;
+                IsInventoryNotificationVisible = false;
+                InventoryMethod = string.Empty;
+                await LoadPartsAsync();
+                StatusMessage = $"Moved part to type: {targetName}";
+                _logger.LogInfo($"Changed part type to {targetName}", "PartSelection");
+                return;
+            }
+
+            await _errorHandler.HandleDaoErrorAsync(
+                changeResult,
+                nameof(ChangePartTypeAsync),
+                true
+            );
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error changing dunnage part type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Builds the type-change confirmation message with affected row counts.</summary>
+    private static string BuildChangeTypeWarning(
+        string partId,
+        string fromType,
+        string toType,
+        Model_DunnagePartDeleteImpact impact
+    )
+    {
+        var affected = new List<string>();
+        if (impact.LabelDataCount > 0)
+        {
+            affected.Add(
+                impact.LabelDataCount == 1
+                    ? "1 current label data entry"
+                    : $"{impact.LabelDataCount} current label data entries"
+            );
+        }
+
+        if (impact.HistoryCount > 0)
+        {
+            affected.Add(
+                impact.HistoryCount == 1
+                    ? "1 history entry"
+                    : $"{impact.HistoryCount} history entries"
+            );
+        }
+
+        var affectedText = affected.Count == 0
+            ? "No saved rows currently reference this part"
+            : string.Join(" and ", affected);
+
+        return $"Move '{partId}' from '{fromType}' to '{toType}'?\n\n{affectedText} will be updated to the new type. Existing spec values are carried over to the new type's layout; spec fields the new type does not define are added to it (as optional) so the part keeps them.";
+    }
+
+    private async Task<bool> ConfirmTypeChangeAsync(string message)
+    {
+        var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return false;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Change Dunnage Type",
+            Content = message,
+            PrimaryButtonText = "Move Part",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
     [RelayCommand(CanExecute = nameof(CanDeleteSelectedPart))]
     private async Task DeletePartAsync()
     {
@@ -1108,6 +1311,37 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     StringComparison.OrdinalIgnoreCase
                 )
             );
+    }
+
+    /// <summary>
+    /// Loads the choice list for each Choices custom field so the Add/Edit Part
+    /// dialogs can populate their Choice comboboxes (GetCustomFieldsByTypeAsync
+    /// does not hydrate them).
+    /// </summary>
+    private async Task HydrateCustomFieldChoicesAsync(
+        List<Model_CustomFieldDefinition> fields
+    )
+    {
+        foreach (var field in fields)
+        {
+            if (
+                string.Equals(field.FieldType, "Choices", StringComparison.OrdinalIgnoreCase)
+                is false
+                || field.Choices.Count > 0
+            )
+            {
+                continue;
+            }
+
+            var choicesResult = await _dunnageService.GetCustomFieldChoicesAsync(field.Id);
+            if (choicesResult.IsSuccess && choicesResult.Data is not null)
+            {
+                field.Choices = choicesResult.Data
+                    .OrderBy(choice => choice.SortOrder)
+                    .Select(choice => choice.Choice)
+                    .ToList();
+            }
+        }
     }
 
     private async Task<bool> ConfirmSavedRowRewriteAsync(string? warningMessage)
@@ -1173,7 +1407,9 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         string updatedQuantityType,
         bool specValuesChanged,
         string? originalImagePath,
-        string? updatedImagePath
+        string? updatedImagePath,
+        string? originalHomeLocation,
+        string? updatedHomeLocation
     )
     {
         var changedValues = new List<string>();
@@ -1201,12 +1437,65 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             changedValues.Add("saved spec values");
         }
 
+        var originalLocation = originalHomeLocation?.Trim() ?? string.Empty;
+        var updatedLocation = updatedHomeLocation?.Trim() ?? string.Empty;
+        if (
+            string.Equals(originalLocation, updatedLocation, StringComparison.Ordinal) is false
+            && string.IsNullOrWhiteSpace(updatedLocation) is false
+        )
+        {
+            changedValues.Add(
+                $"default location from '{originalLocation}' to '{updatedLocation}' (only saved rows still using the old default location)"
+            );
+        }
+
         if (changedValues.Count == 0)
         {
             return null;
         }
 
         return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {string.Join(" and ", changedValues)}?";
+    }
+
+    /// <summary>Builds the part delete-confirmation warning with affected row counts.</summary>
+    internal static string BuildPartDeleteWarning(
+        string partId,
+        Model_DunnagePartDeleteImpact impact
+    )
+    {
+        var affected = new List<string>();
+        if (impact.LabelDataCount > 0)
+        {
+            affected.Add(
+                impact.LabelDataCount == 1
+                    ? "1 current label data entry"
+                    : $"{impact.LabelDataCount} current label data entries"
+            );
+        }
+
+        if (impact.HistoryCount > 0)
+        {
+            affected.Add(
+                impact.HistoryCount == 1
+                    ? "1 history entry"
+                    : $"{impact.HistoryCount} history entries"
+            );
+        }
+
+        if (impact.InventoryCount > 0)
+        {
+            affected.Add(
+                impact.InventoryCount == 1
+                    ? "1 inventory record"
+                    : $"{impact.InventoryCount} inventory records"
+            );
+        }
+
+        var impactSummary = affected.Count == 0
+            ? "No label data or history entries currently reference this part."
+            : $"This will also permanently delete its {string.Join(", ", affected)}.";
+
+        return $"Are you sure you want to permanently delete '{partId}'? This action cannot be undone.\n\n{impactSummary}\n\nAll existing label data and history entries that contain this part number will be removed as well.";
     }
 
     /// <summary>
@@ -1253,12 +1542,19 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
         try
         {
+            // Fetch the rows this cascade delete will remove so the warning can
+            // show exact counts.
+            var impactResult = await _dunnageService.GetPartDeleteImpactAsync(part.PartId);
+            var impact =
+                impactResult.IsSuccess && impactResult.Data is not null
+                    ? impactResult.Data
+                    : new Model_DunnagePartDeleteImpact();
+
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
                 Title = "Delete Dunnage Part",
-                Content =
-                    $"Are you sure you want to permanently delete '{part.PartId}'? This action cannot be undone.",
+                Content = BuildPartDeleteWarning(part.PartId, impact),
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -85,6 +86,13 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
     [ObservableProperty]
     private string _newSpecChoice = string.Empty;
 
+    [ObservableProperty]
+    private string _newSpecDefaultValue = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSpecEditorError))]
+    private string _specEditorError = string.Empty;
+
     public ViewModel_Dunnage_QuickAddTypeDialog(
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -100,11 +108,31 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
 
     public bool HasValidationMessage => string.IsNullOrWhiteSpace(ValidationMessage) is false;
 
+    public bool HasSpecEditorError => string.IsNullOrWhiteSpace(SpecEditorError) is false;
+
     public bool ShowNumberOptions =>
         string.Equals(NewSpecType, "Number", StringComparison.OrdinalIgnoreCase);
 
+    partial void OnNewSpecNameChanged(string value) => SpecEditorError = string.Empty;
+
+    partial void OnNewSpecTypeChanged(string value) => SpecEditorError = string.Empty;
+
+    partial void OnNewSpecDefaultValueChanged(string value) => SpecEditorError = string.Empty;
+
+    partial void OnNewSpecMinValueChanged(double value) => SpecEditorError = string.Empty;
+
+    partial void OnNewSpecMaxValueChanged(double value) => SpecEditorError = string.Empty;
+
     public bool ShowChoicesOptions =>
         string.Equals(NewSpecType, "Choices", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Shows the typed default-value editor for non-Choices fields.</summary>
+    public bool ShowDefaultValueEditor => !ShowChoicesOptions;
+
+    /// <summary>
+    /// Shows the "first choice is the default" note when the field type is Choices.
+    /// </summary>
+    public bool ShowChoicesDefaultNote => ShowChoicesOptions;
 
     public ImageSource? SelectedImageSource =>
         Helpers.Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
@@ -237,19 +265,47 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         string trimmedName = NewSpecName.Trim();
         if (string.IsNullOrWhiteSpace(trimmedName))
         {
-            ValidationMessage = "Enter a specification field name before adding it.";
+            SetSpecEditorError("Field Name is required.");
             return;
         }
 
         if (Specs.Any(spec => spec.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase)))
         {
-            ValidationMessage = $"'{trimmedName}' is already defined for this type.";
+            SetSpecEditorError($"'{trimmedName}' is already defined for this type.");
+            return;
+        }
+
+        if (Specs.Count >= Helper_Dunnage_PartSpecs.MaxUdcCount)
+        {
+            SetSpecEditorError(
+                $"A type can have at most {Helper_Dunnage_PartSpecs.MaxUdcCount} specification fields."
+            );
             return;
         }
 
         if (ShowChoicesOptions && CurrentChoices.Count == 0)
         {
-            ValidationMessage = "Add at least one choice value for a Choices field.";
+            SetSpecEditorError("Add at least one choice value for a Choices field.");
+            return;
+        }
+
+        double? minValue = ShowNumberOptions && !double.IsNaN(NewSpecMinValue)
+            ? NewSpecMinValue
+            : null;
+        double? maxValue = ShowNumberOptions && !double.IsNaN(NewSpecMaxValue)
+            ? NewSpecMaxValue
+            : null;
+
+        if (minValue.HasValue && maxValue.HasValue && minValue.Value > maxValue.Value)
+        {
+            SetSpecEditorError("Min Value cannot be greater than Max Value.");
+            return;
+        }
+
+        var defaultValue = ResolveAddSpecDefault(minValue, maxValue);
+        if (defaultValue is null)
+        {
+            // An inline error was already set for the invalid default value.
             return;
         }
 
@@ -260,17 +316,95 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
                 DataType = NewSpecType,
                 IsRequired = NewSpecRequired,
                 Unit = ShowNumberOptions ? NewSpecUnit.Trim() : string.Empty,
-                MinValue =
-                    ShowNumberOptions && !double.IsNaN(NewSpecMinValue) ? NewSpecMinValue : null,
-                MaxValue =
-                    ShowNumberOptions && !double.IsNaN(NewSpecMaxValue) ? NewSpecMaxValue : null,
+                MinValue = minValue,
+                MaxValue = maxValue,
                 Choices = ShowChoicesOptions ? CurrentChoices.ToList() : new List<string>(),
+                DefaultValue = defaultValue,
             }
         );
 
+        SpecEditorError = string.Empty;
         ValidationMessage = string.Empty;
         ResetSpecEditor();
     }
+
+    /// <summary>
+    /// Resolves and validates the default value for the spec being added. For a
+    /// Number field the typed default must be numeric and within the min/max
+    /// range; a blank Number default clamps the automatic "0" into the range so a
+    /// stored default can never fall below Min Value or above Max Value. Returns
+    /// null (after setting an inline error) when the value is invalid.
+    /// </summary>
+    private string? ResolveAddSpecDefault(double? minValue, double? maxValue)
+    {
+        if (ShowNumberOptions)
+        {
+            var typed = NewSpecDefaultValue.Trim();
+
+            if (string.IsNullOrWhiteSpace(typed))
+            {
+                var autoDefault = 0d;
+                if (minValue.HasValue && autoDefault < minValue.Value)
+                {
+                    autoDefault = minValue.Value;
+                }
+
+                if (maxValue.HasValue && autoDefault > maxValue.Value)
+                {
+                    autoDefault = maxValue.Value;
+                }
+
+                return autoDefault.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (
+                !double.TryParse(
+                    typed,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var parsedDefault
+                )
+            )
+            {
+                SetSpecEditorError("Default Value must be a number.");
+                return null;
+            }
+
+            if (minValue.HasValue && parsedDefault < minValue.Value)
+            {
+                SetSpecEditorError(
+                    $"Default Value cannot be less than Min Value ({FormatForMessage(minValue.Value)})."
+                );
+                return null;
+            }
+
+            if (maxValue.HasValue && parsedDefault > maxValue.Value)
+            {
+                SetSpecEditorError(
+                    $"Default Value cannot be greater than Max Value ({FormatForMessage(maxValue.Value)})."
+                );
+                return null;
+            }
+
+            return typed;
+        }
+
+        var defaultForChoices = ShowChoicesOptions ? CurrentChoices.ToList() : null;
+        return Helper_Dunnage_PartSpecs.ResolveSpecDefault(
+            NewSpecType,
+            NewSpecDefaultValue,
+            defaultForChoices
+        );
+    }
+
+    private void SetSpecEditorError(string message)
+    {
+        SpecEditorError = message;
+        ValidationMessage = string.Empty;
+    }
+
+    private static string FormatForMessage(double value) =>
+        value.ToString(CultureInfo.InvariantCulture);
 
     [RelayCommand]
     private void RemoveSpec(Model_SpecItem? spec)
@@ -292,6 +426,8 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         NewSpecMinValue = double.NaN;
         NewSpecMaxValue = double.NaN;
         NewSpecChoice = string.Empty;
+        NewSpecDefaultValue = string.Empty;
+        SpecEditorError = string.Empty;
         CurrentChoices.Clear();
     }
 }

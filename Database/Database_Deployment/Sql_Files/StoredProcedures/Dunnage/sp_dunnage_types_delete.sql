@@ -21,9 +21,8 @@ CREATE PROCEDURE `sp_Dunnage_Types_Delete`(
 )
 BEGIN
     DECLARE v_exists INT DEFAULT 0;
-    DECLARE v_parts_count INT DEFAULT 0;
-
     DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
@@ -46,24 +45,35 @@ BEGIN
         SET p_error_msg = 'Dunnage type not found';
         ROLLBACK;
     ELSE
-        -- Check if dunnage type is in use by any parts
-        SELECT COUNT(*) INTO v_parts_count
-        FROM dunnage_parts
-        WHERE type_id = p_id;
+        -- Full cascade: deleting the type also deletes its parts and every
+        -- active label-data / archived history row that references the type
+        -- or one of its parts. Inventory rows, custom fields, and custom-field
+        -- choices are removed via ON DELETE CASCADE foreign keys.
 
-        IF v_parts_count > 0 THEN
-            SET p_status = -1;
-            SET p_error_msg = CONCAT('Cannot delete dunnage type that is in use by ', v_parts_count, ' part(s)');
-            ROLLBACK;
-        ELSE
-            -- Delete the dunnage type (hard delete since no soft delete columns in schema)
-            DELETE FROM dunnage_types
-            WHERE id = p_id;
+        -- 1) Active label-data queue rows for the type's parts or type snapshot.
+        DELETE FROM dunnage_label_data
+        WHERE dunnage_type_id = p_id
+           OR part_id IN (SELECT part_id FROM dunnage_parts WHERE type_id = p_id);
 
-            SET p_status = 1;
-            SET p_error_msg = 'Dunnage type deleted successfully';
-            COMMIT;
-        END IF;
+        -- 2) Archived history rows for the type's parts or type snapshot.
+        DELETE FROM dunnage_history
+        WHERE dunnage_type_id = p_id
+           OR type_id = p_id
+           OR part_id IN (SELECT part_id FROM dunnage_parts WHERE type_id = p_id);
+
+        -- 3) Per-part non-PO reference defaults for the type's parts.
+        DELETE FROM dunnage_non_po_part_defaults
+        WHERE part_id IN (SELECT part_id FROM dunnage_parts WHERE type_id = p_id);
+
+        -- 4) The type's parts (inventory rows cascade via FK).
+        DELETE FROM dunnage_parts WHERE type_id = p_id;
+
+        -- 5) The type (custom fields + choices cascade via FK).
+        DELETE FROM dunnage_types WHERE id = p_id;
+
+        SET p_status = 1;
+        SET p_error_msg = 'Dunnage type deleted successfully';
+        COMMIT;
     END IF;
     SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;
 END $$

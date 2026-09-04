@@ -25,6 +25,7 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
 )
 BEGIN
     DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+    DECLARE v_old_home_location VARCHAR(100) DEFAULT NULL;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -36,6 +37,12 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 0;
 
     START TRANSACTION;
+
+    SELECT home_location
+      INTO v_old_home_location
+      FROM dunnage_parts
+     WHERE id = p_id
+     LIMIT 1;
 
     UPDATE dunnage_parts
     SET
@@ -90,6 +97,28 @@ BEGIN
         udc9 = p_udc9,
         udc10 = p_udc10
     WHERE part_id IN (p_original_part_id, p_new_part_id);
+
+    -- When the part's home location (the default location used for saved rows)
+    -- changes, rewrite only the saved label-data and history rows whose stored
+    -- location still equals the OLD home location. Rows whose location was
+    -- overridden by the user are left untouched.
+    IF COALESCE(v_old_home_location, '') <> COALESCE(p_home_location, '')
+       AND p_home_location IS NOT NULL
+       AND TRIM(p_home_location) <> '' THEN
+
+        UPDATE dunnage_history
+        SET
+            location = p_home_location,
+            modified_by = p_user,
+            modified_date = NOW()
+        WHERE part_id IN (p_original_part_id, p_new_part_id)
+          AND COALESCE(location, '') = COALESCE(v_old_home_location, '');
+
+        UPDATE dunnage_label_data
+        SET location = p_home_location
+        WHERE part_id IN (p_original_part_id, p_new_part_id)
+          AND COALESCE(location, '') = COALESCE(v_old_home_location, '');
+    END IF;
 
     IF p_inventory_method IS NULL
         OR TRIM(p_inventory_method) = ''

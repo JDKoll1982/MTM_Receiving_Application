@@ -21,6 +21,19 @@ public class Model_SpecItemTests
     }
 
     [Fact]
+    public void Description_ShouldIncludeDefaultValue_WhenSet()
+    {
+        var specItem = new Model_SpecItem
+        {
+            Name = "Type",
+            DataType = "Choices",
+            DefaultValue = "Tall",
+        };
+
+        specItem.Description.Should().Be("Choices (Default: Tall)");
+    }
+
+    [Fact]
     public void CreateDefinition_ShouldRoundTripSpecItemToCustomField()
     {
         var specItem = new Model_SpecItem

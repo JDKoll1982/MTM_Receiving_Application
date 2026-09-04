@@ -119,6 +119,7 @@ public static class Helper_Dunnage_PartSpecs
             MinValue = field.MinValue.HasValue ? (double)field.MinValue.Value : null,
             MaxValue = field.MaxValue.HasValue ? (double)field.MaxValue.Value : null,
             Choices = field.Choices?.ToList() ?? new List<string>(),
+            DefaultValue = field.DefaultValue ?? string.Empty,
         };
 
     /// <summary>Converts a dialog spec row back to a custom-field definition.</summary>
@@ -135,8 +136,43 @@ public static class Helper_Dunnage_PartSpecs
             MinValue = spec.MinValue.HasValue ? (decimal)spec.MinValue.Value : null,
             MaxValue = spec.MaxValue.HasValue ? (decimal)spec.MaxValue.Value : null,
             Choices = spec.Choices?.ToList() ?? new List<string>(),
+            DefaultValue = string.IsNullOrWhiteSpace(spec.DefaultValue)
+                ? null
+                : spec.DefaultValue.Trim(),
             DisplayOrder = displayOrder,
         };
+
+    /// <summary>
+    /// Resolves the default value for a spec being added in the type dialog.
+    /// Per-type sensible defaults: Choice = first choice, Boolean = false,
+    /// Number = 0, Text = blank. A user-typed default overrides the auto value
+    /// for Text/Number/Boolean fields.
+    /// </summary>
+    public static string ResolveSpecDefault(
+        string specType,
+        string? typedDefault,
+        IReadOnlyCollection<string>? choices = null
+    )
+    {
+        var typed = typedDefault?.Trim() ?? string.Empty;
+
+        if (string.Equals(specType?.Trim(), "Choices", StringComparison.OrdinalIgnoreCase))
+        {
+            return choices?.FirstOrDefault() ?? string.Empty;
+        }
+
+        if (string.Equals(specType?.Trim(), "Boolean", StringComparison.OrdinalIgnoreCase))
+        {
+            return string.IsNullOrWhiteSpace(typed) ? "false" : typed;
+        }
+
+        if (string.Equals(specType?.Trim(), "Number", StringComparison.OrdinalIgnoreCase))
+        {
+            return string.IsNullOrWhiteSpace(typed) ? "0" : typed;
+        }
+
+        return typed;
+    }
 
     /// <summary>Creates a details-entry input row from a definition plus the current value.</summary>
     public static Model_SpecInput CreateSpecInput(

@@ -16,6 +16,12 @@ public class Model_SpecItem
     public double? MaxValue { get; set; }
     public List<string> Choices { get; set; } = new();
 
+    /// <summary>
+    /// Default value applied to new label-data / history rows. For Choices
+    /// fields this is auto-set to the first choice unless overridden.
+    /// </summary>
+    public string DefaultValue { get; set; } = string.Empty;
+
     public string Description
     {
         get
@@ -41,6 +47,11 @@ public class Model_SpecItem
             if (Choices.Count > 0)
             {
                 parts.Add($"Choices: {string.Join(", ", Choices)}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(DefaultValue))
+            {
+                parts.Add($"Default: {DefaultValue}");
             }
 
             if (parts.Count > 0)

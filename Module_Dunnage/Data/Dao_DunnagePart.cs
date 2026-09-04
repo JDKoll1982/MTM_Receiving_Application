@@ -305,6 +305,50 @@ public class Dao_DunnagePart
         );
     }
 
+    /// <summary>
+    /// Re-associates a part with a new dunnage type and rewrites the type
+    /// snapshots and udc layout on the part's label-data and history rows.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result> ChangeTypeAsync(
+        string partId,
+        int newTypeId,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
+        string user
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "part_id", partId },
+            { "new_type_id", newTypeId },
+            { "udc1", (object?)udc1 ?? DBNull.Value },
+            { "udc2", (object?)udc2 ?? DBNull.Value },
+            { "udc3", (object?)udc3 ?? DBNull.Value },
+            { "udc4", (object?)udc4 ?? DBNull.Value },
+            { "udc5", (object?)udc5 ?? DBNull.Value },
+            { "udc6", (object?)udc6 ?? DBNull.Value },
+            { "udc7", (object?)udc7 ?? DBNull.Value },
+            { "udc8", (object?)udc8 ?? DBNull.Value },
+            { "udc9", (object?)udc9 ?? DBNull.Value },
+            { "udc10", (object?)udc10 ?? DBNull.Value },
+            { "user", user },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_Parts_ChangeType",
+            parameters
+        );
+    }
+
     public virtual async Task<Model_Dao_Result<int>> CountTransactionsAsync(string partId)
     {
         var parameters = new Dictionary<string, object> { { "part_id", partId } };
@@ -315,6 +359,46 @@ public class Dao_DunnagePart
             reader => reader.GetInt32(reader.GetOrdinal("transaction_count")),
             parameters
         );
+    }
+
+    /// <summary>
+    /// Returns the number of label-data queue rows, history rows, and inventory
+    /// rows that reference the part, so a delete-impact warning can be shown.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<Model_DunnagePartDeleteImpact>>
+        GetDeleteImpactAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object> { { "part_id", partId } };
+
+        var result =
+            await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePartDeleteImpact>(
+                _connectionString,
+                "sp_Dunnage_Parts_GetDeleteImpact",
+                MapDeleteImpactFromReader,
+                parameters
+            );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_DunnagePartDeleteImpact>(
+                result.ErrorMessage
+            );
+        }
+
+        var impact = result.Data is { Count: > 0 }
+            ? result.Data[0]
+            : new Model_DunnagePartDeleteImpact();
+        return Model_Dao_Result_Factory.Success(impact);
+    }
+
+    private static Model_DunnagePartDeleteImpact MapDeleteImpactFromReader(IDataReader reader)
+    {
+        return new Model_DunnagePartDeleteImpact
+        {
+            LabelDataCount = reader.GetInt32(reader.GetOrdinal("label_data_count")),
+            HistoryCount = reader.GetInt32(reader.GetOrdinal("history_count")),
+            InventoryCount = reader.GetInt32(reader.GetOrdinal("inventory_count")),
+        };
     }
 
     public virtual async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchAsync(

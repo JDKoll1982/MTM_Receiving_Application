@@ -54,31 +54,34 @@ public sealed class Service_MySQL_DunnageTests
     }
 
     [Fact]
-    public async Task DeletePartAsync_ShouldReturnFriendlyMessage_WhenHistoryReferencesExist()
+    public async Task DeletePartAsync_ShouldCascadeDeletePart_WhenHistoryReferencesExist()
     {
         var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
         daoPart
             .Setup(dao => dao.GetByIdAsync("PART-100"))
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
-                    new Model_DunnagePart { Id = 7, PartId = "PART-100" }
+                    new Model_DunnagePart
+                    {
+                        Id = 7,
+                        PartId = "PART-100",
+                        ImagePath = "Images/Dunnage/test.png",
+                    }
                 )
             );
-        daoPart
-            .Setup(dao => dao.CountTransactionsAsync("PART-100"))
-            .Returns(Task.FromResult(Model_Dao_Result_Factory.Success<int>(2)));
+        daoPart.Setup(dao => dao.DeleteAsync(7)).ReturnsAsync(Model_Dao_Result_Factory.Success());
 
-        var service = CreateService(daoPart.Object);
+        var imageStorage = new Mock<IService_DunnageImageStorage>();
+        var service = CreateService(daoPart.Object, imageStorage: imageStorage.Object);
 
         var result = await service.DeletePartAsync("PART-100");
 
-        result.IsSuccess.Should().BeFalse();
-        result
-            .ErrorMessage.Should()
-            .Be(
-                "Part 'PART-100' can't be deleted because it is referenced by 2 Dunnage history records. Remove or reassign those history records first."
-            );
-        daoPart.Verify(dao => dao.DeleteAsync(It.IsAny<int>()), Times.Never);
+        result.IsSuccess.Should().BeTrue();
+        daoPart.Verify(dao => dao.DeleteAsync(7), Times.Once);
+        imageStorage.Verify(
+            storage => storage.DeleteImageAsync("Images/Dunnage/test.png"),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -97,9 +100,6 @@ public sealed class Service_MySQL_DunnageTests
                     }
                 )
             );
-        daoPart
-            .Setup(dao => dao.CountTransactionsAsync("PART-200"))
-            .Returns(Task.FromResult(Model_Dao_Result_Factory.Success<int>(0)));
         daoPart.Setup(dao => dao.DeleteAsync(8)).ReturnsAsync(Model_Dao_Result_Factory.Success());
 
         var imageStorage = new Mock<IService_DunnageImageStorage>();
@@ -113,6 +113,402 @@ public sealed class Service_MySQL_DunnageTests
             storage => storage.DeleteImageAsync("Images/Dunnage/test.png"),
             Times.Once
         );
+    }
+
+    [Fact]
+    public async Task GetPartDeleteImpactAsync_ShouldReturnDaoImpact()
+    {
+        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var impact = new Model_DunnagePartDeleteImpact
+        {
+            LabelDataCount = 3,
+            HistoryCount = 5,
+            InventoryCount = 1,
+        };
+        daoPart
+            .Setup(dao => dao.GetDeleteImpactAsync("PART-100"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(impact));
+
+        var service = CreateService(daoPart.Object);
+
+        var result = await service.GetPartDeleteImpactAsync("PART-100");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeSameAs(impact);
+    }
+
+    [Fact]
+    public async Task GetTypeDeleteImpactAsync_ShouldReturnDaoImpact()
+    {
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        var impact = new Model_DunnageTypeDeleteImpact
+        {
+            PartsCount = 4,
+            LabelDataCount = 2,
+            HistoryCount = 7,
+        };
+        daoType
+            .Setup(dao => dao.GetDeleteImpactAsync(9))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(impact));
+
+        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var service = CreateService(daoPart.Object, daoType: daoType.Object);
+
+        var result = await service.GetTypeDeleteImpactAsync(9);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeSameAs(impact);
+    }
+
+    [Fact]
+    public async Task DeleteTypeAsync_ShouldCleanUpPartAndTypeImages_WhenPartsExist()
+    {
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(5))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_DunnageType
+                    {
+                        Id = 5,
+                        TypeName = "Bins",
+                        ImagePath = "Images/Dunnage/type.png",
+                    }
+                )
+            );
+        daoType
+            .Setup(dao => dao.DeleteAsync(5, "System"))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+
+        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        daoPart
+            .Setup(dao => dao.GetByTypeAsync(5))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new()
+                        {
+                            Id = 1,
+                            PartId = "BIN-1",
+                            ImagePath = "Images/Dunnage/part1.png",
+                        },
+                        new() { Id = 2, PartId = "BIN-2", ImagePath = null },
+                    }
+                )
+            );
+
+        var imageStorage = new Mock<IService_DunnageImageStorage>();
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            imageStorage: imageStorage.Object
+        );
+
+        var result = await service.DeleteTypeAsync(5);
+
+        result.IsSuccess.Should().BeTrue();
+        daoType.Verify(dao => dao.DeleteAsync(5, "System"), Times.Once);
+        imageStorage.Verify(
+            storage => storage.DeleteImageAsync("Images/Dunnage/part1.png"),
+            Times.Once
+        );
+        imageStorage.Verify(
+            storage => storage.DeleteImageAsync("Images/Dunnage/type.png"),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task ChangePartTypeAsync_ShouldMapSharedFieldValueIntoTargetSlot()
+    {
+        var (daoPart, captured) = SetupChangeTypeCapture();
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_DunnageType { Id = 2, TypeName = "Bins" })
+            );
+
+        var daoCustom = new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;");
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(1))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                    }
+                )
+            );
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 2, FieldName = "Length", FieldType = "Number", DisplayOrder = 3 },
+                    }
+                )
+            );
+
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            daoCustomField: daoCustom.Object
+        );
+        var part = new Model_DunnagePart { PartId = "P-1", TypeId = 1 };
+        part.SetUdcValue(1, "14");
+
+        var result = await service.ChangePartTypeAsync(part, 2, new Dictionary<string, string?>());
+
+        result.IsSuccess.Should().BeTrue();
+        daoCustom.Verify(
+            dao =>
+                dao.InsertAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Model_CustomFieldDefinition>(),
+                    It.IsAny<string>()
+                ),
+            Times.Never
+        );
+        captured[2].Should().Be("14");
+    }
+
+    [Fact]
+    public async Task ChangePartTypeAsync_ShouldAddMissingSourceFieldsAsOptional_AndCarryValues()
+    {
+        var (daoPart, captured) = SetupChangeTypeCapture();
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_DunnageType { Id = 2, TypeName = "Bins" })
+            );
+
+        var daoCustom = new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;");
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(1))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                    }
+                )
+            );
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(2))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_CustomFieldDefinition>()));
+        daoCustom
+            .Setup(dao =>
+                dao.InsertAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Model_CustomFieldDefinition>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success<int>(50));
+
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            daoCustomField: daoCustom.Object
+        );
+        var part = new Model_DunnagePart { PartId = "P-1", TypeId = 1 };
+        part.SetUdcValue(1, "14");
+
+        var result = await service.ChangePartTypeAsync(part, 2, new Dictionary<string, string?>());
+
+        result.IsSuccess.Should().BeTrue();
+        daoCustom.Verify(
+            dao =>
+                dao.InsertAsync(
+                    It.IsAny<int>(),
+                    It.Is<Model_CustomFieldDefinition>(field =>
+                        field.FieldName == "Length"
+                        && field.DisplayOrder == 1
+                        && field.IsRequired == false
+                    ),
+                    It.IsAny<string>()
+                ),
+            Times.Once
+        );
+        captured[0].Should().Be("14");
+    }
+
+    [Fact]
+    public async Task ChangePartTypeAsync_ShouldRejectWhenRequiredTargetFieldHasNoValue()
+    {
+        var (daoPart, _) = SetupChangeTypeCapture();
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_DunnageType { Id = 2, TypeName = "Bins" })
+            );
+
+        var daoCustom = new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;");
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(1))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                    }
+                )
+            );
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                        new()
+                        {
+                            Id = 2,
+                            FieldName = "Department",
+                            FieldType = "Text",
+                            DisplayOrder = 2,
+                            IsRequired = true,
+                        },
+                    }
+                )
+            );
+
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            daoCustomField: daoCustom.Object
+        );
+        var part = new Model_DunnagePart { PartId = "P-1", TypeId = 1 };
+        part.SetUdcValue(1, "14");
+
+        var result = await service.ChangePartTypeAsync(part, 2, new Dictionary<string, string?>());
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("Required field 'Department'");
+        daoPart.Verify(dao => dao.ChangeTypeAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ChangePartTypeAsync_ShouldUseProvidedRequiredValue()
+    {
+        var (daoPart, captured) = SetupChangeTypeCapture();
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_DunnageType { Id = 2, TypeName = "Bins" })
+            );
+
+        var daoCustom = new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;");
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(1))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                    }
+                )
+            );
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new()
+                        {
+                            Id = 2,
+                            FieldName = "Department",
+                            FieldType = "Text",
+                            DisplayOrder = 1,
+                            IsRequired = true,
+                        },
+                    }
+                )
+            );
+        daoCustom
+            .Setup(dao =>
+                dao.InsertAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Model_CustomFieldDefinition>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success<int>(50));
+
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            daoCustomField: daoCustom.Object
+        );
+        var part = new Model_DunnagePart { PartId = "P-1", TypeId = 1 };
+
+        var result = await service.ChangePartTypeAsync(
+            part,
+            2,
+            new Dictionary<string, string?> { { "Department", "Die Shop" } }
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        captured[0].Should().Be("Die Shop");
+    }
+
+    [Fact]
+    public async Task ChangePartTypeAsync_ShouldRejectWhenTargetTypeHasNoOpenSlots()
+    {
+        var (daoPart, _) = SetupChangeTypeCapture();
+        var daoType = new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;");
+        daoType
+            .Setup(dao => dao.GetByIdAsync(2))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_DunnageType { Id = 2, TypeName = "Full" })
+            );
+
+        var daoCustom = new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;");
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(1))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_CustomFieldDefinition>
+                    {
+                        new() { Id = 1, FieldName = "Length", FieldType = "Number", DisplayOrder = 1 },
+                    }
+                )
+            );
+        var fullTarget = Enumerable
+            .Range(1, 10)
+            .Select(index =>
+                new Model_CustomFieldDefinition
+                {
+                    Id = index,
+                    FieldName = $"Field{index}",
+                    FieldType = "Text",
+                    DisplayOrder = index,
+                }
+            )
+            .ToList();
+        daoCustom
+            .Setup(dao => dao.GetByTypeAsync(2))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(fullTarget));
+
+        var service = CreateService(
+            daoPart.Object,
+            daoType: daoType.Object,
+            daoCustomField: daoCustom.Object
+        );
+        var part = new Model_DunnagePart { PartId = "P-1", TypeId = 1 };
+        part.SetUdcValue(1, "14");
+
+        var result = await service.ChangePartTypeAsync(part, 2, new Dictionary<string, string?>());
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("open spec slots");
     }
 
     [Fact]
@@ -303,7 +699,8 @@ public sealed class Service_MySQL_DunnageTests
     private static Service_MySQL_Dunnage CreateService(
         Dao_DunnagePart daoPart,
         Dao_DunnageType? daoType = null,
-        IService_DunnageImageStorage? imageStorage = null
+        IService_DunnageImageStorage? imageStorage = null,
+        Dao_DunnageCustomField? daoCustomField = null
     )
     {
         return new Service_MySQL_Dunnage(
@@ -316,10 +713,65 @@ public sealed class Service_MySQL_DunnageTests
             daoPart,
             new Mock<Dao_DunnageQuantityType>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_InventoriedDunnage>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;").Object,
+            daoCustomField ?? new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_DunnageUserPreference>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_DunnageNonPOEntry>("Server=172.16.1.104;Database=test;").Object,
             imageStorage ?? new Mock<IService_DunnageImageStorage>().Object
         );
+    }
+
+    private static (Mock<Dao_DunnagePart> DaoPart, string?[] Captured)
+        SetupChangeTypeCapture()
+    {
+        var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
+        var captured = new string?[10];
+        daoPart
+            .Setup(dao =>
+                dao.ChangeTypeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success())
+            .Callback<
+                string,
+                int,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string?,
+                string
+            >((_, _, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, _) =>
+            {
+                captured[0] = u1;
+                captured[1] = u2;
+                captured[2] = u3;
+                captured[3] = u4;
+                captured[4] = u5;
+                captured[5] = u6;
+                captured[6] = u7;
+                captured[7] = u8;
+                captured[8] = u9;
+                captured[9] = u10;
+            });
+
+        return (daoPart, captured);
     }
 }

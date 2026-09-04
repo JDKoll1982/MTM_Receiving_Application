@@ -178,6 +178,46 @@ public class Dao_DunnageType
     }
 
     /// <summary>
+    /// Returns the number of parts, label-data queue rows, and history rows a
+    /// type delete would cascade-remove, so a delete-impact warning can be shown.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<Model_DunnageTypeDeleteImpact>>
+        GetDeleteImpactAsync(int typeId)
+    {
+        var parameters = new Dictionary<string, object> { { "type_id", typeId } };
+
+        var result =
+            await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageTypeDeleteImpact>(
+                _connectionString,
+                "sp_Dunnage_Types_GetDeleteImpact",
+                MapDeleteImpactFromReader,
+                parameters
+            );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_DunnageTypeDeleteImpact>(
+                result.ErrorMessage
+            );
+        }
+
+        var impact = result.Data is { Count: > 0 }
+            ? result.Data[0]
+            : new Model_DunnageTypeDeleteImpact();
+        return Model_Dao_Result_Factory.Success(impact);
+    }
+
+    private static Model_DunnageTypeDeleteImpact MapDeleteImpactFromReader(IDataReader reader)
+    {
+        return new Model_DunnageTypeDeleteImpact
+        {
+            PartsCount = reader.GetInt32(reader.GetOrdinal("part_count")),
+            LabelDataCount = reader.GetInt32(reader.GetOrdinal("label_data_count")),
+            HistoryCount = reader.GetInt32(reader.GetOrdinal("history_count")),
+        };
+    }
+
+    /// <summary>
     /// Check if a dunnage type name already exists (for duplicate detection during create/update)
     /// </summary>
     /// <param name="typeName">Type name to check</param>

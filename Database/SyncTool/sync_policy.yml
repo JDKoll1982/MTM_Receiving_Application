@@ -1,0 +1,173 @@
+# =============================================================================
+# Sync policy for reference / seed data: test -> core
+#
+# This is the single checked-in source of truth describing exactly which tables
+# the sync tool may touch and how. Reviewers can read this file to see every
+# table that will ever be written, its business (merge) key, the columns that
+# are never overwritten, and the write mode used.
+#
+# Rules enforced by the tool:
+#   * direction "test -> core"  -> the table may be written (source=test, target=core).
+#   * direction "exclude"       -> the table is never written by this tool.
+#   * natural_keys              -> business key(s), NEVER the auto-increment id.
+#   * ignore_columns            -> never inserted/updated from test (audit columns etc.).
+#   * mode "insert-if-missing"  -> only add rows whose natural key is absent.
+#   * mode "upsert"             -> add missing rows and update matching rows so the
+#                                  non-ignored columns follow the test database.
+#   * fk_map                    -> remaps a child FK that points at a parent's identity
+#                                  column so it is resolved through the parent's natural
+#                                  key on the target (ids can differ between databases).
+# =============================================================================
+
+database_defaults:
+  core_db: mtm_receiving_application
+  test_db: mtm_receiving_application_test
+  backup_db: mtm_receiving_application_backup_test
+
+# -----------------------------------------------------------------------------
+# Per-table data policy. Only tables listed here with direction "test -> core"
+# are ever written. Everything else is left untouched by this tool.
+# -----------------------------------------------------------------------------
+tables:
+  - table: dunnage_types
+    direction: test -> core
+    mode: upsert
+    natural_keys: [type_name]
+    ignore_columns: [created_by, created_date, modified_by, modified_date]
+    comment: >-
+      Master list of dunnage container types. type_name is the business key;
+      audit columns are kept local to each database.
+
+  - table: dunnage_parts
+    direction: test -> core
+    mode: upsert
+    natural_keys: [part_id]
+    ignore_columns: [created_by, created_date, modified_by, modified_date]
+    fk_map:
+      - column: type_id
+        references: dunnage_types
+        parent_key: type_name
+    comment: >-
+      Dunnage part master data. type_id points at dunnage_types.id (identity),
+      so it is remapped through dunnage_types.type_name before writing to core.
+
+  - table: dunnage_quantity_types
+    direction: test -> core
+    mode: upsert
+    natural_keys: [quantity_type]
+    ignore_columns: [created_by, created_date]
+    comment: Reusable quantity label headers (seeded by 40_Table_dunnage_quantity_types.sql).
+
+  - table: dunnage_requires_inventory
+    direction: test -> core
+    mode: upsert
+    natural_keys: [part_id]
+    ignore_columns: [created_by, created_date, modified_by, modified_date]
+    comment: >-
+      Returnable dunnage tracked in the Visual ERP. FK references
+      dunnage_parts.part_id (the business key), so no identity remap is needed.
+
+  - table: dunnage_non_po_entries
+    direction: test -> core
+    mode: insert-if-missing
+    natural_keys: [value]
+    ignore_columns: [use_count, created_at]
+    comment: >-
+      Saved non-PO reference reasons. Only new reasons are added; core usage
+      counts (use_count) and local created_at are never overwritten.
+
+# -----------------------------------------------------------------------------
+# Explicitly excluded tables. The tool refuses to write any of these. They are
+# listed so reviewers can confirm the sync will never touch them.
+# -----------------------------------------------------------------------------
+excluded:
+  - table: dunnage_custom_fields
+    reason: >-
+      User-defined UDC slot definitions keyed by dunnage_types.id. Treated as
+      per-database tenant data, not test-controlled seed.
+  - table: dunnage_custom_field_choices
+    reason: >-
+      Child of dunnage_custom_fields.ID (identity). No stable cross-database
+      business key unless its parent is also synced; enable only with an fk_map.
+  - table: dunnage_history
+    reason: Transactional dunnage history; never rewritten by a seed sync.
+  - table: dunnage_label_data
+    reason: Transactional label data.
+  - table: dunnage_non_po_part_defaults
+    reason: Per-part defaults maintained by the app/operator in each database.
+  - table: auth_departments
+    reason: Security/tenant reference data owned by core.
+  - table: auth_users
+    reason: User accounts are core-owned and must never be synced from test.
+  - table: auth_workstation_config
+    reason: Workstation-specific configuration owned by core.
+  - table: receiving_history
+    reason: Transactional receiving history.
+  - table: receiving_label_data
+    reason: Transactional receiving label data.
+  - table: receiving_package_type_mapping
+    reason: App-managed mapping reference.
+  - table: receiving_package_types
+    reason: App-managed package types.
+  - table: receiving_quality_holds
+    reason: Operational hold records owned by core.
+  - table: receiving_non_po_entries
+    reason: User-saved receiving reasons owned per database.
+  - table: receiving_non_po_part_defaults
+    reason: Per-part receiving defaults owned per database.
+  - table: receiving_vendor_variables
+    reason: Vendor-scoped configuration owned by core.
+  - table: receiving_scanner_session
+    reason: Scanner session records (transactional/operational).
+  - table: receiving_scanner_item
+    reason: Scanner item records (transactional/operational).
+  - table: receiving_scanner_profile
+    reason: Scanner profile settings owned by core.
+  - table: settings_roles
+    reason: Role definitions owned by core.
+  - table: settings_user_roles
+    reason: User-role assignments owned by core.
+  - table: settings_activity
+    reason: Activity/audit log owned by core.
+  - table: settings_personal
+    reason: Per-user personal settings.
+  - table: settings_personal_activity_log
+    reason: Personal activity/audit log.
+  - table: settings_universal
+    reason: Universal app settings owned by core.
+  - table: settings_dunnage_personal
+    reason: Per-user dunnage settings.
+  - table: settings_module_volvo
+    reason: Module-scoped settings owned by core.
+  - table: settings_volvo_recipents
+    reason: Volvo email recipients owned by core.
+  - table: settings_reporting_recipients
+    reason: Reporting recipients owned by core.
+  - table: settings_weldedcoils
+    reason: Welded-coils tool settings owned by core.
+  - table: software_version
+    reason: Prod-owned deployment version; test increments are not promoted.
+  - table: volvo_label_data
+    reason: Transactional Volvo label data.
+  - table: volvo_label_history
+    reason: Transactional Volvo label history.
+  - table: volvo_line_data
+    reason: Transactional Volvo line data.
+  - table: volvo_line_history
+    reason: Transactional Volvo line history.
+  - table: volvo_masterdata
+    reason: Volvo master data owned by core.
+  - table: volvo_part_components
+    reason: Volvo BOM reference owned by core.
+  - table: volvo_generated_label_data
+    reason: Generated label data (transactional).
+  - table: volvo_generated_label_history
+    reason: Generated label history (transactional).
+  - table: outside_service_request
+    reason: Operational outside-service requests owned by core.
+  - table: outside_service_request_line
+    reason: Operational outside-service request lines owned by core.
+  - table: outside_service_request_package
+    reason: Operational outside-service request packages owned by core.
+  - table: reporting_scheduled_reports
+    reason: Reporting schedule configuration owned by core.

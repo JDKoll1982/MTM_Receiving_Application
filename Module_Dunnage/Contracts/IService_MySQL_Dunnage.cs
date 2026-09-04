@@ -48,6 +48,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         public Task<Model_Dao_Result<List<Model_DunnageQuantityType>>> GetQuantityTypesAsync();
         public Task<Model_Dao_Result> SaveQuantityTypeIfMissingAsync(string quantityType);
         public Task<Model_Dao_Result> DeletePartAsync(string partId);
+        public Task<Model_Dao_Result<string>> ChangePartTypeAsync(
+            Model_DunnagePart part,
+            int newTypeId,
+            IReadOnlyDictionary<string, string?> providedValues
+        );
         public Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
             string searchText,
             int? typeId = null
@@ -104,11 +109,17 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
         );
         public Task<Model_Dao_Result> DeleteInventoriedPartAsync(int id);
 
-        // ==================== Impact Analysis (3 methods) ====================
+        // ==================== Impact Analysis (5 methods) ====================
 
         public Task<Model_Dao_Result<int>> GetPartCountByTypeIdAsync(int typeId);
         public Task<Model_Dao_Result<int>> GetTransactionCountByPartIdAsync(string partId);
         public Task<Model_Dao_Result<int>> GetTransactionCountByTypeIdAsync(int typeId);
+        public Task<Model_Dao_Result<Model_DunnagePartDeleteImpact>> GetPartDeleteImpactAsync(
+            string partId
+        );
+        public Task<Model_Dao_Result<Model_DunnageTypeDeleteImpact>> GetTypeDeleteImpactAsync(
+            int typeId
+        );
 
         // Aliases for compatibility (spec 010-dunnage-complete)
         public Task<Model_Dao_Result<int>> GetPartCountByTypeAsync(int typeId) =>

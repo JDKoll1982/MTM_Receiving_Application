@@ -104,6 +104,73 @@ public sealed class Helper_Dunnage_PartSpecsTests
     }
 
     [Fact]
+    public void ResolveSpecDefault_ShouldUseFirstChoice_ForChoices()
+    {
+        Helper_Dunnage_PartSpecs
+            .ResolveSpecDefault("Choices", "user typed", new[] { "Tall", "Short" })
+            .Should()
+            .Be("Tall");
+    }
+
+    [Fact]
+    public void ResolveSpecDefault_ShouldDefaultFalse_ForBlankBoolean()
+    {
+        Helper_Dunnage_PartSpecs.ResolveSpecDefault("Boolean", "", null).Should().Be("false");
+        Helper_Dunnage_PartSpecs
+            .ResolveSpecDefault("Boolean", "true", null)
+            .Should()
+            .Be("true");
+    }
+
+    [Fact]
+    public void ResolveSpecDefault_ShouldDefaultZero_ForBlankNumber()
+    {
+        Helper_Dunnage_PartSpecs.ResolveSpecDefault("Number", "", null).Should().Be("0");
+        Helper_Dunnage_PartSpecs
+            .ResolveSpecDefault("Number", "12.5", null)
+            .Should()
+            .Be("12.5");
+    }
+
+    [Fact]
+    public void ResolveSpecDefault_ShouldReturnBlank_ForBlankText()
+    {
+        Helper_Dunnage_PartSpecs.ResolveSpecDefault("Text", "", null).Should().Be("");
+        Helper_Dunnage_PartSpecs
+            .ResolveSpecDefault("Text", "Corrugated", null)
+            .Should()
+            .Be("Corrugated");
+    }
+
+    [Fact]
+    public void CreateDefinition_ShouldMapDefaultValue_FromDialogRow()
+    {
+        var specItem = new Model_SpecItem
+        {
+            Name = "Material",
+            DataType = "Text",
+            DefaultValue = "Corrugated",
+        };
+
+        var field = Helper_Dunnage_PartSpecs.CreateDefinition(specItem, displayOrder: 2);
+
+        field.DefaultValue.Should().Be("Corrugated");
+    }
+
+    [Fact]
+    public void CreateSpecItem_ShouldMapDefaultValue_FromDefinition()
+    {
+        var field = new Model_CustomFieldDefinition
+        {
+            FieldName = "Material",
+            FieldType = "Text",
+            DefaultValue = "Corrugated",
+        };
+
+        Helper_Dunnage_PartSpecs.CreateSpecItem(field).DefaultValue.Should().Be("Corrugated");
+    }
+
+    [Fact]
     public void CreateSpecInput_ShouldMapDefinitionToInput_WithValue()
     {
         var field = new Model_CustomFieldDefinition

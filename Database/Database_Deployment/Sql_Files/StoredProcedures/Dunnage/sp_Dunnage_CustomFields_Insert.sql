@@ -98,6 +98,37 @@ BEGIN
         SET p_new_id = LAST_INSERT_ID();
         SET p_status = 1;
         SET p_error_msg = 'Custom field created successfully';
+
+        -- Backfill existing saved label-data and history rows for parts of this
+        -- type so a brand-new field's default value is applied wherever the slot
+        -- currently has no value. Rows that already carry an overridden value
+        -- are left untouched.
+        IF p_default_value IS NOT NULL AND TRIM(p_default_value) <> '' THEN
+            SET @new_default := p_default_value;
+            SET @type_id := p_dunnage_type_id;
+            SET @slot := p_display_order;
+
+            SET @sql := CONCAT(
+                'UPDATE dunnage_history h ',
+                'JOIN dunnage_parts p ON p.part_id = h.part_id ',
+                'SET h.udc', @slot, ' = ? ',
+                'WHERE p.type_id = ? AND (h.udc', @slot, ' IS NULL OR TRIM(h.udc', @slot, ') = '''')'
+            );
+            PREPARE stmt FROM @sql;
+            EXECUTE stmt USING @new_default, @type_id;
+            DEALLOCATE PREPARE stmt;
+
+            SET @sql := CONCAT(
+                'UPDATE dunnage_label_data d ',
+                'JOIN dunnage_parts p ON p.part_id = d.part_id ',
+                'SET d.udc', @slot, ' = ? ',
+                'WHERE p.type_id = ? AND (d.udc', @slot, ' IS NULL OR TRIM(d.udc', @slot, ') = '''')'
+            );
+            PREPARE stmt FROM @sql;
+            EXECUTE stmt USING @new_default, @type_id;
+            DEALLOCATE PREPARE stmt;
+        END IF;
+
         COMMIT;
     END IF;
     SET FOREIGN_KEY_CHECKS = v_old_foreign_key_checks;

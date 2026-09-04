@@ -1,0 +1,6 @@
+# Generated artifacts - never commit
+backups/
+reviews/
+__pycache__/
+*.pyc
+verify_run*.log

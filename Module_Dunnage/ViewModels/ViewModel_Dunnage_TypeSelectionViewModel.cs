@@ -387,7 +387,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                     var slot = 1;
                     foreach (var specItem in dialog.Specs)
                     {
-                        if (slot > 10)
+                        if (slot > Helper_Dunnage_PartSpecs.MaxUdcCount)
                         {
                             break;
                         }
@@ -397,16 +397,19 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                             newType.Id,
                             field
                         );
-                        if (fieldResult.IsSuccess && field.Id > 0)
+                        if (!fieldResult.IsSuccess)
                         {
-                            for (var index = 0; index < field.Choices.Count; index++)
-                            {
-                                await _dunnageService.InsertCustomFieldChoiceAsync(
-                                    field.Id,
-                                    field.Choices[index],
-                                    index + 1
-                                );
-                            }
+                            await _errorHandler.HandleDaoErrorAsync(
+                                fieldResult,
+                                nameof(QuickAddTypeAsync),
+                                true
+                            );
+                            return;
+                        }
+
+                        if (field.Id > 0)
+                        {
+                            await ReplaceFieldChoicesAsync(field.Id, field.Choices);
                         }
 
                         slot++;
@@ -460,12 +463,14 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 return;
             }
 
-            // Load existing custom fields
+            // Load existing custom fields and hydrate their choice lists so the
+            // edit dialog shows them and saving does not erase them.
             var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(type.Id);
             var existingFields =
                 fieldsResult.IsSuccess && fieldsResult.Data != null
                     ? fieldsResult.Data
                     : new List<Model_CustomFieldDefinition>();
+            await HydrateFieldChoicesAsync(existingFields);
 
             dialog.InitializeForEdit(
                 type.TypeName,
@@ -529,73 +534,17 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                     }
                 }
 
-                // Update custom fields (UDC slots)
-                var newSpecs = dialog.Specs;
-                var newFieldNames = newSpecs.Select(s => s.Name).ToList();
-                var removedFields = existingFields
-                    .Where(field =>
-                        !newFieldNames.Contains(
-                            field.FieldName,
-                            StringComparer.OrdinalIgnoreCase
-                        )
-                    )
-                    .ToList();
-
-                foreach (var removedField in removedFields)
+                // Persist custom fields (UDC slots). Errors surface to the user so
+                // the UI never reports success when a spec did not save.
+                var specsSaved = await PersistTypeSpecsAsync(
+                    type.Id,
+                    existingFields,
+                    dialog.Specs
+                );
+                if (!specsSaved)
                 {
-                    await _dunnageService.DeleteCustomFieldAsync(removedField.Id);
-                }
-
-                var slot = 1;
-                foreach (var specItem in newSpecs)
-                {
-                    if (slot > 10)
-                    {
-                        break;
-                    }
-
-                    var field = Helper_Dunnage_PartSpecs.CreateDefinition(specItem, slot);
-                    var existingField = existingFields.FirstOrDefault(field =>
-                        string.Equals(
-                            field.FieldName,
-                            specItem.Name,
-                            StringComparison.OrdinalIgnoreCase
-                        )
-                    );
-
-                    if (existingField is not null)
-                    {
-                        await _dunnageService.UpdateCustomFieldAsync(existingField.Id, field);
-                        await _dunnageService.DeleteCustomFieldChoicesAsync(existingField.Id);
-                        for (var index = 0; index < field.Choices.Count; index++)
-                        {
-                            await _dunnageService.InsertCustomFieldChoiceAsync(
-                                existingField.Id,
-                                field.Choices[index],
-                                index + 1
-                            );
-                        }
-                    }
-                    else
-                    {
-                        var fieldResult = await _dunnageService.InsertCustomFieldAsync(
-                            type.Id,
-                            field
-                        );
-                        if (fieldResult.IsSuccess && field.Id > 0)
-                        {
-                            for (var index = 0; index < field.Choices.Count; index++)
-                            {
-                                await _dunnageService.InsertCustomFieldChoiceAsync(
-                                    field.Id,
-                                    field.Choices[index],
-                                    index + 1
-                                );
-                            }
-                        }
-                    }
-
-                    slot++;
+                    await LoadTypesAsync();
+                    return;
                 }
 
                 _logger.LogInfo($"Successfully updated type: {type.TypeName}", "TypeSelection");
@@ -626,12 +575,19 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         {
             _logger.LogInfo($"Delete Type requested for {type.TypeName}", "TypeSelection");
 
+            // Fetch the rows this cascade delete will remove so the warning can
+            // show exact counts.
+            var impactResult = await _dunnageService.GetTypeDeleteImpactAsync(type.Id);
+            var impact =
+                impactResult.IsSuccess && impactResult.Data is not null
+                    ? impactResult.Data
+                    : new Model_DunnageTypeDeleteImpact();
+
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
                 Title = "Delete Dunnage Type",
-                Content =
-                    $"Are you sure you want to delete '{type.TypeName}'? This action cannot be undone.",
+                Content = BuildTypeDeleteWarning(type.TypeName, impact),
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
@@ -743,6 +699,182 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
         var changeSummary = string.Join(" and ", changedValues);
         return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {changeSummary}?";
+    }
+
+    /// <summary>
+    /// Loads the choice list for each Choices custom field so the edit dialog can
+    /// display and persist them (GetCustomFieldsByTypeAsync does not hydrate them).
+    /// </summary>
+    private async Task HydrateFieldChoicesAsync(List<Model_CustomFieldDefinition> fields)
+    {
+        foreach (var field in fields)
+        {
+            if (
+                string.Equals(field.FieldType, "Choices", StringComparison.OrdinalIgnoreCase)
+                is false
+                || field.Choices.Count > 0
+            )
+            {
+                continue;
+            }
+
+            var choicesResult = await _dunnageService.GetCustomFieldChoicesAsync(field.Id);
+            if (choicesResult.IsSuccess && choicesResult.Data is not null)
+            {
+                field.Choices = choicesResult.Data
+                    .OrderBy(choice => choice.SortOrder)
+                    .Select(choice => choice.Choice)
+                    .ToList();
+            }
+        }
+    }
+
+    /// <summary>Replaces the choice rows for a custom field (delete + reinsert).</summary>
+    private async Task ReplaceFieldChoicesAsync(int fieldId, List<string> choices)
+    {
+        await _dunnageService.DeleteCustomFieldChoicesAsync(fieldId);
+        for (var index = 0; index < choices.Count; index++)
+        {
+            await _dunnageService.InsertCustomFieldChoiceAsync(
+                fieldId,
+                choices[index],
+                index + 1
+            );
+        }
+    }
+
+    /// <summary>
+    /// Persists the dialog's spec list for a type. Removed specs are deleted;
+    /// existing specs are updated in place; new specs are inserted into the next
+    /// free UDC slot. Any failure is surfaced and returns false so the caller does
+    /// not report a save that did not happen.
+    /// </summary>
+    private async Task<bool> PersistTypeSpecsAsync(
+        int typeId,
+        List<Model_CustomFieldDefinition> existingFields,
+        IReadOnlyList<Model_SpecItem> specs
+    )
+    {
+        var newFieldNames = specs.Select(spec => spec.Name).ToList();
+
+        var removedFields = existingFields
+            .Where(field =>
+                !newFieldNames.Contains(field.FieldName, StringComparer.OrdinalIgnoreCase)
+            )
+            .ToList();
+
+        foreach (var removedField in removedFields)
+        {
+            var deleteResult = await _dunnageService.DeleteCustomFieldAsync(removedField.Id);
+            if (!deleteResult.IsSuccess)
+            {
+                await _errorHandler.HandleDaoErrorAsync(
+                    deleteResult,
+                    nameof(PersistTypeSpecsAsync),
+                    true
+                );
+                return false;
+            }
+        }
+
+        var slot = 1;
+        foreach (var spec in specs)
+        {
+            if (slot > Helper_Dunnage_PartSpecs.MaxUdcCount)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    $"A type can have at most {Helper_Dunnage_PartSpecs.MaxUdcCount} specification fields.",
+                    Enum_ErrorSeverity.Error,
+                    null,
+                    true
+                );
+                return false;
+            }
+
+            var field = Helper_Dunnage_PartSpecs.CreateDefinition(spec, slot);
+            var existingField = existingFields.FirstOrDefault(field =>
+                string.Equals(field.FieldName, spec.Name, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (existingField is not null)
+            {
+                var updateResult = await _dunnageService.UpdateCustomFieldAsync(
+                    existingField.Id,
+                    field
+                );
+                if (!updateResult.IsSuccess)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(
+                        updateResult,
+                        nameof(PersistTypeSpecsAsync),
+                        true
+                    );
+                    return false;
+                }
+
+                await ReplaceFieldChoicesAsync(existingField.Id, field.Choices);
+            }
+            else
+            {
+                var insertResult = await _dunnageService.InsertCustomFieldAsync(typeId, field);
+                if (!insertResult.IsSuccess || field.Id <= 0)
+                {
+                    await _errorHandler.HandleDaoErrorAsync(
+                        insertResult,
+                        nameof(PersistTypeSpecsAsync),
+                        true
+                    );
+                    return false;
+                }
+
+                await ReplaceFieldChoicesAsync(field.Id, field.Choices);
+            }
+
+            slot++;
+        }
+
+        return true;
+    }
+
+    /// <summary>Builds the delete-confirmation warning with affected row counts.</summary>
+    internal static string BuildTypeDeleteWarning(
+        string typeName,
+        Model_DunnageTypeDeleteImpact impact
+    )
+    {
+        var parts = new List<string>();
+        if (impact.PartsCount > 0)
+        {
+            parts.Add(
+                impact.PartsCount == 1
+                    ? "1 part"
+                    : $"{impact.PartsCount} parts"
+            );
+        }
+
+        if (impact.LabelDataCount > 0)
+        {
+            parts.Add(
+                impact.LabelDataCount == 1
+                    ? "1 current label data entry"
+                    : $"{impact.LabelDataCount} current label data entries"
+            );
+        }
+
+        if (impact.HistoryCount > 0)
+        {
+            parts.Add(
+                impact.HistoryCount == 1
+                    ? "1 history entry"
+                    : $"{impact.HistoryCount} history entries"
+            );
+        }
+
+        var impactSummary = parts.Count == 0
+            ? "No parts, label data, or history entries reference this type."
+            : $"This will also permanently delete its {string.Join(", ", parts)}.";
+
+        return $"Are you sure you want to delete '{typeName}'? This action cannot be undone.\n\n{impactSummary}\n\nAll existing label data and history entries that contain this dunnage type or its parts will be removed as well.";
     }
 
     private void UpdatePaginationProperties()

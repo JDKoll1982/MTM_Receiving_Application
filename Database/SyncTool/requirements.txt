@@ -1,0 +1,4 @@
+# Runtime dependencies for the test -> core reference-data sync CLI.
+# Install into the repo virtualenv:  pip install -r requirements.txt
+pymysql>=1.0.2
+PyYAML>=5.4

@@ -348,15 +348,16 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             return candidate;
         }
 
-        if (candidate is null || choices.Count == 0)
+        if (choices.Count == 0)
         {
             return candidate;
         }
 
-        var candidateText = candidate.ToString()?.Trim();
+        var candidateText = candidate?.ToString()?.Trim();
         if (string.IsNullOrWhiteSpace(candidateText))
         {
-            return null;
+            // A Choices spec uses its first choice as the default value.
+            return choices.FirstOrDefault();
         }
 
         var matchedChoice = choices.FirstOrDefault(choice =>

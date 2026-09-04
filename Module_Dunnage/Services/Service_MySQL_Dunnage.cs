@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Data;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MySql.Data.MySqlClient;
 
@@ -296,29 +297,23 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     $"Attempting to delete dunnage type ID {typeId} by user: {CurrentUser}"
                 );
 
-                // Check if any parts are using this type
-                var partsResult = await _daoDunnagePart.GetByTypeAsync(typeId);
-                if (partsResult.IsSuccess && partsResult.Data?.Count > 0)
-                {
-                    var partCount = partsResult.Data.Count;
-                    var usageText =
-                        partCount == 1
-                            ? "1 part still uses it."
-                            : $"{partCount} parts still use it.";
-                    var followUpText =
-                        partCount == 1
-                            ? "Reassign or delete that part first."
-                            : "Reassign or delete those parts first.";
+                var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
 
-                    await _logger.LogWarningAsync(
-                        $"Cannot delete dunnage type ID {typeId}: Used by {partCount} parts"
-                    );
-                    return Model_Dao_Result_Factory.Failure(
-                        $"This type can't be deleted because {usageText} {followUpText}"
-                    );
+                // Clean up part image files too. sp_Dunnage_Types_Delete removes the
+                // parts and every label-data / history / inventory row that
+                // references the type or its parts.
+                var partsResult = await _daoDunnagePart.GetByTypeAsync(typeId);
+                if (partsResult.IsSuccess && partsResult.Data is not null)
+                {
+                    foreach (var part in partsResult.Data)
+                    {
+                        if (!string.IsNullOrWhiteSpace(part.ImagePath))
+                        {
+                            await _imageStorage.DeleteImageAsync(part.ImagePath);
+                        }
+                    }
                 }
 
-                var existingTypeResult = await _daoDunnageType.GetByIdAsync(typeId);
                 var result = await _daoDunnageType.DeleteAsync(typeId, CurrentUser);
                 if (result.IsSuccess)
                 {
@@ -786,6 +781,274 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             }
         }
 
+        /// <summary>
+        /// Re-associates a part with a new dunnage type. Source spec fields that the
+        /// target type does not define are added to the target type (as optional) so
+        /// the part keeps its specs; values map by field name into the new type's
+        /// slots. Required target fields without a mapped value must be supplied via
+        /// <paramref name="providedValues"/> or a default, otherwise the transfer is
+        /// rejected. Also rewrites the type snapshot and udc layout on the part's
+        /// label-data and history rows.
+        /// </summary>
+        public async Task<Model_Dao_Result<string>> ChangePartTypeAsync(
+            Model_DunnagePart part,
+            int newTypeId,
+            IReadOnlyDictionary<string, string?> providedValues
+        )
+        {
+            try
+            {
+                if (part is null)
+                {
+                    return Model_Dao_Result_Factory.Failure<string>(
+                        "No part was selected to change type."
+                    );
+                }
+
+                if (part.TypeId == newTypeId)
+                {
+                    return Model_Dao_Result_Factory.Failure<string>(
+                        "The part already belongs to that dunnage type."
+                    );
+                }
+
+                var targetTypeResult = await _daoDunnageType.GetByIdAsync(newTypeId);
+                if (!targetTypeResult.IsSuccess || targetTypeResult.Data is null)
+                {
+                    return Model_Dao_Result_Factory.Failure<string>(
+                        targetTypeResult.ErrorMessage ?? "Target dunnage type not found."
+                    );
+                }
+
+                var targetType = targetTypeResult.Data;
+
+                var sourceFieldsResult = await _daoCustomField.GetByTypeAsync(part.TypeId);
+                var targetFieldsResult = await _daoCustomField.GetByTypeAsync(newTypeId);
+                if (!sourceFieldsResult.IsSuccess || !targetFieldsResult.IsSuccess)
+                {
+                    return Model_Dao_Result_Factory.Failure<string>(
+                        "Unable to load the type specifications."
+                    );
+                }
+
+                var sourceFields =
+                    (sourceFieldsResult.Data ?? new List<Model_CustomFieldDefinition>())
+                        .OrderBy(field => field.DisplayOrder)
+                        .ToList();
+                var targetFields =
+                    (targetFieldsResult.Data ?? new List<Model_CustomFieldDefinition>())
+                        .OrderBy(field => field.DisplayOrder)
+                        .ToList();
+
+                await HydrateCustomFieldChoicesAsync(sourceFields);
+                await HydrateCustomFieldChoicesAsync(targetFields);
+
+                var sourceValues = Helper_Dunnage_PartSpecs.ExtractUdc(part);
+                var targetNames = new HashSet<string>(
+                    targetFields.Select(field => field.FieldName),
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+                // Source spec fields the target type does not already define.
+                var missingSourceFields = sourceFields
+                    .Where(field => targetNames.Contains(field.FieldName) is false)
+                    .ToList();
+
+                var usedSlots = new HashSet<int>(
+                    targetFields
+                        .Where(field => field.DisplayOrder is >= 1 and <= 10)
+                        .Select(field => field.DisplayOrder)
+                );
+                var freeSlots = Enumerable
+                    .Range(1, Helper_Dunnage_PartSpecs.MaxUdcCount)
+                    .Where(slot => usedSlots.Contains(slot) is false)
+                    .ToList();
+
+                if (missingSourceFields.Count > freeSlots.Count)
+                {
+                    return Model_Dao_Result_Factory.Failure<string>(
+                        $"'{targetType.TypeName}' has no open spec slots for the {missingSourceFields.Count} spec field(s) this part uses. The part can't be transferred."
+                    );
+                }
+
+                // Add missing source fields to the target type as OPTIONAL so existing
+                // parts of the target type are not invalidated by a new requirement.
+                var addedFields = new List<Model_CustomFieldDefinition>();
+                for (var index = 0; index < missingSourceFields.Count; index++)
+                {
+                    var sourceField = missingSourceFields[index];
+                    var copy = new Model_CustomFieldDefinition
+                    {
+                        DunnageTypeId = newTypeId,
+                        FieldName = sourceField.FieldName,
+                        FieldType = sourceField.FieldType,
+                        DisplayOrder = freeSlots[index],
+                        IsRequired = false,
+                        Unit = sourceField.Unit,
+                        MinValue = sourceField.MinValue,
+                        MaxValue = sourceField.MaxValue,
+                        DefaultValue = sourceField.DefaultValue,
+                        ValidationRules = sourceField.ValidationRules,
+                        Choices = sourceField.Choices?.ToList() ?? new List<string>(),
+                    };
+
+                    var insertResult = await _daoCustomField.InsertAsync(
+                        newTypeId,
+                        copy,
+                        CurrentUser
+                    );
+                    if (!insertResult.IsSuccess)
+                    {
+                        return Model_Dao_Result_Factory.Failure<string>(
+                            insertResult.ErrorMessage
+                                ?? "Failed to add a spec field to the target type."
+                        );
+                    }
+
+                    copy.Id = insertResult.Data;
+                    await InsertFieldChoicesAsync(copy.Id, copy.Choices);
+                    addedFields.Add(copy);
+                }
+
+                var finalTargetFields = targetFields.Concat(addedFields).ToList();
+
+                // Map the part's existing values by field NAME into the new type's slots.
+                var finalValues = new string?[Helper_Dunnage_PartSpecs.MaxUdcCount];
+                foreach (var sourceField in sourceFields)
+                {
+                    var value = Helper_Dunnage_PartSpecs.GetValueForSlot(
+                        sourceValues,
+                        sourceField.DisplayOrder
+                    );
+                    var match = finalTargetFields.FirstOrDefault(field =>
+                        string.Equals(
+                            field.FieldName,
+                            sourceField.FieldName,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+                    if (match is not null && string.IsNullOrWhiteSpace(value) is false)
+                    {
+                        finalValues[match.DisplayOrder - 1] = value;
+                    }
+                }
+
+                // Required target fields without a mapped value: user-provided or default.
+                foreach (var targetField in finalTargetFields.OrderBy(field => field.DisplayOrder))
+                {
+                    var slotIndex = targetField.DisplayOrder - 1;
+                    if (string.IsNullOrWhiteSpace(finalValues[slotIndex]) is false)
+                    {
+                        continue;
+                    }
+
+                    var provided = providedValues.TryGetValue(
+                        targetField.FieldName,
+                        out var rawValue
+                    )
+                        ? rawValue?.Trim()
+                        : null;
+                    if (string.IsNullOrWhiteSpace(provided) is false)
+                    {
+                        finalValues[slotIndex] = provided;
+                    }
+                    else if (targetField.IsRequired)
+                    {
+                        if (string.IsNullOrWhiteSpace(targetField.DefaultValue) is false)
+                        {
+                            finalValues[slotIndex] = targetField.DefaultValue.Trim();
+                        }
+                        else
+                        {
+                            return Model_Dao_Result_Factory.Failure<string>(
+                                $"Required field '{targetField.FieldName}' needs a value before the part can be transferred."
+                            );
+                        }
+                    }
+                    else if (string.IsNullOrWhiteSpace(targetField.DefaultValue) is false)
+                    {
+                        finalValues[slotIndex] = targetField.DefaultValue.Trim();
+                    }
+                }
+
+                var changeResult = await _daoDunnagePart.ChangeTypeAsync(
+                    part.PartId,
+                    newTypeId,
+                    finalValues[0],
+                    finalValues[1],
+                    finalValues[2],
+                    finalValues[3],
+                    finalValues[4],
+                    finalValues[5],
+                    finalValues[6],
+                    finalValues[7],
+                    finalValues[8],
+                    finalValues[9],
+                    CurrentUser
+                );
+
+                if (changeResult.IsSuccess)
+                {
+                    await _logger.LogInfoAsync(
+                        $"Changed dunnage part '{part.PartId}' to type '{targetType.TypeName}' (ID {newTypeId}) by user: {CurrentUser}"
+                    );
+                    return Model_Dao_Result_Factory.Success<string>(targetType.TypeName);
+                }
+
+                return Model_Dao_Result_Factory.Failure<string>(changeResult.ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(ChangePartTypeAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<string>(
+                    $"Error changing part type: {ex.Message}"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Loads the choice list for each Choices custom field (definitions returned by
+        /// GetByType do not hydrate them).
+        /// </summary>
+        private async Task HydrateCustomFieldChoicesAsync(
+            List<Model_CustomFieldDefinition> fields
+        )
+        {
+            foreach (var field in fields)
+            {
+                if (
+                    string.Equals(field.FieldType, "Choices", StringComparison.OrdinalIgnoreCase)
+                    is false
+                    || field.Choices.Count > 0
+                )
+                {
+                    continue;
+                }
+
+                var choicesResult = await _daoCustomField.GetChoicesByFieldAsync(field.Id);
+                if (choicesResult.IsSuccess && choicesResult.Data is not null)
+                {
+                    field.Choices = choicesResult.Data
+                        .OrderBy(choice => choice.SortOrder)
+                        .Select(choice => choice.Choice)
+                        .ToList();
+                }
+            }
+        }
+
+        private async Task InsertFieldChoicesAsync(int fieldId, List<string> choices)
+        {
+            for (var index = 0; index < choices.Count; index++)
+            {
+                await _daoCustomField.InsertChoiceAsync(fieldId, choices[index], index + 1);
+            }
+        }
+
         public async Task<Model_Dao_Result> DeletePartAsync(string partId)
         {
             try
@@ -798,18 +1061,9 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     );
                 }
 
-                var transactionCountResult = await _daoDunnagePart.CountTransactionsAsync(partId);
-                if (transactionCountResult.IsSuccess && transactionCountResult.Data > 0)
-                {
-                    await _logger.LogWarningAsync(
-                        $"Cannot delete dunnage part '{partId}': used by {transactionCountResult.Data} history record(s)"
-                    );
-
-                    return Model_Dao_Result_Factory.Failure(
-                        BuildDeletePartBlockedMessage(partId, transactionCountResult.Data)
-                    );
-                }
-
+                // sp_Dunnage_Parts_Delete cascades the part's label-data queue rows,
+                // archived history rows, inventory rows, and non-PO defaults before
+                // deleting the part itself.
                 var deleteResult = await _daoDunnagePart.DeleteAsync(existingPartResult.Data.Id);
                 if (deleteResult.IsSuccess)
                 {
@@ -817,16 +1071,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 }
 
                 return deleteResult;
-            }
-            catch (MySqlException ex) when (IsPartDeleteConstraintFailure(ex))
-            {
-                await _logger.LogWarningAsync(
-                    $"DeletePartAsync blocked by foreign key constraint for part '{partId}': {ex.Message}"
-                );
-
-                return Model_Dao_Result_Factory.Failure(
-                    BuildDeletePartBlockedMessage(partId, null)
-                );
             }
             catch (Exception ex)
             {
@@ -838,30 +1082,6 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure($"Error deleting part: {ex.Message}");
             }
-        }
-
-        private static bool IsPartDeleteConstraintFailure(MySqlException ex)
-        {
-            return ex.Message.Contains(
-                    "FK_dunnage_history_part_id",
-                    StringComparison.OrdinalIgnoreCase
-                )
-                || ex.Message.Contains(
-                    "Cannot delete or update a parent row",
-                    StringComparison.OrdinalIgnoreCase
-                );
-        }
-
-        private static string BuildDeletePartBlockedMessage(string partId, int? historyRecordCount)
-        {
-            var countText = historyRecordCount switch
-            {
-                1 => "1 Dunnage history record",
-                > 1 => $"{historyRecordCount.Value} Dunnage history records",
-                _ => "existing Dunnage history",
-            };
-
-            return $"Part '{partId}' can't be deleted because it is referenced by {countText}. Remove or reassign those history records first.";
         }
 
         public async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchPartsAsync(
@@ -1623,6 +1843,48 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 );
                 return Model_Dao_Result_Factory.Failure<int>(
                     $"Error counting transactions: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result<Model_DunnagePartDeleteImpact>>
+            GetPartDeleteImpactAsync(string partId)
+        {
+            try
+            {
+                return await _daoDunnagePart.GetDeleteImpactAsync(partId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Warning,
+                    nameof(GetPartDeleteImpactAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<Model_DunnagePartDeleteImpact>(
+                    $"Error loading part delete impact: {ex.Message}"
+                );
+            }
+        }
+
+        public async Task<Model_Dao_Result<Model_DunnageTypeDeleteImpact>>
+            GetTypeDeleteImpactAsync(int typeId)
+        {
+            try
+            {
+                return await _daoDunnageType.GetDeleteImpactAsync(typeId);
+            }
+            catch (Exception ex)
+            {
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Warning,
+                    nameof(GetTypeDeleteImpactAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<Model_DunnageTypeDeleteImpact>(
+                    $"Error loading type delete impact: {ex.Message}"
                 );
             }
         }
