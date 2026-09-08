@@ -1,6 +1,6 @@
 -- Stored Procedure: sp_Auth_User_UpdateDefaultDunnageMode
 -- Purpose: Update user's default dunnage workflow mode preference
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_UpdateDefaultDunnageMode`;
 

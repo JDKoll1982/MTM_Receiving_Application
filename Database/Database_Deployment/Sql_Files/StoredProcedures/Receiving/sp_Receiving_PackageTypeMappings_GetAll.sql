@@ -13,7 +13,7 @@ BEGIN
         created_at,
         updated_at,
         created_by
-    FROM mtm_receiving_application_test.receiving_package_type_mapping
+    FROM mtm_receiving_application.receiving_package_type_mapping
     WHERE (is_active = TRUE) OR (p_includeInactive = TRUE)
     ORDER BY display_order, part_prefix;
 END $$

@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_volvo_shipment_insert
 -- =====================================================
 -- Purpose: Insert new shipment header and auto-generate shipment_number
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

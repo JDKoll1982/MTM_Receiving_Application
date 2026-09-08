@@ -3,7 +3,7 @@
 -- cleans up existing Draft data. Run AFTER the scanner schema/SP files so the retained
 -- tables and procedures exist; the statements below are all idempotent.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 -- 1) Drop legacy run-snapshot tables (only used by the removed "Save For Later" feature).
 DROP TABLE IF EXISTS receiving_scanner_run_item;

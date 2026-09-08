@@ -1,11 +1,11 @@
 -- =====================================================
 -- Migration: 05_Migration_volvo_po_status_and_complete_history
 -- Purpose: Add po_status to Volvo active/history lines and align completion with immediate archive-to-history behavior.
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- Target: MySQL 5.7
 -- =====================================================
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 SET @line_po_status_exists = (
     SELECT COUNT(*)

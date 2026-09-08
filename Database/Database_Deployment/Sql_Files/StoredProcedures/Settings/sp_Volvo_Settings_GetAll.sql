@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Settings_GetAll
 -- =====================================================
 -- Purpose: Get all Volvo settings, optionally filtered by category
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

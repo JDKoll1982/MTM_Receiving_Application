@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Settings_Reset
 -- =====================================================
 -- Purpose: Reset a setting to its default value
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

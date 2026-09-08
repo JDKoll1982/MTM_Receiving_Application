@@ -7,7 +7,7 @@
 --   - Intended for controlled data seeding (not the interactive CreateNewUser flow).
 -- ============================================================================
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_Upsert`;
 

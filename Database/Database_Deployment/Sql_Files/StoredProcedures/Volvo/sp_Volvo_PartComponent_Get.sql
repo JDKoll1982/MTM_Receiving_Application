@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartComponent_Get
 -- =====================================================
 -- Purpose: Get components for a parent part
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

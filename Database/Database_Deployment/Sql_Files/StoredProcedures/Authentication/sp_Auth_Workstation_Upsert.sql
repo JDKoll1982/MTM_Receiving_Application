@@ -6,7 +6,7 @@
 --  - Validates workstation_type to allowed enum values
 -- ============================================================================
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_Workstation_Upsert`;
 

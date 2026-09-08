@@ -1,4 +1,4 @@
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 -- Direct aggregate for 'MMC' parts (no prepared statements)
 SET @part_filter = '%MMC%';

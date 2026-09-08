@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_volvo_shipment_complete
 -- =====================================================
 -- Purpose: Complete a shipment and move its active rows to history
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

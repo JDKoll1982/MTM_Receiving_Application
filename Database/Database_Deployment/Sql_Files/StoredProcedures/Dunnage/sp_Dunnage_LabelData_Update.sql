@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Dunnage_LabelData_Update
 -- Description: Updates one row in dunnage_label_data (active print queue)
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_Update`;
 

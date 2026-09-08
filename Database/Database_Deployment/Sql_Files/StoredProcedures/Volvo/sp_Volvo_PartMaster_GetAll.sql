@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartMaster_GetAll
 -- =====================================================
 -- Purpose: Get all active Volvo parts for dropdown
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartMaster_Insert
 -- =====================================================
 -- Purpose: Insert a new Volvo part
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

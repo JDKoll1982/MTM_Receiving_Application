@@ -1,4 +1,4 @@
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 CREATE OR REPLACE VIEW view_receiving_scanner_active_sessions AS
 SELECT

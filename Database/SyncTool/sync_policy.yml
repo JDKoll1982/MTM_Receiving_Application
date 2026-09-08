@@ -21,7 +21,7 @@
 
 database_defaults:
   core_db: mtm_receiving_application
-  test_db: mtm_receiving_application_test
+  test_db: mtm_receiving_application
   # Disposable verification copy used by make-copy / verify-copy.
   backup_db: mtm_receiving_application_backup_test
   # Full snapshot of the live core database taken automatically before every

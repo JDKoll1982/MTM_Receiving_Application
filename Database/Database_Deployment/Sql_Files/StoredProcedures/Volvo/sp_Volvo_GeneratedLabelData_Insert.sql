@@ -1,4 +1,4 @@
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Volvo_GeneratedLabelData_Insert`;
 

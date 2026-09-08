@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerProfile_Delete
 -- Description: Deletes one scanner profile for a user.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerProfile_Delete`;
 

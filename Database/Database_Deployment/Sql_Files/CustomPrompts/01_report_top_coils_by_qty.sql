@@ -5,7 +5,7 @@
 -- -----------------------------
 -- Configurable variables
 -- -----------------------------
-SET @db_name = 'mtm_receiving_application_test';
+SET @db_name = 'mtm_receiving_application';
 -- Using `receiving_history` schema (see Schemas/10_Table_receiving_history.sql)
 SET @receiver_table = 'receiving_history';
 SET @part_id_col = 'part_id';                 -- varchar(50) in receiving_history

@@ -8,7 +8,7 @@ CREATE PROCEDURE sp_receiving_vendor_variables_update(
 BEGIN
     DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
-	UPDATE mtm_receiving_application_test.receiving_vendor_variables
+	UPDATE mtm_receiving_application.receiving_vendor_variables
 	SET
 		variable_name = p_variable_name,
 		updated_at = CURRENT_TIMESTAMP

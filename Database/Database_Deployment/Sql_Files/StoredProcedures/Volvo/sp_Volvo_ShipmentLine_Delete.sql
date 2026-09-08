@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentLine_Delete
 -- =====================================================
 -- Purpose: Delete a shipment line
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

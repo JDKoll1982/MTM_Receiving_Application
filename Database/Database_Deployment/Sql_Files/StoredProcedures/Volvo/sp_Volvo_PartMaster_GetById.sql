@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartMaster_GetById
 -- =====================================================
 -- Purpose: Get a specific part by part number
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

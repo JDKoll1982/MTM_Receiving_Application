@@ -6,7 +6,7 @@
 --   p_StartDate - Start date for retrieval (DATE)
 --   p_EndDate   - End date for retrieval   (DATE)
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_Load_GetAll`;
 

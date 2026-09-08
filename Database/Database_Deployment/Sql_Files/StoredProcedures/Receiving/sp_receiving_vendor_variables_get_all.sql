@@ -9,7 +9,7 @@ BEGIN
 		created_at,
 		updated_at,
 		created_by
-	FROM mtm_receiving_application_test.receiving_vendor_variables
+	FROM mtm_receiving_application.receiving_vendor_variables
 	ORDER BY vendor_name;
 END $$
 

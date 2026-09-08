@@ -5,7 +5,7 @@
 -- -----------------------------
 -- Configurable variables
 -- -----------------------------
-SET @db_name = 'mtm_receiving_application_test';
+SET @db_name = 'mtm_receiving_application';
 SET @receiver_table = 'receiving_history';
 SET @part_id_col = 'part_id';
 SET @part_number_col = 'part_id';

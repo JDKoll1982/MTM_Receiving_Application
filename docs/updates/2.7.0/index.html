@@ -179,7 +179,7 @@
                             This release adds a new <code>is_reprint</code> column to the receiving label data
                             table and a new stored procedure. Your IT administrator or database manager needs to
                             run migration script <strong>09_Migration_receiving_reprint_flag.sql</strong> once
-                            against the <code>mtm_receiving_application_test</code> database before you use the
+                            against the <code>mtm_receiving_application</code> database before you use the
                             Reprint from History feature.
                         </p>
                     </details>
@@ -221,7 +221,7 @@
                     </div>
                     <p class="action-state warning">A database migration must be applied before using the Reprint from History feature.</p>
                     <ul class="action-list">
-                        <li>Ask your IT administrator or database manager to run <strong>09_Migration_receiving_reprint_flag.sql</strong> against the <code>mtm_receiving_application_test</code> database.</li>
+                        <li>Ask your IT administrator or database manager to run <strong>09_Migration_receiving_reprint_flag.sql</strong> against the <code>mtm_receiving_application</code> database.</li>
                         <li>Regular operators do not need to do anything themselves — just update the application and let IT know about the migration.</li>
                         <li>All other changes in this release (the Clear button fix and label shortcut redesign) work immediately after updating with no extra steps.</li>
                     </ul>

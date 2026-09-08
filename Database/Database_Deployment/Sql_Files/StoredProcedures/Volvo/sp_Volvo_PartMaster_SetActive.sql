@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_PartMaster_SetActive
 -- =====================================================
 -- Purpose: Activate or deactivate a Volvo part
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

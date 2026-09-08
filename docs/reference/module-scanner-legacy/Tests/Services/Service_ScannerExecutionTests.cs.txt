@@ -11,7 +11,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.Services;
 public sealed class Service_ScannerExecutionTests
 {
     private const string DummyConnectionString =
-        "Server=localhost;Database=mtm_receiving_application_test;Uid=root;Pwd=root;";
+        "Server=localhost;Database=mtm_receiving_application;Uid=root;Pwd=root;";
 
     [Fact]
     public async Task SendNextItemAsync_ShouldFail_WhenSessionIsNull()

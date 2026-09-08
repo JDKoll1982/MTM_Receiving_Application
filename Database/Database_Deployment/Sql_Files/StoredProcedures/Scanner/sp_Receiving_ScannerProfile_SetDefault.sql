@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerProfile_SetDefault
 -- Description: Marks one scanner profile as the user's default.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerProfile_SetDefault`;
 

@@ -238,7 +238,7 @@
                                 HorizontalAlignment="Left" />
                             <TextBlock
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="The sync source is always the test database (mtm_receiving_application_test)."
+                                Text="The sync source is always the test database (mtm_receiving_application)."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 

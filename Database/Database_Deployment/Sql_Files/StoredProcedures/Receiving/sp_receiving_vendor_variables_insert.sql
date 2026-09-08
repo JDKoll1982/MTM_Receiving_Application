@@ -8,7 +8,7 @@ CREATE PROCEDURE sp_receiving_vendor_variables_insert(
 BEGIN
     DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
     SET FOREIGN_KEY_CHECKS = 0;
-	INSERT INTO mtm_receiving_application_test.receiving_vendor_variables (
+	INSERT INTO mtm_receiving_application.receiving_vendor_variables (
 		vendor_name,
 		variable_name
 	)

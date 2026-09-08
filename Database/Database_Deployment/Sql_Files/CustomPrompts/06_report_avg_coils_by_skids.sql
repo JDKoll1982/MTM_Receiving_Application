@@ -10,7 +10,7 @@
 -- -----------------------------
 -- Filter  : '%mmc%'   → change in both LIKE clauses in the WHERE
 -- Limit   : 25        → change in the LIMIT clause
--- Database: mtm_receiving_application_test.receiving_history
+-- Database: mtm_receiving_application.receiving_history
 
 -- -----------------------------
 -- Report

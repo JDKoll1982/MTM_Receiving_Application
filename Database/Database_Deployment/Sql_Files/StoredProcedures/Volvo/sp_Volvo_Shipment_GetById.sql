@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Shipment_GetById
 -- =====================================================
 -- Purpose: Get a specific shipment by ID
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

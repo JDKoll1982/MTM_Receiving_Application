@@ -12,7 +12,7 @@
 --   Step 5 — dunnage_non_po_entries (reusable non-PO reference reasons)
 --   Note   — dunnage_quantity_types is seeded by schema file 40_Table_dunnage_quantity_types.sql
 -- =============================================
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 START TRANSACTION;
 

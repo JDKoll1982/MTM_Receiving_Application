@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_Settings_Upsert
 -- =====================================================
 -- Purpose: Insert or update a Volvo setting
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

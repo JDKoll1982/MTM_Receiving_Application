@@ -31,7 +31,7 @@ public sealed class Service_DatabaseTargetManager : IService_DatabaseTargetManag
             new(
                 "test",
                 "Test",
-                "mtm_receiving_application_test",
+                "mtm_receiving_application",
                 "The regular test database used for development."
             ),
             new(

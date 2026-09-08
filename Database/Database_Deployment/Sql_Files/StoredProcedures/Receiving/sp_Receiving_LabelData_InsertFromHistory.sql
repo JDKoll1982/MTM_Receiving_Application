@@ -5,7 +5,7 @@
 --              Uses the history row's load_guid as the new load_id so the UNIQUE
 --              constraint on receiving_label_data.load_id prevents double-queuing.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_InsertFromHistory`;
 

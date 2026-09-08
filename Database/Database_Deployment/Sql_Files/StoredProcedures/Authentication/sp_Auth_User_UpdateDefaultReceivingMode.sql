@@ -4,7 +4,7 @@
 --   @p_user_id: Employee number (PK)
 --   @p_default_mode: New default mode ("guided", "manual", "edit", or NULL)
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_UpdateDefaultReceivingMode`;
 

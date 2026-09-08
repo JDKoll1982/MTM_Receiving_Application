@@ -6,7 +6,7 @@
 --              PRIMARY KEY on dunnage_label_data.load_uuid plus the duplicate guard below
 --              prevent double-queuing.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_InsertFromHistory`;
 

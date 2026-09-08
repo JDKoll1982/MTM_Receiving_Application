@@ -4,7 +4,7 @@
 --              All rows moved in one call share the same archive_batch_id.
 -- Lifecycle: Clear Label Data -> Queue to History + Queue Delete
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_ClearToHistory`;
 

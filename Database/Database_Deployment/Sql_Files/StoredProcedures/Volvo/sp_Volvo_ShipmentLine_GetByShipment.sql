@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentLine_GetByShipment
 -- =====================================================
 -- Purpose: Get all lines for a specific shipment
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

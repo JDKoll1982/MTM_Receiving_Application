@@ -5,10 +5,10 @@
 --   Returns the number of auth_users rows that already use a Windows username,
 --   optionally excluding one employee_number during edit scenarios.
 --
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- ============================================================================
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_IsWindowsUsernameUnique`;
 

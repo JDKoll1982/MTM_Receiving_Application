@@ -2,7 +2,7 @@
 -- Description: Deletes one row from receiving_label_data using the persisted queue
 --              record ID when available, otherwise falls back to the workflow GUID.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_Delete`;
 

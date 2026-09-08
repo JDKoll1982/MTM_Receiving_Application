@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_volvo_shipment_delete
 -- =====================================================
 -- Purpose: Delete a shipment and all its lines (CASCADE)
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

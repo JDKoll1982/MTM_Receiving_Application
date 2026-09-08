@@ -1,7 +1,7 @@
 -- =============================================================================
 -- APP_01: Receiving app PO receipt summary (MySQL side of reconciliation)
 -- Server  : 172.16.1.104 (MySQL / MAMP)
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- Run in  : phpMyAdmin or MAMP mysql client
 -- Purpose : Summarises what the receiving app recorded per PO number and part
 --           for MMC coil parts. Run alongside VISUAL_02 in SSMS to compare

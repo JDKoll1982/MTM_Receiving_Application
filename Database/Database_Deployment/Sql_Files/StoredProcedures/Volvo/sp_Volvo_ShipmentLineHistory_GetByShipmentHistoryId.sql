@@ -2,7 +2,7 @@
 -- Stored Procedure: sp_Volvo_ShipmentLineHistory_GetByShipmentHistoryId
 -- =====================================================
 -- Purpose: Get archived Volvo shipment lines for a specific archived header
--- Database: mtm_receiving_application_test
+-- Database: mtm_receiving_application
 -- =====================================================
 
 DELIMITER $$

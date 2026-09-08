@@ -2,7 +2,7 @@
 -- Description: Adds or updates one ordered scanner item for a session, including the
 -- execution result fields so send results persist through the same procedure.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_Upsert`;
 

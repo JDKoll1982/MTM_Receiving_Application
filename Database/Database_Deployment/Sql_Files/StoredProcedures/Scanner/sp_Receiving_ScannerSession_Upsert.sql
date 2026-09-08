@@ -1,7 +1,7 @@
 -- Stored Procedure: sp_Receiving_ScannerSession_Upsert
 -- Description: Creates or updates a scanner current-list session header.
 
-USE mtm_receiving_application_test;
+USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerSession_Upsert`;
 
