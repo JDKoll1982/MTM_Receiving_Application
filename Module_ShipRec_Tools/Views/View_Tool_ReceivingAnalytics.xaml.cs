@@ -47,6 +47,32 @@ public sealed partial class View_Tool_ReceivingAnalytics : Page
         ViewModel.LoadCommand.Execute(null);
     }
 
+    // ------------------------------------------------------------------ date range flyout
+    /// <summary>Executes the command attached to a flyout button's Tag, then closes the flyout.</summary>
+    private void DateFilterActionButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (
+            sender is FrameworkElement { Tag: System.Windows.Input.ICommand command }
+            && command.CanExecute(null)
+        )
+        {
+            command.Execute(null);
+        }
+
+        DateRangeFlyout?.Hide();
+    }
+
+    /// <summary>Applies a quick date-type preset (the list varies by view mode) and closes the flyout.</summary>
+    private async void DateTypeActionButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: string dateType })
+        {
+            await ViewModel.ApplyDateTypeAsync(dateType);
+        }
+
+        DateRangeFlyout?.Hide();
+    }
+
     private static async Task<Model_Dao_Result<bool>> OpenExportDocumentAsync(
         Model_FormattedReportDocument document
     )

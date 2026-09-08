@@ -35,33 +35,76 @@
                 Text="Volvo Shipment History" />
         </StackPanel>
 
-        <!--  Filters  -->
-        <StackPanel
+        <!--  Filters (utility ribbon with in-card help)  -->
+        <Border
             Grid.Row="1"
-            Orientation="Horizontal"
-            Spacing="16">
-            <CalendarDatePicker
-                Width="200"
-                Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
-                Header="Start Date" />
+            Padding="12,6"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <CalendarDatePicker
-                Width="200"
-                Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
-                Header="End Date" />
+                <CalendarDatePicker
+                    Grid.Column="0"
+                    Width="200"
+                    Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+                    Header="Start Date" />
 
-            <ComboBox
-                Width="190"
-                Header="Status"
-                ItemsSource="{x:Bind ViewModel.StatusOptions}"
-                SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
+                <CalendarDatePicker
+                    Grid.Column="1"
+                    Width="200"
+                    Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
+                    Header="End Date" />
 
-            <Button
-                VerticalAlignment="Bottom"
-                Command="{x:Bind ViewModel.FilterCommand}"
-                Content="Filter"
-                Style="{StaticResource AccentButtonStyle}" />
-        </StackPanel>
+                <ComboBox
+                    Grid.Column="2"
+                    Width="190"
+                    Header="Status"
+                    ItemsSource="{x:Bind ViewModel.StatusOptions}"
+                    SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
+
+                <Button
+                    Grid.Column="4"
+                    VerticalAlignment="Bottom"
+                    Command="{x:Bind ViewModel.FilterCommand}"
+                    Content="Filter"
+                    Style="{StaticResource AccentButtonStyle}" />
+
+                <Rectangle
+                    Grid.Column="5"
+                    Width="1"
+                    Height="24"
+                    Margin="2,0"
+                    VerticalAlignment="Bottom"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <Button
+                    Grid.Column="6"
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Help"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Click="OnHelpClick"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="Help">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
+            </Grid>
+        </Border>
 
         <!--  DataGrid  -->
         <controls:DataGrid
@@ -144,22 +187,5 @@
                 </Button.KeyboardAccelerators>
             </Button>
         </StackPanel>
-
-        <Button
-            Width="36"
-            Height="36"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
     </Grid>
 </Page>

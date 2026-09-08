@@ -316,6 +316,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _activeDateFilter == DateFilterPreset.ShowAll
         );
 
+        /// <summary>Background for the date-range toolbar button, highlighted while a quick preset filter is active.</summary>
+        public Brush DateRangeButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter != DateFilterPreset.None
+        );
+
         // ------------------------------------------------------------------ event — tells the View to open the column-chooser dialog
         /// <summary>Raised when the user clicks the "Columns" toolbar button.</summary>
         public event EventHandler? ShowColumnChooserRequested;
@@ -1426,6 +1431,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
             OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
             OnPropertyChanged(nameof(ShowAllFilterButtonBackground));
+            OnPropertyChanged(nameof(DateRangeButtonBackground));
         }
 
         /// <summary>

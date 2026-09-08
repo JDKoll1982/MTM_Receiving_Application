@@ -61,6 +61,208 @@ public sealed partial class View_Scanner_Workbench : Page
         _ = LoadPaddingSettingsAsync();
     }
 
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Scanner.Main");
+    }
+
+    // ------------------------------------------------------------------ per-row actions
+    /// <summary>Opens the neat row-status explainer for the clicked status icon.</summary>
+    private async void StatusIconButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: Model_ScannerBatchItem item })
+        {
+            await ShowRowStatusDialogAsync(item);
+        }
+    }
+
+    /// <summary>Opens the add-lines flyout when the SplitButton is clicked.</summary>
+    private void AddLinesSplitButton_Click(
+        SplitButton sender,
+        SplitButtonClickEventArgs args
+    )
+    {
+        if (sender.Flyout is Flyout flyout && !flyout.IsOpen)
+        {
+            flyout.ShowAt(sender);
+        }
+    }
+
+    /// <summary>Reads the requested count and adds the additional lines for the row's part.</summary>
+    private async void AddLinesConfirmButton_Click(object sender, RoutedEventArgs e)
+    {
+        var element = sender as FrameworkElement;
+        if (element?.DataContext is not Model_ScannerBatchItem item)
+        {
+            return;
+        }
+
+        var count = 1;
+        if (element.Parent is StackPanel panel)
+        {
+            var numberBox = panel.Children.OfType<NumberBox>().FirstOrDefault();
+            if (numberBox?.Value is >= 1 and <= 100)
+            {
+                count = (int)numberBox.Value;
+            }
+        }
+
+        CloseOpenFlyout(element);
+        await ViewModel.AddDuplicateLinesAsync(item, count);
+    }
+
+    /// <summary>Closes the Flyout that hosts the given element (add-lines popup).</summary>
+    private static void CloseOpenFlyout(DependencyObject child)
+    {
+        var popup = FindAncestor<Microsoft.UI.Xaml.Controls.Primitives.Popup>(child);
+        if (popup is not null)
+        {
+            popup.IsOpen = false;
+        }
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? current)
+        where T : DependencyObject
+    {
+        while (current is not null)
+        {
+            if (current is T match)
+            {
+                return match;
+            }
+
+            current = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Shows a tidy modal that states what still needs to be done for the row, with an
+    /// accent/colour matched to the row's validation state.
+    /// </summary>
+    private async Task ShowRowStatusDialogAsync(Model_ScannerBatchItem item)
+    {
+        if (XamlRoot is null)
+        {
+            return;
+        }
+
+        var (title, detail, accentHex) = item.ValidationState switch
+        {
+            Enum_ScannerValidationState.Valid => (
+                "Ready to send",
+                "No action needed - this row is valid and can be sent.",
+                "#28A745"
+            ),
+            Enum_ScannerValidationState.Invalid => BuildFixMessage(item),
+            _ => (
+                "Not validated",
+                "Enter a destination (To) and quantity so the row can be validated.",
+                "#6C757D"
+            ),
+        };
+
+        var accent = new Microsoft.UI.Xaml.Media.SolidColorBrush(ParseHex(accentHex));
+
+        var statusLine = new TextBlock
+        {
+            Text = item.StatusText,
+            FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+            TextWrapping = TextWrapping.WrapWholeWords,
+            Margin = new Thickness(0, 12, 0, 0),
+        };
+
+        var headingRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        headingRow.Children.Add(
+            new FontIcon
+            {
+                Glyph = "\uE946",
+                FontSize = 20,
+                Foreground = accent,
+            }
+        );
+        headingRow.Children.Add(
+            new TextBlock
+            {
+                Text = title,
+                FontSize = 18,
+                FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center,
+            }
+        );
+
+        var content = new StackPanel { Spacing = 0, MinWidth = 320 };
+        content.Children.Add(headingRow);
+        content.Children.Add(statusLine);
+        content.Children.Add(
+            new TextBlock
+            {
+                Text = detail,
+                TextWrapping = TextWrapping.WrapWholeWords,
+                Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(
+                    Microsoft.UI.Colors.Gray
+                ),
+                Margin = new Thickness(28, 4, 0, 0),
+            }
+        );
+
+        var dialog = new ContentDialog
+        {
+            Title = "Line status",
+            Content = content,
+            CloseButtonText = "Close",
+            XamlRoot = XamlRoot,
+        };
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(dialog, XamlRoot);
+        await dialog.ShowAsync();
+    }
+
+    private static (string Title, string Detail, string AccentHex) BuildFixMessage(
+        Model_ScannerBatchItem item
+    )
+    {
+        var status = item.StatusText;
+        var (detail, accent) = status switch
+        {
+            _ when status.Contains("To location", StringComparison.OrdinalIgnoreCase) => (
+                "Enter a valid destination in the To column. The row re-validates once you move on.",
+                "#D90429"
+            ),
+            _ when status.Contains("From location", StringComparison.OrdinalIgnoreCase) => (
+                "Set the source (From) location for this part before sending.",
+                "#D90429"
+            ),
+            _ when status.Contains("Qty", StringComparison.OrdinalIgnoreCase) => (
+                "Set a valid quantity of 1 or more in the Qty column.",
+                "#D90429"
+            ),
+            _ => (
+                string.IsNullOrWhiteSpace(item.ValidationNotes)
+                    ? "Review the issue below and correct the row before sending."
+                    : item.ValidationNotes,
+                "#D90429"
+            ),
+        };
+        return ("Row needs attention", detail, accent);
+    }
+
+    private static Windows.UI.Color ParseHex(string hex)
+    {
+        if (hex.StartsWith("#") && hex.Length == 7)
+        {
+            return Windows.UI.Color.FromArgb(
+                255,
+                Convert.ToByte(hex.Substring(1, 2), 16),
+                Convert.ToByte(hex.Substring(3, 2), 16),
+                Convert.ToByte(hex.Substring(5, 2), 16)
+            );
+        }
+
+        return Microsoft.UI.Colors.Gray;
+    }
+
     /// <summary>
     /// Reads the Part Padding settings (Enabled + RulesJson) and feeds them into the shared
     /// part lookup control so prefix padding is applied before exact-match/fuzzy validation.

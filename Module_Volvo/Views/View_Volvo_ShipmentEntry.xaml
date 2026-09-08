@@ -40,18 +40,29 @@
                 Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}" />
         </StackPanel>
 
-        <Grid Grid.Row="1" ColumnSpacing="12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <Border
+            Grid.Row="1"
+            Padding="12,6"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Spacing="4">
-                <TextBlock Opacity="0.75" Text="Active Volvo lines are saved automatically." />
-            </StackPanel>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Opacity="0.75"
+                    Text="Active Volvo lines are saved automatically." />
 
             <Button
                 Grid.Column="1"
@@ -87,7 +98,32 @@
                     <TextBlock Text="View History" />
                 </StackPanel>
             </Button>
-        </Grid>
+
+            <Rectangle
+                Grid.Column="5"
+                Width="1"
+                Height="24"
+                Margin="2,0"
+                VerticalAlignment="Center"
+                Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+            <Button
+                Grid.Column="6"
+                Width="34"
+                Height="34"
+                Padding="0"
+                VerticalAlignment="Center"
+                AutomationProperties.Name="Help"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnHelpClick"
+                CornerRadius="4"
+                ToolTipService.ToolTip="Help">
+                <FontIcon FontSize="16" Glyph="&#xE946;" />
+            </Button>
+            </Grid>
+        </Border>
 
         <Grid Grid.Row="2">
             <TextBlock
@@ -361,22 +397,5 @@
                 </StackPanel>
             </Button>
         </Grid>
-
-        <Button
-            Width="36"
-            Height="36"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
     </Grid>
 </Page>

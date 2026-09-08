@@ -20,103 +20,152 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Button
+        <!--  Utility card (configuration + filters + help)  -->
+        <Border
             Grid.Row="0"
-            Canvas.ZIndex="100"
-            Width="34"
-            Height="34"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
+            Padding="16,12"
+            Margin="0,0,0,8"
             Background="{ThemeResource LayerFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
-
-        <!--  Book configuration  -->
-        <Border
-            Grid.Row="0"
-            Margin="0,0,0,12"
-            Padding="16"
-            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
             CornerRadius="8">
-            <StackPanel Spacing="10">
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox
-                        Grid.Column="0"
-                        Header="Book title"
-                        PlaceholderText="Dunnage Reference Book"
-                        Text="{x:Bind ViewModel.CoverTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <ToggleSwitch
-                        Grid.Column="1"
-                        Header="Cover page"
-                        IsOn="{x:Bind ViewModel.IncludeCoverPage, Mode=TwoWay}"
-                        OffContent="Off"
-                        OnContent="On" />
-                    <ToggleSwitch
-                        Grid.Column="2"
-                        Header="Table of contents"
-                        IsOn="{x:Bind ViewModel.IncludeTableOfContents, Mode=TwoWay}"
-                        OffContent="Off"
-                        OnContent="On" />
-                </Grid>
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="The book prints on 8.5 x 11 portrait pages with a running title and page numbers." />
-            </StackPanel>
-        </Border>
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Book title  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  divider  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Type filter  -->
+                    <ColumnDefinition Width="*" />
+                    <!--  Search  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Select all  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Clear all  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Book options  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Progress  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Help  -->
+                </Grid.ColumnDefinitions>
 
-        <!--  Filters and actions  -->
-        <Grid
-            Grid.Row="1"
-            Margin="0,0,0,12"
-            ColumnSpacing="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ComboBox
-                Grid.Column="0"
-                Width="220"
-                ItemsSource="{x:Bind ViewModel.TypeFilterOptions, Mode=OneWay}"
-                SelectedItem="{x:Bind ViewModel.SelectedTypeFilter, Mode=TwoWay}" />
-            <TextBox
-                x:Name="SearchBox"
-                Grid.Column="1"
-                PlaceholderText="Search part ID, type, home location, or custom fields"
-                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <Button
-                Grid.Column="2"
-                Command="{x:Bind ViewModel.SelectAllCommand}"
-                Content="Select all" />
-            <Button
-                Grid.Column="3"
-                Command="{x:Bind ViewModel.ClearAllCommand}"
-                Content="Clear all" />
-            <ProgressRing
-                Grid.Column="4"
-                Width="28"
-                Height="28"
-                VerticalAlignment="Center"
-                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
-        </Grid>
+                <!--  Book title  -->
+                <TextBox
+                    Grid.Column="0"
+                    Width="300"
+                    PlaceholderText="Book title"
+                    Text="{x:Bind ViewModel.CoverTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTipService.ToolTip="Book title (printed on the cover)" />
+
+                <Rectangle
+                    Grid.Column="1"
+                    Width="1"
+                    Height="24"
+                    Margin="2,0"
+                    VerticalAlignment="Center"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <!--  Type filter  -->
+                <ComboBox
+                    Grid.Column="2"
+                    MinWidth="180"
+                    VerticalAlignment="Center"
+                    ItemsSource="{x:Bind ViewModel.TypeFilterOptions, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedTypeFilter, Mode=TwoWay}" />
+
+                <!--  Search  -->
+                <TextBox
+                    x:Name="SearchBox"
+                    Grid.Column="3"
+                    MinWidth="180"
+                    VerticalAlignment="Center"
+                    PlaceholderText="Search part ID, type, home location, or custom fields"
+                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  Select all  -->
+                <Button
+                    Grid.Column="4"
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    Command="{x:Bind ViewModel.SelectAllCommand}"
+                    ToolTipService.ToolTip="Select all">
+                    <FontIcon FontSize="16" Glyph="&#xE8B3;" />
+                </Button>
+
+                <!--  Clear all  -->
+                <Button
+                    Grid.Column="5"
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    Command="{x:Bind ViewModel.ClearAllCommand}"
+                    ToolTipService.ToolTip="Clear all">
+                    <FontIcon FontSize="16" Glyph="&#xE711;" />
+                </Button>
+
+                <!--  Book options flyout (cover page + table of contents)  -->
+                <Button
+                    Grid.Column="6"
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    ToolTipService.ToolTip="Book options">
+                    <FontIcon FontSize="16" Glyph="&#xE713;" />
+                    <Button.Flyout>
+                        <Flyout Placement="Bottom">
+                            <StackPanel MinWidth="280" Padding="8" Spacing="10">
+                                <ToggleSwitch
+                                    Header="Cover page"
+                                    IsOn="{x:Bind ViewModel.IncludeCoverPage, Mode=TwoWay}"
+                                    OffContent="Off"
+                                    OnContent="On" />
+                                <ToggleSwitch
+                                    Header="Table of contents"
+                                    IsOn="{x:Bind ViewModel.IncludeTableOfContents, Mode=TwoWay}"
+                                    OffContent="Off"
+                                    OnContent="On" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="The book prints on 8.5 x 11 portrait pages with a running title and page numbers."
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+                <!--  Progress  -->
+                <ProgressRing
+                    Grid.Column="7"
+                    Width="22"
+                    Height="22"
+                    VerticalAlignment="Center"
+                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+
+                <!--  Help  -->
+                <Button
+                    Grid.Column="8"
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    AutomationProperties.Name="Help"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Click="OnHelpClick"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="Help">
+                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                </Button>
+            </Grid>
+        </Border>
 
         <!--  Grouped selection list  -->
         <ScrollViewer

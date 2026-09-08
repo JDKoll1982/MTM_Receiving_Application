@@ -396,6 +396,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Database Settings",
                 "Configure database connections and options."
             ),
+            "View_Settings_DatabaseConfig" => (
+                "Database Config",
+                "Choose the MySQL database the application connects to and run the reference-data sync tool."
+            ),
             "View_Settings_Logging" => (
                 "Logging Settings",
                 "Configure logging and diagnostic options."

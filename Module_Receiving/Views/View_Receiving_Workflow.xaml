@@ -62,6 +62,8 @@
                 x:Name="ManualEntryHost"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsManualEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Edit Mode View  -->
@@ -69,6 +71,8 @@
                 x:Name="EditModeHost"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Reconciliation Review View  -->
@@ -76,6 +80,8 @@
                 x:Name="ReconciliationReviewHost"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsReconciliationReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Guided Wizard Views  -->

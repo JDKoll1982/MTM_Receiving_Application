@@ -234,18 +234,43 @@ def cmd_execute(args) -> int:
 
     is_core = target_db == config.core_db
 
-    # Core requires a fresh automatic backup first.
-    backup_path: Optional[str] = None
+    # Core requires a fresh full snapshot into the live-backup schema first.
     if is_core:
-        backup_path = backup.dump_database(login, target_db,
-                                           str(Path(args.backup_dir) / backup.backup_filename(target_db)))
-        print(f"Automatic backup taken: {backup_path}")
+        protected = [config.core_db, config.test_db, config.backup_db]
+        backup.make_live_backup(
+            login,
+            config.core_db,
+            config.live_backup_db,
+            dump_dir=args.backup_dir,
+            protected=protected,
+        )
+        print(f"Live core database backed up to {config.live_backup_db}.")
         if not _require_confirm(
             args,
             f"This will write reference data into the LIVE core database {target_db}.",
         ):
-            print("Aborted by operator. No writes performed. Backup kept for reference.")
+            print(
+                "Aborted by operator. No writes performed. "
+                f"The backup copy {config.live_backup_db} is kept for reference."
+            )
             return 2
+
+    # The disposable copy must exist as the sync target. Bootstrap it fresh from
+    # core when it is missing (e.g., after drop-copy or a fresh machine) so the
+    # run never dies with "Unknown database '<copy>'" (error 1049).
+    if target_db == config.backup_db and not backup.database_exists(login, target_db):
+        print(
+            f"Disposable copy {target_db} does not exist; creating it from "
+            f"{config.core_db} first ..."
+        )
+        backup.make_disposable_copy(
+            login,
+            config.core_db,
+            config.backup_db,
+            args.backup_dir,
+            protected=[config.core_db, config.test_db],
+        )
+        print(f"Disposable copy {target_db} ready.")
 
     source_conn = connect(login, source_db)
     target_conn = connect(login, target_db)
@@ -272,12 +297,22 @@ def cmd_execute(args) -> int:
             print("Validation OK: a second run would change 0 rows.")
         return 0
     except Exception as exc:
-        # Transaction rolled back inside execute_plans. On core, restore from backup.
-        if is_core and backup_path:
+        # Transaction rolled back inside execute_plans. On core, roll back from the
+        # live-backup schema so the live database is restored to its pre-update state.
+        if is_core:
             print(f"\nERROR: {exc}")
-            print(f"Aborting and restoring core from backup: {backup_path}")
+            print(
+                f"Aborting and restoring core from live backup "
+                f"{config.live_backup_db} ..."
+            )
             try:
-                backup.restore_database(login, target_db, backup_path)
+                backup.restore_core_from_live_backup(
+                    login,
+                    config.core_db,
+                    config.live_backup_db,
+                    dump_dir=args.backup_dir,
+                    protected=[config.core_db, config.test_db, config.backup_db],
+                )
                 print("Restore complete.")
             except Exception as restore_exc:
                 print(f"RESTORE FAILED - manual intervention required: {restore_exc}")

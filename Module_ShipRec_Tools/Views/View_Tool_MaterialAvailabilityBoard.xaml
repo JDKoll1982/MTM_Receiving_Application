@@ -19,116 +19,135 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button
+        <!--  Utility card (edit-mode bar style)  -->
+        <Border
             Grid.Row="0"
-            Canvas.ZIndex="100"
-            Width="34"
-            Height="34"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
+            Padding="16,12"
+            Margin="0,0,0,8"
             Background="{ThemeResource LayerFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
-
-        <StackPanel
-            Grid.Row="0"
-            Margin="0,0,0,6"
-            Spacing="6">
-            <StackPanel
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Spacing="16">
-                <StackPanel Orientation="Horizontal" Spacing="0">
-                    <ToggleButton
-                        Command="{x:Bind ViewModel.SetSearchByLocationCommand}"
-                        Content="Warehouse Location"
-                        CornerRadius="4,0,0,4"
-                        IsChecked="{x:Bind ViewModel.IsSearchByLocation, Mode=OneWay}"
-                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-                    <ToggleButton
-                        Command="{x:Bind ViewModel.SetSearchByPartCommand}"
-                        Content="Part Number"
-                        CornerRadius="0,4,4,0"
-                        IsChecked="{x:Bind ViewModel.IsSearchByPart, Mode=OneWay}"
-                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-                </StackPanel>
-            </StackPanel>
-
-            <Grid HorizontalAlignment="Stretch" ColumnSpacing="6">
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                    Text="{x:Bind ViewModel.SearchLabel, Mode=OneWay}" />
-                <TextBox
-                    x:Name="SearchBox"
+
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <ToggleButton
+                                Command="{x:Bind ViewModel.SetSearchByLocationCommand}"
+                                Content="Warehouse Location"
+                                CornerRadius="4,0,0,4"
+                                IsChecked="{x:Bind ViewModel.IsSearchByLocation, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <ToggleButton
+                                Command="{x:Bind ViewModel.SetSearchByPartCommand}"
+                                Content="Part Number"
+                                CornerRadius="0,4,4,0"
+                                IsChecked="{x:Bind ViewModel.IsSearchByPart, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.SearchLabel, Mode=OneWay}" />
+                        <TextBox
+                            x:Name="SearchBox"
+                            Grid.Column="1"
+                            MinWidth="180"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                            KeyDown="SearchBox_KeyDown"
+                            PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            Grid.Column="2"
+                            Command="{x:Bind ViewModel.SearchCommand}"
+                            Content="Search"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button
+                            Grid.Column="3"
+                            Click="ClearButton_Click"
+                            Content="Clear"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                        <Button
+                            Grid.Column="4"
+                            Command="{x:Bind ViewModel.PrintCommand}"
+                            Content="Print"
+                            IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
+                        <TextBlock
+                            Grid.Column="5"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
+                        <ComboBox
+                            Grid.Column="6"
+                            Width="110"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                            ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
+                        <ProgressRing
+                            Grid.Column="7"
+                            Width="28"
+                            Height="28"
+                            VerticalAlignment="Center"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </Grid>
+
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.MockDataHintText, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords"
+                        Visibility="{x:Bind ViewModel.IsMockDataHintVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
+
+                <!--  Help  -->
+                <StackPanel
                     Grid.Column="1"
-                    Width="260"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    KeyDown="SearchBox_KeyDown"
-                    PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
-                    Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <Button
-                    Grid.Column="2"
-                    Command="{x:Bind ViewModel.SearchCommand}"
-                    Content="Search"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    Style="{StaticResource AccentButtonStyle}" />
-                <Button
-                    Grid.Column="3"
-                    Click="ClearButton_Click"
-                    Content="Clear"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
-                <Button
-                    Grid.Column="4"
-                    Command="{x:Bind ViewModel.PrintCommand}"
-                    Content="Print"
-                    IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
-                <TextBlock
-                    Grid.Column="6"
                     VerticalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                    Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
-                <ComboBox
-                    Grid.Column="7"
-                    Width="110"
-                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                    ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
-                <ProgressRing
-                    Grid.Column="5"
-                    Width="28"
-                    Height="28"
-                    VerticalAlignment="Center"
-                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Rectangle
+                        Width="1"
+                        Height="24"
+                        Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <Button
+                        Width="34"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Help"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Click="OnHelpClick"
+                        CornerRadius="4"
+                        ToolTipService.ToolTip="Help">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
+                </StackPanel>
             </Grid>
-
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource CaptionTextBlockStyle}"
-                Text="{x:Bind ViewModel.MockDataHintText, Mode=OneWay}"
-                TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind ViewModel.IsMockDataHintVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-        </StackPanel>
+        </Border>
 
 
         <Grid Grid.Row="1">

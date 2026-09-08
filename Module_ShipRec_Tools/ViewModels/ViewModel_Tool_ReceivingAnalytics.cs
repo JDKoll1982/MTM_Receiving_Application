@@ -78,6 +78,8 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     /// <summary>"History" or "Incoming".</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ViewModeLabel))]
+    [NotifyPropertyChangedFor(nameof(IsHistoryViewMode))]
+    [NotifyPropertyChangedFor(nameof(IsIncomingViewMode))]
     private string _viewMode = "History";
 
     [ObservableProperty]
@@ -146,6 +148,12 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
 
     /// <summary>Label shown next to the History/Incoming toggle.</summary>
     public string ViewModeLabel => ViewMode;
+
+    /// <summary>True while the History (past received) view is selected.</summary>
+    public bool IsHistoryViewMode => ViewMode == "History";
+
+    /// <summary>True while the Incoming (forecast) view is selected.</summary>
+    public bool IsIncomingViewMode => ViewMode == "Incoming";
 
     /// <summary>
     /// Last chart-image render error, if any. Used for diagnostics and tests.
@@ -301,6 +309,91 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             IsBusy = false;
         }
     }
+
+    /// <summary>
+    /// Applies a quick "date type" range preset and reloads the analytics. The set of
+    /// available types depends on the current view mode: History mode offers past-window
+    /// presets, Incoming mode offers forward-looking (forecast) presets.
+    /// </summary>
+    public async Task ApplyDateTypeAsync(string dateType)
+    {
+        if (string.IsNullOrWhiteSpace(dateType))
+        {
+            return;
+        }
+
+        var (from, to) = ResolveDateTypeRange(dateType, ViewMode == "Incoming");
+        FromDate = from;
+        ToDate = to;
+        await LoadAsync();
+    }
+
+    private static (DateTimeOffset From, DateTimeOffset To) ResolveDateTypeRange(
+        string dateType,
+        bool incoming
+    )
+    {
+        var today = new DateTimeOffset(DateTime.Today);
+        if (incoming)
+        {
+            return dateType switch
+            {
+                "Next7Days" => (today, today.AddDays(7)),
+                "Next30Days" => (today, today.AddDays(30)),
+                "Next90Days" => (today, today.AddDays(90)),
+                "ThisMonth" => (today, EndOfMonth(today)),
+                "NextMonth" => (
+                    StartOfMonth(today.AddMonths(1)),
+                    EndOfMonth(today.AddMonths(1))
+                ),
+                "ThisQuarter" => (today, EndOfQuarter(today)),
+                "NextQuarter" => (
+                    StartOfQuarter(today.AddMonths(3)),
+                    EndOfQuarter(today.AddMonths(3))
+                ),
+                "SixMonths" => (today, today.AddMonths(6)),
+                _ => (today, today.AddMonths(6)),
+            };
+        }
+
+        return dateType switch
+        {
+            "Last7Days" => (today.AddDays(-6), today),
+            "Last30Days" => (today.AddDays(-29), today),
+            "Last90Days" => (today.AddDays(-89), today),
+            "ThisMonth" => (StartOfMonth(today), today),
+            "LastMonth" => (
+                StartOfMonth(today.AddMonths(-1)),
+                EndOfMonth(today.AddMonths(-1))
+            ),
+            "ThisQuarter" => (StartOfQuarter(today), today),
+            "LastQuarter" => (
+                StartOfQuarter(today.AddMonths(-3)),
+                EndOfQuarter(today.AddMonths(-3))
+            ),
+            "ThisYear" => (
+                new DateTimeOffset(today.Year, 1, 1, 0, 0, 0, today.Offset),
+                today
+            ),
+            "AllHistory" => (today.AddYears(-1), today),
+            _ => (today.AddYears(-1), today),
+        };
+    }
+
+    private static DateTimeOffset StartOfMonth(DateTimeOffset value) =>
+        new(value.Year, value.Month, 1, 0, 0, 0, value.Offset);
+
+    private static DateTimeOffset EndOfMonth(DateTimeOffset value) =>
+        StartOfMonth(value).AddMonths(1).AddDays(-1);
+
+    private static DateTimeOffset StartOfQuarter(DateTimeOffset value)
+    {
+        var startMonth = ((value.Month - 1) / 3) * 3 + 1;
+        return new DateTimeOffset(value.Year, startMonth, 1, 0, 0, 0, value.Offset);
+    }
+
+    private static DateTimeOffset EndOfQuarter(DateTimeOffset value) =>
+        StartOfQuarter(value).AddMonths(3).AddDays(-1);
 
     /// <summary>
     /// Renders the chart and stats from the cached datasets, honoring the current

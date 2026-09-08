@@ -15,92 +15,111 @@
     <Grid Padding="16,8,16,24" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button
+        <!--  Utility card (edit-mode bar style)  -->
+        <Border
             Grid.Row="0"
-            Canvas.ZIndex="100"
-            Width="34"
-            Height="34"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
+            Padding="16,12"
+            Margin="0,0,0,8"
             Background="{ThemeResource LayerFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <!--  Search  -->
-        <TextBox
-            Grid.Row="0"
-            PlaceholderText="Search parts..."
-            Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <!--  Search (flexible)  -->
+                    <TextBox
+                        PlaceholderText="Search parts..."
+                        Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-        <!--  Add / Delete Selected  -->
-        <Grid Grid.Row="1" ColumnSpacing="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="240" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Style="{StaticResource BodyStrongTextBlockStyle}"
-                Text="Part #" />
-            <TextBox
-                Grid.Column="1"
-                KeyDown="AddBox_KeyDown"
-                PlaceholderText="e.g. 21-28841"
-                Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <Button
-                Grid.Column="2"
-                Command="{x:Bind ViewModel.AddCoilCommand}"
-                Content="Add Coil"
-                Style="{StaticResource AccentButtonStyle}" />
-            <Button
-                Grid.Column="3"
-                Command="{x:Bind ViewModel.DeleteSelectedCommand}"
-                Content="Delete Selected" />
-            <TextBlock
-                Grid.Column="4"
-                VerticalAlignment="Center"
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Text="Coils that need the inner diameter welded before they go on the press cradle."
-                TextTrimming="CharacterEllipsis" />
-        </Grid>
+                    <!--  Add / Delete Selected  -->
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="Part #" />
+                        <TextBox
+                            Grid.Column="1"
+                            MinWidth="180"
+                            KeyDown="AddBox_KeyDown"
+                            PlaceholderText="e.g. 21-28841"
+                            Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            Grid.Column="2"
+                            Command="{x:Bind ViewModel.AddCoilCommand}"
+                            Content="Add Coil"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button
+                            Grid.Column="3"
+                            Command="{x:Bind ViewModel.DeleteSelectedCommand}"
+                            Content="Delete Selected" />
+                    </Grid>
 
-        <!--  Counts  -->
-        <StackPanel
-            Grid.Row="2"
-            Orientation="Horizontal"
-            Spacing="16">
-            <TextBlock
-                FontWeight="SemiBold"
-                Text="{x:Bind ViewModel.ActiveCountText, Mode=OneWay}" />
-            <TextBlock
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Text="{x:Bind ViewModel.InactiveCountText, Mode=OneWay}" />
-            <ProgressRing
-                Width="20"
-                Height="20"
-                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
-        </StackPanel>
+                    <!--  Counts + helper text  -->
+                    <StackPanel Orientation="Horizontal" Spacing="16">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{x:Bind ViewModel.ActiveCountText, Mode=OneWay}" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.InactiveCountText, Mode=OneWay}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Coils that need the inner diameter welded before they go on the press cradle."
+                            TextTrimming="CharacterEllipsis" />
+                        <ProgressRing
+                            Width="20"
+                            Height="20"
+                            VerticalAlignment="Center"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  Help  -->
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Rectangle
+                        Width="1"
+                        Height="24"
+                        Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <Button
+                        Width="34"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Help"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Click="OnHelpClick"
+                        CornerRadius="4"
+                        ToolTipService.ToolTip="Help">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <!--  Coil list  -->
         <Border
-            Grid.Row="3"
+            Grid.Row="1"
             Padding="16"
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

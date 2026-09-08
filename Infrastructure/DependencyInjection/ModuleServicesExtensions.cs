@@ -434,6 +434,10 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_SettingsErrorHandler, Service_SettingsErrorHandler>();
         services.AddSingleton<IService_SettingsUserLabelButtons, Service_SettingsUserLabelButtons>();
 
+        // Database Config (admin/developer): runtime MySQL target selection + SyncTool launcher
+        services.AddSingleton<IService_DatabaseTargetManager, Service_DatabaseTargetManager>();
+        services.AddSingleton<IService_SyncToolRunner, Service_SyncToolRunner>();
+
         // Settings ViewModels (Transient - Per-settings-page instances)
         RegisterSettingsViewModels(services);
 
@@ -454,6 +458,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_SharedPaths>();
         services.AddTransient<ViewModel_Settings_LabelViewExecutable>();
         services.AddTransient<ViewModel_Settings_MaterialAvailabilityBoardFields>();
+        services.AddTransient<ViewModel_Settings_DatabaseConfig>();
 
         // Navigation Hubs
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_CategoryHub>();
@@ -504,6 +509,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_DatabaseConfig>();
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();

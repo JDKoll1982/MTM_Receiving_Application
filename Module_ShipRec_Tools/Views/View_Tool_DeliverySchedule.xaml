@@ -19,25 +19,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button
-            Grid.Row="0"
-            Canvas.ZIndex="100"
-            Width="34"
-            Height="34"
-            Margin="0,8,16,0"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            AutomationProperties.Name="Help"
-            Background="{ThemeResource LayerFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            Click="OnHelpClick"
-            CornerRadius="4"
-            ToolTipService.ToolTip="Help">
-            <FontIcon FontSize="16" Glyph="&#xE946;" />
-        </Button>
-
         <!--  Compact filter hotbar  -->
         <Border
             Grid.Row="0"
@@ -52,23 +33,56 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Date range  -->
-                <StackPanel
+                <!--  Date range (opens flyout with From/To pickers)  -->
+                <Button
+                    x:Name="DateRangeButton"
                     Grid.Column="0"
+                    Height="36"
+                    Padding="12,0"
                     VerticalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="8">
-                    <TextBlock VerticalAlignment="Center" Text="Date:" />
-                    <CalendarDatePicker
-                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
-                        PlaceholderText="From" />
-                    <TextBlock VerticalAlignment="Center" Text="to" />
-                    <CalendarDatePicker
-                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
-                        PlaceholderText="To" />
-                </StackPanel>
+                    ToolTipService.ToolTip="Filter by date range">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon FontSize="14" Glyph="&#xE787;" />
+                        <TextBlock Text="Date Range" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout x:Name="DateRangeFlyout" Placement="Bottom">
+                            <StackPanel MinWidth="320" Padding="8" Spacing="12">
+                                <Grid ColumnSpacing="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CalendarDatePicker
+                                        Grid.Column="0"
+                                        Width="112"
+                                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                                        PlaceholderText="From" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Text="to" />
+                                    <CalendarDatePicker
+                                        Grid.Column="2"
+                                        Width="112"
+                                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                                        PlaceholderText="To" />
+                                </Grid>
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    Click="DateFilterActionButton_Click"
+                                    Content="Apply Date Range"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Tag="{x:Bind ViewModel.SearchCommand}"
+                                    ToolTipService.ToolTip="Run search with the selected date range" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
 
                 <!--  Quick search (PO, part, supplier, carrier)  -->
                 <TextBox
@@ -207,6 +221,31 @@
                         Width="20"
                         Height="20"
                         IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                </StackPanel>
+
+                <!--  Help  -->
+                <StackPanel
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Rectangle
+                        Width="1"
+                        Height="24"
+                        Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <Button
+                        Width="34"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Help"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Click="OnHelpClick"
+                        CornerRadius="4"
+                        ToolTipService.ToolTip="Help">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

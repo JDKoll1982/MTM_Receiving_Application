@@ -73,7 +73,7 @@ def _actual_rows_by_natural_key(
 def _check_structure(pre_sync_snap, post_sync_snap, copy_db: str) -> List[CheckResult]:
     """The sync is DML-only, so the copy's schema must be identical before and
     after execution. Comparing the copy to itself avoids false positives from
-    mysqldump normalization during copy creation."""
+    logical-copy normalization during copy creation."""
     entries = schema_mod.compare_schemas(pre_sync_snap, post_sync_snap)
     dirty = [e for e in entries if e.status in schema_mod.DIRTY]
     if not dirty:

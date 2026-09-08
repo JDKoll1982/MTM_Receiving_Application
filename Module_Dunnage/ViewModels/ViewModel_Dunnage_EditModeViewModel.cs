@@ -180,6 +180,19 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
     private DateFilterPreset _activeDateFilter = DateFilterPreset.None;
 
+    // ------------------------------------------------------------------ page size
+    /// <summary>Choices available in the per-page ComboBox.</summary>
+    public ObservableCollection<int> PageSizeOptions { get; } = [20, 50, 100, 200];
+
+    [ObservableProperty]
+    private int _selectedPageSize = PAGE_SIZE;
+
+    partial void OnSelectedPageSizeChanged(int value)
+    {
+        // The pagination service resets to page 1 and re-slices the current source.
+        _paginationService.PageSize = value;
+    }
+
     [ObservableProperty]
     private int _currentPage = 1;
 
@@ -292,6 +305,24 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     public Brush ShowAllFilterButtonBackground => ResolveFilterButtonBackground(
         _activeDateFilter == DateFilterPreset.ShowAll
     );
+
+    /// <summary>Background for the date-range toolbar button, highlighted while a quick preset filter is active.</summary>
+    public Brush DateRangeButtonBackground => ResolveFilterButtonBackground(
+        _activeDateFilter != DateFilterPreset.None
+    );
+
+    /// <summary>Label for the Quick Select flyout button, showing the currently applied date preset.</summary>
+    public string ActiveDateFilterLabel =>
+        _activeDateFilter switch
+        {
+            DateFilterPreset.LastWeek => "Last Week",
+            DateFilterPreset.Today => "Today",
+            DateFilterPreset.ThisWeek => "This Week",
+            DateFilterPreset.ThisMonth => "This Month",
+            DateFilterPreset.ThisQuarter => "This Quarter",
+            DateFilterPreset.ShowAll => "Show All",
+            _ => "Quick Select",
+        };
 
     #endregion
 
@@ -627,6 +658,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
         OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
         OnPropertyChanged(nameof(ShowAllFilterButtonBackground));
+        OnPropertyChanged(nameof(DateRangeButtonBackground));
+        OnPropertyChanged(nameof(ActiveDateFilterLabel));
     }
 
     #endregion

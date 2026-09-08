@@ -21,6 +21,12 @@ public sealed partial class View_Scanner_Settings : Page
         Loaded += OnLoaded;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Scanner.Main");
+    }
+
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         await ViewModel.LoadProfilesAsync();

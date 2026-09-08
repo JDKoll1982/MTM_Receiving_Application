@@ -35,16 +35,18 @@
                             TextWrapping="WrapWholeWords" />
                     </Border>
 
-                    <!--  Body Content Container (Row 1) -> Defined in Section 2  -->
-
-
-                    <!--  Body Content Container (Row 1)  -->
-                    <Grid
+                    <!--  Body Content Container (Row 1) - scrolls vertically within the shell  -->
+                    <ScrollViewer
                         Grid.Row="1"
-                        Padding="16"
-                        HorizontalAlignment="Stretch"
-                        RowDefinitions="Auto, Auto"
-                        RowSpacing="16">
+                        VerticalScrollBarVisibility="Auto"
+                        VerticalScrollMode="Auto"
+                        HorizontalScrollMode="Disabled"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <Grid
+                            Padding="16"
+                            HorizontalAlignment="Stretch"
+                            RowDefinitions="Auto, Auto"
+                            RowSpacing="16">
 
                         <!--  Summary Section (Row 0)  -->
                         <Grid
@@ -253,8 +255,9 @@
                         </Grid>
                         <!--  End Detail Section Grid  -->
 
-                    </Grid>
-                    <!--  End Body Content Grid  -->
+                        </Grid>
+                        </ScrollViewer>
+                        <!--  End Body Content Grid  -->
                 </Grid>
                 <!--  End Master Layout Grid  -->
             </Border>
@@ -328,12 +331,11 @@
     </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
-            <Grid Padding="20,18,20,20" RowSpacing="16">
+        <Grid Padding="20,18,20,20" RowSpacing="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <!--  Top Toolbar Row  -->
                 <Grid Grid.Row="0" ColumnSpacing="16">
@@ -458,8 +460,6 @@
                 </TabView>
 
             </Grid>
-        </ScrollViewer>
-
 
         <Border
             x:Name="OptionsOverlayBorder"

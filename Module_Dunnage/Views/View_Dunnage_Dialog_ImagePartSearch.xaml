@@ -147,22 +147,6 @@
                     VerticalAlignment="Center"
                     Source="ms-appx:///Assets/Backgrounds/NothingFound.jpg"
                     Stretch="UniformToFill" />
-                <Border
-                    MaxWidth="420"
-                    Padding="16,10"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <TextBlock
-                        TextAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource BodyTextBlockStyle}"
-                        Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
-                        TextWrapping="Wrap" />
-                </Border>
             </Grid>
         </Grid>
     </Grid>

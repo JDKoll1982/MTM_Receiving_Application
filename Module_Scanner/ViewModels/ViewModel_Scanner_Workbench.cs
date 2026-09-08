@@ -785,6 +785,79 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
     }
 
+    /// <summary>
+    /// Adds the requested number of additional lines for the same part as the source row.
+    /// The source row and every new line are set to quantity 1, new rows start with a blank
+    /// destination, and each new row is persisted to the current batch session.
+    /// </summary>
+    public async Task AddDuplicateLinesAsync(Model_ScannerBatchItem source, int count)
+    {
+        if (CurrentSession is null || source is null || count < 1)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            source.PayloadQuantity = "1";
+            var persistSource = await _workflowService.UpsertBatchItemAsync(CurrentSession, source);
+            if (persistSource.Success && persistSource.Data is not null)
+            {
+                CurrentSession = persistSource.Data;
+            }
+
+            var added = 0;
+            for (var index = 0; index < count; index++)
+            {
+                var line = new Model_ScannerBatchItem
+                {
+                    SessionId = CurrentSession.SessionId,
+                    SequenceNumber = CurrentSession.Items.Count + 1,
+                    PayloadPartId = source.PayloadPartId,
+                    PayloadFromWarehouse = source.PayloadFromWarehouse,
+                    PayloadFromLocation = source.PayloadFromLocation,
+                    PayloadToWarehouse = source.PayloadToWarehouse,
+                    PayloadToLocation = string.Empty,
+                    PayloadQuantity = "1",
+                    MaxQuantity = source.MaxQuantity,
+                    ValidationState = Enum_ScannerValidationState.NotValidated,
+                };
+
+                var save = await _workflowService.UpsertBatchItemAsync(CurrentSession, line);
+                if (!save.Success || save.Data is null)
+                {
+                    ShowStatus(
+                        string.IsNullOrWhiteSpace(save.ErrorMessage)
+                            ? "Unable to add the additional line."
+                            : save.ErrorMessage,
+                        InfoBarSeverity.Error
+                    );
+                    break;
+                }
+
+                CurrentSession = save.Data;
+                added++;
+            }
+
+            if (added > 0)
+            {
+                SessionItems = [.. CurrentSession.Items.OrderBy(candidate => candidate.SequenceNumber)];
+                RecomputeSendEnabled();
+                ShowStatus(
+                    added == 1
+                        ? $"1 line added for {source.PayloadPartId}. Enter the destination."
+                        : $"{added} lines added for {source.PayloadPartId}. Enter each destination.",
+                    InfoBarSeverity.Success
+                );
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     // ── Commands ─────────────────────────────────────────────────────────────────
 
     [RelayCommand]

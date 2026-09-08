@@ -26,42 +26,92 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Filters -->
-        <Grid Grid.Row="0" ColumnSpacing="12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <CalendarDatePicker
-                Grid.Column="0"
-                Header="From"
-                Date="{x:Bind ViewModel.DateFromUtc, Mode=TwoWay}" />
-            <CalendarDatePicker
-                Grid.Column="1"
-                Header="To"
-                Date="{x:Bind ViewModel.DateToUtc, Mode=TwoWay}" />
-            <ComboBox
-                Grid.Column="2"
-                MinWidth="140"
-                Header="Status"
-                ItemsSource="{x:Bind ViewModel.StatusOptions, Mode=OneWay}"
-                SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
-            <Button
-                Grid.Column="3"
-                VerticalAlignment="Bottom"
-                Style="{StaticResource ScannerActionButtonStyle}"
-                Command="{x:Bind ViewModel.RefreshHistoryCommand}"
-                Content="Refresh" />
-            <Button
-                Grid.Column="4"
-                VerticalAlignment="Bottom"
-                Style="{StaticResource ScannerActionButtonStyle}"
-                Command="{x:Bind ViewModel.ClearFiltersCommand}"
-                Content="Clear Filters" />
-        </Grid>
+        <!--  Filter ribbon card  -->
+        <Border
+            Grid.Row="0"
+            Padding="16,12"
+            Margin="0,0,0,8"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <CalendarDatePicker
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Header="From"
+                    Date="{x:Bind ViewModel.DateFromUtc, Mode=TwoWay}" />
+                <CalendarDatePicker
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Header="To"
+                    Date="{x:Bind ViewModel.DateToUtc, Mode=TwoWay}" />
+                <ComboBox
+                    Grid.Column="2"
+                    MinWidth="150"
+                    Header="Status"
+                    ItemsSource="{x:Bind ViewModel.StatusOptions, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
+
+                <Button
+                    Grid.Column="3"
+                    Width="34"
+                    Height="34"
+                    MinWidth="0"
+                    Padding="0"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource ScannerActionButtonStyle}"
+                    Command="{x:Bind ViewModel.RefreshHistoryCommand}"
+                    ToolTipService.ToolTip="Refresh">
+                    <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                </Button>
+                <Button
+                    Grid.Column="4"
+                    Width="34"
+                    Height="34"
+                    MinWidth="0"
+                    Padding="0"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource ScannerActionButtonStyle}"
+                    Command="{x:Bind ViewModel.ClearFiltersCommand}"
+                    ToolTipService.ToolTip="Clear filters">
+                    <FontIcon FontSize="16" Glyph="&#xE711;" />
+                </Button>
+
+                <!--  Help  -->
+                <StackPanel
+                    Grid.Column="5"
+                    VerticalAlignment="Bottom"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Rectangle
+                        Width="1"
+                        Height="24"
+                        VerticalAlignment="Center"
+                        Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <Button
+                        Width="34"
+                        Height="34"
+                        MinWidth="0"
+                        Padding="0"
+                        AutomationProperties.Name="Help"
+                        Style="{StaticResource ScannerActionButtonStyle}"
+                        Click="OnHelpClick"
+                        ToolTipService.ToolTip="Help">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <Grid Grid.Row="1" ColumnSpacing="16">
             <Grid.ColumnDefinitions>

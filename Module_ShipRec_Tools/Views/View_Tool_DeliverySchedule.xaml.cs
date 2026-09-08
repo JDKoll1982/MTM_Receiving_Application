@@ -47,6 +47,21 @@ public sealed partial class View_Tool_DeliverySchedule : Page
         ViewModel.SearchCommand.Execute(null);
     }
 
+    // ------------------------------------------------------------------ date range flyout
+    /// <summary>Executes the command attached to a flyout button's Tag, then closes the flyout.</summary>
+    private void DateFilterActionButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (
+            sender is FrameworkElement { Tag: System.Windows.Input.ICommand command }
+            && command.CanExecute(null)
+        )
+        {
+            command.Execute(null);
+        }
+
+        DateRangeFlyout?.Hide();
+    }
+
     private static async Task<Model_Dao_Result<bool>> OpenExportDocumentAsync(
         Model_FormattedReportDocument document
     )

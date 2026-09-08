@@ -366,6 +366,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ViewModel.ShowColumnChooserCommand.Execute(null);
         }
 
+        // ------------------------------------------------------------------ date range flyout
+        /// <summary>Executes the command attached to a flyout button's Tag, then closes the flyout.</summary>
+        private void DateFilterActionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (
+                sender is FrameworkElement { Tag: System.Windows.Input.ICommand command }
+                && command.CanExecute(null)
+            )
+            {
+                command.Execute(null);
+            }
+
+            DateRangeFlyout?.Hide();
+        }
+
         private async void OnShowColumnChooserRequested(object? sender, EventArgs e)
         {
             await ShowColumnChooserDialogAsync();

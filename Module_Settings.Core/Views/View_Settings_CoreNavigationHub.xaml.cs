@@ -57,6 +57,13 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
             )
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            // Database Config is available to Admins and Developers (admin-or-above).
+            DatabaseConfigButton.Visibility = _userPrivileges.HasPermissionLevel(
+                Enum_SettingsPermissionLevel.Admin
+            )
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
@@ -65,6 +72,7 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
                 "Settings.Navigation"
             );
             SystemSettingsButton.Visibility = Visibility.Collapsed;
+            DatabaseConfigButton.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -192,5 +200,19 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     private void OnNavigateMaterialAvailabilityFields(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_MaterialAvailabilityBoardFields));
+    }
+
+    private void OnNavigateDatabaseConfig(object sender, RoutedEventArgs e)
+    {
+        if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)
+        {
+            _logger.LogWarning(
+                "Blocked navigation to Database Config due to insufficient privileges.",
+                "Settings.Navigation"
+            );
+            return;
+        }
+
+        NavigateUsingServiceProvider(typeof(View_Settings_DatabaseConfig));
     }
 }

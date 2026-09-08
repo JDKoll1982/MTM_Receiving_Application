@@ -1,0 +1,349 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_DatabaseConfig"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    x:Name="RootPage">
+
+    <Page.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibilityConverter" />
+        <converters:Converter_InfoBarSeverity x:Key="InfoBarSeverityConverter" />
+    </Page.Resources>
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <InfoBar
+            Grid.Row="0"
+            IsClosable="True"
+            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
+            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+            Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource InfoBarSeverityConverter}}" />
+
+        <ScrollViewer
+            Grid.Row="1"
+            Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollMode="Disabled">
+            <StackPanel Spacing="24">
+
+                <!-- ============================= Application database ============================= -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Application Database" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="The application reads its MySQL connection settings when it starts. Choose which database it should connect to and restart to apply the change. This only affects this computer's local override - appsettings.json is untouched."
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnSpacing="16" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="Currently connected" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentDatabaseDisplay, Mode=OneWay}" />
+
+                            <TextBlock
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="Server" />
+                            <TextBlock
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentServerDisplay, Mode=OneWay}" />
+                        </Grid>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Connect to this database on the next launch" />
+                            <ComboBox
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                DisplayMemberPath="DisplayName"
+                                ItemsSource="{x:Bind ViewModel.ConnectionTargets, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedConnectionTarget, Mode=TwoWay}"
+                                Width="420"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.SelectedConnectionTargetSummary, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.DatabaseListStatusText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                            Text="{x:Bind ViewModel.PendingStateText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button
+                                Command="{x:Bind ViewModel.TestConnectionCommand}"
+                                Content="Test Connection"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.SaveSelectionCommand}"
+                                Content="Save Selection"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.RefreshDatabasesCommand}"
+                                Content="Refresh DB List"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.RestartApplicationCommand}"
+                                Content="Restart Now"
+                                IsEnabled="{x:Bind ViewModel.IsRestartPending, Mode=OneWay}"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ============================= SyncTool ============================= -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Reference-Data SyncTool" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Syncs allow-listed reference/seed data from the test database into the chosen target (test -&gt; core) and reports schema drift. The tool is read-only unless the Execute action is selected, and the live core database is always backed up before a write."
+                            TextWrapping="Wrap" />
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="SyncTool script path" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                    Text="{x:Bind ViewModel.SyncToolPath, Mode=TwoWay}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Click="BrowseSyncToolPathButton_Click"
+                                    Content="Browse..."
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            </Grid>
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                Text="{x:Bind ViewModel.SyncToolAvailabilityText, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Python executable" />
+                            <TextBox
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                PlaceholderText="python (or full path to python.exe, e.g. the repo .venv)"
+                                Text="{x:Bind ViewModel.SyncToolPythonPath, Mode=TwoWay}" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="If the run fails with a missing module (pymysql / yaml), point this at the repository virtualenv python, e.g. C:\Users\jkoll\source\repos\MTM_Receiving_Application\.venv\Scripts\python.exe, or install Database/SyncTool/requirements.txt into the chosen interpreter."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Visibility="{x:Bind ViewModel.IsSyncToolBlocked, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                    Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                    Text="{x:Bind ViewModel.SyncToolReadinessTitle, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    IsTextSelectionEnabled="True"
+                                    Text="{x:Bind ViewModel.SyncToolRequirementText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <Button
+                                    Command="{x:Bind ViewModel.RecheckRequirementsCommand}"
+                                    Content="Re-check Requirements"
+                                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                                <TextBlock
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Database switching above is unaffected by these checks."
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel
+                            Spacing="12"
+                            Visibility="{x:Bind ViewModel.IsSyncToolReady, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Action" />
+                            <ComboBox
+                                IsEnabled="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                ItemsSource="{x:Bind ViewModel.SyncActionChoices, Mode=OneWay}"
+                                SelectedIndex="{x:Bind ViewModel.SyncActionIndex, Mode=TwoWay}"
+                                Width="420"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.SyncActionCaption, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel
+                            Spacing="6"
+                            Visibility="{x:Bind ViewModel.IsSyncTargetRelevant, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Sync into" />
+                            <ComboBox
+                                DisplayMemberPath="Label"
+                                ItemsSource="{x:Bind ViewModel.SyncTargetOptions, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedSyncTarget, Mode=TwoWay}"
+                                Width="420"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="The sync source is always the test database (mtm_receiving_application_test)."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <CheckBox
+                            IsChecked="{x:Bind ViewModel.ConfirmCoreWrite, Mode=TwoWay}"
+                            IsEnabled="{x:Bind ViewModel.IsConfirmCoreRequired, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.IsConfirmCoreRequired, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="I understand this writes into the LIVE core database (mtm_receiving_application). An automatic backup is taken first."
+                                TextWrapping="Wrap" />
+                        </CheckBox>
+
+                        <CheckBox
+                            IsChecked="{x:Bind ViewModel.SkipValidation, Mode=TwoWay}"
+                            Visibility="{x:Bind ViewModel.IsExecuteAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Skip post-execution validation (--skip-validation)"
+                                TextWrapping="Wrap" />
+                        </CheckBox>
+
+                        <CheckBox
+                            IsChecked="{x:Bind ViewModel.KeepCopy, Mode=TwoWay}"
+                            Visibility="{x:Bind ViewModel.IsVerifyCopyAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Keep the disposable copy after verification (--keep-copy)"
+                                TextWrapping="Wrap" />
+                        </CheckBox>
+
+                        <StackPanel
+                            Spacing="4"
+                            Visibility="{x:Bind ViewModel.IsGenerateSqlAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Output .sql file" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    Text="{x:Bind ViewModel.GenerateSqlOutputPath, Mode=TwoWay}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Click="BrowseGenerateSqlButton_Click"
+                                    Content="Browse..." />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="MySQL password for the SyncTool" />
+                            <PasswordBox
+                                x:Name="SyncPasswordBox"
+                                PasswordChanged="SyncPasswordBox_PasswordChanged"
+                                PlaceholderText="Enter the MySQL password (used only for this run)"
+                                IsEnabled="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                Width="420"
+                                HorizontalAlignment="Left" />
+                            <TextBlock
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Sent to the tool as an environment variable (MTM_SYNC_PASSWORD). It is never passed on the command line and is cleared after each run."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button
+                                Command="{x:Bind ViewModel.RunSyncToolCommand}"
+                                Content="Run Sync Tool"
+                                Style="{StaticResource AccentButtonStyle}"
+                                IsEnabled="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Command="{x:Bind ViewModel.CancelSyncToolCommand}"
+                                Content="Cancel"
+                                Visibility="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <ProgressRing
+                                Width="24"
+                                Height="24"
+                                IsActive="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.IsSyncRunning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+
+                        <Border
+                            Padding="8"
+                            Background="{ThemeResource ControlFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <TextBox
+                                IsReadOnly="True"
+                                AcceptsReturn="True"
+                                FontFamily="Consolas"
+                                FontSize="12"
+                                Height="220"
+                                IsTabStop="False"
+                                Text="{x:Bind ViewModel.SyncOutputText, Mode=OneWay}"
+                                TextWrapping="Wrap"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                PlaceholderText="SyncTool output will appear here." />
+                        </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

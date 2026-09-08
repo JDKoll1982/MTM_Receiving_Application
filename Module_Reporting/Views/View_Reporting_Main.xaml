@@ -14,20 +14,6 @@
 
         <ScrollViewer Grid.Row="0" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Margin="24,20,24,0" Spacing="24">
-                <Button
-                    Width="36"
-                    Height="36"
-                    Padding="0"
-                    HorizontalAlignment="Right"
-                    AutomationProperties.Name="Help"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    Click="OnHelpClick"
-                    CornerRadius="4"
-                    ToolTipService.ToolTip="Help">
-                    <FontIcon FontSize="16" Glyph="&#xE946;" />
-                </Button>
                 <TextBlock
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource BodyTextBlockStyle}"
@@ -39,109 +25,155 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="2">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Date range" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Choose a quick range or set start and end dates, then check which modules have data available."
-                                TextWrapping="WrapWholeWords" />
+                    <StackPanel Spacing="20">
+                        <!--  Date range section  -->
+                        <StackPanel Spacing="16">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Date range" />
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource BodyTextBlockStyle}"
+                                        Text="Choose a quick range or set start and end dates, then check which modules have data available."
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+                                <Button
+                                    Grid.Column="1"
+                                    Width="36"
+                                    Height="36"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    AutomationProperties.Name="Help"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    Click="OnHelpClick"
+                                    CornerRadius="4"
+                                    ToolTipService.ToolTip="Help">
+                                    <FontIcon FontSize="16" Glyph="&#xE946;" />
+                                </Button>
+                            </Grid>
+
+                            <!--  One-row date controls: quick range (flyout), start, end, check availability  -->
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  Quick range flyout  -->
+                                <Button
+                                    x:Name="QuickRangeButton"
+                                    Grid.Column="0"
+                                    MinWidth="118"
+                                    Height="32"
+                                    ToolTipService.ToolTip="Choose a quick date range">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="14" Glyph="&#xE787;" />
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedDateRangePreset, Mode=OneWay}" />
+                                    </StackPanel>
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Click="QuickRangePreset_Click" Tag="Custom" Text="Custom" />
+                                            <MenuFlyoutItem Click="QuickRangePreset_Click" Tag="Yesterday" Text="Yesterday" />
+                                            <MenuFlyoutItem Click="QuickRangePreset_Click" Tag="Today" Text="Today" />
+                                            <MenuFlyoutItem Click="QuickRangePreset_Click" Tag="This Week" Text="This Week" />
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+
+                                <CalendarDatePicker
+                                    Grid.Column="1"
+                                    Width="150"
+                                    Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
+                                    PlaceholderText="Start date" />
+
+                                <CalendarDatePicker
+                                    Grid.Column="2"
+                                    Width="150"
+                                    Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
+                                    PlaceholderText="End date" />
+
+                                <Button
+                                    Grid.Column="4"
+                                    Width="36"
+                                    Height="36"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    ToolTipService.ToolTip="Check availability">
+                                    <FontIcon FontSize="16" Glyph="&#xE73A;" />
+                                </Button>
+                            </Grid>
                         </StackPanel>
 
-                        <ComboBox
-                            Width="220"
-                            HorizontalAlignment="Left"
-                            Header="Quick range"
-                            ItemsSource="{x:Bind ViewModel.DateRangePresetOptions, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.SelectedDateRangePreset, Mode=TwoWay}" />
+                        <!--  Section divider  -->
+                        <Rectangle
+                            Height="1"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                        <!--  Select modules section  -->
+                        <StackPanel Spacing="16">
+                            <StackPanel Spacing="2">
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Select modules" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="Choose which modules to combine into the generated report." />
+                            </StackPanel>
 
-                            <CalendarDatePicker
-                                Grid.Column="0"
-                                HorizontalAlignment="Stretch"
-                                Date="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
-                                Header="Start date" />
+                            <Grid ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <CalendarDatePicker
-                                Grid.Column="1"
-                                HorizontalAlignment="Stretch"
-                                Date="{x:Bind ViewModel.EndDate, Mode=TwoWay}"
-                                Header="End date" />
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <CheckBox
+                                        Content="Receiving"
+                                        IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
+                                        IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}" />
+                                    <TextBlock
+                                        Margin="32,0,0,0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}" />
+                                </StackPanel>
 
-                            <Button
-                                Grid.Column="2"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.CheckAvailabilityCommand}"
-                                Content="Check availability"
-                                Style="{StaticResource AccentButtonStyle}" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
-                <Border
-                    Padding="20"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="2">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Select modules" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Choose which modules to combine into the generated report." />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <CheckBox
+                                        Content="Dunnage"
+                                        IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
+                                        IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}" />
+                                    <TextBlock
+                                        Margin="32,0,0,0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <CheckBox
+                                        Content="Volvo"
+                                        IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
+                                        IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}" />
+                                    <TextBlock
+                                        Margin="32,0,0,0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
-
-                        <Grid ColumnSpacing="24">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0" Spacing="4">
-                                <CheckBox
-                                    Content="Receiving"
-                                    IsChecked="{x:Bind ViewModel.IsReceivingChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsReceivingEnabled, Mode=OneWay}" />
-                                <TextBlock
-                                    Margin="32,0,0,0"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.ReceivingCount, Mode=OneWay}" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" Spacing="4">
-                                <CheckBox
-                                    Content="Dunnage"
-                                    IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}" />
-                                <TextBlock
-                                    Margin="32,0,0,0"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.DunnageCount, Mode=OneWay}" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2" Spacing="4">
-                                <CheckBox
-                                    Content="Volvo"
-                                    IsChecked="{x:Bind ViewModel.IsVolvoChecked, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind ViewModel.IsVolvoEnabled, Mode=OneWay}" />
-                                <TextBlock
-                                    Margin="32,0,0,0"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.VolvoCount, Mode=OneWay}" />
-                            </StackPanel>
-                        </Grid>
                     </StackPanel>
                 </Border>
 

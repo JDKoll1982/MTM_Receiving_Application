@@ -94,58 +94,128 @@
                     TextWrapping="WrapWholeWords" />
             </StackPanel>
 
-            <Grid ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Border
+                Padding="24"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                <Button
-                    Grid.Column="0"
-                    Width="220"
-                    Height="220"
-                    Background="{StaticResource ReceivingAccentBrush}"
-                    Command="{x:Bind ViewModel.SelectReceivingCommand}"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource ReprintModeCardButtonStyle}">
-                    <StackPanel Spacing="12" HorizontalAlignment="Center">
-                        <FontIcon Glyph="&#xE74C;" FontSize="42" Foreground="White" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Foreground="White" Text="Receiving" TextAlignment="Center" />
-                        <TextBlock FontSize="12" Foreground="White" Opacity="0.9" Text="Receiving labels" TextAlignment="Center" TextWrapping="WrapWholeWords" />
-                    </StackPanel>
-                </Button>
+                    <!--  Receiving module card  -->
+                    <Grid Grid.Column="0" Padding="12">
+                        <Button
+                            MinHeight="220"
+                            Padding="20"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            AutomationProperties.Name="Reprint Receiving labels"
+                            Background="{StaticResource ReceivingAccentBrush}"
+                            Command="{x:Bind ViewModel.SelectReceivingCommand}"
+                            Style="{StaticResource ReprintModeCardButtonStyle}">
+                            <StackPanel VerticalAlignment="Center" Spacing="12">
+                                <FontIcon
+                                    HorizontalAlignment="Center"
+                                    FontSize="42"
+                                    Foreground="White"
+                                    Glyph="&#xE74C;" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="18"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"
+                                    Text="Receiving"
+                                    TextAlignment="Center" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="White"
+                                    Opacity="0.9"
+                                    Text="Receiving labels"
+                                    TextAlignment="Center"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
 
-                <Button
-                    Grid.Column="1"
-                    Width="220"
-                    Height="220"
-                    Background="{StaticResource DunnageAccentBrush}"
-                    Command="{x:Bind ViewModel.SelectDunnageCommand}"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource ReprintModeCardButtonStyle}">
-                    <StackPanel Spacing="12" HorizontalAlignment="Center">
-                        <FontIcon Glyph="&#xEA18;" FontSize="42" Foreground="White" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Foreground="White" Text="Dunnage" TextAlignment="Center" />
-                        <TextBlock FontSize="12" Foreground="White" Opacity="0.9" Text="Dunnage labels" TextAlignment="Center" TextWrapping="WrapWholeWords" />
-                    </StackPanel>
-                </Button>
+                    <!--  Dunnage module card  -->
+                    <Grid Grid.Column="1" Padding="12">
+                        <Button
+                            MinHeight="220"
+                            Padding="20"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            AutomationProperties.Name="Reprint Dunnage labels"
+                            Background="{StaticResource DunnageAccentBrush}"
+                            Command="{x:Bind ViewModel.SelectDunnageCommand}"
+                            Style="{StaticResource ReprintModeCardButtonStyle}">
+                            <StackPanel VerticalAlignment="Center" Spacing="12">
+                                <FontIcon
+                                    HorizontalAlignment="Center"
+                                    FontSize="42"
+                                    Foreground="White"
+                                    Glyph="&#xEA18;" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="18"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"
+                                    Text="Dunnage"
+                                    TextAlignment="Center" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="White"
+                                    Opacity="0.9"
+                                    Text="Dunnage labels"
+                                    TextAlignment="Center"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
 
-                <Button
-                    Grid.Column="2"
-                    Width="220"
-                    Height="220"
-                    Background="{StaticResource VolvoAccentBrush}"
-                    Command="{x:Bind ViewModel.SelectVolvoCommand}"
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource ReprintModeCardButtonStyle}">
-                    <StackPanel Spacing="12" HorizontalAlignment="Center">
-                        <FontIcon Glyph="&#xE7B8;" FontSize="42" Foreground="White" />
-                        <TextBlock FontSize="18" FontWeight="SemiBold" Foreground="White" Text="Volvo" TextAlignment="Center" />
-                        <TextBlock FontSize="12" Foreground="White" Opacity="0.9" Text="Volvo generated labels" TextAlignment="Center" TextWrapping="WrapWholeWords" />
-                    </StackPanel>
-                </Button>
-            </Grid>
+                    <!--  Volvo module card  -->
+                    <Grid Grid.Column="2" Padding="12">
+                        <Button
+                            MinHeight="220"
+                            Padding="20"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            AutomationProperties.Name="Reprint Volvo labels"
+                            Background="{StaticResource VolvoAccentBrush}"
+                            Command="{x:Bind ViewModel.SelectVolvoCommand}"
+                            Style="{StaticResource ReprintModeCardButtonStyle}">
+                            <StackPanel VerticalAlignment="Center" Spacing="12">
+                                <FontIcon
+                                    HorizontalAlignment="Center"
+                                    FontSize="42"
+                                    Foreground="White"
+                                    Glyph="&#xE7B8;" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="18"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"
+                                    Text="Volvo"
+                                    TextAlignment="Center" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="White"
+                                    Opacity="0.9"
+                                    Text="Volvo generated labels"
+                                    TextAlignment="Center"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

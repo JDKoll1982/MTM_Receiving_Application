@@ -121,6 +121,7 @@ class SyncConfig:
     backup_db: str
     policies: List[TablePolicy]
     excluded: List[ExcludedTable]
+    live_backup_db: str = "mtm_receiving_application_backup"
 
     @property
     def active_policies(self) -> List[TablePolicy]:
@@ -140,6 +141,9 @@ class SyncConfig:
             backup_db=str(defaults.get("backup_db", "mtm_receiving_application_backup_test")),
             policies=tables,
             excluded=excluded,
+            live_backup_db=str(
+                defaults.get("live_backup_db", "mtm_receiving_application_backup")
+            ),
         )
 
 

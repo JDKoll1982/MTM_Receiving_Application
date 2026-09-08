@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -51,6 +53,20 @@ public partial class App : Application
         LiveCharts.Configure(settings => settings.AddSkiaSharp());
 
         _host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(
+                (context, config) =>
+                {
+                    // Machine-local runtime override (e.g., the Database Config page's target
+                    // database selection). Loaded after the default appsettings.json sources so
+                    // any key it defines (ConnectionStrings:MySql) wins. Optional: when absent
+                    // the app behaves exactly as before.
+                    config.AddJsonFile(
+                        Path.Combine(AppContext.BaseDirectory, "appsettings.local.json"),
+                        optional: true,
+                        reloadOnChange: false
+                    );
+                }
+            )
             .UseSerilog(
                 (context, configuration) =>
                     SerilogConfiguration.Configure(configuration, context.Configuration)
