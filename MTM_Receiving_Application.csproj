@@ -6,9 +6,9 @@
     <EnableDefaultPageItems>true</EnableDefaultPageItems>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>MTM_Receiving_Application</RootNamespace>
-    <Version>4.1.0.0</Version>
-    <AssemblyVersion>4.1.0.0</AssemblyVersion>
-    <FileVersion>4.1.0.0</FileVersion>
+    <Version>4.2.0.0</Version>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <FileVersion>4.2.0.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- x64 only — all manufacturing floor PCs are x64 Windows. ARM64 and x86 removed
          to eliminate parallel build file-lock issues and reduce build time. -->
@@ -66,6 +66,46 @@
       <Link>docs\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
   </ItemGroup>
+  <!-- SyncTool (reference-data sync used by Settings -> Core Settings -> Configuration ->
+       Database Config). Bundled so the tool can be launched from the running application;
+       it is allow-list based, read-only by default, and never accepts secrets on the CLI. -->
+  <ItemGroup>
+    <Content Include="Database\SyncTool\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Database\SyncTool\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+    <!-- Do not ship generated/runtime artifacts of the tool. -->
+    <Content Remove="Database\SyncTool\**\__pycache__\**" />
+    <Content Remove="Database\SyncTool\backups\**" />
+    <Content Remove="Database\SyncTool\build\**" />
+    <Content Remove="Database\SyncTool\dist\**" />
+    <Content Remove="Database\SyncTool\build_exe.py" />
+    <Content Remove="Database\SyncTool\sync_reference_data.spec" />
+    <None Remove="Database\SyncTool\**\__pycache__\**" />
+    <None Remove="Database\SyncTool\backups\**" />
+    <None Remove="Database\SyncTool\build\**" />
+    <None Remove="Database\SyncTool\dist\**" />
+    <None Remove="Database\SyncTool\build_exe.py" />
+    <None Remove="Database\SyncTool\sync_reference_data.spec" />
+    <!-- Standalone executable (built by build_exe.py); run with no Python installed. -->
+    <Content
+      Include="Database\SyncTool\dist\sync_reference_data.exe"
+      Condition="Exists('Database\SyncTool\dist\sync_reference_data.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Database\SyncTool\sync_reference_data.exe</Link>
+    </Content>
+  </ItemGroup>
+  <!-- Build the standalone SyncTool exe with the repo venv whenever the tool has
+       changed. Skips gracefully (script+Python fallback) when PyInstaller is not
+       installed or the venv is absent, so normal builds never fail on it. -->
+  <Target
+    Name="BuildSyncToolExe"
+    BeforeTargets="BeforeBuild"
+    Condition="'$(OS)' == 'Windows_NT' and Exists('$(MSBuildProjectDirectory)\.venv\Scripts\python.exe')">
+    <Exec
+      Command="&quot;$(MSBuildProjectDirectory)\.venv\Scripts\python.exe&quot; &quot;$(MSBuildProjectDirectory)\Database\SyncTool\build_exe.py&quot;"
+      WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
   <ItemGroup>
     <Content Remove="docs\development\CopilotForms\**" />
     <Content Remove="docs\CopilotForms\data\module-metadata\Module_Settings.Receiving\settings-receiving-configuration.json" />
