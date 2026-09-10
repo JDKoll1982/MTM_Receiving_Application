@@ -352,9 +352,22 @@ LIMIT 1;";
 
                 if (result.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving history row matched the delete request for load '{load.LoadNumber}'."
+                    // sp_Receiving_Load_Delete restores FOREIGN_KEY_CHECKS as its final
+                    // statement, so MySQL reports that trailing SET's row count (0) instead
+                    // of the DELETE's. Only treat the delete as failed when the row is
+                    // genuinely still present.
+                    var historyRowStillExists = await ReceivingHistoryRowExistsAsync(
+                        connection,
+                        transaction,
+                        load
                     );
+
+                    if (historyRowStillExists)
+                    {
+                        throw new InvalidOperationException(
+                            $"No receiving history row matched the delete request for load '{load.LoadNumber}'."
+                        );
+                    }
                 }
 
                 deletedCount++;
