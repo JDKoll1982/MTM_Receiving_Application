@@ -32,6 +32,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private DateTime? _currentPoHeaderPromiseDate;
         private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
         private bool _isClearingRestrictedSelection;
+        private string? _lastLoadedPoNumber;
+        private Task<bool>? _pendingQualityHoldCheck;
         private static readonly Regex CanonicalPoNumberPattern = new(
             @"^(?:PO-)?(?<digits>\d{1,6})(?<suffix>[Bb]?)$",
             RegexOptions.IgnoreCase
@@ -146,6 +148,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// Gets a value indicating whether a part is currently selected for guided PO entry.
         /// </summary>
         public bool HasSelectedPart => SelectedPart is not null;
+
+        /// <summary>
+        /// Raised when the view should return focus to the PO number field, for example after a rejected PO.
+        /// </summary>
+        public event EventHandler? PoFieldRefocusRequested;
 
         public ViewModel_Receiving_POEntry(
             IService_InforVisual inforVisualService,
@@ -274,6 +281,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             PoStatus = string.Empty;
             _currentPoHeaderPromiseDate = null;
             _workflowService.CurrentPODueDate = null;
+            _lastLoadedPoNumber = null;
         }
 
         [RelayCommand]
@@ -296,6 +304,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task LoadPOAsync()
         {
+            if (_workflowService.CurrentStep != Enum_ReceivingWorkflowStep.POEntry || IsLoading)
+            {
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(PoNumber))
             {
                 await _errorHandler.HandleErrorAsync(
@@ -307,6 +320,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
+            _lastLoadedPoNumber = PoNumber.Trim();
             IsLoading = true;
             try
             {
@@ -314,6 +328,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 if (result.IsSuccess && result.Data != null)
                 {
                     var parts = result.Data.Parts.ToList();
+
+                    if (parts.Count == 0)
+                    {
+                        await RejectPoWithoutPartsAsync();
+                        return;
+                    }
 
                     // Set PO status in ViewModel
                     PoStatus = result.Data.Status;
@@ -327,6 +347,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _workflowService.CurrentPODueDate = _currentPoHeaderPromiseDate;
 
                     ReplaceParts(parts, clearSelection: true);
+
+                    if (parts.Count == 1)
+                    {
+                        await AutoSelectSinglePartAndAdvanceAsync(parts[0]);
+                        return;
+                    }
 
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts,
@@ -353,6 +379,87 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        /// <summary>
+        /// Loads the current PO number automatically when the operator leaves the PO field or presses Enter.
+        /// </summary>
+        public async Task TryAutoLoadPoAsync()
+        {
+            if (IsLoading || string.IsNullOrWhiteSpace(PoNumber) || !IsLoadPOEnabled)
+            {
+                return;
+            }
+
+            if (
+                string.Equals(
+                    PoNumber.Trim(),
+                    _lastLoadedPoNumber,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return;
+            }
+
+            await LoadPOAsync();
+        }
+
+        /// <summary>
+        /// Rejects a PO that has no part numbers, clears the field, and asks the view to refocus it.
+        /// </summary>
+        private async Task RejectPoWithoutPartsAsync()
+        {
+            var message = await _receivingSettings.FormatAsync(
+                ReceivingSettingsKeys.Messages.ErrorPoHasNoParts,
+                PoNumber
+            );
+
+            ShowStatus(message, InfoBarSeverity.Warning);
+
+            ReplaceParts(Array.Empty<Model_InforVisualPart>(), clearSelection: true);
+            _lastLoadedPoNumber = null;
+            PoNumber = string.Empty;
+            PartID = string.Empty;
+            PoStatus = string.Empty;
+            PoStatusDescription = string.Empty;
+            IsPOClosed = false;
+            PoValidationMessage = string.Empty;
+            _currentPoHeaderPromiseDate = null;
+            _workflowService.CurrentPODueDate = null;
+            _workflowService.CurrentLocation = string.Empty;
+            _workflowService.CurrentPOVendor = string.Empty;
+            _workflowService.CurrentPOStatus = string.Empty;
+
+            PoFieldRefocusRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Selects the only part on the PO, notifies the operator, and advances to the load information step.
+        /// </summary>
+        private async Task AutoSelectSinglePartAndAdvanceAsync(Model_InforVisualPart onlyPart)
+        {
+            SelectedPart = onlyPart;
+
+            var isPartUsable = await AwaitPendingQualityHoldCheckAsync();
+            if (!isPartUsable || SelectedPart is null)
+            {
+                return;
+            }
+
+            var message = await _receivingSettings.FormatAsync(
+                ReceivingSettingsKeys.Messages.InfoPoSinglePartAutoSelected,
+                onlyPart.PartID
+            );
+            ShowStatus(message, InfoBarSeverity.Informational);
+
+            await _workflowService.AdvanceToNextStepAsync();
+        }
+
+        private async Task<bool> AwaitPendingQualityHoldCheckAsync()
+        {
+            var pendingCheck = _pendingQualityHoldCheck;
+            return pendingCheck is null || await pendingCheck;
         }
 
         [RelayCommand]
@@ -593,6 +700,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         partial void OnPoNumberChanged(string value)
         {
+            if (
+                !string.Equals(value?.Trim(), _lastLoadedPoNumber, StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                _lastLoadedPoNumber = null;
+            }
+
             if (string.IsNullOrWhiteSpace(value))
             {
                 _workflowService.CurrentPONumber = string.Empty;
@@ -702,7 +816,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 else
                     PackageType = "Skids";
 
-                _ = CheckQualityHoldOnSelectedPartAsync(value);
+                _pendingQualityHoldCheck = CheckQualityHoldOnSelectedPartAsync(value);
             }
 
             NotifyWorkflowNextButtonStateChanged();
@@ -718,17 +832,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        private async Task CheckQualityHoldOnSelectedPartAsync(Model_InforVisualPart selectedPart)
+        private async Task<bool> CheckQualityHoldOnSelectedPartAsync(
+            Model_InforVisualPart selectedPart
+        )
         {
             if (_qualityHoldWarning.IsRestrictedPart(selectedPart.PartID) is false)
             {
-                return;
+                return true;
             }
 
             bool acknowledged = await _qualityHoldWarning.CheckAndWarnAsync(selectedPart.PartID);
             if (acknowledged)
             {
-                return;
+                return true;
             }
 
             _isClearingRestrictedSelection = true;
@@ -750,6 +866,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 _isClearingRestrictedSelection = false;
             }
+
+            return false;
         }
 
         /// <summary>

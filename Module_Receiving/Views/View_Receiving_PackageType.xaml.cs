@@ -41,7 +41,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             DataContext = ViewModel;
 
             this.InitializeComponent();
-            AttachPackagePerLoadFocus();
             Loaded += View_Receiving_PackageType_Loaded;
             SizeChanged += View_Receiving_PackageType_SizeChanged;
         }
@@ -69,53 +68,22 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <summary>
         /// Moves focus to the package input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            FocusFirstPackagesPerLoadInput();
+            return FocusFirstPackagesPerLoadInput();
         }
 
-        private void AttachPackagePerLoadFocus()
+        private bool FocusFirstPackagesPerLoadInput()
         {
-            this.Loaded += (_, _) =>
+            if (this.Visibility != Visibility.Visible)
             {
-                if (this.Visibility == Visibility.Visible)
-                {
-                    FocusFirstPackagesPerLoadInput();
-                }
-            };
-            this.RegisterPropertyChangedCallback(
-                UIElement.VisibilityProperty,
-                (_, _) =>
-                {
-                    if (this.Visibility == Visibility.Visible)
-                    {
-                        FocusFirstPackagesPerLoadInput();
-                    }
-                }
-            );
-        }
-
-        private void FocusFirstPackagesPerLoadInput()
-        {
-            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
-            {
-                return;
+                return false;
             }
 
-            this.DispatcherQueue.TryEnqueue(() =>
-            {
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    var target = FindDescendant<NumberBox>(LoadsItemsControl);
-                    if (target != null)
-                    {
-                        _focusService.SetFocus(target);
-                        return;
-                    }
-
-                    _focusService.SetFocus(PackageTypeComboBox);
-                });
-            });
+            var target = FindDescendant<NumberBox>(LoadsItemsControl);
+            return target is not null
+                ? _focusService.TrySetFocus(target)
+                : _focusService.TrySetFocus(PackageTypeComboBox);
         }
 
         private static T? FindDescendant<T>(DependencyObject parent)

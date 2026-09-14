@@ -68,6 +68,9 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
         Title = ViewModel.Title;
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1400, 900);
 
+        // Open maximized; the size set above defines the size restored on un-maximize.
+        this.Maximize();
+
         ConfigureTitleBar();
         Activated += OnWindowActivated;
         UpdateTitleBarColors();

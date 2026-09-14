@@ -41,8 +41,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             SizeChanged += View_Receiving_LoadEntry_SizeChanged;
             UpdateViewportBounds();
-
-            _focusService.AttachFocusOnVisibility(this, NumberOfLoadsNumberBox);
         }
 
         private void View_Receiving_LoadEntry_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -80,9 +78,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <summary>
         /// Moves focus to the primary load-count input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            _focusService.SetFocus(NumberOfLoadsNumberBox);
+            return _focusService.TrySetFocus(NumberOfLoadsNumberBox);
         }
 
         private async void LocationLookupControl_ValidationCompleted(

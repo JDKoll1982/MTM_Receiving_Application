@@ -26,5 +26,19 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="view">The view/element to monitor for visibility changes.</param>
         /// <param name="targetControl">Optional specific control to focus. If null, searches for first input.</param>
         public void AttachFocusOnVisibility(FrameworkElement view, Control? targetControl = null);
+
+        /// <summary>
+        /// Focuses the control synchronously and reports whether focus was applied.
+        /// Returns <see langword="false"/> when the control is not yet loaded, visible, or enabled,
+        /// which lets callers retry after the next layout pass.
+        /// </summary>
+        /// <param name="control">The control to focus.</param>
+        public bool TrySetFocus(Control control);
+
+        /// <summary>
+        /// Focuses the text box synchronously, selects its full contents, and reports whether focus was applied.
+        /// </summary>
+        /// <param name="textBox">The text box to focus and select.</param>
+        public bool TrySetFocusAndSelectAll(TextBox textBox);
     }
 }

@@ -264,9 +264,12 @@ public static class ReceivingSettingsKeys
         public const string ErrorPoRequired = "Receiving.Messages.Error.PoRequired";
         public const string ErrorPartIdRequired = "Receiving.Messages.Error.PartIdRequired";
         public const string ErrorPoNotFound = "Receiving.Messages.Error.PoNotFound";
+        public const string ErrorPoHasNoParts = "Receiving.Messages.Error.PoHasNoParts";
         public const string ErrorPartNotFound = "Receiving.Messages.Error.PartNotFound";
 
         public const string InfoPoLoadedWithParts = "Receiving.Messages.Info.PoLoadedWithParts";
+        public const string InfoPoSinglePartAutoSelected =
+            "Receiving.Messages.Info.PoSinglePartAutoSelected";
         public const string InfoPartFound = "Receiving.Messages.Info.PartFound";
 
         public const string WarningSameDayReceiving = "Receiving.Messages.Warning.SameDayReceiving";

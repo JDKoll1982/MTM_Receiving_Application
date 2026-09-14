@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
@@ -13,6 +14,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using Windows.System;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
@@ -46,10 +48,25 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             DataContext = ViewModel;
             this.InitializeComponent();
 
-            _focusService.AttachFocusOnVisibility(this, PoNumberTextBox);
+            ViewModel.PoFieldRefocusRequested += ViewModel_PoFieldRefocusRequested;
             Loaded += View_Receiving_POEntry_Loaded;
             SizeChanged += View_Receiving_POEntry_SizeChanged;
             _ = LoadPartPaddingRulesAsync();
+        }
+
+        private void ViewModel_PoFieldRefocusRequested(object? sender, EventArgs e)
+        {
+            _ = sender;
+
+            if (DispatcherQueue is null)
+            {
+                return;
+            }
+
+            DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+                () => _focusService.TrySetFocusAndSelectAll(PoNumberTextBox)
+            );
         }
 
         private void View_Receiving_POEntry_Loaded(object sender, RoutedEventArgs e)
@@ -75,15 +92,27 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <summary>
         /// Moves focus to the PO entry field whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            _focusService.SetFocus(PoNumberTextBox);
+            return _focusService.TrySetFocusAndSelectAll(PoNumberTextBox);
+        }
+
+        private void PoNumberTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key != VirtualKey.Enter)
+            {
+                return;
+            }
+
+            e.Handled = true;
+            _ = ViewModel.TryAutoLoadPoAsync();
         }
 
         private void POTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Trigger auto-correction command
             ViewModel.PoTextBoxLostFocusCommand.Execute(null);
+            _ = ViewModel.TryAutoLoadPoAsync();
         }
 
         private async void PartIDLookupControl_ValidationCompleted(

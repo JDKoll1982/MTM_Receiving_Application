@@ -1359,6 +1359,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("MMC0000850");
         result.Data.PageCss.Should().Contain("thead { display: table-header-group; }");
         result.Data.PageCss.Should().Contain("margin: 0.2in");
+        result.Data.PageCss.Should().Contain(".identity-cell { width: 2.1in;");
+        result.Data.PageCss.Should().NotContain("display: flex");
     }
 
     [Fact]

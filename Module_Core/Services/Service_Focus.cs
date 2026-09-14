@@ -101,6 +101,34 @@ namespace MTM_Receiving_Application.Module_Core.Services
             );
         }
 
+        public bool TrySetFocus(Control control)
+        {
+            if (!IsReadyForFocus(control))
+            {
+                return false;
+            }
+
+            return control.Focus(FocusState.Programmatic);
+        }
+
+        public bool TrySetFocusAndSelectAll(TextBox textBox)
+        {
+            if (!TrySetFocus(textBox))
+            {
+                return false;
+            }
+
+            textBox.SelectAll();
+            return true;
+        }
+
+        private static bool IsReadyForFocus(Control? control)
+        {
+            return control?.IsLoaded == true
+                && control.IsEnabled
+                && control.Visibility == Visibility.Visible;
+        }
+
         private Control? FindFirstFocusableChild(DependencyObject parent)
         {
             if (parent == null)

@@ -207,6 +207,12 @@ namespace MTM_Receiving_Application
                 );
             }
 
+            // NOTE: do not maximize here. Maximizing a WinUI window that has not been
+            // activated yet makes the OS show it immediately, which paints the window with
+            // the default theme before the saved theme is applied and consumes the first
+            // Activated event that drives the startup navigation. The window is maximized
+            // by the startup lifecycle right after Activate() instead.
+
             try
             {
                 // Configure custom title bar

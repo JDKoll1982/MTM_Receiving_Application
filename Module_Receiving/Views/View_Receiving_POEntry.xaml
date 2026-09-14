@@ -71,6 +71,7 @@
                                 MinWidth="320"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PoNumberAccessibilityName, Mode=OneWay}"
+                                KeyDown="PoNumberTextBox_KeyDown"
                                 LostFocus="POTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                 TabIndex="0"

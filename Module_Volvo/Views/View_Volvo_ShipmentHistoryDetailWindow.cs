@@ -36,6 +36,10 @@ public sealed class View_Volvo_ShipmentHistoryDetailWindow : Window
         ExtendsContentIntoTitleBar = true;
         _contentPage.Loaded += OnContentPageLoaded;
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1180, 860);
+
+        // Open maximized; the size set above defines the size restored on un-maximize.
+        this.Maximize();
+
         Closed += OnWindowClosed;
     }
 

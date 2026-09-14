@@ -372,8 +372,13 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 UpdateSplash(100, "Ready!");
                 await Task.Delay(500);
 
-                // Show main window and hide splash screen
+                // Show main window and hide splash screen. Activate() first so the window is
+                // shown and the first Activated event (which drives the startup navigation)
+                // fires; maximize immediately after so the window is never painted at the
+                // small restore size. Maximizing before Activate() would show the window
+                // early and skip that first activation event.
                 App.MainWindow?.Activate();
+                App.MainWindow?.Maximize();
                 if (_splashScreen != null)
                 {
                     _splashScreen.IsProgrammaticClose = true;

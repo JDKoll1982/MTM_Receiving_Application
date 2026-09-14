@@ -20,15 +20,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_Workflow : Page
     {
+        private const int MaxFocusAttempts = 6;
+
         public ViewModel_Receiving_Workflow ViewModel { get; }
         private readonly IService_AdaptiveLayout _adaptiveLayout;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingShortcuts _receivingShortcuts;
+        private readonly IService_Focus _focusService;
         private readonly List<KeyboardAccelerator> _registeredAccelerators = new();
         private Model_Settings_ReceivingShortcuts _shortcutSettings =
             Model_Settings_ReceivingShortcuts.CreateDefault();
         private bool _isSimpleNavigationToggleActive;
+        private int _pendingFocusAttempts;
+        private bool _isFocusAttemptScheduled;
 
         public View_Receiving_Workflow(
             ViewModel_Receiving_Workflow viewModel,
@@ -36,6 +41,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             IService_ReceivingWorkflow workflowService,
             IService_Help helpService,
             IService_ReceivingShortcuts receivingShortcuts,
+            IService_Focus focusService,
             View_Receiving_ModeSelection modeSelectionView,
             View_Receiving_ManualEntry manualEntryView,
             View_Receiving_EditMode editModeView,
@@ -53,6 +59,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(workflowService);
             ArgumentNullException.ThrowIfNull(helpService);
             ArgumentNullException.ThrowIfNull(receivingShortcuts);
+            ArgumentNullException.ThrowIfNull(focusService);
             ArgumentNullException.ThrowIfNull(modeSelectionView);
             ArgumentNullException.ThrowIfNull(manualEntryView);
             ArgumentNullException.ThrowIfNull(editModeView);
@@ -69,6 +76,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _workflowService = workflowService;
             _helpService = helpService;
             _receivingShortcuts = receivingShortcuts;
+            _focusService = focusService;
             this.InitializeComponent();
             KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             AddHandler(KeyDownEvent, new KeyEventHandler(WorkflowPage_KeyDown), true);
@@ -88,6 +96,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             Loaded += View_Receiving_Workflow_Loaded;
             Unloaded += View_Receiving_Workflow_Unloaded;
             SizeChanged += View_Receiving_Workflow_SizeChanged;
+            LayoutUpdated += View_Receiving_Workflow_LayoutUpdated;
 
             _ = LoadShortcutsAsync();
         }
@@ -110,6 +119,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
             SizeChanged -= View_Receiving_Workflow_SizeChanged;
+            LayoutUpdated -= View_Receiving_Workflow_LayoutUpdated;
         }
 
         private void View_Receiving_Workflow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -139,13 +149,58 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
-            DispatcherQueue.TryEnqueue(() =>
+            _pendingFocusAttempts = MaxFocusAttempts;
+            ScheduleFocusAttempt();
+        }
+
+        private void View_Receiving_Workflow_LayoutUpdated(object? sender, object e)
+        {
+            _ = sender;
+            _ = e;
+
+            if (_pendingFocusAttempts > 0)
             {
-                DispatcherQueue.TryEnqueue(() =>
+                ScheduleFocusAttempt();
+            }
+        }
+
+        private void ScheduleFocusAttempt()
+        {
+            if (_isFocusAttemptScheduled || DispatcherQueue == null)
+            {
+                return;
+            }
+
+            _isFocusAttemptScheduled = true;
+            DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+                () =>
                 {
-                    ResolveFocusableStepView()?.FocusForAccess();
-                });
-            });
+                    _isFocusAttemptScheduled = false;
+                    AttemptFocusForCurrentStep();
+                }
+            );
+        }
+
+        private void AttemptFocusForCurrentStep()
+        {
+            if (_pendingFocusAttempts <= 0)
+            {
+                return;
+            }
+
+            _pendingFocusAttempts--;
+
+            if (TryFocusCurrentStep())
+            {
+                _pendingFocusAttempts = 0;
+                return;
+            }
+
+            if (_pendingFocusAttempts > 0)
+            {
+                ScheduleFocusAttempt();
+            }
         }
 
         private void RegisterGuidedStepFocusHooks()
@@ -161,6 +216,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 PackageTypeHost,
                 Enum_ReceivingWorkflowStep.PackageTypeEntry
             );
+            RegisterGuidedStepHostFocusHook(ReviewHost, Enum_ReceivingWorkflowStep.Review);
         }
 
         private void RegisterGuidedStepHostFocusHook(
@@ -183,22 +239,30 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             );
         }
 
-        private IReceivingWorkflowFocusable? ResolveFocusableStepView()
+        private bool TryFocusCurrentStep()
         {
             return _workflowService.CurrentStep switch
             {
-                Enum_ReceivingWorkflowStep.POEntry => POEntryHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.LoadEntry => LoadEntryHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.WeightQuantityEntry => WeightQuantityHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.HeatLotEntry => HeatLotHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.PackageTypeEntry => PackageTypeHost.Content
-                    as IReceivingWorkflowFocusable,
-                _ => null,
+                Enum_ReceivingWorkflowStep.POEntry => TryFocusHostedStep(POEntryHost),
+                Enum_ReceivingWorkflowStep.LoadEntry => TryFocusHostedStep(LoadEntryHost),
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry => TryFocusHostedStep(
+                    WeightQuantityHost
+                ),
+                Enum_ReceivingWorkflowStep.HeatLotEntry => TryFocusHostedStep(HeatLotHost),
+                Enum_ReceivingWorkflowStep.PackageTypeEntry => TryFocusHostedStep(PackageTypeHost),
+                Enum_ReceivingWorkflowStep.Review => TryFocusHostedStep(ReviewHost),
+                Enum_ReceivingWorkflowStep.Complete => _focusService.TrySetFocus(
+                    CompletionStartNewEntryButton
+                ),
+                _ => true,
             };
+        }
+
+        private static bool TryFocusHostedStep(ContentControl host)
+        {
+            return host.Visibility == Visibility.Visible
+                && host.Content is IReceivingWorkflowFocusable view
+                && view.FocusForAccess();
         }
 
         private async void HelpButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

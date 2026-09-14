@@ -242,6 +242,7 @@
                     Orientation="Horizontal"
                     Spacing="12">
                     <Button
+                        x:Name="CompletionStartNewEntryButton"
                         Command="{x:Bind ViewModel.StartNewEntryCommand}"
                         Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"

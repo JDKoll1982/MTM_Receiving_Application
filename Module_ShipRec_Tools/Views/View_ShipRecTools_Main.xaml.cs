@@ -1,9 +1,7 @@
 using System;
 using System.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
-using Windows.Graphics;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
@@ -13,9 +11,6 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 /// </summary>
 public sealed partial class View_ShipRecTools_Main : Page
 {
-    private const int DefaultMainWindowWidth = 1450;
-    private const int DefaultMainWindowHeight = 900;
-
     private readonly ViewModel_ShipRecTools_ToolSelection _toolSelectionViewModel;
     private readonly ViewModel_Tool_OutsideServiceHistory _outsideServiceHistoryViewModel;
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
@@ -97,69 +92,49 @@ public sealed partial class View_ShipRecTools_Main : Page
     {
         if (ViewModel.IsToolSelectionVisible)
         {
-            RestoreMainWindowSize();
             _toolSelectionViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsOutsideServiceHistoryVisible)
         {
-            RestoreMainWindowSize();
             _outsideServiceHistoryViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsMaterialAvailabilityBoardVisible)
         {
-            RestoreMainWindowSize();
             _materialAvailabilityBoardViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsPOLineSpecSearchVisible)
         {
-            RestoreMainWindowSize();
             _poLineSpecSearchViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsDunnageBookVisible)
         {
-            RestoreMainWindowSize();
             _dunnageBookViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsWeldedCoilsVisible)
         {
-            RestoreMainWindowSize();
             _weldedCoilsViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsReceivingAnalyticsVisible)
         {
-            RestoreMainWindowSize();
             _receivingAnalyticsViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsDeliveryScheduleVisible)
         {
-            RestoreMainWindowSize();
             _deliveryScheduleViewModel.ActivateView();
         }
-    }
-
-    private static void RestoreMainWindowSize()
-    {
-        if (App.MainWindow is not MTM_Receiving_Application.MainWindow mainWindow)
-        {
-            return;
-        }
-
-        mainWindow.AppWindow.Resize(
-            mainWindow.GetScaledWindowSize(DefaultMainWindowWidth, DefaultMainWindowHeight)
-        );
     }
 }

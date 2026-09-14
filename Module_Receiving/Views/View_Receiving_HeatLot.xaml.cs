@@ -59,7 +59,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
             this.InitializeComponent();
-            AttachLoadFocus();
             Loaded += View_Receiving_HeatLot_Loaded;
             SizeChanged += View_Receiving_HeatLot_SizeChanged;
         }
@@ -87,59 +86,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <summary>
         /// Moves focus to the first heat or lot input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            FocusFirstLoadHeatLotInput();
-        }
-
-        /// <summary>
-        /// The AttachLoadFocus.
-        /// </summary>
-        private void AttachLoadFocus()
-        {
-            this.Loaded += (_, _) =>
-            {
-                if (this.Visibility == Visibility.Visible)
-                {
-                    FocusFirstLoadHeatLotInput();
-                }
-            };
-            this.RegisterPropertyChangedCallback(
-                UIElement.VisibilityProperty,
-                (_, _) =>
-                {
-                    if (this.Visibility == Visibility.Visible)
-                    {
-                        FocusFirstLoadHeatLotInput();
-                    }
-                }
-            );
+            return FocusFirstLoadHeatLotInput();
         }
 
         /// <summary>
         /// Moves focus to the first heat or lot input.
         /// </summary>
-        private void FocusFirstLoadHeatLotInput()
+        private bool FocusFirstLoadHeatLotInput()
         {
-            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
+            if (this.Visibility != Visibility.Visible)
             {
-                return;
+                return false;
             }
 
-            this.DispatcherQueue.TryEnqueue(() =>
-            {
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    var target = FindDescendant<TextBox>(LoadsItemsControl);
-                    if (target != null)
-                    {
-                        _focusService.SetFocus(target);
-                        return;
-                    }
-
-                    _focusService.SetFocusFirstInput(this);
-                });
-            });
+            var target = FindDescendant<TextBox>(LoadsItemsControl);
+            return target is not null && _focusService.TrySetFocus(target);
         }
 
         /// <summary>

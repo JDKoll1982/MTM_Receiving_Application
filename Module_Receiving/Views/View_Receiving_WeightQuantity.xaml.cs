@@ -51,62 +51,27 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             Loaded += View_Receiving_WeightQuantity_Loaded;
             SizeChanged += View_Receiving_WeightQuantity_SizeChanged;
             this.Unloaded += View_Receiving_WeightQuantity_Unloaded;
-            AttachLoadFocus();
             InitializeCurrentTotalReminderAnimation();
-
             CurrentTotalReminderTextBlock.Foreground = _currentTotalReminderBrush;
         }
 
         /// <summary>
         /// Moves focus to the first weight or quantity input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            FocusFirstLoadQuantityInput();
+            return FocusFirstLoadQuantityInput();
         }
 
-        private void AttachLoadFocus()
+        private bool FocusFirstLoadQuantityInput()
         {
-            this.Loaded += (_, _) =>
+            if (this.Visibility != Visibility.Visible)
             {
-                if (this.Visibility == Visibility.Visible)
-                {
-                    FocusFirstLoadQuantityInput();
-                }
-            };
-            this.RegisterPropertyChangedCallback(
-                UIElement.VisibilityProperty,
-                (_, _) =>
-                {
-                    if (this.Visibility == Visibility.Visible)
-                    {
-                        FocusFirstLoadQuantityInput();
-                    }
-                }
-            );
-        }
-
-        private void FocusFirstLoadQuantityInput()
-        {
-            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
-            {
-                return;
+                return false;
             }
 
-            this.DispatcherQueue.TryEnqueue(() =>
-            {
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    var target = FindDescendant<NumberBox>(LoadsItemsControl);
-                    if (target != null)
-                    {
-                        _focusService.SetFocus(target);
-                        return;
-                    }
-
-                    _focusService.SetFocusFirstInput(this);
-                });
-            });
+            var target = FindDescendant<NumberBox>(LoadsItemsControl);
+            return target is not null && _focusService.TrySetFocus(target);
         }
 
         private void View_Receiving_WeightQuantity_Unloaded(object sender, RoutedEventArgs e)

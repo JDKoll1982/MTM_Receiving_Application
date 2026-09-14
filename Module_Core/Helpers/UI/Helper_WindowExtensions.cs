@@ -76,6 +76,23 @@ public static class Helper_WindowExtensions
     }
 
     /// <summary>
+    /// Maximizes the window so it fills the work area of its display while keeping the
+    /// title bar and taskbar accessible.
+    /// </summary>
+    /// <param name="window">The window to maximize</param>
+    public static void Maximize(this Window window)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+
+        var appWindow = window.GetAppWindow();
+
+        if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.Maximize();
+        }
+    }
+
+    /// <summary>
     /// Configures the window as non-resizable (fixed size)
     /// </summary>
     /// <param name="window">The window to configure</param>

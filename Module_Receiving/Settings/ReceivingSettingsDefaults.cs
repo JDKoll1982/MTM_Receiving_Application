@@ -237,9 +237,13 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Messages.ErrorPoRequired] = "Please enter a PO number.",
             [ReceivingSettingsKeys.Messages.ErrorPartIdRequired] = "Please enter a Part ID.",
             [ReceivingSettingsKeys.Messages.ErrorPoNotFound] = "PO not found or contains no parts.",
+            [ReceivingSettingsKeys.Messages.ErrorPoHasNoParts] =
+                "Purchase Order {0} has no part numbers. Enter a different PO.",
             [ReceivingSettingsKeys.Messages.ErrorPartNotFound] = "Part not found.",
             [ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts] =
                 "Purchase Order {0} loaded with {1} parts.",
+            [ReceivingSettingsKeys.Messages.InfoPoSinglePartAutoSelected] =
+                "Part {0} was auto selected because it is the only part on this PO.",
             [ReceivingSettingsKeys.Messages.InfoPartFound] = "Part {0} found.",
             [ReceivingSettingsKeys.Messages.WarningSameDayReceiving] =
                 "Warning: {0:N2} of this part has already been received today on this PO.",

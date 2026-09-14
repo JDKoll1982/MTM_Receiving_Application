@@ -485,6 +485,7 @@
             </Button>
 
             <Button
+                x:Name="SaveToDatabaseButton"
                 Grid.Column="2"
                 AutomationProperties.Name="{x:Bind ViewModel.ReviewSaveToDatabaseAccessibilityName, Mode=OneWay}"
                 Command="{x:Bind ViewModel.SaveCommand}"
