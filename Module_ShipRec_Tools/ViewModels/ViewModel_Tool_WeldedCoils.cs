@@ -13,8 +13,8 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
 /// <summary>
 /// ViewModel for the Welded Coils tool: lists the settings_weldedcoils table and
-/// supports add, search, active/inactive toggling, and delete-selected. Rows are
-/// read-only after they are added; they can only be activated/deactivated or removed.
+/// supports add, search, per-row delete, and delete-selected. Rows are read-only
+/// after they are added; removing a row is the only way to change the list.
 /// </summary>
 public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
 {
@@ -44,14 +44,8 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
     private Model_Tool_WeldedCoil? _selectedCoil;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActiveCountText))]
-    [NotifyPropertyChangedFor(nameof(InactiveCountText))]
-    private int _activeCount;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActiveCountText))]
-    [NotifyPropertyChangedFor(nameof(InactiveCountText))]
-    private int _inactiveCount;
+    [NotifyPropertyChangedFor(nameof(TotalCountText))]
+    private int _totalCount;
 
     /// <summary>True when the Add box has a non-empty part number.</summary>
     public bool CanAdd => !string.IsNullOrWhiteSpace(NewPartId);
@@ -67,8 +61,7 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
             ? "No welded coils defined. Add a part to get started."
             : "No coils match your search.";
 
-    public string ActiveCountText => $"{ActiveCount} active";
-    public string InactiveCountText => $"{InactiveCount} inactive";
+    public string TotalCountText => $"{TotalCount} coil(s)";
 
     public ViewModel_Tool_WeldedCoils(
         IService_Tool_WeldedCoils service,
@@ -124,8 +117,7 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
 
             var loaded = result.Data ?? [];
             Coils = new ObservableCollection<Model_Tool_WeldedCoil>(loaded);
-            ActiveCount = loaded.Count(c => c.IsActive);
-            InactiveCount = loaded.Count - ActiveCount;
+            TotalCount = Coils.Count;
             ApplyFilter();
             ShowStatus(
                 loaded.Count == 0
@@ -204,10 +196,9 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
     }
 
     /// <summary>
-    /// Persists an Active / Inactive change for a row. Called from the view on the
-    /// row's Activate / Deactivate button click.
+    /// Deletes a single row. Called from the view on the row's Delete button click.
     /// </summary>
-    public async Task ToggleActiveAsync(Model_Tool_WeldedCoil coil)
+    public async Task DeleteCoilAsync(Model_Tool_WeldedCoil coil)
     {
         if (coil is null || coil.Id <= 0 || IsBusy)
         {
@@ -217,32 +208,29 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
         IsBusy = true;
         try
         {
-            var result = await _service.SetActiveAsync(coil.Id, coil.IsActive);
+            var result = await _service.DeleteAsync(coil.Id);
             if (!result.IsSuccess)
             {
                 ShowStatus(result.ErrorMessage, InfoBarSeverity.Error);
-                await LoadCoilsAsync();
                 return;
             }
 
-            RecalculateCounts();
-            ShowStatus(
-                coil.IsActive ? $"Activated {coil.PartId}." : $"Deactivated {coil.PartId}.",
-                InfoBarSeverity.Success
-            );
+            RemoveCoilFromList(coil);
+            ShowStatus($"Deleted {coil.PartId}.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
-                nameof(ToggleActiveAsync),
+                nameof(DeleteCoilAsync),
                 nameof(ViewModel_Tool_WeldedCoils)
             );
         }
         finally
         {
             IsBusy = false;
+            DeleteSelectedCommand.NotifyCanExecuteChanged();
         }
     }
 
@@ -266,10 +254,7 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
                 return;
             }
 
-            Coils.Remove(coil);
-            SelectedCoil = null;
-            RecalculateCounts();
-            ApplyFilter();
+            RemoveCoilFromList(coil);
             ShowStatus($"Removed {coil.PartId}.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
@@ -288,10 +273,20 @@ public partial class ViewModel_Tool_WeldedCoils : ViewModel_Tool_Base
         }
     }
 
-    private void RecalculateCounts()
+    /// <summary>
+    /// Drops a deleted row from the in-memory list, refreshes the count and filter, and
+    /// clears the selection when the deleted row was the selected one.
+    /// </summary>
+    private void RemoveCoilFromList(Model_Tool_WeldedCoil coil)
     {
-        ActiveCount = Coils.Count(c => c.IsActive);
-        InactiveCount = Coils.Count - ActiveCount;
+        Coils.Remove(coil);
+        if (ReferenceEquals(SelectedCoil, coil))
+        {
+            SelectedCoil = null;
+        }
+
+        TotalCount = Coils.Count;
+        ApplyFilter();
     }
 
     /// <summary>Filters the displayed rows by the current search text.</summary>

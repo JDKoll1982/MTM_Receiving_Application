@@ -15,6 +15,7 @@
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
         <converters:Converter_DoubleToDecimal x:Key="DoubleToDecimalConverter" />
         <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid x:Name="WeightQuantityRootGrid">
@@ -64,49 +65,91 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Grid
                         Grid.Row="0"
-                        Grid.Column="0"
-                        ColumnSpacing="6">
+                        Grid.ColumnSpan="2"
+                        ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
+
+                        <!--  Left: part number  -->
+                        <StackPanel
                             Grid.Column="0"
-                            VerticalAlignment="Center"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            MaxLines="1"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Part Number:"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
-                        <TextBlock
+                            HorizontalAlignment="Left"
+                            Orientation="Horizontal"
+                            Spacing="6">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Part Number:"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                        </StackPanel>
+
+                        <!--  Center: PO number, hidden when the workflow has none  -->
+                        <StackPanel
                             Grid.Column="1"
-                            VerticalAlignment="Center"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            MaxLines="1"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            Visibility="{x:Bind ViewModel.HasPoNumber, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="PO Number:"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentPoNumber, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                        </StackPanel>
+
+                        <!--  Right: description  -->
                         <TextBlock
-                            Grid.Column="3"
+                            Grid.Column="2"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             MaxLines="1"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Text="{x:Bind ViewModel.CurrentPartDescription, Mode=OneWay}"
+                            TextAlignment="Right"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="NoWrap" />
                     </Grid>
 
-                    <Grid
+                    <Border
                         Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Height="1"
+                        Margin="0,2"
+                        Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                    <Grid
+                        Grid.Row="2"
                         Grid.Column="0"
                         ColumnSpacing="32">
                         <Grid.ColumnDefinitions>
@@ -125,7 +168,7 @@
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 MaxLines="1"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Loads:"
+                                Text="Labels:"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap" />
                             <TextBlock
@@ -168,8 +211,7 @@
                     </Grid>
 
                     <Button
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
+                        Grid.Row="2"
                         Grid.Column="1"
                         Padding="16,8"
                         VerticalAlignment="Center"

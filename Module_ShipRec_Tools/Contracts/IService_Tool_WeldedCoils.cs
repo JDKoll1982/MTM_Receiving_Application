@@ -19,9 +19,6 @@ public interface IService_Tool_WeldedCoils
     /// <summary>Renames the part number on an existing row.</summary>
     Task<Model_Dao_Result> UpdateAsync(int id, string partId);
 
-    /// <summary>Flips a row between Active and Inactive.</summary>
-    Task<Model_Dao_Result> SetActiveAsync(int id, bool isActive);
-
     /// <summary>Removes a welded-coil row.</summary>
     Task<Model_Dao_Result> DeleteAsync(int id);
 }

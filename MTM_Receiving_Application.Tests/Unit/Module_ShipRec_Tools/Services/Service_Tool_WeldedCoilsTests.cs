@@ -102,21 +102,6 @@ public sealed class Service_Tool_WeldedCoilsTests
     }
 
     [Fact]
-    public async Task SetActiveAsync_ShouldDelegateToDao()
-    {
-        var daoMock = new Mock<Dao_Tool_WeldedCoil>("Server=x;Database=y;");
-        daoMock
-            .Setup(dao => dao.SetActiveAsync(It.IsAny<int>(), It.IsAny<bool>()))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success());
-        var service = CreateService(daoMock);
-
-        var result = await service.SetActiveAsync(5, false);
-
-        result.IsSuccess.Should().BeTrue();
-        daoMock.Verify(dao => dao.SetActiveAsync(5, false), Times.Once);
-    }
-
-    [Fact]
     public async Task DeleteAsync_ShouldDelegateToDao()
     {
         var daoMock = new Mock<Dao_Tool_WeldedCoil>("Server=x;Database=y;");

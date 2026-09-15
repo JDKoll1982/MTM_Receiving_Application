@@ -33,22 +33,20 @@ public sealed class ViewModel_Tool_WeldedCoilsTests
     }
 
     [Fact]
-    public async Task LoadCoilsAsync_ShouldPopulateCoilsAndCounts()
+    public async Task LoadCoilsAsync_ShouldPopulateCoilsAndTotalCount()
     {
         var serviceMock = CreateServiceMockWithCoils(
-            CreateCoil(1, "A-001", isActive: true),
-            CreateCoil(2, "B-002", isActive: true),
-            CreateCoil(3, "C-003", isActive: false)
+            CreateCoil(1, "A-001"),
+            CreateCoil(2, "B-002"),
+            CreateCoil(3, "C-003")
         );
         var viewModel = CreateViewModel(serviceMock.Object);
 
         await viewModel.LoadCoilsAsync();
 
         viewModel.Coils.Should().HaveCount(3);
-        viewModel.ActiveCount.Should().Be(2);
-        viewModel.InactiveCount.Should().Be(1);
-        viewModel.ActiveCountText.Should().Be("2 active");
-        viewModel.InactiveCountText.Should().Be("1 inactive");
+        viewModel.TotalCount.Should().Be(3);
+        viewModel.TotalCountText.Should().Be("3 coil(s)");
     }
 
     [Fact]
@@ -109,22 +107,55 @@ public sealed class ViewModel_Tool_WeldedCoilsTests
     }
 
     [Fact]
-    public async Task ToggleActiveAsync_ShouldCallSetActiveAndRecount()
+    public async Task DeleteCoilAsync_ShouldDeleteRowAndUpdateCount()
     {
-        var coil = CreateCoil(1, "21-28841", isActive: true);
-        var serviceMock = CreateServiceMockWithCoils(coil);
+        var coilA = CreateCoil(1, "21-28841");
+        var coilB = CreateCoil(2, "21-28842");
+        var serviceMock = CreateServiceMockWithCoils(coilA, coilB);
         serviceMock
-            .Setup(service => service.SetActiveAsync(1, false))
+            .Setup(service => service.DeleteAsync(1))
             .ReturnsAsync(Model_Dao_Result_Factory.Success());
         var viewModel = CreateViewModel(serviceMock.Object);
         await viewModel.LoadCoilsAsync();
 
-        coil.IsActive = false;
-        await viewModel.ToggleActiveAsync(coil);
+        await viewModel.DeleteCoilAsync(coilA);
 
-        serviceMock.Verify(service => service.SetActiveAsync(1, false), Times.Once);
-        viewModel.ActiveCount.Should().Be(0);
-        viewModel.InactiveCount.Should().Be(1);
+        serviceMock.Verify(service => service.DeleteAsync(1), Times.Once);
+        viewModel.Coils.Should().ContainSingle(c => c.Id == 2);
+        viewModel.TotalCount.Should().Be(1);
+        viewModel.StatusMessage.Should().Contain("Deleted");
+    }
+
+    [Fact]
+    public async Task DeleteCoilAsync_ShouldKeepRow_WhenServiceFails()
+    {
+        var coil = CreateCoil(1, "21-28841");
+        var serviceMock = CreateServiceMockWithCoils(coil);
+        serviceMock
+            .Setup(service => service.DeleteAsync(1))
+            .ReturnsAsync(Model_Dao_Result_Factory.Failure("delete failed"));
+        var viewModel = CreateViewModel(serviceMock.Object);
+        await viewModel.LoadCoilsAsync();
+
+        await viewModel.DeleteCoilAsync(coil);
+
+        viewModel.Coils.Should().ContainSingle();
+        viewModel.TotalCount.Should().Be(1);
+        viewModel.StatusMessage.Should().Contain("delete failed");
+    }
+
+    [Fact]
+    public async Task DeleteCoilAsync_ShouldNotDelete_WhenBusy()
+    {
+        var coil = CreateCoil(1, "21-28841");
+        var serviceMock = CreateServiceMockWithCoils(coil);
+        var viewModel = CreateViewModel(serviceMock.Object);
+        await viewModel.LoadCoilsAsync();
+        viewModel.IsBusy = true;
+
+        await viewModel.DeleteCoilAsync(coil);
+
+        serviceMock.Verify(service => service.DeleteAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -145,8 +176,6 @@ public sealed class ViewModel_Tool_WeldedCoilsTests
         serviceMock.Verify(service => service.DeleteAsync(1), Times.Once);
         viewModel.Coils.Should().ContainSingle(c => c.Id == 2);
         viewModel.SelectedCoil.Should().BeNull();
-        viewModel.ActiveCount.Should().Be(0);
-        viewModel.InactiveCount.Should().Be(1);
     }
 
     [Fact]

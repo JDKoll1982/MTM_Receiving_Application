@@ -69,14 +69,11 @@
                             Content="Delete Selected" />
                     </Grid>
 
-                    <!--  Counts + helper text  -->
+                    <!--  Count + helper text  -->
                     <StackPanel Orientation="Horizontal" Spacing="16">
                         <TextBlock
                             FontWeight="SemiBold"
-                            Text="{x:Bind ViewModel.ActiveCountText, Mode=OneWay}" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="{x:Bind ViewModel.InactiveCountText, Mode=OneWay}" />
+                            Text="{x:Bind ViewModel.TotalCountText, Mode=OneWay}" />
                         <TextBlock
                             VerticalAlignment="Center"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -136,10 +133,8 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.6*" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Part" />
-                    <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Status" />
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -155,23 +150,18 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1.6*" />
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
                                         Text="{x:Bind PartId}" />
-                                    <TextBlock
+                                    <Button
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind StatusLabel}" />
-                                    <Button
-                                        Grid.Column="2"
-                                        VerticalAlignment="Center"
-                                        Click="ToggleActiveButton_Click"
-                                        Content="{x:Bind ToggleLabel}"
+                                        AutomationProperties.Name="Delete coil"
+                                        Click="DeleteRowButton_Click"
+                                        Content="Delete"
                                         Tag="{x:Bind}" />
                                 </Grid>
                             </DataTemplate>

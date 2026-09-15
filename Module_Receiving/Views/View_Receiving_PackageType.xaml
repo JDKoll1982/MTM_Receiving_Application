@@ -49,14 +49,101 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8">
-            <Grid ColumnSpacing="16">
+            <Grid ColumnSpacing="16" RowSpacing="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  Identity row: part, PO number, description  -->
+                <Grid
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Left: part number  -->
+                    <StackPanel
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Part Number:"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                    </StackPanel>
+
+                    <!--  Center: PO number, hidden when the workflow has none  -->
+                    <StackPanel
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        Visibility="{x:Bind ViewModel.HasPoNumber, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="PO Number:"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.CurrentPoNumber, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                    </StackPanel>
+
+                    <!--  Right: description  -->
+                    <TextBlock
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="1"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.CurrentPartDescription, Mode=OneWay}"
+                        TextAlignment="Right"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap" />
+                </Grid>
+
+                <Border
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    Height="1"
+                    Margin="0,2"
+                    Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
                 <StackPanel
+                    Grid.Row="2"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
@@ -69,6 +156,7 @@
                 </StackPanel>
 
                 <Grid
+                    Grid.Row="2"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     ColumnSpacing="16">
@@ -95,6 +183,7 @@
                 </Grid>
 
                 <CheckBox
+                    Grid.Row="2"
                     Grid.Column="2"
                     VerticalAlignment="Center"
                     Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"

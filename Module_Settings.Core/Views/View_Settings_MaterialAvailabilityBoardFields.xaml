@@ -7,6 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Border
@@ -48,19 +49,44 @@
             </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Spacing="8">
+            <Button Command="{x:Bind ViewModel.ExpandAllCommand}" Content="Expand all" />
+            <Button Command="{x:Bind ViewModel.CollapseAllCommand}" Content="Collapse all" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <ItemsControl ItemsSource="{x:Bind ViewModel.FieldGroups, Mode=OneWay}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:Model_Settings_MaterialAvailabilityFieldGroup">
-                        <Border
+                        <Expander
                             Margin="0,0,0,12"
-                            Padding="16"
-                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            CornerRadius="10">
-                            <StackPanel Spacing="12">
-                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind Title}" />
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}">
+                            <Expander.Header>
+                                <Grid Padding="0,4" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind Title}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind SelectionSummary, Mode=OneWay}" />
+                                </Grid>
+                            </Expander.Header>
+                            <StackPanel Padding="0,4" Spacing="12">
                                 <Grid ColumnSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -94,31 +120,42 @@
                                                     <ColumnDefinition Width="100" />
                                                     <ColumnDefinition Width="100" />
                                                 </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" Spacing="2">
-                                                    <TextBlock
-                                                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                                                        Text="{x:Bind DisplayName}"
-                                                        TextWrapping="WrapWholeWords" />
-                                                    <TextBlock
-                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                                        Text="Used in logic by default"
-                                                        Visibility="{x:Bind IsLogicOnly, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                                </StackPanel>
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    VerticalAlignment="Center"
+                                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                    Text="{x:Bind DisplayName}"
+                                                    TextWrapping="WrapWholeWords" />
+                                                <!--  WinUI's default CheckBox reserves a 120px minimum width
+                                                      plus content padding. Inside these fixed 100px columns that
+                                                      reserve overflows and the visuals clip, so each check box is
+                                                      sized to its glyph while keeping a touch-friendly hit area.  -->
                                                 <CheckBox
                                                     Grid.Column="1"
+                                                    MinWidth="32"
+                                                    MinHeight="32"
+                                                    Padding="0"
                                                     HorizontalAlignment="Center"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    VerticalContentAlignment="Center"
                                                     IsChecked="{x:Bind IsVisibleInUi, Mode=TwoWay}" />
                                                 <CheckBox
                                                     Grid.Column="2"
+                                                    MinWidth="32"
+                                                    MinHeight="32"
+                                                    Padding="0"
                                                     HorizontalAlignment="Center"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    VerticalContentAlignment="Center"
                                                     IsChecked="{x:Bind IsVisibleInPrint, Mode=TwoWay}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
-                        </Border>
+                        </Expander>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

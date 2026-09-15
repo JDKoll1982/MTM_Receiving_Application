@@ -107,21 +107,6 @@ public class Service_Tool_WeldedCoils : IService_Tool_WeldedCoils
     }
 
     /// <inheritdoc />
-    public async Task<Model_Dao_Result> SetActiveAsync(int id, bool isActive)
-    {
-        var result = await _dao.SetActiveAsync(id, isActive);
-        if (!result.IsSuccess)
-        {
-            _logger.LogError(
-                $"WeldedCoils: failed to set active={isActive} on row {id}. {result.ErrorMessage}",
-                result.Exception
-            );
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc />
     public async Task<Model_Dao_Result> DeleteAsync(int id)
     {
         var result = await _dao.DeleteAsync(id);

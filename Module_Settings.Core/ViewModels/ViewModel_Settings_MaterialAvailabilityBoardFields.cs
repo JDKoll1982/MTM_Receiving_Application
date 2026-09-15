@@ -51,29 +51,47 @@ public sealed partial class ViewModel_Settings_MaterialAvailabilityBoardFields
             settingsErrorHandler ?? throw new ArgumentNullException(nameof(settingsErrorHandler));
 
         foreach (
-            var group in MaterialAvailabilityWorkOrderFieldCatalog
-                .All.GroupBy(field => field.Category)
-                .Select(group => new Model_Settings_MaterialAvailabilityFieldGroup
-                {
-                    Title = group.Key,
-                    Fields =
-                        new ObservableCollection<Model_Settings_MaterialAvailabilityFieldOption>(
-                            group
-                                .OrderBy(field => field.SortOrder)
-                                .Select(field => new Model_Settings_MaterialAvailabilityFieldOption
-                                {
-                                    Id = field.Id,
-                                    DisplayName = field.DisplayName,
-                                    IsLogicOnly = field.IsLogicOnly,
-                                })
-                        ),
-                })
+            var group in MaterialAvailabilityWorkOrderFieldCatalog.All.GroupBy(field =>
+                field.Category
+            )
         )
         {
-            FieldGroups.Add(group);
+            var fieldGroup = new Model_Settings_MaterialAvailabilityFieldGroup(group.Key);
+            foreach (var field in group.OrderBy(field => field.SortOrder))
+            {
+                fieldGroup.AddField(
+                    new Model_Settings_MaterialAvailabilityFieldOption
+                    {
+                        Id = field.Id,
+                        DisplayName = field.DisplayName,
+                    }
+                );
+            }
+
+            FieldGroups.Add(fieldGroup);
         }
 
         _ = LoadAsync();
+    }
+
+    /// <summary>
+    /// Opens every field group so all configurable rows are visible at once.
+    /// </summary>
+    [RelayCommand]
+    private void ExpandAll() => SetGroupExpansion(isExpanded: true);
+
+    /// <summary>
+    /// Collapses every field group back to the compact header summary view.
+    /// </summary>
+    [RelayCommand]
+    private void CollapseAll() => SetGroupExpansion(isExpanded: false);
+
+    private void SetGroupExpansion(bool isExpanded)
+    {
+        foreach (var group in FieldGroups)
+        {
+            group.IsExpanded = isExpanded;
+        }
     }
 
     [RelayCommand]

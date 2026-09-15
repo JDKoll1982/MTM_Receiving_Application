@@ -48,6 +48,9 @@ public partial class App : Application
         InitializeComponent();
         DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
 
+        // Subscribed before the host is built so even a failure during startup is recorded.
+        UnhandledException += OnUnhandledException;
+
         // LiveCharts2 SkiaSharp renderer setup (used by the Delivery Schedule tool
         // both for the on-screen CartesianChart and for headless chart-image export).
         LiveCharts.Configure(settings => settings.AddSkiaSharp());
@@ -89,6 +92,34 @@ public partial class App : Application
                 }
             )
             .Build();
+    }
+
+    /// <summary>
+    /// Records unhandled exceptions to Serilog and the debug output before the process dies.
+    /// Without this, XAML failures such as an unresolvable resource key never reach the hosted
+    /// logging pipeline, so a crash that stops the app leaves no trace in logs/app-*.txt.
+    /// The exception is left unhandled so startup and shutdown behaviour is unchanged.
+    /// </summary>
+    /// <param name="sender">The application raising the event.</param>
+    /// <param name="e">The unhandled exception and its message.</param>
+    private static void OnUnhandledException(
+        object sender,
+        Microsoft.UI.Xaml.UnhandledExceptionEventArgs e
+    )
+    {
+        try
+        {
+            var message = e.Exception?.ToString() ?? e.Message;
+            Serilog.Log.Fatal(
+                e.Exception,
+                "Unhandled exception reached the application dispatcher."
+            );
+            System.Diagnostics.Debug.WriteLine($"[UnhandledException] {message}");
+        }
+        catch
+        {
+            // Logging must never mask or replace the original failure.
+        }
     }
 
     /// <summary>

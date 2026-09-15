@@ -55,6 +55,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _currentPartDescription = string.Empty;
 
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row.
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPoNumber))]
+        private string _currentPoNumber = string.Empty;
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
+
         [ObservableProperty]
         private int _currentNumberOfLoads;
 
@@ -148,6 +158,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var part = _workflowService.CurrentPart;
             CurrentPartId = part?.PartID ?? string.Empty;
             CurrentPartDescription = part?.Description ?? string.Empty;
+            CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
             CurrentNumberOfLoads = _workflowService.NumberOfLoads;
         }
 

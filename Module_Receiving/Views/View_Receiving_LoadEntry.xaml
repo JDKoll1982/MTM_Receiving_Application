@@ -57,41 +57,80 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Grid
                         Grid.Row="0"
-                        Grid.Column="0"
-                        ColumnSpacing="6">
+                        Grid.ColumnSpan="2"
+                        ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
+
+                        <!--  Left: part number  -->
+                        <StackPanel
                             Grid.Column="0"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Part Number:" />
-                        <TextBlock
+                            HorizontalAlignment="Left"
+                            Orientation="Horizontal"
+                            Spacing="6">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Part Number:" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <!--  Center: PO number, hidden when the workflow has none  -->
+                        <StackPanel
                             Grid.Column="1"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Text="{x:Bind ViewModel.SelectedPartId, Mode=OneWay}" />
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            Visibility="{x:Bind ViewModel.HasPoNumber, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="PO Number:" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentPoNumber, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <!--  Right: description  -->
                         <TextBlock
-                            Grid.Column="3"
+                            Grid.Column="2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Text="{x:Bind ViewModel.SelectedPartDescription, Mode=OneWay}"
+                            TextAlignment="Right"
                             TextTrimming="WordEllipsis"
                             TextWrapping="NoWrap" />
                     </Grid>
 
 
 
-                    <Grid
+                    <Border
                         Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Height="1"
+                        Margin="0,2"
+                        Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                    <Grid
+                        Grid.Row="2"
                         Grid.ColumnSpan="2"
                         ColumnSpacing="16">
                         <Grid.ColumnDefinitions>

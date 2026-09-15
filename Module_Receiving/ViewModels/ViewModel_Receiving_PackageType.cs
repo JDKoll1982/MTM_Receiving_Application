@@ -44,12 +44,33 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private bool _isSaveAsDefault;
+
+        /// <summary>
+        /// Part identity for the card header row. This step has no part fields of its own, so the
+        /// values come from the guided workflow rather than user input.
+        /// </summary>
+        [ObservableProperty]
+        private string _currentPartId = string.Empty;
+
+        [ObservableProperty]
+        private string _currentPartDescription = string.Empty;
+
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row.
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPoNumber))]
+        private string _currentPoNumber = string.Empty;
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
+
         private static readonly System.Text.RegularExpressions.Regex _regex =
             new System.Text.RegularExpressions.Regex(@"^[\w\s\-\.\(\)]+$");
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
-        private string _packageTypeHeaderText = "Package Type (Applied to all loads)";
+        private string _packageTypeHeaderText = "Package Type:";
 
         [ObservableProperty]
         private string _packageTypeComboHeaderText = "Type";
@@ -170,12 +191,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
+            RefreshIdentityHeader();
+
             IsSaveAsDefault = false;
 
             await LoadPreferencesAsync();
 
             // Ensure package type is set for all loads after preferences are loaded
             UpdateLoadsPackageType();
+        }
+
+        /// <summary>
+        /// Fills the card header row. The part falls back to the first load when the workflow part
+        /// is not populated yet, matching how <see cref="LoadPreferencesAsync"/> resolves it.
+        /// </summary>
+        private void RefreshIdentityHeader()
+        {
+            var part = _workflowService.CurrentPart;
+            CurrentPartId = part?.PartID?.Trim() ?? string.Empty;
+            CurrentPartDescription = part?.Description?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(CurrentPartId) && Loads.Count > 0)
+            {
+                CurrentPartId = Loads[0].PartID;
+            }
+
+            CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
         }
 
         private async Task LoadPreferencesAsync()

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -10,7 +11,8 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
 /// <summary>
 /// Welded Coils tool view. Keeps business logic in the ViewModel; this file only
-/// forwards the row-level active toggle and the Add-box Enter key to the ViewModel.
+/// forwards the row-level delete (after confirming it) and the Add-box Enter key
+/// to the ViewModel.
 /// </summary>
 public sealed partial class View_Tool_WeldedCoils : Page
 {
@@ -30,12 +32,39 @@ public sealed partial class View_Tool_WeldedCoils : Page
         await helpService.ShowHelpAsync("ShipRecTools.WeldedCoils", XamlRoot);
     }
 
-    private async void ToggleActiveButton_Click(object sender, RoutedEventArgs e)
+    private async void DeleteRowButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is Model_Tool_WeldedCoil coil)
         {
-            await ViewModel.ToggleActiveAsync(coil);
+            if (await ConfirmDeleteAsync(coil))
+            {
+                await ViewModel.DeleteCoilAsync(coil);
+            }
         }
+    }
+
+    /// <summary>
+    /// Asks before removing a row because the delete permanently removes the part
+    /// from the welded coils table.
+    /// </summary>
+    private async Task<bool> ConfirmDeleteAsync(Model_Tool_WeldedCoil coil)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "Delete welded coil",
+            Content = $"Delete part {coil.PartId} from the welded coils list? This cannot be undone.",
+            PrimaryButtonText = "Delete",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            XamlRoot
+        );
+
+        return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
     private void AddBox_KeyDown(object sender, KeyRoutedEventArgs e)

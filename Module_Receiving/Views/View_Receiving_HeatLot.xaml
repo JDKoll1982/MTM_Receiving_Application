@@ -14,6 +14,7 @@
     <UserControl.Resources>
         <converters:Converter_StringFormat x:Key="StringFormatConverter" />
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid x:Name="HeatLotRootGrid">
@@ -55,64 +56,112 @@
                 BorderThickness="1"
                 CornerRadius="8">
 
-                <Grid>
+                <Grid ColumnSpacing="16" RowSpacing="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <!--  Left Side Layout Container  -->
-                    <Grid Grid.Column="0">
+                    <!--  Identity row: part, PO number, description  -->
+                    <Grid
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
-                            <!--  Part Number & Description Fields  -->
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
-                            <!--  Preset Fillers Controls  -->
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!--  Section 1: Part Number Fields  -->
-                        <TextBlock
+                        <!--  Left: part number  -->
+                        <StackPanel
                             Grid.Column="0"
-                            VerticalAlignment="Center"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            MaxLines="1"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Part Number:"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
+                            HorizontalAlignment="Left"
+                            Orientation="Horizontal"
+                            Spacing="6">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Part Number:"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                        </StackPanel>
 
-                        <TextBlock
+                        <!--  Center: PO number, hidden when the workflow has none  -->
+                        <StackPanel
                             Grid.Column="1"
-                            Margin="6,0,0,0"
-                            VerticalAlignment="Center"
-                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                            MaxLines="1"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            Visibility="{x:Bind ViewModel.HasPoNumber, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="PO Number:"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                MaxLines="1"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentPoNumber, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                        </StackPanel>
 
-                        <!--  Section 2: Part Description Field (Takes remaining middle space)  -->
+                        <!--  Right: description  -->
                         <TextBlock
                             Grid.Column="2"
-                            Margin="6,0,16,0"
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             MaxLines="1"
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Text="{x:Bind ViewModel.CurrentPartDescription, Mode=OneWay}"
-                            TextAlignment="Center"
+                            TextAlignment="Right"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="NoWrap" />
+                    </Grid>
 
-                        <!--  Section 3: Preset Fillers Controls  -->
+                    <Border
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Height="1"
+                        Margin="0,2"
+                        Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                    <!--  Preset fillers stay left justified; auto-fill sits right justified  -->
+                    <Grid
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
                         <TextBlock
-                            Grid.Column="3"
+                            Grid.Column="0"
                             VerticalAlignment="Center"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
@@ -121,16 +170,14 @@
                             TextWrapping="NoWrap" />
 
                         <ComboBox
-                            Grid.Column="4"
+                            Grid.Column="1"
                             Width="220"
-                            Margin="8,0,0,0"
                             VerticalAlignment="Center"
                             ItemsSource="{x:Bind ViewModel.HeatLotPresetFillers, Mode=OneWay}"
                             SelectedItem="{x:Bind ViewModel.SelectedHeatLotPresetFiller, Mode=TwoWay}" />
 
                         <Button
-                            Grid.Column="5"
-                            Margin="8,0,0,0"
+                            Grid.Column="2"
                             Padding="12,8"
                             VerticalAlignment="Center"
                             Command="{x:Bind ViewModel.ApplyHeatLotPresetCommand}"
@@ -141,12 +188,13 @@
                         </Button>
                     </Grid>
 
-                    <!--  Right Side: Auto-Fill Button  -->
                     <Button
+                        Grid.Row="2"
                         Grid.Column="1"
                         Margin="16,0,0,0"
                         Padding="16,8"
-                        HorizontalAlignment="Stretch"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
                         Command="{x:Bind ViewModel.AutoFillCommand}"
                         Content="{x:Bind ViewModel.HeatLotAutoFillText, Mode=OneWay}"
                         CornerRadius="8"

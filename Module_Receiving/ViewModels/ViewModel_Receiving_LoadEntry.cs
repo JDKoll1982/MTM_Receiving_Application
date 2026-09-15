@@ -36,6 +36,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _selectedPartDescription = string.Empty;
 
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row. Kept
+        /// separate from the part fields so non-PO receiving can hide the segment cleanly.
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPoNumber))]
+        private string _currentPoNumber = string.Empty;
+
         [ObservableProperty]
         private string _location = string.Empty;
 
@@ -56,7 +64,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
-        private string _loadEntryHeaderText = "Number of Loads (1-99)";
+        private string _loadEntryHeaderText = "Number of Labels (1-99)";
 
         [ObservableProperty]
         private string _loadEntryInstructionText =
@@ -71,13 +79,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         // Accessibility Properties
         [ObservableProperty]
-        private string _numberOfLoadsAccessibilityName = "Number of Loads";
+        private string _numberOfLoadsAccessibilityName = "Number of Labels";
 
         public ObservableCollection<string> PresetLocations { get; } = new();
 
         public bool IsLiveLocationMode => !IsMockLocationMode;
 
         public bool HasRecommendedLocations => RecommendedLocations.Count > 0;
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
 
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
@@ -142,6 +153,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             NumberOfLoads = 1;
             SelectedPartId = string.Empty;
             SelectedPartDescription = string.Empty;
+            CurrentPoNumber = string.Empty;
             Location = string.Empty;
             RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>();
             RecommendedLocationsMessage =
@@ -152,6 +164,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.LoadEntry)
             {
+                CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
                 NumberOfLoads = _workflowService.NumberOfLoads;
                 var part = _workflowService.CurrentPart;
                 if (part is not null)

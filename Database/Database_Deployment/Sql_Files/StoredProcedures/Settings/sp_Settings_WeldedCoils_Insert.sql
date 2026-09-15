@@ -1,8 +1,8 @@
 -- =============================================
 -- Stored Procedure: sp_Settings_WeldedCoils_Insert
 -- Purpose: Adds a new welded-coil part (defaults isActive = 1).
---          Blocks duplicate part numbers at the SP layer because the live
---          table has no unique key on partid.
+--          Reports a duplicate part number with a friendly message before the
+--          unique key uq_settings_weldedcoils_partid rejects it.
 -- Parameters:
 --   IN  p_partid  VARCHAR(11) - part number to add
 --   OUT p_new_id  INT         - id of the new row

@@ -81,22 +81,6 @@ public class Dao_Tool_WeldedCoil
         );
     }
 
-    /// <summary>Flips a row between Active (true) and Inactive (false).</summary>
-    public virtual async Task<Model_Dao_Result> SetActiveAsync(int id, bool isActive)
-    {
-        var parameters = new Dictionary<string, object>
-        {
-            { "p_id", id },
-            { "p_is_active", isActive },
-        };
-
-        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
-            _connectionString,
-            "sp_Settings_WeldedCoils_SetActive",
-            parameters
-        );
-    }
-
     /// <summary>Removes a welded-coil row.</summary>
     public virtual async Task<Model_Dao_Result> DeleteAsync(int id)
     {

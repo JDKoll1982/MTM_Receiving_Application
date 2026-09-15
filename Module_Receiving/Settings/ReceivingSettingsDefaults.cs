@@ -113,7 +113,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.PoEntryColumnLocation] = "Location",
 
             // Load entry
-            [ReceivingSettingsKeys.UiText.LoadEntryHeader] = "Number of Loads (1-99)",
+            [ReceivingSettingsKeys.UiText.LoadEntryHeader] = "Number of Labels (1-99)",
             [ReceivingSettingsKeys.UiText.LoadEntryInstruction] =
                 "Enter the total number of skids/loads for this part.",
 
@@ -134,8 +134,7 @@ public static class ReceivingSettingsDefaults
                 "[\"Refer to Vendor Tag\",\"N/A\",\"Old Coil\",\"Old Flatstock\",\"Old Product\"]",
 
             // Package Type
-            [ReceivingSettingsKeys.UiText.PackageTypeHeader] =
-                "Package Type (Applied to all loads)",
+            [ReceivingSettingsKeys.UiText.PackageTypeHeader] = "Package Type:",
             [ReceivingSettingsKeys.UiText.PackageTypeComboHeader] = "Type",
             [ReceivingSettingsKeys.UiText.PackageTypeCustomHeader] = "Custom Name",
             [ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault] =
@@ -260,7 +259,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Accessibility.PoEntryPartId] = "Part Identifier",
             [ReceivingSettingsKeys.Accessibility.PoEntryLookupPart] = "Look Up Part",
             [ReceivingSettingsKeys.Accessibility.PoEntryPartsList] = "Parts List",
-            [ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads] = "Number of Loads",
+            [ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads] = "Number of Labels",
             [ReceivingSettingsKeys.Accessibility.WeightQuantityInput] = "Weight Quantity",
             [ReceivingSettingsKeys.Accessibility.HeatLotNumber] = "Heat Lot Number",
             [ReceivingSettingsKeys.Accessibility.PackageTypeCombo] = "Package Type",
