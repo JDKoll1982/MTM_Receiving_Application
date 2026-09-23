@@ -146,6 +146,9 @@ public static class ReceivingSettingsKeys
         public const string PackageTypeHeader = "Receiving.UiText.PackageType.Header";
         public const string PackageTypeComboHeader = "Receiving.UiText.PackageType.ComboHeader";
         public const string PackageTypeCustomHeader = "Receiving.UiText.PackageType.CustomHeader";
+        public const string PackageTypeAutoFill = "Receiving.UiText.PackageType.AutoFill";
+        public const string PackageTypeAutoFillTooltip =
+            "Receiving.UiText.PackageType.AutoFillTooltip";
         public const string PackageTypeSaveAsDefault = "Receiving.UiText.PackageType.SaveAsDefault";
         public const string PackageTypeLoadNumberPrefix =
             "Receiving.UiText.PackageType.LoadNumberPrefix";

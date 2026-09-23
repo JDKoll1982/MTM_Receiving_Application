@@ -325,7 +325,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task CreateLoadsAsync()
         {
-            var validationResult = _validationService.ValidateNumberOfLoads(NumberOfLoads);
+            var validationResult = await _validationService.ValidateNumberOfLoadsAsync(
+                NumberOfLoads
+            );
             if (!validationResult.IsValid)
             {
                 await _errorHandler.HandleErrorAsync(

@@ -1159,6 +1159,28 @@
     },
     {
       "category": "Receiving",
+      "key": "Receiving.UiText.PackageType.AutoFill",
+      "displayName": "Package Type - Auto-Fill",
+      "defaultValue": "Auto-Fill",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PackageType.AutoFillTooltip",
+      "displayName": "Package Type - Auto-Fill Tooltip",
+      "defaultValue": "Fill blank package counts from rows above",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
       "key": "Receiving.UiText.PackageType.SaveAsDefault",
       "displayName": "Package Type - Save as Default",
       "defaultValue": "Save as default for this part",

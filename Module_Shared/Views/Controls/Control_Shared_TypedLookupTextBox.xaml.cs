@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -124,6 +125,10 @@ public sealed partial class Control_Shared_TypedLookupTextBox : UserControl
             new PropertyMetadata(false)
         );
 
+    private static readonly TimeSpan ValidationTimeout = TimeSpan.FromSeconds(20);
+
+    private int _validationGate;
+
     public Control_Shared_TypedLookupTextBox()
     {
         InitializeComponent();
@@ -238,44 +243,110 @@ public sealed partial class Control_Shared_TypedLookupTextBox : UserControl
 
     public async Task ValidateAsync()
     {
-        SyncInputFromTextBox();
-
-        var workflow = LookupWorkflowService ?? ResolveWorkflowService();
-        if (workflow is null)
+        // Lost focus, Enter, and the view's follow-up validation can all fire together.
+        // A second overlapping run would race on the progress indicator and on the resolved value.
+        if (Interlocked.CompareExchange(ref _validationGate, 1, 0) != 0)
         {
-            ApplyResult(
-                new Model_SharedLookupValidationResult
-                {
-                    LookupType = LookupType,
-                    RawInput = InputValue,
-                    FormattedValue = InputValue?.Trim() ?? string.Empty,
-                    ResolvedValue = string.Empty,
-                    IsValid = false,
-                    Message = "Shared lookup workflow service is not available.",
-                }
-            );
             return;
         }
 
+        Model_SharedLookupValidationResult result;
         try
         {
-            IsValidationInProgress = true;
-            var request = new Model_SharedLookupRequest
-            {
-                LookupType = LookupType,
-                RawInput = InputValue,
-                WarehouseCode = WarehouseCode,
-                PrefixPaddingRules = PrefixPaddingRules,
-                AutoResolveFuzzyMatches = AutoResolveFuzzyMatches,
-            };
-
-            var result = await workflow.ValidateAsync(request);
-            ApplyResult(result);
+            result = await RunValidationAsync();
         }
         finally
         {
             IsValidationInProgress = false;
+            Volatile.Write(ref _validationGate, 0);
         }
+
+        // Raised after the gate is released so the completion handler can start a follow-up validation.
+        ApplyResult(result);
+    }
+
+    private async Task<Model_SharedLookupValidationResult> RunValidationAsync()
+    {
+        SyncInputFromTextBox();
+
+        var request = new Model_SharedLookupRequest
+        {
+            LookupType = LookupType,
+            RawInput = InputValue,
+            WarehouseCode = WarehouseCode,
+            PrefixPaddingRules = PrefixPaddingRules,
+            AutoResolveFuzzyMatches = AutoResolveFuzzyMatches,
+        };
+
+        var workflow = LookupWorkflowService ?? ResolveWorkflowService();
+        if (workflow is null)
+        {
+            return BuildInvalidResult(
+                request,
+                "Shared lookup workflow service is not available."
+            );
+        }
+
+        IsValidationInProgress = true;
+
+        // Bound the wait so a stalled Infor Visual round-trip surfaces a message instead of
+        // leaving the control spinning indefinitely with no feedback.
+        using var timeoutSource = new CancellationTokenSource();
+        try
+        {
+            var validationTask = workflow.ValidateAsync(request, timeoutSource.Token);
+            var completed = await Task.WhenAny(
+                validationTask,
+                Task.Delay(ValidationTimeout, timeoutSource.Token)
+            );
+
+            if (completed != validationTask)
+            {
+                ObserveAbandonedValidation(validationTask);
+                return BuildInvalidResult(
+                    request,
+                    $"Timed out after {ValidationTimeout.TotalSeconds:0} seconds while validating the {request.LookupType}. Check the ERP connection and try again."
+                );
+            }
+
+            return await validationTask;
+        }
+        catch (OperationCanceledException)
+        {
+            return BuildInvalidResult(request, "Lookup validation was cancelled.");
+        }
+        catch (Exception ex)
+        {
+            return BuildInvalidResult(request, $"Lookup validation failed: {ex.Message}");
+        }
+    }
+
+    private static Model_SharedLookupValidationResult BuildInvalidResult(
+        Model_SharedLookupRequest request,
+        string message
+    )
+    {
+        return new Model_SharedLookupValidationResult
+        {
+            LookupType = request.LookupType,
+            RawInput = request.RawInput,
+            FormattedValue = request.RawInput?.Trim() ?? string.Empty,
+            ResolvedValue = string.Empty,
+            IsValid = false,
+            Message = message,
+        };
+    }
+
+    private static void ObserveAbandonedValidation(
+        Task<Model_SharedLookupValidationResult> validationTask
+    )
+    {
+        _ = validationTask.ContinueWith(
+            static task => _ = task.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default
+        );
     }
 
     private void SyncInputFromTextBox()

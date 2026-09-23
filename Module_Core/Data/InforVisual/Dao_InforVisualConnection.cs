@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -1716,6 +1717,8 @@ public class Dao_InforVisualConnection
     {
         try
         {
+            _logger?.LogInfo($"Checking part existence for '{partId}'");
+            var stopwatch = Stopwatch.StartNew();
             var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("12_ValidatePartExists.sql");
 
             await using var connection = new SqlConnection(_connectionString);
@@ -1725,6 +1728,9 @@ public class Dao_InforVisualConnection
             command.Parameters.AddWithValue("@PartId", partId);
 
             var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            _logger?.LogInfo(
+                $"Part existence check for '{partId}' returned {count > 0} in {stopwatch.ElapsedMilliseconds}ms"
+            );
             return Model_Dao_Result_Factory.Success(count > 0);
         }
         catch (Exception ex)
@@ -1753,6 +1759,10 @@ public class Dao_InforVisualConnection
     {
         try
         {
+            _logger?.LogInfo(
+                $"Checking location existence for '{locationId}' in warehouse '{warehouseCode}'"
+            );
+            var stopwatch = Stopwatch.StartNew();
             var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
                 resourcePath: "13_ValidateLocationExists.sql"
             );
@@ -1765,6 +1775,9 @@ public class Dao_InforVisualConnection
             command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
 
             var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            _logger?.LogInfo(
+                $"Location existence check for '{locationId}' in warehouse '{warehouseCode}' returned {count > 0} in {stopwatch.ElapsedMilliseconds}ms"
+            );
             return Model_Dao_Result_Factory.Success(count > 0);
         }
         catch (Exception ex)

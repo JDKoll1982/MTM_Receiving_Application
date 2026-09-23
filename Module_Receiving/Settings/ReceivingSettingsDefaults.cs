@@ -137,6 +137,9 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.PackageTypeHeader] = "Package Type:",
             [ReceivingSettingsKeys.UiText.PackageTypeComboHeader] = "Type",
             [ReceivingSettingsKeys.UiText.PackageTypeCustomHeader] = "Custom Name",
+            [ReceivingSettingsKeys.UiText.PackageTypeAutoFill] = "Auto-Fill",
+            [ReceivingSettingsKeys.UiText.PackageTypeAutoFillTooltip] =
+                "Fill blank package counts from rows above",
             [ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault] =
                 "Save as default for this part",
             [ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix] = "#{0}",

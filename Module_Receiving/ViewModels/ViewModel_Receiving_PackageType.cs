@@ -79,6 +79,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _packageTypeCustomHeaderText = "Custom Name";
 
         [ObservableProperty]
+        private string _packageTypeAutoFillText = "Auto-Fill";
+
+        [ObservableProperty]
+        private string _packageTypeAutoFillTooltipText =
+            "Fill blank package counts from rows above";
+
+        [ObservableProperty]
         private string _packageTypeSaveAsDefaultText = "Save as default for this part";
 
         [ObservableProperty]
@@ -135,6 +142,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 PackageTypeCustomHeaderText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.PackageTypeCustomHeader
+                );
+                PackageTypeAutoFillText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeAutoFill
+                );
+                PackageTypeAutoFillTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.PackageTypeAutoFillTooltip
                 );
                 PackageTypeSaveAsDefaultText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault
@@ -347,6 +360,26 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             foreach (var load in Loads)
             {
                 load.PackageTypeName = typeName;
+            }
+        }
+
+        /// <summary>
+        /// Copies each blank package count from the row above, matching the Auto-Fill behavior on
+        /// the Weight/Quantity and Heat/Lot steps. Zero is the model's "blank" value for
+        /// <see cref="Model_ReceivingLoad.PackagesPerLoad"/>.
+        /// </summary>
+        [RelayCommand]
+        private void AutoFill()
+        {
+            for (int i = 1; i < Loads.Count; i++)
+            {
+                var currentLoad = Loads[i];
+                var previousLoad = Loads[i - 1];
+
+                if (currentLoad.PackagesPerLoad == 0 && previousLoad.PackagesPerLoad != 0)
+                {
+                    currentLoad.PackagesPerLoad = previousLoad.PackagesPerLoad;
+                }
             }
         }
 

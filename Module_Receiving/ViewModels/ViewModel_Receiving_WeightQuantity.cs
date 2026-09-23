@@ -212,7 +212,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             foreach (var load in Loads)
             {
-                var result = _validationService.ValidateWeightQuantity(load.WeightQuantity);
+                var result = await _validationService.ValidateWeightQuantityAsync(
+                    load.WeightQuantity
+                );
                 if (!result.IsValid)
                 {
                     await _errorHandler.HandleErrorAsync(

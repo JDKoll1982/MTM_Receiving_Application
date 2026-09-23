@@ -182,12 +182,26 @@
                         Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
 
-                <CheckBox
+                <StackPanel
                     Grid.Row="2"
                     Grid.Column="2"
                     VerticalAlignment="Center"
-                    Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"
-                    IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}" />
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <CheckBox
+                        VerticalAlignment="Center"
+                        Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"
+                        IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}" />
+                    <Button
+                        Padding="16,8"
+                        VerticalAlignment="Center"
+                        Command="{x:Bind ViewModel.AutoFillCommand}"
+                        Content="{x:Bind ViewModel.PackageTypeAutoFillText, Mode=OneWay}"
+                        CornerRadius="8"
+                        FontSize="16"
+                        Style="{StaticResource AccentButtonStyle}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.PackageTypeAutoFillTooltipText, Mode=OneWay}" />
+                </StackPanel>
             </Grid>
         </Border>
 

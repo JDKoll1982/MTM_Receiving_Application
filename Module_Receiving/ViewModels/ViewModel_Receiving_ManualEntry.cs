@@ -771,7 +771,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
-                var sessionValidation = _validationService.ValidateSession(Loads.ToList());
+                var sessionValidation = await _validationService.ValidateSessionAsync(
+                    Loads.ToList()
+                );
                 if (!sessionValidation.IsValid)
                 {
                     var errorText =
@@ -1137,7 +1139,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (!string.IsNullOrWhiteSpace(load.PoNumber))
             {
                 var normalizedPo = load.PoNumber.Trim();
-                var poValidation = _validationService.ValidatePONumber(normalizedPo);
+                var poValidation = await _validationService.ValidatePONumberAsync(normalizedPo);
                 if (!poValidation.IsValid)
                 {
                     return;
@@ -1705,7 +1707,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
 
             var normalizedPo = load.PoNumber.Trim();
-            var poValidation = _validationService.ValidatePONumber(normalizedPo);
+            var poValidation = await _validationService.ValidatePONumberAsync(normalizedPo);
             if (!poValidation.IsValid)
             {
                 return false;
