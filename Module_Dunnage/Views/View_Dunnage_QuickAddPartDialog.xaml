@@ -103,6 +103,7 @@
                                 <ComboBoxItem Content="Not Inventoried" />
                                 <ComboBoxItem Content="Adjust In" />
                                 <ComboBoxItem Content="Receive In" />
+                                <ComboBoxItem Content="WIP" />
                                 <ComboBoxItem Content="Both" />
                             </ComboBox>
                         </StackPanel>

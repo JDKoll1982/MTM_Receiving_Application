@@ -33,6 +33,16 @@ public sealed class Model_ReceivingLoadTests
     }
 
     [Fact]
+    public void PartID_ShouldLeavePackagesPerLoadBlank_WhenPartIDIsAssigned()
+    {
+        var load = new Model_ReceivingLoad();
+
+        load.PartID = "MMC0000056";
+
+        load.PackagesPerLoad.Should().Be(0);
+    }
+
+    [Fact]
     public void PoNumber_WhenBlanketOrderSuffixIsEntered_ShouldNormalizeToCanonicalUppercaseFormat()
     {
         var load = new Model_ReceivingLoad();

@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <converters:Converter_StringFormat x:Key="StringFormatConverter" />
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_IntToBlankText x:Key="IntToBlankTextConverter" />
     </UserControl.Resources>
 
     <Grid
@@ -257,15 +258,15 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <!--  Column 1: Interactive NumberBox  -->
-                            <NumberBox
+                            <!--  Column 1: Package count. A TextBox (not a NumberBox) is used so the
+                                  count, and the EA per Package readout beside it, update on every
+                                  keystroke; the converter keeps the blank sentinel an empty box.  -->
+                            <TextBox
                                 Grid.Column="1"
                                 AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.PackageTypePackagesPerLoadAccessibilityName}"
-                                LargeChange="5"
-                                Minimum="1"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Hidden"
-                                Value="{x:Bind PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                GotFocus="PackagesPerLoadTextBox_GotFocus"
+                                InputScope="Number"
+                                Text="{x:Bind PackagesPerLoad, Mode=TwoWay, Converter={StaticResource IntToBlankTextConverter}, UpdateSourceTrigger=PropertyChanged}" />
 
                             <!--  Column 2: Weight Display  -->
                             <StackPanel

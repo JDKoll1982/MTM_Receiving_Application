@@ -80,10 +80,26 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return false;
             }
 
-            var target = FindDescendant<NumberBox>(LoadsItemsControl);
+            var target = FindDescendant<TextBox>(LoadsItemsControl);
             return target is not null
                 ? _focusService.TrySetFocus(target)
                 : _focusService.TrySetFocus(PackageTypeComboBox);
+        }
+
+        /// <summary>
+        /// Selects all text when the user enters a package count so the existing value can be
+        /// overwritten quickly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PackagesPerLoadTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox)
+            {
+                return;
+            }
+
+            _ = textBox.DispatcherQueue.TryEnqueue(() => textBox.SelectAll());
         }
 
         private static T? FindDescendant<T>(DependencyObject parent)

@@ -771,6 +771,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     return;
                 }
 
+                // Package counts start blank so the grid's Auto-Fill can copy them down from the row
+                // above. Any row still blank when the user hands off falls back to a single package.
+                foreach (var load in Loads)
+                {
+                    if (load.PackagesPerLoad <= 0)
+                    {
+                        load.PackagesPerLoad = 1;
+                    }
+                }
+
                 var sessionValidation = await _validationService.ValidateSessionAsync(
                     Loads.ToList()
                 );

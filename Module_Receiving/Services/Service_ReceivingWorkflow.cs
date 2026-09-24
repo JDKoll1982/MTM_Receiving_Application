@@ -355,6 +355,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 case Enum_ReceivingWorkflowStep.PackageTypeEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
+                        // Blank counts stay blank while the user is on this step so Auto-Fill can copy
+                        // counts down the grid. Anything still blank on exit becomes a single package.
+                        if (load.PackagesPerLoad <= 0)
+                        {
+                            load.PackagesPerLoad = 1;
+                        }
+
                         var result = _validation.ValidatePackageCount(load.PackagesPerLoad);
                         if (!result.IsValid)
                         {

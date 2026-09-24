@@ -7,6 +7,20 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### WIP added to the dunnage Inventory Type options (2026-09-24)
+
+- **What changed:** The **Add New Dunnage Part** and **Edit Dunnage Part** dialogs now offer
+  **WIP** alongside Not Inventoried, Adjust In, Receive In, and Both.
+- **Why:** Users need to flag dunnage that is consumed by work in progress instead of being
+  received into stock.
+- **Notes:** No schema or stored procedure change was needed.
+  `dunnage_requires_inventory.inventory_method` is a free-text `VARCHAR(100)` column, and both part
+  stored procedures only special-case blank and `NOT INVENTORIED`, so WIP is stored and shown
+  as-is in the part details card, the review step, and saved history.
+- Files changed:
+  - `Module_Dunnage/Views/View_Dunnage_QuickAddPartDialog.xaml`
+  - `Module_Dunnage/Views/View_Dunnage_EditPartDialog.xaml`
+
 #### Application windows open maximized (2026-09-10)
 
 - Every top-level application window now opens maximized, so users no longer have to maximize
@@ -28,6 +42,38 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   - `Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs`
   - `Module_Shared/Views/View_Shared_IconSelectorWindow.xaml.cs`
   - `Module_Volvo/Views/View_Volvo_ShipmentHistoryDetailWindow.cs`
+
+### Changed
+
+#### Package Type counts start empty and update EA per Package while typing (2026-09-24)
+
+- **Symptom:** The guided **Receiving - Enter Package Type** step opened with `1` already shown in
+  every package-count box, so Auto-Fill had nothing blank to fill and users had to clear each box
+  before typing real counts. The **EA per Package** readout also only changed after a box was
+  committed (Enter, Tab, or clicking away).
+- **Cause:** `Model_ReceivingLoad.OnPartIDChanged` forced `PackagesPerLoad` to `1` whenever a part
+  ID was assigned, and the guided workflow assigns the part ID while it generates the loads. The
+  readout then lagged because `NumberBox.ValueChanged` only fires on Enter, spin-button click, or
+  focus change, and the `NumberBox` template never feeds typed text back to `Value`/`Text`.
+- **Fix:** Assigning a part ID no longer seeds the package count, so counts stay at the blank
+  sentinel (`0`) and the boxes render empty for Auto-Fill. Each package-count box is now a
+  `TextBox` bound per keystroke (`UpdateSourceTrigger=PropertyChanged`), which makes
+  `EA per Package` recalculate as digits are typed. Blank rows still fall back to a single package
+  when the step is left (guided Package Type, or Manual Entry save), keeping the previous end
+  result. Blank text handling comes from the new `Converter_IntToBlankText`, which maps `0` to an
+  empty string and treats empty, unparseable, or non-positive text as `0`.
+- **Trade-off:** a `TextBox` has no arrow-key stepping and no built-in numeric validation, so
+  non-digit text leaves the count blank instead of being overwritten. This matches how the Manual
+  Entry grid already handles the same column.
+- Files changed:
+  - `Module_Receiving/Models/Model_ReceivingLoad.cs`
+  - `Module_Receiving/Views/View_Receiving_PackageType.xaml`
+  - `Module_Receiving/Views/View_Receiving_PackageType.xaml.cs`
+  - `Module_Receiving/Services/Service_ReceivingWorkflow.cs`
+  - `Module_Receiving/ViewModels/ViewModel_Receiving_ManualEntry.cs`
+  - `Module_Core/Converters/Converter_IntToBlankText.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Core/Converters/Converter_IntToBlankTextTests.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Receiving/Models/Model_ReceivingLoadTests.cs`
 
 ### Fixed
 
