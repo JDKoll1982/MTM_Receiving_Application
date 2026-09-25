@@ -516,6 +516,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void UpdateNextButtonEnabled()
         {
             IsNextButtonEnabled = !IsPOEntryVisible || _workflowService.CurrentPart is not null;
+            NotifyWorkflowCommandStates();
         }
 
         public void RefreshNextButtonEnabled()
@@ -523,7 +524,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             UpdateNextButtonEnabled();
         }
 
-        [RelayCommand]
+        /// <summary>
+        /// Mirrors the workflow Next button so the Next shortcut cannot advance a step that the
+        /// button keeps disabled, such as PO entry without a selected part.
+        /// </summary>
+        private bool CanGoToNextStep() => ShowWorkflowNextButton && IsNextButtonEnabled;
+
+        /// <summary>
+        /// Mirrors the workflow Back button visibility so the Back shortcut cannot rewind from
+        /// steps that do not offer the button, such as Saving, Complete, or Mode Selection.
+        /// </summary>
+        private bool CanGoToPreviousStep() => ShowWorkflowBackButton;
+
+        /// <summary>
+        /// Mirrors the Mode Selection button visibility so the shortcut cannot leave a step that
+        /// does not offer the button.
+        /// </summary>
+        private bool CanReturnToModeSelection() => !IsModeSelectionVisible;
+
+        private void NotifyWorkflowCommandStates()
+        {
+            NextStepCommand.NotifyCanExecuteChanged();
+            PreviousStepCommand.NotifyCanExecuteChanged();
+            ReturnToModeSelectionCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanGoToNextStep))]
         private async Task NextStepAsync()
         {
             try
@@ -775,7 +801,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanGoToPreviousStep))]
         private void PreviousStep()
         {
             var result = _workflowService.GoToPreviousStep();
@@ -828,7 +854,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             );
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanReturnToModeSelection))]
         private async Task ReturnToModeSelectionAsync()
         {
             var xamlRoot = _windowService.GetXamlRoot();

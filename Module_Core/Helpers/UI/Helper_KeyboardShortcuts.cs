@@ -170,7 +170,7 @@ public static class Helper_KeyboardShortcuts
     }
 
     /// <summary>
-    /// Prevents plain-arrow navigation shortcuts from hijacking text editing interactions.
+    /// Prevents unmodified workflow shortcuts from hijacking text editing interactions.
     /// </summary>
     /// <param name="focusedElement">The currently focused element.</param>
     /// <param name="binding">The binding being invoked.</param>
@@ -185,15 +185,9 @@ public static class Helper_KeyboardShortcuts
             return false;
         }
 
-        var normalizedKey = NormalizeKey(binding.Key);
-        var isPlainArrowShortcut =
-            (
-                normalizedKey.Equals("Left", StringComparison.OrdinalIgnoreCase)
-                || normalizedKey.Equals("Right", StringComparison.OrdinalIgnoreCase)
-            )
-            && GetModifiers(binding) == VirtualKeyModifiers.None;
-
-        if (!isPlainArrowShortcut)
+        // A key pressed without modifiers belongs to the focused text control: arrows move the
+        // caret, Enter commits, characters and Space are typed. Modified shortcuts stay global.
+        if (GetModifiers(binding) != VirtualKeyModifiers.None)
         {
             return false;
         }

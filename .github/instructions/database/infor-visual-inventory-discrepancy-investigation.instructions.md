@@ -10,19 +10,22 @@ description: >
 <!-- 
 [DOC-META-START]
 - File Name: infor-visual-inventory-discrepancy-investigation.instructions.md
-- Description: Reusable investigation playbook for physical-count vs Infor Visual (MTMFG) inventory discrepancies - schema decode, ledger self-check, root-cause checks, and READ-ONLY SQL templates.
-- Last Updated: 2026-09-02
+- Description: Reusable investigation playbook for physical-count vs Infor Visual (MTMFG) inventory discrepancies - workflow rules, mandatory checks, known pitfalls, schema decode, ledger self-check, root-cause checks, and READ-ONLY SQL templates.
+- Last Updated: 2026-09-25
 - Quick TOC:
-  - Line 12-15: # Infor Visual Inventory Discrepancy Investigation
-  - Line 16-24: ## When To Use This Playbook
-  - Line 25-29: ## Non-Negotiables
-  - Line 30-45: ## Mental Model (How The Ledger Works)
-  - Line 46-61: ## Schema Decode Reference
-  - Line 62-100: ## Investigation Workflow (Run In Order)
-  - Line 101-118: ## Reconciliation Math
-  - Line 119-127: ## Root-Cause Decision Table
-  - Line 128-137: ## References
-- Critical Notes: MTMFG is READ ONLY; the system ledger is always internally consistent - find the physical-activity mismatch, never a "lost record."
+  - Line 32-38: # Infor Visual Inventory Discrepancy Investigation
+  - Line 39-44: ## When To Use This Playbook
+  - Line 45-54: ## Non-Negotiables
+  - Line 55-61: ## Workflow Rules
+  - Line 62-75: ## Mandatory Checks (Run In Order, Record In The Report)
+  - Line 76-86: ## Known Pitfalls
+  - Line 87-105: ## Mental Model (How The Ledger Works)
+  - Line 106-130: ## Schema Decode Reference
+  - Line 131-239: ## Investigation Workflow (Run In Order)
+  - Line 240-252: ## Reconciliation Math
+  - Line 253-265: ## Root-Cause Decision Table
+  - Line 266-278: ## References
+- Critical Notes: MTMFG is READ ONLY and an AI session must never write to it or store findings in AI memory. Start from the live database full lifetime history, never a supplied extract. Stop at ranked candidates plus a floor-check list - never name a root cause from system data alone. The ledger is always internally consistent, so find the physical-activity mismatch, never a "lost record."
 [DOC-META-END]
 -->
 
@@ -46,6 +49,40 @@ reviewing Material Availability / reconciliation queries or DAOs.
   (Tables/, ColumnDetails/, ForeignKeys/, PrimaryKeys/, TableRowCounts/) before running SQL.
 - Query access (dev): `sqlcmd -S VISUAL -d MTMFG -U <user> -P <pwd> -Q "<sql>"`.
 - The physical count scope MUST be clarified first (raw material only vs includes cut WIP).
+- An AI session MUST NOT write to MTMFG. Read-only connection, SELECT only. Fixing a variance is a human action.
+- An AI session MUST NOT store findings in any AI memory or external AI store, regardless of model - no part numbers, quantities, or conclusions. Findings live only in repo files under `Database/`, `docs/`, or `.github/`.
+
+## Workflow Rules
+
+- **Source of truth is the live database, full lifetime history.** Never treat a supplied extract, spreadsheet, or exported file as complete. Check its date range and coverage against `INVENTORY_TRANS` before drawing any conclusion. A date-truncated export has already produced two wrong conclusions in this repo.
+- **Scope defaults to the named part only.** Widen to shop-wide only when explicitly asked. The shop-wide negative-location check runs regardless, as context.
+- **Stop at ranked candidates plus a floor-check list.** Do not name a single root cause from system data alone. Physical confirmation decides between candidates; state what to count and where.
+- **Report is quick-read only.** Short sections, tables over prose, no long narrative.
+
+## Mandatory Checks (Run In Order, Record In The Report)
+
+Steps 1-7 are scoped to the named part. Step 8 is shop-wide by design.
+
+1. **Ledger self-check** - lifetime In minus Out must equal the on-hand total.
+2. **Location balances** - every location row, including zeros and negatives. Flag any location marked `DEF_BACKFLUSH_LOC` or `AUTO_ISSUE_LOC`.
+3. **Receipt audit** - every physical `RECEIVER_LINE` must carry a posted `TRANSACTION_ID`. A NULL means a delivery arrived and was never booked.
+4. **Transfer pairing** - I/CLASS-A quantity must equal O/CLASS-A quantity, and every `TRANSFER_TRANS_ID` must resolve.
+5. **Work-order consumption** - issued versus returned per work order, with status and pieces received.
+6. **Labor clock-out check** - confirm the consumption was driven by real clock-outs, and derive the per-piece usage factor.
+7. **Open purchase-order lines** - anything ordered that was never received.
+8. **Shop-wide negative locations** - always run, even when the report is scoped to one part. It shows whether the part is an outlier or one instance of a pattern.
+9. **Cycle counting** - first check whether the cycle-count feature is used at all (`CYCLE_COUNT_PART`, `PHYSICAL_COUNT`, `CR_PART_LOCATION.LAST_COUNT_DATE`). If it is used, confirm the part is set up for it.
+
+## Known Pitfalls
+
+| Pitfall | Why it bites | Guard |
+| ------- | ------------ | ----- |
+| Truncated transaction export | Hides earlier receipts, so "no inbound" conclusions come out wrong | Re-run the ledger self-check against the live database |
+| Blaming a rack | Racks are storage; the imbalance is almost never there | Check the `DEF_BACKFLUSH_LOC` / `AUTO_ISSUE_LOC` location first |
+| Assuming `V-` means vendor/subcontract | At MTM `V-` is just a rack prefix | Confirm with the floor before reasoning about it |
+| Ignoring whether cycle counting runs | `CYCLE_COUNT_PART` can be empty database-wide | Run check 9 before recommending cycle counting |
+| Concluding from system data alone | The ledger is internally consistent by definition | Rank candidates; require a floor confirmation |
+| `LINENO` as a column alias | ODBC reserved word; sqlcmd rejects it | Alias purchase order lines as `PurchaseOrderLineNo` |
 
 ## Mental Model (How The Ledger Works)
 
@@ -229,8 +266,13 @@ that reconcile to the reported gap, then always recommend a floor verification s
 ## References
 
 - CSV schema reference: `docs/development/InforVisual/DatabaseCSVFiles/`
+- Checklist queries for this playbook:
+  - `Database/InforVisualScripts/Queries/32_GetInventoryDiscrepancyPartProfile.sql` - steps 1-7 and 9 for one part
+  - `Database/InforVisualScripts/Queries/33_GetNegativeOnHandLocations.sql` - step 8, shop-wide negatives
 - Existing read-only queries: `Database/InforVisualScripts/Queries/` (notably
   `18_GetMaterialAvailabilityCurrentStock.sql`, `18_GetReceivingLocationTransferMovements.sql`,
   `18a/18b` transfer pair queries, `17_GetReceivingLocationTransactionHistory.sql`)
+- Worked example: `docs/W99996-06002S_Inventory_Discrepancy_Report.md`
+- Prior case, different mechanism: `docs/MMF0005531_Inventory_Discrepancy_Findings.md`
 - Schema reference instructions: `.github/instructions/database/infor-visual-database-reference.instructions.md`
 - Query authoring: `.github/instructions/database/infor-visual-query-authoring.instructions.md`
