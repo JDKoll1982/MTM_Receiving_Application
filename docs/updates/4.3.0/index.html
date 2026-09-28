@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.3.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.3.0</h1>
+                    <p class="hero-copy">This release makes the Guided Receiving steps faster to work through. Every step now starts with the cursor in the field you need next, and a purchase order with a single part number moves ahead on its own. Package count boxes open empty so Auto-Fill can copy counts down the grid, Scanner access is now managed from Settings instead of being fixed to a short list of accounts, and several everyday annoyances are fixed - deleting receiving history no longer reports a false error, lookups no longer spin forever when the ERP is slow, and windows open maximized on the right page.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.3.0</span>
+                <span class="meta-text">Released September 28, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.3.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.3.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Guided Receiving keeps you on track</p>
+                            <p class="highlight-text">All seven steps now place the cursor in the field you need next, and the PO Number is selected for you so you can type straight over it. A purchase order with one part number continues to the next step by itself.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Scanner access is now managed</p>
+                            <p class="highlight-text">An administrator can choose who may use Scanner from Core Settings, and the list applies to every workstation at once. The Scanner button and its keyboard shortcut only appear for people on the list.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Package counts start blank</p>
+                            <p class="highlight-text">Count boxes open empty instead of showing 1, so Auto-Fill can copy a count down the grid. The EA per Package figure updates as you type instead of waiting for you to leave the box.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Guided Receiving focuses the right field at every step</summary>
+                        <p>Each step of the guided workflow now places the cursor where you need it, no matter how you arrived on the page - pressing Next or Back, being moved ahead automatically, using the search bar, or picking the mode from the start screen.</p>
+                        <p>The PO Number box is focused with its text already selected, so typing a new number replaces the old one. Load Information focuses the Number of Labels box, Weight &amp; Quantity, Heat &amp; Lot, and Package Type each focus the first row, Review &amp; Save focuses the Save to Database button, and the final step focuses Start New Entry.</p>
+                        <p>The Review and Complete steps previously had no focus target at all, so they did nothing until you clicked. If a field is not ready yet when the page opens, the application now keeps trying instead of quietly giving up.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Simple purchase orders move ahead on their own</summary>
+                        <p>The PO now loads as soon as you press Enter or leave the PO Number box, so the Load PO button is no longer required for everyday entry.</p>
+                        <p>A purchase order that returns no part numbers is rejected outright. A warning appears in the header, the loaded PO details are cleared, the PO Number box is emptied, and the cursor returns there so you can try again.</p>
+                        <p>A purchase order with exactly one part number selects that part for you, announces it in the header, and continues straight to Load Information. If your PO covers several part numbers, the parts list still appears and you choose as before. When the single part is on quality hold and you have not acknowledged it, the workflow stays on the PO step rather than moving on.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Step cards show the PO number and clearer headings</summary>
+                        <p>The Part Number and Description headings on the Load Information, Weight, Heat, and Package Type steps now include the PO Number, separated by a thin divider line. The PO segment stays hidden when there is no PO on the load.</p>
+                        <p>Headings were tidied at the same time: <strong>Number of Loads (1-99)</strong> now reads <strong>Number of Labels (1-99)</strong>, the <strong>Loads:</strong> label on the Weight step reads <strong>Labels:</strong>, and the Package Type heading is now simply <strong>Package Type:</strong> with the package type row moved below the divider.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Package counts start blank and Auto-Fill fills the gaps</summary>
+                        <p>Assigning a part number no longer puts a 1 in every package count box, so the boxes open empty and there is something for Auto-Fill to fill. Auto-Fill copies a count from the rows above into any box you left blank.</p>
+                        <p>If you still leave rows blank when you leave the step, each blank row counts as a single package exactly as it did before, so the saved result is unchanged. The EA per Package figure now recalculates while you type rather than when you press Enter or click away.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>WIP added to dunnage inventory options</summary>
+                        <p>When you add a new dunnage part or edit an existing one, the inventory type list now includes <strong>WIP</strong> alongside Not Inventoried, Adjust In, Receive In, and Both. Use it to flag dunnage that is consumed by work in progress rather than received into stock. The choice is shown on the part details card, the review step, and in saved history.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Scanner access list in Core Settings</summary>
+                        <p>Scanner access is decided by a single plant-wide list of employee numbers that an administrator maintains from the new <strong>Scanner Access</strong> card in Core Settings. The change takes effect for everyone at once, and access is re-checked when someone opens Scanner, so a freshly saved change applies immediately.</p>
+                        <p>Until the list is saved, Scanner stays limited to the developer accounts it was restricted to before, so nothing changes for the floor until an administrator fills the list in. If the setting cannot be read, the application falls back to that same rule and never widens access by accident.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Material Availability Board fields expand or collapse together</summary>
+                        <p>The Material Availability Board field settings page gained <strong>Expand all</strong> and <strong>Collapse all</strong> buttons so every configurable row can be opened at once instead of one group at a time.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Welded Coils list cleaned up</summary>
+                        <p>Every part in the Welded Coils tool used to appear twice or more because the table itself held duplicate rows - 32 rows covering only 15 distinct part numbers. The surplus rows have been removed and a database rule now prevents new duplicates from being created, so the list shows each part once.</p>
+                        <p>Each row now has its own <strong>Delete</strong> button, which removes that single part without disturbing the rest of the list. The previous Activate and Deactivate buttons are gone.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Deleting receiving history no longer reports a false error</summary>
+                        <p>Removing loads from Receiving Edit Mode sometimes failed with "Failed to save receiving data" even though the selected rows had in fact been deleted. The application misread the database's reply as "no matching row".</p>
+                        <p>Deleting now checks whether the row is genuinely still present before reporting a problem, so a successful delete completes quietly. The same guard already used elsewhere in Receiving is now applied to this delete path.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Windows open maximized, on the right page, in the right theme</summary>
+                        <p>Top-level windows now open maximized, which covers the main window, the Settings window, the Volvo shipment history detail window, and the shared icon selector.</p>
+                        <p>The main window was briefly visible during startup while it switched from the default theme to your saved theme, and it sometimes landed on the empty Dashboard placeholder instead of the Receiving mode selection page. Both are corrected: the window stays hidden until it is activated and is maximized in the same moment, so it never appears at the wrong size or theme, and startup navigation always runs.</p>
+                        <p>Opening Ship/Rec Tools, or choosing a tool card inside it, no longer resizes the main window.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Part and location lookups no longer spin forever</summary>
+                        <p>When a lookup had to wait on Infor Visual, the progress indicator could spin indefinitely with no explanation, and losing focus, pressing Enter, or the page validating behind the scenes could all start the same lookup at once.</p>
+                        <p>Overlapping lookups are now ignored so only one runs at a time. If the ERP does not answer within 20 seconds, the wait ends with a clear message telling you to check the ERP connection and try again, rather than leaving the screen stuck.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Fewer clicks per load</h3>
+                            <p>The cursor is already where you need it, Auto-Fill has blank boxes to work with, and a single-part purchase order moves ahead without you choosing the part or pressing Load PO.</p>
+                        </article>
+                        <article>
+                            <h3>Clear messages instead of dead ends</h3>
+                            <p>A purchase order with no parts tells you so and puts you back on the PO box, a slow lookup explains itself instead of spinning, and a completed history delete stops reporting a false failure.</p>
+                        </article>
+                        <article>
+                            <h3>Access you can control</h3>
+                            <p>Who may use Scanner is now a setting your administrator can maintain, instead of a fixed list of accounts, and the Welded Coils list finally shows each part once.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Pick up where you left off</h2>
+                    </div>
+                    <p class="action-state success">No migration or setup step is required.</p>
+                    <ul class="action-list">
+                        <li>There is nothing to configure after this update - your preferences and saved work carry over, and previously saved receiving and dunnage records are unchanged.</li>
+                        <li>Regular operators do not need to do anything and continue using the same screens.</li>
+                        <li>Administrators: to give someone Scanner access, open Core Settings and use the <strong>Scanner Access</strong> card. Until the list is saved, Scanner remains limited to the developer accounts it was restricted to before.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a Guided Receiving step does not put the cursor where you expect, a package count does not fill in, Scanner is missing from your navigation bar, or a lookup reports a timeout, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
