@@ -23,73 +23,83 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         );
 
         private readonly IService_Focus _focusService;
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
 
         public View_Receiving_PackageType(
             ViewModel_Receiving_PackageType viewModel,
-            IService_Focus focusService
+            IService_Focus focusService,
+            IService_AdaptiveLayout adaptiveLayout
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
 
             ViewModel = viewModel;
             _focusService = focusService;
+            _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
 
             this.InitializeComponent();
-            AttachPackagePerLoadFocus();
+            Loaded += View_Receiving_PackageType_Loaded;
+            SizeChanged += View_Receiving_PackageType_SizeChanged;
+        }
+
+        private void View_Receiving_PackageType_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void View_Receiving_PackageType_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void ApplyAdaptiveLayout()
+        {
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
         }
 
         /// <summary>
         /// Moves focus to the package input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            FocusFirstPackagesPerLoadInput();
+            return FocusFirstPackagesPerLoadInput();
         }
 
-        private void AttachPackagePerLoadFocus()
+        private bool FocusFirstPackagesPerLoadInput()
         {
-            this.Loaded += (_, _) =>
+            if (this.Visibility != Visibility.Visible)
             {
-                if (this.Visibility == Visibility.Visible)
-                {
-                    FocusFirstPackagesPerLoadInput();
-                }
-            };
-            this.RegisterPropertyChangedCallback(
-                UIElement.VisibilityProperty,
-                (_, _) =>
-                {
-                    if (this.Visibility == Visibility.Visible)
-                    {
-                        FocusFirstPackagesPerLoadInput();
-                    }
-                }
-            );
+                return false;
+            }
+
+            var target = FindDescendant<TextBox>(LoadsItemsControl);
+            return target is not null
+                ? _focusService.TrySetFocus(target)
+                : _focusService.TrySetFocus(PackageTypeComboBox);
         }
 
-        private void FocusFirstPackagesPerLoadInput()
+        /// <summary>
+        /// Selects all text when the user enters a package count so the existing value can be
+        /// overwritten quickly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PackagesPerLoadTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
+            if (sender is not TextBox textBox)
             {
                 return;
             }
 
-            this.DispatcherQueue.TryEnqueue(() =>
-            {
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    var target = FindDescendant<NumberBox>(LoadsItemsControl);
-                    if (target != null)
-                    {
-                        _focusService.SetFocus(target);
-                        return;
-                    }
-
-                    _focusService.SetFocus(PackageTypeComboBox);
-                });
-            });
+            _ = textBox.DispatcherQueue.TryEnqueue(() => textBox.SelectAll());
         }
 
         private static T? FindDescendant<T>(DependencyObject parent)

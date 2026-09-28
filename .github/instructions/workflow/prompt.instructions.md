@@ -2,6 +2,26 @@
 applyTo: "**/*.prompt.md"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: prompt.instructions.md
+- Description: Guidelines for creating effective and maintainable prompt files that guide GitHub Copilot in delivering consistent, high-quality outcomes across any repository.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Copilot Prompt Files Guidelines
+  - Line 9-13: ## Scope and Principles
+  - Line 14-34: ## Frontmatter Requirements
+  - Line 35-38: ## File Naming and Placement
+  - Line 39-44: ## Body Structure
+  - Line 45-49: ## Input and Context Handling
+  - Line 50-54: ## Tool and Permission Guidance
+  - Line 55-59: ## Instruction Tone and Style
+  - Line 60-64: ## Output Definition
+  - Line 70-78: ## Quality Assurance Checklist
+  - Line 84-90: ## Additional Resources
+[DOC-META-END]
+-->
+
 # Copilot Prompt Files Guidelines
 
 Instructions for creating effective and maintainable prompt files that guide GitHub Copilot in delivering consistent, high-quality outcomes across any repository.

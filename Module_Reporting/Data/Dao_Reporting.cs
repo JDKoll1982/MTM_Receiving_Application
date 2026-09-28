@@ -110,7 +110,7 @@ public class Dao_Reporting
             UserId = ReadNullableString(reader, "user_id"),
             SourceModule = ReadString(reader, "source_module") ?? string.Empty,
             DunnageType = ReadNullableString(reader, "dunnage_type"),
-            SpecsCombined = ReadNullableString(reader, "specs_combined"),
+            SpecsCombined = ReadUdcCombined(reader),
             ShipmentNumber = ReadNullableInt(reader, "shipment_number"),
             ReceiverNumber = ReadNullableString(reader, "receiver_number"),
             Status = ReadNullableString(reader, "status"),
@@ -171,6 +171,23 @@ public class Dao_Reporting
     private static string? ReadNullableString(IDataReader reader, params string[] columnNames)
     {
         return ReadString(reader, columnNames);
+    }
+
+    private static string? ReadUdcCombined(IDataReader reader)
+    {
+        var values = new List<string>();
+        for (var slot = 1; slot <= 10; slot++)
+        {
+            var value = ReadNullableString(reader, $"udc{slot}");
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                continue;
+            }
+
+            values.Add(value.Trim());
+        }
+
+        return values.Count == 0 ? null : string.Join(" | ", values);
     }
 
     private static decimal? ReadNullableDecimal(IDataReader reader, params string[] columnNames)

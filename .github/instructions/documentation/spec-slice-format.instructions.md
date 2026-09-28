@@ -7,6 +7,21 @@ description: >
   <guardrails>) inside these documents.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: spec-slice-format.instructions.md
+- Description: Formatting rules for spec slice files under specs/ and module FeatureUpdates docs under Module_*/docs/. Enforces Google Markdown Style Guide conventions — ATX headings, bullet lists, numbered steps, fenced code blocks — and explicitly prohibits XML tags (e.g. <feature_name>, <guardrails>) inside these documents.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 10-20: # Spec Slice File Formatting Rules
+  - Line 21-32: ## Core Rules
+  - Line 33-52: ## Required Section Structure
+  - Line 53-78: ## Anti-Patterns
+  - Line 79-83: ## Google Markdown Style Guide References
+- Critical Notes: Never use XML tags in spec slice or FeatureUpdates docs — replace every XML section wrapper with a '##' heading.
+[DOC-META-END]
+-->
+
 # Spec Slice File Formatting Rules
 
 Spec slice files and module FeatureUpdates documents are implementation-handoff documents. They

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     HorizontalAlignment="Stretch"
@@ -16,10 +17,29 @@
     </UserControl.Resources>
 
     <Grid
+        x:Name="POEntryRootGrid"
         Padding="24,0,24,0"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         RowSpacing="20">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingPOEntryAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="POEntryRootGrid.Padding" Value="10,0,10,0" />
+                        <Setter Target="POEntryRootGrid.RowSpacing" Value="12" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="POEntryRootGrid.Padding" Value="20,0,20,0" />
+                        <Setter Target="POEntryRootGrid.RowSpacing" Value="20" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -51,6 +71,7 @@
                                 MinWidth="320"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PoNumberAccessibilityName, Mode=OneWay}"
+                                KeyDown="PoNumberTextBox_KeyDown"
                                 LostFocus="POTextBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PONumber'), Mode=OneWay}"
                                 TabIndex="0"
@@ -134,13 +155,17 @@
                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.PartIdentifierHeaderText, Mode=OneWay}" />
                             </StackPanel>
 
-                            <TextBox
-                                x:Name="PartIDTextBox"
+                            <sharedControls:Control_Shared_TypedLookupTextBox
+                                x:Name="PartIDLookupControl"
+                                AutoResolveFuzzyMatches="False"
                                 MinWidth="320"
                                 HorizontalAlignment="Stretch"
                                 AutomationProperties.Name="{x:Bind ViewModel.PartIdAccessibilityName, Mode=OneWay}"
+                                HeaderText=""
+                                InputValue="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                LookupType="PartNumber"
                                 PlaceholderText="{x:Bind ViewModel.GetPlaceholder('Field.PartID'), Mode=OneWay}"
-                                Text="{x:Bind ViewModel.PartID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                ValidationCompleted="PartIDLookupControl_ValidationCompleted" />
                         </StackPanel>
 
                         <!--  Package Type Display (Auto-detected)  -->
@@ -154,7 +179,7 @@
                             </StackPanel>
 
                             <TextBlock
-                                Foreground="{ThemeResource SystemAccentColor}"
+                                Foreground="{StaticResource ReceivingAccentBrush}"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind ViewModel.PackageType, Mode=OneWay}" />
                         </StackPanel>
@@ -254,16 +279,12 @@
                             Header="{x:Bind ViewModel.ColumnDescriptionHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
-                            Binding="{Binding RemainingQuantity}"
-                            Header="{x:Bind ViewModel.ColumnRemainingQtyHeaderText, Mode=OneWay}" />
+                            Binding="{Binding OnHandQtyDisplay}"
+                            Header="{x:Bind ViewModel.ColumnOnHandHeaderText, Mode=OneWay}" />
                         <controls:DataGridTextColumn
                             Width="*"
-                            Binding="{Binding QtyOrdered, Converter={StaticResource DecimalToIntConverter}}"
-                            Header="{x:Bind ViewModel.ColumnQtyOrderedHeaderText, Mode=OneWay}" />
-                        <controls:DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding POLineNumber}"
-                            Header="{x:Bind ViewModel.ColumnLineNumberHeaderText, Mode=OneWay}" />
+                            Binding="{Binding Location}"
+                            Header="{x:Bind ViewModel.ColumnLocationHeaderText, Mode=OneWay}" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

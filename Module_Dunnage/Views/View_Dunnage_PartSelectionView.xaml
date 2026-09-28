@@ -189,7 +189,7 @@
                     BorderThickness="1"
                     CornerRadius="8"
                     Visibility="{x:Bind ViewModel.IsPartSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid RowSpacing="8">
+                <Grid RowSpacing="4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -244,16 +244,10 @@
                                    Grid.Column="1"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    Text="Type:"/>
-                        <StackPanel Grid.Row="1"
-                                    Grid.Column="2"
-                                    Orientation="Horizontal"
-                                    Spacing="6">
-                            <mi:MaterialIcon Width="16"
-                                             Height="16"
-                                             Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                                             Kind="{x:Bind ViewModel.SelectedTypeIconKind, Mode=OneWay}"/>
-                            <TextBlock Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
-                        </StackPanel>
+                        
+                                <TextBlock Grid.Row="1"
+                                    Grid.Column="2" Text="{x:Bind ViewModel.SelectedTypeName, Mode=OneWay}"/>
+                 
 
                         <TextBlock Grid.Row="2"
                                    Grid.Column="1"
@@ -308,6 +302,7 @@
             <Grid Grid.Row="1"
                   ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -367,10 +362,23 @@
                     </StackPanel>
                 </Button>
 
-                <!--  Column 4 is the * spacer  -->
+                <Button
+                    Grid.Column="4"
+                    Command="{x:Bind ViewModel.ChangePartTypeCommand}"
+                    ToolTipService.ToolTip="Move the selected part to a different dunnage type"
+                    Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8">
+                        <FontIcon FontSize="16"
+                                  Glyph="&#xE8A9;"/>
+                        <TextBlock Text="Change Type"/>
+                    </StackPanel>
+                </Button>
+
+                <!--  Column 5 is the * spacer  -->
 
                 <ToggleSwitch
-                    Grid.Column="5"
+                    Grid.Column="6"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     IsOn="{x:Bind ViewModel.IsImageDisplayPreferred, Mode=TwoWay}"

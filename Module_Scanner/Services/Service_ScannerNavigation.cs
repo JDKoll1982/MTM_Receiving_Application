@@ -5,7 +5,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Services;
 
 /// <summary>
-/// Tracks which placeholder scanner page is active inside the module host.
+/// Tracks which scanner page is active inside the module host.
 /// </summary>
 public partial class Service_ScannerNavigation : ObservableObject, IService_ScannerNavigation
 {

@@ -2,6 +2,21 @@
 applyTo: "**/*.sh"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: shell.instructions.md
+- Description: Shell scripting guidelines for writing clean, safe, and maintainable bash/sh/zsh scripts.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Shell Scripting Guidelines
+  - Line 9-21: ## General Principles
+  - Line 22-30: ## Error Handling & Safety
+  - Line 31-39: ## Script Structure
+  - Line 40-131: ## Working with JSON and YAML
+- Critical Notes: Always enable set -euo pipefail and prefer jq/yq parsers over ad-hoc text processing.
+[DOC-META-END]
+-->
+
 # Shell Scripting Guidelines
 
 Instructions for writing clean, safe, and maintainable shell scripts for bash, sh, zsh, and other shells.

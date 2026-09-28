@@ -10,15 +10,12 @@ The forms are designed for these common request types:
 
 All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
 
-Detailed feature metadata can now be split into module-specific files under `data/module-metadata/` so the main config stays smaller and easier to maintain.
-
 ## Folder Layout
 
 - `index.html`: landing page with links to each form
 - `forms/`: scenario-specific HTML pages
 - `assets/`: shared JavaScript and CSS
 - `data/`: shared JSON catalog and schema
-- `data/module-metadata/`: split per-module feature metadata loaded at runtime
 - `inputs/templates/`: machine-editable request templates for bulk authoring or AI-assisted drafting
 - `outputs/templates/`: export format references
 - `outputs/<scenario>/`: suggested place to save generated Markdown or JSON exports
@@ -31,8 +28,6 @@ Detailed feature metadata can now be split into module-specific files under `dat
 4. Generate Markdown and JSON output.
 5. Save the generated output into the matching folder under `outputs/`.
 6. Link the saved export in chat and run the matching prompt from `.github/prompts/`.
-
-Generated exports now also include an explicit reminder that the CopilotForms metadata for the edited module must be reviewed and updated when needed as part of the same request.
 
 All CopilotForms now include an optional checkbox that adds the standard Infor Visual schema CSV reference list from `MTM_Waitlist_Application/Documents/InforVisualRelated/CSV_Documents/` into the export output. This is available on every form because a request that starts unrelated can still require Infor Visual schema context as the implementation work becomes clearer.
 
@@ -71,16 +66,7 @@ Edit `data/copilot-forms.config.json` when:
 - A feature is removed or deprecated
 - Prompt or instruction file names change
 
-Edit `data/module-metadata/<ModuleName>/` when:
-
-- A split module feature needs richer metadata
-- New sub-feature hints are added
-- Feature-aware prompt defaults or validation hints are updated
-- An analyzed module is moved out of the main config and into split files
-
-The HTML forms read that catalog at runtime. The runtime can also load split metadata indexes listed in `project.moduleMetadataIndexes` inside the main config.
-
-The generated Markdown and JSON exports include a metadata follow-up section so the person or agent using the export is reminded to review both the main config and the module-specific metadata path for the edited module.
+The HTML forms read that catalog at runtime.
 
 If the browser blocks local JSON loading, use the built-in `Load Local Config` button and select `data/copilot-forms.config.json` manually.
 

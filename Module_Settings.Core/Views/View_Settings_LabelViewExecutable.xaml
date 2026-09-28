@@ -104,13 +104,13 @@
                                             Width="18"
                                             Height="18"
                                             VerticalAlignment="Center"
-                                            Kind="{x:Bind IconKind, Mode=OneWay}" />
+                                            Kind="{x:Bind IconKind, Mode=OneTime}" />
                                         <StackPanel Grid.Column="1" Spacing="2">
-                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Label, Mode=OneWay}" />
+                                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Label, Mode=OneTime}" />
                                             <TextBlock
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind LabelPath, Mode=OneWay}"
+                                                Text="{x:Bind LabelPath, Mode=OneTime}"
                                                 TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <TextBlock
@@ -118,7 +118,7 @@
                                             VerticalAlignment="Center"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{x:Bind IsEnabled, Mode=OneWay}" />
+                                            Text="{x:Bind IsEnabled, Mode=OneTime}" />
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

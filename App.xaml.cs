@@ -1,6 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -8,7 +12,6 @@ using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
-using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MySql.Data.MySqlClient;
 using Serilog;
 
@@ -25,6 +28,13 @@ public partial class App : Application
     private System.Threading.Tasks.Task? _shutdownTask;
 
     /// <summary>
+    /// Upper bound for graceful shutdown cleanup. If session-end / host-stop / pool
+    /// clearing does not finish in this window, the app fails fast to Exit() so the
+    /// process can never linger after the last window closes.
+    /// </summary>
+    private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(8);
+
+    /// <summary>
     /// Gets the main window for the application.
     /// </summary>
     public static Window? MainWindow { get; internal set; }
@@ -38,7 +48,28 @@ public partial class App : Application
         InitializeComponent();
         DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
 
+        // Subscribed before the host is built so even a failure during startup is recorded.
+        UnhandledException += OnUnhandledException;
+
+        // LiveCharts2 SkiaSharp renderer setup (used by the Delivery Schedule tool
+        // both for the on-screen CartesianChart and for headless chart-image export).
+        LiveCharts.Configure(settings => settings.AddSkiaSharp());
+
         _host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(
+                (context, config) =>
+                {
+                    // Machine-local runtime override (e.g., the Database Config page's target
+                    // database selection). Loaded after the default appsettings.json sources so
+                    // any key it defines (ConnectionStrings:MySql) wins. Optional: when absent
+                    // the app behaves exactly as before.
+                    config.AddJsonFile(
+                        Path.Combine(AppContext.BaseDirectory, "appsettings.local.json"),
+                        optional: true,
+                        reloadOnChange: false
+                    );
+                }
+            )
             .UseSerilog(
                 (context, configuration) =>
                     SerilogConfiguration.Configure(configuration, context.Configuration)
@@ -64,6 +95,34 @@ public partial class App : Application
     }
 
     /// <summary>
+    /// Records unhandled exceptions to Serilog and the debug output before the process dies.
+    /// Without this, XAML failures such as an unresolvable resource key never reach the hosted
+    /// logging pipeline, so a crash that stops the app leaves no trace in logs/app-*.txt.
+    /// The exception is left unhandled so startup and shutdown behaviour is unchanged.
+    /// </summary>
+    /// <param name="sender">The application raising the event.</param>
+    /// <param name="e">The unhandled exception and its message.</param>
+    private static void OnUnhandledException(
+        object sender,
+        Microsoft.UI.Xaml.UnhandledExceptionEventArgs e
+    )
+    {
+        try
+        {
+            var message = e.Exception?.ToString() ?? e.Message;
+            Serilog.Log.Fatal(
+                e.Exception,
+                "Unhandled exception reached the application dispatcher."
+            );
+            System.Diagnostics.Debug.WriteLine($"[UnhandledException] {message}");
+        }
+        catch
+        {
+            // Logging must never mask or replace the original failure.
+        }
+    }
+
+    /// <summary>
     /// Invoked when the application is launched.
     /// Starts the application startup service and subscribes to session events.
     /// </summary>
@@ -71,10 +130,6 @@ public partial class App : Application
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         await _host.StartAsync();
-
-        var dunnageImageStorage = _host.Services.GetRequiredService<IService_DunnageImageStorage>();
-        await dunnageImageStorage.RefreshConfiguredRootFolderAsync();
-        _ = dunnageImageStorage.SyncLocalCacheAsync();
 
         var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
         var sessionManager = _host.Services.GetRequiredService<IService_UserSessionManager>();
@@ -112,11 +167,7 @@ public partial class App : Application
     /// <param name="e"></param>
     private void OnSessionTimedOut(object? sender, Model_SessionTimedOutEventArgs e)
     {
-        _host
-            .Services.GetRequiredService<IService_ApplicationShutdown>()
-            .RequestShutdown("session_timeout");
-
-        MainWindow?.Close();
+        _ = RequestShutdownAsync("session_timeout");
     }
 
     /// <summary>
@@ -145,6 +196,34 @@ public partial class App : Application
         var shutdownService = _host.Services.GetRequiredService<IService_ApplicationShutdown>();
         shutdownService.RequestShutdown(reason, exitCode);
 
+        // Every close-point converges on this method, so close the main window here
+        // (a no-op when it is already closed or closing).
+        try
+        {
+            MainWindow?.Close();
+        }
+        catch
+        {
+            // Window is already closed or closing.
+        }
+
+        // Bound the graceful cleanup: a slow or hung step must never keep the process
+        // alive after the last window closes, so fail-fast to Exit() below.
+        var cleanup = RunShutdownCleanupAsync(reason);
+        var completed = await Task.WhenAny(cleanup, Task.Delay(ShutdownTimeout));
+        if (completed != cleanup)
+        {
+            Log.Warning(
+                $"App shutdown cleanup did not finish within {ShutdownTimeout.TotalSeconds:0} seconds; forcing exit."
+            );
+        }
+
+        Environment.ExitCode = exitCode;
+        Exit();
+    }
+
+    private async Task RunShutdownCleanupAsync(string reason)
+    {
         try
         {
             _host.Services.GetService<IService_SoftwareVersionMonitor>()?.StopMonitoring();
@@ -213,9 +292,6 @@ public partial class App : Application
         {
             Log.Error(ex, "Error disposing host during shutdown");
         }
-
-        Environment.ExitCode = exitCode;
-        Exit();
     }
 
     /// <summary>

@@ -27,8 +27,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         var userSessionManagerMock = new Mock<IService_UserSessionManager>();
 
         validationMock
-            .Setup(service => service.ValidateSession(It.IsAny<List<Model_ReceivingLoad>>()))
-            .Returns(Model_ReceivingValidationResult.Success());
+            .Setup(service => service.ValidateSessionAsync(It.IsAny<List<Model_ReceivingLoad>>()))
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
         receivingSettingsMock
             .Setup(service => service.GetStringAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync(string.Empty);
@@ -138,8 +138,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         var userSessionManagerMock = new Mock<IService_UserSessionManager>();
 
         validationMock
-            .Setup(service => service.ValidateSession(It.IsAny<List<Model_ReceivingLoad>>()))
-            .Returns(Model_ReceivingValidationResult.Success());
+            .Setup(service => service.ValidateSessionAsync(It.IsAny<List<Model_ReceivingLoad>>()))
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
         receivingSettingsMock
             .Setup(service => service.GetStringAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync(string.Empty);
@@ -344,8 +344,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         var userSessionManagerMock = new Mock<IService_UserSessionManager>();
 
         validationMock
-            .Setup(service => service.ValidateSession(It.IsAny<List<Model_ReceivingLoad>>()))
-            .Returns(Model_ReceivingValidationResult.Success());
+            .Setup(service => service.ValidateSessionAsync(It.IsAny<List<Model_ReceivingLoad>>()))
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
         qualityHoldWarningMock
             .Setup(service =>
                 service.ConfirmBeforeSaveAsync(It.IsAny<IReadOnlyList<Model_ReceivingLoad>>())
@@ -428,8 +428,8 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         var userSessionManagerMock = new Mock<IService_UserSessionManager>();
 
         validationMock
-            .Setup(service => service.ValidateSession(It.IsAny<List<Model_ReceivingLoad>>()))
-            .Returns(Model_ReceivingValidationResult.Success());
+            .Setup(service => service.ValidateSessionAsync(It.IsAny<List<Model_ReceivingLoad>>()))
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
         qualityHoldWarningMock
             .Setup(service =>
                 service.ConfirmBeforeSaveAsync(It.IsAny<IReadOnlyList<Model_ReceivingLoad>>())

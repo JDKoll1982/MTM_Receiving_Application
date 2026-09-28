@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.ViewModels;
 
@@ -67,6 +68,9 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
         Title = ViewModel.Title;
         WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1400, 900);
 
+        // Open maximized; the size set above defines the size restored on un-maximize.
+        this.Maximize();
+
         ConfigureTitleBar();
         Activated += OnWindowActivated;
         UpdateTitleBarColors();
@@ -84,6 +88,43 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "Manage core system defaults, users, and infrastructure settings."
         );
         UpdateHeaderActions();
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        var pageType = SettingsFrame.Content?.GetType() ?? _currentNestedSettingsPageType;
+
+        Model_HelpContent content;
+        if (pageType is null)
+        {
+            content = new Model_HelpContent
+            {
+                Key = "Settings.General",
+                Title = "Settings",
+                Content =
+                    "Browse settings by module using the left navigation. Each page applies changes when you navigate away or use its save action.",
+            };
+        }
+        else
+        {
+            var (title, description) = GetPageHeader(pageType);
+            content = new Model_HelpContent
+            {
+                Key = $"Settings.{pageType.Name}",
+                Title = string.IsNullOrWhiteSpace(title) ? "Settings" : title,
+                Content =
+                    (string.IsNullOrWhiteSpace(description)
+                        ? "Configure this settings page."
+                        : description)
+                    + "\n\n"
+                    + "• Changes made here are saved when you leave the page or use the page's save action.\n"
+                    + "• Use Back or the module list on the left to move between pages.\n"
+                    + "• Some settings are user-specific; others apply to all users.",
+            };
+        }
+
+        await helpService.ShowHelpAsync(content, Content?.XamlRoot);
     }
 
     /// <summary>
@@ -358,6 +399,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Database Settings",
                 "Configure database connections and options."
             ),
+            "View_Settings_DatabaseConfig" => (
+                "Database Config",
+                "Choose the MySQL database the application connects to and run the reference-data sync tool."
+            ),
             "View_Settings_Logging" => (
                 "Logging Settings",
                 "Configure logging and diagnostic options."
@@ -373,6 +418,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             "View_Settings_MaterialAvailabilityBoardFields" => (
                 "Material Availability Fields",
                 "Control which work-order details are shown in the Material Availability dialog and print output."
+            ),
+            "View_Settings_ScannerAccess" => (
+                "Scanner Access",
+                "Choose which users may open the Scanner module. This allow-list applies to every workstation."
             ),
 
             _ => (string.Empty, string.Empty),

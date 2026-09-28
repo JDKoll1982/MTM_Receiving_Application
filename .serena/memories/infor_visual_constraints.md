@@ -1,3 +1,22 @@
+<!-- 
+[DOC-META-START]
+- File Name: infor_visual_constraints.md
+- Description: Infor Visual SQL Server read-only rules, connection requirements, and DAO patterns.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 20-23: # Infor Visual Integration Constraints
+  - Line 24-27: ## CRITICAL: READ-ONLY DATABASE
+  - Line 28-42: ## Connection Requirements
+  - Line 43-81: ## DAO Pattern for Infor Visual
+  - Line 82-113: ## Allowed Operations
+  - Line 114-124: ## Forbidden Operations
+  - Line 125-147: ## Error Handling
+  - Line 148-157: ## Registration in DI
+  - Line 158-167: ## Pre-Commit Validation
+- Critical Notes: ApplicationIntent=ReadOnly; never INSERT/UPDATE/DELETE against Visual.
+[DOC-META-END]
+-->
+
 # Infor Visual Integration Constraints
 
 Last Updated: 2026-03-21

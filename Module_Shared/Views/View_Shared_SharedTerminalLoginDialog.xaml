@@ -11,6 +11,8 @@
     Width="400"
 >
     <StackPanel Spacing="16" Padding="8">
+        
+
         <!-- Instructions -->
         <TextBlock
             Text="Please enter your credentials to continue"

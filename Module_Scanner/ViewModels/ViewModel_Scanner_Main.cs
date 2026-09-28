@@ -10,7 +10,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
 
 /// <summary>
-/// Main host ViewModel for the scanner module placeholder scaffold.
+/// Main host ViewModel for the scanner module.
 /// </summary>
 public partial class ViewModel_Scanner_Main
     : ViewModel_Shared_Base,

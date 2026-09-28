@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.2.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.2.0</h1>
+                    <p class="hero-copy">This release continues the cross-module refresh. Receiving, Dunnage, Scanner, Reporting, Ship/Rec Tools, and Volvo now share a compact, consistent way to work - icon toolbars with quick date filters and help on the screen where you need it. Scanner batch entry is faster to manage, and a new Reprint area brings Receiving, Dunnage, and Volvo labels together.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.2.0</span>
+                <span class="meta-text">Released September 8, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.2.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.2.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">One consistent way to work</p>
+                            <p class="highlight-text">Edit Mode and tool screens across Receiving, Dunnage, Scanner, Reporting, Ship/Rec Tools, and Volvo now use the same compact toolbar style, with quick date filters, rows-per-page choices, and a help button on each screen.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Scanner batch entry is faster</p>
+                            <p class="highlight-text">Add several lines of the same part in one step, change quantities as you go, and use the colour-coded status icon to see exactly what to fix before sending.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">New: Reprint labels</p>
+                            <p class="highlight-text">A new Reprint area groups Receiving, Dunnage, and Volvo labels together so previously created labels can be reprinted from one place.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving and Dunnage Edit Mode are easier to use</summary>
+                        <p>Each Edit Mode screen now has a single, compact toolbar at the top instead of several scattered rows. Load, edit, and filter actions sit side by side as icon buttons, and the search box stretches to fill the available width so there is room to type.</p>
+                        <p>Date filtering is tucked behind one button with a quick picker: choose a preset such as Today, This Week, or This Quarter, or set your own start and end dates. Dunnage Edit Mode also lets you choose how many rows to show per page, and when a search finds nothing the empty table disappears so the "no matches" message is easy to see.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Scanner batch entry handles multiple lines</summary>
+                        <p>In the Scanner Workbench, each line now has a status icon that is colour-coded to tell you whether the line is ready, needs attention, or is waiting for a destination. Selecting the icon opens a short explanation of exactly what to do for that line.</p>
+                        <p>A + button on each line lets you add more lines of the same part at once. The original line and every new line start at a quantity of one with a blank destination, so you can type in each destination as you go. Search By and Remove Selected now sit together in the footer, with Remove Selected clearly marked.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Reporting keeps date and module choices together</summary>
+                        <p>The Reporting opening page combines the date range and module selection into one card. Date controls fit on a single row, with quick ranges and a check-mark button to confirm which modules have data. The preview page no longer clips its contents and stays readable as the window resizes.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Ship/Rec Tools get the same toolbar treatment</summary>
+                        <p>Delivery Schedule, Material Availability Board, PO Line Specification Search, Welded Coils, and Dunnage Book now use the shared toolbar card. Each keeps its own filters, search, and print options in one tidy row with help on the right.</p>
+                        <p>Receiving Analytics gained quick date ranges that match the view you are in: when you are looking at History you get past ranges such as last 7, 30, or 90 days, and when you switch to Incoming you get forward-looking ranges such as the next 7, 30, or 90 days.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Volvo pages place help where you are working</summary>
+                        <p>On the Volvo opening page the help button now sits beside Add Part, Preview Email, View Label Data, and View History in the same toolbar card. On the Volvo history page, help sits beside the date and status filters.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>New Reprint labels area</summary>
+                        <p>Reprint is now its own landing page in the application. Choose Receiving, Dunnage, or Volvo to find a previously created label and reprint it without re-entering the original work.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Administrator settings for database configuration</summary>
+                        <p>Settings includes a Database configuration area where administrators can choose which database the application uses and run reference-data sync tasks. This is intended for support staff who set up workstations, not for day-to-day operators.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Cleaner no-results and focus behaviour</summary>
+                        <p>Screens that show a "nothing found" message now hide the leftover empty grid so the message stands out. Help content was added or updated across Receiving, Dunnage, Scanner, Reporting, Ship/Rec Tools, and Volvo, and the Scanner supports the same keyboard input handling as the rest of the application.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Less hunting for the right control</h3>
+                            <p>Toolbars look and behave the same across modules, and help is on the screen where you are working instead of floating elsewhere.</p>
+                        </article>
+                        <article>
+                            <h3>Faster batch entry with clearer status</h3>
+                            <p>Adding lines of one part and knowing what still needs to be done happens without leaving the list.</p>
+                        </article>
+                        <article>
+                            <h3>Reprinting is a separate, simple step</h3>
+                            <p>Labels that were already created can be found again and reprinted from the Reprint area.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Pick up where you left off</h2>
+                    </div>
+                    <p class="action-state success">No migration or setup step is required.</p>
+                    <ul class="action-list">
+                        <li>There is nothing to configure after this update - existing preferences and saved work carry over.</li>
+                        <li>To try the new Scanner tools, open the Scanner Workbench and use the + button on a line to add more lines of the same part.</li>
+                        <li>To reprint a label, open Reprint from the main menu and choose the module.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a screen looks wrong, a date range returns unexpected results, or Reprint cannot find a label you expect, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

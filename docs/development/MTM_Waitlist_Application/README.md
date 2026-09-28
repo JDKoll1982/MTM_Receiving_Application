@@ -93,7 +93,7 @@ All planning documents are located in [Documentation/Planning/](Documentation/Pl
 - **Framework**: WinUI 3 on .NET 8
 - **Architecture**: Strict MVVM with CommunityToolkit.Mvvm
 - **Databases**:
-  - MySQL (mtm_receiving_application) - Full READ/WRITE access
+  - MySQL (mtm_receiving_application_test) - Full READ/WRITE access
   - SQL Server (Infor Visual - VISUAL/MTMFG) - **READ ONLY**
 - **Dependency Injection**: Built-in .NET DI
 - **Key Packages**:

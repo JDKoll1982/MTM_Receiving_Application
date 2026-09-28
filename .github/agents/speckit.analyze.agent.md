@@ -2,6 +2,24 @@
 description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.analyze.agent.md
+- Description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-12: ## User Input
+  - Line 13-16: ## Goal
+  - Line 17-22: ## Operating Constraints
+  - Line 23-32: ## Major Assumption Approval
+  - Line 33-146: ## Execution Steps
+  - Line 147-184: ## Specification Analysis Report
+  - Line 185-201: ## Operating Principles
+  - Line 202-204: ## Context
+- Critical Notes: STRICTLY READ-ONLY — never modify files; constitution conflicts are automatically CRITICAL.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

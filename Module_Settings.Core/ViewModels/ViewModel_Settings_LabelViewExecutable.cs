@@ -50,7 +50,7 @@ public partial class ViewModel_Settings_LabelViewExecutable : ViewModel_Shared_B
     private MaterialIconKind? _selectedIconKind = MaterialIconKind.PackageVariantClosed;
 
     [ObservableProperty]
-    private string _selectedAccentOption = Enum_MainWindowLabelButtonAccent.Neutral.ToString();
+    private string _selectedAccentOption = nameof(Enum_MainWindowLabelButtonAccent.Neutral);
 
     [ObservableProperty]
     private ObservableCollection<Model_IconDefinition> _recentlyUsedIcons = new();
@@ -178,7 +178,7 @@ public partial class ViewModel_Settings_LabelViewExecutable : ViewModel_Shared_B
             Id = Guid.NewGuid().ToString("N"),
             Label = $"Label {nextIndex + 1}",
             LabelPath = string.Empty,
-            IconKey = MaterialIconKind.PackageVariantClosed.ToString(),
+            IconKey = nameof(MaterialIconKind.PackageVariantClosed),
             Accent = Enum_MainWindowLabelButtonAccent.Neutral,
             IsEnabled = true,
             SortOrder = nextIndex,

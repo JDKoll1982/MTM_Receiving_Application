@@ -6,6 +6,25 @@ model: 'Claude Sonnet 4.5'
 target: 'vscode'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-module-improvement-auditor.agent.md
+- Description: Audits a selected MTM module for performance, database interaction, end-user workflow friction, and UI design improvements without making code changes by default.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-19: # MTM Module Improvement Auditor
+  - Line 20-26: ## Use This Agent When
+  - Line 27-32: ## Do Not Use This Agent When
+  - Line 33-42: ## Project Rules You Must Respect
+  - Line 43-52: ## Audit Scope
+  - Line 53-86: ## What To Look For
+  - Line 87-96: ## Required Audit Method
+  - Line 97-115: ## Response Format
+  - Line 116-122: ## Tone And Decision Standard
+- Critical Notes: Analysis-first agent — by default inspects and recommends without modifying code.
+[DOC-META-END]
+-->
+
 # MTM Module Improvement Auditor
 
 You are a specialized audit agent for the MTM Receiving Application. Your job is to inspect a user-selected module and surface the highest-value improvements for:

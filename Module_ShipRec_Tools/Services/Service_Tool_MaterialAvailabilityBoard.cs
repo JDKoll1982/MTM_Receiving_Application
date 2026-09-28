@@ -1843,11 +1843,11 @@ body { margin: 0; background: #ffffff; }
 .transaction-sheet th, .transaction-sheet td { border: 1px solid #111827; padding: 3px 4px; vertical-align: top; }
 .transaction-sheet th { background: #f3f4f6; font-weight: 700; text-align: left; }
 .transaction-row { break-inside: avoid; page-break-inside: avoid; }
-.identity-header { width: 1%; white-space: nowrap; }
-.entries-header { width: 99%; }
-.identity-cell { width: 1%; white-space: nowrap; background: #faf5ff; padding: 5px; display: flex; align-items: center; justify-content: center; }
+.identity-header { width: 2.1in; white-space: nowrap; }
+.entries-header { width: auto; }
+.identity-cell { width: 2.1in; white-space: nowrap; background: #faf5ff; padding: 5px; vertical-align: middle; }
 .identity-card {
-    min-width: 1.9in;
+    width: 100%;
     background: linear-gradient(180deg, #fcfaff 0%, #f3e8ff 100%);
     border: 1px solid #c4b5fd;
     border-radius: 8px;
@@ -1867,6 +1867,8 @@ body { margin: 0; background: #ffffff; }
     font-weight: 700;
     color: #111827;
     margin: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 .identity-from-value {
     font-size: 10.5pt;
@@ -1889,7 +1891,7 @@ body { margin: 0; background: #ffffff; }
     padding: 0 !important;
     width: 10px;
 }
-.entry-cell { height: 28px; }
+.entry-cell { height: 26px; }
 """;
     }
 

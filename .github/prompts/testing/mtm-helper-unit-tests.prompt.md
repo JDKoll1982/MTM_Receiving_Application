@@ -5,6 +5,22 @@ argument-hint: "Select or specify the helper class file to test"
 agent: agent
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-helper-unit-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for C# helper/utility classes with edge cases and performance validation
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Generate Unit Tests for Helper/Utility Classes
+  - Line 12-19: ## Context
+  - Line 20-83: ## Requirements
+  - Line 84-95: ## Output Requirements
+  - Line 96-105: ## Example Test Patterns
+  - Line 106-112: ## Notes
+- Critical Notes: Helpers are usually pure functions — exhaustively test null/empty/whitespace/boundary/culture edge cases and thread safety.
+[DOC-META-END]
+-->
+
 # Generate Unit Tests for Helper/Utility Classes
 
 You are an expert C# unit test developer specializing in .NET 10 and xUnit with deep knowledge of testing static utilities, extension methods, and pure functions.

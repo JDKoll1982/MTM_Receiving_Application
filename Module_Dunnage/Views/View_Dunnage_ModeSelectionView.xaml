@@ -43,7 +43,7 @@
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Foreground="{StaticResource DunnageAccentBrush}"
                         Glyph="&#xE771;" />
                     <TextBlock
                         HorizontalAlignment="Center"
@@ -75,7 +75,7 @@
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Foreground="{StaticResource DunnageAccentBrush}"
                         Glyph="&#xE70F;" />
                     <TextBlock
                         HorizontalAlignment="Center"
@@ -106,7 +106,7 @@
                 <StackPanel Spacing="12">
                     <FontIcon
                         FontSize="48"
-                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Foreground="{StaticResource DunnageAccentBrush}"
                         Glyph="&#xE7C5;" />
                     <TextBlock
                         HorizontalAlignment="Center"

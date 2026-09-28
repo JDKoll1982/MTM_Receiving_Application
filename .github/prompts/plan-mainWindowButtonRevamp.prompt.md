@@ -1,3 +1,14 @@
+<!-- 
+[DOC-META-START]
+- File Name: plan-mainWindowButtonRevamp.prompt.md
+- Description: Plan to replace the fixed 4-footer label buttons with a user-managed, data-driven button list stored per user in settings_personal, with an expanded LabelView settings page and MainWindow overflow flyout behavior.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1: ## Plan: MainWindow Dynamic Label Buttons
+- Critical Notes: Single-release delivery; keep launch validation via Service_LabelViewLauncher and route all label launches through MainWindow OpenLabelAsync without duplicate logic.
+[DOC-META-END]
+-->
+
 ## Plan: MainWindow Dynamic Label Buttons
 
 Replace the fixed 4-footer buttons with a user-managed, data-driven button list stored per user in settings_personal, managed from an expanded LabelView settings page, and shown in MainWindow with overflow flyout behavior. Preserve current launch validation via Service_LabelViewLauncher and remove module-specific label-path pages in one release.

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -13,27 +12,50 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Receiving.Models;
-using Windows.Foundation;
 using Windows.System;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
     public sealed partial class View_Receiving_Workflow : Page
     {
+        private const int MaxFocusAttempts = 6;
+
+        // Simple-navigation mode swaps the configured step shortcuts for bare arrow keys.
+        private static readonly Model_KeyboardShortcutBinding SimpleNavigationNextShortcut = new()
+        {
+            Key = "Right",
+        };
+
+        private static readonly Model_KeyboardShortcutBinding SimpleNavigationBackShortcut = new()
+        {
+            Key = "Left",
+        };
+
+        private static readonly Model_KeyboardShortcutBinding SimpleNavigationToggleShortcut = new()
+        {
+            Key = "T",
+            IsCtrlEnabled = true,
+        };
+
         public ViewModel_Receiving_Workflow ViewModel { get; }
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
         private readonly IService_ReceivingShortcuts _receivingShortcuts;
-        private readonly List<KeyboardAccelerator> _registeredAccelerators = new();
+        private readonly IService_Focus _focusService;
         private Model_Settings_ReceivingShortcuts _shortcutSettings =
             Model_Settings_ReceivingShortcuts.CreateDefault();
         private bool _isSimpleNavigationToggleActive;
+        private int _pendingFocusAttempts;
+        private bool _isFocusAttemptScheduled;
 
         public View_Receiving_Workflow(
             ViewModel_Receiving_Workflow viewModel,
+            IService_AdaptiveLayout adaptiveLayout,
             IService_ReceivingWorkflow workflowService,
             IService_Help helpService,
             IService_ReceivingShortcuts receivingShortcuts,
+            IService_Focus focusService,
             View_Receiving_ModeSelection modeSelectionView,
             View_Receiving_ManualEntry manualEntryView,
             View_Receiving_EditMode editModeView,
@@ -47,9 +69,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
             ArgumentNullException.ThrowIfNull(workflowService);
             ArgumentNullException.ThrowIfNull(helpService);
             ArgumentNullException.ThrowIfNull(receivingShortcuts);
+            ArgumentNullException.ThrowIfNull(focusService);
             ArgumentNullException.ThrowIfNull(modeSelectionView);
             ArgumentNullException.ThrowIfNull(manualEntryView);
             ArgumentNullException.ThrowIfNull(editModeView);
@@ -62,11 +86,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(reconciliationReviewView);
 
             ViewModel = viewModel;
+            _adaptiveLayout = adaptiveLayout;
             _workflowService = workflowService;
             _helpService = helpService;
             _receivingShortcuts = receivingShortcuts;
+            _focusService = focusService;
             this.InitializeComponent();
-            KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             AddHandler(KeyDownEvent, new KeyEventHandler(WorkflowPage_KeyDown), true);
 
             ModeSelectionHost.Content = modeSelectionView;
@@ -79,9 +104,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             PackageTypeHost.Content = packageTypeView;
             ReviewHost.Content = reviewView;
             ReconciliationReviewHost.Content = reconciliationReviewView;
+            RegisterGuidedStepFocusHooks();
 
             Loaded += View_Receiving_Workflow_Loaded;
             Unloaded += View_Receiving_Workflow_Unloaded;
+            SizeChanged += View_Receiving_Workflow_SizeChanged;
+            LayoutUpdated += View_Receiving_Workflow_LayoutUpdated;
 
             _ = LoadShortcutsAsync();
         }
@@ -93,6 +121,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
             _workflowService.StepChanged += WorkflowService_StepChanged;
+            ApplyAdaptiveLayout();
+            QueueFocusForCurrentStep();
         }
 
         private void View_Receiving_Workflow_Unloaded(object sender, RoutedEventArgs e)
@@ -101,30 +131,151 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _ = e;
 
             _workflowService.StepChanged -= WorkflowService_StepChanged;
+            SizeChanged -= View_Receiving_Workflow_SizeChanged;
+            LayoutUpdated -= View_Receiving_Workflow_LayoutUpdated;
+        }
+
+        private void View_Receiving_Workflow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void ApplyAdaptiveLayout()
+        {
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
         }
 
         private void WorkflowService_StepChanged(object? sender, EventArgs e)
         {
             _ = sender;
             _ = e;
+            QueueFocusForCurrentStep();
         }
 
-        private IReceivingWorkflowFocusable? ResolveFocusableStepView()
+        private void QueueFocusForCurrentStep()
+        {
+            if (DispatcherQueue == null)
+            {
+                return;
+            }
+
+            _pendingFocusAttempts = MaxFocusAttempts;
+            ScheduleFocusAttempt();
+        }
+
+        private void View_Receiving_Workflow_LayoutUpdated(object? sender, object e)
+        {
+            _ = sender;
+            _ = e;
+
+            if (_pendingFocusAttempts > 0)
+            {
+                ScheduleFocusAttempt();
+            }
+        }
+
+        private void ScheduleFocusAttempt()
+        {
+            if (_isFocusAttemptScheduled || DispatcherQueue == null)
+            {
+                return;
+            }
+
+            _isFocusAttemptScheduled = true;
+            DispatcherQueue.TryEnqueue(
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+                () =>
+                {
+                    _isFocusAttemptScheduled = false;
+                    AttemptFocusForCurrentStep();
+                }
+            );
+        }
+
+        private void AttemptFocusForCurrentStep()
+        {
+            if (_pendingFocusAttempts <= 0)
+            {
+                return;
+            }
+
+            _pendingFocusAttempts--;
+
+            if (TryFocusCurrentStep())
+            {
+                _pendingFocusAttempts = 0;
+                return;
+            }
+
+            if (_pendingFocusAttempts > 0)
+            {
+                ScheduleFocusAttempt();
+            }
+        }
+
+        private void RegisterGuidedStepFocusHooks()
+        {
+            RegisterGuidedStepHostFocusHook(POEntryHost, Enum_ReceivingWorkflowStep.POEntry);
+            RegisterGuidedStepHostFocusHook(LoadEntryHost, Enum_ReceivingWorkflowStep.LoadEntry);
+            RegisterGuidedStepHostFocusHook(
+                WeightQuantityHost,
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry
+            );
+            RegisterGuidedStepHostFocusHook(HeatLotHost, Enum_ReceivingWorkflowStep.HeatLotEntry);
+            RegisterGuidedStepHostFocusHook(
+                PackageTypeHost,
+                Enum_ReceivingWorkflowStep.PackageTypeEntry
+            );
+            RegisterGuidedStepHostFocusHook(ReviewHost, Enum_ReceivingWorkflowStep.Review);
+        }
+
+        private void RegisterGuidedStepHostFocusHook(
+            ContentControl host,
+            Enum_ReceivingWorkflowStep step
+        )
+        {
+            host.RegisterPropertyChangedCallback(
+                UIElement.VisibilityProperty,
+                (_, _) =>
+                {
+                    if (
+                        host.Visibility == Visibility.Visible
+                        && _workflowService.CurrentStep == step
+                    )
+                    {
+                        QueueFocusForCurrentStep();
+                    }
+                }
+            );
+        }
+
+        private bool TryFocusCurrentStep()
         {
             return _workflowService.CurrentStep switch
             {
-                Enum_ReceivingWorkflowStep.POEntry => POEntryHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.LoadEntry => LoadEntryHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.WeightQuantityEntry => WeightQuantityHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.HeatLotEntry => HeatLotHost.Content
-                    as IReceivingWorkflowFocusable,
-                Enum_ReceivingWorkflowStep.PackageTypeEntry => PackageTypeHost.Content
-                    as IReceivingWorkflowFocusable,
-                _ => null,
+                Enum_ReceivingWorkflowStep.POEntry => TryFocusHostedStep(POEntryHost),
+                Enum_ReceivingWorkflowStep.LoadEntry => TryFocusHostedStep(LoadEntryHost),
+                Enum_ReceivingWorkflowStep.WeightQuantityEntry => TryFocusHostedStep(
+                    WeightQuantityHost
+                ),
+                Enum_ReceivingWorkflowStep.HeatLotEntry => TryFocusHostedStep(HeatLotHost),
+                Enum_ReceivingWorkflowStep.PackageTypeEntry => TryFocusHostedStep(PackageTypeHost),
+                Enum_ReceivingWorkflowStep.Review => TryFocusHostedStep(ReviewHost),
+                Enum_ReceivingWorkflowStep.Complete => _focusService.TrySetFocus(
+                    CompletionStartNewEntryButton
+                ),
+                _ => true,
             };
+        }
+
+        private static bool TryFocusHostedStep(ContentControl host)
+        {
+            return host.Visibility == Visibility.Visible
+                && host.Content is IReceivingWorkflowFocusable view
+                && view.FocusForAccess();
         }
 
         private async void HelpButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -226,108 +377,141 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 _shortcutSettings = (
                     shortcuts ?? Model_Settings_ReceivingShortcuts.CreateDefault()
                 ).Clone();
-                ApplyKeyboardShortcuts(isSimpleNavigationToggleActive: false);
             }
             catch (Exception ex)
             {
                 _ = ex;
                 _shortcutSettings = Model_Settings_ReceivingShortcuts.CreateDefault();
-                ApplyKeyboardShortcuts(isSimpleNavigationToggleActive: false);
-            }
-        }
-
-        private void ApplyKeyboardShortcuts(bool isSimpleNavigationToggleActive)
-        {
-            _isSimpleNavigationToggleActive =
-                _shortcutSettings.IsToggleSimpleNavigationEnabled && isSimpleNavigationToggleActive;
-
-            ClearKeyboardAccelerators();
-
-            RegisterAccelerator(
-                _shortcutSettings.ModeSelectionShortcut,
-                ModeSelectionAccelerator_Invoked
-            );
-            RegisterAccelerator(
-                _shortcutSettings.ClearLabelDataShortcut,
-                ClearLabelDataAccelerator_Invoked
-            );
-            RegisterNavigationAccelerators();
-            RegisterAccelerator(_shortcutSettings.HelpShortcut, HelpAccelerator_Invoked);
-
-            if (_shortcutSettings.IsToggleSimpleNavigationEnabled)
-            {
-                RegisterAccelerator(
-                    new Model_KeyboardShortcutBinding { Key = "T", IsCtrlEnabled = true },
-                    ToggleSimpleNavigationAccelerator_Invoked
-                );
-            }
-        }
-
-        private void ClearKeyboardAccelerators()
-        {
-            foreach (var accelerator in _registeredAccelerators)
-            {
-                KeyboardAccelerators.Remove(accelerator);
             }
 
-            _registeredAccelerators.Clear();
+            _isSimpleNavigationToggleActive = false;
         }
 
-        private void RegisterNavigationAccelerators()
+        /// <summary>
+        /// Routes every configured workflow shortcut through the same gated commands the on-screen
+        /// buttons use, so a shortcut can never reach a step, mode change, or data reset that the
+        /// matching button would block.
+        /// </summary>
+        private void WorkflowPage_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var nextShortcut = _isSimpleNavigationToggleActive
-                ? new Model_KeyboardShortcutBinding { Key = "Right" }
-                : _shortcutSettings.NextStepShortcut;
-            var backShortcut = _isSimpleNavigationToggleActive
-                ? new Model_KeyboardShortcutBinding { Key = "Left" }
-                : _shortcutSettings.BackStepShortcut;
+            _ = sender;
 
-            RegisterAccelerator(nextShortcut, NextStepAccelerator_Invoked);
-            RegisterAccelerator(backShortcut, BackStepAccelerator_Invoked);
-        }
-
-        private void RegisterAccelerator(
-            Model_KeyboardShortcutBinding binding,
-            TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs> handler
-        )
-        {
-            var accelerator = Helper_KeyboardShortcuts.CreateAccelerator(binding);
-            if (accelerator == null)
+            // Holding a shortcut key repeats KeyDown; a shortcut must behave like a single click.
+            if (e.KeyStatus.WasKeyDown)
             {
                 return;
             }
 
-            accelerator.Invoked += handler;
-            KeyboardAccelerators.Add(accelerator);
-            _registeredAccelerators.Add(accelerator);
-        }
-
-        private void ModeSelectionAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
-        )
-        {
-            _ = sender;
-
-            if (ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
+            if (
+                TryHandleModeSelectionShortcut(e)
+                || TryHandleClearLabelDataShortcut(e)
+                || TryHandleStepNavigationShortcut(e)
+                || TryHandleHelpShortcut(e)
+                || TryHandleSimpleNavigationToggleShortcut(e)
+            )
             {
-                ViewModel.ReturnToModeSelectionCommand.Execute(null);
-                args.Handled = true;
+                e.Handled = true;
             }
         }
 
-        private void ClearLabelDataAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
+        private bool TryHandleModeSelectionShortcut(KeyRoutedEventArgs e)
+        {
+            return IsShortcutMatch(e, _shortcutSettings.ModeSelectionShortcut)
+                && TryExecuteCommand(ViewModel.ReturnToModeSelectionCommand);
+        }
+
+        private bool TryHandleClearLabelDataShortcut(KeyRoutedEventArgs e)
+        {
+            if (
+                !IsShortcutMatch(e, _shortcutSettings.ClearLabelDataShortcut)
+                || !ViewModel.CanClearLabelData
+            )
+            {
+                return false;
+            }
+
+            // The Clear Label Data button always clears the active rows, never the full history.
+            return TryExecuteCommand(ViewModel.ResetLabelDataCommand, false);
+        }
+
+        private bool TryHandleStepNavigationShortcut(KeyRoutedEventArgs e)
+        {
+            var nextShortcut = _isSimpleNavigationToggleActive
+                ? SimpleNavigationNextShortcut
+                : _shortcutSettings.NextStepShortcut;
+
+            if (IsShortcutMatch(e, nextShortcut) && TryExecuteCommand(ViewModel.NextStepCommand))
+            {
+                return true;
+            }
+
+            var backShortcut = _isSimpleNavigationToggleActive
+                ? SimpleNavigationBackShortcut
+                : _shortcutSettings.BackStepShortcut;
+
+            return IsShortcutMatch(e, backShortcut)
+                && TryExecuteCommand(ViewModel.PreviousStepCommand);
+        }
+
+        private bool TryHandleHelpShortcut(KeyRoutedEventArgs e)
+        {
+            if (!IsShortcutMatch(e, _shortcutSettings.HelpShortcut))
+            {
+                return false;
+            }
+
+            HelpButton_Click(this, new RoutedEventArgs());
+            return true;
+        }
+
+        private bool TryHandleSimpleNavigationToggleShortcut(KeyRoutedEventArgs e)
+        {
+            if (
+                !_shortcutSettings.IsToggleSimpleNavigationEnabled
+                || !IsShortcutMatch(e, SimpleNavigationToggleShortcut)
+            )
+            {
+                return false;
+            }
+
+            _isSimpleNavigationToggleActive = !_isSimpleNavigationToggleActive;
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether a routed key event matches a binding and may act on the workflow.
+        /// </summary>
+        private bool IsShortcutMatch(KeyRoutedEventArgs e, Model_KeyboardShortcutBinding binding)
+        {
+            if (!Helper_KeyboardShortcuts.DoesCurrentKeyEventMatch(e.Key, binding))
+            {
+                return false;
+            }
+
+            return !Helper_KeyboardShortcuts.ShouldIgnoreForFocusedInput(
+                GetFocusedElement(),
+                binding
+            );
+        }
+
+        private object? GetFocusedElement()
+        {
+            var xamlRoot = XamlRoot;
+            return xamlRoot is null ? null : FocusManager.GetFocusedElement(xamlRoot);
+        }
+
+        private static bool TryExecuteCommand(
+            System.Windows.Input.ICommand command,
+            object? parameter = null
         )
         {
-            _ = sender;
-
-            if (ViewModel.ResetLabelDataCommand.CanExecute(false))
+            if (!command.CanExecute(parameter))
             {
-                ViewModel.ResetLabelDataCommand.Execute(false);
-                args.Handled = true;
+                return false;
             }
+
+            command.Execute(parameter);
+            return true;
         }
 
         private void OnResetLabelDataClick(object sender, RoutedEventArgs e)
@@ -346,126 +530,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
         }
 
-        private void NextStepAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
-        )
-        {
-            _ = sender;
-
-            if (ViewModel.NextStepCommand.CanExecute(null))
-            {
-                ViewModel.NextStepCommand.Execute(null);
-                args.Handled = true;
-            }
-        }
-
-        private void BackStepAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
-        )
-        {
-            _ = sender;
-
-            if (ViewModel.PreviousStepCommand.CanExecute(null))
-            {
-                ViewModel.PreviousStepCommand.Execute(null);
-                args.Handled = true;
-            }
-        }
-
-        private void HelpAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
-        )
-        {
-            _ = sender;
-            HelpButton_Click(this, new RoutedEventArgs());
-            args.Handled = true;
-        }
-
-        private void ToggleSimpleNavigationAccelerator_Invoked(
-            KeyboardAccelerator sender,
-            KeyboardAcceleratorInvokedEventArgs args
-        )
-        {
-            _ = sender;
-
-            if (!_shortcutSettings.IsToggleSimpleNavigationEnabled)
-            {
-                return;
-            }
-
-            ApplyKeyboardShortcuts(!_isSimpleNavigationToggleActive);
-            args.Handled = true;
-        }
-
-        private void WorkflowPage_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            _ = sender;
-
-            if (TryHandleNavigationShortcut(e))
-            {
-                return;
-            }
-        }
-
-        private bool TryHandleNavigationShortcut(KeyRoutedEventArgs e)
-        {
-            if (_isSimpleNavigationToggleActive)
-            {
-                if (
-                    Helper_KeyboardShortcuts.DoesCurrentKeyEventMatch(
-                        e.Key,
-                        new Model_KeyboardShortcutBinding { Key = "Right" }
-                    ) && ViewModel.NextStepCommand.CanExecute(null)
-                )
-                {
-                    ViewModel.NextStepCommand.Execute(null);
-                    e.Handled = true;
-                    return true;
-                }
-
-                if (
-                    Helper_KeyboardShortcuts.DoesCurrentKeyEventMatch(
-                        e.Key,
-                        new Model_KeyboardShortcutBinding { Key = "Left" }
-                    ) && ViewModel.PreviousStepCommand.CanExecute(null)
-                )
-                {
-                    ViewModel.PreviousStepCommand.Execute(null);
-                    e.Handled = true;
-                    return true;
-                }
-
-                return false;
-            }
-
-            if (
-                Helper_KeyboardShortcuts.DoesCurrentKeyEventMatch(
-                    e.Key,
-                    _shortcutSettings.NextStepShortcut
-                ) && ViewModel.NextStepCommand.CanExecute(null)
-            )
-            {
-                ViewModel.NextStepCommand.Execute(null);
-                e.Handled = true;
-                return true;
-            }
-
-            if (
-                Helper_KeyboardShortcuts.DoesCurrentKeyEventMatch(
-                    e.Key,
-                    _shortcutSettings.BackStepShortcut
-                ) && ViewModel.PreviousStepCommand.CanExecute(null)
-            )
-            {
-                ViewModel.PreviousStepCommand.Execute(null);
-                e.Handled = true;
-                return true;
-            }
-
-            return false;
-        }
     }
 }

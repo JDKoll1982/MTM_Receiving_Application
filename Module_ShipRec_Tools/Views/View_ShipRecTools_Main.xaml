@@ -35,18 +35,39 @@
             VerticalContentAlignment="Stretch"
             Visibility="{x:Bind ViewModel.IsMaterialAvailabilityBoardVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <!--  Customer Pull n' Pack Tool  -->
+        <!--  PO Line Spec Search Tool  -->
         <ContentControl
-            x:Name="CustomerPullPackHost"
+            x:Name="POLineSpecSearchHost"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
-            Visibility="{x:Bind ViewModel.IsCustomerPullPackVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            Visibility="{x:Bind ViewModel.IsPOLineSpecSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <!--  Customer Pull n' Pack Waitlist Tool  -->
+        <!--  Dunnage Book Tool  -->
         <ContentControl
-            x:Name="CustomerPullPackWaitlistHost"
+            x:Name="DunnageBookHost"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
-            Visibility="{x:Bind ViewModel.IsCustomerPullPackWaitlistVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            Visibility="{x:Bind ViewModel.IsDunnageBookVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Welded Coils Tool  -->
+        <ContentControl
+            x:Name="WeldedCoilsHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsWeldedCoilsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Receiving Analytics Tool  -->
+        <ContentControl
+            x:Name="ReceivingAnalyticsHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsReceivingAnalyticsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Delivery Schedule Tool  -->
+        <ContentControl
+            x:Name="DeliveryScheduleHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Visibility="{x:Bind ViewModel.IsDeliveryScheduleVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </Page>

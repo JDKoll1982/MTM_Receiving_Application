@@ -1,3 +1,19 @@
+<!-- 
+[DOC-META-START]
+- File Name: mtm-mermaid-architecture-diagram-continue.prompt.md
+- Description: Continue the Mermaid architecture diagram for the MTM Receiving Application with the next installment.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-4: # MTM Mermaid Architecture Diagram Continue Prompt
+  - Line 5-12: ## Rules
+  - Line 13-20: ## Output Format
+  - Line 21-37: ## Installment Order
+  - Line 38-53: ## Relationship Rules
+  - Line 54-60: ## Continuation Task
+- Critical Notes: Emit exactly one Mermaid installment; stop and ask for the last completed installment when no prior context exists.
+[DOC-META-END]
+-->
+
 # MTM Mermaid Architecture Diagram Continue Prompt
 
 Continue the Mermaid architecture diagram started with `mtm-mermaid-architecture-diagram.prompt.md`.

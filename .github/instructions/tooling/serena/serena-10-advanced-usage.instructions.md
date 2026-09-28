@@ -5,6 +5,24 @@ description: >
   git worktrees, comparison with other agents, and MTM-specific coding workflows.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-10-advanced-usage.instructions.md
+- Description: Advanced Serena usage — prompting strategies, context management, custom agents (Agno), git worktrees, comparison with other agents, and MTM-specific coding workflows.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-17: # Serena Advanced Usage
+  - Line 18-70: ## Prompting Strategies
+  - Line 71-107: ## Context Window Management
+  - Line 108-157: ## Custom Agents with Serena (Agno Integration)
+  - Line 158-180: ## Comparison with Other Coding Agents
+  - Line 181-239: ## MTM-Specific Coding Workflows
+  - Line 240-263: ## Git Worktrees + Serena
+  - Line 264-277: ## Serena MCP SDK Note
+- Critical Notes: Scope tasks tightly and summarize discoveries to memories to avoid exhausting the context window.
+[DOC-META-END]
+-->
+
 # Serena Advanced Usage
 
 Sources:

@@ -2,6 +2,27 @@
 applyTo: "**/*.cs"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: csharp.instructions.md
+- Description: C# development instructions covering latest language features, naming, formatting, nullable types, and ASP.NET Core patterns.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # C# Development
+  - Line 7-10: ## C# Instructions
+  - Line 11-16: ## General Instructions
+  - Line 17-22: ## Naming Conventions
+  - Line 23-32: ## Formatting
+  - Line 33-40: ## Project Setup and Structure
+  - Line 41-46: ## Nullable Reference Types
+  - Line 47-54: ## Data Access Patterns
+  - Line 55-62: ## Authentication and Authorization
+  - Line 63-70: ## Validation and Error Handling
+  - Line 71-78: ## API Versioning and Documentation
+- Critical Notes: Always use the latest C# (currently C# 14) and add XML doc comments to all public APIs.
+[DOC-META-END]
+-->
+
 # C# Development
 
 ## C# Instructions

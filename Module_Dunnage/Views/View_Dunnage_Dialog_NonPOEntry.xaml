@@ -20,11 +20,19 @@
     </ContentDialog.Resources>
     <StackPanel Width="400" Spacing="16">
         <!--  Explanation  -->
-        <TextBlock
-            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            Style="{StaticResource BodyTextBlockStyle}"
-            Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this load."
-            TextWrapping="WrapWholeWords" />
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="No PO number was entered. Enter a reference reason below, or pick a saved one. The reference will be stored with this load."
+                TextWrapping="WrapWholeWords" />
+            
+        </Grid>
 
         <!--  Free-form text entry  -->
         <TextBox

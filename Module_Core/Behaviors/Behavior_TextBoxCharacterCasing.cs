@@ -21,40 +21,45 @@ namespace MTM_Receiving_Application.Module_Core.Behaviors
             "Old Product",
         };
 
-        public static readonly DependencyProperty ForceUppercaseProperty =
-            DependencyProperty.RegisterAttached(
-                "ForceUppercase",
-                typeof(bool),
-                typeof(Behavior_TextBoxCharacterCasing),
-                new PropertyMetadata(false, OnForceUppercaseChanged)
-            );
+        // Lazy registration avoids WinRT DependencyProperty init in non-XAML hosts (unit tests).
+        private static readonly Lazy<DependencyProperty> ForceUppercaseProperty = new(
+            () =>
+                DependencyProperty.RegisterAttached(
+                    "ForceUppercase",
+                    typeof(bool),
+                    typeof(Behavior_TextBoxCharacterCasing),
+                    new PropertyMetadata(false, OnForceUppercaseChanged)
+                )
+        );
 
-        private static readonly DependencyProperty IsUpdatingTextProperty =
-            DependencyProperty.RegisterAttached(
-                "IsUpdatingText",
-                typeof(bool),
-                typeof(Behavior_TextBoxCharacterCasing),
-                new PropertyMetadata(false)
-            );
+        private static readonly Lazy<DependencyProperty> IsUpdatingTextProperty = new(
+            () =>
+                DependencyProperty.RegisterAttached(
+                    "IsUpdatingText",
+                    typeof(bool),
+                    typeof(Behavior_TextBoxCharacterCasing),
+                    new PropertyMetadata(false)
+                )
+        );
 
         public static bool GetForceUppercase(DependencyObject obj)
         {
-            return (bool)obj.GetValue(ForceUppercaseProperty);
+            return (bool)obj.GetValue(ForceUppercaseProperty.Value);
         }
 
         public static void SetForceUppercase(DependencyObject obj, bool value)
         {
-            obj.SetValue(ForceUppercaseProperty, value);
+            obj.SetValue(ForceUppercaseProperty.Value, value);
         }
 
         private static bool GetIsUpdatingText(DependencyObject obj)
         {
-            return (bool)obj.GetValue(IsUpdatingTextProperty);
+            return (bool)obj.GetValue(IsUpdatingTextProperty.Value);
         }
 
         private static void SetIsUpdatingText(DependencyObject obj, bool value)
         {
-            obj.SetValue(IsUpdatingTextProperty, value);
+            obj.SetValue(IsUpdatingTextProperty.Value, value);
         }
 
         private static void OnForceUppercaseChanged(

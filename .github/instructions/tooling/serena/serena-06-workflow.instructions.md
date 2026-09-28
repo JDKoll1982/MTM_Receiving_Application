@@ -5,6 +5,25 @@ description: >
   preparing your codebase, and working with multiple projects.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-06-workflow.instructions.md
+- Description: Serena project workflow — creation, indexing, activation, onboarding, preparing your codebase, and working with multiple projects.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-19: # Serena Project Workflow
+  - Line 20-61: ## Phase 1: Project Creation & Indexing
+  - Line 62-97: ## Project Configuration (`project.yml`)
+  - Line 98-118: ## Indexing
+  - Line 119-145: ## Phase 2: Project Activation
+  - Line 146-189: ## Phase 3: Onboarding
+  - Line 190-196: ## Phase 4: Working on Coding Tasks
+  - Line 197-232: ## Preparing Your Project for Serena
+  - Line 233-270: ## Multiple Projects
+- Critical Notes: Start tasks from a clean git state and run project index once after creation.
+[DOC-META-END]
+-->
+
 # Serena Project Workflow
 
 Official docs: <https://oraios.github.io/serena/02-usage/040_workflow.html>

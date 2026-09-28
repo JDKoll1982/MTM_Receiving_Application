@@ -11,8 +11,6 @@ public partial class Model_Settings_MaterialAvailabilityFieldOption : Observable
 
     public string DisplayName { get; set; } = string.Empty;
 
-    public bool IsLogicOnly { get; set; }
-
     [ObservableProperty]
     private bool _isVisibleInUi;
 

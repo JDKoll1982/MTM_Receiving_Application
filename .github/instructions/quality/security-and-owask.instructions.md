@@ -1,6 +1,20 @@
 ---
 applyTo: "**"
 ---
+
+<!-- 
+[DOC-META-START]
+- File Name: security-and-owask.instructions.md
+- Description: Secure coding and OWASP guidelines ensuring all generated, reviewed, or refactored code is secure by default.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 4-5: # Secure Coding and OWASP Guidelines
+  - Line 6-47: ## Instructions
+  - Line 48-50: ## General Guidelines
+- Critical Notes: Be secure by default — always choose the more secure option and follow the OWASP Top 10.
+[DOC-META-END]
+-->
+
 # Secure Coding and OWASP Guidelines
 
 ## Instructions

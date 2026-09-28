@@ -62,7 +62,16 @@ public class Dao_DunnagePart
     public virtual async Task<Model_Dao_Result<int>> InsertAsync(
         string partId,
         int typeId,
-        string specValues,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
         string? imagePath,
         string quantityType,
         string homeLocation,
@@ -78,7 +87,16 @@ public class Dao_DunnagePart
         {
             new MySqlParameter("@p_part_id", partId),
             new MySqlParameter("@p_type_id", typeId),
-            new MySqlParameter("@p_spec_values", specValues),
+            new MySqlParameter("@p_udc1", (object?)udc1 ?? DBNull.Value),
+            new MySqlParameter("@p_udc2", (object?)udc2 ?? DBNull.Value),
+            new MySqlParameter("@p_udc3", (object?)udc3 ?? DBNull.Value),
+            new MySqlParameter("@p_udc4", (object?)udc4 ?? DBNull.Value),
+            new MySqlParameter("@p_udc5", (object?)udc5 ?? DBNull.Value),
+            new MySqlParameter("@p_udc6", (object?)udc6 ?? DBNull.Value),
+            new MySqlParameter("@p_udc7", (object?)udc7 ?? DBNull.Value),
+            new MySqlParameter("@p_udc8", (object?)udc8 ?? DBNull.Value),
+            new MySqlParameter("@p_udc9", (object?)udc9 ?? DBNull.Value),
+            new MySqlParameter("@p_udc10", (object?)udc10 ?? DBNull.Value),
             new MySqlParameter(
                 "@p_image_path",
                 string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath
@@ -110,7 +128,16 @@ public class Dao_DunnagePart
     public virtual async Task<Model_Dao_Result<int>> InsertWithInventoryAsync(
         string partId,
         int typeId,
-        string specValues,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
         string? imagePath,
         string quantityType,
         string homeLocation,
@@ -128,7 +155,16 @@ public class Dao_DunnagePart
         {
             new MySqlParameter("@p_part_id", partId),
             new MySqlParameter("@p_type_id", typeId),
-            new MySqlParameter("@p_spec_values", specValues),
+            new MySqlParameter("@p_udc1", (object?)udc1 ?? DBNull.Value),
+            new MySqlParameter("@p_udc2", (object?)udc2 ?? DBNull.Value),
+            new MySqlParameter("@p_udc3", (object?)udc3 ?? DBNull.Value),
+            new MySqlParameter("@p_udc4", (object?)udc4 ?? DBNull.Value),
+            new MySqlParameter("@p_udc5", (object?)udc5 ?? DBNull.Value),
+            new MySqlParameter("@p_udc6", (object?)udc6 ?? DBNull.Value),
+            new MySqlParameter("@p_udc7", (object?)udc7 ?? DBNull.Value),
+            new MySqlParameter("@p_udc8", (object?)udc8 ?? DBNull.Value),
+            new MySqlParameter("@p_udc9", (object?)udc9 ?? DBNull.Value),
+            new MySqlParameter("@p_udc10", (object?)udc10 ?? DBNull.Value),
             new MySqlParameter(
                 "@p_image_path",
                 string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath
@@ -163,7 +199,16 @@ public class Dao_DunnagePart
     public virtual async Task<Model_Dao_Result> UpdateAsync(
         int id,
         string partId,
-        string specValues,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
         string? imagePath,
         string quantityType,
         string homeLocation,
@@ -174,7 +219,16 @@ public class Dao_DunnagePart
         {
             { "id", id },
             { "part_id", partId },
-            { "spec_values", specValues },
+            { "udc1", (object?)udc1 ?? DBNull.Value },
+            { "udc2", (object?)udc2 ?? DBNull.Value },
+            { "udc3", (object?)udc3 ?? DBNull.Value },
+            { "udc4", (object?)udc4 ?? DBNull.Value },
+            { "udc5", (object?)udc5 ?? DBNull.Value },
+            { "udc6", (object?)udc6 ?? DBNull.Value },
+            { "udc7", (object?)udc7 ?? DBNull.Value },
+            { "udc8", (object?)udc8 ?? DBNull.Value },
+            { "udc9", (object?)udc9 ?? DBNull.Value },
+            { "udc10", (object?)udc10 ?? DBNull.Value },
             { "image_path", string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath },
             { "quantity_type", quantityType },
             { "home_location", homeLocation },
@@ -192,7 +246,16 @@ public class Dao_DunnagePart
         int id,
         string originalPartId,
         string newPartId,
-        string specValues,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
         string? imagePath,
         string quantityType,
         string homeLocation,
@@ -206,7 +269,16 @@ public class Dao_DunnagePart
             { "id", id },
             { "original_part_id", originalPartId },
             { "new_part_id", newPartId },
-            { "spec_values", specValues },
+            { "udc1", (object?)udc1 ?? DBNull.Value },
+            { "udc2", (object?)udc2 ?? DBNull.Value },
+            { "udc3", (object?)udc3 ?? DBNull.Value },
+            { "udc4", (object?)udc4 ?? DBNull.Value },
+            { "udc5", (object?)udc5 ?? DBNull.Value },
+            { "udc6", (object?)udc6 ?? DBNull.Value },
+            { "udc7", (object?)udc7 ?? DBNull.Value },
+            { "udc8", (object?)udc8 ?? DBNull.Value },
+            { "udc9", (object?)udc9 ?? DBNull.Value },
+            { "udc10", (object?)udc10 ?? DBNull.Value },
             { "image_path", string.IsNullOrWhiteSpace(imagePath) ? DBNull.Value : imagePath },
             { "quantity_type", quantityType },
             { "home_location", homeLocation },
@@ -233,6 +305,50 @@ public class Dao_DunnagePart
         );
     }
 
+    /// <summary>
+    /// Re-associates a part with a new dunnage type and rewrites the type
+    /// snapshots and udc layout on the part's label-data and history rows.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result> ChangeTypeAsync(
+        string partId,
+        int newTypeId,
+        string? udc1,
+        string? udc2,
+        string? udc3,
+        string? udc4,
+        string? udc5,
+        string? udc6,
+        string? udc7,
+        string? udc8,
+        string? udc9,
+        string? udc10,
+        string user
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "part_id", partId },
+            { "new_type_id", newTypeId },
+            { "udc1", (object?)udc1 ?? DBNull.Value },
+            { "udc2", (object?)udc2 ?? DBNull.Value },
+            { "udc3", (object?)udc3 ?? DBNull.Value },
+            { "udc4", (object?)udc4 ?? DBNull.Value },
+            { "udc5", (object?)udc5 ?? DBNull.Value },
+            { "udc6", (object?)udc6 ?? DBNull.Value },
+            { "udc7", (object?)udc7 ?? DBNull.Value },
+            { "udc8", (object?)udc8 ?? DBNull.Value },
+            { "udc9", (object?)udc9 ?? DBNull.Value },
+            { "udc10", (object?)udc10 ?? DBNull.Value },
+            { "user", user },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_Parts_ChangeType",
+            parameters
+        );
+    }
+
     public virtual async Task<Model_Dao_Result<int>> CountTransactionsAsync(string partId)
     {
         var parameters = new Dictionary<string, object> { { "part_id", partId } };
@@ -243,6 +359,46 @@ public class Dao_DunnagePart
             reader => reader.GetInt32(reader.GetOrdinal("transaction_count")),
             parameters
         );
+    }
+
+    /// <summary>
+    /// Returns the number of label-data queue rows, history rows, and inventory
+    /// rows that reference the part, so a delete-impact warning can be shown.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<Model_DunnagePartDeleteImpact>>
+        GetDeleteImpactAsync(string partId)
+    {
+        var parameters = new Dictionary<string, object> { { "part_id", partId } };
+
+        var result =
+            await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnagePartDeleteImpact>(
+                _connectionString,
+                "sp_Dunnage_Parts_GetDeleteImpact",
+                MapDeleteImpactFromReader,
+                parameters
+            );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_DunnagePartDeleteImpact>(
+                result.ErrorMessage
+            );
+        }
+
+        var impact = result.Data is { Count: > 0 }
+            ? result.Data[0]
+            : new Model_DunnagePartDeleteImpact();
+        return Model_Dao_Result_Factory.Success(impact);
+    }
+
+    private static Model_DunnagePartDeleteImpact MapDeleteImpactFromReader(IDataReader reader)
+    {
+        return new Model_DunnagePartDeleteImpact
+        {
+            LabelDataCount = reader.GetInt32(reader.GetOrdinal("label_data_count")),
+            HistoryCount = reader.GetInt32(reader.GetOrdinal("history_count")),
+            InventoryCount = reader.GetInt32(reader.GetOrdinal("inventory_count")),
+        };
     }
 
     public virtual async Task<Model_Dao_Result<List<Model_DunnagePart>>> SearchAsync(
@@ -277,9 +433,16 @@ public class Dao_DunnagePart
             QuantityType = reader.IsDBNull(reader.GetOrdinal("quantity_type"))
                 ? "Quantity"
                 : reader.GetString(reader.GetOrdinal("quantity_type")),
-            SpecValues = reader.IsDBNull(reader.GetOrdinal("spec_values"))
-                ? "{}"
-                : reader.GetString(reader.GetOrdinal("spec_values")),
+            Udc1 = ReadUdc(reader, "udc1"),
+            Udc2 = ReadUdc(reader, "udc2"),
+            Udc3 = ReadUdc(reader, "udc3"),
+            Udc4 = ReadUdc(reader, "udc4"),
+            Udc5 = ReadUdc(reader, "udc5"),
+            Udc6 = ReadUdc(reader, "udc6"),
+            Udc7 = ReadUdc(reader, "udc7"),
+            Udc8 = ReadUdc(reader, "udc8"),
+            Udc9 = ReadUdc(reader, "udc9"),
+            Udc10 = ReadUdc(reader, "udc10"),
             ImagePath = reader.IsDBNull(reader.GetOrdinal("image_path"))
                 ? null
                 : reader.GetString(reader.GetOrdinal("image_path")),
@@ -298,5 +461,11 @@ public class Dao_DunnagePart
                 ? null
                 : reader.GetDateTime(reader.GetOrdinal("modified_date")),
         };
+    }
+
+    private static string? ReadUdc(IDataReader reader, string columnName)
+    {
+        var ordinal = reader.GetOrdinal(columnName);
+        return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
     }
 }

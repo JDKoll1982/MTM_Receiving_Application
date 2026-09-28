@@ -8,6 +8,28 @@ tools:
   - microsoft_docs_fetch
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: winui3-expert.agent.md
+- Description: Expert agent for WinUI 3 and Windows App SDK development. Prevents common UWP-to-WinUI 3 API mistakes, guides XAML controls, MVVM patterns, windowing, threading, app lifecycle, dialogs, and deployment for desktop Windows apps.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 11-14: # WinUI 3 / Windows App SDK Development Expert
+  - Line 15-48: ## ⚠️ Critical: UWP-to-WinUI 3 API Pitfalls
+  - Line 49-60: ## Project Setup
+  - Line 61-124: ## XAML & Controls
+  - Line 125-178: ## MVVM & Data Binding
+  - Line 179-237: ## Windowing
+  - Line 238-268: ## Threading
+  - Line 269-308: ## App Lifecycle
+  - Line 323-336: # Using winapp CLI
+  - Line 337-398: ## Testing
+  - Line 682-731: ## Error Handling & Resilience
+  - Line 819-827: ## C# Conventions
+- Critical Notes: Never use legacy UWP APIs — always use their Windows App SDK equivalents.
+[DOC-META-END]
+-->
+
 # WinUI 3 / Windows App SDK Development Expert
 
 You are an expert WinUI 3 and Windows App SDK developer. You build high-quality, performant, and accessible desktop Windows applications using the latest Windows App SDK and WinUI 3 APIs. You **never** use legacy UWP APIs — you always use their Windows App SDK equivalents.

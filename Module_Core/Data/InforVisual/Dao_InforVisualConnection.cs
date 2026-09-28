@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -142,6 +144,65 @@ public class Dao_InforVisualConnection
             _logger?.LogError($"Error retrieving PO {poNumber}: {ex.Message}", ex);
             return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLine>>(
                 $"Error retrieving PO {poNumber}: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the PO header plus one row per unique part number on the PO,
+    /// with total on-hand quantity (PO site) and current location display.
+    /// Uses: 28_GetPOUniquePartsWithOnHand.sql
+    /// </summary>
+    /// <param name="poNumber"></param>
+    public async Task<Model_Dao_Result<List<Model_InforVisualPOUniquePart>>> GetPOUniquePartsWithOnHandAsync(
+        string poNumber
+    )
+    {
+        try
+        {
+            _logger?.LogInfo($"Retrieving unique parts with on-hand for PO: {poNumber}");
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "28_GetPOUniquePartsWithOnHand.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PoNumber", poNumber);
+
+            var rows = new List<Model_InforVisualPOUniquePart>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualPOUniquePart
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        HeaderPromiseDate = reader["HeaderPromiseDate"] as DateTime?,
+                        HeaderDesiredReceiveDate = reader["HeaderDesiredRecvDate"] as DateTime?,
+                        FreeOnBoard = reader["FreeOnBoard"].ToString() ?? string.Empty,
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        PoLineNumber = reader["FirstLineNumber"].ToString() ?? string.Empty,
+                        PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
+                        OnHandQty = Math.Round(Convert.ToDecimal(reader["OnHandQty"]), 2),
+                        Location = reader["Location"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Retrieved {rows.Count} unique parts for PO {poNumber}");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error retrieving unique parts for PO {poNumber}: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOUniquePart>>(
+                $"Error retrieving unique parts for PO {poNumber}: {ex.Message}",
                 ex
             );
         }
@@ -774,6 +835,147 @@ public class Dao_InforVisualConnection
                 $"Error retrieving purchase orders for part: {ex.Message}",
                 ex
             );
+        }
+    }
+
+    /// <summary>
+    /// Searches PO line binary/spec content and related PO line supplemental spec fields.
+    /// Uses: 22_SearchPurchaseOrderLineSpecs.sql
+    /// </summary>
+    /// <param name="normalizedSearchTerm">Uppercased search term with collapsed whitespace.</param>
+    /// <param name="searchLike">Contains wildcard pattern for normalized term.</param>
+    /// <param name="normalizedWildcard">Ordered-token wildcard pattern (for example %PUR%AIR%CYLINDER%).</param>
+    /// <param name="firstTokenLike">Contains wildcard for first token to expand candidate recall.</param>
+    /// <param name="maxResults">Maximum number of rows returned by SQL.</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
+    > SearchPurchaseOrderLineSpecsAsync(
+        string normalizedSearchTerm,
+        string searchLike,
+        string normalizedWildcard,
+        string firstTokenLike,
+        int maxResults = 250,
+        string searchMode = "Weighted Ranking",
+        string poStatusCodeFilter = ""
+    )
+    {
+        try
+        {
+            var hasStatusFilter = string.IsNullOrWhiteSpace(poStatusCodeFilter) is false;
+            var selectedQueryFile = ResolvePoLineSpecSearchQueryFile(searchMode, hasStatusFilter);
+            _logger?.LogInfo(
+                $"Searching PO line specs for term '{normalizedSearchTerm}' (max {maxResults}) with script '{selectedQueryFile}'"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(selectedQueryFile);
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.Add("@SearchTerm", SqlDbType.NVarChar, 200).Value =
+                normalizedSearchTerm;
+            command.Parameters.Add("@SearchLike", SqlDbType.NVarChar, 260).Value = searchLike;
+            command.Parameters.Add("@NormalizedWildcard", SqlDbType.NVarChar, 260).Value =
+                normalizedWildcard;
+            command.Parameters.Add("@FirstTokenLike", SqlDbType.NVarChar, 260).Value =
+                firstTokenLike;
+            command.Parameters.Add("@MaxResults", SqlDbType.Int).Value = maxResults;
+            command.Parameters.Add("@PoStatusCode", SqlDbType.NVarChar, 10).Value =
+                string.IsNullOrWhiteSpace(poStatusCodeFilter)
+                    ? DBNull.Value
+                    : poStatusCodeFilter.Trim().ToUpperInvariant();
+
+            var rows = new List<Model_InforVisualPOLineSpecSearchRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualPOLineSpecSearchRow
+                    {
+                        PONumber = reader["PONumber"].ToString() ?? string.Empty,
+                        POLineNumber =
+                            reader["POLineNumber"] == DBNull.Value
+                                ? 0
+                                : Convert.ToInt32(reader["POLineNumber"]),
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        VendorId = reader["VendorId"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        VendorPartId = reader["VendorPartId"].ToString() ?? string.Empty,
+                        QtyOrdered =
+                            reader["QtyOrdered"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["QtyOrdered"]),
+                        TotalQtyReceived =
+                            reader["TotalQtyReceived"] == DBNull.Value
+                                ? 0
+                                : Convert.ToDecimal(reader["TotalQtyReceived"]),
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        BinaryType = reader["BinaryType"].ToString() ?? string.Empty,
+                        SpecText = DecodeSpecText(reader["BinaryBits"]),
+                        SupplementalText = reader["SupplementalText"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error searching PO line specs: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualPOLineSpecSearchRow>>(
+                $"Error searching PO line specs: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static string ResolvePoLineSpecSearchQueryFile(string searchMode, bool hasStatusFilter)
+    {
+        var normalizedMode = searchMode?.Trim() ?? string.Empty;
+
+        if (string.Equals(normalizedMode, "Exact Phrase", StringComparison.OrdinalIgnoreCase))
+        {
+            return hasStatusFilter
+                ? "27_SearchPurchaseOrderLineSpecs_ExactPhrase_StatusFiltered.sql"
+                : "26_SearchPurchaseOrderLineSpecs_ExactPhrase.sql";
+        }
+
+        if (
+            string.Equals(
+                normalizedMode,
+                "Tokenized Partial",
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return hasStatusFilter
+                ? "25_SearchPurchaseOrderLineSpecs_TokenizedPartial_StatusFiltered.sql"
+                : "24_SearchPurchaseOrderLineSpecs_TokenizedPartial.sql";
+        }
+
+        return hasStatusFilter
+            ? "23_SearchPurchaseOrderLineSpecs_WeightedRanking_StatusFiltered.sql"
+            : "22_SearchPurchaseOrderLineSpecs.sql";
+    }
+
+    private static string DecodeSpecText(object binaryBits)
+    {
+        if (binaryBits is not byte[] bytes || bytes.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            // SQL CAST(VARBINARY AS NVARCHAR) semantics are UTF-16 little-endian.
+            return Encoding.Unicode.GetString(bytes);
+        }
+        catch
+        {
+            // Defensive fallback for unexpected encoding artifacts.
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 
@@ -1515,6 +1717,8 @@ public class Dao_InforVisualConnection
     {
         try
         {
+            _logger?.LogInfo($"Checking part existence for '{partId}'");
+            var stopwatch = Stopwatch.StartNew();
             var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("12_ValidatePartExists.sql");
 
             await using var connection = new SqlConnection(_connectionString);
@@ -1524,6 +1728,9 @@ public class Dao_InforVisualConnection
             command.Parameters.AddWithValue("@PartId", partId);
 
             var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            _logger?.LogInfo(
+                $"Part existence check for '{partId}' returned {count > 0} in {stopwatch.ElapsedMilliseconds}ms"
+            );
             return Model_Dao_Result_Factory.Success(count > 0);
         }
         catch (Exception ex)
@@ -1552,6 +1759,10 @@ public class Dao_InforVisualConnection
     {
         try
         {
+            _logger?.LogInfo(
+                $"Checking location existence for '{locationId}' in warehouse '{warehouseCode}'"
+            );
+            var stopwatch = Stopwatch.StartNew();
             var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
                 resourcePath: "13_ValidateLocationExists.sql"
             );
@@ -1564,6 +1775,9 @@ public class Dao_InforVisualConnection
             command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
 
             var count = (int)(await command.ExecuteScalarAsync() ?? 0);
+            _logger?.LogInfo(
+                $"Location existence check for '{locationId}' in warehouse '{warehouseCode}' returned {count > 0} in {stopwatch.ElapsedMilliseconds}ms"
+            );
             return Model_Dao_Result_Factory.Success(count > 0);
         }
         catch (Exception ex)
@@ -1577,6 +1791,281 @@ public class Dao_InforVisualConnection
                 ex
             );
         }
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
+    /// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
+    /// quantity) was recorded at or after <paramref name="afterUtc"/>.
+    /// Uses: 28_ScannerTransferTransactionLookup.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="partId">Exact part ID.</param>
+    /// <param name="fromWarehouse">Source warehouse code.</param>
+    /// <param name="fromLocation">Source location ID.</param>
+    /// <param name="toWarehouse">Destination warehouse code.</param>
+    /// <param name="toLocation">Destination location ID.</param>
+    /// <param name="quantity">Expected transfer quantity (matched on absolute value).</param>
+    /// <param name="afterUtc">Only consider transactions recorded at/after this instant.</param>
+    public async Task<Model_Dao_Result<bool>> ScannerTransferExistsAsync(
+        string partId,
+        string fromWarehouse,
+        string fromLocation,
+        string toWarehouse,
+        string toLocation,
+        decimal quantity,
+        DateTime afterUtc
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Checking for recorded scanner transfer for part '{partId}' after {afterUtc:O}"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "28_ScannerTransferTransactionLookup.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartId", partId);
+            command.Parameters.AddWithValue("@FromWarehouse", fromWarehouse);
+            command.Parameters.AddWithValue("@FromLocation", fromLocation);
+            command.Parameters.AddWithValue("@ToWarehouse", toWarehouse);
+            command.Parameters.AddWithValue("@ToLocation", toLocation);
+            command.Parameters.AddWithValue("@Quantity", quantity);
+            command.Parameters.AddWithValue("@AfterUtc", afterUtc);
+
+            var found = (int)(await command.ExecuteScalarAsync() ?? 0);
+            return Model_Dao_Result_Factory.Success(found > 0);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error checking for recorded scanner transfer for part '{partId}': {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<bool>(
+                $"Error checking for recorded scanner transfer: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    #endregion
+
+    #region Delivery Schedule & Receiving Analytics
+
+    /// <summary>
+    /// Returns receiving-schedule grid rows (per PO line) within an optional date
+    /// window, applying search, scope, delivery-state, and PO-state filters.
+    /// Uses: 29_GetDeliveryScheduleLines.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualDeliveryScheduleLine>>
+    > GetDeliveryScheduleLinesAsync(Model_InforVisualDeliveryScheduleFilter filter)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            _logger?.LogInfo(
+                $"Querying delivery schedule lines (from {filter.FromDate?.ToShortDateString() ?? "-"} "
+                    + $"to {filter.ToDate?.ToShortDateString() ?? "-"}, max {filter.MaxResults})"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "29_GetDeliveryScheduleLines.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FromDate", (object?)filter.FromDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ToDate", (object?)filter.ToDate ?? DBNull.Value);
+            command.Parameters.AddWithValue(
+                "@PartSearch",
+                (object?)ToLikePattern(filter.PartSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@PoSearch",
+                (object?)ToLikePattern(filter.PoSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@SupplierSearch",
+                (object?)ToLikePattern(filter.SupplierSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue(
+                "@CarrierSearch",
+                (object?)ToLikePattern(filter.CarrierSearch) ?? DBNull.Value
+            );
+            command.Parameters.AddWithValue("@SearchAll", filter.SearchAll);
+            command.Parameters.AddWithValue("@ScopeParts", filter.ScopeParts);
+            command.Parameters.AddWithValue("@ScopeCoils", filter.ScopeCoils);
+            command.Parameters.AddWithValue("@ScopeFlat", filter.ScopeFlat);
+            command.Parameters.AddWithValue("@ScopeOutside", filter.ScopeOutside);
+            command.Parameters.AddWithValue("@ScopeUninv", filter.ScopeUninventoried);
+            command.Parameters.AddWithValue("@ShowNearFilled", filter.ShowNearFilled);
+            command.Parameters.AddWithValue("@NearFillPct", Math.Clamp(filter.NearFillPct, 1, 99));
+            command.Parameters.AddWithValue("@ShowOpen", filter.ShowOpen);
+            command.Parameters.AddWithValue("@ShowClosed", filter.ShowClosed);
+            command.Parameters.AddWithValue("@ShowOnTime", filter.ShowOnTime);
+            command.Parameters.AddWithValue("@ShowLate", filter.ShowLate);
+            command.Parameters.AddWithValue("@Today", filter.Today);
+            command.Parameters.AddWithValue("@MaxResults", Math.Max(1, filter.MaxResults));
+
+            var rows = new List<Model_InforVisualDeliveryScheduleLine>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualDeliveryScheduleLine
+                    {
+                        PoNumber = reader["PoNumber"].ToString() ?? string.Empty,
+                        VendorName = reader["VendorName"].ToString() ?? string.Empty,
+                        PoDesiredDate = reader["PoDesiredDate"] as DateTime?,
+                        PoPromiseDate = reader["PoPromiseDate"] as DateTime?,
+                        OrderDate = reader["OrderDate"] as DateTime?,
+                        Carrier = reader["Carrier"].ToString() ?? string.Empty,
+                        PartNumber = reader["PartNumber"].ToString() ?? string.Empty,
+                        OrderQty = Convert.ToDecimal(reader["OrderQty"]),
+                        ReceivedQty = Convert.ToDecimal(reader["ReceivedQty"]),
+                        RemainingQty = Convert.ToDecimal(reader["RemainingQty"]),
+                        LineDesiredDate = reader["LineDesiredDate"] as DateTime?,
+                        LinePromiseDate = reader["LinePromiseDate"] as DateTime?,
+                        PoStatus = reader["PoStatus"].ToString() ?? string.Empty,
+                        LineStatus = reader["LineStatus"].ToString() ?? string.Empty,
+                        ReceivedBy = reader["ReceivedBy"].ToString() ?? string.Empty,
+                        DueDate = reader["DueDate"] as DateTime?,
+                        Category = reader["Category"].ToString() ?? string.Empty,
+                        DeliveryState = reader["DeliveryState"].ToString() ?? string.Empty,
+                        PoState = reader["PoState"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Returned {rows.Count} delivery schedule lines.");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying delivery schedule lines: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualDeliveryScheduleLine>>(
+                $"Error querying delivery schedule lines: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Returns aggregated receiving-history line counts by date and category
+    /// (past received items) for the Receiving Analytics chart.
+    /// Uses: 30_GetReceivingAnalyticsHistory.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsHistoryAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        return await QueryReceivingAnalyticsByDateAsync(
+            "30_GetReceivingAnalyticsHistory.sql",
+            "receiving history",
+            filter
+        );
+    }
+
+    /// <summary>
+    /// Returns aggregated incoming (forecast) line counts by due date and category
+    /// (open PO lines) for the Receiving Analytics chart.
+    /// Uses: 31_GetReceivingAnalyticsForecast.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        return await QueryReceivingAnalyticsByDateAsync(
+            "31_GetReceivingAnalyticsForecast.sql",
+            "receiving forecast",
+            filter
+        );
+    }
+
+    private async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+    > QueryReceivingAnalyticsByDateAsync(
+        string queryFile,
+        string label,
+        Model_InforVisualReceivingAnalyticsFilter filter
+    )
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            _logger?.LogInfo(
+                $"Querying {label} by date (from {filter.FromDate?.ToShortDateString() ?? "-"} "
+                    + $"to {filter.ToDate?.ToShortDateString() ?? "-"}, max {filter.MaxResults})"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(queryFile);
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FromDate", (object?)filter.FromDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ToDate", (object?)filter.ToDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ScopeParts", filter.ScopeParts);
+            command.Parameters.AddWithValue("@ScopeCoils", filter.ScopeCoils);
+            command.Parameters.AddWithValue("@ScopeFlat", filter.ScopeFlat);
+            command.Parameters.AddWithValue("@ScopeOutside", filter.ScopeOutside);
+            command.Parameters.AddWithValue("@ScopeUninv", filter.ScopeUninventoried);
+            command.Parameters.AddWithValue("@MaxResults", Math.Max(1, filter.MaxResults));
+
+            var rows = new List<Model_InforVisualReceivingAnalyticsPoint>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualReceivingAnalyticsPoint
+                    {
+                        ActivityDate = Convert.ToDateTime(reader["ActivityDate"]),
+                        Category = reader["Category"].ToString() ?? string.Empty,
+                        LineCount = Convert.ToInt32(reader["LineCount"]),
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Returned {rows.Count} {label} data points.");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying {label} by date: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualReceivingAnalyticsPoint>>(
+                $"Error querying {label} by date: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static string? ToLikePattern(string term)
+    {
+        var trimmed = term?.Trim() ?? string.Empty;
+        if (trimmed.Length == 0)
+        {
+            return null;
+        }
+
+        return $"%{trimmed}%";
     }
 
     #endregion

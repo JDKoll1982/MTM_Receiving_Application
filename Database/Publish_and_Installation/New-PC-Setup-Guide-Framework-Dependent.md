@@ -170,7 +170,7 @@ The 64-bit driver will not appear in LABELVIEW's data source list.
    | **Port**             | `3306`                          |
    | **User**             | root                            |
    | **Password**         | root                            |
-   | **Database**         | `mtm_receiving_application`     |
+   | **Database**         | `mtm_receiving_application_test`     |
 
 5. Click **Test** to verify the connection succeeds
 6. Click **OK** to save

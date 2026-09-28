@@ -1,3 +1,17 @@
+<!-- 
+[DOC-META-START]
+- File Name: forbidden_practices.md
+- Description: Constitutional violations to prevent: direct DAO calls, static DAOs, raw SQL, runtime Binding.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 15-72: # Forbidden Practices (Constitutional Violations)
+  - Line 73-140: ## High-Priority Violations
+  - Line 141-173: ## Medium-Priority Violations
+  - Line 174-187: ## Validation Checklist
+- Critical Notes: No ViewModel-to-DAO calls, no static DAOs, no raw MySQL SQL.
+[DOC-META-END]
+-->
+
 # Forbidden Practices (Constitutional Violations)
 
 Last Updated: 2026-03-21

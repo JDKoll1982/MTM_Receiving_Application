@@ -3,6 +3,20 @@ description: 'WinUI 3 converter guidance for MTM covering naming, null handling,
 applyTo: 'Module_Core/Converters/**/*.cs,Module_*/Views/**/*.xaml'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: winui3-xaml-converters.instructions.md
+- Description: WinUI 3 converter guidance for MTM covering naming, null handling, resource registration, and converter scope boundaries.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # WinUI 3 XAML Converters
+  - Line 10: ## Rules
+  - Line 18: ## Preferred Uses
+  - Line 24: ## Avoid
+- Critical Notes: Keep converters single-purpose and free of business logic and service/data-access injection.
+[DOC-META-END]
+-->
+
 # WinUI 3 XAML Converters
 
 Use this file when adding or changing value converters.

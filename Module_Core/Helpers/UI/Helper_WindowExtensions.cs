@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -17,6 +18,13 @@ public static class Helper_WindowExtensions
         "MTMIcon.ico",
         "Assets\\MTMIcon.ico",
     ];
+
+    /// <summary>
+    /// Tracks windows that already have the activation-time icon re-apply hook attached so the
+    /// hook is attached only once per window even if <see cref="ApplySharedIcon"/> is called
+    /// more than once on the same window.
+    /// </summary>
+    private static readonly ConditionalWeakTable<Window, object> IconReapplyHookRegistry = new();
 
     /// <summary>
     /// Sets the window size
@@ -65,6 +73,23 @@ public static class Helper_WindowExtensions
         var y = (workArea.Height - appWindow.Size.Height) / 2;
 
         appWindow.Move(new Windows.Graphics.PointInt32(x, y));
+    }
+
+    /// <summary>
+    /// Maximizes the window so it fills the work area of its display while keeping the
+    /// title bar and taskbar accessible.
+    /// </summary>
+    /// <param name="window">The window to maximize</param>
+    public static void Maximize(this Window window)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+
+        var appWindow = window.GetAppWindow();
+
+        if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.Maximize();
+        }
     }
 
     /// <summary>
@@ -131,6 +156,50 @@ public static class Helper_WindowExtensions
                 ex,
                 nameof(Helper_WindowExtensions)
             );
+        }
+
+        // AppWindow.SetIcon can be ignored by the taskbar when it is applied before the window
+        // is shown/activated (e.g. windows created hidden during startup, like the main window).
+        // Re-apply the icon once on the first activation so every window shows the app icon on
+        // the taskbar, matching the splash screen.
+        if (!IconReapplyHookRegistry.TryGetValue(window, out _))
+        {
+            IconReapplyHookRegistry.Add(window, new object());
+            window.Activated += Window_Activated_ReapplySharedIcon;
+        }
+    }
+
+    private static void Window_Activated_ReapplySharedIcon(
+        object sender,
+        WindowActivatedEventArgs args
+    )
+    {
+        if (args.WindowActivationState == WindowActivationState.Deactivated)
+        {
+            return;
+        }
+
+        if (sender is not Window window)
+        {
+            return;
+        }
+
+        try
+        {
+            var iconPath = ResolveSharedWindowIconPath();
+            if (iconPath is not null)
+            {
+                window.GetAppWindow().SetIcon(iconPath);
+            }
+        }
+        catch
+        {
+            // Best-effort re-apply. The initial ApplySharedIcon call already logged any
+            // configuration problems.
+        }
+        finally
+        {
+            window.Activated -= Window_Activated_ReapplySharedIcon;
         }
     }
 

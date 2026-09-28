@@ -2,8 +2,23 @@
 applyTo: "**"
 description: >
   Serena semantic coding tools index for MTM Receiving Application — start here.
-  Links to all ten detail files covering installation, tools, workflow, memories, and configuration.
+  Links to token-friendly and full-detail files covering installation, tools, workflow, memories, and configuration.
 ---
+
+<!-- 
+[DOC-META-START]
+- File Name: serena-tools.instructions.md
+- Description: Serena semantic coding tools index for MTM Receiving Application — start here. Links to token-friendly and full-detail files covering installation, tools, workflow, memories, and configuration.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-22: # Serena Semantic Coding Tools — Index
+  - Line 23-37: ## Quick Reference — When to Use Serena
+  - Line 38-61: ## MTM Memory Catalog (Quick Reference)
+  - Line 62-158: ## Detail File Index
+  - Line 159-164: ## Official References
+- Critical Notes: Start here — read serena-01-overview first; use symbol tools for 80-90% token savings.
+[DOC-META-END]
+-->
 
 # Serena Semantic Coding Tools — Index
 
@@ -14,6 +29,9 @@ codebases compared to reading full files.
 > **Start here.** Use the links below to navigate to detail files for each topic.
 > Read [serena-01-overview.instructions.md](serena-01-overview.instructions.md) first
 > if you are new to Serena.
+
+For minimal-token sessions, start with
+[serena-token-friendly.instructions.md](serena-token-friendly.instructions.md).
 
 ---
 
@@ -57,6 +75,11 @@ Read a memory: `read_memory("forbidden_practices")`
 ---
 
 ## Detail File Index
+
+### [00 — Token-Friendly Quick Guide](serena-token-friendly.instructions.md)
+
+Shortest practical Serena guidance for symbol-first exploration, safe edits, and mode/context
+selection with minimal token usage.
 
 ### [01 — Overview & Quick Start](serena-01-overview.instructions.md)
 

@@ -5,6 +5,23 @@ description: >
   (ide, claude-code, desktop-app), modes (editing, planning, interactive), and advanced options.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-08-configuration.instructions.md
+- Description: Serena global/project config, contexts, modes, and advanced options.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 25-40: # Serena Configuration
+  - Line 41-89: ## Global Configuration (serena_config.yml)
+  - Line 90-145: ## Project Configuration (project.yml)
+  - Line 146-164: ## Contexts
+  - Line 165-205: ## Modes
+  - Line 206-264: ## Advanced Configuration
+  - Line 265-277: ## Configuration Priority
+- Critical Notes: Non-Markdown config files are indexed in tooling/non-markdown-config-files.instructions.md.
+[DOC-META-END]
+-->
+
 # Serena Configuration
 
 Official docs: <https://oraios.github.io/serena/02-usage/050_configuration.html>
@@ -240,7 +257,9 @@ Extend Serena's default instructions for your workflow. Add to `serena_config.ym
 ```yaml
 custom_system_prompt_suffix: >
   When working on this project, always check the current git branch before making changes.
-  Prefer small, incremental commits over large batches.
+  P
+
+For non-Markdown config files (JSON/XAML/YAML/MSBuild), see `tooling/non-markdown-config-files.instructions.md`.refer small, incremental commits over large batches.
 ```
 
 ---

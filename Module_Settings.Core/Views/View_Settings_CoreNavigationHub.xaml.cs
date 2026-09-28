@@ -1,9 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Settings.Core.Enums;
 
 namespace MTM_Receiving_Application.Module_Settings.Core.Views;
 
@@ -12,18 +14,75 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     private readonly IServiceProvider _services;
     private readonly IService_ErrorHandler _errorHandler;
     private readonly IService_LoggingUtility _logger;
+    private readonly IService_UserSessionManager _sessionManager;
+    private readonly IService_UserPrivileges _userPrivileges;
 
     public View_Settings_CoreNavigationHub(
         IServiceProvider services,
         IService_ErrorHandler errorHandler,
-        IService_LoggingUtility logger
+        IService_LoggingUtility logger,
+        IService_UserSessionManager sessionManager,
+        IService_UserPrivileges userPrivileges
     )
     {
         InitializeComponent();
         _services = services;
         _errorHandler = errorHandler;
         _logger = logger;
+        _sessionManager = sessionManager;
+        _userPrivileges = userPrivileges;
         _logger.LogInfo("View_Settings_CoreNavigationHub initialized", "Settings.Navigation");
+
+        _ = InitializeAccessAsync();
+    }
+
+    private async Task InitializeAccessAsync()
+    {
+        try
+        {
+            var currentUserId = _sessionManager.CurrentSession?.User?.EmployeeNumber;
+            if (
+                currentUserId.HasValue
+                && (
+                    _userPrivileges.IsInitialized is false
+                    || _userPrivileges.CurrentUserId != currentUserId.Value
+                )
+            )
+            {
+                await _userPrivileges.InitializeAsync(currentUserId.Value);
+            }
+
+            SystemSettingsButton.Visibility = _userPrivileges.HasPermissionLevel(
+                Enum_SettingsPermissionLevel.Admin
+            )
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            // Database Config is available to Admins and Developers (admin-or-above).
+            DatabaseConfigButton.Visibility = _userPrivileges.HasPermissionLevel(
+                Enum_SettingsPermissionLevel.Admin
+            )
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            // Scanner Access is admin-or-above only. This gate is deliberately independent of
+            // the Scanner allow-list itself so an admin cannot lock themselves out of it.
+            ScannerAccessButton.Visibility = _userPrivileges.HasPermissionLevel(
+                Enum_SettingsPermissionLevel.Admin
+            )
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"Failed to initialize system settings access gate: {ex.Message}",
+                "Settings.Navigation"
+            );
+            SystemSettingsButton.Visibility = Visibility.Collapsed;
+            DatabaseConfigButton.Visibility = Visibility.Collapsed;
+            ScannerAccessButton.Visibility = Visibility.Collapsed;
+        }
     }
 
     private Frame? GetHostFrame()
@@ -123,6 +182,20 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         NavigateUsingServiceProvider(typeof(View_Settings_Theme));
     }
 
+    private void OnNavigateSystemSettings(object sender, RoutedEventArgs e)
+    {
+        if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)
+        {
+            _logger.LogWarning(
+                "Blocked navigation to System Settings due to insufficient privileges.",
+                "Settings.Navigation"
+            );
+            return;
+        }
+
+        NavigateUsingServiceProvider(typeof(View_Settings_System));
+    }
+
     private void OnNavigateSharedPaths(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_SharedPaths));
@@ -136,5 +209,33 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
     private void OnNavigateMaterialAvailabilityFields(object sender, RoutedEventArgs e)
     {
         NavigateUsingServiceProvider(typeof(View_Settings_MaterialAvailabilityBoardFields));
+    }
+
+    private void OnNavigateDatabaseConfig(object sender, RoutedEventArgs e)
+    {
+        if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)
+        {
+            _logger.LogWarning(
+                "Blocked navigation to Database Config due to insufficient privileges.",
+                "Settings.Navigation"
+            );
+            return;
+        }
+
+        NavigateUsingServiceProvider(typeof(View_Settings_DatabaseConfig));
+    }
+
+    private void OnNavigateScannerAccess(object sender, RoutedEventArgs e)
+    {
+        if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)
+        {
+            _logger.LogWarning(
+                "Blocked navigation to Scanner Access due to insufficient privileges.",
+                "Settings.Navigation"
+            );
+            return;
+        }
+
+        NavigateUsingServiceProvider(typeof(View_Settings_ScannerAccess));
     }
 }

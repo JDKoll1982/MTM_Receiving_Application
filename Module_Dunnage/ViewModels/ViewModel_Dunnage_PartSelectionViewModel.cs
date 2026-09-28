@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     private bool _isRestoringDisplayFormatPreference;
     private bool _persistedImageDisplayPreference = true;
+    private string? _pendingWorkflowSelectionPartId;
 
     public ViewModel_Dunnage_PartSelection(
         IService_DunnageWorkflow workflowService,
@@ -184,6 +186,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     public bool CanDeleteSelectedPart => CanManageDefinitions && IsPartSelected;
 
+    public bool CanChangeSelectedPartType => CanManageDefinitions && IsPartSelected;
+
     public bool HasSelectedTypeImage => SelectedTypeImageSource is not null;
 
     public ImageSource? SelectedTypeImageSource =>
@@ -229,6 +233,13 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             SelectedTypeIcon = _workflowService.CurrentSession.SelectedType?.Icon ?? "Help";
             SelectedTypeImagePath = _workflowService.CurrentSession.SelectedType?.ImagePath;
 
+            var workflowSelectedPart = _workflowService.CurrentSession.SelectedPart;
+            _pendingWorkflowSelectionPartId =
+                _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+                && string.IsNullOrWhiteSpace(workflowSelectedPart?.PartId) is false
+                    ? workflowSelectedPart!.PartId
+                    : null;
+
             _logger.LogInfo(
                 $"PartSelection: SelectedTypeId={SelectedTypeId}, SelectedTypeName={SelectedTypeName}, SelectedTypeIcon={SelectedTypeIcon}",
                 "PartSelection"
@@ -236,7 +247,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
             await LoadPartsAsync();
 
-            RestoreWorkflowSelectedPart();
+            RestoreWorkflowSelectedPart(workflowSelectedPart);
+            QueueWorkflowSelectionReassert();
 
             StatusMessage = $"Loaded {AvailableParts.Count} parts for {SelectedTypeName}";
             _logger.LogInfo($"PartSelection: {StatusMessage}", "PartSelection");
@@ -436,21 +448,148 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
     #region Part Selection
 
-    private void RestoreWorkflowSelectedPart()
+    private void RestoreWorkflowSelectedPart(Model_DunnagePart? workflowSelectedPart = null)
     {
-        var workflowSelectedPart = _workflowService.CurrentSession.SelectedPart;
+        workflowSelectedPart ??= _workflowService.CurrentSession.SelectedPart;
         if (workflowSelectedPart is null)
         {
             SelectedPart = null;
             return;
         }
 
-        var matchingPart = AvailableParts.FirstOrDefault(part =>
-            part.Id == workflowSelectedPart.Id
-            || part.PartId.Equals(workflowSelectedPart.PartId, StringComparison.OrdinalIgnoreCase)
-        );
+        var matchingPart = FindMatchingPartForWorkflowSelection(workflowSelectedPart);
+        if (matchingPart is null)
+        {
+            _logger.LogWarning(
+                $"PartSelection: Could not restore selected part '{workflowSelectedPart.PartId}' (Id={workflowSelectedPart.Id}, TypeId={workflowSelectedPart.TypeId}). Available parts: {string.Join(", ", AvailableParts.Select(part => part.PartId))}",
+                "PartSelection"
+            );
+        }
 
         SelectedPart = matchingPart;
+
+        if (matchingPart is not null)
+        {
+            _workflowService.CurrentSession.SelectedPart = matchingPart;
+            _pendingWorkflowSelectionPartId = null;
+        }
+    }
+
+    private void QueueWorkflowSelectionReassert()
+    {
+        if (string.IsNullOrWhiteSpace(_pendingWorkflowSelectionPartId))
+        {
+            return;
+        }
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            _dispatcher.TryEnqueue(() =>
+            {
+                _ = TryRestorePendingWorkflowPartSelection();
+            });
+        });
+    }
+
+    private bool TryRestorePendingWorkflowPartSelection()
+    {
+        if (string.IsNullOrWhiteSpace(_pendingWorkflowSelectionPartId))
+        {
+            return false;
+        }
+
+        var pendingMatch = FindMatchingPartForWorkflowSelection(
+            new Model_DunnagePart { PartId = _pendingWorkflowSelectionPartId }
+        );
+
+        if (pendingMatch is null)
+        {
+            return false;
+        }
+
+        SelectedPart = pendingMatch;
+        _workflowService.CurrentSession.SelectedPart = pendingMatch;
+        _pendingWorkflowSelectionPartId = null;
+        return true;
+    }
+
+    private Model_DunnagePart? FindMatchingPartForWorkflowSelection(Model_DunnagePart workflowPart)
+    {
+        if (AvailableParts.Count == 0)
+        {
+            return null;
+        }
+
+        if (workflowPart.Id > 0)
+        {
+            var byId = AvailableParts.FirstOrDefault(part => part.Id == workflowPart.Id);
+            if (byId is not null)
+            {
+                return byId;
+            }
+        }
+
+        var selectedPartKey = NormalizePartSelectionKey(workflowPart.PartId);
+        if (string.IsNullOrWhiteSpace(selectedPartKey))
+        {
+            return null;
+        }
+
+        var exactNormalizedMatch = AvailableParts.FirstOrDefault(part =>
+            string.Equals(
+                NormalizePartSelectionKey(part.PartId),
+                selectedPartKey,
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
+
+        if (exactNormalizedMatch is not null)
+        {
+            return exactNormalizedMatch;
+        }
+
+        var relaxedSelectedPartKey = BuildRelaxedPartSelectionKey(workflowPart.PartId);
+        if (string.IsNullOrWhiteSpace(relaxedSelectedPartKey))
+        {
+            return null;
+        }
+
+        return AvailableParts.FirstOrDefault(part =>
+            string.Equals(
+                BuildRelaxedPartSelectionKey(part.PartId),
+                relaxedSelectedPartKey,
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
+    }
+
+    private static string NormalizePartSelectionKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalizedWhitespace = string.Join(
+            " ",
+            value
+                .Trim()
+                .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+        );
+
+        return normalizedWhitespace.ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    private static string BuildRelaxedPartSelectionKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalized = NormalizePartSelectionKey(value);
+        var filteredChars = normalized.Where(static ch => char.IsLetterOrDigit(ch));
+        return new string(filteredChars.ToArray());
     }
 
     partial void OnSelectedPartChanged(Model_DunnagePart? oldValue, Model_DunnagePart? newValue)
@@ -458,6 +597,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         if (newValue != null)
         {
             _logger.LogInfo($"Part selected via ComboBox: {newValue.PartId}", "PartSelection");
+            _pendingWorkflowSelectionPartId = null;
 
             // Update workflow session immediately when part is selected
             _workflowService.CurrentSession.SelectedPart = newValue;
@@ -466,11 +606,16 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 "PartSelection"
             );
 
-            UpdateSelectedPartSpecs(newValue);
+            _ = UpdateSelectedPartSpecsAsync(newValue);
             _ = CheckInventoryStatusAsync(newValue);
         }
         else
         {
+            if (TryRestorePendingWorkflowPartSelection())
+            {
+                return;
+            }
+
             _workflowService.CurrentSession.SelectedPart = null;
             IsInventoryNotificationVisible = false;
             ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
@@ -483,12 +628,15 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         SelectPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
         DeletePartCommand.NotifyCanExecuteChanged();
+        ChangePartTypeCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnCanManageDefinitionsChanged(bool value)
     {
         OnPropertyChanged(nameof(CanDeleteSelectedPart));
+        OnPropertyChanged(nameof(CanChangeSelectedPartType));
         DeletePartCommand.NotifyCanExecuteChanged();
+        ChangePartTypeCommand.NotifyCanExecuteChanged();
     }
 
     private async Task CheckInventoryStatusAsync(Model_DunnagePart part)
@@ -527,19 +675,37 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
     }
 
-    private void UpdateSelectedPartSpecs(Model_DunnagePart part)
+    private async Task UpdateSelectedPartSpecsAsync(Model_DunnagePart part)
     {
+        var udcValues = Helper_Dunnage_PartSpecs.ExtractUdc(part);
         var specSummaries = new List<string>();
 
-        foreach (var pair in part.SpecValuesDict.OrderBy(item => item.Key))
-        {
-            var formattedValue = FormatSpecValue(pair.Value);
-            if (string.IsNullOrWhiteSpace(formattedValue))
-            {
-                continue;
-            }
+        var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(part.TypeId);
+        var fields =
+            fieldsResult.IsSuccess && fieldsResult.Data != null
+                ? fieldsResult.Data
+                : new List<Model_CustomFieldDefinition>();
 
-            specSummaries.Add($"{pair.Key}: {formattedValue}");
+        var labeledPairs = Helper_Dunnage_PartSpecs.BuildLabeledPairs(fields, udcValues);
+        if (labeledPairs.Count > 0)
+        {
+            specSummaries.AddRange(
+                labeledPairs.Select(pair => $"{pair.Key}: {pair.Value}")
+            );
+        }
+        else
+        {
+            // No custom-field labels are available; fall back to the raw slot names.
+            for (var slot = 1; slot <= 10; slot++)
+            {
+                var value = Helper_Dunnage_PartSpecs.GetValueForSlot(udcValues, slot);
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    continue;
+                }
+
+                specSummaries.Add($"UDC{slot}: {value}");
+            }
         }
 
         ReplaceSelectedPartSpecSummaries(specSummaries);
@@ -551,32 +717,6 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         SelectedPartSpecSummaries = new ObservableCollection<string>(specSummaries);
     }
 
-    private static string FormatSpecValue(object? rawValue)
-    {
-        if (rawValue is null)
-        {
-            return string.Empty;
-        }
-
-        if (rawValue is JsonElement element)
-        {
-            return element.ValueKind switch
-            {
-                JsonValueKind.String => element.GetString() ?? string.Empty,
-                JsonValueKind.True => "Yes",
-                JsonValueKind.False => "No",
-                JsonValueKind.Number => element.ToString(),
-                JsonValueKind.Array => string.Join(
-                    ", ",
-                    element.EnumerateArray().Select(item => item.ToString())
-                ),
-                _ => element.ToString(),
-            };
-        }
-
-        return rawValue.ToString() ?? string.Empty;
-    }
-
     #endregion
 
     #region Navigation Commands
@@ -584,8 +724,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     [RelayCommand]
     private void GoBack()
     {
-        _logger.LogInfo("Returning to Type Selection", "PartSelection");
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+        var targetStep = _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+            ? Enum_DunnageWorkflowStep.ImagePartSearch
+            : Enum_DunnageWorkflowStep.TypeSelection;
+
+        _logger.LogInfo($"Returning to {targetStep}", "PartSelection");
+        _workflowService.GoToStep(targetStep);
     }
 
     [RelayCommand(CanExecute = nameof(IsPartSelected))]
@@ -634,12 +778,14 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 "PartSelection"
             );
 
-            // Fetch specs for the selected type
-            var specsResult = await _dunnageService.GetSpecsForTypeAsync(SelectedTypeId);
-            var specs =
-                (specsResult.IsSuccess && specsResult.Data != null)
-                    ? specsResult.Data
-                    : new List<Model_DunnageSpec>();
+            // Fetch custom-field definitions for the selected type and hydrate
+            // their Choice lists so the dialog's Choice comboboxes are populated.
+            var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(SelectedTypeId);
+            var customFields =
+                fieldsResult.IsSuccess && fieldsResult.Data != null
+                    ? fieldsResult.Data
+                    : new List<Model_CustomFieldDefinition>();
+            await HydrateCustomFieldChoicesAsync(customFields);
 
             var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
             var existingParts =
@@ -659,7 +805,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 var dialog = new Module_Dunnage.Views.View_Dunnage_QuickAddPartDialog(
                     SelectedTypeId,
                     SelectedTypeName,
-                    specs,
+                    customFields,
                     quantityTypes,
                     dialogDraft
                 )
@@ -691,24 +837,27 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 }
 
                 var partId = dialog.PartId;
-                var specValuesJson = dialog.SpecValuesJson;
+                var draft = dialog.GetDraft();
 
                 _logger.LogInfo(
                     $"Adding new part: {partId} for type {SelectedTypeName}",
                     "PartSelection"
                 );
 
-                // Create new part model
+                // Create new part model with udc values from the dialog
                 var newPart = new Model_DunnagePart
                 {
                     PartId = partId,
                     TypeId = SelectedTypeId,
-                    SpecValues = specValuesJson,
                     ImagePath = dialog.SelectedImagePath,
                     DunnageTypeName = SelectedTypeName,
                     QuantityType = dialog.ResolvedQuantityType,
                     HomeLocation = dialog.HomeLocation,
                 };
+                for (var slot = 1; slot <= 10; slot++)
+                {
+                    newPart.SetUdcValue(slot, draft.GetUdcValue(slot));
+                }
 
                 var insertResult = await _dunnageService.InsertPartWithInventoryAsync(
                     newPart,
@@ -777,11 +926,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         {
             _logger.LogInfo($"Edit Part requested for: {SelectedPart.PartId}", "PartSelection");
 
-            var specsResult = await _dunnageService.GetSpecsForTypeAsync(SelectedTypeId);
-            var specs =
-                (specsResult.IsSuccess && specsResult.Data != null)
-                    ? specsResult.Data
-                    : new List<Model_DunnageSpec>();
+            var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(SelectedTypeId);
+            var customFields =
+                fieldsResult.IsSuccess && fieldsResult.Data != null
+                    ? fieldsResult.Data
+                    : new List<Model_CustomFieldDefinition>();
+            await HydrateCustomFieldChoicesAsync(customFields);
 
             var existingPartsResult = await _dunnageService.GetPartsByTypeAsync(SelectedTypeId);
             var existingParts =
@@ -812,7 +962,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             {
                 var dialog = new Module_Dunnage.Views.View_Dunnage_EditPartDialog(
                     SelectedPart,
-                    specs,
+                    customFields,
                     quantityTypes,
                     SelectedTypeName,
                     currentInventoryMethod,
@@ -853,10 +1003,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 }
 
                 var partIdToReselect = SelectedPart.PartId;
-                var originalSpecValuesJson = SelectedPart.SpecValues;
                 var originalQuantityType = SelectedPart.QuantityType;
+                var originalHomeLocation = SelectedPart.HomeLocation;
                 var originalImagePath = SelectedPart.ImagePath;
                 var updatedPartId = dialog.UpdatedPartId;
+                var editDraft = dialog.GetDraft();
 
                 var updatedPart = new Model_DunnagePart
                 {
@@ -864,21 +1015,29 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     PartId = updatedPartId,
                     TypeId = SelectedPart.TypeId,
                     DunnageTypeName = SelectedTypeName,
-                    SpecValues = dialog.UpdatedSpecValuesJson,
                     ImagePath = dialog.SelectedImagePath,
                     QuantityType = dialog.ResolvedQuantityType,
                     HomeLocation = dialog.UpdatedHomeLocation,
                 };
+                for (var slot = 1; slot <= 10; slot++)
+                {
+                    updatedPart.SetUdcValue(slot, editDraft.GetUdcValue(slot));
+                }
 
+                var specValuesChanged = !UdcValuesEqual(
+                    Helper_Dunnage_PartSpecs.ExtractUdc(SelectedPart),
+                    Helper_Dunnage_PartSpecs.ExtractUdc(updatedPart)
+                );
                 var savedRowRewriteWarning = BuildSavedRowRewriteWarning(
                     partIdToReselect,
                     updatedPartId,
                     originalQuantityType,
                     dialog.ResolvedQuantityType,
-                    originalSpecValuesJson,
-                    dialog.UpdatedSpecValuesJson,
+                    specValuesChanged,
                     originalImagePath,
-                    dialog.SelectedImagePath
+                    dialog.SelectedImagePath,
+                    originalHomeLocation,
+                    updatedPart.HomeLocation
                 );
 
                 if (await ConfirmSavedRowRewriteAsync(savedRowRewriteWarning) is false)
@@ -944,6 +1103,198 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanChangeSelectedPartType))]
+    private async Task ChangePartTypeAsync()
+    {
+        if (SelectedPart is null || !CanManageDefinitions || IsBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+
+            var typesResult = await _dunnageService.GetAllTypesAsync();
+            if (!typesResult.IsSuccess || typesResult.Data is null)
+            {
+                await _errorHandler.HandleDaoErrorAsync(
+                    typesResult,
+                    nameof(ChangePartTypeAsync),
+                    true
+                );
+                return;
+            }
+
+            var availableTypes = typesResult.Data
+                .Where(type => type.Id != SelectedPart.TypeId)
+                .OrderBy(type => type.TypeName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (availableTypes.Count == 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    "No other dunnage types are available to move this part to.",
+                    Enum_ErrorSeverity.Info,
+                    null,
+                    true
+                );
+                return;
+            }
+
+            var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+            if (xamlRoot is null)
+            {
+                return;
+            }
+
+            var currentTypeName = string.IsNullOrWhiteSpace(SelectedPart.DunnageTypeName)
+                ? SelectedTypeName
+                : SelectedPart.DunnageTypeName;
+
+            var dialog = new Module_Dunnage.Views.View_Dunnage_ChangeTypeDialog(
+                SelectedPart,
+                currentTypeName,
+                availableTypes,
+                _dunnageService
+            )
+            {
+                XamlRoot = xamlRoot,
+            };
+
+            await dialog.ShowAsync();
+
+            if (dialog.WasAccepted is false || dialog.SelectedTargetTypeId is null)
+            {
+                return;
+            }
+
+            var targetTypeId = dialog.SelectedTargetTypeId.Value;
+            var targetType = availableTypes.FirstOrDefault(type => type.Id == targetTypeId);
+
+            var impactResult = await _dunnageService.GetPartDeleteImpactAsync(
+                SelectedPart.PartId
+            );
+            var impact =
+                impactResult.IsSuccess && impactResult.Data is not null
+                    ? impactResult.Data
+                    : new Model_DunnagePartDeleteImpact();
+
+            var message = BuildChangeTypeWarning(
+                SelectedPart.PartId,
+                currentTypeName,
+                targetType?.TypeName ?? "the selected type",
+                impact
+            );
+
+            if (await ConfirmTypeChangeAsync(message) is false)
+            {
+                return;
+            }
+
+            var changeResult = await _dunnageService.ChangePartTypeAsync(
+                SelectedPart,
+                targetTypeId,
+                dialog.ProvidedValues
+            );
+
+            if (changeResult.IsSuccess)
+            {
+                var targetName = changeResult.Data ?? targetType?.TypeName ?? "the new type";
+                _workflowService.CurrentSession.SelectedPart = null;
+                SelectedPart = null;
+                ReplaceSelectedPartSpecSummaries(Array.Empty<string>());
+                HasSelectedPartSpecs = false;
+                IsInventoryNotificationVisible = false;
+                InventoryMethod = string.Empty;
+                await LoadPartsAsync();
+                StatusMessage = $"Moved part to type: {targetName}";
+                _logger.LogInfo($"Changed part type to {targetName}", "PartSelection");
+                return;
+            }
+
+            await _errorHandler.HandleDaoErrorAsync(
+                changeResult,
+                nameof(ChangePartTypeAsync),
+                true
+            );
+        }
+        catch (Exception ex)
+        {
+            await _errorHandler.HandleErrorAsync(
+                "Error changing dunnage part type",
+                Enum_ErrorSeverity.Error,
+                ex,
+                true
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Builds the type-change confirmation message with affected row counts.</summary>
+    private static string BuildChangeTypeWarning(
+        string partId,
+        string fromType,
+        string toType,
+        Model_DunnagePartDeleteImpact impact
+    )
+    {
+        var affected = new List<string>();
+        if (impact.LabelDataCount > 0)
+        {
+            affected.Add(
+                impact.LabelDataCount == 1
+                    ? "1 current label data entry"
+                    : $"{impact.LabelDataCount} current label data entries"
+            );
+        }
+
+        if (impact.HistoryCount > 0)
+        {
+            affected.Add(
+                impact.HistoryCount == 1
+                    ? "1 history entry"
+                    : $"{impact.HistoryCount} history entries"
+            );
+        }
+
+        var affectedText = affected.Count == 0
+            ? "No saved rows currently reference this part"
+            : string.Join(" and ", affected);
+
+        return $"Move '{partId}' from '{fromType}' to '{toType}'?\n\n{affectedText} will be updated to the new type. Existing spec values are carried over to the new type's layout; spec fields the new type does not define are added to it (as optional) so the part keeps them.";
+    }
+
+    private async Task<bool> ConfirmTypeChangeAsync(string message)
+    {
+        var xamlRoot = App.MainWindow?.Content?.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return false;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Change Dunnage Type",
+            Content = message,
+            PrimaryButtonText = "Move Part",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+
+        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+            dialog,
+            xamlRoot
+        );
+
+        var result = await dialog.ShowAsync();
+        return result == ContentDialogResult.Primary;
+    }
+
     [RelayCommand(CanExecute = nameof(CanDeleteSelectedPart))]
     private async Task DeletePartAsync()
     {
@@ -960,6 +1311,37 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                     StringComparison.OrdinalIgnoreCase
                 )
             );
+    }
+
+    /// <summary>
+    /// Loads the choice list for each Choices custom field so the Add/Edit Part
+    /// dialogs can populate their Choice comboboxes (GetCustomFieldsByTypeAsync
+    /// does not hydrate them).
+    /// </summary>
+    private async Task HydrateCustomFieldChoicesAsync(
+        List<Model_CustomFieldDefinition> fields
+    )
+    {
+        foreach (var field in fields)
+        {
+            if (
+                string.Equals(field.FieldType, "Choices", StringComparison.OrdinalIgnoreCase)
+                is false
+                || field.Choices.Count > 0
+            )
+            {
+                continue;
+            }
+
+            var choicesResult = await _dunnageService.GetCustomFieldChoicesAsync(field.Id);
+            if (choicesResult.IsSuccess && choicesResult.Data is not null)
+            {
+                field.Choices = choicesResult.Data
+                    .OrderBy(choice => choice.SortOrder)
+                    .Select(choice => choice.Choice)
+                    .ToList();
+            }
+        }
     }
 
     private async Task<bool> ConfirmSavedRowRewriteAsync(string? warningMessage)
@@ -994,15 +1376,40 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         return result == ContentDialogResult.Primary;
     }
 
+    private static bool UdcValuesEqual(string?[] left, string?[] right)
+    {
+        if (left.Length != right.Length)
+        {
+            return false;
+        }
+
+        for (var index = 0; index < left.Length; index++)
+        {
+            if (
+                string.Equals(
+                    left[index] ?? string.Empty,
+                    right[index] ?? string.Empty,
+                    StringComparison.Ordinal
+                ) is false
+            )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static string? BuildSavedRowRewriteWarning(
         string originalPartId,
         string updatedPartId,
         string originalQuantityType,
         string updatedQuantityType,
-        string originalSpecValuesJson,
-        string updatedSpecValuesJson,
+        bool specValuesChanged,
         string? originalImagePath,
-        string? updatedImagePath
+        string? updatedImagePath,
+        string? originalHomeLocation,
+        string? updatedHomeLocation
     )
     {
         var changedValues = new List<string>();
@@ -1023,12 +1430,23 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
 
         if (
-            string.Equals(originalSpecValuesJson, updatedSpecValuesJson, StringComparison.Ordinal)
-            is false
+            specValuesChanged
             || string.Equals(originalImagePath, updatedImagePath, StringComparison.Ordinal) is false
         )
         {
             changedValues.Add("saved spec values");
+        }
+
+        var originalLocation = originalHomeLocation?.Trim() ?? string.Empty;
+        var updatedLocation = updatedHomeLocation?.Trim() ?? string.Empty;
+        if (
+            string.Equals(originalLocation, updatedLocation, StringComparison.Ordinal) is false
+            && string.IsNullOrWhiteSpace(updatedLocation) is false
+        )
+        {
+            changedValues.Add(
+                $"default location from '{originalLocation}' to '{updatedLocation}' (only saved rows still using the old default location)"
+            );
         }
 
         if (changedValues.Count == 0)
@@ -1037,6 +1455,47 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
 
         return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {string.Join(" and ", changedValues)}?";
+    }
+
+    /// <summary>Builds the part delete-confirmation warning with affected row counts.</summary>
+    internal static string BuildPartDeleteWarning(
+        string partId,
+        Model_DunnagePartDeleteImpact impact
+    )
+    {
+        var affected = new List<string>();
+        if (impact.LabelDataCount > 0)
+        {
+            affected.Add(
+                impact.LabelDataCount == 1
+                    ? "1 current label data entry"
+                    : $"{impact.LabelDataCount} current label data entries"
+            );
+        }
+
+        if (impact.HistoryCount > 0)
+        {
+            affected.Add(
+                impact.HistoryCount == 1
+                    ? "1 history entry"
+                    : $"{impact.HistoryCount} history entries"
+            );
+        }
+
+        if (impact.InventoryCount > 0)
+        {
+            affected.Add(
+                impact.InventoryCount == 1
+                    ? "1 inventory record"
+                    : $"{impact.InventoryCount} inventory records"
+            );
+        }
+
+        var impactSummary = affected.Count == 0
+            ? "No label data or history entries currently reference this part."
+            : $"This will also permanently delete its {string.Join(", ", affected)}.";
+
+        return $"Are you sure you want to permanently delete '{partId}'? This action cannot be undone.\n\n{impactSummary}\n\nAll existing label data and history entries that contain this part number will be removed as well.";
     }
 
     /// <summary>
@@ -1083,12 +1542,19 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
 
         try
         {
+            // Fetch the rows this cascade delete will remove so the warning can
+            // show exact counts.
+            var impactResult = await _dunnageService.GetPartDeleteImpactAsync(part.PartId);
+            var impact =
+                impactResult.IsSuccess && impactResult.Data is not null
+                    ? impactResult.Data
+                    : new Model_DunnagePartDeleteImpact();
+
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
                 Title = "Delete Dunnage Part",
-                Content =
-                    $"Are you sure you want to permanently delete '{part.PartId}'? This action cannot be undone.",
+                Content = BuildPartDeleteWarning(part.PartId, impact),
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
                 DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
@@ -1169,7 +1635,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         var templateOptions = existingParts
             .Select(CreateSpecTemplateOption)
             .Where(option =>
-                option.SpecValues.Count > 0 || !string.IsNullOrWhiteSpace(option.Notes)
+                option.HasAnyUdcValue || !string.IsNullOrWhiteSpace(option.Notes)
             )
             .OrderBy(option => option.PartId)
             .ToList();
@@ -1207,7 +1673,11 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         }
 
         var nextDraft = currentDraft.Clone();
-        nextDraft.SpecValues = new Dictionary<string, object?>(dialog.SelectedTemplate.SpecValues);
+        for (var slot = 1; slot <= 10; slot++)
+        {
+            nextDraft.SetUdcValue(slot, dialog.SelectedTemplate.GetUdcValue(slot));
+        }
+
         nextDraft.Notes = dialog.SelectedTemplate.Notes;
         nextDraft.QuantityType = dialog.SelectedTemplate.QuantityType;
 
@@ -1215,81 +1685,65 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         {
             nextDraft.PartId = Helper_Dunnage_PartIdSuggestion.BuildSuggestedPartId(
                 SelectedTypeName,
-                nextDraft.SpecValues
+                GetDraftLabeledValues(nextDraft)
             );
         }
 
         return nextDraft;
     }
 
-    private static Model_DunnageSpecTemplateOption CreateSpecTemplateOption(Model_DunnagePart part)
+    private static List<KeyValuePair<string, string?>> GetDraftLabeledValues(
+        Model_DunnagePartDialogDraft draft
+    )
     {
-        var specValues = part.SpecValuesDict.ToDictionary(
-            pair => pair.Key,
-            pair => NormalizeSpecValue(pair.Value)
-        );
-
-        foreach (var definition in part.PartSpecificSpecDefinitions)
+        var values = new List<KeyValuePair<string, string?>>();
+        for (var slot = 1; slot <= 10; slot++)
         {
-            specValues[definition.Key] = definition.Value;
+            var value = draft.GetUdcValue(slot);
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                continue;
+            }
+
+            values.Add(new KeyValuePair<string, string?>($"UDC{slot}", value));
         }
 
-        var notes = specValues.TryGetValue("Notes", out var notesValue)
-            ? notesValue?.ToString() ?? string.Empty
-            : string.Empty;
-        specValues.Remove("Notes");
+        return values;
+    }
 
-        return new Model_DunnageSpecTemplateOption
+    private static Model_DunnageSpecTemplateOption CreateSpecTemplateOption(Model_DunnagePart part)
+    {
+        var udcValues = Helper_Dunnage_PartSpecs.ExtractUdc(part);
+        var option = new Model_DunnageSpecTemplateOption
         {
             PartId = part.PartId,
             HomeLocation = part.HomeLocation ?? string.Empty,
             QuantityType = part.QuantityType,
-            Notes = notes,
-            SpecValues = specValues,
-            SpecSummary = BuildSpecSummary(specValues),
         };
+        for (var slot = 1; slot <= 10; slot++)
+        {
+            option.SetUdcValue(slot, Helper_Dunnage_PartSpecs.GetValueForSlot(udcValues, slot));
+        }
+
+        option.SpecSummary = BuildSpecSummary(option);
+        return option;
     }
 
-    private static object? NormalizeSpecValue(object? rawValue)
+    private static string BuildSpecSummary(Model_DunnageSpecTemplateOption option)
     {
-        if (rawValue is JsonElement element)
+        var pairs = new List<string>();
+        for (var slot = 1; slot <= 10; slot++)
         {
-            if (Helper_Dunnage_PartSpecs.TryGetSpecDefinition(element, out var definition))
+            var value = option.GetUdcValue(slot);
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return definition;
+                continue;
             }
 
-            return element.ValueKind switch
-            {
-                JsonValueKind.String => element.GetString(),
-                JsonValueKind.True => true,
-                JsonValueKind.False => false,
-                JsonValueKind.Number when element.TryGetInt64(out var integerValue) => integerValue,
-                JsonValueKind.Number => element.GetDouble(),
-                _ => element.ToString(),
-            };
+            pairs.Add($"UDC{slot}: {value}");
         }
 
-        return rawValue;
-    }
-
-    private static string BuildSpecSummary(Dictionary<string, object?> specValues)
-    {
-        if (specValues.Count == 0)
-        {
-            return "No saved spec values";
-        }
-
-        return string.Join(
-            " | ",
-            specValues
-                .OrderBy(pair => pair.Key)
-                .Select(pair =>
-                    Helper_Dunnage_PartSpecs.TryGetSpecDefinition(pair.Value, out var definition)
-                        ? $"{pair.Key}: {definition.DataType} field"
-                        : $"{pair.Key}: {pair.Value}"
-                )
-        );
+        return pairs.Count == 0 ? "No saved spec values" : string.Join(" | ", pairs);
     }
 
     private async Task PromptToSaveCustomQuantityTypeAsync(string quantityType)

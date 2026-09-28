@@ -18,6 +18,17 @@ public class Converter_DecimalToDouble : IValueConverter
     /// <inheritdoc/>
     public object ConvertBack(object? value, Type targetType, object? parameter, string language)
     {
-        return value is double d ? (decimal)d : 0m;
+        // NumberBox reports NaN when the user clears the text; casting that to decimal overflows.
+        if (value is not double d || double.IsNaN(d) || double.IsInfinity(d))
+        {
+            return 0m;
+        }
+
+        if (d <= (double)decimal.MinValue || d >= (double)decimal.MaxValue)
+        {
+            return 0m;
+        }
+
+        return (decimal)d;
     }
 }

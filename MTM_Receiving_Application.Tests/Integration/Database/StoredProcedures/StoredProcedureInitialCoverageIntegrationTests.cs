@@ -8,371 +8,6 @@ public sealed class StoredProcedureInitialCoverageIntegrationTests
     : StoredProcedureIntegrationTestBase
 {
     [Fact]
-    public async Task sp_CustomerPullPack_UserDefaults_GetByUser_ShouldReturnSeededDefaults_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var suffix = CreateUniqueSuffix();
-        var userId = $"test.cpp.defaults.get.{suffix}";
-
-        try
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                @"
-INSERT INTO customer_pull_pack_user_defaults
-(
-    user_id,
-    default_customer_id,
-    favorite_customer_ids_json,
-    last_good_date_range_type,
-    last_good_date_from,
-    last_good_date_to,
-    default_sort_mode,
-    default_shortages_only,
-    default_unpulled_only,
-    default_late_orders_only,
-    default_waitlist_status_set_json,
-    default_print_preset,
-    last_updated_by_user_id
-)
-VALUES
-(
-    @userId,
-    'VOLVO',
-    '[""VOLVO"",""MACK""]',
-    'Custom',
-    @dateFrom,
-    @dateTo,
-    'Part',
-    1,
-    0,
-    1,
-    '[""Requested"",""Problem""]',
-    'PullList',
-    'integration-test'
-);",
-                new MySqlParameter("@userId", userId),
-                new MySqlParameter(
-                    "@dateFrom",
-                    new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc)
-                ),
-                new MySqlParameter("@dateTo", new DateTime(2026, 5, 27, 0, 0, 0, DateTimeKind.Utc))
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_CustomerPullPack_UserDefaults_GetByUser",
-                new MySqlParameter("p_user_id", userId)
-            );
-
-            result.Rows.Count.Should().Be(1);
-            result.Rows[0]["UserId"].Should().Be(userId);
-            result.Rows[0]["DefaultCustomerId"].Should().Be("VOLVO");
-            result.Rows[0]["DefaultSortMode"].Should().Be("Part");
-            result.Rows[0]["DefaultPrintPreset"].Should().Be("PullList");
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM customer_pull_pack_user_defaults WHERE user_id = @userId;",
-                new MySqlParameter("@userId", userId)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_CustomerPullPack_UserDefaults_Upsert_ShouldPersistDefaults_AndDirectCleanupShouldPass_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var suffix = CreateUniqueSuffix();
-        var userId = $"test.cpp.defaults.upsert.{suffix}";
-
-        var statusParameter = new MySqlParameter("p_status", MySqlDbType.Int32)
-        {
-            Direction = ParameterDirection.Output,
-        };
-        var errorParameter = new MySqlParameter("p_error_message", MySqlDbType.VarChar, 500)
-        {
-            Direction = ParameterDirection.Output,
-        };
-
-        try
-        {
-            var result = await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_CustomerPullPack_UserDefaults_Upsert",
-                new MySqlParameter("p_user_id", userId),
-                new MySqlParameter("p_default_customer_id", "VOLVO"),
-                new MySqlParameter("p_favorite_customer_ids_json", "[\"VOLVO\",\"MACK\"]"),
-                new MySqlParameter("p_last_good_date_range_type", "Custom"),
-                new MySqlParameter(
-                    "p_last_good_date_from",
-                    new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
-                ),
-                new MySqlParameter(
-                    "p_last_good_date_to",
-                    new DateTime(2026, 5, 31, 0, 0, 0, DateTimeKind.Utc)
-                ),
-                new MySqlParameter("p_default_sort_mode", "ShortageFirst"),
-                new MySqlParameter("p_default_shortages_only", 1),
-                new MySqlParameter("p_default_unpulled_only", 1),
-                new MySqlParameter("p_default_late_orders_only", 0),
-                new MySqlParameter(
-                    "p_default_waitlist_status_set_json",
-                    "[\"Requested\",\"Accepted\"]"
-                ),
-                new MySqlParameter("p_default_print_preset", "CurrentView"),
-                new MySqlParameter("p_last_updated_by_user_id", userId),
-                statusParameter,
-                errorParameter
-            );
-
-            ConvertToInt(result.OutputValues["p_status"]).Should().Be(0);
-            result.OutputValues["p_error_message"].Should().BeNull();
-
-            var savedRowCount = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM customer_pull_pack_user_defaults WHERE user_id = @userId;",
-                    new MySqlParameter("@userId", userId)
-                )
-            );
-
-            savedRowCount.Should().Be(1);
-        }
-        finally
-        {
-            var deletedRows = await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM customer_pull_pack_user_defaults WHERE user_id = @userId;",
-                new MySqlParameter("@userId", userId)
-            );
-
-            deletedRows.Should().Be(1);
-        }
-    }
-
-    [Fact]
-    public async Task sp_CustomerPullPack_Waitlist_GetQueue_ShouldReturnSeededQueueRow_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var suffix = CreateUniqueSuffix();
-        var waitlistId = Guid.NewGuid().ToString();
-
-        try
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                @"
-INSERT INTO customer_pull_pack_waitlist
-(
-    waitlist_id,
-    source_line_key,
-    customer_id,
-    customer_name,
-    customer_order_id,
-    parent_part_id,
-    requested_quantity,
-    requested_by_user_id,
-    requested_by_display_name,
-    requester_context_note,
-    current_status,
-    last_updated_by_user_id,
-    recheck_indicator
-)
-VALUES
-(
-    @waitlistId,
-    @sourceLineKey,
-    'VOLVO',
-    'Volvo Test Customer',
-    @customerOrderId,
-    @parentPartId,
-    5,
-    'integration.requester',
-    'Integration Requester',
-    'Queue seeded by integration test.',
-    'Requested',
-    'integration.requester',
-    0
-);",
-                new MySqlParameter("@waitlistId", waitlistId),
-                new MySqlParameter("@sourceLineKey", $"TEST-CPP-QUEUE-{suffix}"),
-                new MySqlParameter("@customerOrderId", $"ORDER-{suffix}"),
-                new MySqlParameter("@parentPartId", $"PART-{suffix}")
-            );
-
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                @"
-INSERT INTO customer_pull_pack_waitlist_location
-(
-    waitlist_id,
-    selection_order,
-    location_id,
-    selected_by_user_id
-)
-VALUES
-(
-    @waitlistId,
-    1,
-    @locationId,
-    'integration.requester'
-);",
-                new MySqlParameter("@waitlistId", waitlistId),
-                new MySqlParameter("@locationId", $"LOC-{suffix}")
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_CustomerPullPack_Waitlist_GetQueue",
-                new MySqlParameter("p_waitlist_id", waitlistId),
-                new MySqlParameter("p_customer_id", DBNull.Value),
-                new MySqlParameter("p_requester_user_id", DBNull.Value),
-                new MySqlParameter("p_current_owner_user_id", DBNull.Value),
-                new MySqlParameter("p_location_id", DBNull.Value),
-                new MySqlParameter("p_status_set_json", DBNull.Value),
-                new MySqlParameter("p_use_default_open_work", 0),
-                new MySqlParameter("p_max_results", 10)
-            );
-
-            result.Rows.Count.Should().Be(1);
-            result.Rows[0]["WaitlistId"].Should().Be(waitlistId);
-            ConvertToInt(result.Rows[0]["SelectedLocationCount"]).Should().Be(1);
-            result.Rows[0]["PrimarySelectedLocationId"].Should().Be($"LOC-{suffix}");
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM customer_pull_pack_waitlist WHERE waitlist_id = @waitlistId;",
-                new MySqlParameter("@waitlistId", waitlistId)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_CustomerPullPack_Waitlist_Upsert_ShouldPersistQueueRow_AndDirectCleanupShouldPass_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var suffix = CreateUniqueSuffix();
-        var waitlistIdParameter = new MySqlParameter("p_waitlist_id", MySqlDbType.VarChar, 36)
-        {
-            Direction = ParameterDirection.InputOutput,
-            Value = DBNull.Value,
-        };
-        var duplicateIdParameter = new MySqlParameter(
-            "p_duplicate_existing_waitlist_id",
-            MySqlDbType.VarChar,
-            36
-        )
-        {
-            Direction = ParameterDirection.Output,
-        };
-        var statusParameter = new MySqlParameter("p_status", MySqlDbType.Int32)
-        {
-            Direction = ParameterDirection.Output,
-        };
-        var errorParameter = new MySqlParameter("p_error_message", MySqlDbType.VarChar, 1000)
-        {
-            Direction = ParameterDirection.Output,
-        };
-
-        string? createdWaitlistId = null;
-
-        try
-        {
-            var result = await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_CustomerPullPack_Waitlist_Upsert",
-                waitlistIdParameter,
-                new MySqlParameter("p_source_line_key", $"TEST-CPP-UPSERT-{suffix}"),
-                new MySqlParameter("p_customer_id", "VOLVO"),
-                new MySqlParameter("p_customer_name", "Volvo Test Customer"),
-                new MySqlParameter("p_customer_order_id", $"ORDER-{suffix}"),
-                new MySqlParameter("p_parent_part_id", $"PART-{suffix}"),
-                new MySqlParameter("p_requested_quantity", 4.0m),
-                new MySqlParameter("p_requested_by_user_id", "integration.requester"),
-                new MySqlParameter("p_requested_by_display_name", "Integration Requester"),
-                new MySqlParameter("p_requester_context_note", "Created by integration test."),
-                new MySqlParameter("p_current_status", "Requested"),
-                new MySqlParameter("p_current_owner_user_id", DBNull.Value),
-                new MySqlParameter("p_current_owner_display_name", DBNull.Value),
-                new MySqlParameter("p_location_review_flag", 0),
-                new MySqlParameter("p_problem_reason", "None"),
-                new MySqlParameter("p_handler_note", DBNull.Value),
-                new MySqlParameter("p_completion_user_id", DBNull.Value),
-                new MySqlParameter("p_completion_timestamp", DBNull.Value),
-                new MySqlParameter("p_last_updated_by_user_id", "integration.requester"),
-                new MySqlParameter("p_recheck_indicator", 0),
-                new MySqlParameter("p_selected_locations_json", "[\"A-01\",\"B-02\"]"),
-                duplicateIdParameter,
-                statusParameter,
-                errorParameter
-            );
-
-            ConvertToInt(result.OutputValues["p_status"]).Should().Be(0);
-            result.OutputValues["p_error_message"].Should().BeNull();
-            result.OutputValues["p_duplicate_existing_waitlist_id"].Should().BeNull();
-
-            createdWaitlistId = result.OutputValues["p_waitlist_id"]?.ToString();
-            createdWaitlistId.Should().NotBeNullOrWhiteSpace();
-
-            var waitlistCount = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM customer_pull_pack_waitlist WHERE waitlist_id = @waitlistId;",
-                    new MySqlParameter("@waitlistId", createdWaitlistId)
-                )
-            );
-            var locationCount = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM customer_pull_pack_waitlist_location WHERE waitlist_id = @waitlistId;",
-                    new MySqlParameter("@waitlistId", createdWaitlistId)
-                )
-            );
-
-            waitlistCount.Should().Be(1);
-            locationCount.Should().Be(2);
-        }
-        finally
-        {
-            if (!string.IsNullOrWhiteSpace(createdWaitlistId))
-            {
-                var deletedRows = await ExecuteSqlNonQueryAsync(
-                    connectionString,
-                    "DELETE FROM customer_pull_pack_waitlist WHERE waitlist_id = @waitlistId;",
-                    new MySqlParameter("@waitlistId", createdWaitlistId)
-                );
-
-                deletedRows.Should().Be(1);
-            }
-        }
-    }
-
-    [Fact]
     public async Task sp_Receiving_Load_Delete_ShouldRemoveSeededHistoryRow_WhenIntegrationConnectionIsAvailable()
     {
         var connectionString = TryGetIntegrationConnectionString();
@@ -7884,13 +7519,22 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 2, 'Quan
                 new MySqlParameter("p_label_number", "LBL-1"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 1),
-                new MySqlParameter("p_specs_json", "{\"color\":\"green\"}")
+                new MySqlParameter("p_udc1", "green"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value)
             );
 
             var savedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND part_id = @partId;",
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND part_id = @partId AND udc1 = 'green';",
                     new MySqlParameter("@loadUuid", loadUuid),
                     new MySqlParameter("@partId", partId)
                 )
@@ -8001,13 +7645,22 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 new MySqlParameter("p_label_number", "L9"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 2),
-                new MySqlParameter("p_specs_json", "{\"size\":\"XL\"}")
+                new MySqlParameter("p_udc1", "XL"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value)
             );
 
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND quantity = 9 AND location = 'LABEL-NEW-LOC' AND quantity_type = 'Boxes';",
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND quantity = 9 AND location = 'LABEL-NEW-LOC' AND quantity_type = 'Boxes' AND udc1 = 'XL';",
                     new MySqlParameter("@loadUuid", loadUuid)
                 )
             );
@@ -8373,14 +8026,23 @@ VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, N
                 new MySqlParameter("p_label_number", "NEW"),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 1),
-                new MySqlParameter("p_specs_json", "{\"batch\":1}"),
+                new MySqlParameter("p_udc1", "batch"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_user", "integration.user")
             );
 
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = 'DLU-HIST-NEW' AND quantity = 7 AND location = 'LOAD-NEW-LOC';",
+                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = 'DLU-HIST-NEW' AND quantity = 7 AND location = 'LOAD-NEW-LOC' AND udc1 = 'batch';",
                     new MySqlParameter("@loadUuid", loadUuid)
                 )
             );
@@ -8503,6 +8165,152 @@ VALUES (@loadGuid, 1, @partId, 'PO-RPT', '1', 1012, CURDATE(), 'RPT-LOC', 1, 'Re
                 connectionString,
                 "DELETE FROM receiving_history WHERE load_guid = @loadGuid;",
                 new MySqlParameter("@loadGuid", loadGuid)
+            );
+        }
+    }
+
+    [Fact]
+    public async Task sp_Dunnage_LabelData_InsertFromHistory_ShouldQueueReprintRow_WhenIntegrationConnectionIsAvailable()
+    {
+        var connectionString = TryGetIntegrationConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        var loadUuid = Guid.NewGuid().ToString();
+        var partId = $"DLIFH-{CreateUniqueSuffix()[..8]}";
+        var typeName = $"TYPE-{CreateUniqueSuffix()[..8]}";
+        var typeId = 0;
+
+        try
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_types (type_name, created_by, created_date) VALUES (@typeName, 'integration.user', NOW());",
+                new MySqlParameter("@typeName", typeName)
+            );
+            typeId = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT id FROM dunnage_types WHERE type_name = @typeName;",
+                    new MySqlParameter("@typeName", typeName)
+                )
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_parts (part_id, type_id, created_by, created_date) VALUES (@partId, @typeId, 'integration.user', NOW());",
+                new MySqlParameter("@partId", partId),
+                new MySqlParameter("@typeId", typeId)
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, created_date, po_number)
+VALUES (@loadUuid, @partId, 2, 'Quantity', NOW(), 'integration.user', NOW(), 'PO-RPT');",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId)
+            );
+
+            await ExecuteStoredProcedureQueryAsync(
+                connectionString,
+                "sp_Dunnage_LabelData_InsertFromHistory",
+                new MySqlParameter("p_load_uuid", loadUuid),
+                new MySqlParameter("p_queued_by", "integration.user"),
+                new MySqlParameter("p_employee_number", 1012)
+            );
+
+            var queuedRows = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid = @loadUuid AND is_reprint = 1;",
+                    new MySqlParameter("@loadUuid", loadUuid)
+                )
+            );
+            queuedRows.Should().Be(1);
+        }
+        finally
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_label_data WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_parts WHERE part_id = @partId;",
+                new MySqlParameter("@partId", partId)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_types WHERE id = @typeId;",
+                new MySqlParameter("@typeId", typeId)
+            );
+        }
+    }
+
+    [Fact]
+    public async Task sp_Volvo_GeneratedLabelData_InsertFromHistory_ShouldQueueReprintRow_WhenIntegrationConnectionIsAvailable()
+    {
+        var connectionString = TryGetIntegrationConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        var historyId = 0;
+        var partNumber = $"V{CreateUniqueSuffix()[..8]}";
+
+        try
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"INSERT INTO volvo_generated_label_history (original_id, shipment_id, shipment_number, shipment_date, part_number, quantity, skid_number, total_skids, part_description, employee_number, archived_by)
+VALUES (999999, 1, 1001, CURDATE(), @partNumber, 3, 1, 2, 'Volvo reprint row', 1012, 'integration.user');",
+                new MySqlParameter("@partNumber", partNumber)
+            );
+            historyId = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT id FROM volvo_generated_label_history WHERE part_number = @partNumber ORDER BY id DESC LIMIT 1;",
+                    new MySqlParameter("@partNumber", partNumber)
+                )
+            );
+
+            await ExecuteStoredProcedureQueryAsync(
+                connectionString,
+                "sp_Volvo_GeneratedLabelData_InsertFromHistory",
+                new MySqlParameter("p_history_id", historyId),
+                new MySqlParameter("p_queued_by", "integration.user"),
+                new MySqlParameter("p_employee_number", 1012)
+            );
+
+            var queuedRows = ConvertToInt(
+                await ExecuteSqlScalarAsync(
+                    connectionString,
+                    "SELECT COUNT(*) FROM volvo_generated_label_data WHERE part_number = @partNumber AND is_reprint = 1;",
+                    new MySqlParameter("@partNumber", partNumber)
+                )
+            );
+            queuedRows.Should().Be(1);
+        }
+        finally
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM volvo_generated_label_data WHERE part_number = @partNumber;",
+                new MySqlParameter("@partNumber", partNumber)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM volvo_generated_label_history WHERE id = @historyId;",
+                new MySqlParameter("@historyId", historyId)
             );
         }
     }

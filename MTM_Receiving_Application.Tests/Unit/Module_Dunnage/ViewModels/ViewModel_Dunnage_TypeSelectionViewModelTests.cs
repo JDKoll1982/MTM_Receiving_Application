@@ -195,6 +195,52 @@ public sealed class ViewModel_Dunnage_TypeSelectionViewModelTests
             .As<string?>();
     }
 
+    [Fact]
+    public void BuildTypeDeleteWarning_ShouldListAffectedCounts()
+    {
+        var message = InvokeTypeDeleteWarning(
+            "Bins",
+            new Model_DunnageTypeDeleteImpact
+            {
+                PartsCount = 3,
+                LabelDataCount = 4,
+                HistoryCount = 2,
+            }
+        );
+
+        message.Should().Contain("'Bins'");
+        message.Should().Contain("3 parts");
+        message.Should().Contain("4 current label data entries");
+        message.Should().Contain("2 history entries");
+        message.Should().Contain("All existing label data and history entries");
+    }
+
+    [Fact]
+    public void BuildTypeDeleteWarning_ShouldMentionNoReferences_WhenNoImpact()
+    {
+        var message = InvokeTypeDeleteWarning(
+            "Bins",
+            new Model_DunnageTypeDeleteImpact()
+        );
+
+        message.Should().Contain("No parts, label data, or history entries reference this type.");
+    }
+
+    private static string InvokeTypeDeleteWarning(
+        string typeName,
+        Model_DunnageTypeDeleteImpact impact
+    )
+    {
+        var method = typeof(ViewModel_dunnage_typeselection).GetMethod(
+            "BuildTypeDeleteWarning",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+
+        return method!.Invoke(null, [typeName, impact]).As<string>();
+    }
+
     private static ViewModel_dunnage_typeselection CreateViewModel(
         Mock<IService_DunnageWorkflow>? workflow = null,
         Mock<IService_MySQL_Dunnage>? dunnageService = null,

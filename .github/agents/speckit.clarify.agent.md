@@ -6,6 +6,19 @@ handoffs:
     prompt: Create a plan for the spec. I am building with...
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.clarify.agent.md
+- Description: Identify underspecified areas in the current feature spec by asking up to 5 highly targeted clarification questions and encoding answers back into the spec.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-16: ## User Input
+  - Line 17-22: ## Outline
+  - Line 23-199: ## Major Assumption Approval
+- Critical Notes: Ask up to 5 highly targeted clarification questions and encode answers back into the spec.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

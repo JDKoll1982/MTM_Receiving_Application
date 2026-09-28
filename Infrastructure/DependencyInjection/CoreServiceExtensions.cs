@@ -60,6 +60,7 @@ public static class CoreServiceExtensions
         services.AddSingleton<IService_HeaderBackNavigation, Service_HeaderBackNavigation>();
         services.AddSingleton<IService_Focus, Service_Focus>();
         services.AddSingleton<IService_Window, Service_Window>();
+        services.AddSingleton<IService_AdaptiveLayout, Service_AdaptiveLayout>();
         services.AddSingleton<IService_LabelViewLauncher, Service_LabelViewLauncher>();
         services.AddSingleton<IService_Help, Service_Help>();
         services.AddSingleton<IService_ThemeManager, Service_ThemeManager>();
@@ -164,7 +165,6 @@ public static class CoreServiceExtensions
             var userPrivileges = sp.GetRequiredService<IService_UserPrivileges>();
             var settingsCoreFacade = sp.GetRequiredService<IService_SettingsCoreFacade>();
             var windowService = sp.GetRequiredService<IService_Window>();
-            var applicationShutdown = sp.GetRequiredService<IService_ApplicationShutdown>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             var errorHandler = sp.GetRequiredService<IService_ErrorHandler>();
 
@@ -174,7 +174,6 @@ public static class CoreServiceExtensions
                 userPrivileges,
                 settingsCoreFacade,
                 windowService,
-                applicationShutdown,
                 logger,
                 errorHandler,
                 sp

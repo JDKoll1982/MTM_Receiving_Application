@@ -2,6 +2,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
@@ -63,6 +64,73 @@ public sealed class ViewModel_Receiving_WorkflowTests
         viewModel
             .CurrentHeaderContextSubtitle.Should()
             .Be("Review every generated load before saving labels and database records.");
+    }
+
+    [Fact]
+    public async Task NextStepCommand_ShouldNotExecute_WhenPoEntryStepHasNoSelectedPart()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.POEntry);
+        workflow.SetupGet(service => service.CurrentPart).Returns((Model_InforVisualPart?)null);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.NextStepCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task NextStepCommand_ShouldExecute_WhenPoEntryStepHasSelectedPart()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.POEntry);
+        workflow
+            .SetupGet(service => service.CurrentPart)
+            .Returns(new Model_InforVisualPart { PartID = "TEST-PART" });
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.NextStepCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task PreviousStepCommand_ShouldNotExecute_OnModeSelectionStep()
+    {
+        var workflow = CreateWorkflowMock();
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.PreviousStepCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task NavigationCommands_ShouldExecute_WhenBothButtonsAreOffered()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.LoadEntry);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.PreviousStepCommand.CanExecute(null).Should().BeTrue();
+        viewModel.NextStepCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    private static void RaiseStepChanged(Mock<IService_ReceivingWorkflow> workflow)
+    {
+        workflow.Raise(service => service.StepChanged += null, workflow.Object, EventArgs.Empty);
     }
 
     private static Mock<IService_ReceivingWorkflow> CreateWorkflowMock()

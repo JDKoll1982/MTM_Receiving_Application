@@ -32,9 +32,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _hasWarning;
 
-        [ObservableProperty]
-        private string _poQuantityInfo = string.Empty;
-
         private string _currentTotal = string.Empty;
 
         public string CurrentTotal
@@ -57,6 +54,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _currentPartDescription = string.Empty;
+
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row.
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPoNumber))]
+        private string _currentPoNumber = string.Empty;
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
 
         [ObservableProperty]
         private int _currentNumberOfLoads;
@@ -139,7 +146,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
 
-            await UpdatePOQuantityInfoAsync();
+            UpdateCurrentTotal();
             await CheckSameDayReceivingAsync();
         }
 
@@ -151,27 +158,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var part = _workflowService.CurrentPart;
             CurrentPartId = part?.PartID ?? string.Empty;
             CurrentPartDescription = part?.Description ?? string.Empty;
+            CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
             CurrentNumberOfLoads = _workflowService.NumberOfLoads;
-        }
-
-        private async Task UpdatePOQuantityInfoAsync()
-        {
-            if (_workflowService.CurrentSession.IsNonPO)
-            {
-                PoQuantityInfo = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Messages.InfoNonPoItem
-                );
-            }
-            else if (_workflowService.CurrentPart != null)
-            {
-                PoQuantityInfo = _workflowService.CurrentPart.QtyOrdered.ToString("N2");
-            }
-            else
-            {
-                PoQuantityInfo = string.Empty;
-            }
-
-            UpdateCurrentTotal();
         }
 
         private async Task CheckSameDayReceivingAsync()
@@ -224,7 +212,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             foreach (var load in Loads)
             {
-                var result = _validationService.ValidateWeightQuantity(load.WeightQuantity);
+                var result = await _validationService.ValidateWeightQuantityAsync(
+                    load.WeightQuantity
+                );
                 if (!result.IsValid)
                 {
                     await _errorHandler.HandleErrorAsync(

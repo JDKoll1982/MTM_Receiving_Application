@@ -2,6 +2,27 @@
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: performance-optimization.instructions.md
+- Description: Performance optimization best practices across frontend, backend, and database layers including checklists, advanced topics, and practical examples.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # Performance Optimization Best Practices
+  - Line 7-12: ## Introduction
+  - Line 13-27: ## General Principles
+  - Line 28-103: ## Frontend Performance
+  - Line 104-183: ## Backend Performance
+  - Line 184-233: ## Database Performance
+  - Line 234-253: ## Code Review Checklist for Performance
+  - Line 254-292: ## Advanced Topics
+  - Line 293-388: ## Practical Examples
+  - Line 389-412: ## References and Further Reading
+  - Line 413-419: ## Conclusion
+- Critical Notes: Measure first, optimize second — always profile before optimizing.
+[DOC-META-END]
+-->
+
 # Performance Optimization Best Practices
 
 ## Introduction

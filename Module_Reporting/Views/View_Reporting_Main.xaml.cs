@@ -33,11 +33,26 @@ public sealed partial class View_Reporting_Main : Page
         await System.Threading.Tasks.Task.CompletedTask;
     }
 
+    /// <summary>Applies the selected quick range preset from the flyout.</summary>
+    private void QuickRangePreset_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem { Tag: string preset })
+        {
+            ViewModel.SelectedDateRangePreset = preset;
+        }
+    }
+
     private void OnUnloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         _ = sender;
         _ = e;
         ViewModel.PreviewRequested -= OnPreviewRequested;
         Unloaded -= OnUnloaded;
+    }
+
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Reporting.Main");
     }
 }

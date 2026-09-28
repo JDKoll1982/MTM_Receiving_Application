@@ -159,13 +159,6 @@ Update rule: mark completed procedures every 5 stored-procedure tests finished.
 - [x] sp_Volvo_Settings_Reset
 - [x] sp_Volvo_Settings_Upsert
 
-## ShipRecTools
-
-- [x] sp_CustomerPullPack_UserDefaults_GetByUser
-- [x] sp_CustomerPullPack_UserDefaults_Upsert
-- [x] sp_CustomerPullPack_Waitlist_GetQueue
-- [x] sp_CustomerPullPack_Waitlist_Upsert
-
 ## Volvo
 
 - [x] sp_Volvo_GeneratedLabelData_ClearToHistory

@@ -1,11 +1,7 @@
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
-using MTM_Receiving_Application.Module_Core.Helpers.UI;
-using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
-using Windows.Graphics;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
@@ -15,56 +11,58 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 /// </summary>
 public sealed partial class View_ShipRecTools_Main : Page
 {
-    private const int DefaultMainWindowWidth = 1450;
-    private const int DefaultMainWindowHeight = 900;
-    private const int CustomerPullPackWindowWidth = 1880;
-    private const int CustomerPullPackWindowHeight = 950;
-
     private readonly ViewModel_ShipRecTools_ToolSelection _toolSelectionViewModel;
     private readonly ViewModel_Tool_OutsideServiceHistory _outsideServiceHistoryViewModel;
     private readonly ViewModel_Tool_MaterialAvailabilityBoard _materialAvailabilityBoardViewModel;
-    private readonly ViewModel_Tool_CustomerPullPackReport _customerPullPackReportViewModel;
-    private readonly ViewModel_Tool_CustomerPullPackQueue _customerPullPackQueueViewModel;
-    private readonly IService_CustomerPullPackDataSourceResolver _customerPullPackDataSourceResolver;
+    private readonly ViewModel_Tool_POLineSpecSearch _poLineSpecSearchViewModel;
+    private readonly ViewModel_Tool_DunnageBook _dunnageBookViewModel;
+    private readonly ViewModel_Tool_WeldedCoils _weldedCoilsViewModel;
+    private readonly ViewModel_Tool_ReceivingAnalytics _receivingAnalyticsViewModel;
+    private readonly ViewModel_Tool_DeliverySchedule _deliveryScheduleViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
     public View_ShipRecTools_Main(
         ViewModel_ShipRecTools_Main viewModel,
-        IService_CustomerPullPackDataSourceResolver customerPullPackDataSourceResolver,
         View_ShipRecTools_ToolSelection toolSelectionView,
         View_Tool_OutsideServiceHistory outsideServiceHistoryView,
         View_Tool_MaterialAvailabilityBoard materialAvailabilityBoardView,
-        View_Tool_CustomerPullPackReport customerPullPackReportView,
-        View_Tool_CustomerPullPackQueue customerPullPackQueueView
+        View_Tool_POLineSpecSearch poLineSpecSearchView,
+        View_Tool_DunnageBook dunnageBookView,
+        View_Tool_WeldedCoils weldedCoilsView,
+        View_Tool_ReceivingAnalytics receivingAnalyticsView,
+        View_Tool_DeliverySchedule deliveryScheduleView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(toolSelectionView);
         ArgumentNullException.ThrowIfNull(outsideServiceHistoryView);
         ArgumentNullException.ThrowIfNull(materialAvailabilityBoardView);
-        ArgumentNullException.ThrowIfNull(customerPullPackReportView);
-        ArgumentNullException.ThrowIfNull(customerPullPackQueueView);
-        ArgumentNullException.ThrowIfNull(customerPullPackDataSourceResolver);
+        ArgumentNullException.ThrowIfNull(poLineSpecSearchView);
+        ArgumentNullException.ThrowIfNull(dunnageBookView);
+        ArgumentNullException.ThrowIfNull(weldedCoilsView);
+        ArgumentNullException.ThrowIfNull(receivingAnalyticsView);
+        ArgumentNullException.ThrowIfNull(deliveryScheduleView);
 
         ViewModel = viewModel;
-        _customerPullPackDataSourceResolver = customerPullPackDataSourceResolver;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
         _outsideServiceHistoryViewModel = outsideServiceHistoryView.ViewModel;
         _materialAvailabilityBoardViewModel = materialAvailabilityBoardView.ViewModel;
-        _customerPullPackReportViewModel = customerPullPackReportView.ViewModel;
-        _customerPullPackQueueViewModel = customerPullPackQueueView.ViewModel;
+        _poLineSpecSearchViewModel = poLineSpecSearchView.ViewModel;
+        _dunnageBookViewModel = dunnageBookView.ViewModel;
+        _weldedCoilsViewModel = weldedCoilsView.ViewModel;
+        _receivingAnalyticsViewModel = receivingAnalyticsView.ViewModel;
+        _deliveryScheduleViewModel = deliveryScheduleView.ViewModel;
         InitializeComponent();
-
-        customerPullPackReportView.ConfigureWaitlistQueueNavigation(
-            ShowCustomerPullPackWaitlistAsync
-        );
 
         ToolSelectionHost.Content = toolSelectionView;
         OutsideServiceHistoryHost.Content = outsideServiceHistoryView;
         MaterialAvailabilityBoardHost.Content = materialAvailabilityBoardView;
-        CustomerPullPackHost.Content = customerPullPackReportView;
-        CustomerPullPackWaitlistHost.Content = customerPullPackQueueView;
+        POLineSpecSearchHost.Content = poLineSpecSearchView;
+        DunnageBookHost.Content = dunnageBookView;
+        WeldedCoilsHost.Content = weldedCoilsView;
+        ReceivingAnalyticsHost.Content = receivingAnalyticsView;
+        DeliveryScheduleHost.Content = deliveryScheduleView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -79,8 +77,11 @@ public sealed partial class View_ShipRecTools_Main : Page
             is nameof(ViewModel_ShipRecTools_Main.IsToolSelectionVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsOutsideServiceHistoryVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsMaterialAvailabilityBoardVisible)
-                or nameof(ViewModel_ShipRecTools_Main.IsCustomerPullPackVisible)
-                or nameof(ViewModel_ShipRecTools_Main.IsCustomerPullPackWaitlistVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsPOLineSpecSearchVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsDunnageBookVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsWeldedCoilsVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsReceivingAnalyticsVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsDeliveryScheduleVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -91,74 +92,49 @@ public sealed partial class View_ShipRecTools_Main : Page
     {
         if (ViewModel.IsToolSelectionVisible)
         {
-            RestoreMainWindowFromCustomerPullPack();
             _toolSelectionViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsOutsideServiceHistoryVisible)
         {
-            RestoreMainWindowFromCustomerPullPack();
             _outsideServiceHistoryViewModel.ActivateView();
             return;
         }
 
         if (ViewModel.IsMaterialAvailabilityBoardVisible)
         {
-            RestoreMainWindowFromCustomerPullPack();
             _materialAvailabilityBoardViewModel.ActivateView();
             return;
         }
 
-        if (ViewModel.IsCustomerPullPackVisible)
+        if (ViewModel.IsPOLineSpecSearchVisible)
         {
-            _customerPullPackDataSourceResolver.ResolveForWorkflow();
-            ResizeMainWindowForCustomerPullPack();
-            _customerPullPackReportViewModel.ActivateView();
+            _poLineSpecSearchViewModel.ActivateView();
             return;
         }
 
-        if (ViewModel.IsCustomerPullPackWaitlistVisible)
+        if (ViewModel.IsDunnageBookVisible)
         {
-            _customerPullPackDataSourceResolver.ResolveForWorkflow();
-            ResizeMainWindowForCustomerPullPack();
-            _ = _customerPullPackQueueViewModel.ActivateViewAsync();
-        }
-    }
-
-    private Task ShowCustomerPullPackWaitlistAsync()
-    {
-        ViewModel.NavigateToTool("CustomerPullPackWaitlist");
-        return Task.CompletedTask;
-    }
-
-    private static void ResizeMainWindowForCustomerPullPack()
-    {
-        if (App.MainWindow is not MTM_Receiving_Application.MainWindow mainWindow)
-        {
+            _dunnageBookViewModel.ActivateView();
             return;
         }
 
-        var currentSize = mainWindow.AppWindow.Size;
-        var desiredSize = mainWindow.GetScaledWindowSize(
-            CustomerPullPackWindowWidth,
-            CustomerPullPackWindowHeight
-        );
-
-        var desiredWidth = Math.Max(currentSize.Width, desiredSize.Width);
-        var desiredHeight = Math.Max(currentSize.Height, desiredSize.Height);
-        mainWindow.AppWindow.Resize(new SizeInt32(desiredWidth, desiredHeight));
-    }
-
-    private static void RestoreMainWindowFromCustomerPullPack()
-    {
-        if (App.MainWindow is not MTM_Receiving_Application.MainWindow mainWindow)
+        if (ViewModel.IsWeldedCoilsVisible)
         {
+            _weldedCoilsViewModel.ActivateView();
             return;
         }
 
-        mainWindow.AppWindow.Resize(
-            mainWindow.GetScaledWindowSize(DefaultMainWindowWidth, DefaultMainWindowHeight)
-        );
+        if (ViewModel.IsReceivingAnalyticsVisible)
+        {
+            _receivingAnalyticsViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsDeliveryScheduleVisible)
+        {
+            _deliveryScheduleViewModel.ActivateView();
+        }
     }
 }

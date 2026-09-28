@@ -243,6 +243,7 @@ public sealed class ViewModel_Reporting_MainTests
             new Mock<IService_Reporting>().Object,
             new Mock<IService_ReportingClipboard>().Object,
             new Mock<IService_ReportingRecipientSettings>().Object,
+            new Mock<IService_ReportingSettings>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

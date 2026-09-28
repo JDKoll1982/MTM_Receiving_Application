@@ -33,7 +33,6 @@ This model stores execution settings that define how items are validated, target
 - PopupCloseTimeoutMs: maximum wait for popup dismissal
 - SendShortcutLabel: friendly text label for user instruction
 - SendShortcutChord: configured send keyboard shortcut, default Ctrl+Alt+M
-- StopShortcutChord: configured stop keyboard shortcut, default Ctrl+Alt+N
 - StopBetweenSendsOnly: always true in baseline design
 - AllowAdvancedTiming: optional safety feature flag, default false
 - MaxItemsPerSend: optional guard to constrain long runs

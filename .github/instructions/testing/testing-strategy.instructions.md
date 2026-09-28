@@ -3,6 +3,21 @@ description: 'Testing strategy for MTM Receiving Application covering unit-vs-in
 applyTo: 'MTM_Receiving_Application.Tests/**/*.cs,**/*Tests.cs'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: testing-strategy.instructions.md
+- Description: Testing strategy for MTM Receiving Application covering unit-vs-integration decisions, naming, fixtures, and validation expectations.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-9: # MTM Testing Strategy
+  - Line 10-19: ## Core Rules
+  - Line 20-28: ## Decision Guide
+  - Line 29-35: ## Repository Patterns
+  - Line 36-39: ## Validation
+- Critical Notes: Use xUnit with FluentAssertions; integration tests use IAsyncLifetime and prefix disposable data with TEST-.
+[DOC-META-END]
+-->
+
 # MTM Testing Strategy
 
 Use this file for test-writing work in the repository.

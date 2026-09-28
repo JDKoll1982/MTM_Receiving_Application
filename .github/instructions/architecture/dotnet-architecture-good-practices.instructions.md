@@ -2,6 +2,24 @@
 applyTo: "**/*.cs,**/*.csproj,**/Program.cs,**/*.razor"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: dotnet-architecture-good-practices.instructions.md
+- Description: DDD, SOLID, and .NET good-practice guidelines for building robust, maintainable systems.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5: # DDD Systems & .NET Guidelines
+  - Line 9: ## MANDATORY THINKING PROCESS
+  - Line 33: ## Core Principles
+  - Line 73: ## DDD & .NET Standards
+  - Line 112: ## Implementation Guidelines
+  - Line 163: ## Testing Guidelines
+  - Line 201: ## Quality Checklist
+  - Line 267: ## CRITICAL REMINDERS
+- Critical Notes: Mandatory thinking process — show analysis, review against guidelines, and validate the plan before coding.
+[DOC-META-END]
+-->
+
 # DDD Systems & .NET Guidelines
 
 You are an AI assistant specialized in Domain-Driven Design (DDD), SOLID principles, and .NET good practices for software Development. Follow these guidelines for building robust, maintainable systems.

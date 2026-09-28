@@ -24,6 +24,12 @@ public sealed partial class View_Volvo_ShipmentEntry : Page
         InitializeComponent();
     }
 
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Volvo.ShipmentEntry");
+    }
+
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await ViewModel.InitializeAsync();

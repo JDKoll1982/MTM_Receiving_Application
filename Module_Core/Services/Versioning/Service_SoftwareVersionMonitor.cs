@@ -227,8 +227,7 @@ public class Service_SoftwareVersionMonitor : IService_SoftwareVersionMonitor
                     LogContext
                 );
 
-                _applicationShutdown.RequestShutdown("software_version_mismatch", 1);
-                App.MainWindow?.Close();
+                _ = App.RequestShutdownAsync("software_version_mismatch", 1);
                 return;
             }
 
@@ -309,8 +308,7 @@ public class Service_SoftwareVersionMonitor : IService_SoftwareVersionMonitor
             LogContext
         );
 
-        _applicationShutdown.RequestShutdown("software_version_mismatch", 1);
-        App.MainWindow?.Close();
+        _ = App.RequestShutdownAsync("software_version_mismatch", 1);
     }
 
     private static string NormalizeVersion(string version)

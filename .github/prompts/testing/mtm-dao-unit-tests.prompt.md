@@ -5,6 +5,20 @@ argument-hint: "Select or specify the DAO file to test"
 agent: agent
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-dao-unit-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for C# DAO classes with MySQL stored procedures
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Generate Unit Tests for DAO (Data Access Object) Classes
+  - Line 12-20: ## Context
+  - Line 21-255: ## Requirements
+  - Line 256-284: ## Output Requirements
+- Critical Notes: DAO tests must verify Model_Dao_Result success/error paths (no unhandled exceptions) using a dedicated test MySQL database or a mocked stored-procedure helper.
+[DOC-META-END]
+-->
+
 # Generate Unit Tests for DAO (Data Access Object) Classes
 
 You are an expert C# unit test developer specializing in database integration testing with .NET 10 and xUnit.

@@ -106,6 +106,14 @@
     "X-04 (WATERJET)",
     "X-05"
   ],
+  "Customers": [
+    {
+      "CustomerId": "VOLVO",
+      "Name": "Volvo Trucks",
+      "City": "Greensboro",
+      "State": "NC"
+    }
+  ],
   "PurchaseOrders": [
     {
       "PONumber": "PO-033349",

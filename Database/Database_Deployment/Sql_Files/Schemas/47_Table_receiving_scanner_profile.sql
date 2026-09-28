@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS receiving_scanner_profile (
+    id CHAR(36) PRIMARY KEY COMMENT 'Profile GUID',
+    user_id VARCHAR(100) NOT NULL,
+    profile_name VARCHAR(120) NOT NULL,
+    is_default TINYINT(1) NOT NULL DEFAULT 0,
+    target_executable_name VARCHAR(255) NOT NULL DEFAULT 'VMINVENT.exe',
+    app_window_title VARCHAR(255) NOT NULL,
+    target_child_window_title VARCHAR(255) NOT NULL DEFAULT 'Inventory Transfers',
+    app_window_class VARCHAR(255) NULL,
+    require_exact_title_match TINYINT(1) NOT NULL DEFAULT 0,
+    from_warehouse_default VARCHAR(10) NOT NULL DEFAULT '002',
+    to_warehouse_default VARCHAR(10) NOT NULL DEFAULT '002',
+    activation_delay_ms INT NOT NULL DEFAULT 250,
+    delay_between_fields_ms INT NOT NULL DEFAULT 100,
+    pause_after_item_ms INT NOT NULL DEFAULT 200,
+    popup_timeout_ms INT NOT NULL DEFAULT 3000,
+    popup_close_timeout_ms INT NOT NULL DEFAULT 1200,
+    send_shortcut_chord VARCHAR(64) NOT NULL DEFAULT 'Ctrl+Alt+M',
+    stop_shortcut_chord VARCHAR(64) NOT NULL DEFAULT 'Ctrl+Alt+N',
+    allow_advanced_timing TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_receiving_scanner_profile_user_name (user_id, profile_name),
+    INDEX idx_receiving_scanner_profile_user (user_id),
+    INDEX idx_receiving_scanner_profile_default (user_id, is_default)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='User-scoped profile settings for Receiving scanner sending behavior.';

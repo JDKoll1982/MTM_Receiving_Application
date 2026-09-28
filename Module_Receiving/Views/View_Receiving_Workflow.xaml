@@ -13,7 +13,28 @@
         <converters:Converter_StringFormat x:Key="StringFormatConverter" />
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid
+        x:Name="ReceivingWorkflowRootGrid"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingWorkflowAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="ReceivingWorkflowContentGrid.Margin" Value="10,10,10,10" />
+                        <Setter Target="ReceivingWorkflowNavigationGrid.Margin" Value="12" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="ReceivingWorkflowContentGrid.Margin" Value="20,16,20,20" />
+                        <Setter Target="ReceivingWorkflowNavigationGrid.Margin" Value="28" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -22,6 +43,7 @@
 
         <!--  Content Area  -->
         <Grid
+            x:Name="ReceivingWorkflowContentGrid"
             Grid.Row="1"
             Margin="16,12,16,16"
             HorizontalAlignment="Stretch"
@@ -220,6 +242,7 @@
                     Orientation="Horizontal"
                     Spacing="12">
                     <Button
+                        x:Name="CompletionStartNewEntryButton"
                         Command="{x:Bind ViewModel.StartNewEntryCommand}"
                         Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"
@@ -233,7 +256,10 @@
         </Grid>
 
         <!--  Navigation Buttons  -->
-        <Grid Grid.Row="2" Margin="24">
+        <Grid
+            x:Name="ReceivingWorkflowNavigationGrid"
+            Grid.Row="2"
+            Margin="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -257,7 +283,7 @@
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
                     Background="Transparent"
-                    BorderBrush="{ThemeResource SystemAccentColor}"
+                    BorderBrush="{StaticResource ReceivingAccentBrush}"
                     Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
                     Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />

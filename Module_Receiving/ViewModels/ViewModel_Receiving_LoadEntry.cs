@@ -36,6 +36,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _selectedPartDescription = string.Empty;
 
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row. Kept
+        /// separate from the part fields so non-PO receiving can hide the segment cleanly.
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasPoNumber))]
+        private string _currentPoNumber = string.Empty;
+
         [ObservableProperty]
         private string _location = string.Empty;
 
@@ -56,7 +64,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
-        private string _loadEntryHeaderText = "Number of Loads (1-99)";
+        private string _loadEntryHeaderText = "Number of Labels (1-99)";
 
         [ObservableProperty]
         private string _loadEntryInstructionText =
@@ -71,13 +79,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         // Accessibility Properties
         [ObservableProperty]
-        private string _numberOfLoadsAccessibilityName = "Number of Loads";
+        private string _numberOfLoadsAccessibilityName = "Number of Labels";
 
         public ObservableCollection<string> PresetLocations { get; } = new();
 
         public bool IsLiveLocationMode => !IsMockLocationMode;
 
         public bool HasRecommendedLocations => RecommendedLocations.Count > 0;
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
 
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
@@ -142,6 +153,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             NumberOfLoads = 1;
             SelectedPartId = string.Empty;
             SelectedPartDescription = string.Empty;
+            CurrentPoNumber = string.Empty;
             Location = string.Empty;
             RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>();
             RecommendedLocationsMessage =
@@ -152,6 +164,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.LoadEntry)
             {
+                CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
                 NumberOfLoads = _workflowService.NumberOfLoads;
                 var part = _workflowService.CurrentPart;
                 if (part is not null)
@@ -171,15 +184,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private async Task RefreshRecommendedLocationsAsync()
         {
-            if (
-                _workflowService.CurrentPart is null
-                || string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber)
-            )
+            if (_workflowService.CurrentPart is null)
             {
                 RecommendedLocations =
                     new ObservableCollection<Model_ReceivingRecommendedLocation>();
                 RecommendedLocationsMessage =
                     "Current stock recommendations appear after a guided part is selected.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber))
+            {
+                await RefreshPartOnlyRecommendedLocationsAsync(_workflowService.CurrentPart.PartID);
                 return;
             }
 
@@ -229,10 +245,89 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
+        private async Task RefreshPartOnlyRecommendedLocationsAsync(string partId)
+        {
+            try
+            {
+                IsRecommendedLocationsLoading = true;
+                RecommendedLocationsMessage = "Looking up current stock locations...";
+
+                var currentStockResult = await _inforVisualService.GetMaterialAvailabilityCurrentStockAsync(
+                    null,
+                    partId,
+                    "002"
+                );
+
+                if (!currentStockResult.IsSuccess || currentStockResult.Data is null)
+                {
+                    RecommendedLocations =
+                        new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                    RecommendedLocationsMessage = string.IsNullOrWhiteSpace(
+                        currentStockResult.ErrorMessage
+                    )
+                        ? "Recommended locations are unavailable right now."
+                        : currentStockResult.ErrorMessage;
+                    return;
+                }
+
+                var recommendedFromPartInventory = currentStockResult
+                    .Data.Where(stockRow =>
+                        string.IsNullOrWhiteSpace(stockRow.LocationId) is false
+                        && stockRow.Quantity > 0
+                    )
+                    .GroupBy(
+                        stockRow =>
+                            $"{stockRow.WarehouseCode.Trim()}|{stockRow.LocationId.Trim()}",
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .Select(group =>
+                    {
+                        var sample = group.First();
+                        return new Model_ReceivingRecommendedLocation
+                        {
+                            WarehouseId = sample.WarehouseCode?.Trim() ?? string.Empty,
+                            LocationId = sample.LocationId?.Trim() ?? string.Empty,
+                            QuantityOnHand = group.Sum(stockRow => stockRow.Quantity),
+                            ReasonText = "current stock for selected part",
+                        };
+                    })
+                    .OrderByDescending(location => location.QuantityOnHand)
+                    .ThenBy(
+                        location => location.DisplayLocation,
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .ToList();
+
+                RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>(
+                    recommendedFromPartInventory
+                );
+                RecommendedLocationsMessage =
+                    RecommendedLocations.Count == 0
+                        ? "No recommended locations with positive on-hand quantity were found."
+                        : $"{RecommendedLocations.Count} recommended location(s) found from current stock inventory.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    $"Error loading part-based recommended locations: {ex.Message}",
+                    ex
+                );
+                RecommendedLocations =
+                    new ObservableCollection<Model_ReceivingRecommendedLocation>();
+                RecommendedLocationsMessage = "Recommended locations are unavailable right now.";
+            }
+            finally
+            {
+                IsRecommendedLocationsLoading = false;
+            }
+        }
+
         [RelayCommand]
         private async Task CreateLoadsAsync()
         {
-            var validationResult = _validationService.ValidateNumberOfLoads(NumberOfLoads);
+            var validationResult = await _validationService.ValidateNumberOfLoadsAsync(
+                NumberOfLoads
+            );
             if (!validationResult.IsValid)
             {
                 await _errorHandler.HandleErrorAsync(

@@ -5,6 +5,25 @@ description: >
   the onboarding process, and MTM-specific memory catalog.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-07-memories.instructions.md
+- Description: Serena memory system — project vs global memories, organizing memories, the onboarding process, and MTM-specific memory catalog.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-16: # Serena Memories & Onboarding
+  - Line 17-53: ## Memory Types
+  - Line 54-72: ## Organizing Memories
+  - Line 73-102: ## MTM Memory Catalog
+  - Line 103-134: ## Onboarding
+  - Line 135-148: ## Managing Memories via Dashboard
+  - Line 149-177: ## Managing Memories in Code
+  - Line 178-197: ## Disabling Memories and Onboarding
+  - Line 198-214: ## Memory Best Practices for MTM
+- Critical Notes: Commit .serena/memories/ to git so project knowledge persists across sessions.
+[DOC-META-END]
+-->
+
 # Serena Memories & Onboarding
 
 Official docs: <https://oraios.github.io/serena/02-usage/045_memories.html>

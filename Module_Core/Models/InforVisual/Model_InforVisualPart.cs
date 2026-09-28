@@ -47,6 +47,24 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public string QualityHoldRestrictionType { get; set; } = string.Empty;
 
         /// <summary>
+        /// Total on-hand quantity for this part across all locations in the PO's site.
+        /// </summary>
+        public decimal OnHandQty { get; set; }
+
+        /// <summary>
+        /// Current location display: a single location when only one location holds
+        /// stock, "Multiple Locations" when more than one, otherwise blank.
+        /// </summary>
+        public string Location { get; set; } = string.Empty;
+
+        /// <summary>
+        /// On-hand quantity formatted for display: up to two decimal places with
+        /// trailing zeros trimmed (e.g. "47301", "17240.2", "33454.35"). Zero shows
+        /// as "0".
+        /// </summary>
+        public string OnHandQtyDisplay => OnHandQty.ToString("0.##");
+
+        /// <summary>
         /// Display text for UI showing part ID, description, and line number.
         /// </summary>
         public string DisplayText => $"{PartID} - {Description} (Line {POLineNumber})";

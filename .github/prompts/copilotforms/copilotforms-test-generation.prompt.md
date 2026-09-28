@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link a test generation export from docs/CopilotForms/outputs/test-generation and note any framework constraints'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-test-generation.prompt.md
+- Description: Read a saved CopilotForms test generation export and add the requested tests.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Test Generation
+  - Line 12: ## Workflow
+  - Line 20: ## Output Expectations
+- Critical Notes: Tests first; no unrelated production refactors unless needed for testability.
+[DOC-META-END]
+-->
+
 # CopilotForms Test Generation
 
 Read the linked export from `docs/CopilotForms/outputs/test-generation/` and add the requested tests.

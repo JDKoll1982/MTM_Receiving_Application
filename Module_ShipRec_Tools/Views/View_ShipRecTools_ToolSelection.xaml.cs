@@ -24,6 +24,12 @@ public sealed partial class View_ShipRecTools_ToolSelection : UserControl
         ViewModel.LoadTools();
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.ToolSelection", XamlRoot);
+    }
+
     private void ToolCard_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is not Model_ToolDefinition selectedTool)

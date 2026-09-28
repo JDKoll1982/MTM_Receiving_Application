@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MySql.Data.MySqlClient;
 
@@ -242,14 +243,13 @@ public class Dao_ReceivingLoad
 
                 if (result.AffectedRows <= 0)
                 {
-                    var rowStillExists = await DoesHistoryRowExistAsync(
+                    var historyRowExists = await ReceivingHistoryRowExistsAsync(
                         connection,
                         transaction,
-                        load.HistoryRecordID,
-                        load.LoadID
+                        load
                     );
 
-                    if (!rowStillExists)
+                    if (!historyRowExists)
                     {
                         throw new InvalidOperationException(
                             $"No receiving history row matched the update request for load '{load.LoadNumber}'."
@@ -271,6 +271,37 @@ public class Dao_ReceivingLoad
                 ex
             );
         }
+    }
+
+    private static async Task<bool> ReceivingHistoryRowExistsAsync(
+        MySqlConnection connection,
+        MySqlTransaction transaction,
+        Model_ReceivingLoad load
+    )
+    {
+        const string sql = @"
+SELECT 1
+FROM receiving_history
+WHERE (@historyRecordId IS NOT NULL AND id = @historyRecordId)
+   OR (
+        @historyRecordId IS NULL
+        AND @loadId IS NOT NULL
+        AND @loadId <> ''
+        AND load_guid = @loadId
+   )
+LIMIT 1;";
+
+        object historyRecordId = load.HistoryRecordID.HasValue
+            ? load.HistoryRecordID.Value
+            : DBNull.Value;
+        object loadId = load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString();
+
+        await using var command = new MySqlCommand(sql, connection, transaction);
+        command.Parameters.AddWithValue("@historyRecordId", historyRecordId);
+        command.Parameters.AddWithValue("@loadId", loadId);
+
+        var scalar = await command.ExecuteScalarAsync();
+        return scalar != null && scalar != DBNull.Value;
     }
 
     public async Task<Model_Dao_Result<int>> DeleteLoadsAsync(List<Model_ReceivingLoad> loads)
@@ -321,9 +352,22 @@ public class Dao_ReceivingLoad
 
                 if (result.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving history row matched the delete request for load '{load.LoadNumber}'."
+                    // sp_Receiving_Load_Delete restores FOREIGN_KEY_CHECKS as its final
+                    // statement, so MySQL reports that trailing SET's row count (0) instead
+                    // of the DELETE's. Only treat the delete as failed when the row is
+                    // genuinely still present.
+                    var historyRowStillExists = await ReceivingHistoryRowExistsAsync(
+                        connection,
+                        transaction,
+                        load
                     );
+
+                    if (historyRowStillExists)
+                    {
+                        throw new InvalidOperationException(
+                            $"No receiving history row matched the delete request for load '{load.LoadNumber}'."
+                        );
+                    }
                 }
 
                 deletedCount++;
@@ -381,6 +425,82 @@ public class Dao_ReceivingLoad
                 ex
             );
         }
+    }
+
+    /// <summary>
+    /// Loads receiving history rows for the Reprint Labels page, including whether each row is
+    /// already queued for reprint (an <c>is_reprint = 1</c> row exists in receiving_label_data).
+    /// </summary>
+    public async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_start_date", filter.StartDate is null ? DBNull.Value : filter.StartDate.Value.Date },
+            { "p_end_date", filter.EndDate is null ? DBNull.Value : filter.EndDate.Value.Date },
+            {
+                "p_search_by",
+                string.IsNullOrWhiteSpace(filter.SearchBy) ? "part" : filter.SearchBy
+            },
+            {
+                "p_search_text",
+                string.IsNullOrWhiteSpace(filter.SearchText) ? "" : filter.SearchText.Trim()
+            },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+            _connectionString,
+            "sp_Receiving_History_GetForReprint",
+            MapReprintHistoryRow,
+            parameters
+        );
+    }
+
+    private static Model_ReprintHistoryRow MapReprintHistoryRow(IDataReader reader)
+    {
+        var poNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("po_number")).Trim();
+        var loadNumber = reader.IsDBNull(reader.GetOrdinal("load_number"))
+            ? (int?)null
+            : reader.GetInt32(reader.GetOrdinal("load_number"));
+        var labelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+            ? (int?)null
+            : reader.GetInt32(reader.GetOrdinal("label_number"));
+
+        return new Model_ReprintHistoryRow
+        {
+            HistoryId = reader.GetInt32(reader.GetOrdinal("history_id")).ToString(),
+            RecordDate = reader.GetDateTime(reader.GetOrdinal("record_date")),
+            Part = reader.GetString(reader.GetOrdinal("part_id")),
+            Quantity = reader.IsDBNull(reader.GetOrdinal("quantity"))
+                ? 0m
+                : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
+            Reference = BuildReceivingReference(poNumber, loadNumber, labelNumber),
+            AlreadyQueued =
+                !reader.IsDBNull(reader.GetOrdinal("already_queued"))
+                && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
+        };
+    }
+
+    private static string BuildReceivingReference(
+        string poNumber,
+        int? loadNumber,
+        int? labelNumber
+    )
+    {
+        if (!string.IsNullOrWhiteSpace(poNumber))
+        {
+            return poNumber;
+        }
+
+        if (loadNumber.HasValue)
+        {
+            return $"Load {loadNumber.Value}";
+        }
+
+        return labelNumber.HasValue ? $"Label {labelNumber.Value}" : string.Empty;
     }
 
     public async Task<Model_Dao_Result<List<Model_ReceivingLoad>>> GetAllAsync(

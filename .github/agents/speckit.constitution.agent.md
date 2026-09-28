@@ -6,6 +6,18 @@ handoffs:
     prompt: Implement the feature specification based on the updated constitution. I want to build...
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: speckit.constitution.agent.md
+- Description: Create or update the project constitution from interactive or provided principle inputs, ensuring all dependent templates stay in sync.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-16: ## User Input
+  - Line 17-82: ## Outline
+- Critical Notes: The project constitution is non-negotiable and all dependent templates must stay in sync.
+[DOC-META-END]
+-->
+
 ## User Input
 
 ```text

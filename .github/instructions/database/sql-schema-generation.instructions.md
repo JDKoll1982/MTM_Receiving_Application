@@ -2,6 +2,25 @@
 applyTo: "Database/Schemas/**/*.sql"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: sql-schema-generation.instructions.md
+- Description: Rules for authoring table, index, constraint, trigger, and view schema files under Database/Schemas/, including naming, structure, and migration safety.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # SQL Schema Development
+  - Line 7-12: ## Scope
+  - Line 13-21: ## Database Schema Generation
+  - Line 22-30: ## Database Schema Design
+  - Line 31-38: ## SQL Coding Style
+  - Line 39-46: ## Table Definition Structure
+  - Line 47-54: ## Migration and Alter Safety
+  - Line 55-61: ## Views and Triggers
+  - Line 62-67: ## Security and Reliability
+- Critical Notes: Prefer singular table/column names with id, created_at, and updated_at columns, and never rename existing objects solely for naming style.
+[DOC-META-END]
+-->
+
 # SQL Schema Development
 
 ## Scope

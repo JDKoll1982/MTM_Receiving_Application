@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -108,22 +110,24 @@ public partial class ViewModel_Dunnage_PartInfoModal : ViewModel_Shared_Base
                 InventoryType = "Not inventoried";
             }
 
-            var specFields = part
-                .SpecValuesDict.OrderBy(static pair => pair.Key)
-                .Select(pair => new Model_DunnageDisplayField
-                {
-                    Label = pair.Key,
-                    Value = pair.Value?.ToString() ?? string.Empty,
-                })
-                .ToList();
+            var customFieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(part.TypeId);
+            var customFields =
+                customFieldsResult.IsSuccess && customFieldsResult.Data != null
+                    ? customFieldsResult.Data
+                    : new List<Model_CustomFieldDefinition>();
 
-            if (string.IsNullOrWhiteSpace(ImagePath) is false)
-            {
-                specFields.Insert(
-                    0,
-                    new Model_DunnageDisplayField { Label = "image_path", Value = ImagePath }
-                );
-            }
+            var udcValues = Helper_Dunnage_PartSpecs.ExtractUdc(part);
+            var specFields = customFields
+                .OrderBy(field => field.DisplayOrder)
+                .Select(field => new Model_DunnageDisplayField
+                {
+                    Label = field.FieldName,
+                    Value =
+                        Helper_Dunnage_PartSpecs.GetValueForSlot(udcValues, field.DisplayOrder)
+                        ?? string.Empty,
+                })
+                .Where(field => string.IsNullOrWhiteSpace(field.Value) is false)
+                .ToList();
 
             SpecValues = new ObservableCollection<Model_DunnageDisplayField>(specFields);
         }

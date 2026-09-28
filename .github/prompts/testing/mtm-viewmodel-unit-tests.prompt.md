@@ -5,6 +5,20 @@ argument-hint: "Select or specify the ViewModel file to test"
 agent: agent
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-viewmodel-unit-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for MVVM ViewModels using CommunityToolkit.Mvvm
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Generate Unit Tests for ViewModel Classes
+  - Line 12-19: ## Context
+  - Line 20-77: ## Requirements
+  - Line 78-93: ## Output
+- Critical Notes: Mock ALL services — never use real DB/filesystem — and verify service calls with It.Is<T>() predicates plus PropertyChanged for every ObservableProperty.
+[DOC-META-END]
+-->
+
 # Generate Unit Tests for ViewModel Classes
 
 You are an expert C# unit test developer specializing in MVVM, WinUI 3, CommunityToolkit.Mvvm, and xUnit.

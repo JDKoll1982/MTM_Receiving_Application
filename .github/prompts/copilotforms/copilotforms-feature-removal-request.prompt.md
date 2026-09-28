@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a feature removal export from docs/CopilotForms/outputs/feature-removal-request and add any extra cleanup constraints"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-feature-removal-request.prompt.md
+- Description: Read a saved CopilotForms feature removal export and remove or retire the requested capability safely.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Feature Removal Request
+  - Line 12: ## Workflow
+- Critical Notes: Remove or retire the capability with the smallest safe cleanup that satisfies the request.
+[DOC-META-END]
+-->
+
 # CopilotForms Feature Removal Request
 
 Read the linked export from `docs/CopilotForms/outputs/feature-removal-request/` and use it as the structured input for implementation.

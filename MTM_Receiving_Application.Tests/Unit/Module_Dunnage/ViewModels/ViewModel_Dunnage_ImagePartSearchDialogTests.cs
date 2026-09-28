@@ -2,9 +2,11 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
+using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.ViewModels;
@@ -163,10 +165,124 @@ public sealed class ViewModel_Dunnage_ImagePartSearchDialogTests
         );
     }
 
+    [Fact]
+    public async Task HandleShowPartsWithoutImagesChangedAsync_ShouldShowAllParts_WhenToggledOn()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetAllPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new()
+                        {
+                            PartId = "PART-100",
+                            DunnageTypeName = "Bags",
+                            ImagePath = "Images/part100.png",
+                        },
+                        new()
+                        {
+                            PartId = "PART-300",
+                            DunnageTypeName = "Wrap",
+                            ImagePath = string.Empty,
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+
+        await viewModel.HandleShowPartsWithoutImagesChangedAsync(true);
+        await viewModel.LoadPartsCommand.ExecuteAsync(null);
+
+        viewModel.DisplayedParts.Select(part => part.PartId).Should().Equal("PART-100", "PART-300");
+        viewModel.HasNoResults.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HandleShowPartsWithoutImagesChangedAsync_ShouldPersistPreference_WhenToggledOn()
+    {
+        var dunnageSettings = new Mock<IService_DunnageSettings>();
+        var sessionManager = new Mock<IService_UserSessionManager>();
+        sessionManager
+            .SetupGet(service => service.CurrentSession)
+            .Returns(new Model_UserSession { User = new Model_User { EmployeeNumber = 42 } });
+
+        var viewModel = CreateViewModel(
+            dunnageSettings: dunnageSettings,
+            sessionManager: sessionManager
+        );
+
+        await viewModel.HandleShowPartsWithoutImagesChangedAsync(true);
+
+        dunnageSettings.Verify(
+            service =>
+                service.SaveStringAsync(
+                    DunnageSettingsKeys.UserPreferences.ShowPartsWithoutImages,
+                    "true",
+                    42
+                ),
+            Times.Once
+        );
+        viewModel.ShowPartsWithoutImages.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HandleShowPartsWithoutImagesChangedAsync_ShouldNotPersist_WhenValueUnchanged()
+    {
+        var dunnageSettings = new Mock<IService_DunnageSettings>();
+        var viewModel = CreateViewModel(dunnageSettings: dunnageSettings);
+
+        await viewModel.HandleShowPartsWithoutImagesChangedAsync(false);
+
+        dunnageSettings.Verify(
+            service => service.SaveStringAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task HandleShowPartsWithoutImagesChangedAsync_ShouldFilterOutImageLessParts_WhenToggledOff()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetAllPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new()
+                        {
+                            PartId = "PART-100",
+                            DunnageTypeName = "Bags",
+                            ImagePath = "Images/part100.png",
+                        },
+                        new()
+                        {
+                            PartId = "PART-300",
+                            DunnageTypeName = "Wrap",
+                            ImagePath = string.Empty,
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+
+        await viewModel.HandleShowPartsWithoutImagesChangedAsync(true);
+        await viewModel.LoadPartsCommand.ExecuteAsync(null);
+        await viewModel.HandleShowPartsWithoutImagesChangedAsync(false);
+
+        viewModel.DisplayedParts.Select(part => part.PartId).Should().Equal("PART-100");
+    }
+
     private static ViewModel_Dunnage_ImagePartSearchDialog CreateViewModel(
         Mock<IService_MySQL_Dunnage>? dunnageService = null,
         Mock<IService_DunnageWorkflow>? workflow = null,
-        Model_DunnageSession? workflowSession = null
+        Model_DunnageSession? workflowSession = null,
+        Mock<IService_DunnageSettings>? dunnageSettings = null,
+        Mock<IService_UserSessionManager>? sessionManager = null
     )
     {
         if (dunnageService is null)
@@ -182,9 +298,23 @@ public sealed class ViewModel_Dunnage_ImagePartSearchDialogTests
             .SetupGet(service => service.CurrentSession)
             .Returns(workflowSession ?? new Model_DunnageSession());
 
+        dunnageSettings ??= new Mock<IService_DunnageSettings>();
+        dunnageSettings
+            .Setup(service =>
+                service.GetBoolAsync(
+                    DunnageSettingsKeys.UserPreferences.ShowPartsWithoutImages,
+                    It.IsAny<int?>()
+                )
+            )
+            .ReturnsAsync(false);
+
+        sessionManager ??= new Mock<IService_UserSessionManager>();
+
         return new ViewModel_Dunnage_ImagePartSearchDialog(
             dunnageService.Object,
             workflow.Object,
+            dunnageSettings.Object,
+            sessionManager.Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

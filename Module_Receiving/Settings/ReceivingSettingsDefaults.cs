@@ -109,9 +109,11 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty] = "Remaining Qty",
             [ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered] = "Qty Ordered",
             [ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber] = "Line #",
+            [ReceivingSettingsKeys.UiText.PoEntryColumnOnHand] = "On Hand",
+            [ReceivingSettingsKeys.UiText.PoEntryColumnLocation] = "Location",
 
             // Load entry
-            [ReceivingSettingsKeys.UiText.LoadEntryHeader] = "Number of Loads (1-99)",
+            [ReceivingSettingsKeys.UiText.LoadEntryHeader] = "Number of Labels (1-99)",
             [ReceivingSettingsKeys.UiText.LoadEntryInstruction] =
                 "Enter the total number of skids/loads for this part.",
 
@@ -132,10 +134,12 @@ public static class ReceivingSettingsDefaults
                 "[\"Refer to Vendor Tag\",\"N/A\",\"Old Coil\",\"Old Flatstock\",\"Old Product\"]",
 
             // Package Type
-            [ReceivingSettingsKeys.UiText.PackageTypeHeader] =
-                "Package Type (Applied to all loads)",
+            [ReceivingSettingsKeys.UiText.PackageTypeHeader] = "Package Type:",
             [ReceivingSettingsKeys.UiText.PackageTypeComboHeader] = "Type",
             [ReceivingSettingsKeys.UiText.PackageTypeCustomHeader] = "Custom Name",
+            [ReceivingSettingsKeys.UiText.PackageTypeAutoFill] = "Auto-Fill",
+            [ReceivingSettingsKeys.UiText.PackageTypeAutoFillTooltip] =
+                "Fill blank package counts from rows above",
             [ReceivingSettingsKeys.UiText.PackageTypeSaveAsDefault] =
                 "Save as default for this part",
             [ReceivingSettingsKeys.UiText.PackageTypeLoadNumberPrefix] = "#{0}",
@@ -235,9 +239,13 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Messages.ErrorPoRequired] = "Please enter a PO number.",
             [ReceivingSettingsKeys.Messages.ErrorPartIdRequired] = "Please enter a Part ID.",
             [ReceivingSettingsKeys.Messages.ErrorPoNotFound] = "PO not found or contains no parts.",
+            [ReceivingSettingsKeys.Messages.ErrorPoHasNoParts] =
+                "Purchase Order {0} has no part numbers. Enter a different PO.",
             [ReceivingSettingsKeys.Messages.ErrorPartNotFound] = "Part not found.",
             [ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts] =
                 "Purchase Order {0} loaded with {1} parts.",
+            [ReceivingSettingsKeys.Messages.InfoPoSinglePartAutoSelected] =
+                "Part {0} was auto selected because it is the only part on this PO.",
             [ReceivingSettingsKeys.Messages.InfoPartFound] = "Part {0} found.",
             [ReceivingSettingsKeys.Messages.WarningSameDayReceiving] =
                 "Warning: {0:N2} of this part has already been received today on this PO.",
@@ -254,7 +262,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Accessibility.PoEntryPartId] = "Part Identifier",
             [ReceivingSettingsKeys.Accessibility.PoEntryLookupPart] = "Look Up Part",
             [ReceivingSettingsKeys.Accessibility.PoEntryPartsList] = "Parts List",
-            [ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads] = "Number of Loads",
+            [ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads] = "Number of Labels",
             [ReceivingSettingsKeys.Accessibility.WeightQuantityInput] = "Weight Quantity",
             [ReceivingSettingsKeys.Accessibility.HeatLotNumber] = "Heat Lot Number",
             [ReceivingSettingsKeys.Accessibility.PackageTypeCombo] = "Package Type",

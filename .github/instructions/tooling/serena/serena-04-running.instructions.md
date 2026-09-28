@@ -5,6 +5,23 @@ description: >
   MCP server modes (stdio, HTTP); and all command-line arguments.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-04-running.instructions.md
+- Description: How to run Serena — uvx (recommended), local install, Docker, Nix; MCP server modes (stdio, HTTP); and all command-line arguments.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-16: # Running Serena
+  - Line 17-71: ## Ways of Running Serena
+  - Line 72-108: ## Starting the MCP Server
+  - Line 109-128: ## Key Command-Line Arguments
+  - Line 129-154: ## Other Useful Commands
+  - Line 155-192: ## MTM-Recommended Launch Configuration
+  - Line 193-213: ## Performance: With vs Without Indexing
+- Critical Notes: uvx --from git+https://github.com/oraios/serena serena start-mcp-server is the recommended launch; index once for fast tools.
+[DOC-META-END]
+-->
+
 # Running Serena
 
 Official docs: <https://oraios.github.io/serena/02-usage/020_running.html>

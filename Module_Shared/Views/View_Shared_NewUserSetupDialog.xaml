@@ -23,6 +23,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        
+
         <!--  Main Content - Using Grid for compact two-column layout -->
         
         <Grid

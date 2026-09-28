@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MySql.Data.MySqlClient;
 
@@ -179,13 +180,7 @@ public class Dao_DunnageLabelData
                     }
                 );
 
-                var specsJson = BuildSpecsJson(load);
-                command.Parameters.Add(
-                    new MySqlParameter("p_specs_json", MySqlDbType.JSON)
-                    {
-                        Value = specsJson is null ? DBNull.Value : (object)specsJson,
-                    }
-                );
+                AddUdcParameters(command.Parameters, load);
 
                 await command.ExecuteNonQueryAsync();
                 savedCount++;
@@ -298,6 +293,122 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
+    /// Loads dunnage history rows for the Reprint Labels page, including whether each row is
+    /// already queued for reprint (an <c>is_reprint = 1</c> row exists in dunnage_label_data
+    /// for the same load_uuid).
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_start_date", filter.StartDate is null ? DBNull.Value : filter.StartDate.Value.Date },
+            { "p_end_date", filter.EndDate is null ? DBNull.Value : filter.EndDate.Value.Date },
+            {
+                "p_search_by",
+                string.IsNullOrWhiteSpace(filter.SearchBy) ? "part" : filter.SearchBy
+            },
+            {
+                "p_search_text",
+                string.IsNullOrWhiteSpace(filter.SearchText) ? "" : filter.SearchText.Trim()
+            },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+            _connectionString,
+            "sp_Dunnage_LabelHistory_GetForReprint",
+            MapReprintHistoryRow,
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Copies a single row from <c>dunnage_history</c> back into <c>dunnage_label_data</c> so it
+    /// can be re-printed. Sets <c>is_reprint = 1</c>. Returns 0 rows inserted when the history
+    /// row is already queued for reprint (the stored procedure raises SQLSTATE 45000).
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(
+        string loadUuid,
+        string queuedBy,
+        int employeeNumber
+    )
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                "sp_Dunnage_LabelData_InsertFromHistory",
+                connection
+            )
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+
+            command.Parameters.AddWithValue("p_load_uuid", loadUuid);
+            command.Parameters.AddWithValue("p_queued_by", queuedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            int inserted = 0;
+            if (await reader.ReadAsync())
+            {
+                inserted = Convert.ToInt32(reader["rows_inserted"]);
+            }
+
+            return Model_Dao_Result_Factory.Success<int>(inserted);
+        }
+        catch (MySqlException ex) when (ex.Number == 1644)
+        {
+            // SQLSTATE 45000 — already queued for reprint
+            return Model_Dao_Result_Factory.Failure<int>(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Error queuing history record {loadUuid} for reprint: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static Model_ReprintHistoryRow MapReprintHistoryRow(IDataReader reader)
+    {
+        var poNumber = reader.IsDBNull(reader.GetOrdinal("po_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("po_number")).Trim();
+        var labelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("label_number")).Trim();
+
+        return new Model_ReprintHistoryRow
+        {
+            HistoryId = reader.GetValue(reader.GetOrdinal("load_uuid")).ToString() ?? string.Empty,
+            RecordDate = reader.GetDateTime(reader.GetOrdinal("record_date")),
+            Part = reader.GetString(reader.GetOrdinal("part_id")),
+            Quantity = reader.IsDBNull(reader.GetOrdinal("quantity"))
+                ? 0m
+                : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
+            Reference = BuildDunnageReference(poNumber, labelNumber),
+            AlreadyQueued =
+                !reader.IsDBNull(reader.GetOrdinal("already_queued"))
+                && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
+        };
+    }
+
+    private static string BuildDunnageReference(string poNumber, string labelNumber)
+    {
+        if (!string.IsNullOrWhiteSpace(poNumber))
+        {
+            return poNumber;
+        }
+
+        return string.IsNullOrWhiteSpace(labelNumber) ? string.Empty : $"Label {labelNumber}";
+    }
+
+    /// <summary>
     /// Deletes one row from the active label queue identified by load UUID.
     /// </summary>
     /// <param name="loadUuid"></param>
@@ -322,7 +433,6 @@ public class Dao_DunnageLabelData
         string fallbackUser
     )
     {
-        var specsJson = BuildSpecsJson(load);
         var parameters = new MySqlParameter[]
         {
             new("@p_load_uuid", MySqlDbType.VarChar, 36) { Value = load.LoadUuid.ToString() },
@@ -396,10 +506,16 @@ public class Dao_DunnageLabelData
                     ? (object)load.PartSkidTotal.Value
                     : DBNull.Value,
             },
-            new("@p_specs_json", MySqlDbType.JSON)
-            {
-                Value = specsJson is null ? DBNull.Value : (object)specsJson,
-            },
+            new("@p_udc1", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc1 ?? DBNull.Value },
+            new("@p_udc2", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc2 ?? DBNull.Value },
+            new("@p_udc3", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc3 ?? DBNull.Value },
+            new("@p_udc4", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc4 ?? DBNull.Value },
+            new("@p_udc5", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc5 ?? DBNull.Value },
+            new("@p_udc6", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc6 ?? DBNull.Value },
+            new("@p_udc7", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc7 ?? DBNull.Value },
+            new("@p_udc8", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc8 ?? DBNull.Value },
+            new("@p_udc9", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc9 ?? DBNull.Value },
+            new("@p_udc10", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc10 ?? DBNull.Value },
         };
 
         return await Helper_Database_StoredProcedure.ExecuteAsync(
@@ -448,20 +564,23 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
-    /// Serializes the dynamic spec values from a load into a JSON string for <c>specs_json</c>.
-    /// Prefers <see cref="Model_DunnageLoad.SpecValues"/> then falls back to <see cref="Model_DunnageLoad.Specs"/>.
-    /// Returns <c>null</c> if both are empty.
+    /// Adds the udc1..udc10 parameters for a load to a stored-procedure parameter collection.
     /// </summary>
-    /// <param name="load">The dunnage load whose spec values to serialize.</param>
-    private static string? BuildSpecsJson(Model_DunnageLoad load)
+    private static void AddUdcParameters(
+        MySqlParameterCollection parameters,
+        Model_DunnageLoad load
+    )
     {
-        var specs = load.SpecValues ?? load.Specs;
-        if (specs == null || specs.Count == 0)
-        {
-            return null;
-        }
-
-        return JsonSerializer.Serialize(specs);
+        parameters.Add(new MySqlParameter("p_udc1", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc1 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc2", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc2 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc3", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc3 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc4", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc4 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc5", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc5 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc6", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc6 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc7", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc7 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc8", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc8 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc9", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc9 ?? DBNull.Value });
+        parameters.Add(new MySqlParameter("p_udc10", MySqlDbType.VarChar, 255) { Value = (object?)load.Udc10 ?? DBNull.Value });
     }
 
     private static Model_DunnageLoad MapFromReader(IDataReader reader)
@@ -518,8 +637,28 @@ public class Dao_DunnageLabelData
             PartSkidTotal = reader.IsDBNull(reader.GetOrdinal("part_skid_total"))
                 ? null
                 : reader.GetInt32(reader.GetOrdinal("part_skid_total")),
-            SpecValues = DeserializeSpecValues(reader),
+            Udc1 = ReadUdc(reader, "udc1"),
+            Udc2 = ReadUdc(reader, "udc2"),
+            Udc3 = ReadUdc(reader, "udc3"),
+            Udc4 = ReadUdc(reader, "udc4"),
+            Udc5 = ReadUdc(reader, "udc5"),
+            Udc6 = ReadUdc(reader, "udc6"),
+            Udc7 = ReadUdc(reader, "udc7"),
+            Udc8 = ReadUdc(reader, "udc8"),
+            Udc9 = ReadUdc(reader, "udc9"),
+            Udc10 = ReadUdc(reader, "udc10"),
         };
+    }
+
+    private static string? ReadUdc(IDataReader reader, string columnName)
+    {
+        if (!HasColumn(reader, columnName))
+        {
+            return null;
+        }
+
+        var ordinal = reader.GetOrdinal(columnName);
+        return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
     }
 
     private static bool HasColumn(IDataReader reader, string columnName)
@@ -535,32 +674,5 @@ public class Dao_DunnageLabelData
         }
 
         return false;
-    }
-
-    private static Dictionary<string, object>? DeserializeSpecValues(IDataReader reader)
-    {
-        var ordinal = reader.GetOrdinal("specs_json");
-        if (reader.IsDBNull(ordinal))
-        {
-            return null;
-        }
-
-        var json = reader.GetString(ordinal);
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return null;
-        }
-
-        try
-        {
-            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        }
-        catch (JsonException ex)
-        {
-            System.Diagnostics.Debug.WriteLine(
-                $"[Dao_DunnageLabelData] Failed to deserialize specs_json: {ex.Message}"
-            );
-            return null;
-        }
     }
 }

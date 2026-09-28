@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
@@ -70,6 +71,46 @@ public sealed class ViewModel_Dunnage_EditModeTests
         var result = InvokeHasRowsOrPendingRemovals(viewModel);
 
         result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SetFilterTodayCommand_ShouldQueryInclusiveCurrentDayRange()
+    {
+        var requestedRanges = new List<(DateTime Start, DateTime End)>();
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetLoadsByDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .Callback<DateTime, DateTime>((start, end) => requestedRanges.Add((start, end)))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnageLoad>()));
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+
+        await viewModel.SetFilterTodayCommand.ExecuteAsync(null);
+
+        requestedRanges.Should().ContainSingle();
+        requestedRanges[0].Start.Should().Be(DateTime.Now.Date);
+        requestedRanges[0].End.Should().Be(DateTime.Now.Date.AddDays(1).AddTicks(-1));
+    }
+
+    [Fact]
+    public async Task LoadFromHistoryCommand_ShouldSwapAndNormalizeRange_WhenFromDateIsAfterToDate()
+    {
+        var requestedRanges = new List<(DateTime Start, DateTime End)>();
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetLoadsByDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .Callback<DateTime, DateTime>((start, end) => requestedRanges.Add((start, end)))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnageLoad>()));
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+        viewModel.FromDate = new DateTimeOffset(2026, 8, 7, 14, 30, 0, TimeSpan.Zero);
+        viewModel.ToDate = new DateTimeOffset(2026, 8, 6, 8, 15, 0, TimeSpan.Zero);
+
+        await viewModel.LoadFromHistoryCommand.ExecuteAsync(null);
+
+        requestedRanges.Should().ContainSingle();
+        requestedRanges[0].Start.Should().Be(new DateTime(2026, 8, 6, 0, 0, 0));
+        requestedRanges[0].End.Should().Be(new DateTime(2026, 8, 7, 23, 59, 59, 999).AddTicks(9999));
     }
 
     private static bool InvokeHasValidRequiredSelections(Model_DunnageLoad load)
@@ -153,10 +194,12 @@ public sealed class ViewModel_Dunnage_EditModeTests
         fieldInfo!.SetValue(viewModel, value);
     }
 
-    private static ViewModel_Dunnage_EditMode CreateViewModel()
+    private static ViewModel_Dunnage_EditMode CreateViewModel(
+        Mock<IService_MySQL_Dunnage>? dunnageService = null
+    )
     {
         return new ViewModel_Dunnage_EditMode(
-            new Mock<IService_MySQL_Dunnage>().Object,
+            (dunnageService ?? new Mock<IService_MySQL_Dunnage>()).Object,
             new Mock<IService_Pagination>().Object,
             new Mock<IService_DunnageWorkflow>().Object,
             new Mock<IService_ViewModelRegistry>().Object,

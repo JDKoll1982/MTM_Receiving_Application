@@ -358,7 +358,10 @@ public class Dao_ReceivingLabelData
                 var parameters = new Dictionary<string, object>
                 {
                     { "p_label_data_record_id", load.LabelDataRecordID ?? (object)DBNull.Value },
-                    { "p_load_id", load.LoadID.ToString() },
+                    {
+                        "p_load_id",
+                        load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString()
+                    },
                     { "p_load_number", load.LoadNumber },
                     { "p_quantity", (int)load.WeightQuantity },
                     { "p_weight_quantity", load.WeightQuantity },
@@ -412,9 +415,13 @@ public class Dao_ReceivingLabelData
 
                 if (execResult.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving_label_data row matched the update request for load '{load.LoadNumber}'."
-                    );
+                    var rowExists = await LabelDataRowExistsAsync(connection, transaction, load);
+                    if (!rowExists)
+                    {
+                        throw new InvalidOperationException(
+                            $"No receiving_label_data row matched the update request for load '{load.LoadNumber}'."
+                        );
+                    }
                 }
 
                 updatedCount++;
@@ -483,9 +490,41 @@ public class Dao_ReceivingLabelData
 
                 if (execResult.AffectedRows <= 0)
                 {
-                    throw new InvalidOperationException(
-                        $"No receiving_label_data row matched the delete request for load '{load.LoadNumber}'."
-                    );
+                    // If ID lookup missed, retry by workflow GUID only.
+                    if (load.LoadID != Guid.Empty && load.LabelDataRecordID.HasValue)
+                    {
+                        var fallbackParameters = new Dictionary<string, object>
+                        {
+                            { "p_label_data_record_id", DBNull.Value },
+                            { "p_load_id", load.LoadID.ToString() },
+                        };
+
+                        var fallbackResult =
+                            await Helper_Database_StoredProcedure.ExecuteInTransactionAsync(
+                                connection,
+                                transaction,
+                                "sp_Receiving_LabelData_Delete",
+                                fallbackParameters
+                            );
+
+                        if (!fallbackResult.Success)
+                        {
+                            throw new InvalidOperationException(
+                                fallbackResult.ErrorMessage,
+                                fallbackResult.Exception
+                            );
+                        }
+
+                        if (fallbackResult.AffectedRows > 0)
+                        {
+                            deletedCount++;
+                            continue;
+                        }
+                    }
+
+                    // Treat missing rows as idempotent delete success and count as processed.
+                    deletedCount++;
+                    continue;
                 }
 
                 deletedCount++;
@@ -502,6 +541,37 @@ public class Dao_ReceivingLabelData
                 ex
             );
         }
+    }
+
+    private static async Task<bool> LabelDataRowExistsAsync(
+        MySqlConnection connection,
+        MySqlTransaction transaction,
+        Model_ReceivingLoad load
+    )
+    {
+        const string sql = @"
+SELECT 1
+FROM receiving_label_data
+WHERE (@labelDataRecordId IS NOT NULL AND id = @labelDataRecordId)
+   OR (
+        @labelDataRecordId IS NULL
+        AND @loadId IS NOT NULL
+        AND @loadId <> ''
+        AND load_id = @loadId
+   )
+LIMIT 1;";
+
+        object labelDataRecordId = load.LabelDataRecordID.HasValue
+            ? load.LabelDataRecordID.Value
+            : DBNull.Value;
+        object loadId = load.LoadID == Guid.Empty ? DBNull.Value : load.LoadID.ToString();
+
+        await using var command = new MySqlCommand(sql, connection, transaction);
+        command.Parameters.AddWithValue("@labelDataRecordId", labelDataRecordId);
+        command.Parameters.AddWithValue("@loadId", loadId);
+
+        var scalar = await command.ExecuteScalarAsync();
+        return scalar != null && scalar != DBNull.Value;
     }
 
     private static Model_ReceivingLoad MapRowToLoad(DataRow row)

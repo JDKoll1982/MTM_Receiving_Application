@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: project_overview.md
+- Description: High-level project purpose, features, module inventory, architecture, and databases.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-26: # Project Overview
+  - Line 27-37: ## Key Features
+  - Line 38-55: ## Module Inventory
+  - Line 56-61: ## Architecture
+  - Line 62-67: ## Databases
+- Critical Notes: Infor Visual is read-only; MySQL is read/write.
+[DOC-META-END]
+-->
+
 # Project Overview
 
 Last Updated: 2026-03-22
@@ -48,5 +63,5 @@ and integrates with MySQL (application data) and SQL Server / Infor Visual ERP (
 
 | Database                                | Connection                                        | Access                              |
 | --------------------------------------- | ------------------------------------------------- | ----------------------------------- |
-| MySQL 5.7 (`mtm_receiving_application`) | `Helper_Database_Variables.GetConnectionString()` | READ/WRITE via stored procedures    |
+| MySQL 5.7 (`mtm_receiving_application_test`) | `Helper_Database_Variables.GetConnectionString()` | READ/WRITE via stored procedures    |
 | SQL Server (Infor Visual MTMFG)         | `ApplicationIntent=ReadOnly` required             | READ ONLY — no INSERT/UPDATE/DELETE |

@@ -92,6 +92,7 @@
             AutoGenerateColumns="False"
             CanUserSortColumns="True"
             CurrentCellChanged="ManualEntryDataGrid_CurrentCellChanged"
+            Sorting="ManualEntryDataGrid_Sorting"
             GridLinesVisibility="All"
             HeadersVisibility="Column"
             IsReadOnly="False"

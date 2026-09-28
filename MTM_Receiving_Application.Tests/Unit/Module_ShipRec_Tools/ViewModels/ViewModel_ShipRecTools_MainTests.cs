@@ -43,18 +43,18 @@ public sealed class ViewModel_ShipRecTools_MainTests
         var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
         var headerBackServiceMock = new Mock<IService_HeaderBackNavigation>();
         navigationServiceMock
-            .Setup(service => service.GetToolByKey("CustomerPullPack"))
+            .Setup(service => service.GetToolByKey("MaterialAvailabilityBoard"))
             .Returns(
                 new Model_ToolDefinition
                 {
-                    ToolKey = "CustomerPullPack",
-                    Title = "Customer Pull n' Pack",
+                    ToolKey = "MaterialAvailabilityBoard",
+                    Title = "Material Availability Board",
                 }
             );
 
         var viewModel = CreateViewModel(navigationServiceMock.Object, headerBackServiceMock.Object);
 
-        viewModel.NavigateToTool("CustomerPullPack");
+        viewModel.NavigateToTool("MaterialAvailabilityBoard");
         viewModel.ShowToolSelectionCommand.Execute(null);
 
         viewModel.IsToolSelectionVisible.Should().BeTrue();
@@ -63,27 +63,27 @@ public sealed class ViewModel_ShipRecTools_MainTests
     }
 
     [Fact]
-    public void NavigateToTool_ShouldShowWaitlistHost_WhenWaitlistToolIsSelected()
+    public void NavigateToTool_ShouldShowMaterialAvailabilityBoard_WhenToolIsSelected()
     {
         var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
         var headerBackServiceMock = new Mock<IService_HeaderBackNavigation>();
         navigationServiceMock
-            .Setup(service => service.GetToolByKey("CustomerPullPackWaitlist"))
+            .Setup(service => service.GetToolByKey("MaterialAvailabilityBoard"))
             .Returns(
                 new Model_ToolDefinition
                 {
-                    ToolKey = "CustomerPullPackWaitlist",
-                    Title = "Customer Pull n' Pack Waitlist",
+                    ToolKey = "MaterialAvailabilityBoard",
+                    Title = "Material Availability Board",
                 }
             );
 
         var viewModel = CreateViewModel(navigationServiceMock.Object, headerBackServiceMock.Object);
 
-        viewModel.NavigateToTool("CustomerPullPackWaitlist");
+        viewModel.NavigateToTool("MaterialAvailabilityBoard");
 
-        viewModel.IsCustomerPullPackWaitlistVisible.Should().BeTrue();
-        viewModel.IsCustomerPullPackVisible.Should().BeFalse();
-        viewModel.CurrentHeaderTitle.Should().Be("Customer Pull n' Pack Waitlist");
+        viewModel.IsMaterialAvailabilityBoardVisible.Should().BeTrue();
+        viewModel.IsOutsideServiceHistoryVisible.Should().BeFalse();
+        viewModel.CurrentHeaderTitle.Should().Be("Material Availability Board");
     }
 
     private static ViewModel_ShipRecTools_Main CreateViewModel(

@@ -1,0 +1,80 @@
+using System;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
+
+namespace MTM_Receiving_Application.Module_Scanner.Helpers;
+
+/// <summary>
+/// Legacy developer-only Scanner rollout rule. This is the fallback used by
+/// <see cref="MTM_Receiving_Application.Module_Scanner.Contracts.IService_ScannerAccessPolicy"/>
+/// while the plant-wide allow-list has not been configured; once an admin or developer saves
+/// an allow-list the configured employees are authoritative.
+/// </summary>
+public static class Helper_ScannerAccess
+{
+	/// <summary>Developer full name that unlocks the Scanner module.</summary>
+	public const string DeveloperFullName = "John Koll";
+
+	/// <summary>Developer Windows usernames (domain-stripped) that unlock the Scanner module.</summary>
+	private static readonly string[] DeveloperUserNames = ["jkoll", "johnk"];
+
+	/// <summary>Department value treated as a developer user type.</summary>
+	public const string DeveloperUserType = "Developer";
+
+	/// <summary>
+	/// Returns true when the given session user is a developer (full name John Koll, or a
+	/// domain-stripped Windows username of jkoll/johnk, or a Developer department). When the
+	/// session user is unavailable, falls back to the raw Windows user name.
+	/// </summary>
+	public static bool IsDeveloperUser(Model_User? user, string? fallbackWindowsUserName = null)
+	{
+		if (user is not null)
+		{
+			if (user.FullName?.Trim().Equals(DeveloperFullName, StringComparison.OrdinalIgnoreCase) == true)
+			{
+				return true;
+			}
+
+			var username = StripDomain(user.WindowsUsername);
+			foreach (var candidate in DeveloperUserNames)
+			{
+				if (string.Equals(username, candidate, StringComparison.OrdinalIgnoreCase))
+				{
+					return true;
+				}
+			}
+
+			if (
+				user.Department?.Trim().Equals(DeveloperUserType, StringComparison.OrdinalIgnoreCase)
+				== true
+			)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		var fallback = StripDomain(fallbackWindowsUserName);
+		foreach (var candidate in DeveloperUserNames)
+		{
+			if (string.Equals(fallback, candidate, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static string StripDomain(string? value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return string.Empty;
+		}
+
+		var trimmed = value.Trim();
+		var backslash = trimmed.LastIndexOf('\\');
+		return backslash >= 0 ? trimmed[(backslash + 1)..] : trimmed;
+	}
+}

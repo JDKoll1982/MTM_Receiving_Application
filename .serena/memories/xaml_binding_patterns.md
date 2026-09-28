@@ -1,3 +1,24 @@
+<!-- 
+[DOC-META-START]
+- File Name: xaml_binding_patterns.md
+- Description: x:Bind rules, modes, help-system bindings, DataTemplates, performance, and mistakes.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 22-25: # XAML Binding Patterns
+  - Line 26-29: ## Overview
+  - Line 30-88: ## Fundamental Binding Rules
+  - Line 89-262: ## Help System Binding Patterns
+  - Line 263-341: ## Common XAML Patterns
+  - Line 342-374: ## DataTemplate Patterns
+  - Line 375-405: ## Event Handling Patterns
+  - Line 406-449: ## Performance Best Practices
+  - Line 450-502: ## Common Mistakes to Avoid
+  - Line 503-531: ## Help System Migration Checklist
+  - Line 532-537: ## Related Memories
+- Critical Notes: Always use x:Bind with explicit Mode; never runtime {Binding}.
+[DOC-META-END]
+-->
+
 # XAML Binding Patterns
 
 Last Updated: 2026-03-21

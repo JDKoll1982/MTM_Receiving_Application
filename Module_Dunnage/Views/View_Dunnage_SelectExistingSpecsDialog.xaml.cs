@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 
@@ -25,6 +26,7 @@ public sealed partial class View_Dunnage_SelectExistingSpecsDialog : ContentDial
         );
     }
 
+    
     private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         var searchText = SearchTextBox.Text?.Trim() ?? string.Empty;

@@ -5,8 +5,8 @@ using MTM_Receiving_Application.Module_Scanner.ViewModels;
 namespace MTM_Receiving_Application.Module_Scanner.Views;
 
 /// <summary>
-/// Main container page for the scanner module scaffold.
-/// Hosts the placeholder workbench, history, and settings views using DI-injected subviews.
+/// Main container page for the scanner module.
+/// Hosts the Workbench, History, and Settings views using DI-injected subviews.
 /// </summary>
 public sealed partial class View_Scanner_Main : Page
 {
@@ -31,5 +31,11 @@ public sealed partial class View_Scanner_Main : Page
         WorkbenchHost.Content = workbenchView;
         HistoryHost.Content = historyView;
         SettingsHost.Content = settingsView;
+    }
+
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Scanner.Main");
     }
 }

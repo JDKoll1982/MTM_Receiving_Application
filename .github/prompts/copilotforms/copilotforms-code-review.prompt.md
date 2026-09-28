@@ -5,6 +5,19 @@ agent: ask
 argument-hint: 'Link a code review export from docs/CopilotForms/outputs/code-review and note any priority concerns'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-code-review.prompt.md
+- Description: Read a saved CopilotForms code review export and perform a focused review.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Code Review
+  - Line 12: ## Workflow
+  - Line 20: ## Output Expectations
+- Critical Notes: Present findings first, ordered by severity, with file references.
+[DOC-META-END]
+-->
+
 # CopilotForms Code Review
 
 Read the linked export from `docs/CopilotForms/outputs/code-review/` and perform a focused code review.

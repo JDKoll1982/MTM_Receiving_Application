@@ -1,3 +1,24 @@
+<!-- 
+[DOC-META-START]
+- File Name: mtm-mermaid-architecture-diagram.prompt.md
+- Description: Generate a Mermaid class diagram for the MTM Receiving Application from the real workspace structure, emitting only code-supported relationships.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-4: # MTM Mermaid Architecture Diagram Prompt
+  - Line 5-17: ## Goal
+  - Line 18-28: ## Scope Rules
+  - Line 29-43: ## Required Anchor Files
+  - Line 44-104: ## What To Include
+  - Line 105-155: ## Extraction Rules
+  - Line 156-173: ## Relationship Rules
+  - Line 174-209: ## Output Constraints
+  - Line 210-217: ## Accuracy Rules
+  - Line 218-221: ## Response Format
+  - Line 222-228: ## First Task
+- Critical Notes: Emit the diagram in deterministic installments, including only relationships directly evidenced in code.
+[DOC-META-END]
+-->
+
 # MTM Mermaid Architecture Diagram Prompt
 
 Generate a Mermaid class diagram for the MTM Receiving Application by analyzing the real workspace structure and emitting only relationships you can support from code.

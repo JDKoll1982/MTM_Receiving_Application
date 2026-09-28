@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
 
@@ -14,4 +15,5 @@ public sealed partial class View_Reporting_PreviewDialog : ContentDialog
         InitializeComponent();
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
     }
-}
+
+    }

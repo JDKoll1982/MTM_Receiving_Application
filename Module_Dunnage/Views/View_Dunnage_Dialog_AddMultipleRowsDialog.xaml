@@ -16,6 +16,7 @@
         <x:Double x:Key="ContentDialogMaxHeight">760</x:Double>
     </ContentDialog.Resources>
     <StackPanel Padding="24" Spacing="16">
+        
         <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="How many rows would you like to add?" />
 
         <NumberBox

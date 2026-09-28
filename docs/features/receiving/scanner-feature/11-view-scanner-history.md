@@ -1,6 +1,6 @@
 # Scanner History View
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This view presents completed and interrupted sends, with drill-down into item-level results.
 
@@ -42,6 +42,7 @@ Bottom Detail Table:
 - incomplete sends highlighted for quick triage
 - immutable sent records clearly labeled as non-editable history
 - history details must be sufficient for operator retry decisions without returning to the original workbench session
+- scanner history now uses the shared adaptive layout service to apply width breakpoints and bound list viewport heights so run and item result lists stay readable across resolutions and scale settings
 
 ## Binding And UI Rules
 

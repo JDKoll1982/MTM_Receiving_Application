@@ -5,6 +5,24 @@ description: >
   workflow tools, and shell tools — with MTM-specific usage examples.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-02-tools-reference.instructions.md
+- Description: Complete Serena tool catalogue — symbol tools, file tools, memory tools, workflow tools, and shell tools — with MTM-specific usage examples.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-16: # Serena Tools Reference
+  - Line 17-132: ## Symbol Tools
+  - Line 133-152: ## File Tools (optional — enabled in `desktop-app` context)
+  - Line 153-184: ## Memory Tools
+  - Line 185-194: ## Workflow Tools
+  - Line 195-205: ## Shell / Command Tools (optional)
+  - Line 206-235: ## Search Tools
+  - Line 236-249: ## Tool Selection Quick Reference
+- Critical Notes: Only a subset of tools is active per context/mode; run find_referencing_symbols before signature changes.
+[DOC-META-END]
+-->
+
 # Serena Tools Reference
 
 Full catalogue of Serena tools. In most configurations only a **subset** is active at a time,

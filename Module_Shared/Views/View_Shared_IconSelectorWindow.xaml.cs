@@ -66,11 +66,20 @@ public sealed partial class View_Shared_IconSelectorWindow : Window
             appWindow.Move(new Windows.Graphics.PointInt32 { X = centerX, Y = centerY });
         }
 
+        // Open maximized; the size set above defines the size restored on un-maximize.
+        this.Maximize();
+
         // Handle window closing to complete the task
         this.Closed += (s, e) =>
         {
             _selectionTaskCompletionSource?.TrySetResult(IconWasSelected ? SelectedIconKind : null);
         };
+    }
+
+    private async void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        var helpService = App.GetService<IService_Help>();
+        await helpService.ShowHelpAsync("Shared.IconSelector", Content?.XamlRoot);
     }
 
     /// <summary>

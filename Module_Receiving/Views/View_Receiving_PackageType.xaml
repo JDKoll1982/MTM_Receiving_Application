@@ -12,9 +12,28 @@
     <UserControl.Resources>
         <converters:Converter_StringFormat x:Key="StringFormatConverter" />
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_IntToBlankText x:Key="IntToBlankTextConverter" />
     </UserControl.Resources>
 
-    <Grid Padding="20">
+    <Grid
+        x:Name="PackageTypeRootGrid"
+        Padding="20">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingPackageTypeAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="PackageTypeRootGrid.Padding" Value="10" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="PackageTypeRootGrid.Padding" Value="20" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -31,14 +50,101 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8">
-            <Grid ColumnSpacing="16">
+            <Grid ColumnSpacing="16" RowSpacing="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  Identity row: part, PO number, description  -->
+                <Grid
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Left: part number  -->
+                    <StackPanel
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Part Number:"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                    </StackPanel>
+
+                    <!--  Center: PO number, hidden when the workflow has none  -->
+                    <StackPanel
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        Visibility="{x:Bind ViewModel.HasPoNumber, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="PO Number:"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            MaxLines="1"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.CurrentPoNumber, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+                    </StackPanel>
+
+                    <!--  Right: description  -->
+                    <TextBlock
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="1"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.CurrentPartDescription, Mode=OneWay}"
+                        TextAlignment="Right"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap" />
+                </Grid>
+
+                <Border
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    Height="1"
+                    Margin="0,2"
+                    Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
                 <StackPanel
+                    Grid.Row="2"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
@@ -51,6 +157,7 @@
                 </StackPanel>
 
                 <Grid
+                    Grid.Row="2"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     ColumnSpacing="16">
@@ -76,11 +183,26 @@
                         Visibility="{x:Bind ViewModel.IsCustomTypeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
 
-                <CheckBox
+                <StackPanel
+                    Grid.Row="2"
                     Grid.Column="2"
                     VerticalAlignment="Center"
-                    Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"
-                    IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}" />
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <CheckBox
+                        VerticalAlignment="Center"
+                        Content="{x:Bind ViewModel.PackageTypeSaveAsDefaultText, Mode=OneWay}"
+                        IsChecked="{x:Bind ViewModel.IsSaveAsDefault, Mode=TwoWay}" />
+                    <Button
+                        Padding="16,8"
+                        VerticalAlignment="Center"
+                        Command="{x:Bind ViewModel.AutoFillCommand}"
+                        Content="{x:Bind ViewModel.PackageTypeAutoFillText, Mode=OneWay}"
+                        CornerRadius="8"
+                        FontSize="16"
+                        Style="{StaticResource AccentButtonStyle}"
+                        ToolTipService.ToolTip="{x:Bind ViewModel.PackageTypeAutoFillTooltipText, Mode=OneWay}" />
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -136,15 +258,15 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <!--  Column 1: Interactive NumberBox  -->
-                            <NumberBox
+                            <!--  Column 1: Package count. A TextBox (not a NumberBox) is used so the
+                                  count, and the EA per Package readout beside it, update on every
+                                  keystroke; the converter keeps the blank sentinel an empty box.  -->
+                            <TextBox
                                 Grid.Column="1"
                                 AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.PackageTypePackagesPerLoadAccessibilityName}"
-                                LargeChange="5"
-                                Minimum="1"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Hidden"
-                                Value="{x:Bind PackagesPerLoad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                GotFocus="PackagesPerLoadTextBox_GotFocus"
+                                InputScope="Number"
+                                Text="{x:Bind PackagesPerLoad, Mode=TwoWay, Converter={StaticResource IntToBlankTextConverter}, UpdateSourceTrigger=PropertyChanged}" />
 
                             <!--  Column 2: Weight Display  -->
                             <StackPanel

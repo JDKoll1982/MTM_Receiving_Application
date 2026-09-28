@@ -18,4 +18,15 @@ public static class ShipRecToolsSettingsKeys
         public const string WorkOrderAllowShowAllChip =
             "MaterialAvailability.WorkOrderFields.AllowShowAllChip";
     }
+
+    public static class POLineSpecSearch
+    {
+        public const string SearchMode = "POLineSpecSearch.Options.SearchMode";
+
+        public const string PoStatusFilter = "POLineSpecSearch.Options.PoStatusFilter";
+
+        public const string VisibleLines = "POLineSpecSearch.Options.VisibleLines";
+
+        public const string VisibleColumnKeys = "POLineSpecSearch.Options.VisibleColumnKeys";
+    }
 }

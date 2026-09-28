@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 
@@ -21,4 +22,5 @@ public sealed partial class Dialog_MaterialAvailabilityWorkOrderDetails : Conten
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
         Title = ViewModel.Heading;
     }
-}
+
+    }

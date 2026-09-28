@@ -279,6 +279,7 @@
     <Grid>
         <ScrollViewer MaxHeight="900" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Padding="20,18,20,20" Spacing="16">
+                
                 <Grid ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

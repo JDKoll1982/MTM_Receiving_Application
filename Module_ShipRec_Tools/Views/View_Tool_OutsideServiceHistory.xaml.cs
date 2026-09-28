@@ -30,6 +30,12 @@ public sealed partial class View_Tool_OutsideServiceHistory : Page
         ViewModel.ResetSortIndicators = ResetAllColumnSortDirections;
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("ShipRecTools.OutsideServiceHistory", XamlRoot);
+    }
+
     // ─── Fuzzy Picker Delegate ───────────────────────────────────────────────
 
     private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(

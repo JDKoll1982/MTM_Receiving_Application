@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
-using MTM_Receiving_Application.Module_Dunnage.Models;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Helpers;
 
@@ -11,7 +9,7 @@ internal static class Helper_Dunnage_PartIdSuggestion
 {
     public static string BuildSuggestedPartId(
         string typeName,
-        IEnumerable<KeyValuePair<string, object?>> specValues
+        IEnumerable<KeyValuePair<string, string?>> labeledValues
     )
     {
         var parts = new List<string>();
@@ -24,27 +22,20 @@ internal static class Helper_Dunnage_PartIdSuggestion
         var numericValues = new List<string>();
         var booleanValues = new List<string>();
 
-        foreach (var pair in specValues)
+        foreach (var pair in labeledValues)
         {
             if (string.Equals(pair.Key, "Notes", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            if (
-                pair.Value is JsonElement element
-                && Helper_Dunnage_PartSpecs.TryGetSpecDefinition(element, out _)
-            )
+            var rawValue = pair.Value;
+            if (string.IsNullOrWhiteSpace(rawValue))
             {
                 continue;
             }
 
-            if (pair.Value is SpecDefinition)
-            {
-                continue;
-            }
-
-            if (TryGetBoolean(pair.Value, out var boolValue))
+            if (TryGetBoolean(rawValue, out var boolValue))
             {
                 if (boolValue)
                 {
@@ -54,17 +45,13 @@ internal static class Helper_Dunnage_PartIdSuggestion
                 continue;
             }
 
-            if (TryGetNumber(pair.Value, out var numericValue))
+            if (TryGetNumber(rawValue, out var numericValue))
             {
                 numericValues.Add(FormatNumber(numericValue));
                 continue;
             }
 
-            var textValue = GetString(pair.Value).Trim();
-            if (!string.IsNullOrWhiteSpace(textValue))
-            {
-                textValues.Add(textValue);
-            }
+            textValues.Add(rawValue.Trim());
         }
 
         if (textValues.Count > 0)
@@ -107,58 +94,22 @@ internal static class Helper_Dunnage_PartIdSuggestion
             : value.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
-    private static string GetString(object? rawValue)
+    private static bool TryGetBoolean(string? rawValue, out bool value)
     {
-        if (rawValue is JsonElement element)
+        if (bool.TryParse(rawValue, out value))
         {
-            return element.ValueKind switch
-            {
-                JsonValueKind.String => element.GetString() ?? string.Empty,
-                JsonValueKind.True => "Yes",
-                JsonValueKind.False => "No",
-                JsonValueKind.Number => element.ToString(),
-                _ => element.ToString(),
-            };
-        }
-
-        return rawValue?.ToString() ?? string.Empty;
-    }
-
-    private static bool TryGetBoolean(object? rawValue, out bool value)
-    {
-        if (rawValue is bool booleanValue)
-        {
-            value = booleanValue;
             return true;
         }
 
-        if (rawValue is JsonElement element)
+        if (rawValue == "1")
         {
-            if (element.ValueKind == JsonValueKind.True)
-            {
-                value = true;
-                return true;
-            }
-
-            if (element.ValueKind == JsonValueKind.False)
-            {
-                value = false;
-                return true;
-            }
-
-            if (
-                element.ValueKind == JsonValueKind.String
-                && bool.TryParse(element.GetString(), out var parsedBoolean)
-            )
-            {
-                value = parsedBoolean;
-                return true;
-            }
+            value = true;
+            return true;
         }
 
-        if (rawValue is string text && bool.TryParse(text, out var parsedValue))
+        if (rawValue == "0")
         {
-            value = parsedValue;
+            value = false;
             return true;
         }
 
@@ -166,51 +117,13 @@ internal static class Helper_Dunnage_PartIdSuggestion
         return false;
     }
 
-    private static bool TryGetNumber(object? rawValue, out double value)
+    private static bool TryGetNumber(string? rawValue, out double value)
     {
-        if (rawValue is null)
-        {
-            value = 0;
-            return false;
-        }
-
-        if (rawValue is JsonElement element)
-        {
-            if (element.ValueKind == JsonValueKind.Number)
-            {
-                value = element.GetDouble();
-                return true;
-            }
-
-            if (
-                element.ValueKind == JsonValueKind.String
-                && double.TryParse(
-                    element.GetString(),
-                    NumberStyles.Float,
-                    CultureInfo.InvariantCulture,
-                    out var parsedJsonNumber
-                )
-            )
-            {
-                value = parsedJsonNumber;
-                return true;
-            }
-        }
-
-        if (
-            double.TryParse(
-                rawValue.ToString(),
-                NumberStyles.Float,
-                CultureInfo.InvariantCulture,
-                out var parsedValue
-            )
-        )
-        {
-            value = parsedValue;
-            return true;
-        }
-
-        value = 0;
-        return false;
+        return double.TryParse(
+            rawValue,
+            NumberStyles.Any,
+            CultureInfo.InvariantCulture,
+            out value
+        );
     }
 }

@@ -3,6 +3,26 @@ description: "Guidance for using WinApp MCP to launch, inspect, and automate Win
 applyTo: "**"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: winapp-mcp.instructions.md
+- Description: Guidance for using WinApp MCP to launch, inspect, and automate WinUI and other Windows desktop applications when the user asks for UI interaction, verification, or desktop E2E workflows.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6-9: # WinApp MCP Usage Guide
+  - Line 10-25: ## Purpose
+  - Line 26-35: ## Prerequisites
+  - Line 36-63: ## Installation And Configuration
+  - Line 64-76: ## Default Operating Pattern
+  - Line 77-114: ## Tooling Strategy
+  - Line 115-139: ## WinUI-Specific Guidance
+  - Line 140-152: ## Reliability Rules
+  - Line 191-200: ## Safety Rules
+  - Line 201-239: ## Recommended Workflows
+  - Line 240-257: ## Decision Guidance
+[DOC-META-END]
+-->
+
 # WinApp MCP Usage Guide
 
 Use this guidance when the user asks to interact with, inspect, validate, test, or automate a running Windows desktop application through the WinApp MCP server.

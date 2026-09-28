@@ -8,6 +8,27 @@ description: >
   Derived from binary analysis of docs/LabelView/ReverseEngThis.lbl.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: labelview-lbl-parsing.instructions.md
+- Description: Step-by-step guide for reading and extracting all meaningful data from a TEKLYNX LabelView 2022 .lbl file without launching LabelView, covering the OLE2 container, named streams, binary object layout, variable/SQL definitions, printer binding, and the AIAG MH10.8.2 barcode formula.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 11: # TEKLYNX LabelView 2022 — `.lbl` File Parsing Guide
+  - Line 13: ## Overview
+  - Line 27: ## 1. Identify the Format
+  - Line 48: ## 2. Stream Inventory
+  - Line 74: ## 3. Reading the `Printer` Stream
+  - Line 106: ## 4. Reading the `Variables` Stream
+  - Line 195: ## 5. Reading the `Objects` Stream
+  - Line 254: ## 6. The AIAG MH10.8.2 Format 06 Barcode
+  - Line 316: ## 7. Reading the `Form` Stream (Canvas Properties)
+  - Line 332: ## 8. Practical Parsing Strategy
+  - Line 403: ## 10. Known Limitations and Edge Cases
+- Critical Notes: A .lbl file is an OLE2 compound document readable without LabelView — ODBC credentials are embedded in plain text.
+[DOC-META-END]
+-->
+
 # TEKLYNX LabelView 2022 — `.lbl` File Parsing Guide
 
 ## Overview

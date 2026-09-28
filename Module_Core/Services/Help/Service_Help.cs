@@ -41,7 +41,10 @@ public class Service_Help : IService_Help
 
     #region Show Help Methods
 
-    public async Task ShowHelpAsync(string helpKey)
+    public async Task ShowHelpAsync(
+        string helpKey,
+        Microsoft.UI.Xaml.XamlRoot? xamlRoot = null
+    )
     {
         try
         {
@@ -49,6 +52,26 @@ public class Service_Help : IService_Help
             if (content == null)
             {
                 await _logger.LogWarningAsync($"Help content not found for key: {helpKey}");
+                return;
+            }
+
+            await ShowHelpAsync(content, xamlRoot);
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogErrorAsync($"Error showing help for key {helpKey}: {ex.Message}");
+        }
+    }
+
+    public async Task ShowHelpAsync(
+        Model_HelpContent content,
+        Microsoft.UI.Xaml.XamlRoot? xamlRoot = null
+    )
+    {
+        try
+        {
+            if (content == null)
+            {
                 return;
             }
 
@@ -71,7 +94,7 @@ public class Service_Help : IService_Help
                     }
 
                     dialog.SetHelpContent(content);
-                    dialog.XamlRoot = _windowService.GetXamlRoot();
+                    dialog.XamlRoot = xamlRoot ?? _windowService.GetXamlRoot();
 
                     if (dialog.XamlRoot == null)
                     {
@@ -81,7 +104,7 @@ public class Service_Help : IService_Help
                     }
 
                     await dialog.ShowAsync();
-                    await _logger.LogInfoAsync($"Displayed help for: {helpKey}");
+                    await _logger.LogInfoAsync($"Displayed help for: {content.Key}");
                     tcs.SetResult(true);
                 }
                 catch (Exception ex)
@@ -95,7 +118,7 @@ public class Service_Help : IService_Help
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Error showing help for key {helpKey}: {ex.Message}");
+            await _logger.LogErrorAsync($"Error showing help for {content?.Key}: {ex.Message}");
         }
     }
 
@@ -132,6 +155,9 @@ public class Service_Help : IService_Help
             Enum_ReceivingWorkflowStep.Review => "Receiving.Review",
             Enum_ReceivingWorkflowStep.ManualEntry => "Receiving.ManualEntry",
             Enum_ReceivingWorkflowStep.EditMode => "Receiving.EditMode",
+            Enum_ReceivingWorkflowStep.Saving => "Receiving.Saving",
+            Enum_ReceivingWorkflowStep.Complete => "Receiving.Complete",
+            Enum_ReceivingWorkflowStep.ReconciliationReview => "Receiving.ReconciliationReview",
             _ => "Receiving.ModeSelection",
         };
 
@@ -230,6 +256,9 @@ public class Service_Help : IService_Help
             Enum_ReceivingWorkflowStep.HeatLotEntry => "Receiving.HeatLot",
             Enum_ReceivingWorkflowStep.PackageTypeEntry => "Receiving.PackageType",
             Enum_ReceivingWorkflowStep.Review => "Receiving.Review",
+            Enum_ReceivingWorkflowStep.Saving => "Receiving.Saving",
+            Enum_ReceivingWorkflowStep.Complete => "Receiving.Complete",
+            Enum_ReceivingWorkflowStep.ReconciliationReview => "Receiving.ReconciliationReview",
             _ => "",
         };
 
@@ -272,6 +301,12 @@ public class Service_Help : IService_Help
 
         // Receiving Workflow Help Content
         InitializeReceivingHelp();
+
+        // Module page help content
+        InitializeModuleHelp();
+
+        // Dialog help content
+        InitializeDialogHelp();
 
         // Admin Help Content
         InitializeAdminHelp();
@@ -482,52 +517,6 @@ public class Service_Help : IService_Help
 
     private void InitializeReceivingHelp()
     {
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Receiving.ManualEntry",
-                Title = "Manual Entry Mode",
-                Content =
-                    "Bulk entry mode for processing multiple receiving items:\n\n"
-                    + "**Features:**\n"
-                    + "• Add multiple rows at once\n"
-                    + "• Auto-fill from last entry\n"
-                    + "• Sort entries for optimal label printing\n\n"
-                    + "**Tips:**\n"
-                    + "• Use Tab key to move between cells\n"
-                    + "• Copy/paste values between cells\n"
-                    + "• Sort by Part ID before saving",
-                Category = "Receiving Workflow",
-                HelpType = Enum_HelpType.Tutorial,
-                Icon = "Table",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Receiving.EditMode",
-                Title = "Edit Historical Data",
-                Content =
-                    "Review and edit past receiving entries:\n\n"
-                    + "**Data Sources:**\n"
-                    + "• Session Memory - Unsaved work\n"
-                    + "• Recent Labels - From most recent saved label dataset\n"
-                    + "• Historical Loads - From database by date range\n\n"
-                    + "**Editing:**\n"
-                    + "• Select entries to modify\n"
-                    + "• Make changes directly in the grid\n"
-                    + "• Save updates back to database",
-                Category = "Receiving Workflow",
-                HelpType = Enum_HelpType.Tutorial,
-                Icon = "PencilBox",
-                Severity = Enum_HelpSeverity.Warning,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
-            }
-        );
-
         AddHelpContent(
             new Model_HelpContent
             {
@@ -745,6 +734,799 @@ public class Service_Help : IService_Help
                 Icon = "PencilBox",
                 Severity = Enum_HelpSeverity.Warning,
                 RelatedKeys = new List<string> { "Receiving.ModeSelection" },
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Receiving.Saving",
+                Title = "Saving Your Receiving",
+                Content =
+                    "The app is saving your receiving entry. Do not close the app or use the Back button until it finishes.\n\n"
+                    + "**What is happening:**\n"
+                    + "• Database record is being written to MySQL\n"
+                    + "• Label data is being queued for printing\n"
+                    + "• A CSV backup is exported for records\n\n"
+                    + "**If a step fails:**\n"
+                    + "• The completion screen shows the specific error\n"
+                    + "• Contact your supervisor or IT support",
+                Category = "Receiving Workflow",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "ContentSave",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string> { "Receiving.Review" },
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Receiving.Complete",
+                Title = "Receiving Complete",
+                Content =
+                    "Your receiving entry saved successfully.\n\n"
+                    + "**What was saved:**\n"
+                    + "• Label Data - queued for printing\n"
+                    + "• Database - permanent record stored\n\n"
+                    + "**Next steps:**\n"
+                    + "• Start New Entry - begin another receiving transaction\n"
+                    + "• Mode Selection - return to choose a different entry mode\n"
+                    + "• Reprint labels later from Edit Mode\n\n"
+                    + "If any step shows a failure, review the error message and contact your supervisor.",
+                Category = "Receiving Workflow",
+                HelpType = Enum_HelpType.Info,
+                Icon = "CheckCircle",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string> { "Receiving.ModeSelection", "Receiving.Review" },
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Receiving.ReconciliationReview",
+                Title = "Reconcile Saved Locations",
+                Content =
+                    "Review saved loads against InforVisual to verify their storage locations.\n\n"
+                    + "**What this screen does:**\n"
+                    + "• Compares InforVisual transaction history with current inventory\n"
+                    + "• Shows suggested locations where quantities match exactly\n"
+                    + "• Lets you confirm or adjust each saved load's location\n\n"
+                    + "**Why:**\n"
+                    + "• Keeps inventory locations accurate in InforVisual\n"
+                    + "• Prevents misplaced stock\n"
+                    + "• Uses read-only data from InforVisual",
+                Category = "Receiving Workflow",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "MapMarker",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Receiving.NonPOEntry",
+                Title = "Non-PO Reference",
+                Content =
+                    "No PO number was entered, so the app asks for a reference reason for this receiving batch.\n\n"
+                    + "**Reference / Reason:**\n"
+                    + "• Enter a short reason (e.g. Stock Replenishment, Internal Move, Sample Run)\n"
+                    + "• Stored with the batch and shown on the Review page\n\n"
+                    + "**Previously Saved Entries:**\n"
+                    + "• Pick a saved entry to reuse it\n"
+                    + "• Remove an entry with the trash icon\n\n"
+                    + "**Save for next time:**\n"
+                    + "• Keep the reference so it is offered again later\n\n"
+                    + "Use This Reference confirms the entry; Cancel closes the dialog.",
+                Category = "Receiving Workflow",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TextBox",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string> { "Receiving.POEntry" },
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Receiving.EditModeColumnChooser",
+                Title = "Choose Visible Columns",
+                Content =
+                    "Choose which columns appear in Edit Mode. Related fields are grouped together so the list is easier to scan and update.\n\n"
+                    + "**Groups:**\n"
+                    + "• Part and receiving details\n"
+                    + "• Purchase order details\n"
+                    + "• Packaging and traceability\n"
+                    + "• Quality hold\n"
+                    + "• Audit and ownership\n\n"
+                    + "**Buttons:**\n"
+                    + "• Select All / Clear All - toggle every optional column\n"
+                    + "• Reset - restore the original column visibility\n"
+                    + "• Apply - save your visibility choices\n"
+                    + "• Cancel - keep the existing grid unchanged\n\n"
+                    + "Some columns are always shown and cannot be hidden.",
+                Category = "Receiving Workflow",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "ViewColumn",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string> { "Receiving.EditMode" },
+            }
+        );
+    }
+
+    private void InitializeModuleHelp()
+    {
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Reporting.Main",
+                Title = "End of Day Reports",
+                Content =
+                    "Generate end-of-day reports for one or more modules.\n\n"
+                    + "**Date range:**\n"
+                    + "• Pick a quick range or set Start/End dates\n"
+                    + "• Check availability to see which modules have data\n\n"
+                    + "**Select modules:**\n"
+                    + "• Choose which modules to include\n"
+                    + "• Generate a combined preview for the selected modules",
+                Category = "Reporting",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "FileChart",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Reprint.Main",
+                Title = "Reprint Labels",
+                Content =
+                    "Reprint Receiving, Dunnage, or Volvo labels from history.\n\n"
+                    + "• Pick a module to open its reprint page\n"
+                    + "• Review the history and check the rows to reprint\n"
+                    + "• Click Reprint Selected to move rows back into the active label queue",
+                Category = "Reprint",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "Printer",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.Main",
+                Title = "Ship/Rec Tools",
+                Content =
+                    "Utilities for shipping and receiving operations.\n\n"
+                    + "• Choose a tool from the selection screen\n"
+                    + "• Tools include Outside Service History, Material Availability Board, PO Line Spec Search, Dunnage Book, Welded Coils, Receiving Analytics, and Delivery Schedule",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "Tools",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.ShipmentEntry",
+                Title = "Volvo Dunnage Requisition",
+                Content =
+                    "Create and submit Volvo dunnage requisitions.\n\n"
+                    + "• Enter shipment line details for each part\n"
+                    + "• Add parts, report discrepancies, and track quantities\n"
+                    + "• Entries are auto-saved as you work\n"
+                    + "• Complete the shipment when all lines are entered",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "Truck",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.History",
+                Title = "Volvo Shipment History",
+                Content =
+                    "Review past Volvo shipments and requisitions.\n\n"
+                    + "• Recent shipments load automatically (last 30 days)\n"
+                    + "• Filter by date or search terms\n"
+                    + "• View details, edit, or delete a shipment",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "History",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Scanner.Main",
+                Title = "Scanner",
+                Content =
+                    "Scanner workbench, history, and settings.\n\n"
+                    + "• Workbench - run scanner send/sweep operations\n"
+                    + "• History - review past scan results\n"
+                    + "• Settings - configure scanner behavior",
+                Category = "Scanner",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ScanHelper",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.ToolSelection",
+                Title = "Ship/Rec Tools",
+                Content =
+                    "Choose a utility from the tool cards.\n\n"
+                    + "• Outside Service History\n"
+                    + "• Material Availability Board\n"
+                    + "• PO Line Spec Search\n"
+                    + "• Dunnage Book\n"
+                    + "• Welded Coils\n"
+                    + "• Receiving Analytics\n"
+                    + "• Delivery Schedule",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ViewGrid",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.OutsideServiceHistory",
+                Title = "Outside Service History",
+                Content =
+                    "Look up dispatch history for parts sent to outside service providers.\n\n"
+                    + "• Search by part number or vendor name\n"
+                    + "• Review dispatch and receipt history (read-only)\n"
+                    + "• Use the fuzzy picker when the search returns similar matches",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TruckClock",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.MaterialAvailabilityBoard",
+                Title = "Material Availability Board",
+                Content =
+                    "Read-only card view of material availability by location.\n\n"
+                    + "• Search by location or part\n"
+                    + "• Cards show on-hand availability and details\n"
+                    + "• Open work-order or incoming detail dialogs from a card",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ViewDashboard",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.POLineSpecSearch",
+                Title = "PO Line Spec Search",
+                Content =
+                    "Search purchase-order line specification text.\n\n"
+                    + "• Enter a search term to find matching PO lines\n"
+                    + "• Configure which spec columns to match in Search Options\n"
+                    + "• Open a row to view the full spec text",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Magnify",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.DunnageBook",
+                Title = "Dunnage Book",
+                Content =
+                    "Generate the dunnage book report for the selected criteria.\n\n"
+                    + "• Configure the book (dates, types, parts)\n"
+                    + "• Preview the generated pages\n"
+                    + "• Print or save as PDF",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "BookOpen",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.WeldedCoils",
+                Title = "Welded Coils",
+                Content =
+                    "Maintain welded-coil inventory.\n\n"
+                    + "• Search and add coils\n"
+                    + "• Toggle active status per coil\n"
+                    + "• Delete selected coils when no longer needed",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "CircleMultiple",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.ReceivingAnalytics",
+                Title = "Receiving Analytics",
+                Content =
+                    "Review receiving statistics and trends.\n\n"
+                    + "• Filter by date, location, or part\n"
+                    + "• View summary cards and charts\n"
+                    + "• Export results when needed",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ChartLine",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.DeliverySchedule",
+                Title = "Delivery Schedule",
+                Content =
+                    "Review and export the delivery schedule.\n\n"
+                    + "• Filter the schedule as needed\n"
+                    + "• Open details for a scheduled delivery\n"
+                    + "• Export results when needed",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TruckDelivery",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+    }
+
+    private void InitializeDialogHelp()
+    {
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Shared.TerminalLogin",
+                Title = "Shared Terminal Login",
+                Content =
+                    "Log in with your Windows username and 4-digit PIN.\n\n"
+                    + "• Username - your application username\n"
+                    + "• PIN - your 4-digit personal PIN\n"
+                    + "• After 3 failed attempts the terminal locks\n\n"
+                    + "If you do not know your PIN, ask your supervisor to reset it.",
+                Category = "Shared",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Lock",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Shared.NewUserSetup",
+                Title = "New User Entry",
+                Content =
+                    "Create your account the first time you use the app.\n\n"
+                    + "• Name - first and last name\n"
+                    + "• Employee number - your badge/employee ID\n"
+                    + "• Department / Shift - pick from the lists\n"
+                    + "• PIN - choose a 4-digit PIN and confirm it\n"
+                    + "• Infor Visual credentials - your ERP sign-in used for lookups\n\n"
+                    + "The Create Account button enables once all required fields are valid.",
+                Category = "Shared",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "AccountPlus",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.NonPOEntry",
+                Title = "Non-PO Reference",
+                Content =
+                    "No PO number was entered, so a reference reason is requested.\n\n"
+                    + "• Enter a short reason (e.g. Stock Replenishment, Return Dunnage, Internal Use)\n"
+                    + "• Stored with the load and shown on the review page\n"
+                    + "• Pick a saved entry to reuse it, or remove one with the trash icon\n"
+                    + "• Save for next time keeps the reference for later",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TextBox",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.EditModeColumnChooser",
+                Title = "Choose Visible Columns",
+                Content =
+                    "Choose which columns appear in Dunnage Edit Mode.\n\n"
+                    + "• Fields are grouped so the list is easy to scan\n"
+                    + "• Use Select All / Clear All / Reset to adjust quickly\n"
+                    + "• Apply saves your visibility choices; Cancel keeps the current layout\n"
+                    + "• Some columns are always shown and cannot be hidden",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "ViewColumn",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.AddMultipleRows",
+                Title = "Add Multiple Rows",
+                Content =
+                    "Add several blank rows to Manual Entry at once.\n\n"
+                    + "• Enter the number of rows to add (1 or more)\n"
+                    + "• Click Add (primary button) to insert them\n"
+                    + "• Fill in each new row as usual",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TablePlus",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.SelectExistingSpecs",
+                Title = "Select Existing Specs",
+                Content =
+                    "Copy saved details from an existing part to speed up entry.\n\n"
+                    + "• Search or pick a part whose saved details you want to reuse\n"
+                    + "• Part ID, inventory type, and home location can still be changed after copying",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ContentCopy",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Shared.IconSelector",
+                Title = "Select Icon",
+                Content =
+                    "Pick a Material icon to represent the item.\n\n"
+                    + "• Search icons by name (e.g. box, truck, pallet)\n"
+                    + "• Show all icons reveals the full library\n"
+                    + "• Select an icon and confirm your choice",
+                Category = "Shared",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ShapeOutline",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.ImagePartSearch",
+                Title = "Image Part Search",
+                Content =
+                    "Find a part by its image instead of a part ID.\n\n"
+                    + "• Browse the part image catalog\n"
+                    + "• Pick the image that matches the material on the floor\n"
+                    + "• The matching part is loaded into the workflow",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ImageSearch",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Dunnage.PartInfoModal",
+                Title = "Part Information",
+                Content =
+                    "Read-only summary of the selected part.\n\n"
+                    + "• Stored part metadata and inventory settings\n"
+                    + "• Spec values saved for this part\n"
+                    + "• No edits are made from this view",
+                Category = "Dunnage",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Information",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.EmailPreview",
+                Title = "Email Preview",
+                Content =
+                    "Review the prepared Volvo requisition email before it is sent.\n\n"
+                    + "• Confirm recipients and the email body\n"
+                    + "• Copy Email Body copies the formatted text to the clipboard",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Email",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.GeneratedLabelData",
+                Title = "Generated Label Data",
+                Content =
+                    "Review the queued Volvo generated-label rows.\n\n"
+                    + "• Shows part, quantity, and skid for each row\n"
+                    + "• Clear Label Data removes all queued rows",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Label",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.PartNumberEdit",
+                Title = "Change Part Number",
+                Content =
+                    "Replace the part number on this shipment card.\n\n"
+                    + "• Search for the replacement part number\n"
+                    + "• Select the correct match and save\n"
+                    + "• The card updates to the new part",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Pencil",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.ShipmentHistoryDetail",
+                Title = "Shipment History Detail",
+                Content =
+                    "Read-only details for an archived Volvo shipment.\n\n"
+                    + "• Review the shipment and its line items\n"
+                    + "• Details cannot be changed here",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ClipboardText",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.ShipmentEdit",
+                Title = "Edit Shipment",
+                Content =
+                    "Edit a Volvo shipment's line items.\n\n"
+                    + "• Add or remove part rows\n"
+                    + "• Edit quantities and details inline\n"
+                    + "• Archived shipments open read-only",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "PencilBox",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Volvo.PartAddEdit",
+                Title = "Add / Edit Volvo Part",
+                Content =
+                    "Maintain the Volvo part master.\n\n"
+                    + "• Enter the part number and description\n"
+                    + "• Only the fields used by shipment entry are required\n"
+                    + "• Save writes the change to the part catalog",
+                Category = "Volvo",
+                HelpType = Enum_HelpType.Info,
+                Icon = "PackageVariant",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Reporting.Preview",
+                Title = "Report Preview",
+                Content =
+                    "Review the combined report preview before finalizing.\n\n"
+                    + "• Verify each module section looks correct\n"
+                    + "• Use the preview to confirm formatting and data",
+                Category = "Reporting",
+                HelpType = Enum_HelpType.Info,
+                Icon = "FileEye",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Scanner.ManageItems",
+                Title = "Manage Items",
+                Content =
+                    "Rearrange the scanner batch before sending.\n\n"
+                    + "• Add or duplicate an item\n"
+                    + "• Move items up/down to set the order\n"
+                    + "• Apply saves your changes to the batch",
+                Category = "Scanner",
+                HelpType = Enum_HelpType.Info,
+                Icon = "FormatListBulleted",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Reprint.ColumnChooser",
+                Title = "Choose Visible Columns",
+                Content =
+                    "Choose which columns appear in the reprint history grid.\n\n"
+                    + "• The selection checkbox column is always shown\n"
+                    + "• Apply saves your visibility choices; Cancel keeps the current layout",
+                Category = "Reprint",
+                HelpType = Enum_HelpType.Tutorial,
+                Icon = "ViewColumn",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRec.POLineSpecTextViewer",
+                Title = "PO Line Spec Text",
+                Content =
+                    "Read-only full specification text for a PO line.\n\n"
+                    + "• Displays the complete stored spec text\n"
+                    + "• Use Close when finished",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "FileDocument",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRec.POLineSpecSearchOptions",
+                Title = "PO Line Spec Search Options",
+                Content =
+                    "Choose which spec columns to search and show.\n\n"
+                    + "• Enable the fields you want to match on\n"
+                    + "• Apply runs the search with the selected options",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Magnify",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRec.MaterialAvailabilityWorkOrder",
+                Title = "Work Order Availability",
+                Content =
+                    "Material availability for a work order.\n\n"
+                    + "• Shows the work-order details and required material\n"
+                    + "• Use Close when finished",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "ClipboardCheck",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRec.MaterialAvailabilityIncoming",
+                Title = "Incoming Material Availability",
+                Content =
+                    "Material availability for incoming shipments.\n\n"
+                    + "• Shows the incoming order and expected material\n"
+                    + "• Use Close when finished",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "TruckDelivery",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRec.DunnageBookPreview",
+                Title = "Dunnage Book Preview",
+                Content =
+                    "Preview the dunnage book report before output.\n\n"
+                    + "• Review the generated pages\n"
+                    + "• Print / Save as PDF writes the report",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "BookOpen",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
             }
         );
     }

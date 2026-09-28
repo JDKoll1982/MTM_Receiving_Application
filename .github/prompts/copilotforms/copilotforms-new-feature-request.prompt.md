@@ -5,6 +5,18 @@ agent: agent
 argument-hint: "Link a new feature request export from docs/CopilotForms/outputs/new-feature-request and add any extra constraints"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-new-feature-request.prompt.md
+- Description: Read a saved CopilotForms new feature request export and implement the requested capability.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms New Feature Request
+  - Line 12: ## Workflow
+- Critical Notes: Implement the new capability with the smallest architecture-aligned changes.
+[DOC-META-END]
+-->
+
 # CopilotForms New Feature Request
 
 Read the linked export from `docs/CopilotForms/outputs/new-feature-request/` and use it as the structured input for implementation.

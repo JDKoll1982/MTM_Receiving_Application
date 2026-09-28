@@ -16,6 +16,12 @@ public sealed partial class View_Volvo_History : Page
         InitializeComponent();
     }
 
+    private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        await helpService.ShowHelpAsync("Volvo.History");
+    }
+
     private async void OnPageLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         // Load recent shipments on page load (last 30 days)

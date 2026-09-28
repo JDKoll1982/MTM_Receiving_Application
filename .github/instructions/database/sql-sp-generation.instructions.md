@@ -2,6 +2,25 @@
 applyTo: "Database/StoredProcedures/**/*.sql,Database/Scripts/**/*.sql,Database/Deploy/**/*.sql"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: sql-sp-generation.instructions.md
+- Description: Rules for authoring MySQL stored procedures and SQL scripts under Database/, covering coding style, query structure, naming, parameters, and toggleable test blocks.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # SQL Development
+  - Line 7-14: ## SQL Coding Style
+  - Line 15-23: ## SQL Query Structure
+  - Line 24-31: ## Stored Procedure Naming Conventions
+  - Line 32-40: ## Parameter Handling
+  - Line 41-48: ## Stored Procedure Structure
+  - Line 49-91: ## Toggleable Test Blocks
+  - Line 92-99: ## SQL Security Best Practices
+  - Line 100-106: ## Transaction Management
+- Critical Notes: Toggleable test blocks must use exact '-- TEST BLOCK START/END: <Block Name>' markers that Set-SqlTestBlockState.ps1 can toggle safely.
+[DOC-META-END]
+-->
+
 # SQL Development
 
 ## SQL Coding Style

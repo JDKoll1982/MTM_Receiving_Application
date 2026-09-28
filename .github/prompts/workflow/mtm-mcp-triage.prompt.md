@@ -15,6 +15,17 @@ tools:
   - oraios/serena/*
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-mcp-triage.prompt.md
+- Description: Triage a task using MCP-first context gathering (Serena + filesystem).
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 18: # MCP Triage
+- Critical Notes: Gather context with MCP tools before proposing a plan; do not edit unless the user explicitly asked to implement.
+[DOC-META-END]
+-->
+
 # MCP Triage
 
 You are triaging a request in this workspace.

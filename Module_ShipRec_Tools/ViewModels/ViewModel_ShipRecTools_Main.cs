@@ -38,10 +38,19 @@ public partial class ViewModel_ShipRecTools_Main
     private bool _isMaterialAvailabilityBoardVisible;
 
     [ObservableProperty]
-    private bool _isCustomerPullPackVisible;
+    private bool _isPOLineSpecSearchVisible;
 
     [ObservableProperty]
-    private bool _isCustomerPullPackWaitlistVisible;
+    private bool _isDunnageBookVisible;
+
+    [ObservableProperty]
+    private bool _isWeldedCoilsVisible;
+
+    [ObservableProperty]
+    private bool _isReceivingAnalyticsVisible;
+
+    [ObservableProperty]
+    private bool _isDeliveryScheduleVisible;
 
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
@@ -88,14 +97,32 @@ public partial class ViewModel_ShipRecTools_Main
                     ShowHeaderBackButton();
                     break;
 
-                case "CustomerPullPack":
-                    IsCustomerPullPackVisible = true;
+                case "POLineSpecSearch":
+                    IsPOLineSpecSearchVisible = true;
                     CurrentToolTitle = toolTitle;
                     ShowHeaderBackButton();
                     break;
 
-                case "CustomerPullPackWaitlist":
-                    IsCustomerPullPackWaitlistVisible = true;
+                case "DunnageBook":
+                    IsDunnageBookVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "WeldedCoils":
+                    IsWeldedCoilsVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "ReceivingAnalytics":
+                    IsReceivingAnalyticsVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
+                case "DeliverySchedule":
+                    IsDeliveryScheduleVisible = true;
                     CurrentToolTitle = toolTitle;
                     ShowHeaderBackButton();
                     break;
@@ -147,7 +174,10 @@ public partial class ViewModel_ShipRecTools_Main
         IsToolSelectionVisible = false;
         IsOutsideServiceHistoryVisible = false;
         IsMaterialAvailabilityBoardVisible = false;
-        IsCustomerPullPackVisible = false;
-        IsCustomerPullPackWaitlistVisible = false;
+        IsPOLineSpecSearchVisible = false;
+        IsDunnageBookVisible = false;
+        IsWeldedCoilsVisible = false;
+        IsReceivingAnalyticsVisible = false;
+        IsDeliveryScheduleVisible = false;
     }
 }

@@ -5,7 +5,8 @@ using System.Linq;
 namespace MTM_Receiving_Application.Module_Scanner.Models;
 
 /// <summary>
-/// Root aggregate for a user-owned scanner draft or send run.
+/// Root aggregate for the user's current scanner list. Persisted so the list survives app
+/// restarts; there is no separate Draft state.
 /// </summary>
 public sealed partial class Model_ScannerBatchSession
 {
@@ -21,7 +22,7 @@ public sealed partial class Model_ScannerBatchSession
 
 	public DateTime LastUpdatedUtc { get; set; } = DateTime.UtcNow;
 
-	public Enum_ScannerSessionStatus Status { get; set; } = Enum_ScannerSessionStatus.Draft;
+	public Enum_ScannerSessionStatus Status { get; set; } = Enum_ScannerSessionStatus.Ready;
 
 	public Guid ActiveProfileId { get; set; }
 
@@ -58,35 +59,5 @@ public sealed partial class Model_ScannerBatchSession
 		FailedItems = Items.Count(item => item.ExecutionState == Enum_ScannerExecutionState.Failed);
 		WaitingItems = Items.Count(item => item.ExecutionState == Enum_ScannerExecutionState.Waiting);
 		LastUpdatedUtc = DateTime.UtcNow;
-	}
-
-	public Model_ScannerRun ToRunSnapshot()
-	{
-		RecalculateItemCounters();
-		var run = new Model_ScannerRun
-		{
-			RunId = Guid.NewGuid(),
-			SessionId = SessionId,
-			ProfileId = ActiveProfileId,
-			OwnerUserId = OwnerUserId,
-			OwnerDisplayName = OwnerDisplayName,
-			StartedUtc = LastSendStartedUtc ?? DateTime.UtcNow,
-			EndedUtc = LastSendEndedUtc,
-			FinalStatus = Status,
-			StopReason = StopReason,
-			TotalItems = TotalItems,
-			SentItems = SentItems,
-			FailedItems = FailedItems,
-			WaitingItems = WaitingItems,
-			FailureSummary = LastFailureMessage,
-			CreatedUtc = DateTime.UtcNow,
-		};
-
-		foreach (var item in Items.OrderBy(item => item.SequenceNumber))
-		{
-			run.Items.Add(item.ToRunItem(run.RunId));
-		}
-
-		return run;
 	}
 }

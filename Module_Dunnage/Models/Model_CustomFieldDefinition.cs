@@ -1,11 +1,11 @@
 using System;
-using System.Text;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Models;
 
 /// <summary>
-/// Represents a user-defined custom field for dunnage types.
+/// Represents a user-defined custom field (UDC slot) for dunnage types.
 /// Corresponds to dunnage_custom_fields table.
 /// </summary>
 public partial class Model_CustomFieldDefinition : ObservableObject
@@ -20,9 +20,6 @@ public partial class Model_CustomFieldDefinition : ObservableObject
     private string _fieldName = string.Empty;
 
     [ObservableProperty]
-    private string _databaseColumnName = string.Empty;
-
-    [ObservableProperty]
     private string _fieldType = "Text";
 
     [ObservableProperty]
@@ -32,7 +29,22 @@ public partial class Model_CustomFieldDefinition : ObservableObject
     private bool _isRequired;
 
     [ObservableProperty]
+    private string? _unit;
+
+    [ObservableProperty]
+    private decimal? _minValue;
+
+    [ObservableProperty]
+    private decimal? _maxValue;
+
+    [ObservableProperty]
+    private string? _defaultValue;
+
+    [ObservableProperty]
     private string? _validationRules;
+
+    [ObservableProperty]
+    private List<string> _choices = new();
 
     [ObservableProperty]
     private DateTime _createdDate = DateTime.Now;
@@ -40,36 +52,12 @@ public partial class Model_CustomFieldDefinition : ObservableObject
     [ObservableProperty]
     private string _createdBy = string.Empty;
 
-    public static string BuildDatabaseColumnName(string fieldName)
-    {
-        if (string.IsNullOrWhiteSpace(fieldName))
-        {
-            return string.Empty;
-        }
-
-        var builder = new StringBuilder(fieldName.Length);
-        var previousWasUnderscore = false;
-
-        foreach (var character in fieldName.Trim().ToLowerInvariant())
-        {
-            if (char.IsLetterOrDigit(character))
-            {
-                builder.Append(character);
-                previousWasUnderscore = false;
-                continue;
-            }
-
-            if (previousWasUnderscore)
-            {
-                continue;
-            }
-
-            builder.Append('_');
-            previousWasUnderscore = true;
-        }
-
-        return builder.ToString().Trim('_');
-    }
+    /// <summary>
+    /// Gets the udc slot column name (udc1..udc10) that backs this field.
+    /// DisplayOrder is 1-based; values outside 1-10 map to an empty string.
+    /// </summary>
+    public string UdcColumnName =>
+        DisplayOrder is >= 1 and <= 10 ? $"udc{DisplayOrder}" : string.Empty;
 
     /// <summary>
     /// Returns a summary string for display in the UI

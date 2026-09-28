@@ -1,6 +1,6 @@
 # Scanner ViewModel
 
-Last Updated: 2026-07-21
+Last Updated: 2026-08-24
 
 This view-model is the operational center for preparing items, validating data, and sending them to inventory.
 
@@ -8,8 +8,20 @@ This view-model is the operational center for preparing items, validating data, 
 
 - manage the active session and batch items collection
 - expose item editing, ordering, and validation commands
-- trigger send-next and send-all operations
+- trigger send-next (manual, one item at a time) operations
 - present progress and partial-send state to the user
+
+## Current Implementation State
+
+- CurrentSession
+- SessionItems collection
+- SelectedSessionItem
+- OwnerUserId and OwnerDisplayName
+- AppWindowTitleSnapshot and AppWindowClassSnapshot
+- LastValidationStatus and LastValidationNotes
+- HasActiveSession
+- Status and notification state from the shared base view-model
+- ManageItemsDialogCommand
 
 ## Required State
 
@@ -22,7 +34,7 @@ This view-model is the operational center for preparing items, validating data, 
 - CurrentRunMessage
 - CurrentRunSeverity
 - SentCount, FailedCount, PendingCount
-- CanSendNext, CanSendBatch, CanStop
+- CanSendNext
 - LastRunSummary
 - ItemValidationSummaryMessage
 - HasInvalidItems
@@ -39,10 +51,19 @@ This view-model is the operational center for preparing items, validating data, 
 - MoveItemUp and MoveItemDown
 - CheckAll
 - SendNext
-- SendAll (formerly SendBatchCycle)
-- StopAfterThis (formerly StopAfterCurrentCycle)
 - RetryFailedItem
 - ClearHistory
+
+## Implemented Workbench Behaviors
+
+- StartDraftSessionAsync creates a new draft session and initializes the workbench state.
+- AddDraftItemAsync validates new items and stages them into the active session without blocking the workflow when validation returns warnings or issues.
+- BuildRunSnapshotAsync creates the run snapshot and updates the current session status from the workflow service response.
+- CheckAllAsync revalidates all staged items and refreshes status/notes summaries.
+- SendNextAsync transitions eligible items into sent state and updates counters and session status.
+- ClearHistoryAsync clears the active workbench UI state and ExportAsync writes the current batch to a text export.
+- ManageItemsDialogAsync opens the batch-edit dialog, allows add/duplicate/reorder/delete actions, and persists the reordered session back through the workflow service.
+- GetFromInventoryLocationsAsync returns every warehouse location that currently holds stock (quantity > 0) for the entered part, scoped to the From warehouse, via the validation service. It backs the From-location inventory picker shown when the typed source location does not resolve.
 
 ## Validation Responsibilities
 
@@ -80,6 +101,7 @@ Modify or extend:
 - scanner module navigation host to include scanner workbench route
 - scanner module command wiring to expose scanner entry points
 - workbench command surface to open the manage-items dialog for inline item entry and reorder workflows
+- manage-items dialog implementation in Module_Scanner.Views and its workflow persistence path
 
 Do not modify:
 

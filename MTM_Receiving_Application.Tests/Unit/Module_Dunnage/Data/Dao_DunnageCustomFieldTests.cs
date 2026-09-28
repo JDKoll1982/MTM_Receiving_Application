@@ -28,10 +28,13 @@ public sealed class Dao_DunnageCustomFieldTests
         field.Id.Should().Be(7);
         field.DunnageTypeId.Should().Be(12);
         field.FieldName.Should().Be("Weight (lbs)");
-        field.DatabaseColumnName.Should().Be("weight_lbs");
         field.FieldType.Should().Be("Number");
         field.DisplayOrder.Should().Be(3);
         field.IsRequired.Should().BeTrue();
+        field.Unit.Should().Be("lbs");
+        field.MinValue.Should().Be(1m);
+        field.MaxValue.Should().Be(50m);
+        field.DefaultValue.Should().Be("10");
         field.ValidationRules.Should().Be("{\"min\":1}");
         field.CreatedDate.Should().Be(new DateTime(2026, 4, 1, 10, 30, 0));
         field.CreatedBy.Should().Be("tester");
@@ -40,25 +43,32 @@ public sealed class Dao_DunnageCustomFieldTests
     private static IDataReader CreateReader()
     {
         var table = new DataTable();
-        table.Columns.Add("id", typeof(int));
-        table.Columns.Add("dunnagetypeid", typeof(int));
-        table.Columns.Add("field_name", typeof(string));
-        table.Columns.Add("databasecolumnname", typeof(string));
-        table.Columns.Add("field_type", typeof(string));
-        table.Columns.Add("display_order", typeof(int));
-        table.Columns.Add("is_required", typeof(bool));
-        table.Columns.Add("validationrules", typeof(string));
-        table.Columns.Add("createddate", typeof(DateTime));
-        table.Columns.Add("createdby", typeof(string));
+        // Column names mirror the exact casing returned by sp_Dunnage_CustomFields_GetByType.
+        table.Columns.Add("ID", typeof(int));
+        table.Columns.Add("DunnageTypeID", typeof(int));
+        table.Columns.Add("FieldName", typeof(string));
+        table.Columns.Add("FieldType", typeof(string));
+        table.Columns.Add("DisplayOrder", typeof(int));
+        table.Columns.Add("IsRequired", typeof(bool));
+        table.Columns.Add("Unit", typeof(string));
+        table.Columns.Add("MinValue", typeof(decimal));
+        table.Columns.Add("MaxValue", typeof(decimal));
+        table.Columns.Add("DefaultValue", typeof(string));
+        table.Columns.Add("ValidationRules", typeof(string));
+        table.Columns.Add("CreatedDate", typeof(DateTime));
+        table.Columns.Add("CreatedBy", typeof(string));
 
         table.Rows.Add(
             7,
             12,
             "Weight (lbs)",
-            "weight_lbs",
             "Number",
             3,
             true,
+            "lbs",
+            1m,
+            50m,
+            "10",
             "{\"min\":1}",
             new DateTime(2026, 4, 1, 10, 30, 0),
             "tester"

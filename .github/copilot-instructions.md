@@ -1,3 +1,30 @@
+<!-- 
+[DOC-META-START]
+- File Name: copilot-instructions.md
+- Description: Repository-wide source of truth for coding agents: MVVM/DAO/DB rules, workflow, module map, build/test commands.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 28-31: # MTM Receiving Application Instructions
+  - Line 32-36: ## Reply Style
+  - Line 37-45: ## Read Order
+  - Line 46-57: ## Non-Negotiables
+  - Line 58-66: ## Major Assumptions
+  - Line 67-74: ## Required Workflow
+  - Line 75-82: ## Ask User Before
+  - Line 83-88: ## Validation
+  - Line 89-94: ## Key Architecture Rules
+  - Line 95-103: ## Database Rules
+  - Line 104-116: ## Testing Rules
+  - Line 117-126: ## Module Map
+  - Line 127-137: ## Quick Debug Checklist
+  - Line 138-141: ## Docs Maintenance
+  - Line 142-146: ## Build/Test Commands
+  - Line 147-151: ## Environment Notes
+  - Line 152-156: ## Azure Notes
+- Critical Notes: Non-negotiable rules apply to all modules; ignore .github/archive/ for active work.
+[DOC-META-END]
+-->
+
 # MTM Receiving Application Instructions
 
 Repository-wide source of truth for coding agents.
@@ -70,6 +97,9 @@ Pause and ask via chat approval flow when a major assumption is needed, includin
 - MySQL: stored procedures only.
 - SQL Server (Infor Visual): read-only.
 - Never write raw MySQL SQL in C#.
+- Use the VS Code extension `cweijan.vscode-mysql-client2` for MySQL read/write validation against `mtm_receiving_application_test` before or during MySQL-related code changes.
+- Keep SQL files in `Database/` as source-of-truth artifacts; use extension queries for immediate validation and safe iteration.
+- Run extension-side tests with a non-destructive pattern: target the test schema explicitly and clean up any temporary rows/tables created during validation.
 
 ## Testing Rules
 
@@ -107,12 +137,12 @@ Pause and ask via chat approval flow when a major assumption is needed, includin
 
 ## Docs Maintenance
 
-If code changes invalidate source-of-truth docs, update matching files under .github/, specs/, docs/, or CopilotForms metadata.
+If code changes invalidate source-of-truth docs, update matching files under .github/, specs/, or docs/.
 
 ## Build/Test Commands
 
-- dotnet build MTM_Receiving_Application.sln
-- dotnet test MTM_Receiving_Application.sln
+- dotnet build MTM_Receiving_Application.slnx
+- dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 
 ## Environment Notes
 

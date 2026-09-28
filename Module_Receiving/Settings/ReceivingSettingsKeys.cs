@@ -125,6 +125,8 @@ public static class ReceivingSettingsKeys
             "Receiving.UiText.PoEntry.Column.RemainingQty";
         public const string PoEntryColumnQtyOrdered = "Receiving.UiText.PoEntry.Column.QtyOrdered";
         public const string PoEntryColumnLineNumber = "Receiving.UiText.PoEntry.Column.LineNumber";
+        public const string PoEntryColumnOnHand = "Receiving.UiText.PoEntry.Column.OnHand";
+        public const string PoEntryColumnLocation = "Receiving.UiText.PoEntry.Column.Location";
 
         public const string LoadEntryHeader = "Receiving.UiText.LoadEntry.Header";
         public const string LoadEntryInstruction = "Receiving.UiText.LoadEntry.Instruction";
@@ -144,6 +146,9 @@ public static class ReceivingSettingsKeys
         public const string PackageTypeHeader = "Receiving.UiText.PackageType.Header";
         public const string PackageTypeComboHeader = "Receiving.UiText.PackageType.ComboHeader";
         public const string PackageTypeCustomHeader = "Receiving.UiText.PackageType.CustomHeader";
+        public const string PackageTypeAutoFill = "Receiving.UiText.PackageType.AutoFill";
+        public const string PackageTypeAutoFillTooltip =
+            "Receiving.UiText.PackageType.AutoFillTooltip";
         public const string PackageTypeSaveAsDefault = "Receiving.UiText.PackageType.SaveAsDefault";
         public const string PackageTypeLoadNumberPrefix =
             "Receiving.UiText.PackageType.LoadNumberPrefix";
@@ -262,9 +267,12 @@ public static class ReceivingSettingsKeys
         public const string ErrorPoRequired = "Receiving.Messages.Error.PoRequired";
         public const string ErrorPartIdRequired = "Receiving.Messages.Error.PartIdRequired";
         public const string ErrorPoNotFound = "Receiving.Messages.Error.PoNotFound";
+        public const string ErrorPoHasNoParts = "Receiving.Messages.Error.PoHasNoParts";
         public const string ErrorPartNotFound = "Receiving.Messages.Error.PartNotFound";
 
         public const string InfoPoLoadedWithParts = "Receiving.Messages.Info.PoLoadedWithParts";
+        public const string InfoPoSinglePartAutoSelected =
+            "Receiving.Messages.Info.PoSinglePartAutoSelected";
         public const string InfoPartFound = "Receiving.Messages.Info.PartFound";
 
         public const string WarningSameDayReceiving = "Receiving.Messages.Warning.SameDayReceiving";

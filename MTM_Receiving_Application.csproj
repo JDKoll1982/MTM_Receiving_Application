@@ -6,9 +6,9 @@
     <EnableDefaultPageItems>true</EnableDefaultPageItems>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>MTM_Receiving_Application</RootNamespace>
-    <Version>3.1.0.0</Version>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
+    <Version>4.2.0.0</Version>
+    <AssemblyVersion>4.2.0.0</AssemblyVersion>
+    <FileVersion>4.2.0.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- x64 only — all manufacturing floor PCs are x64 Windows. ARM64 and x86 removed
          to eliminate parallel build file-lock issues and reduce build time. -->
@@ -66,8 +66,52 @@
       <Link>docs\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
   </ItemGroup>
+  <!-- SyncTool (reference-data sync used by Settings -> Core Settings -> Configuration ->
+       Database Config). Bundled so the tool can be launched from the running application;
+       it is allow-list based, read-only by default, and never accepts secrets on the CLI. -->
+  <ItemGroup>
+    <Content Include="Database\SyncTool\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Database\SyncTool\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+    <!-- Do not ship generated/runtime artifacts of the tool. -->
+    <Content Remove="Database\SyncTool\**\__pycache__\**" />
+    <Content Remove="Database\SyncTool\backups\**" />
+    <Content Remove="Database\SyncTool\build\**" />
+    <Content Remove="Database\SyncTool\dist\**" />
+    <Content Remove="Database\SyncTool\build_exe.py" />
+    <Content Remove="Database\SyncTool\sync_reference_data.spec" />
+    <None Remove="Database\SyncTool\**\__pycache__\**" />
+    <None Remove="Database\SyncTool\backups\**" />
+    <None Remove="Database\SyncTool\build\**" />
+    <None Remove="Database\SyncTool\dist\**" />
+    <None Remove="Database\SyncTool\build_exe.py" />
+    <None Remove="Database\SyncTool\sync_reference_data.spec" />
+    <!-- Standalone executable (built by build_exe.py); run with no Python installed. -->
+    <Content
+      Include="Database\SyncTool\dist\sync_reference_data.exe"
+      Condition="Exists('Database\SyncTool\dist\sync_reference_data.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Database\SyncTool\sync_reference_data.exe</Link>
+    </Content>
+  </ItemGroup>
+  <!-- Build the standalone SyncTool exe with the repo venv whenever the tool has
+       changed. Skips gracefully (script+Python fallback) when PyInstaller is not
+       installed or the venv is absent, so normal builds never fail on it. -->
+  <Target
+    Name="BuildSyncToolExe"
+    BeforeTargets="BeforeBuild"
+    Condition="'$(OS)' == 'Windows_NT' and Exists('$(MSBuildProjectDirectory)\.venv\Scripts\python.exe')">
+    <Exec
+      Command="&quot;$(MSBuildProjectDirectory)\.venv\Scripts\python.exe&quot; &quot;$(MSBuildProjectDirectory)\Database\SyncTool\build_exe.py&quot;"
+      WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
   <ItemGroup>
     <Content Remove="docs\development\CopilotForms\**" />
+    <Content Remove="docs\CopilotForms\data\module-metadata\Module_Settings.Receiving\settings-receiving-configuration.json" />
+    <!-- Schema reference exports only; ~5,900 files that would otherwise be copied to output. -->
+    <Content Remove="docs\development\InforVisual\DatabaseCSVFiles\**" />
+    <None Remove="docs\development\InforVisual\DatabaseCSVFiles\**" />
     <None Include="docs\development\CopilotForms\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>docs\development\CopilotForms\%(RecursiveDir)%(Filename)%(Extension)</Link>
@@ -95,6 +139,9 @@
     <None Include="Assets\MTMLogo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\DunnageBookNoImage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- Exclude .github folder from PRI generation -->
   <ItemGroup>
@@ -106,10 +153,8 @@
     <Compile Remove=".agent_work\**" />
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
     <Compile Remove="Scripts\**" />
-    <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_System.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Logging.cs" />
-    <Compile Remove="Module_Settings.Core\Views\View_Settings_System.xaml.cs" />
     <Compile Remove="Module_Settings.Core\Views\View_Settings_Database.xaml.cs" />
     <Compile Remove="Module_Settings.Core\Views\View_Settings_Logging.xaml.cs" />
     <Compile Remove="Properties\**" />
@@ -140,6 +185,7 @@
     <None Include=".github\**\*.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Backgrounds\NothingFound.jpg" />
     <Content Include="Assets\Icons\open-label-dunnage.png" />
     <Content Include="Assets\Icons\open-label-mini-receiving.png" />
     <Content Include="Assets\Icons\open-label-receiving.png" />
@@ -214,6 +260,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.2.251219" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.5" />
     <PackageReference Include="Mapster" Version="10.0.9" />
 
     <!-- CQRS Infrastructure -->
@@ -339,9 +386,6 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="docs\development\CopilotForms\data\module-metadata\Module_OutsideService\" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove=".agent_work\**" />

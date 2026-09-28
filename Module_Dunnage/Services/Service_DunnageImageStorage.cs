@@ -65,84 +65,88 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
 
     public async Task SyncLocalCacheAsync()
     {
-        await Task.Yield();
-
         try
         {
             await RefreshConfiguredRootFolderAsync();
 
-            var sharedRootFolder = Helper_DunnageImagePaths.SharedRootFolder;
-            var localCacheRootFolder = Helper_DunnageImagePaths.LocalCacheRootFolder;
-
-            Directory.CreateDirectory(localCacheRootFolder);
-            if (Directory.Exists(sharedRootFolder) is false)
+            await Task.Run(() =>
             {
-                return;
-            }
+                var sharedRootFolder = Helper_DunnageImagePaths.SharedRootFolder;
+                var localCacheRootFolder = Helper_DunnageImagePaths.LocalCacheRootFolder;
 
-            var sharedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var sharedImagePath in Directory.EnumerateFiles(
-                sharedRootFolder,
-                "*",
-                SearchOption.AllDirectories
-            ))
-            {
-                if (IsSupportedExtension(Path.GetExtension(sharedImagePath)) is false)
+                Directory.CreateDirectory(localCacheRootFolder);
+                if (Directory.Exists(sharedRootFolder) is false)
                 {
-                    continue;
+                    return;
                 }
 
-                var relativePath = Path.GetRelativePath(sharedRootFolder, sharedImagePath);
-                if (ShouldSkipFromLocalSync(relativePath))
+                var sharedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var sharedImagePath in Directory.EnumerateFiles(
+                    sharedRootFolder,
+                    "*",
+                    SearchOption.AllDirectories
+                ))
                 {
-                    continue;
+                    if (IsSupportedExtension(Path.GetExtension(sharedImagePath)) is false)
+                    {
+                        continue;
+                    }
+
+                    var relativePath = Path.GetRelativePath(sharedRootFolder, sharedImagePath);
+                    if (ShouldSkipFromLocalSync(relativePath))
+                    {
+                        continue;
+                    }
+
+                    sharedRelativePaths.Add(relativePath);
+
+                    var localCachePath = Path.Combine(localCacheRootFolder, relativePath);
+                    var localCacheDirectory = Path.GetDirectoryName(localCachePath);
+                    if (string.IsNullOrWhiteSpace(localCacheDirectory) is false)
+                    {
+                        Directory.CreateDirectory(localCacheDirectory);
+                    }
+
+                    if (ShouldCopyToLocalCache(sharedImagePath, localCachePath))
+                    {
+                        File.Copy(sharedImagePath, localCachePath, overwrite: true);
+                        File.SetLastWriteTimeUtc(
+                            localCachePath,
+                            File.GetLastWriteTimeUtc(sharedImagePath)
+                        );
+                    }
                 }
 
-                sharedRelativePaths.Add(relativePath);
-
-                var localCachePath = Path.Combine(localCacheRootFolder, relativePath);
-                var localCacheDirectory = Path.GetDirectoryName(localCachePath);
-                if (string.IsNullOrWhiteSpace(localCacheDirectory) is false)
+                foreach (var localCacheImagePath in Directory.EnumerateFiles(
+                    localCacheRootFolder,
+                    "*",
+                    SearchOption.AllDirectories
+                ))
                 {
-                    Directory.CreateDirectory(localCacheDirectory);
-                }
+                    if (IsSupportedExtension(Path.GetExtension(localCacheImagePath)) is false)
+                    {
+                        continue;
+                    }
 
-                if (ShouldCopyToLocalCache(sharedImagePath, localCachePath))
-                {
-                    File.Copy(sharedImagePath, localCachePath, overwrite: true);
-                    File.SetLastWriteTimeUtc(
-                        localCachePath,
-                        File.GetLastWriteTimeUtc(sharedImagePath)
+                    var relativePath = Path.GetRelativePath(
+                        localCacheRootFolder,
+                        localCacheImagePath
                     );
-                }
-            }
+                    if (ShouldSkipFromLocalSync(relativePath))
+                    {
+                        continue;
+                    }
 
-            foreach (var localCacheImagePath in Directory.EnumerateFiles(
-                localCacheRootFolder,
-                "*",
-                SearchOption.AllDirectories
-            ))
-            {
-                if (IsSupportedExtension(Path.GetExtension(localCacheImagePath)) is false)
-                {
-                    continue;
-                }
+                    if (sharedRelativePaths.Contains(relativePath))
+                    {
+                        continue;
+                    }
 
-                var relativePath = Path.GetRelativePath(localCacheRootFolder, localCacheImagePath);
-                if (ShouldSkipFromLocalSync(relativePath))
-                {
-                    continue;
+                    File.Delete(localCacheImagePath);
                 }
 
-                if (sharedRelativePaths.Contains(relativePath))
-                {
-                    continue;
-                }
-
-                File.Delete(localCacheImagePath);
-            }
-
-            CleanupEmptyCacheDirectories(localCacheRootFolder);
+                CleanupEmptyCacheDirectories(localCacheRootFolder);
+            });
         }
         catch
         {

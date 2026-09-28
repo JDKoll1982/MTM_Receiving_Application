@@ -24,7 +24,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="poNumber">PO number to validate</param>
         /// <returns>Validation result with success flag and error message if invalid</returns>
-        public Model_ReceivingValidationResult ValidatePONumber(string poNumber);
+        public Task<Model_ReceivingValidationResult> ValidatePONumberAsync(string poNumber);
 
         /// <summary>
         /// Validates a Part ID format and basic requirements.
@@ -38,14 +38,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="numLoads">Number of loads</param>
         /// <returns>Validation result</returns>
-        public Model_ReceivingValidationResult ValidateNumberOfLoads(int numLoads);
+        public Task<Model_ReceivingValidationResult> ValidateNumberOfLoadsAsync(int numLoads);
 
         /// <summary>
         /// Validates weight/quantity value (must be > 0).
         /// </summary>
         /// <param name="weightQuantity">Weight quantity</param>
         /// <returns>Validation result</returns>
-        public Model_ReceivingValidationResult ValidateWeightQuantity(decimal weightQuantity);
+        public Task<Model_ReceivingValidationResult> ValidateWeightQuantityAsync(
+            decimal weightQuantity
+        );
 
         /// <summary>
         /// Validates package count (must be > 0).
@@ -59,7 +61,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="heatLotNumber">Heat/lot number</param>
         /// <returns>Validation result</returns>
-        public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber);
+        public Task<Model_ReceivingValidationResult> ValidateHeatLotNumberAsync(
+            string heatLotNumber
+        );
 
         /// <summary>
         /// Validates a receiving location when one is entered.
@@ -105,14 +109,18 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="load">Load to validate</param>
         /// <returns>Validation result</returns>
-        public Model_ReceivingValidationResult ValidateReceivingLoad(Model_ReceivingLoad load);
+        public Task<Model_ReceivingValidationResult> ValidateReceivingLoadAsync(
+            Model_ReceivingLoad load
+        );
 
         /// <summary>
         /// Validates all loads in a session before save.
         /// </summary>
         /// <param name="loads">List of loads</param>
         /// <returns>Validation result with all errors aggregated</returns>
-        public Model_ReceivingValidationResult ValidateSession(List<Model_ReceivingLoad> loads);
+        public Task<Model_ReceivingValidationResult> ValidateSessionAsync(
+            List<Model_ReceivingLoad> loads
+        );
 
         /// <summary>
         /// Validates a part ID exists in Infor Visual (for edit scenarios).

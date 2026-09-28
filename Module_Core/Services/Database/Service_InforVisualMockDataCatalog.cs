@@ -18,10 +18,6 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
     private const string CatalogPath = "Module_Settings.Core/Defaults/inforvisual-mock-data.json";
     private const string RuntimeCatalogPath =
         "Module_Settings.Core/Defaults/inforvisual.mock-runtime.json";
-    private const string CustomerPullPackCatalogPath =
-        "Module_ShipRec_Tools/Defaults/customer-pull-pack-mock-data.json";
-    private const string CustomerPullPackRuntimeCatalogPath =
-        "Module_ShipRec_Tools/Defaults/customer-pull-pack-runtime.json";
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -31,24 +27,12 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
     private readonly IService_LoggingUtility? _logger;
     private readonly Lazy<Model_InforVisualMockDataCatalog> _catalog;
     private readonly Lazy<Model_InforVisualMockDataCatalog> _runtimeCatalog;
-    private readonly Lazy<
-        IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow>
-    > _customerPullPackDemandRows;
-    private readonly Lazy<
-        IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow>
-    > _customerPullPackLocationRows;
 
     public Service_InforVisualMockDataCatalog(IService_LoggingUtility? logger = null)
     {
         _logger = logger;
         _catalog = new Lazy<Model_InforVisualMockDataCatalog>(LoadCatalog);
         _runtimeCatalog = new Lazy<Model_InforVisualMockDataCatalog>(LoadRuntimeCatalog);
-        _customerPullPackDemandRows = new Lazy<
-            IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow>
-        >(LoadCustomerPullPackDemandRows);
-        _customerPullPackLocationRows = new Lazy<
-            IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow>
-        >(LoadCustomerPullPackLocationRows);
     }
 
     public Model_InforVisualMockDataCatalog GetCatalog()
@@ -107,16 +91,6 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             .OrderByDescending(transaction => transaction.TransactionDate)
             .ThenBy(transaction => transaction.PartID, StringComparer.OrdinalIgnoreCase)
             .ToList();
-    }
-
-    public IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow> GetCustomerPullPackDemandRows()
-    {
-        return _customerPullPackDemandRows.Value;
-    }
-
-    public IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> GetCustomerPullPackLocationRows()
-    {
-        return _customerPullPackLocationRows.Value;
     }
 
     public async Task<Model_Dao_Result<int>> AppendReceivingTransactionsAsync(
@@ -295,176 +269,6 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             .ToList();
     }
 
-    private IReadOnlyList<Model_InforVisualCustomerPullPackDemandRow> LoadCustomerPullPackDemandRows()
-    {
-        var mergedRows = new Dictionary<string, Model_InforVisualCustomerPullPackDemandRow>(
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        void Merge(IEnumerable<Model_InforVisualCustomerPullPackDemandRow> rows)
-        {
-            foreach (var row in rows.Select(NormalizeCustomerPullPackDemandRow))
-            {
-                if (string.IsNullOrWhiteSpace(row.SourceLineKey))
-                {
-                    continue;
-                }
-
-                mergedRows[row.SourceLineKey] = row;
-            }
-        }
-
-        var catalog = LoadCustomerPullPackCatalog(
-            CustomerPullPackCatalogPath,
-            logWhenMissing: true
-        );
-        var runtimeCatalog = LoadCustomerPullPackCatalog(
-            CustomerPullPackRuntimeCatalogPath,
-            logWhenMissing: false
-        );
-
-        Merge(catalog.DemandRows);
-        Merge(runtimeCatalog.DemandRows);
-
-        return mergedRows
-            .Values.OrderBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.PullDate)
-            .ThenBy(row => row.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.ParentPartId, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-    }
-
-    private IReadOnlyList<Model_InforVisualCustomerPullPackLocationRow> LoadCustomerPullPackLocationRows()
-    {
-        var mergedRows = new Dictionary<string, Model_InforVisualCustomerPullPackLocationRow>(
-            StringComparer.OrdinalIgnoreCase
-        );
-
-        void Merge(IEnumerable<Model_InforVisualCustomerPullPackLocationRow> rows)
-        {
-            foreach (var row in rows.Select(NormalizeCustomerPullPackLocationRow))
-            {
-                var key = string.IsNullOrWhiteSpace(row.LocationKey)
-                    ? $"{row.SourceLineKey}|{row.LocationId}"
-                    : row.LocationKey;
-
-                if (string.IsNullOrWhiteSpace(key))
-                {
-                    continue;
-                }
-
-                mergedRows[key] = row;
-            }
-        }
-
-        var catalog = LoadCustomerPullPackCatalog(
-            CustomerPullPackCatalogPath,
-            logWhenMissing: true
-        );
-        var runtimeCatalog = LoadCustomerPullPackCatalog(
-            CustomerPullPackRuntimeCatalogPath,
-            logWhenMissing: false
-        );
-
-        Merge(catalog.LocationRows);
-        Merge(runtimeCatalog.LocationRows);
-
-        return mergedRows
-            .Values.OrderBy(row => row.SourceLineKey, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-    }
-
-    private CustomerPullPackMockCatalogPayload LoadCustomerPullPackCatalog(
-        string relativePath,
-        bool logWhenMissing
-    )
-    {
-        var absolutePath = ResolveReadableCatalogPath(relativePath);
-        if (absolutePath is null)
-        {
-            if (logWhenMissing)
-            {
-                _logger?.LogWarning(
-                    $"Customer Pull n' Pack mock catalog not found for '{relativePath}'."
-                );
-            }
-
-            return new CustomerPullPackMockCatalogPayload();
-        }
-
-        try
-        {
-            var json = File.ReadAllText(absolutePath);
-            var catalog = JsonSerializer.Deserialize<CustomerPullPackMockCatalogPayload>(
-                json,
-                SerializerOptions
-            );
-
-            if (catalog is null)
-            {
-                _logger?.LogWarning(
-                    $"Customer Pull n' Pack mock catalog at '{absolutePath}' was empty or invalid."
-                );
-                return new CustomerPullPackMockCatalogPayload();
-            }
-
-            NormalizeCustomerPullPackCatalog(catalog);
-            return catalog;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(
-                $"Failed to load Customer Pull n' Pack mock catalog '{absolutePath}': {ex.Message}",
-                ex
-            );
-            return new CustomerPullPackMockCatalogPayload();
-        }
-    }
-
-    private static void NormalizeCustomerPullPackCatalog(CustomerPullPackMockCatalogPayload catalog)
-    {
-        catalog.DemandRows = catalog
-            .DemandRows.Select(NormalizeCustomerPullPackDemandRow)
-            .OrderBy(row => row.CustomerId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.PullDate)
-            .ThenBy(row => row.CustomerOrderId, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.ParentPartId, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        catalog.LocationRows = catalog
-            .LocationRows.Select(NormalizeCustomerPullPackLocationRow)
-            .OrderBy(row => row.SourceLineKey, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-    }
-
-    private static string? ResolveReadableCatalogPath(string relativePath)
-    {
-        var normalizedRelativePath = relativePath.Replace('/', Path.DirectorySeparatorChar);
-        var directPath = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, normalizedRelativePath)
-        );
-        if (File.Exists(directPath))
-        {
-            return directPath;
-        }
-
-        DirectoryInfo? currentDirectory = new(AppContext.BaseDirectory);
-        while (currentDirectory != null)
-        {
-            var candidate = Path.Combine(currentDirectory.FullName, normalizedRelativePath);
-            if (File.Exists(candidate))
-            {
-                return candidate;
-            }
-
-            currentDirectory = currentDirectory.Parent;
-        }
-
-        return null;
-    }
-
     private static Model_InforVisualMockReceivingTransaction NormalizeTransaction(
         Model_InforVisualMockReceivingTransaction transaction
     )
@@ -529,51 +333,6 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
         };
     }
 
-    private static Model_InforVisualCustomerPullPackDemandRow NormalizeCustomerPullPackDemandRow(
-        Model_InforVisualCustomerPullPackDemandRow row
-    )
-    {
-        return new Model_InforVisualCustomerPullPackDemandRow
-        {
-            SourceLineKey = row.SourceLineKey?.Trim() ?? string.Empty,
-            CustomerId = row.CustomerId?.Trim().ToUpperInvariant() ?? string.Empty,
-            CustomerName = row.CustomerName?.Trim() ?? string.Empty,
-            CustomerOrderId = row.CustomerOrderId?.Trim().ToUpperInvariant() ?? string.Empty,
-            ParentPartId = row.ParentPartId?.Trim().ToUpperInvariant() ?? string.Empty,
-            SourceLocationId = row.SourceLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
-            ShipQuantity = row.ShipQuantity,
-            PullDate = row.PullDate,
-            QuantityToPack = row.QuantityToPack,
-            FgOnHandQuantity = row.FgOnHandQuantity,
-            FgLocationId = row.FgLocationId?.Trim().ToUpperInvariant() ?? string.Empty,
-            ShortageFlag = row.ShortageFlag,
-            LateOrderFlag = row.LateOrderFlag,
-            PulledFlag = row.PulledFlag,
-            HasLinkedWaitlist = row.HasLinkedWaitlist,
-            LinkedWaitlistId = row.LinkedWaitlistId?.Trim() ?? string.Empty,
-            LinkedWaitlistStatus = row.LinkedWaitlistStatus?.Trim() ?? string.Empty,
-            RequesterNote = row.RequesterNote?.Trim() ?? string.Empty,
-            RecheckIndicator = row.RecheckIndicator,
-        };
-    }
-
-    private static Model_InforVisualCustomerPullPackLocationRow NormalizeCustomerPullPackLocationRow(
-        Model_InforVisualCustomerPullPackLocationRow row
-    )
-    {
-        return new Model_InforVisualCustomerPullPackLocationRow
-        {
-            LocationKey = row.LocationKey?.Trim() ?? string.Empty,
-            SourceLineKey = row.SourceLineKey?.Trim() ?? string.Empty,
-            ParentPartId = row.ParentPartId?.Trim().ToUpperInvariant() ?? string.Empty,
-            LocationId = row.LocationId?.Trim().ToUpperInvariant() ?? string.Empty,
-            DisplayLabel = row.DisplayLabel?.Trim() ?? string.Empty,
-            OnHandQuantity = row.OnHandQuantity,
-            SourceType = row.SourceType?.Trim() ?? string.Empty,
-            InitiallySelected = row.InitiallySelected,
-        };
-    }
-
     private static IReadOnlyList<string> ResolveWritableCatalogPaths(string relativePath)
     {
         var candidates = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -613,10 +372,4 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
         return candidates.ToList();
     }
 
-    private sealed class CustomerPullPackMockCatalogPayload
-    {
-        public List<Model_InforVisualCustomerPullPackDemandRow> DemandRows { get; set; } = [];
-
-        public List<Model_InforVisualCustomerPullPackLocationRow> LocationRows { get; set; } = [];
-    }
 }

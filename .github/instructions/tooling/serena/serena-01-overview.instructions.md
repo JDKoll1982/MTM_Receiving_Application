@@ -5,6 +5,24 @@ description: >
   when to use it vs standard tools, and the quick-start command.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-01-overview.instructions.md
+- Description: Serena overview — what it is, key benefits for the MTM project, when to use it vs standard tools, and the quick-start command.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-19: # Serena Overview
+  - Line 20-33: ## Key Benefits for the MTM Project
+  - Line 34-65: ## When to Use Serena vs Standard Tools
+  - Line 66-122: ## Quick Start (MTM Project)
+  - Line 123-135: ## How Serena Works
+  - Line 136-151: ## MTM C# Language Server Notes
+  - Line 152-168: ## Serena File Structure in MTM Project
+  - Line 169-183: ## Instruction File Index
+- Critical Notes: Symbol-level MCP toolkit that saves 80-95% tokens on the 300+ file C# codebase.
+[DOC-META-END]
+-->
+
 # Serena Overview
 
 **Serena** is a free, open-source coding agent toolkit that provides IDE-like semantic code

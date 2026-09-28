@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using Windows.Foundation;
@@ -21,6 +22,7 @@ public sealed partial class View_Settings_Volvo_PartAddEditDialog : ContentDialo
         Helper_UI_ContentDialogTheme.ApplyTheme(this);
     }
 
+    
     public void PrepareDialogSize()
     {
         if (XamlRoot is null)

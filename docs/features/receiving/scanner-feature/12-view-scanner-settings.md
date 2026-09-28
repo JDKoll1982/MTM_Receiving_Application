@@ -1,6 +1,6 @@
 # Scanner Settings View
 
-Last Updated: 2026-07-21
+Last Updated: 2026-07-28
 
 This view allows user-scoped profile management and safety configuration for scanner execution.
 
@@ -55,6 +55,7 @@ Bottom Actions:
 - advanced timing always shows warning text and confirmation requirement
 - from and to warehouse variables are settings-controlled and feed the workbench as read-only values on each item
 - executable, child screen title, and optional class matching support Gupta/Centura target verification before any send begins
+- scanner settings now use the shared adaptive layout service for split-column breakpoints and bounded profile/editor viewport sizing across window resolutions and DPI scale settings
 
 ## Binding And UI Rules
 

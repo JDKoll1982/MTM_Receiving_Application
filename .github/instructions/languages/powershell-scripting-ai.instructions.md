@@ -2,6 +2,24 @@
 applyTo: "**/*.ps1,**/*.psm1"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: powershell-scripting-ai.instructions.md
+- Description: PowerShell script creation (AI-assisted) guidelines covering core structure, safe defaults, AI integration, error handling, output quality, security, and naming.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # PowerShell Script Creation (AI-Assisted)
+  - Line 9-17: ## Core Script Structure
+  - Line 18-23: ## Safe Defaults and Paths
+  - Line 24-56: ## AI Integration (Optional)
+  - Line 57-62: ## Error Handling
+  - Line 63-67: ## Output Quality
+  - Line 68-72: ## Security
+  - Line 73-76: ## Naming
+- Critical Notes: Never hardcode tokens or secrets; read them from environment variables or secure stores.
+[DOC-META-END]
+-->
+
 # PowerShell Script Creation (AI-Assisted)
 
 Purpose: Provide a consistent approach for creating reliable .ps1 scripts with optional AI integration. Adapted from the NetNerds AI-for-PowerShell guidance.

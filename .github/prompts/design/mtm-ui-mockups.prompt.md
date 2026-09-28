@@ -1,3 +1,24 @@
+<!-- 
+[DOC-META-START]
+- File Name: mtm-ui-mockups.prompt.md
+- Description: Generate accurate SVG UI mockups for WinUI 3 desktop application views following the MTM Receiving Application design system.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-6: # SVG UI Mockup Generation Prompt Template
+  - Line 7-12: ## Instructions for AI Agent
+  - Line 13-38: ## Context & Requirements
+  - Line 39-95: ## Design System Specifications
+  - Line 96-271: ## Component Specifications
+  - Line 272-303: ## SVG Structure Template
+  - Line 304-369: ## Layout Patterns
+  - Line 370-424: ## Module-Specific Elements
+  - Line 425-441: ## Accessibility Guidelines
+  - Line 442-474: ## View-Specific Requirements
+  - Line 475-486: ## Output Requirements
+- Critical Notes: Use exact design-system colors, fonts, and the 8px spacing grid with a 1400x900 ViewBox for every mockup.
+[DOC-META-END]
+-->
+
 # SVG UI Mockup Generation Prompt Template
 
 **Purpose**: This prompt template generates beautiful, accurate SVG UI mockups for WinUI 3 desktop applications following the MTM Receiving Application design system.

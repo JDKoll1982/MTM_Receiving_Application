@@ -1,7 +1,7 @@
 namespace MTM_Receiving_Application.Module_Scanner.Models;
 
 /// <summary>
-/// Reason a scanner run was stopped.
+/// Reason a scanner batch was stopped.
 /// </summary>
 public enum Enum_ScannerStopReason
 {

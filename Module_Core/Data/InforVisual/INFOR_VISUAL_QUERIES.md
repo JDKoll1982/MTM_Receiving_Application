@@ -1,10 +1,21 @@
 # Infor Visual Queries Report
 >
 > **Last Generated:** 2026-01-13
+> **Last Updated:** 2026-08-31
 > **Database Target:** VISUAL.MTMFG (Infor Visual)
 > **Access Level:** READ ONLY
 
 This document tracks all SQL queries used to access the Infor Visual database.
+
+## Delivery Schedule & Receiving Analytics Queries
+
+Added 2026-08-31 for the two Ship/Rec Tools. All are read-only.
+
+| Query Name / File | Method Usage | Parameter(s) |
+|-------------------|--------------|--------------|
+| **29_GetDeliveryScheduleLines.sql** | `Dao_InforVisualConnection.GetDeliveryScheduleLinesAsync` | `@FromDate`, `@ToDate`, `@PartSearch`, `@PoSearch`, `@SupplierSearch`, `@CarrierSearch`, `@SearchAll`, `@ScopeParts`, `@ScopeCoils`, `@ScopeFlat`, `@ScopeOutside`, `@ShowOpen`, `@ShowPartial`, `@ShowClosed`, `@ShowOnTime`, `@ShowLate`, `@Today`, `@MaxResults` |
+| **30_GetReceivingAnalyticsHistory.sql** | `Dao_InforVisualConnection.GetReceivingAnalyticsHistoryAsync` | `@FromDate`, `@ToDate`, `@ScopeParts`, `@ScopeCoils`, `@ScopeFlat`, `@ScopeOutside`, `@ScopeUninv`, `@MaxResults` |
+| **31_GetReceivingAnalyticsForecast.sql** | `Dao_InforVisualConnection.GetReceivingAnalyticsForecastAsync` | `@FromDate`, `@ToDate`, `@ScopeParts`, `@ScopeCoils`, `@ScopeFlat`, `@ScopeOutside`, `@ScopeUninv`, `@MaxResults` |
 
 ## Query Inventory
 

@@ -4,11 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:models="using:MTM_Receiving_Application.Module_Scanner.Models"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_ValidationStatusToBrush x:Key="ValidationStatusToBrushConverter" />
         <Style x:Key="ScannerSectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="FontSize" Value="16" />
@@ -25,441 +28,328 @@
             <Setter Property="Padding" Value="16,0" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
-        <Style x:Key="ScannerChipTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="WorkbenchRootGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer
+        <!-- Non-blocking header error area (ScannerUpdate.md Step 6b-a2) -->
+        <InfoBar
+            x:Name="HeaderErrorBar"
             Grid.Row="0"
-            HorizontalScrollMode="Disabled"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollMode="Auto"
-            VerticalScrollBarVisibility="Auto">
-            <Grid
-                Padding="16"
-                ColumnSpacing="16"
-                RowSpacing="16">
+            Margin="16,8,16,0"
+            IsClosable="False"
+            IsOpen="{x:Bind ViewModel.IsHeaderErrorVisible, Mode=OneWay}"
+            Message="{x:Bind ViewModel.HeaderErrorText, Mode=OneWay}"
+            Severity="Error" />
+
+        <Grid
+            Grid.Row="1"
+            Padding="16"
+            ColumnSpacing="16"
+            RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Entry form: part/location lookup (fills the row) -->
+            <Grid>
+                <sharedControls:Control_Shared_TypedLookupTextBox
+                    x:Name="PartIdLookupControl"
+                    HorizontalAlignment="Stretch"
+                    IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
+                    AutoResolveFuzzyMatches="False"
+                    HeaderText="{x:Bind ViewModel.LookupHeaderText, Mode=OneWay}"
+                    InputValue="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    LookupType="{x:Bind ViewModel.LookupType, Mode=OneWay}"
+                    PlaceholderText="{x:Bind ViewModel.LookupPlaceholderText, Mode=OneWay}"
+                    ValidationCompleted="PartIdLookupControl_ValidationCompleted" />
+            </Grid>
+
+            <!-- Current list -->
+            <Grid Grid.Row="1" RowSpacing="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
-                <Border
-                    Grid.Row="0"
-                    Padding="16"
-                    Background="{ThemeResource LayerFillColorAltBrush}"
-                    CornerRadius="8">
-                    <Grid ColumnSpacing="12" RowSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Spacing="2">
-                            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Scanner" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Prepare items and send them to inventory." />
-                        </StackPanel>
-                        <Border
-                            Grid.Column="1"
-                            Padding="14,7"
-                            Background="{ThemeResource AccentFillColorSecondaryBrush}"
-                            CornerRadius="8">
-                            <TextBlock Style="{StaticResource ScannerChipTextStyle}" Text="System: Ready" />
-                        </Border>
-                        <Border
-                            Grid.Column="2"
-                            Padding="14,7"
-                            Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
-                            CornerRadius="8">
-                            <TextBlock Style="{StaticResource ScannerChipTextStyle}" Text="Stop: Between Items" />
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Grid
+                <!-- Right padding matches the row items' right inset so header columns stay\n                     aligned with the row content. -->
+                <Grid Padding="0,0,14,0" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="1.6*" />
+                        <ColumnDefinition Width="1.1*" />
+                        <ColumnDefinition Width="1.1*" />
+                        <ColumnDefinition Width="0.8*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="#" />
+                    <TextBlock Grid.Column="1" Text="Part" />
+                    <TextBlock Grid.Column="2" Text="From" />
+                    <TextBlock Grid.Column="3" Text="To" />
+                    <TextBlock Grid.Column="4" Text="Qty" />
+                    <TextBlock Grid.Column="5" Text="Status" VerticalAlignment="Center" />
+                </Grid>
+                <ListView
+                    x:Name="SessionItemsListView"
                     Grid.Row="1"
-                    ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Column="0"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid ColumnSpacing="12" RowSpacing="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Header="Session Owner"
-                                Text="{x:Bind ViewModel.OwnerUserId, Mode=TwoWay}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Header="Display Name"
-                                Text="{x:Bind ViewModel.OwnerDisplayName, Mode=TwoWay}" />
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="2"
-                                Header="Target Window"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.AppWindowTitleSnapshot, Mode=TwoWay}" />
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="3"
-                                Style="{StaticResource ScannerActionButtonStyle}"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.StartDraftSessionCommand}"
-                                Content="Start Draft" />
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="4"
-                                Style="{StaticResource ScannerActionButtonStyle}"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.BuildRunSnapshotCommand}"
-                                Content="Save For Later" />
-
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="5"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Session Active"
-                                Visibility="{x:Bind ViewModel.HasActiveSession, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        </Grid>
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Validation" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="{x:Bind ViewModel.LastValidationStatus, Mode=OneWay}" />
-                            <TextBlock TextWrapping="Wrap" Text="{x:Bind ViewModel.LastValidationNotes, Mode=OneWay}" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-
-                <Grid
-                    Grid.Row="2"
-                    ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Column="0"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid RowSpacing="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0">
+                    VerticalAlignment="Stretch"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{x:Bind ViewModel.SessionItems, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedSessionItem, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_ScannerBatchItem">
+                            <Grid ColumnSpacing="12">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="0.5*" />
+                                    <ColumnDefinition Width="1.6*" />
+                                    <ColumnDefinition Width="1.1*" />
+                                    <ColumnDefinition Width="1.1*" />
+                                    <ColumnDefinition Width="0.8*" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Items To Send" />
-                                <Button
-                                    Grid.Column="1"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    Command="{x:Bind ViewModel.ManageItemsCommand}"
-                                    Content="Manage Items" />
-                            </Grid>
-
-                            <Grid
-                                Grid.Row="1"
-                                ColumnSpacing="10"
-                                RowSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
+                                <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind PayloadPartId}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind PayloadFromLocation}" VerticalAlignment="Center" />
                                 <TextBox
-                                    Grid.Column="0"
-                                    Header="Part"
-                                    LostFocus="PartTextBox_LostFocus"
-                                    Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay}" />
-                                <TextBox Grid.Column="1" Header="From WH" Text="{x:Bind ViewModel.NewFromWarehouse, Mode=TwoWay}" />
-                                <TextBox Grid.Column="2" Header="From Loc" Text="{x:Bind ViewModel.NewFromLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Column="3" Header="To WH" Text="{x:Bind ViewModel.NewToWarehouse, Mode=TwoWay}" />
-                                <TextBox Grid.Column="4" Header="To Loc" Text="{x:Bind ViewModel.NewToLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Column="5" Header="Qty" Text="{x:Bind ViewModel.NewQuantity, Mode=TwoWay}" />
+                                    Grid.Column="3"
+                                    Tag="ToCell"
+                                    PlaceholderText="To"
+                                    Text="{x:Bind PayloadToLocation, Mode=TwoWay}"
+                                    LostFocus="SessionItemToTextBox_LostFocus"
+                                    KeyDown="SessionItemTextBox_KeyDown"
+                                    VerticalAlignment="Center" />
+                                <TextBox
+                                    Grid.Column="4"
+                                    Tag="QtyCell"
+                                    PlaceholderText="Qty"
+                                    Text="{x:Bind PayloadQuantity, Mode=TwoWay}"
+                                    BeforeTextChanging="SessionItemQtyTextBox_BeforeTextChanging"
+                                    LostFocus="SessionItemQtyTextBox_LostFocus"
+                                    KeyDown="SessionItemTextBox_KeyDown"
+                                    VerticalAlignment="Center" />
+
+                                <!--  Status - colored icon opens the explainer modal  -->
                                 <Button
+                                    Grid.Column="5"
+                                    Width="30"
+                                    Height="30"
+                                    Padding="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Click="StatusIconButton_Click"
+                                    Tag="{x:Bind}"
+                                    ToolTipService.ToolTip="{x:Bind StatusText}">
+                                    <FontIcon
+                                        FontSize="16"
+                                        Foreground="{x:Bind StatusIsValid, Converter={StaticResource ValidationStatusToBrushConverter}}"
+                                        Glyph="&#xE946;" />
+                                </Button>
+
+                                <!--  Add-lines split button  -->
+                                <SplitButton
                                     Grid.Column="6"
-                                    Style="{StaticResource ScannerActionButtonStyle}"
-                                    VerticalAlignment="Bottom"
-                                    Command="{x:Bind ViewModel.AddDraftItemCommand}"
-                                    Content="Add" />
+                                    Width="30"
+                                    Height="30"
+                                    Margin="2,0,0,0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Click="AddLinesSplitButton_Click"
+                                    Tag="{x:Bind}"
+                                    ToolTipService.ToolTip="Add lines of this part">
+                                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                                    <SplitButton.Flyout>
+                                        <Flyout>
+                                            <StackPanel MinWidth="220" Padding="6" Spacing="10">
+                                                <TextBlock
+                                                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                    Text="Add additional lines" />
+                                                <NumberBox
+                                                    Minimum="1"
+                                                    Maximum="100"
+                                                    SmallChange="1"
+                                                    SpinButtonPlacementMode="Compact"
+                                                    Header="How many additional lines?"
+                                                    Value="1" />
+                                                <Button
+                                                    HorizontalAlignment="Stretch"
+                                                    Click="AddLinesConfirmButton_Click"
+                                                    Content="Add Lines"
+                                                    Style="{StaticResource ScannerPrimaryActionButtonStyle}" />
+                                            </StackPanel>
+                                        </Flyout>
+                                    </SplitButton.Flyout>
+                                </SplitButton>
                             </Grid>
-
-                            <ListView
-                                Grid.Row="2"
-                                ItemsSource="{x:Bind ViewModel.SessionItems, Mode=OneWay}"
-                                SelectedItem="{x:Bind ViewModel.SelectedSessionItem, Mode=TwoWay}">
-                                <ListView.Header>
-                                    <Grid ColumnSpacing="8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.5*" />
-                                            <ColumnDefinition Width="1.5*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="0.8*" />
-                                            <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="2*" />
-                                            <ColumnDefinition Width="1*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="#" />
-                                        <TextBlock Grid.Column="1" Text="Part" />
-                                        <TextBlock Grid.Column="2" Text="From WH" />
-                                        <TextBlock Grid.Column="3" Text="From Loc" />
-                                        <TextBlock Grid.Column="4" Text="To WH" />
-                                        <TextBlock Grid.Column="5" Text="To Loc" />
-                                        <TextBlock Grid.Column="6" Text="Qty" />
-                                        <TextBlock Grid.Column="7" Text="State" />
-                                        <TextBlock Grid.Column="8" Text="Notes" />
-                                        <TextBlock Grid.Column="9" Text="Execution" />
-                                    </Grid>
-                                </ListView.Header>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Model_ScannerBatchItem">
-                                        <Grid ColumnSpacing="8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="0.5*" />
-                                                <ColumnDefinition Width="1.5*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="0.8*" />
-                                                <ColumnDefinition Width="1*" />
-                                                <ColumnDefinition Width="2*" />
-                                                <ColumnDefinition Width="1*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{x:Bind SequenceNumber}" />
-                                            <TextBlock Grid.Column="1" Text="{x:Bind PayloadPartId}" />
-                                            <TextBlock Grid.Column="2" Text="{x:Bind PayloadFromWarehouse}" />
-                                            <TextBlock Grid.Column="3" Text="{x:Bind PayloadFromLocation}" />
-                                            <TextBlock Grid.Column="4" Text="{x:Bind PayloadToWarehouse}" />
-                                            <TextBlock Grid.Column="5" Text="{x:Bind PayloadToLocation}" />
-                                            <TextBlock Grid.Column="6" Text="{x:Bind PayloadQuantity}" />
-                                            <TextBlock Grid.Column="7" Text="{x:Bind ValidationState}" />
-                                            <TextBlock Grid.Column="8" Text="{x:Bind ValidationNotes}" TextWrapping="WrapWholeWords" />
-                                            <TextBlock Grid.Column="9" Text="{x:Bind ExecutionState}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </Grid>
-                    </Border>
-
-                    <Border
-                        Grid.Column="1"
-                        Padding="12"
-                        Background="{ThemeResource LayerFillColorAltBrush}"
-                        CornerRadius="8">
-                        <Grid RowSpacing="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Style="{StaticResource ScannerSectionHeaderStyle}" Text="Item Details" />
-
-                            <TextBox
-                                Grid.Row="1"
-                                Header="Part ID"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.SelectedSessionItem.PayloadPartId, Mode=OneWay}" />
-
-                            <Grid Grid.Row="2" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox
-                                    Grid.Column="0"
-                                    Header="From Warehouse"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadFromWarehouse, Mode=OneWay}" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Header="From Location"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadFromLocation, Mode=OneWay}" />
-                            </Grid>
-
-                            <Grid Grid.Row="3" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox
-                                    Grid.Column="0"
-                                    Header="To Warehouse"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadToWarehouse, Mode=OneWay}" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Header="To Location"
-                                    IsReadOnly="True"
-                                    Text="{x:Bind ViewModel.SelectedSessionItem.PayloadToLocation, Mode=OneWay}" />
-                            </Grid>
-
-                            <TextBox
-                                Grid.Row="4"
-                                Header="Issues"
-                                IsReadOnly="True"
-                                Text="{x:Bind ViewModel.SelectedSessionItem.ValidationNotes, Mode=OneWay}"
-                                TextWrapping="Wrap" />
-
-                            <Grid Grid.Row="5" ColumnSpacing="8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Border
-                                    Grid.Column="0"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Sent" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.SentItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Grid.Column="1"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Failed" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.FailedItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Grid.Column="2"
-                                    Padding="10"
-                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                    CornerRadius="6">
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Waiting" />
-                                        <TextBlock FontSize="18" Text="{x:Bind ViewModel.CurrentSession.WaitingItems, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-
-                            <Border
-                                Grid.Row="6"
-                                Padding="10,8"
-                                Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
-                                CornerRadius="6">
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="Stops work between items only." />
-                            </Border>
-
-                            <TextBlock
-                                Grid.Row="7"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="User manually validates and saves in ERP after send." />
-                        </Grid>
-                    </Border>
-                </Grid>
-
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <!-- Stretch + right padding so row columns line up with the header
+                                 grid (ListViewItem defaults to left-aligned content) and the last
+                                 column clears the ListView's right-edge scrollbar gutter. -->
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0,2,14,2" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
             </Grid>
-        </ScrollViewer>
+        </Grid>
 
-        <Border
-            Grid.Row="1"
-            Margin="16,0,16,12"
-            Padding="12"
-            Background="{ThemeResource LayerFillColorAltBrush}"
-            CornerRadius="8">
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.CheckAllCommand}" Content="Check All" />
-                <Button Grid.Column="1" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendNextCommand}" Content="Send Next" />
-                <Button Grid.Column="2" Style="{StaticResource ScannerPrimaryActionButtonStyle}" Command="{x:Bind ViewModel.SendAllCommand}" Content="Send All" />
-                <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.StopAfterThisCommand}" Content="Stop After This" />
-                <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ClearHistoryCommand}" Content="Clear History" />
-                <Button Grid.Column="5" Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ExportCommand}" Content="Export" />
-            </Grid>
-        </Border>
-
+        <!-- Footer action bar (ribbon card) -->
         <Border
             Grid.Row="2"
-            Padding="24,12,24,16"
+            Margin="16,0,16,12"
+            Padding="10,6"
             Background="{ThemeResource LayerFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,1,0,0">
-            <StackPanel
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToWorkbenchCommand}" Content="Workbench" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToHistoryCommand}" Content="History" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.NavigateToSettingsCommand}" Content="Settings" />
+            BorderThickness="1"
+            CornerRadius="6">
+            <StackPanel Spacing="6">
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Left: batch actions (icon-only)  -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Command="{x:Bind ViewModel.CheckAllCommand}"
+                            ToolTipService.ToolTip="Check all">
+                            <FontIcon FontSize="16" Glyph="&#xE8B3;" />
+                        </Button>
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind ViewModel.SendSelectedCommand}"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.SendButtonText, Mode=OneWay}">
+                            <FontIcon FontSize="16" Glyph="&#xE724;" />
+                        </Button>
+
+                        <Rectangle
+                            Width="1"
+                            Height="24"
+                            Margin="2,0"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Command="{x:Bind ViewModel.ClearListCommand}"
+                            ToolTipService.ToolTip="Clear list">
+                            <FontIcon FontSize="16" Glyph="&#xE711;" />
+                        </Button>
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Command="{x:Bind ViewModel.OpenInventoryCommand}"
+                            ToolTipService.ToolTip="Open inventory">
+                            <FontIcon FontSize="16" Glyph="&#xE8E5;" />
+                        </Button>
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Command="{x:Bind ViewModel.ExportCommand}"
+                            ToolTipService.ToolTip="Export">
+                            <FontIcon FontSize="16" Glyph="&#xE74E;" />
+                        </Button>
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
+                            ToolTipService.ToolTip="Manage items">
+                            <FontIcon FontSize="16" Glyph="&#xE70F;" />
+                        </Button>
+                    </StackPanel>
+
+                    <!--  Right: search-by toggle, remove selected (red), help  -->
+                    <StackPanel
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <Rectangle
+                            Width="1"
+                            Height="24"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <TextBlock VerticalAlignment="Center" Text="Search By:" />
+                        <ToggleSwitch
+                            MinWidth="0"
+                            VerticalAlignment="Center"
+                            OffContent="Part"
+                            OnContent="Location"
+                            IsOn="{x:Bind ViewModel.IsLocationModeEnabled, Mode=TwoWay}" />
+                        <Button
+                            Height="34"
+                            Padding="14,0"
+                            VerticalAlignment="Center"
+                            Background="#C42B1C"
+                            BorderThickness="0"
+                            Command="{x:Bind ViewModel.RemoveSelectedSessionItemCommand}"
+                            Content="Remove Selected"
+                            CornerRadius="4"
+                            Foreground="White"
+                            IsEnabled="{x:Bind ViewModel.HasSelectedSessionItem, Mode=OneWay}" />
+                        <Rectangle
+                            Width="1"
+                            Height="24"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                        <Button
+                            Width="34"
+                            Height="34"
+                            MinWidth="0"
+                            Padding="0"
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="Help"
+                            Style="{StaticResource ScannerActionButtonStyle}"
+                            Click="OnHelpClick"
+                            ToolTipService.ToolTip="Help">
+                            <FontIcon FontSize="16" Glyph="&#xE946;" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Saved? manual confirmation row -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6"
+                    Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Was the transaction saved in Infor Visual?" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmSavedCommand}" Content="Yes" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmNotSavedCommand}" Content="No" />
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

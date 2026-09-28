@@ -77,13 +77,13 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
         string typeName,
         string iconName,
         string? imagePath,
-        Dictionary<string, SpecDefinition> specs,
+        List<Model_CustomFieldDefinition> customFields,
         bool canDelete
     )
     {
         WasAccepted = false;
         RequestDelete = false;
-        ViewModel.InitializeForEdit(typeName, iconName, imagePath, specs);
+        ViewModel.InitializeForEdit(typeName, iconName, imagePath, customFields);
         UpdateDeleteVisibility(canDelete);
     }
 

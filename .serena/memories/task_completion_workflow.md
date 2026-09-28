@@ -1,3 +1,19 @@
+<!-- 
+[DOC-META-START]
+- File Name: task_completion_workflow.md
+- Description: Steps to complete a task: build, test, architecture validation, memory update, code quality.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 17-22: # Task Completion Workflow
+  - Line 23-30: ## 1. Build Verification
+  - Line 31-39: ## 2. Test Execution
+  - Line 40-50: ## 3. Architecture Validation
+  - Line 51-55: ## 4. Memory Update (if applicable)
+  - Line 56-61: ## 5. Code Quality
+- Critical Notes: Build must succeed with zero errors and zero warnings before proceeding.
+[DOC-META-END]
+-->
+
 # Task Completion Workflow
 
 Last Updated: 2026-03-21
@@ -15,7 +31,7 @@ Must succeed with **zero errors and zero warnings** before proceeding.
 ## 2. Test Execution
 
 ```powershell
-dotnet test MTM_Receiving_Application.slnx
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
 ```
 
 - All existing tests must still pass.
@@ -32,10 +48,9 @@ Verify no forbidden patterns were introduced:
 - All new async methods end with `Async` suffix
 - All new ViewModels are `partial` classes inheriting from `ViewModel_Shared_Base`
 
-## 4. Memory-Bank Update (if applicable)
+## 4. Memory Update (if applicable)
 
-Update `memory-bank/activeContext.md` with what was completed and what is next.
-Update `memory-bank/progress.md` if a milestone was reached.
+Update `.serena/memories/` and repo memory notes with what was completed and what is next.
 
 ## 5. Code Quality
 

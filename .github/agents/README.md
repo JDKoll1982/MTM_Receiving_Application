@@ -1,3 +1,16 @@
+<!-- 
+[DOC-META-START]
+- File Name: README.md
+- Description: Index of the .github/agents library: repository specialists, speckit agents, and usage rules.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 14-17: # Agent Library
+  - Line 18-23: ## Agent Groups
+  - Line 24-29: ## Usage Rules
+- Critical Notes: Keep agents role-specific; put shared rules in copilot-instructions.md.
+[DOC-META-END]
+-->
+
 # Agent Library
 
 This folder contains agent definitions used by repository workflows.

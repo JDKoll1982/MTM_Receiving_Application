@@ -20,6 +20,17 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOWithPartsAsync(string poNumber);
 
         /// <summary>
+        /// Retrieves a purchase order with one entry per unique part number, each
+        /// with the total on-hand quantity (PO site) and current location display
+        /// (a single location, "Multiple Locations", or blank).
+        /// </summary>
+        /// <param name="poNumber">6-digit PO number</param>
+        /// <returns>Result containing the PO header with unique parts, or null if not found</returns>
+        public Task<Model_Dao_Result<Model_InforVisualPO?>> GetPOUniquePartsWithOnHandAsync(
+            string poNumber
+        );
+
+        /// <summary>
         /// Retrieves part information by Part ID for non-PO items.
         /// </summary>
         /// <param name="partID">Part identifier</param>
@@ -142,6 +153,23 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Searches PO line binary/spec content and related PO line supplemental spec fields.
+        /// Returns raw candidate rows for tool-side weighted ranking.
+        /// </summary>
+        /// <param name="searchTerm">Free-text search term.</param>
+        /// <param name="maxResults">Maximum candidate rows to return before tool-side ranking.</param>
+        /// <param name="searchMode">Search mode label (Exact Phrase, Tokenized Partial, Weighted Ranking).</param>
+        /// <param name="poStatusCodeFilter">Optional single status code filter (for example R/F/C/V).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
+        > SearchPurchaseOrderLineSpecsAsync(
+            string searchTerm,
+            int maxResults = 250,
+            string searchMode = "Weighted Ranking",
+            string poStatusCodeFilter = ""
+        );
+
+        /// <summary>
         /// Fuzzy-searches vendors by name using a LIKE '%term%' query against Infor Visual.
         /// Returns up to 50 candidates for display in a selection picker.
         /// </summary>
@@ -185,9 +213,11 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// </summary>
         /// <param name="term">Partial location ID entered by the user.</param>
         /// <param name="warehouseCode">Warehouse code to scope results (e.g. "002").</param>
+        /// <param name="maxResults">Maximum rows to return from Infor Visual.</param>
         public Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> FuzzySearchLocationsAsync(
             string term,
-            string warehouseCode
+            string warehouseCode,
+            int maxResults = 50
         );
 
         /// <summary>
@@ -257,5 +287,57 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
             string locationId,
             string warehouseCode
         );
+
+        /// <summary>
+        /// Returns <see langword="true"/> when an <c>INVENTORY_TRANS</c> row matching a
+        /// scanner-emitted inventory transfer (part, source/destination warehouse+location, and
+        /// quantity) was recorded at or after <paramref name="afterUtc"/>.
+        /// Polled by the scanner workbench to auto-confirm a send.
+        /// </summary>
+        /// <param name="partId">Exact part ID.</param>
+        /// <param name="fromWarehouse">Source warehouse code.</param>
+        /// <param name="fromLocation">Source location ID.</param>
+        /// <param name="toWarehouse">Destination warehouse code.</param>
+        /// <param name="toLocation">Destination location ID.</param>
+        /// <param name="quantity">Expected transfer quantity (matched on absolute value).</param>
+        /// <param name="afterUtc">Only consider transactions recorded at/after this instant.</param>
+        public Task<Model_Dao_Result<bool>> ScannerTransferExistsAsync(
+            string partId,
+            string fromWarehouse,
+            string fromLocation,
+            string toWarehouse,
+            string toLocation,
+            decimal quantity,
+            DateTime afterUtc
+        );
+
+        /// <summary>
+        /// Returns receiving-schedule grid rows (per PO line) within an optional date
+        /// window, applying search, scope, delivery-state, and PO-state filters.
+        /// Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualDeliveryScheduleLine>>
+        > GetDeliveryScheduleLinesAsync(Model_InforVisualDeliveryScheduleFilter filter);
+
+        /// <summary>
+        /// Returns aggregated receiving-history line counts by date and category
+        /// (past received items) for the Receiving Analytics chart.
+        /// Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+        > GetReceivingAnalyticsHistoryAsync(Model_InforVisualReceivingAnalyticsFilter filter);
+
+        /// <summary>
+        /// Returns aggregated incoming (forecast) line counts by due date and category
+        /// (open PO lines) for the Receiving Analytics chart. Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
+        > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter);
     }
 }

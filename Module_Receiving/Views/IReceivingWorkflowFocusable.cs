@@ -8,6 +8,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// <summary>
         /// Moves focus to the primary input for the current workflow step.
         /// </summary>
-        void FocusForAccess();
+        /// <returns>
+        /// <see langword="true"/> when focus was applied; <see langword="false"/> when the target input
+        /// is not ready yet, which signals the host to retry after the next layout pass.
+        /// </returns>
+        bool FocusForAccess();
     }
 }

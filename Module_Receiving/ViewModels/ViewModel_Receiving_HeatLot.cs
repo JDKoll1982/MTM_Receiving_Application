@@ -89,6 +89,26 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             private set => SetProperty(ref _currentPartDescription, value);
         }
 
+        private string _currentPoNumber = string.Empty;
+
+        /// <summary>
+        /// PO number for the current guided entry, shown in the step card identity row.
+        /// </summary>
+        public string CurrentPoNumber
+        {
+            get => _currentPoNumber;
+            private set
+            {
+                if (SetProperty(ref _currentPoNumber, value))
+                {
+                    OnPropertyChanged(nameof(HasPoNumber));
+                }
+            }
+        }
+
+        /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
+        public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
+
         public ViewModel_Receiving_HeatLot(
             IService_ReceivingWorkflow workflowService,
             IService_ReceivingValidation validationService,
@@ -265,6 +285,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             CurrentPartId = _workflowService.CurrentPart?.PartID?.Trim() ?? string.Empty;
             CurrentPartDescription = _workflowService.CurrentPart?.Description?.Trim() ?? string.Empty;
+            CurrentPoNumber = _workflowService.CurrentPONumber?.Trim() ?? string.Empty;
         }
 
         private static IEnumerable<string> DeserializeHeatLotPresetFillers(string json)

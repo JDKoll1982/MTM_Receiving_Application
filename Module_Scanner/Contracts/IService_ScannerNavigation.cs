@@ -4,7 +4,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Contracts;
 
 /// <summary>
-/// Coordinates which placeholder scanner page is active inside the module host.
+/// Coordinates which scanner page is active inside the module host.
 /// </summary>
 public interface IService_ScannerNavigation : INotifyPropertyChanged
 {

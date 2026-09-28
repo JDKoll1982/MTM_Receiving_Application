@@ -1,3 +1,18 @@
+<!-- 
+[DOC-META-START]
+- File Name: memory_maintenance.md
+- Description: When and how to create, update, and prune memory files.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 16-17: # Memory Maintenance
+  - Line 18-33: ## Discovery Model
+  - Line 34-39: ## Style
+  - Line 40-44: ## Add/update threshold
+  - Line 45-48: ## Maintenance Actions
+- Critical Notes: Keep memories short and topic-specific.
+[DOC-META-END]
+-->
+
 # Memory Maintenance
 
 ## Discovery Model

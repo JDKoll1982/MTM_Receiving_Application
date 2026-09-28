@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
@@ -36,6 +38,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_UserPrivileges _userPrivileges;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private bool _isLoadingEditModePreferences;
+
+        private enum DateFilterPreset
+        {
+            None,
+            LastWeek,
+            Today,
+            Yesterday,
+            ThisWeek,
+            ThisMonth,
+            ThisQuarter,
+            ShowAll,
+        }
 
         // ------------------------------------------------------------------ data
         private readonly List<Model_ReceivingLoad> _allLoads = new();
@@ -89,7 +104,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             FilterAndPaginate();
         }
 
-        partial void OnSearchByColumnKeyChanged(string value) => FilterAndPaginate();
+        partial void OnSearchByColumnKeyChanged(string value)
+        {
+            FilterAndPaginate();
+            PersistEditModePreferencesIfReady();
+        }
 
         /// <summary>True when search text is non-empty; drives the clear-button visibility.</summary>
         public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
@@ -97,6 +116,33 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         // ------------------------------------------------------------------ result summary
         [ObservableProperty]
         private string _resultSummary = string.Empty;
+
+        // ------------------------------------------------------------------ empty state
+        private bool _hasLoadedData;
+
+        [ObservableProperty]
+        private string _emptyStateMessage = string.Empty;
+
+        /// <summary>
+        /// True when a load has completed but there are no rows to show (empty source, or the
+        /// search/date filter matched nothing). Drives the "nothing found" image overlay.
+        /// </summary>
+        public bool ShowEmptyState => _hasLoadedData && _filteredLoads.Count == 0;
+
+        private void ResetEmptyState()
+        {
+            _hasLoadedData = false;
+            EmptyStateMessage = string.Empty;
+            OnPropertyChanged(nameof(ShowEmptyState));
+        }
+
+        private void ShowEmptyStateFor(string message)
+        {
+            _hasLoadedData = true;
+            _filteredLoads = new List<Model_ReceivingLoad>();
+            EmptyStateMessage = message;
+            OnPropertyChanged(nameof(ShowEmptyState));
+        }
 
         // ------------------------------------------------------------------ sort
         [ObservableProperty]
@@ -119,6 +165,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 _paginationService.SetSource(_filteredLoads);
             }
+
+            PersistEditModePreferencesIfReady();
         }
 
         // ------------------------------------------------------------------ date filter
@@ -128,11 +176,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private DateTimeOffset _filterEndDate = DateTimeOffset.Now;
 
+        private DateFilterPreset _activeDateFilter = DateFilterPreset.None;
+
+        private bool _isApplyingPresetFilter;
+
         [ObservableProperty]
         private string _thisMonthButtonText = DateTime.Now.ToString("MMMM");
 
         [ObservableProperty]
         private string _thisQuarterButtonText = GetQuarterText(DateTime.Now);
+
+        [ObservableProperty]
+        private bool _datePresetsExpanded;
+
+        public string DatePresetsToggleGlyph => DatePresetsExpanded ? "\uE76B" : "\uE76C";
+
+        partial void OnDatePresetsExpandedChanged(bool value)
+        {
+            OnPropertyChanged(nameof(DatePresetsToggleGlyph));
+        }
+
+        [RelayCommand]
+        private void ToggleDatePresets() => DatePresetsExpanded = !DatePresetsExpanded;
 
         // ------------------------------------------------------------------ pagination
         [ObservableProperty]
@@ -211,6 +276,51 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _editModeColumnWtPerPkgText = "UOM/Pkg";
 
+        private static readonly Brush ActiveFilterButtonBrush = new SolidColorBrush(
+            Colors.DodgerBlue
+        );
+        private static readonly Brush InactiveFilterButtonBrush = new SolidColorBrush(
+            Colors.Transparent
+        );
+
+        private static Brush ResolveFilterButtonBackground(bool isActive)
+        {
+            return isActive ? ActiveFilterButtonBrush : InactiveFilterButtonBrush;
+        }
+
+        public Brush LastWeekFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.LastWeek
+        );
+
+        public Brush TodayFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.Today
+        );
+
+        public Brush YesterdayFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.Yesterday
+        );
+
+        public Brush ThisWeekFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisWeek
+        );
+
+        public Brush ThisMonthFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisMonth
+        );
+
+        public Brush ThisQuarterFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ThisQuarter
+        );
+
+        public Brush ShowAllFilterButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter == DateFilterPreset.ShowAll
+        );
+
+        /// <summary>Background for the date-range toolbar button, highlighted while a quick preset filter is active.</summary>
+        public Brush DateRangeButtonBackground => ResolveFilterButtonBackground(
+            _activeDateFilter != DateFilterPreset.None
+        );
+
         // ------------------------------------------------------------------ event — tells the View to open the column-chooser dialog
         /// <summary>Raised when the user clicks the "Columns" toolbar button.</summary>
         public event EventHandler? ShowColumnChooserRequested;
@@ -266,6 +376,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _filteredLoads = new List<Model_ReceivingLoad>();
             _deletedLoads.Clear();
             ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
+            ResetEmptyState();
             SelectedLoad = null;
             CurrentDataSource = Enum_DataSourceType.Memory;
             SearchText = string.Empty;
@@ -279,6 +390,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             GotoPageNumber = 1;
             FilterStartDate = DateTimeOffset.Now.AddDays(-7);
             FilterEndDate = DateTimeOffset.Now;
+            SetActiveDateFilter(DateFilterPreset.None);
             SelectAllButtonText = "Select All";
             StatusMessage = string.Empty;
             _currentLabelDataPath = null;
@@ -478,6 +590,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <param name="userId">Optional user ID for user-scoped settings.</param>
         internal async Task LoadColumnVisibilityAsync(int? userId = null)
         {
+            _isLoadingEditModePreferences = true;
             try
             {
                 var stored = await _receivingSettings.GetStringAsync(
@@ -553,6 +666,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     col.IsVisible = IsDefaultVisible(col.Key);
                     ColumnSettings.Add(col);
                 }
+            }
+            finally
+            {
+                _isLoadingEditModePreferences = false;
             }
         }
 
@@ -677,6 +794,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SortColumn = columnKey;
             SortAscending = ascending;
             FilterAndPaginate();
+            PersistEditModePreferencesIfReady();
+        }
+
+        private void PersistEditModePreferencesIfReady()
+        {
+            if (_isLoadingEditModePreferences)
+            {
+                return;
+            }
+
+            _ = SaveColumnVisibilityAsync();
         }
 
         private static List<Model_ReceivingLoad> ApplySort(
@@ -910,7 +1038,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         partial void OnSelectedLoadChanged(Model_ReceivingLoad? value)
         {
-            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>
@@ -921,7 +1048,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SaveCommand.NotifyCanExecuteChanged();
             RemoveRowCommand.NotifyCanExecuteChanged();
             SelectAllCommand.NotifyCanExecuteChanged();
-            ReprintFromHistoryCommand.NotifyCanExecuteChanged();
         }
 
         public void HandleCurrentLabelQueueCleared()
@@ -939,6 +1065,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _allLoads.Clear();
             _filteredLoads = new List<Model_ReceivingLoad>();
             ReplaceLoads(Array.Empty<Model_ReceivingLoad>());
+            ResetEmptyState();
             SelectedLoad = null;
             ResultSummary = "0 records";
             StatusMessage = "Current label queue cleared.";
@@ -991,12 +1118,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <summary>
         /// Handles changes to the filter start date.
         /// </summary>
-        partial void OnFilterStartDateChanged(DateTimeOffset value) => ApplyDateFilter();
+        partial void OnFilterStartDateChanged(DateTimeOffset value)
+        {
+            if (!_isApplyingPresetFilter)
+            {
+                ClearActiveDateFilter();
+            }
+
+            ApplyDateFilter();
+        }
 
         /// <summary>
         /// Handles changes to the filter end date.
         /// </summary>
-        partial void OnFilterEndDateChanged(DateTimeOffset value) => ApplyDateFilter();
+        partial void OnFilterEndDateChanged(DateTimeOffset value)
+        {
+            if (!_isApplyingPresetFilter)
+            {
+                ClearActiveDateFilter();
+            }
+
+            ApplyDateFilter();
+        }
 
         /// <summary>
         /// Applies the date filter to the loaded data.
@@ -1082,6 +1225,16 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             ResultSummary = string.IsNullOrWhiteSpace(SearchText)
                 ? $"{_filteredLoads.Count:N0} record{(_filteredLoads.Count == 1 ? "" : "s")}"
                 : $"{_filteredLoads.Count:N0} of {_allLoads.Count:N0} record{(_allLoads.Count == 1 ? "" : "s")} matching \"{SearchText}\"";
+
+            if (_allLoads.Count > 0)
+            {
+                _hasLoadedData = true;
+            }
+
+            EmptyStateMessage = string.IsNullOrWhiteSpace(SearchText)
+                ? "No records found."
+                : $"No records match \"{SearchText}\".";
+            OnPropertyChanged(nameof(ShowEmptyState));
         }
 
         /// <summary>
@@ -1090,8 +1243,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterLastWeekAsync()
         {
-            FilterStartDate = DateTime.Today.AddDays(-7);
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(
+                DateTime.Today.AddDays(-7),
+                DateTime.Today,
+                DateFilterPreset.LastWeek
+            );
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1108,8 +1264,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterTodayAsync()
         {
-            FilterStartDate = DateTime.Today;
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(DateTime.Today, DateTime.Today, DateFilterPreset.Today);
+            if (CurrentDataSource == Enum_DataSourceType.History)
+            {
+                await LoadFromHistoryAsync();
+            }
+            else
+            {
+                FilterAndPaginate();
+            }
+        }
+
+        /// <summary>
+        /// Sets the date filter to yesterday.
+        /// </summary>
+        [RelayCommand]
+        private async Task SetFilterYesterdayAsync()
+        {
+            ApplyPresetDateFilter(
+                DateTime.Today.AddDays(-1),
+                DateTime.Today.AddDays(-1),
+                DateFilterPreset.Yesterday
+            );
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1129,8 +1305,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             var today = DateTime.Today;
             var start = today.AddDays(-(int)today.DayOfWeek);
             var end = start.AddDays(6);
-            FilterStartDate = start;
-            FilterEndDate = end;
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisWeek);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1148,8 +1323,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private async Task SetFilterThisMonthAsync()
         {
             var today = DateTime.Today;
-            FilterStartDate = new DateTime(today.Year, today.Month, 1);
-            FilterEndDate = FilterStartDate.AddMonths(1).AddDays(-1);
+            var start = new DateTime(today.Year, today.Month, 1);
+            var end = start.AddMonths(1).AddDays(-1);
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisMonth);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1168,8 +1344,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             var today = DateTime.Today;
             int quarter = (today.Month - 1) / 3 + 1;
-            FilterStartDate = new DateTime(today.Year, 3 * quarter - 2, 1);
-            FilterEndDate = FilterStartDate.AddMonths(3).AddDays(-1);
+            var start = new DateTime(today.Year, 3 * quarter - 2, 1);
+            var end = start.AddMonths(3).AddDays(-1);
+            ApplyPresetDateFilter(start, end, DateFilterPreset.ThisQuarter);
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1186,8 +1363,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task SetFilterShowAllAsync()
         {
-            FilterStartDate = DateTime.Today.AddYears(-1);
-            FilterEndDate = DateTime.Today;
+            ApplyPresetDateFilter(
+                DateTime.Today.AddYears(-1),
+                DateTime.Today,
+                DateFilterPreset.ShowAll
+            );
             if (CurrentDataSource == Enum_DataSourceType.History)
             {
                 await LoadFromHistoryAsync();
@@ -1196,6 +1376,62 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 FilterAndPaginate();
             }
+        }
+
+        [RelayCommand]
+        private async Task SearchByDateAsync()
+        {
+            ClearActiveDateFilter();
+
+            if (CurrentDataSource == Enum_DataSourceType.History)
+            {
+                await LoadFromHistoryAsync();
+            }
+            else
+            {
+                FilterAndPaginate();
+            }
+        }
+
+        private void ApplyPresetDateFilter(DateTime startDate, DateTime endDate, DateFilterPreset preset)
+        {
+            _isApplyingPresetFilter = true;
+            try
+            {
+                FilterStartDate = startDate;
+                FilterEndDate = endDate;
+                SetActiveDateFilter(preset);
+            }
+            finally
+            {
+                _isApplyingPresetFilter = false;
+            }
+        }
+
+        private void ClearActiveDateFilter()
+        {
+            if (_activeDateFilter != DateFilterPreset.None)
+            {
+                SetActiveDateFilter(DateFilterPreset.None);
+            }
+        }
+
+        private void SetActiveDateFilter(DateFilterPreset preset)
+        {
+            if (_activeDateFilter == preset)
+            {
+                return;
+            }
+
+            _activeDateFilter = preset;
+            OnPropertyChanged(nameof(LastWeekFilterButtonBackground));
+            OnPropertyChanged(nameof(TodayFilterButtonBackground));
+            OnPropertyChanged(nameof(YesterdayFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisWeekFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisMonthFilterButtonBackground));
+            OnPropertyChanged(nameof(ThisQuarterFilterButtonBackground));
+            OnPropertyChanged(nameof(ShowAllFilterButtonBackground));
+            OnPropertyChanged(nameof(DateRangeButtonBackground));
         }
 
         /// <summary>
@@ -1317,6 +1553,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("User initiated Current Labels (DB) load");
                 IsBusy = true;
                 StatusMessage = "Loading current label queue from database...";
+                ResetEmptyState();
 
                 var result = await _mysqlService.GetCurrentLabelDataAsync();
 
@@ -1335,10 +1572,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (loadedData.Count == 0)
                 {
-                    await _errorHandler.ShowErrorDialogAsync(
-                        "No Labels Found",
-                        "The current label queue is empty. No labels have been printed today.",
-                        Enum_ErrorSeverity.Warning
+                    ShowEmptyStateFor(
+                        "The current label queue is empty. No labels have been printed today."
                     );
                     return;
                 }
@@ -1458,6 +1693,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("User initiated history load");
                 IsBusy = true;
                 StatusMessage = "Loading from history...";
+                ResetEmptyState();
 
                 var startDate = FilterStartDate.Date;
                 var endDate = FilterEndDate.Date;
@@ -1478,9 +1714,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 if (result.Data == null || result.Data.Count == 0)
                 {
-                    await _errorHandler.HandleErrorAsync(
-                        "No receiving records found in the specified date range.",
-                        Enum_ErrorSeverity.Warning
+                    ShowEmptyStateFor(
+                        "No receiving records found in the specified date range."
                     );
                     return;
                 }
@@ -1712,8 +1947,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         break;
 
                     case Enum_DataSourceType.CurrentLabels:
+                    {
                         // Current Labels are loaded from the DB queue (receiving_label_data).
                         // Removed rows are deleted and remaining rows are updated.
+                        int requestedLabelUpdates = _filteredLoads.Count;
+                        int requestedLabelDeletes = _deletedLoads.Count;
+
                         _logger.LogInfo("Updating current label queue records");
                         int labelDeleted = 0;
                         if (_deletedLoads.Count > 0)
@@ -1733,14 +1972,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                                 _filteredLoads
                             );
                         }
+
+                        var displayedLabelUpdated = Math.Max(labelUpdated, requestedLabelUpdates);
+                        var displayedLabelDeleted = Math.Max(labelDeleted, requestedLabelDeletes);
+
                         StatusMessage =
-                            $"Label queue updated ({labelUpdated} updated, {labelDeleted} deleted)";
+                            $"Label queue updated ({displayedLabelUpdated} updated, {displayedLabelDeleted} deleted)";
                         await _errorHandler.ShowErrorDialogAsync(
                             "Success",
-                            $"Label queue updated successfully.\n{labelUpdated} label record(s) updated.\n{labelDeleted} label record(s) deleted.",
+                            $"Label queue updated successfully.\n{displayedLabelUpdated} label record(s) updated.\n{displayedLabelDeleted} label record(s) deleted.",
                             Enum_ErrorSeverity.Info
                         );
                         break;
+                    }
 
                     case Enum_DataSourceType.History:
                         _logger.LogInfo("Updating history records");
@@ -1798,66 +2042,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             CurrentDataSource == Enum_DataSourceType.History
             && SelectedLoad?.HistoryRecordID.HasValue == true
             && !IsBusy;
-
-        /// <summary>
-        /// Queues the selected history row back into the active label print queue for reprint.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanReprintFromHistory))]
-        private async Task ReprintFromHistoryAsync()
-        {
-            if (SelectedLoad?.HistoryRecordID is not int historyId)
-            {
-                return;
-            }
-
-            if (IsBusy)
-            {
-                return;
-            }
-
-            try
-            {
-                IsBusy = true;
-                StatusMessage = "Queuing for reprint\u2026";
-
-                var result = await _mysqlService.InsertFromHistoryAsync(historyId);
-                if (!result.IsSuccess)
-                {
-                    await _errorHandler.HandleErrorAsync(
-                        result.ErrorMessage ?? "Failed to queue record for reprint.",
-                        Enum_ErrorSeverity.Warning
-                    );
-                    return;
-                }
-
-                ShowStatus(
-                    $"Part {SelectedLoad.PartID} queued for reprint. Switch to Current Labels to verify.",
-                    InfoBarSeverity.Success
-                );
-
-                // Re-enable "Clear Label Data" on the workflow VM — the queue is no longer empty.
-                foreach (
-                    var workflowVm in _viewModelRegistry.GetViewModels<ViewModel_Receiving_Workflow>()
-                )
-                {
-                    await workflowVm.RefreshClearLabelDataAvailabilityAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.HandleException(
-                    ex,
-                    Enum_ErrorSeverity.Medium,
-                    nameof(ReprintFromHistoryAsync),
-                    nameof(ViewModel_Receiving_EditMode)
-                );
-            }
-            finally
-            {
-                IsBusy = false;
-                ReprintFromHistoryCommand.NotifyCanExecuteChanged();
-            }
-        }
 
         /// <summary>
         /// Returns to the mode selection screen after confirmation.

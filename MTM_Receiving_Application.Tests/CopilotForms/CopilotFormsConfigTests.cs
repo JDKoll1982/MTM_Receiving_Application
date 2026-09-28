@@ -16,6 +16,7 @@ public class CopilotFormsConfigTests
                 "..",
                 "..",
                 "docs",
+                "development",
                 "CopilotForms",
                 "data",
                 "copilot-forms.config.json"

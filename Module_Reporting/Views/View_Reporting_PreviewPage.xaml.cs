@@ -40,12 +40,11 @@ public sealed partial class View_Reporting_PreviewPage : Page
     {
         _headerBackNavigation.ClearBackAction();
 
-        // Safely clear the TabView items source layout tree during page destruction
-        // to prevent x:Load caching memory leaks.
-        if (PreviewModulesTabView != null)
-        {
-            PreviewModulesTabView.TabItems.Clear();
-        }
+        // No TabView teardown is needed here. The tabs are generated from the
+        // ViewModel-owned IncludedPreviewModuleCards collection via TabItemsSource,
+        // so there is no page-owned tab tree to clear, and the TabView is unloaded
+        // with the page. Clearing TabItems here throws a COMException during
+        // teardown when the TabView is bound to a TabItemsSource.
     }
 
     private Task NavigateBackToReportingAsync()

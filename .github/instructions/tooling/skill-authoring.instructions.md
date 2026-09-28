@@ -2,6 +2,23 @@
 applyTo: "**/.github/skills/**/SKILL.md, **/.github/skills/**/scripts/*, **/.github/skills/**/references/*, **/.github/skills/**/templates/*"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: skill-authoring.instructions.md
+- Description: Repo standard for creating and maintaining Agent Skills, covering scope rules, frontmatter, progressive loading, resource folders, and repo-specific guardrails.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-10: # Skill Authoring Instructions (Repo Standard)
+  - Line 11-17: ## 1) Skill scope rules
+  - Line 18-51: ## 2) Frontmatter (discovery) rules
+  - Line 52-63: ## 3) Progressive loading rules
+  - Line 64-88: ## 4) Resource folder rules
+  - Line 89-100: ## 5) Repo-specific guardrails (MVVM and data access)
+  - Line 101-107: ## 6) Commenting standard
+  - Line 108-115: ## 7) Maintenance
+[DOC-META-END]
+-->
+
 # Skill Authoring Instructions (Repo Standard)
 
 Last Updated: 2026-01-24

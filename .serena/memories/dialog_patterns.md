@@ -1,3 +1,17 @@
+<!-- 
+[DOC-META-START]
+- File Name: dialog_patterns.md
+- Description: ContentDialog/window patterns, DI registration, and help-system dialog implications.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 15-18: # Dialog and Modal Patterns
+  - Line 19-83: ## Existing Dialog Infrastructure
+  - Line 84-112: ## Registration Requirements
+  - Line 113-123: ## Help System Implications
+- Critical Notes: Dialogs need XamlRoot and DI registration.
+[DOC-META-END]
+-->
+
 # Dialog and Modal Patterns
 
 Last Updated: 2026-03-21

@@ -5,6 +5,20 @@ argument-hint: "Select or specify the converter file to test"
 agent: agent
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-converter-unit-tests.prompt.md
+- Description: Creates comprehensive xUnit tests for C# Converter classes
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-11: # Generate Unit Tests for Value Converters
+  - Line 12-18: ## Context
+  - Line 19-55: ## Requirements
+  - Line 56-64: ## Output
+- Critical Notes: Use [Theory] with multiple input/output pairs and add Category/Type traits to every test.
+[DOC-META-END]
+-->
+
 # Generate Unit Tests for Value Converters
 
 You are an expert C# unit test developer specializing in WinUI 3 value converters and xUnit.

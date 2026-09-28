@@ -7,6 +7,24 @@ description: >
   the query. Includes annotated examples drawn from Database/InforVisualScripts/Queries/.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: infor-visual-query-authoring.instructions.md
+- Description: Step-by-step guide for planning and writing new SQL SELECT queries against the MTMFG Infor Visual (SQL Server) database. Covers the required research workflow using the CSV reference files, mandatory constraints, query patterns, and the C# DAO wiring that consumes the query. Includes annotated examples drawn from Database/InforVisualScripts/Queries/.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 10-11: # Infor Visual Query Authoring Guide
+  - Line 12-30: ## Absolute Constraints — Read Before Writing a Single Line of SQL
+  - Line 31-81: ## Step-by-Step Authoring Workflow
+  - Line 82-143: ## Query Style Rules
+  - Line 144-318: ## Annotated Examples
+  - Line 319-372: ## C# DAO Wiring
+  - Line 373-386: ## Common Mistakes to Avoid
+  - Line 387-398: ## Reference Files Checklist
+- Critical Notes: MTMFG has no stored procedures and is READ ONLY — every query is a plain parameterized SELECT with TOP (@MaxResults) using the dbo. schema prefix.
+[DOC-META-END]
+-->
+
 # Infor Visual Query Authoring Guide
 
 ## Absolute Constraints — Read Before Writing a Single Line of SQL

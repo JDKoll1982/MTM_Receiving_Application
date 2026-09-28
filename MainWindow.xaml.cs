@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Material.Icons;
 using Material.Icons.WinUI3;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
@@ -20,6 +21,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -48,8 +50,13 @@ namespace MTM_Receiving_Application
         private readonly List<object> _applicationFooterItems = new();
         private readonly List<object> _settingsMenuItems = new();
         private bool _hasNavigatedOnStartup = false;
+        private bool _isWindowActive = true;
         private bool _isUpdatingNavSelection;
         private bool _isSettingsMode;
+        private bool _isScannerAccessAllowed;
+        private bool _isScannerHotkeyRegistered;
+        private bool _hasAttemptedScannerHotkeyRegistration;
+        private bool _hasRefreshedScannerAccess;
         private int _labelButtonsPageIndex;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
@@ -60,6 +67,7 @@ namespace MTM_Receiving_Application
         {
             FrameRoute,
             SettingsPage,
+            Command,
         }
 
         private sealed class SearchDestination
@@ -73,6 +81,7 @@ namespace MTM_Receiving_Application
                 string? routeTag,
                 Type? settingsPageType,
                 string detail,
+                string? commandText = null,
                 params string[] aliases
             )
             {
@@ -82,6 +91,7 @@ namespace MTM_Receiving_Application
                 RouteTag = routeTag;
                 SettingsPageType = settingsPageType;
                 Detail = detail;
+                CommandText = commandText;
                 _aliases = aliases;
             }
 
@@ -91,6 +101,7 @@ namespace MTM_Receiving_Application
             public string? RouteTag { get; }
             public Type? SettingsPageType { get; }
             public string Detail { get; }
+            public string? CommandText { get; }
 
             public IEnumerable<string> SearchTerms
             {
@@ -101,6 +112,11 @@ namespace MTM_Receiving_Application
                     if (!string.IsNullOrWhiteSpace(RouteTag))
                     {
                         yield return RouteTag;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(CommandText))
+                    {
+                        yield return CommandText;
                     }
 
                     foreach (var alias in _aliases)
@@ -138,42 +154,107 @@ namespace MTM_Receiving_Application
         )
         {
             InitializeComponent();
-            ViewModel = viewModel;
-            _sessionManager = sessionManager;
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-            _labelViewLauncher = labelViewLauncher;
-            _labelButtonSettings = labelButtonSettings;
-            _headerBackNavigation = headerBackNavigation;
-            _errorHandler = errorHandler;
-            ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
+            ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _labelViewLauncher = labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
+            _labelButtonSettings = labelButtonSettings ?? throw new ArgumentNullException(nameof(labelButtonSettings));
+            _headerBackNavigation = headerBackNavigation ?? throw new ArgumentNullException(nameof(headerBackNavigation));
+            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+
+            if (ViewModel.NotificationService is not null)
+            {
+                ViewModel.NotificationService.PropertyChanged += NotificationService_PropertyChanged;
+            }
+
             _headerBackNavigation.PropertyChanged += HeaderBackNavigation_PropertyChanged;
 
-            _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
-            _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
+            if (NavView is not null)
+            {
+                _applicationMenuItems.AddRange(NavView.MenuItems.Cast<object>());
+                _applicationFooterItems.AddRange(NavView.FooterMenuItems.Cast<object>());
+            }
+
             _settingsMenuItems.AddRange(CreateSettingsNavigationItems());
 
             // Configure Frame to use DI for view activation
-            ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
+            if (ContentFrame is not null)
+            {
+                ContentFrame.NavigationFailed += ContentFrame_NavigationFailed;
+            }
 
-            // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
-            AppWindow.Resize(this.GetScaledWindowSize(1450, 900));
+            try
+            {
+                // Set initial window size (1450x900 to accommodate wide data grids and toolbars)
+                AppWindow.Resize(this.GetScaledWindowSize(1450, 900));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to resize main window during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
-            // Center window on screen
-            CenterWindow();
+            try
+            {
+                // Center window on screen
+                CenterWindow();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to center main window during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
-            // Configure custom title bar
-            ConfigureTitleBar();
+            // NOTE: do not maximize here. Maximizing a WinUI window that has not been
+            // activated yet makes the OS show it immediately, which paints the window with
+            // the default theme before the saved theme is applied and consumes the first
+            // Activated event that drives the startup navigation. The window is maximized
+            // by the startup lifecycle right after Activate() instead.
 
-            // Apply the shared window icon so published builds match debug behavior.
-            this.ApplySharedIcon(_logger);
+            try
+            {
+                // Configure custom title bar
+                ConfigureTitleBar();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to configure title bar during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
+
+            try
+            {
+                // Apply the shared window icon so published builds match debug behavior.
+                this.ApplySharedIcon(_logger);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to apply shared window icon during startup: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
 
             // Set user display from current session
             if (_sessionManager.CurrentSession?.User != null)
             {
                 var user = _sessionManager.CurrentSession.User;
-                UserDisplayTextBlock.Text = user.DisplayName;
-                UserPicture.DisplayName = user.DisplayName;
+                if (UserDisplayTextBlock is not null)
+                {
+                    UserDisplayTextBlock.Text = user.DisplayName;
+                }
+
+                if (UserPicture is not null)
+                {
+                    UserPicture.DisplayName = user.DisplayName;
+                }
             }
 
             // Wire up activity tracking
@@ -183,22 +264,40 @@ namespace MTM_Receiving_Application
                 rootElement.KeyDown += (s, e) => _sessionManager.UpdateLastActivity();
             }
 
-            // Subscribe to theme changes to update title bar colors
+            // Subscribe to theme changes to update the title bar colors and the
+            // theme-aware module accent borders in the header.
             if (Content is FrameworkElement contentElement)
             {
-                contentElement.ActualThemeChanged += (s, e) => UpdateTitleBarColors();
+                contentElement.ActualThemeChanged += (s, e) =>
+                {
+                    UpdateTitleBarColors();
+                    UpdateTitleBarTextColor(_isWindowActive);
+                    ApplyHeaderAccent(ContentFrame?.Content?.GetType());
+                };
             }
 
             this.Activated += MainWindow_Activated;
 
             // Subscribe to navigation events once
-            ContentFrame.Navigated += ContentFrame_Navigated;
+            if (ContentFrame is not null)
+            {
+                ContentFrame.Navigated += ContentFrame_Navigated;
+            }
 
             // Wire up title bar events
-            AppTitleBar.Loaded += AppTitleBar_Loaded;
-            AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+            if (AppTitleBar is not null)
+            {
+                AppTitleBar.Loaded += AppTitleBar_Loaded;
+                AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+            }
 
-            ApplyNavigationMode(isSettingsMode: false);
+            if (NavView is not null)
+            {
+                ApplyNavigationMode(isSettingsMode: false);
+            }
+
+            _ = ApplyScannerAccessAsync();
+
             UpdateHeaderBackButton();
             UpdateStatusInfoBarActionButton();
 
@@ -265,24 +364,141 @@ namespace MTM_Receiving_Application
                 : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Applies the plant-wide Scanner access policy to the navigation entry and the global
+        /// send hotkey. The allow-list is a shared, system-scoped setting, so the result is
+        /// cached briefly and re-evaluated when the user actually tries to open Scanner.
+        /// </summary>
+        private async Task ApplyScannerAccessAsync()
+        {
+            try
+            {
+                var accessPolicy = _serviceProvider.GetService<IService_ScannerAccessPolicy>();
+                if (accessPolicy is null)
+                {
+                    return;
+                }
+
+                _isScannerAccessAllowed = await accessPolicy.IsUserAllowedAsync(
+                    _sessionManager.CurrentSession?.User,
+                    Environment.UserName
+                );
+
+                var scannerItem = FindNavigationItemByTag("ScannerMainPage");
+                if (scannerItem is not null)
+                {
+                    scannerItem.Visibility = _isScannerAccessAllowed
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    scannerItem.IsEnabled = _isScannerAccessAllowed;
+                }
+
+                ApplyScannerHotkey(_isScannerAccessAllowed);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to apply Scanner access policy: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
+        }
+
+        private void NotifyScannerAccessDenied()
+        {
+            ViewModel.NotificationService.ShowStatus(
+                "Scanner is not enabled for your user name. Ask an admin or developer to add you in Core Settings ▸ Scanner Access.",
+                global::MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
+        }
+
+        /// <summary>
+        /// Re-checks Scanner access with a fresh read of the plant-wide allow-list. Used when a
+        /// user actually tries to open Scanner so a just-saved change takes effect immediately.
+        /// </summary>
+        private async Task<bool> RefreshScannerAccessAsync()
+        {
+            _serviceProvider.GetService<IService_ScannerAccessPolicy>()?.InvalidateCache();
+            await ApplyScannerAccessAsync();
+            return _isScannerAccessAllowed;
+        }
+
+        /// <summary>
+        /// Registers the global scanner send hotkey (Ctrl+Alt+M) against the main window and
+        /// unregisters it when the window closes. The shortcut is only registered for users who
+        /// may use Scanner so the chord stays free for everyone else.
+        /// </summary>
+        private void ApplyScannerHotkey(bool isAllowed)
+        {
+            try
+            {
+                if (!isAllowed)
+                {
+                    if (_isScannerHotkeyRegistered)
+                    {
+                        _serviceProvider.GetService<IService_ScannerHotkey>()?.Unregister();
+                        _isScannerHotkeyRegistered = false;
+                    }
+
+                    return;
+                }
+
+                if (_hasAttemptedScannerHotkeyRegistration)
+                {
+                    return;
+                }
+
+                _hasAttemptedScannerHotkeyRegistration = true;
+
+                var hotkey = _serviceProvider.GetService<IService_ScannerHotkey>();
+                if (hotkey is null)
+                {
+                    return;
+                }
+
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+                if (!hotkey.TryRegister(hwnd, "Ctrl+Alt+M"))
+                {
+                    _logger.LogWarning(
+                        "Unable to register global scanner hotkeys. Another application may already own the chord.",
+                        nameof(MainWindow)
+                    );
+                    return;
+                }
+
+                _isScannerHotkeyRegistered = true;
+                Closed += (_, _) => hotkey.Unregister();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Unable to initialize scanner hotkeys: {ex.Message}",
+                    nameof(MainWindow)
+                );
+            }
+        }
+
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
-            // Update title bar text color based on activation state
-            if (args.WindowActivationState == WindowActivationState.Deactivated)
-            {
-                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
-                    App.Current.Resources["WindowCaptionForegroundDisabled"];
-            }
-            else
-            {
-                TitleBarTextBlock.Foreground = (Microsoft.UI.Xaml.Media.SolidColorBrush)
-                    App.Current.Resources["WindowCaptionForeground"];
-            }
+            // Update the app title color based on activation state using the
+            // standard theme-aware text brushes so it stays readable in both
+            // light and dark mode. Re-resolved on theme changes so a live
+            // light/dark toggle updates the title immediately.
+            _isWindowActive = args.WindowActivationState != WindowActivationState.Deactivated;
+            UpdateTitleBarTextColor(_isWindowActive);
 
             if (args.WindowActivationState != WindowActivationState.Deactivated)
             {
                 _sessionManager.UpdateLastActivity();
                 _ = LoadConfiguredLabelButtonsAsync();
+
+                // The window can be laid out before the user session exists, so re-evaluate the
+                // plant-wide Scanner access policy once the app is actually in front of a user.
+                if (!_hasRefreshedScannerAccess)
+                {
+                    _hasRefreshedScannerAccess = true;
+                    _ = ApplyScannerAccessAsync();
+                }
 
                 // Navigate to Receiving workflow on first activation
                 if (!_hasNavigatedOnStartup)
@@ -318,6 +534,10 @@ namespace MTM_Receiving_Application
             ["ScannerMainPage"] = (
                 typeof(Module_Scanner.Views.View_Scanner_Main),
                 "Scanner"
+            ),
+            ["ReprintLabelsPage"] = (
+                typeof(Module_Reprint.Views.View_Reprint_Main),
+                "Reprint Labels"
             ),
             ["DunnageLabelPage"] = (
                 typeof(Module_Dunnage.Views.View_Dunnage_WorkflowView),
@@ -372,11 +592,30 @@ namespace MTM_Receiving_Application
         private static readonly List<SearchDestination> _searchDestinations =
             CreateSearchDestinations();
 
+        private static readonly List<SearchDestination> _searchCommandDestinations =
+            CreateSearchCommandDestinations();
+
         private static readonly Dictionary<string, SearchDestination> _searchDestinationsByKey =
-            _searchDestinations.ToDictionary(
-                destination => destination.Key,
-                StringComparer.Ordinal
-            );
+            _searchDestinations
+                .Concat(_searchCommandDestinations)
+                .ToDictionary(destination => destination.Key, StringComparer.Ordinal);
+
+        private static readonly HashSet<string> _searchCommandNames = new(
+            [
+                "/all",
+                "/apps",
+                "/settings",
+                "/help",
+                "/labels",
+                "/tools",
+                "/receiving",
+                "/dunnage",
+                "/volvo",
+                "/reporting",
+                "/docs",
+            ],
+            StringComparer.OrdinalIgnoreCase
+        );
 
         private async void NavView_SelectionChanged(
             NavigationView sender,
@@ -439,6 +678,15 @@ namespace MTM_Receiving_Application
 
             if (!_navRoutes.TryGetValue(tag, out var route))
             {
+                return;
+            }
+
+            // Scanner is gated by a plant-wide allow-list that an admin can change at any time,
+            // so re-read it before allowing entry instead of trusting the cached nav state.
+            if (tag == "ScannerMainPage" && await RefreshScannerAccessAsync() is false)
+            {
+                NotifyScannerAccessDenied();
+                SetNavigationSelectionByTag(GetCurrentRouteTag());
                 return;
             }
 
@@ -879,6 +1127,31 @@ namespace MTM_Receiving_Application
                     "shipping receiving tools",
                     "tools"
                 ),
+                CreateFrameDestination(
+                    "ScannerMainPage",
+                    "Scanner",
+                    "Scanner workbench, history, and settings",
+                    "scanner",
+                    "scanner module",
+                    "scan"
+                ),
+                CreateFrameDestination(
+                    "ReprintLabelsPage",
+                    "Reprint Labels",
+                    "Reprint Receiving, Dunnage, or Volvo labels from history",
+                    "reprint",
+                    "reprint labels",
+                    "reprint labels page"
+                ),
+                CreateFrameDestination(
+                    "AppDocumentation",
+                    "Documentation",
+                    "Open the in-app documentation index",
+                    "documentation",
+                    "docs",
+                    "help docs",
+                    "application docs"
+                ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_CoreNavigationHub),
                     "Configuration",
@@ -902,6 +1175,14 @@ namespace MTM_Receiving_Application
                     "theme",
                     "theme settings",
                     "appearance"
+                ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_System),
+                    "System Settings",
+                    "Core system settings and defaults",
+                    "system",
+                    "system settings",
+                    "core system"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Core.Views.View_Settings_SharedPaths),
@@ -986,6 +1267,14 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts receiving"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths),
+                    "Receiving Label Files",
+                    "Configure the LabelView template paths used by Receiving workflow label buttons",
+                    "receiving label paths",
+                    "receiving label files",
+                    "receiving labelview paths"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
                     "Dunnage Settings",
                     "Dunnage settings categories",
@@ -1033,6 +1322,14 @@ namespace MTM_Receiving_Application
                     "keyboard shortcuts dunnage"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
+                    "Dunnage Label Files",
+                    "Configure the LabelView template path used for Dunnage labels",
+                    "dunnage label paths",
+                    "dunnage label files",
+                    "dunnage labelview paths"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
                     "Reporting Settings",
                     "Reporting settings placeholder",
@@ -1070,6 +1367,102 @@ namespace MTM_Receiving_Application
                     "volvo email recipients",
                     "volvo notifications"
                 ),
+                CreateSettingsDestination(
+                    typeof(Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths),
+                    "Volvo Label Files",
+                    "Configure the LabelView template path used for Volvo labels",
+                    "volvo label paths",
+                    "volvo label files",
+                    "volvo labelview paths"
+                ),
+            ];
+        }
+
+        private static List<SearchDestination> CreateSearchCommandDestinations()
+        {
+            static SearchDestination CreateCommandDestination(
+                string commandText,
+                string label,
+                string detail,
+                params string[] aliases
+            )
+            {
+                return new SearchDestination(
+                    key: $"command:{commandText}",
+                    label: label,
+                    kind: SearchDestinationKind.Command,
+                    routeTag: null,
+                    settingsPageType: null,
+                    detail: detail,
+                    commandText: commandText,
+                    aliases: aliases
+                );
+            }
+
+            return
+            [
+                CreateCommandDestination(
+                    "/all",
+                    "/all",
+                    "Show all searchable links",
+                    "all"
+                ),
+                CreateCommandDestination(
+                    "/apps",
+                    "/apps",
+                    "Show application pages only",
+                    "apps",
+                    "pages"
+                ),
+                CreateCommandDestination(
+                    "/settings",
+                    "/settings",
+                    "Show settings pages only",
+                    "settings"
+                ),
+                CreateCommandDestination(
+                    "/labels",
+                    "/labels",
+                    "Show label-related destinations",
+                    "labels"
+                ),
+                CreateCommandDestination(
+                    "/tools",
+                    "/tools",
+                    "Show tools-related destinations",
+                    "tools"
+                ),
+                CreateCommandDestination(
+                    "/receiving",
+                    "/receiving",
+                    "Show receiving-related destinations",
+                    "receiving"
+                ),
+                CreateCommandDestination(
+                    "/dunnage",
+                    "/dunnage",
+                    "Show dunnage-related destinations",
+                    "dunnage"
+                ),
+                CreateCommandDestination(
+                    "/volvo",
+                    "/volvo",
+                    "Show volvo-related destinations",
+                    "volvo"
+                ),
+                CreateCommandDestination(
+                    "/reporting",
+                    "/reporting",
+                    "Show reporting-related destinations",
+                    "reporting"
+                ),
+                CreateCommandDestination(
+                    "/docs",
+                    "/docs",
+                    "Show documentation destination",
+                    "docs",
+                    "documentation"
+                ),
             ];
         }
 
@@ -1079,6 +1472,11 @@ namespace MTM_Receiving_Application
             if (string.IsNullOrWhiteSpace(normalizedQuery))
             {
                 return Array.Empty<SearchDestination>();
+            }
+
+            if (TryGetCommandMatches(normalizedQuery, out var commandMatches))
+            {
+                return commandMatches;
             }
 
             return _searchDestinations
@@ -1102,6 +1500,18 @@ namespace MTM_Receiving_Application
             var normalizedQuery = NormalizeSearchText(queryText);
             if (string.IsNullOrWhiteSpace(normalizedQuery))
             {
+                destination = null;
+                return false;
+            }
+
+            if (TryGetCommandMatches(normalizedQuery, out var commandMatches))
+            {
+                if (commandMatches.Count == 1)
+                {
+                    destination = commandMatches[0];
+                    return true;
+                }
+
                 destination = null;
                 return false;
             }
@@ -1147,6 +1557,123 @@ namespace MTM_Receiving_Application
 
             destination = null;
             return false;
+        }
+
+        private static bool TryGetCommandMatches(
+            string normalizedQuery,
+            out IReadOnlyList<SearchDestination> matches
+        )
+        {
+            matches = Array.Empty<SearchDestination>();
+
+            if (!normalizedQuery.StartsWith('/'))
+            {
+                return false;
+            }
+
+            var parts = normalizedQuery.Split(' ', 2, StringSplitOptions.TrimEntries);
+            var command = parts[0];
+            var optionalFilter = parts.Length > 1 ? parts[1] : string.Empty;
+
+            if (string.Equals(command, "/help", StringComparison.OrdinalIgnoreCase))
+            {
+                var commandSet = _searchCommandDestinations.AsEnumerable();
+                if (!string.IsNullOrWhiteSpace(optionalFilter))
+                {
+                    commandSet = commandSet
+                        .Select(destination => new
+                        {
+                            Destination = destination,
+                            Rank = GetSearchMatchRank(destination, optionalFilter),
+                        })
+                        .Where(result => result.Rank < int.MaxValue)
+                        .OrderBy(result => result.Rank)
+                        .ThenBy(result => result.Destination.Label, StringComparer.OrdinalIgnoreCase)
+                        .Select(result => result.Destination);
+                }
+                else
+                {
+                    commandSet = commandSet.OrderBy(
+                        destination => destination.Label,
+                        StringComparer.OrdinalIgnoreCase
+                    );
+                }
+
+                matches = commandSet.ToList();
+                return true;
+            }
+
+            IEnumerable<SearchDestination> baseSet = command.ToLowerInvariant() switch
+            {
+                "/all" => _searchDestinations,
+                "/apps" => _searchDestinations.Where(destination =>
+                    destination.Kind == SearchDestinationKind.FrameRoute
+                ),
+                "/settings" => _searchDestinations.Where(destination =>
+                    destination.Kind == SearchDestinationKind.SettingsPage
+                ),
+                "/labels" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("label", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/tools" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("tool", StringComparison.OrdinalIgnoreCase)
+                    )
+                    || destination.SearchTerms.Any(term =>
+                        term.Contains("scanner", StringComparison.OrdinalIgnoreCase)
+                    )
+                    || destination.SearchTerms.Any(term =>
+                        term.Contains("report", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/receiving" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("receiving", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/dunnage" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("dunnage", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/volvo" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("volvo", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/reporting" => _searchDestinations.Where(destination =>
+                    destination.SearchTerms.Any(term =>
+                        term.Contains("report", StringComparison.OrdinalIgnoreCase)
+                    )
+                ),
+                "/docs" => _searchDestinations.Where(destination =>
+                    string.Equals(destination.RouteTag, "AppDocumentation", StringComparison.Ordinal)
+                ),
+                _ => Enumerable.Empty<SearchDestination>(),
+            };
+
+            if (!string.IsNullOrWhiteSpace(optionalFilter))
+            {
+                baseSet = baseSet
+                    .Select(destination => new
+                    {
+                        Destination = destination,
+                        Rank = GetSearchMatchRank(destination, optionalFilter),
+                    })
+                    .Where(result => result.Rank < int.MaxValue)
+                    .OrderBy(result => result.Rank)
+                    .ThenBy(result => result.Destination.Label, StringComparer.OrdinalIgnoreCase)
+                    .Select(result => result.Destination);
+            }
+            else
+            {
+                baseSet = baseSet.OrderBy(destination => destination.Label, StringComparer.OrdinalIgnoreCase);
+            }
+
+            matches = baseSet.ToList();
+            return true;
         }
 
         private static string NormalizeSearchText(string queryText)
@@ -1203,7 +1730,7 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            sender.ItemsSource = GetSearchMatches(queryText).Take(8).ToList();
+            sender.ItemsSource = GetSearchMatches(queryText).Take(24).ToList();
         }
 
         private void TitleBarSearchBox_SuggestionChosen(
@@ -1231,6 +1758,29 @@ namespace MTM_Receiving_Application
             var queryText = args.QueryText?.Trim();
             if (string.IsNullOrWhiteSpace(queryText))
             {
+                return;
+            }
+
+            var normalizedQuery = NormalizeSearchText(queryText);
+            if (normalizedQuery.StartsWith('/'))
+            {
+                var commandMatches = GetSearchMatches(normalizedQuery).Take(50).ToList();
+                if (commandMatches.Count == 1)
+                {
+                    await NavigateToSearchDestinationAsync(commandMatches[0]);
+                    return;
+                }
+
+                if (commandMatches.Count > 1)
+                {
+                    await ShowSearchDisambiguationAsync(queryText, commandMatches);
+                    return;
+                }
+
+                ViewModel.NotificationService.ShowStatus(
+                    $"Unknown search command '{normalizedQuery}'. Try: {string.Join(", ", _searchCommandNames.OrderBy(command => command, StringComparer.OrdinalIgnoreCase))}",
+                    global::MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+                );
                 return;
             }
 
@@ -1301,6 +1851,14 @@ namespace MTM_Receiving_Application
 
         private async Task NavigateToSearchDestinationAsync(SearchDestination destination)
         {
+            if (destination.Kind == SearchDestinationKind.Command)
+            {
+                var commandText = destination.CommandText ?? destination.Label;
+                TitleBarSearchBox.Text = commandText;
+                TitleBarSearchBox.ItemsSource = GetSearchMatches(commandText).Take(24).ToList();
+                return;
+            }
+
             bool navigationSucceeded;
             if (destination.Kind == SearchDestinationKind.FrameRoute)
             {
@@ -1326,6 +1884,15 @@ namespace MTM_Receiving_Application
 
         private async Task<bool> NavigateToRouteTagAsync(string routeTag)
         {
+            if (string.Equals(routeTag, "AppDocumentation", StringComparison.Ordinal))
+            {
+                var docsPath = Path.Combine(AppContext.BaseDirectory, "docs", "index.html");
+                var docsUri = new Uri(docsPath);
+                _ = await Windows.System.Launcher.LaunchUriAsync(docsUri);
+                SetNavigationSelectionByTag("AppDocumentation");
+                return true;
+            }
+
             if (!_navRoutes.TryGetValue(routeTag, out var route))
             {
                 return false;
@@ -1690,6 +2257,233 @@ namespace MTM_Receiving_Application
             });
         }
 
+        /// <summary>
+        /// Namespace prefix to module accent brush keys. The generic
+        /// Module_Settings prefix is checked last so settings pages for a
+        /// specific module (Receiving, Dunnage, Volvo, Reporting) resolve to
+        /// their own module color.
+        /// </summary>
+        private static readonly (string NamespacePrefix, string FillKey, string BorderKey, string HighlightKey)[]
+            ModuleAccentMap =
+            [
+                ("MTM_Receiving_Application.Module_Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Volvo", "VolvoAccentBrush", "VolvoAccentBorderBrush", "VolvoAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Volvo", "VolvoAccentBrush", "VolvoAccentBorderBrush", "VolvoAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Reporting", "ReportingAccentBrush", "ReportingAccentBorderBrush", "ReportingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Reporting", "ReportingAccentBrush", "ReportingAccentBorderBrush", "ReportingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_ShipRec_Tools", "ShipRecAccentBrush", "ShipRecAccentBorderBrush", "ShipRecAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Reprint", "ReprintAccentBrush", "ReprintAccentBorderBrush", "ReprintAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Scanner", "ScannerAccentBrush", "ScannerAccentBorderBrush", "ScannerAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings", "SettingsAccentBrush", "SettingsAccentBorderBrush", "SettingsAccentHighlightBrush"),
+            ];
+
+        /// <summary>
+        /// Resolved accent brushes for a module: the accent fill used as the
+        /// header background, the theme-aware border brush key used for the user
+        /// card and the initials circle, and the fixed highlight brush key used
+        /// for the header card border on top of the accent fill.
+        /// </summary>
+        private sealed record ModuleAccent(
+            SolidColorBrush? Fill,
+            string BorderKey,
+            string HighlightKey
+        );
+
+        /// <summary>
+        /// Colors the shell header with the active module's accent. The header
+        /// card background becomes the module fill (title and back icon turn
+        /// white), the header card border becomes a fixed accent highlight, and
+        /// the user card and initials circle receive a theme-aware accent border
+        /// so they stay visible in light and dark mode. Pages outside the
+        /// branded modules keep the neutral theme header. Driven by the page
+        /// type so settings pages for a module match their module too.
+        /// </summary>
+        private void ApplyHeaderAccent(Type? pageType)
+        {
+            if (HeaderBarBorder is null)
+            {
+                return;
+            }
+
+            var accent = GetModuleAccent(pageType);
+            if (accent?.Fill is not null)
+            {
+                HeaderBarBorder.Background = accent.Fill;
+                HeaderBarBorder.BorderBrush =
+                    ResolveAppBrush(accent.HighlightKey) ?? accent.Fill;
+                HeaderBarBorder.BorderThickness = new Thickness(2);
+
+                PageTitleTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                HeaderBackButton.BorderBrush = new SolidColorBrush(
+                    ColorHelper.FromArgb(64, 255, 255, 255)
+                );
+                if (HeaderBackButtonIcon is not null)
+                {
+                    HeaderBackButtonIcon.Foreground = new SolidColorBrush(Colors.White);
+                }
+
+                ApplyUserCardAccentBorder(ResolveThemeAwareBrush(accent.BorderKey));
+
+                // Blend the user card into the accent fill and render the user
+                // name in white so the whole header reads consistently on the
+                // accent in both light and dark themes.
+                UserMenuButton.Background = new SolidColorBrush(Colors.Transparent);
+                UserDisplayTextBlock.Foreground = new SolidColorBrush(Colors.White);
+                return;
+            }
+
+            HeaderBarBorder.Background = ResolveAppBrush("LayerFillColorDefaultBrush");
+            HeaderBarBorder.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            HeaderBarBorder.BorderThickness = new Thickness(1);
+            PageTitleTextBlock.ClearValue(TextBlock.ForegroundProperty);
+            HeaderBackButton.BorderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            HeaderBackButtonIcon?.ClearValue(IconElement.ForegroundProperty);
+            UserMenuButton.ClearValue(Button.BackgroundProperty);
+            UserDisplayTextBlock.ClearValue(TextBlock.ForegroundProperty);
+            ApplyUserCardNeutralBorder();
+        }
+
+        /// <summary>
+        /// Applies the module accent border to the user card and the initials
+        /// circle. Falls back to the theme card stroke when the theme-aware
+        /// brush cannot be resolved.
+        /// </summary>
+        private void ApplyUserCardAccentBorder(SolidColorBrush? accentBorder)
+        {
+            var borderBrush = accentBorder ?? ResolveAppBrush("CardStrokeColorDefaultBrush");
+            if (UserMenuButton is not null)
+            {
+                UserMenuButton.BorderBrush = borderBrush;
+                UserMenuButton.BorderThickness = new Thickness(2);
+            }
+
+            if (UserPictureBorder is not null)
+            {
+                UserPictureBorder.BorderBrush = borderBrush;
+                UserPictureBorder.BorderThickness = new Thickness(2);
+            }
+        }
+
+        /// <summary>
+        /// Restores the neutral theme card stroke on the user card and the
+        /// initials circle for non-branded pages.
+        /// </summary>
+        private void ApplyUserCardNeutralBorder()
+        {
+            var borderBrush = ResolveAppBrush("CardStrokeColorDefaultBrush");
+            if (UserMenuButton is not null)
+            {
+                UserMenuButton.BorderBrush = borderBrush;
+                UserMenuButton.BorderThickness = new Thickness(1);
+            }
+
+            if (UserPictureBorder is not null)
+            {
+                UserPictureBorder.BorderBrush = borderBrush;
+                UserPictureBorder.BorderThickness = new Thickness(1);
+            }
+        }
+
+        /// <summary>
+        /// Resolves a theme-aware accent border brush from the app theme
+        /// dictionaries. The Light theme holds the dark brand accents (visible
+        /// on light surfaces) and the Dark theme holds lighter tints (visible on
+        /// dark surfaces), so the header borders stay readable in both modes.
+        /// Searches the root dictionary and every merged dictionary because the
+        /// theme dictionaries live inside the merged ModuleAccentBrushes.xaml.
+        /// </summary>
+        private SolidColorBrush? ResolveThemeAwareBrush(string key)
+        {
+            var themeKey = GetThemeKey(
+                (Content as FrameworkElement)?.ActualTheme ?? ElementTheme.Default
+            );
+
+            if (TryResolveThemeBrush(App.Current.Resources, themeKey, key, out var brush))
+            {
+                return brush;
+            }
+
+            foreach (var merged in App.Current.Resources.MergedDictionaries)
+            {
+                if (TryResolveThemeBrush(merged, themeKey, key, out brush))
+                {
+                    return brush;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool TryResolveThemeBrush(
+            ResourceDictionary dictionary,
+            string themeKey,
+            string key,
+            out SolidColorBrush? brush
+        )
+        {
+            brush = null;
+
+            if (dictionary.ThemeDictionaries is not { } themeDictionaries)
+            {
+                return false;
+            }
+
+            if (
+                themeDictionaries.TryGetValue(themeKey, out var themeDictionary)
+                && themeDictionary is ResourceDictionary resourceDictionary
+                && resourceDictionary.TryGetValue(key, out var value)
+                && value is SolidColorBrush solidBrush
+            )
+            {
+                brush = solidBrush;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static string GetThemeKey(ElementTheme theme) =>
+            theme switch
+            {
+                ElementTheme.Dark => "Dark",
+                ElementTheme.Light => "Light",
+                _ => Application.Current.RequestedTheme == ApplicationTheme.Dark
+                    ? "Dark"
+                    : "Light",
+            };
+
+        /// <summary>
+        /// Maps a page type to its module accent brushes, or null when the page
+        /// does not belong to a branded module.
+        /// </summary>
+        private static ModuleAccent? GetModuleAccent(Type? pageType)
+        {
+            if (pageType?.FullName is not string fullName)
+            {
+                return null;
+            }
+
+            foreach (var mapping in ModuleAccentMap)
+            {
+                if (fullName.StartsWith(mapping.NamespacePrefix, StringComparison.Ordinal))
+                {
+                    return new ModuleAccent(
+                        ResolveAppBrush(mapping.FillKey),
+                        mapping.BorderKey,
+                        mapping.HighlightKey
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        private static SolidColorBrush? ResolveAppBrush(string key) =>
+            App.Current.Resources[key] as SolidColorBrush;
+
         private void ResetHeaderContext() { }
 
         private void UpdateHeader(IViewModel_HeaderTitleProvider viewModel)
@@ -1721,6 +2515,8 @@ namespace MTM_Receiving_Application
         {
             ClearHeaderSubscription();
             _headerBackNavigation.ClearBackAction();
+
+            ApplyHeaderAccent(content?.GetType());
 
             var headerProvider = ResolveHeaderProvider(content);
             if (headerProvider != null)
@@ -1952,6 +2748,23 @@ namespace MTM_Receiving_Application
                 titleBar.ButtonPressedForegroundColor = foregroundColor;
                 titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 96, 96, 96);
             }
+        }
+
+        /// <summary>
+        /// Applies a theme-aware color to the title-bar app title: the primary
+        /// text fill for an active window (near-black in Light mode, near-white
+        /// in Dark mode) and a muted secondary fill when the window is
+        /// deactivated.
+        /// </summary>
+        private void UpdateTitleBarTextColor(bool isActive)
+        {
+            var brush = isActive
+                ? ResolveAppBrush("TextFillColorPrimaryBrush")
+                    ?? new SolidColorBrush(Colors.Black)
+                : ResolveAppBrush("TextFillColorSecondaryBrush")
+                    ?? ResolveAppBrush("TextFillColorDisabledBrush")
+                    ?? new SolidColorBrush(Colors.Gray);
+            TitleBarTextBlock.Foreground = brush;
         }
 
         /// <summary>

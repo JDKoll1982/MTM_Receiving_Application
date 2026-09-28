@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link a UI change export from docs/CopilotForms/outputs/ui-change and describe any extra constraints'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-ui-change.prompt.md
+- Description: Read a saved CopilotForms UI change export and implement the requested UI changes.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms UI Change
+  - Line 12: ## Workflow
+  - Line 21: ## Output Expectations
+- Critical Notes: Preserve MVVM boundaries and x:Bind; keep business logic unchanged unless requested.
+[DOC-META-END]
+-->
+
 # CopilotForms UI Change
 
 Read the linked export from `docs/CopilotForms/outputs/ui-change/` and implement the requested UI changes.

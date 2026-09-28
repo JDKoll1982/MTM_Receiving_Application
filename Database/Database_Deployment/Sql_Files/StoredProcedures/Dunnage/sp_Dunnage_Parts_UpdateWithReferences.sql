@@ -6,7 +6,16 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
     IN p_id INT,
     IN p_original_part_id VARCHAR(50),
     IN p_new_part_id VARCHAR(50),
-    IN p_spec_values JSON,
+    IN p_udc1 VARCHAR(255),
+    IN p_udc2 VARCHAR(255),
+    IN p_udc3 VARCHAR(255),
+    IN p_udc4 VARCHAR(255),
+    IN p_udc5 VARCHAR(255),
+    IN p_udc6 VARCHAR(255),
+    IN p_udc7 VARCHAR(255),
+    IN p_udc8 VARCHAR(255),
+    IN p_udc9 VARCHAR(255),
+    IN p_udc10 VARCHAR(255),
     IN p_image_path VARCHAR(255),
     IN p_quantity_type VARCHAR(100),
     IN p_home_location VARCHAR(100),
@@ -16,6 +25,7 @@ CREATE PROCEDURE `sp_Dunnage_Parts_UpdateWithReferences`(
 )
 BEGIN
     DECLARE v_old_foreign_key_checks INT DEFAULT @@FOREIGN_KEY_CHECKS;
+    DECLARE v_old_home_location VARCHAR(100) DEFAULT NULL;
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -28,10 +38,25 @@ BEGIN
 
     START TRANSACTION;
 
+    SELECT home_location
+      INTO v_old_home_location
+      FROM dunnage_parts
+     WHERE id = p_id
+     LIMIT 1;
+
     UPDATE dunnage_parts
     SET
         part_id = p_new_part_id,
-        spec_values = p_spec_values,
+        udc1 = p_udc1,
+        udc2 = p_udc2,
+        udc3 = p_udc3,
+        udc4 = p_udc4,
+        udc5 = p_udc5,
+        udc6 = p_udc6,
+        udc7 = p_udc7,
+        udc8 = p_udc8,
+        udc9 = p_udc9,
+        udc10 = p_udc10,
         image_path = NULLIF(p_image_path, ''),
         quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
         home_location = p_home_location,
@@ -43,7 +68,16 @@ BEGIN
     SET
         part_id = p_new_part_id,
         quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
-        specs_json = p_spec_values,
+        udc1 = p_udc1,
+        udc2 = p_udc2,
+        udc3 = p_udc3,
+        udc4 = p_udc4,
+        udc5 = p_udc5,
+        udc6 = p_udc6,
+        udc7 = p_udc7,
+        udc8 = p_udc8,
+        udc9 = p_udc9,
+        udc10 = p_udc10,
         modified_by = p_user,
         modified_date = NOW()
     WHERE part_id IN (p_original_part_id, p_new_part_id);
@@ -52,8 +86,39 @@ BEGIN
     SET
         part_id = p_new_part_id,
         quantity_type = COALESCE(NULLIF(TRIM(p_quantity_type), ''), 'Quantity'),
-        specs_json = p_spec_values
+        udc1 = p_udc1,
+        udc2 = p_udc2,
+        udc3 = p_udc3,
+        udc4 = p_udc4,
+        udc5 = p_udc5,
+        udc6 = p_udc6,
+        udc7 = p_udc7,
+        udc8 = p_udc8,
+        udc9 = p_udc9,
+        udc10 = p_udc10
     WHERE part_id IN (p_original_part_id, p_new_part_id);
+
+    -- When the part's home location (the default location used for saved rows)
+    -- changes, rewrite only the saved label-data and history rows whose stored
+    -- location still equals the OLD home location. Rows whose location was
+    -- overridden by the user are left untouched.
+    IF COALESCE(v_old_home_location, '') <> COALESCE(p_home_location, '')
+       AND p_home_location IS NOT NULL
+       AND TRIM(p_home_location) <> '' THEN
+
+        UPDATE dunnage_history
+        SET
+            location = p_home_location,
+            modified_by = p_user,
+            modified_date = NOW()
+        WHERE part_id IN (p_original_part_id, p_new_part_id)
+          AND COALESCE(location, '') = COALESCE(v_old_home_location, '');
+
+        UPDATE dunnage_label_data
+        SET location = p_home_location
+        WHERE part_id IN (p_original_part_id, p_new_part_id)
+          AND COALESCE(location, '') = COALESCE(v_old_home_location, '');
+    END IF;
 
     IF p_inventory_method IS NULL
         OR TRIM(p_inventory_method) = ''

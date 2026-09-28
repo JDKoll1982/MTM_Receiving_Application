@@ -22,6 +22,7 @@
     <Grid MaxWidth="1200">
         <ScrollViewer MaxHeight="720" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Spacing="12">
+                
                 <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" ColumnSpacing="8" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50"/>

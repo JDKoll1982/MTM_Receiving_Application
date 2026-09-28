@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -43,6 +42,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     private readonly IService_SettingsCoreFacade _settingsCore;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
+
+    private List<Model_CustomFieldDefinition> _currentCustomFields = new();
 
     public ViewModel_Dunnage_DetailsEntry(
         IService_DunnageWorkflow workflowService,
@@ -184,70 +185,78 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
             _logger.LogInfo($"Loading specs for type ID: {selectedTypeId}", "DetailsEntry");
 
-            // Fetch specs from dunnage_specs table (NOT from SpecsJson field which doesn't exist)
-            var specsResult = await _dunnageService.GetSpecsForTypeAsync(selectedTypeId);
-            var specs =
-                specsResult.IsSuccess && specsResult.Data != null
-                    ? specsResult.Data
-                    : new List<Model_DunnageSpec>();
+            // Fetch custom-field definitions for the selected type (these are the UDC slots).
+            var fieldsResult = await _dunnageService.GetCustomFieldsByTypeAsync(selectedTypeId);
+            var fields =
+                fieldsResult.IsSuccess && fieldsResult.Data != null
+                    ? fieldsResult.Data
+                    : new List<Model_CustomFieldDefinition>();
             _logger.LogInfo(
-                $"Loaded {specs.Count} configured type specs from database",
+                $"Loaded {fields.Count} custom-field definitions for type",
                 "DetailsEntry"
             );
 
-            // Get the selected part's spec values for defaults
-            var selectedPart = _workflowService.CurrentSession.SelectedPart;
-            var partSpecValues = selectedPart?.SpecValuesDict;
-            var partSpecificDefinitions =
-                selectedPart?.PartSpecificSpecDefinitions
-                ?? new Dictionary<string, SpecDefinition>();
+            _currentCustomFields = fields.OrderBy(field => field.DisplayOrder).ToList();
 
-            // Create spec inputs from database specs
+            // Choices live in a separate table and are not returned by
+            // GetCustomFieldsByTypeAsync. Hydrate them per field so the
+            // Choices combobox has its options to display.
+            foreach (var field in _currentCustomFields)
+            {
+                if (
+                    string.Equals(
+                        field.FieldType,
+                        "Choices",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    && field.Choices.Count == 0
+                )
+                {
+                    var choicesResult = await _dunnageService.GetCustomFieldChoicesAsync(
+                        field.Id
+                    );
+                    if (choicesResult.IsSuccess && choicesResult.Data != null)
+                    {
+                        field.Choices = choicesResult.Data
+                            .OrderBy(choice => choice.SortOrder)
+                            .Select(choice => choice.Choice)
+                            .ToList();
+                    }
+                }
+            }
+
+            // Get the selected part's udc values as defaults
+            var selectedPart = _workflowService.CurrentSession.SelectedPart;
+
             var specInputs = new List<Model_SpecInput>();
             var textSpecs = new List<Model_SpecInput>();
             var numberSpecs = new List<Model_SpecInput>();
             var booleanSpecs = new List<Model_SpecInput>();
             var choiceSpecs = new List<Model_SpecInput>();
 
-            var createdSpecNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var spec in specs)
+            foreach (var field in _currentCustomFields)
             {
-                var definition = ParseSpecDefinition(spec.SpecValue);
-                object? defaultValue = null;
-                partSpecValues?.TryGetValue(spec.SpecKey, out defaultValue);
-
-                var input = CreateSpecInput(spec.SpecKey, definition, defaultValue);
-
-                specInputs.Add(input);
-                createdSpecNames.Add(spec.SpecKey);
-
-                _logger.LogInfo(
-                    $"Processing configured spec: {spec.SpecKey}, Type: {input.SpecType}",
-                    "DetailsEntry"
-                );
-
-                AddInputToCollection(input, textSpecs, numberSpecs, booleanSpecs, choiceSpecs);
-            }
-
-            foreach (var definition in partSpecificDefinitions.OrderBy(item => item.Key))
-            {
-                if (!createdSpecNames.Add(definition.Key))
+                var defaultValue = selectedPart?.GetUdcValue(field.DisplayOrder);
+                if (defaultValue is null && string.IsNullOrWhiteSpace(field.DefaultValue) is false)
                 {
-                    continue;
+                    defaultValue = field.DefaultValue.Trim();
                 }
 
-                var input = CreateSpecInput(
-                    definition.Key,
-                    definition.Value,
-                    Helper_Dunnage_PartSpecs.GetDefaultRuntimeValue(definition.Value)
+                var input = Helper_Dunnage_PartSpecs.CreateSpecInput(field, defaultValue);
+                input.Value = ResolveInitialSpecValue(
+                    input.SpecType,
+                    defaultValue,
+                    field.DefaultValue,
+                    input.Choices
                 );
 
                 specInputs.Add(input);
+
                 _logger.LogInfo(
-                    $"Processing part-specific runtime spec: {definition.Key}, Type: {input.SpecType}",
+                    $"Processing custom field: {field.FieldName} (slot {field.DisplayOrder}), Type: {input.SpecType}",
                     "DetailsEntry"
                 );
+
                 AddInputToCollection(input, textSpecs, numberSpecs, booleanSpecs, choiceSpecs);
             }
 
@@ -321,52 +330,6 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     #region Spec Parsing Helpers
 
-    private static SpecDefinition ParseSpecDefinition(string specValue)
-    {
-        try
-        {
-            var definition =
-                JsonSerializer.Deserialize<SpecDefinition>(specValue) ?? new SpecDefinition();
-            definition.DataType = string.IsNullOrWhiteSpace(definition.DataType)
-                ? "Text"
-                : definition.DataType.Trim();
-            definition.Unit ??= string.Empty;
-            definition.DefaultValue ??= string.Empty;
-            definition.Choices ??= new List<string>();
-            return definition;
-        }
-        catch (JsonException)
-        {
-            return new SpecDefinition();
-        }
-    }
-
-    private static Model_SpecInput CreateSpecInput(
-        string specName,
-        SpecDefinition definition,
-        object? defaultValue
-    )
-    {
-        var normalizedType = NormalizeSpecType(definition.DataType);
-        var choices = definition.Choices?.ToList() ?? new List<string>();
-        var resolvedValue = ResolveInitialSpecValue(
-            normalizedType,
-            defaultValue,
-            definition.DefaultValue,
-            choices
-        );
-
-        return new Model_SpecInput
-        {
-            SpecName = specName,
-            SpecType = normalizedType,
-            Unit = string.IsNullOrWhiteSpace(definition.Unit) ? null : definition.Unit,
-            IsRequired = definition.Required,
-            Value = resolvedValue,
-            Choices = choices,
-        };
-    }
-
     private static object? ResolveInitialSpecValue(
         string normalizedType,
         object? defaultValue,
@@ -385,15 +348,16 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             return candidate;
         }
 
-        if (candidate is null || choices.Count == 0)
+        if (choices.Count == 0)
         {
             return candidate;
         }
 
-        var candidateText = candidate.ToString()?.Trim();
+        var candidateText = candidate?.ToString()?.Trim();
         if (string.IsNullOrWhiteSpace(candidateText))
         {
-            return null;
+            // A Choices spec uses its first choice as the default value.
+            return choices.FirstOrDefault();
         }
 
         var matchedChoice = choices.FirstOrDefault(choice =>
@@ -498,75 +462,28 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
 
     public async Task<Model_ReceivingValidationResult> ValidateLocationAsync()
     {
-        var locationToValidate = Location.Trim();
+        await Task.CompletedTask;
+
+        var locationToValidate = NormalizeLocation(Location);
 
         if (string.IsNullOrWhiteSpace(locationToValidate))
         {
             return Model_ReceivingValidationResult.Error("Please enter a location.");
         }
 
-        var validation = await _receivingValidation.ValidateLocationAsync(
-            locationToValidate,
-            WarehouseCode
-        );
-        if (validation.IsValid)
-        {
-            Location = locationToValidate;
-        }
-
-        return validation;
+        Location = locationToValidate;
+        return Model_ReceivingValidationResult.Success();
     }
 
     public async Task<Model_Dao_Result<List<Model_FuzzySearchResult>>> GetLocationSuggestionsAsync()
     {
-        if (string.IsNullOrWhiteSpace(Location))
-        {
-            return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
-        }
+        await Task.CompletedTask;
+        return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
+    }
 
-        if (_receivingValidation.UseMockLocationList)
-        {
-            var normalizedSearch = NormalizeLocationForMatch(Location);
-            var locationSuggestions = _receivingValidation
-                .PresetLocations.Where(presetLocation =>
-                {
-                    var normalizedPreset = NormalizeLocationForMatch(presetLocation);
-                    return normalizedPreset.Contains(
-                        normalizedSearch,
-                        StringComparison.OrdinalIgnoreCase
-                    );
-                })
-                .OrderByDescending(presetLocation =>
-                    presetLocation.StartsWith(Location.Trim(), StringComparison.OrdinalIgnoreCase)
-                )
-                .ThenBy(presetLocation => presetLocation, StringComparer.OrdinalIgnoreCase)
-                .Select(presetLocation => new Model_FuzzySearchResult
-                {
-                    Key = presetLocation,
-                    Label = presetLocation,
-                    Detail = "Preset mock location",
-                })
-                .ToList();
-
-            return Model_Dao_Result_Factory.Success(locationSuggestions);
-        }
-
-        var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
-            Location.Trim(),
-            WarehouseCode
-        );
-        if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null)
-        {
-            return fuzzyResult;
-        }
-
-        var suggestions = fuzzyResult
-            .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
-            .GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
-            .Select(static group => group.First())
-            .ToList();
-
-        return Model_Dao_Result_Factory.Success(suggestions);
+    private static string NormalizeLocation(string? value)
+    {
+        return (value ?? string.Empty).Trim().ToUpperInvariant();
     }
 
     private void UpdateInventoryMessage()
@@ -701,10 +618,24 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             _workflowService.CurrentSession.PONumber = PoNumber;
             _workflowService.CurrentSession.Location = Location;
 
-            // Convert spec inputs to dictionary
-            var specValues = SpecInputs.ToDictionary(s => s.SpecName, s => s.Value ?? string.Empty);
-
-            _workflowService.CurrentSession.SpecValues = specValues;
+            // Apply each spec input to the session's matching UDC slot.
+            foreach (var input in SpecInputs)
+            {
+                var field = _currentCustomFields.FirstOrDefault(candidate =>
+                    string.Equals(
+                        candidate.FieldName,
+                        input.SpecName,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+                if (field is not null)
+                {
+                    _workflowService.CurrentSession.SetUdcValue(
+                        field.DisplayOrder,
+                        input.Value?.ToString()
+                    );
+                }
+            }
 
             var advanceResult = await _workflowService.AdvanceToNextStepAsync();
             if (!advanceResult.IsSuccess)

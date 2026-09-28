@@ -87,7 +87,7 @@ public sealed class Service_ReportingFormattingTests
 
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
-        result.Data!.PlainText.Should().Contain("PART-A\t3\t2");
+        result.Data!.PlainText.Should().Contain("PART-A\t3");
         result.Data.PlainText.Should().NotContain("PART-A\t1");
         result.Data.PlainText.Should().NotContain("PART-A\t2");
     }

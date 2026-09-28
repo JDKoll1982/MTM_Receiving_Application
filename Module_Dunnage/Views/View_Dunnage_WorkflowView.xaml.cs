@@ -535,49 +535,36 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
     private async Task<bool> EnsureDetailsLocationResolvedAsync()
     {
+        DetailsEntryView.CommitPendingInputs();
+
         var validation = await DetailsEntryView.ViewModel.ValidateLocationAsync();
         if (validation.IsValid)
         {
             return true;
         }
 
-        var suggestionsResult = await DetailsEntryView.ViewModel.GetLocationSuggestionsAsync();
-        if (suggestionsResult.IsSuccess && suggestionsResult.Data?.Count > 0)
+        if (string.IsNullOrWhiteSpace(DetailsEntryView.ViewModel.Location) is false)
         {
-            var dialog = new Dialog_FuzzySearchPicker(
-                suggestionsResult.Data,
-                "Select Location",
-                $"No exact match was found for '{DetailsEntryView.ViewModel.Location?.Trim()}'. Select a matching location."
-            )
+            var warningDialog = new ContentDialog
             {
+                Title = "Location Not Verified",
+                Content =
+                    $"{validation.Message}\n\nThe entered location will still be saved as-is.",
+                CloseButtonText = "Continue",
                 XamlRoot = this.XamlRoot,
             };
-
-            var dialogResult = await dialog.ShowAsync();
-            if (
-                dialogResult == ContentDialogResult.Primary
-                && dialog.SelectedResult is not null
-                && string.IsNullOrWhiteSpace(dialog.SelectedResult.Label) is false
-            )
-            {
-                DetailsEntryView.ViewModel.Location = dialog.SelectedResult.Label.Trim();
-                return true;
-            }
-        }
-
-        var statusMessage = validation.Message;
-        if (
-            !suggestionsResult.IsSuccess
-            && string.IsNullOrWhiteSpace(suggestionsResult.ErrorMessage) is false
-        )
-        {
-            statusMessage = $"{validation.Message} {suggestionsResult.ErrorMessage}";
+            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                warningDialog,
+                this.XamlRoot
+            );
+            await warningDialog.ShowAsync();
+            return true;
         }
 
         var errorDialog = new ContentDialog
         {
             Title = "Finish This Step First",
-            Content = statusMessage,
+            Content = validation.Message,
             CloseButtonText = "OK",
             XamlRoot = this.XamlRoot,
         };
@@ -674,7 +661,11 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
                 break;
             case Enum_DunnageWorkflowStep.PartSelection:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                _workflowService.GoToStep(
+                    _workflowService.CurrentSession.IsPartSelectionFromImageSearch
+                        ? Enum_DunnageWorkflowStep.ImagePartSearch
+                        : Enum_DunnageWorkflowStep.TypeSelection
+                );
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
                 _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);

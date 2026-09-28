@@ -309,7 +309,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
-                        var result = _validation.ValidateWeightQuantity(load.WeightQuantity);
+                        var result = await _validation.ValidateWeightQuantityAsync(
+                            load.WeightQuantity
+                        );
                         if (!result.IsValid)
                         {
                             validationErrors.Add($"Load {load.LoadNumber}: {result.Message}");
@@ -335,7 +337,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     // Validate heat/lot numbers (only checks max length now)
                     foreach (var load in CurrentSession.Loads)
                     {
-                        var result = _validation.ValidateHeatLotNumber(load.HeatLotNumber);
+                        var result = await _validation.ValidateHeatLotNumberAsync(
+                            load.HeatLotNumber
+                        );
                         if (!result.IsValid)
                         {
                             validationErrors.Add($"Load {load.LoadNumber}: {result.Message}");
@@ -351,6 +355,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 case Enum_ReceivingWorkflowStep.PackageTypeEntry:
                     foreach (var load in CurrentSession.Loads)
                     {
+                        // Blank counts stay blank while the user is on this step so Auto-Fill can copy
+                        // counts down the grid. Anything still blank on exit becomes a single package.
+                        if (load.PackagesPerLoad <= 0)
+                        {
+                            load.PackagesPerLoad = 1;
+                        }
+
                         var result = _validation.ValidatePackageCount(load.PackagesPerLoad);
                         if (!result.IsValid)
                         {
@@ -543,7 +554,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             var loadsToSave = CurrentSession.Loads.ToList();
 
             // Validate session
-            var validation = _validation.ValidateSession(loadsToSave);
+            var validation = await _validation.ValidateSessionAsync(loadsToSave);
             if (!validation.IsValid)
             {
                 result.Success = false;
@@ -607,7 +618,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             // Validate session
             _logger.LogInfo("Validating session before save...");
-            var validation = _validation.ValidateSession(CurrentSession.Loads);
+            var validation = await _validation.ValidateSessionAsync(CurrentSession.Loads);
             if (!validation.IsValid)
             {
                 _logger.LogWarning(

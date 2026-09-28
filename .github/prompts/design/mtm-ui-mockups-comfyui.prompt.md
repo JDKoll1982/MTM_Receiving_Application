@@ -5,6 +5,25 @@ agent: ask
 argument-hint: 'Specify the module name and view — e.g. "Volvo ShipmentEntry" or "Receiving LabelEntry"'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mtm-ui-mockups-comfyui.prompt.md
+- Description: Generate ComfyUI text prompts (positive + negative) for AI-image-based UI mockups of the MTM Receiving Application, including accurate Volvo 2021 brand identity.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-14: # ComfyUI UI Mockup Prompt Generator
+  - Line 15-26: ## Instructions for AI Agent
+  - Line 27-39: ## Base Positive Prompt Template
+  - Line 40-52: ## Base Negative Prompt
+  - Line 53-67: ## Recommended ComfyUI Settings
+  - Line 68-205: ## Module-Specific Positive Prompt Additions
+  - Line 206-268: ## Volvo Brand Symbol — Standalone Icon Generation
+  - Line 269-324: ## Full Ready-to-Paste Examples
+  - Line 325-345: ## Usage Steps
+- Critical Notes: Always validate the Volvo 2021 brand identity rules (flat black roundel, no chrome or blue) before generating any Volvo prompt.
+[DOC-META-END]
+-->
+
 # ComfyUI UI Mockup Prompt Generator
 
 **Purpose**: Produce ready-to-paste ComfyUI positive and negative prompts that generate

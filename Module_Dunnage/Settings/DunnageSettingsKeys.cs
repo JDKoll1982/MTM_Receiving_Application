@@ -25,6 +25,8 @@ public static class DunnageSettingsKeys
             "Dunnage.UserPreferences.PreferredThumbnailSize";
         public const string PreferPartImages = "Dunnage.UserPreferences.PreferPartImages";
         public const string TypeSelectionSort = "Dunnage.UserPreferences.TypeSelectionSort";
+        public const string ShowPartsWithoutImages =
+            "Dunnage.UserPreferences.ShowPartsWithoutImages";
     }
 
     public static class UiUx

@@ -2,6 +2,22 @@
 applyTo: "**/*.py"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: python.instructions.md
+- Description: Python coding conventions covering type hints, docstrings, PEP 8 formatting, edge cases, and testing.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-6: # Python Coding Conventions
+  - Line 7-14: ## Python Instructions
+  - Line 15-24: ## General Instructions
+  - Line 25-32: ## Code Style and Formatting
+  - Line 33-39: ## Edge Cases and Testing
+  - Line 40-55: ## Example of Proper Documentation
+- Critical Notes: Follow PEP 8 with 4-space indentation and keep lines under 79 characters.
+[DOC-META-END]
+-->
+
 # Python Coding Conventions
 
 ## Python Instructions

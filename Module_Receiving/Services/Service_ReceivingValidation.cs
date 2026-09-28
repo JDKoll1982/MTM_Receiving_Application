@@ -49,11 +49,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 mockDataCatalog ?? throw new ArgumentNullException(nameof(mockDataCatalog));
         }
 
-        private bool GetBoolSetting(string key, bool fallback)
+        private async Task<bool> GetBoolSettingAsync(string key, bool fallback)
         {
             try
             {
-                return _receivingSettings.GetBoolAsync(key).GetAwaiter().GetResult();
+                return await _receivingSettings.GetBoolAsync(key);
             }
             catch
             {
@@ -61,11 +61,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        private int GetIntSetting(string key, int fallback)
+        private async Task<int> GetIntSettingAsync(string key, int fallback)
         {
             try
             {
-                return _receivingSettings.GetIntAsync(key).GetAwaiter().GetResult();
+                return await _receivingSettings.GetIntAsync(key);
             }
             catch
             {
@@ -73,10 +73,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             }
         }
 
-        public Model_ReceivingValidationResult ValidatePONumber(string poNumber)
+        public async Task<Model_ReceivingValidationResult> ValidatePONumberAsync(string poNumber)
         {
             if (
-                !GetBoolSetting(
+                !await GetBoolSettingAsync(
                     ReceivingSettingsKeys.Validation.RequirePoNumber,
                     ReceivingSettingsDefaults.BoolDefaults[
                         ReceivingSettingsKeys.Validation.RequirePoNumber
@@ -118,10 +118,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateNumberOfLoads(int numLoads)
+        public async Task<Model_ReceivingValidationResult> ValidateNumberOfLoadsAsync(int numLoads)
         {
-            var minimumLoads = GetIntSetting(ReceivingSettingsKeys.Validation.MinLoadCount, 1);
-            var maximumLoads = GetIntSetting(ReceivingSettingsKeys.Validation.MaxLoadCount, 99);
+            var minimumLoads = await GetIntSettingAsync(
+                ReceivingSettingsKeys.Validation.MinLoadCount,
+                1
+            );
+            var maximumLoads = await GetIntSettingAsync(
+                ReceivingSettingsKeys.Validation.MaxLoadCount,
+                99
+            );
 
             if (numLoads < minimumLoads)
             {
@@ -140,16 +146,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateWeightQuantity(decimal weightQuantity)
+        public async Task<Model_ReceivingValidationResult> ValidateWeightQuantityAsync(
+            decimal weightQuantity
+        )
         {
-            var allowNegativeQuantity = GetBoolSetting(
+            var allowNegativeQuantity = await GetBoolSettingAsync(
                 ReceivingSettingsKeys.Validation.AllowNegativeQuantity,
                 ReceivingSettingsDefaults.BoolDefaults[
                     ReceivingSettingsKeys.Validation.AllowNegativeQuantity
                 ]
             );
-            var minimumQuantity = GetIntSetting(ReceivingSettingsKeys.Validation.MinQuantity, 0);
-            var maximumQuantity = GetIntSetting(
+            var minimumQuantity = await GetIntSettingAsync(
+                ReceivingSettingsKeys.Validation.MinQuantity,
+                0
+            );
+            var maximumQuantity = await GetIntSettingAsync(
                 ReceivingSettingsKeys.Validation.MaxQuantity,
                 999999
             );
@@ -197,10 +208,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateHeatLotNumber(string heatLotNumber)
+        public async Task<Model_ReceivingValidationResult> ValidateHeatLotNumberAsync(
+            string heatLotNumber
+        )
         {
             if (
-                GetBoolSetting(
+                await GetBoolSettingAsync(
                     ReceivingSettingsKeys.Validation.RequireHeatLot,
                     ReceivingSettingsDefaults.BoolDefaults[
                         ReceivingSettingsKeys.Validation.RequireHeatLot
@@ -275,14 +288,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 );
         }
 
-        public Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(
+        public async Task<Model_ReceivingValidationResult> ValidateAgainstPOQuantityAsync(
             decimal totalQuantity,
             decimal orderedQuantity,
             string partID
         )
         {
             if (
-                !GetBoolSetting(
+                !await GetBoolSettingAsync(
                     ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo,
                     ReceivingSettingsDefaults.BoolDefaults[
                         ReceivingSettingsKeys.Validation.WarnOnQuantityExceedsPo
@@ -290,19 +303,17 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 )
             )
             {
-                return Task.FromResult(Model_ReceivingValidationResult.Success());
+                return Model_ReceivingValidationResult.Success();
             }
 
             if (totalQuantity > orderedQuantity)
             {
-                return Task.FromResult(
-                    Model_ReceivingValidationResult.Warning(
-                        $"Total quantity ({totalQuantity:F2}) exceeds PO ordered quantity ({orderedQuantity:F2}) for part {partID}. Do you want to continue?"
-                    )
+                return Model_ReceivingValidationResult.Warning(
+                    $"Total quantity ({totalQuantity:F2}) exceeds PO ordered quantity ({orderedQuantity:F2}) for part {partID}. Do you want to continue?"
                 );
             }
 
-            return Task.FromResult(Model_ReceivingValidationResult.Success());
+            return Model_ReceivingValidationResult.Success();
         }
 
         public async Task<Model_ReceivingValidationResult> CheckSameDayReceivingAsync(
@@ -312,7 +323,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         )
         {
             if (
-                !GetBoolSetting(
+                !await GetBoolSettingAsync(
                     ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving,
                     ReceivingSettingsDefaults.BoolDefaults[
                         ReceivingSettingsKeys.Validation.WarnOnSameDayReceiving
@@ -344,13 +355,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateReceivingLoad(Model_ReceivingLoad load)
+        public async Task<Model_ReceivingValidationResult> ValidateReceivingLoadAsync(
+            Model_ReceivingLoad load
+        )
         {
             var errors = new List<string>();
 
             if (!load.IsNonPOItem)
             {
-                var poValidation = ValidatePONumber(load.PoNumber ?? string.Empty);
+                var poValidation = await ValidatePONumberAsync(load.PoNumber ?? string.Empty);
                 if (!poValidation.IsValid)
                 {
                     errors.Add($"Load {load.LoadNumber}: {poValidation.Message}");
@@ -378,13 +391,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 errors.Add("Load number must be at least 1");
             }
 
-            var quantityValidation = ValidateWeightQuantity(load.WeightQuantity);
+            var quantityValidation = await ValidateWeightQuantityAsync(load.WeightQuantity);
             if (!quantityValidation.IsValid)
             {
                 errors.Add($"Load {load.LoadNumber}: {quantityValidation.Message}");
             }
 
-            var heatLotValidation = ValidateHeatLotNumber(load.HeatLotNumber);
+            var heatLotValidation = await ValidateHeatLotNumberAsync(load.HeatLotNumber);
             if (!heatLotValidation.IsValid)
             {
                 errors.Add($"Load {load.LoadNumber}: {heatLotValidation.Message}");
@@ -419,7 +432,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             return Model_ReceivingValidationResult.Success();
         }
 
-        public Model_ReceivingValidationResult ValidateSession(List<Model_ReceivingLoad> loads)
+        public async Task<Model_ReceivingValidationResult> ValidateSessionAsync(
+            List<Model_ReceivingLoad> loads
+        )
         {
             if (loads == null || loads.Count == 0)
             {
@@ -432,7 +447,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             foreach (var load in loads)
             {
-                var loadValidation = ValidateReceivingLoad(load);
+                var loadValidation = await ValidateReceivingLoadAsync(load);
                 if (!loadValidation.IsValid)
                 {
                     allErrors.AddRange(loadValidation.Errors);

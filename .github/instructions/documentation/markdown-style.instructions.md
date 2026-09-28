@@ -6,6 +6,27 @@ description: >
   Applies to specs, docs, module FeatureUpdates, README files, and all other Markdown documents.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: markdown-style.instructions.md
+- Description: General Markdown authoring standards for all .md files in this repository. Based on the Google Markdown Style Guide (https://google.github.io/styleguide/docguide/style.html). Applies to specs, docs, module FeatureUpdates, README files, and all other Markdown documents.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 9-12: # Markdown Style Guide
+  - Line 13-18: ## Core Principle
+  - Line 19-41: ## Document Layout
+  - Line 42-63: ## Headings
+  - Line 64-70: ## Lists
+  - Line 71-95: ## Code
+  - Line 96-101: ## Line Length
+  - Line 102-108: ## Links
+  - Line 120-124: ## Strongly Prefer Markdown Over HTML
+  - Line 125-136: ## File-Type-Specific Rules
+  - Line 137-148: ## Anti-Patterns
+- Critical Notes: Never use HTML or XML tags in .md files — always use ATX '##' headings instead.
+[DOC-META-END]
+-->
+
 # Markdown Style Guide
 
 Source of truth: <https://google.github.io/styleguide/docguide/style.html>

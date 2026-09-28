@@ -1,3 +1,24 @@
+<!-- 
+[DOC-META-START]
+- File Name: mtm-module-code-review.prompt.md
+- Description: Comprehensive code review and automated fix application for WinUI 3 modules in the MTM Receiving Application.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 1-8: # Module Code Review - Automated Analysis & Fix Application
+  - Line 9-22: ## What This Does
+  - Line 23-46: ## Quick Start
+  - Line 47-175: ## Workflow
+  - Line 176-190: ## Menu Commands
+  - Line 191-207: ## Severity Categories
+  - Line 208-246: ## What Gets Created
+  - Line 247-306: ## Examples
+  - Line 307-346: ## Configuration
+  - Line 347-390: ## Troubleshooting
+  - Line 391-428: ## Advanced Usage
+- Critical Notes: Builds after EVERY fix and stops on errors; amend CODE_REVIEW.md checkboxes to select which fixes apply.
+[DOC-META-END]
+-->
+
 # Module Code Review - Automated Analysis & Fix Application
 
 **Version:** 1.0  

@@ -3,6 +3,19 @@ description: 'Settings system guidance for MTM covering the CQRS-based settings 
 applyTo: 'Module_Settings.Core/**/*.cs,Module_Settings.*/**/*.{cs,xaml}'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: settings-management-system.instructions.md
+- Description: Settings system guidance for MTM covering the CQRS-based settings core, facade usage, caching, encryption, and extension points.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 6: # Settings Management System
+  - Line 10: ## Rules
+  - Line 17: ## Extension Guidance
+- Critical Notes: Add new settings through the existing settings core flow — never bypass the facade or CQRS commands/queries.
+[DOC-META-END]
+-->
+
 # Settings Management System
 
 The repository has a centralized settings subsystem rather than ad hoc module-level setting logic.

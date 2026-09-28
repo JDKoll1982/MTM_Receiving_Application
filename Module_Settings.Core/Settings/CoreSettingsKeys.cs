@@ -5,6 +5,11 @@ public static class CoreSettingsKeys
     public const string SystemCategory = "System";
     public const string UserCategory = "User";
 
+    public static class Session
+    {
+        public const string InactivityTimeoutMinutes = "Core.Session.InactivityTimeoutMinutes";
+    }
+
     public static class LabelView
     {
         public const string ExecutablePath = "Core.LabelView.ExecutablePath";

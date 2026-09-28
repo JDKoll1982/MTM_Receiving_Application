@@ -96,11 +96,24 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
         RegisterTool(
             new Model_ToolDefinition
             {
-                ToolKey = "CustomerPullPack",
-                Title = "Customer Pull n' Pack",
+                ToolKey = "POLineSpecSearch",
+                Title = "PO Line Spec Search",
                 Description =
-                    "Interactive pull-and-pack reporting with linked MTM waitlist workflow for warehouse execution.",
-                IconGlyph = "\uE8A5",
+                    "Search PO line binary specs and related line fields using weighted fuzzy ranking.",
+                IconGlyph = "\uE721",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "DunnageBook",
+                Title = "Dunnage Book",
+                Description =
+                    "Select dunnage parts and generate a printable 8.5 x 11 book with a cover page and table of contents.",
+                IconGlyph = "\uE736",
                 Category = Enum_ToolCategory.Utilities,
                 IsAvailable = true,
             }
@@ -109,12 +122,38 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
         RegisterTool(
             new Model_ToolDefinition
             {
-                ToolKey = "CustomerPullPackWaitlist",
-                Title = "Customer Pull n' Pack Waitlist",
+                ToolKey = "WeldedCoils",
+                Title = "Welded Coils",
                 Description =
-                    "Standalone waitlist work queue for Customer Pull n' Pack handlers and request follow-up.",
-                IconGlyph = "\uE8A5",
+                    "Maintain the list of coils that need the inner diameter welded before they go on the press cradle.",
+                IconGlyph = "\uE7BA",
                 Category = Enum_ToolCategory.Utilities,
+                IsAvailable = true,
+            }
+        );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "ReceivingAnalytics",
+                Title = "Receiving Analytics",
+                Description =
+                    "Chart receiving history (past received) vs incoming items by date and category.",
+                IconGlyph = "\uE9D9",
+                Category = Enum_ToolCategory.Analysis,
+                IsAvailable = true,
+            }
+        );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "DeliverySchedule",
+                Title = "Delivery Schedule",
+                Description =
+                    "Review the receiving schedule by PO line with date, scope, and state filters.",
+                IconGlyph = "\uE9D2",
+                Category = Enum_ToolCategory.Analysis,
                 IsAvailable = true,
             }
         );

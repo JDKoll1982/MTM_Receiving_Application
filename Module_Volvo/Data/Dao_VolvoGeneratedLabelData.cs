@@ -4,6 +4,7 @@ using System.Data;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reprint;
 using MTM_Receiving_Application.Module_Volvo.Models;
 using MySql.Data.MySqlClient;
 
@@ -211,6 +212,102 @@ public class Dao_VolvoGeneratedLabelData : IDao_VolvoGeneratedLabelData
                 : reader.GetInt32(reader.GetOrdinal("employee_number")),
             CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
             UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
+        };
+    }
+
+    public async Task<Model_Dao_Result<List<Model_ReprintHistoryRow>>> GetReprintHistoryAsync(
+        Model_ReprintHistoryFilter filter
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_start_date", filter.StartDate is null ? DBNull.Value : filter.StartDate.Value.Date },
+            { "p_end_date", filter.EndDate is null ? DBNull.Value : filter.EndDate.Value.Date },
+            {
+                "p_search_by",
+                string.IsNullOrWhiteSpace(filter.SearchBy) ? "part" : filter.SearchBy
+            },
+            {
+                "p_search_text",
+                string.IsNullOrWhiteSpace(filter.SearchText) ? "" : filter.SearchText.Trim()
+            },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync(
+            _connectionString,
+            "sp_Volvo_GeneratedLabelHistory_GetForReprint",
+            MapReprintHistoryRow,
+            parameters
+        );
+    }
+
+    public async Task<Model_Dao_Result<int>> InsertFromHistoryAsync(
+        int historyId,
+        string queuedBy,
+        int employeeNumber
+    )
+    {
+        try
+        {
+            await using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                "sp_Volvo_GeneratedLabelData_InsertFromHistory",
+                connection
+            )
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+
+            command.Parameters.AddWithValue("p_history_id", historyId);
+            command.Parameters.AddWithValue("p_queued_by", queuedBy ?? "SYSTEM");
+            command.Parameters.AddWithValue("p_employee_number", employeeNumber);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            int inserted = 0;
+            if (await reader.ReadAsync())
+            {
+                inserted = Convert.ToInt32(reader["rows_inserted"]);
+            }
+
+            return Model_Dao_Result_Factory.Success<int>(inserted);
+        }
+        catch (MySqlException ex) when (ex.Number == 1644)
+        {
+            // SQLSTATE 45000 — already queued for reprint
+            return Model_Dao_Result_Factory.Failure<int>(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Error queuing history record {historyId} for reprint: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    private static Model_ReprintHistoryRow MapReprintHistoryRow(IDataReader reader)
+    {
+        var description = reader.IsDBNull(reader.GetOrdinal("part_description"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("part_description")).Trim();
+        var shipmentNumber = reader.IsDBNull(reader.GetOrdinal("shipment_number"))
+            ? 0
+            : reader.GetInt32(reader.GetOrdinal("shipment_number"));
+
+        return new Model_ReprintHistoryRow
+        {
+            HistoryId = reader.GetInt32(reader.GetOrdinal("history_id")).ToString(),
+            RecordDate = reader.GetDateTime(reader.GetOrdinal("record_date")),
+            Part = reader.GetString(reader.GetOrdinal("part_number")),
+            Quantity = reader.IsDBNull(reader.GetOrdinal("quantity"))
+                ? 0m
+                : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
+            Reference = shipmentNumber > 0 ? $"Ship {shipmentNumber}" : description,
+            AlreadyQueued =
+                !reader.IsDBNull(reader.GetOrdinal("already_queued"))
+                && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
         };
     }
 }

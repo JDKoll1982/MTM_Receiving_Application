@@ -1,3 +1,22 @@
+<!-- 
+[DOC-META-START]
+- File Name: dao_best_practices.md
+- Description: DAO pattern: instance-based classes, stored procedures, Model_Dao_Result, DI, and testing.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 20-48: # DAO Best Practices
+  - Line 49-71: ## Method Signatures
+  - Line 72-108: ## Using Helper_Database_StoredProcedure
+  - Line 109-147: ## Error Handling in DAOs
+  - Line 148-168: ## DI Registration Pattern
+  - Line 169-224: ## MySQL vs Infor Visual
+  - Line 225-250: ## Testing DAOs
+  - Line 251-265: ## File Organization
+  - Line 266-276: ## Checklist for New DAOs
+- Critical Notes: DAOs never throw; always return Model_Dao_Result.
+[DOC-META-END]
+-->
+
 # DAO Best Practices
 
 Last Updated: 2026-03-21

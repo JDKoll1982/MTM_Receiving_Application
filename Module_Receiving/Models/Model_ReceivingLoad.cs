@@ -150,12 +150,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             if (string.IsNullOrWhiteSpace(value))
                 return;
 
-            // If PackagesPerLoad is 0 (default/blank), set it to 1 when PartID is entered
-            if (PackagesPerLoad == 0)
-            {
-                PackagesPerLoad = 1;
-            }
-
+            // Package count intentionally stays at its blank default (0) so the Package Type step
+            // opens with empty boxes and Auto-Fill can copy counts down the grid. Rows left blank
+            // fall back to a single package when the step is completed.
             try
             {
                 var upperValue = value.ToUpperInvariant();

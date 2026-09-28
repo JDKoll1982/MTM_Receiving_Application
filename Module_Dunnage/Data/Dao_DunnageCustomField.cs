@@ -24,9 +24,6 @@ public class Dao_DunnageCustomField
         string user
     )
     {
-        var databaseColumnName = string.IsNullOrWhiteSpace(field.DatabaseColumnName)
-            ? Model_CustomFieldDefinition.BuildDatabaseColumnName(field.FieldName)
-            : field.DatabaseColumnName.Trim();
         var pNewId = new MySqlParameter("@p_new_id", MySqlDbType.Int32)
         {
             Direction = ParameterDirection.Output,
@@ -44,10 +41,31 @@ public class Dao_DunnageCustomField
         {
             new MySqlParameter("@p_dunnage_type_id", typeId),
             new MySqlParameter("@p_field_name", field.FieldName),
-            new MySqlParameter("@p_database_column_name", databaseColumnName),
             new MySqlParameter("@p_field_type", field.FieldType),
             new MySqlParameter("@p_display_order", field.DisplayOrder),
             new MySqlParameter("@p_is_required", field.IsRequired),
+            new MySqlParameter("@p_unit", MySqlDbType.VarChar, 50)
+            {
+                Value = string.IsNullOrWhiteSpace(field.Unit) ? DBNull.Value : (object)field.Unit,
+            },
+            new MySqlParameter("@p_min_value", MySqlDbType.Decimal)
+            {
+                Value = field.MinValue.HasValue ? (object)field.MinValue.Value : DBNull.Value,
+                Precision = 18,
+                Scale = 4,
+            },
+            new MySqlParameter("@p_max_value", MySqlDbType.Decimal)
+            {
+                Value = field.MaxValue.HasValue ? (object)field.MaxValue.Value : DBNull.Value,
+                Precision = 18,
+                Scale = 4,
+            },
+            new MySqlParameter("@p_default_value", MySqlDbType.VarChar, 255)
+            {
+                Value = string.IsNullOrWhiteSpace(field.DefaultValue)
+                    ? DBNull.Value
+                    : (object)field.DefaultValue,
+            },
             new MySqlParameter("@p_validation_rules", MySqlDbType.Text)
             {
                 Value = string.IsNullOrWhiteSpace(field.ValidationRules)
@@ -87,7 +105,6 @@ public class Dao_DunnageCustomField
             return Model_Dao_Result_Factory.Failure<int>("Failed to retrieve new ID");
         }
 
-        field.DatabaseColumnName = databaseColumnName;
         return Model_Dao_Result_Factory.Success<int>(Convert.ToInt32(pNewId.Value));
     }
 
@@ -110,18 +127,35 @@ public class Dao_DunnageCustomField
         Model_CustomFieldDefinition field
     )
     {
-        var databaseColumnName = string.IsNullOrWhiteSpace(field.DatabaseColumnName)
-            ? Model_CustomFieldDefinition.BuildDatabaseColumnName(field.FieldName)
-            : field.DatabaseColumnName.Trim();
-
         var parameters = new MySqlParameter[]
         {
             new("@p_field_id", MySqlDbType.Int32) { Value = fieldId },
             new("@p_field_name", MySqlDbType.VarChar, 100) { Value = field.FieldName },
-            new("@p_database_column_name", MySqlDbType.VarChar, 64) { Value = databaseColumnName },
             new("@p_field_type", MySqlDbType.VarChar, 20) { Value = field.FieldType },
             new("@p_display_order", MySqlDbType.Int32) { Value = field.DisplayOrder },
             new("@p_is_required", MySqlDbType.Bit) { Value = field.IsRequired },
+            new("@p_unit", MySqlDbType.VarChar, 50)
+            {
+                Value = string.IsNullOrWhiteSpace(field.Unit) ? DBNull.Value : (object)field.Unit,
+            },
+            new("@p_min_value", MySqlDbType.Decimal)
+            {
+                Value = field.MinValue.HasValue ? (object)field.MinValue.Value : DBNull.Value,
+                Precision = 18,
+                Scale = 4,
+            },
+            new("@p_max_value", MySqlDbType.Decimal)
+            {
+                Value = field.MaxValue.HasValue ? (object)field.MaxValue.Value : DBNull.Value,
+                Precision = 18,
+                Scale = 4,
+            },
+            new("@p_default_value", MySqlDbType.VarChar, 255)
+            {
+                Value = string.IsNullOrWhiteSpace(field.DefaultValue)
+                    ? DBNull.Value
+                    : (object)field.DefaultValue,
+            },
             new("@p_validation_rules", MySqlDbType.Text)
             {
                 Value = string.IsNullOrWhiteSpace(field.ValidationRules)
@@ -130,7 +164,6 @@ public class Dao_DunnageCustomField
             },
         };
 
-        field.DatabaseColumnName = databaseColumnName;
         return await Helper_Database_StoredProcedure.ExecuteAsync(
             "sp_Dunnage_CustomFields_Update",
             parameters,
@@ -149,22 +182,96 @@ public class Dao_DunnageCustomField
         );
     }
 
+    public virtual async Task<Model_Dao_Result> InsertChoiceAsync(
+        int customFieldId,
+        string choice,
+        int sortOrder
+    )
+    {
+        var parameters = new MySqlParameter[]
+        {
+            new("@p_custom_field_id", MySqlDbType.Int32) { Value = customFieldId },
+            new("@p_choice", MySqlDbType.VarChar, 255) { Value = choice },
+            new("@p_sort_order", MySqlDbType.Int32) { Value = sortOrder },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteAsync(
+            "sp_Dunnage_CustomFieldChoices_Insert",
+            parameters,
+            _connectionString
+        );
+    }
+
+    public virtual async Task<Model_Dao_Result> DeleteChoicesByFieldAsync(int customFieldId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "custom_field_id", customFieldId },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteNonQueryAsync(
+            _connectionString,
+            "sp_Dunnage_CustomFieldChoices_DeleteByField",
+            parameters
+        );
+    }
+
+    public virtual async Task<Model_Dao_Result<List<Model_DunnageCustomFieldChoice>>>
+        GetChoicesByFieldAsync(int customFieldId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "custom_field_id", customFieldId },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_DunnageCustomFieldChoice>(
+            _connectionString,
+            "sp_Dunnage_CustomFieldChoices_GetByField",
+            MapChoiceFromReader,
+            parameters
+        );
+    }
+
+    private Model_DunnageCustomFieldChoice MapChoiceFromReader(IDataReader reader)
+    {
+        return new Model_DunnageCustomFieldChoice
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("ID")),
+            CustomFieldId = reader.GetInt32(reader.GetOrdinal("CustomFieldID")),
+            Choice = reader.GetString(reader.GetOrdinal("Choice")),
+            SortOrder = reader.GetInt32(reader.GetOrdinal("SortOrder")),
+        };
+    }
+
     private Model_CustomFieldDefinition MapFromReader(IDataReader reader)
     {
         return new Model_CustomFieldDefinition
         {
-            Id = reader.GetInt32(reader.GetOrdinal("id")),
-            DunnageTypeId = reader.GetInt32(reader.GetOrdinal("dunnagetypeid")),
-            FieldName = reader.GetString(reader.GetOrdinal("field_name")),
-            DatabaseColumnName = reader.GetString(reader.GetOrdinal("databasecolumnname")),
-            FieldType = reader.GetString(reader.GetOrdinal("field_type")),
-            DisplayOrder = reader.GetInt32(reader.GetOrdinal("display_order")),
-            IsRequired = reader.GetBoolean(reader.GetOrdinal("is_required")),
-            ValidationRules = reader.IsDBNull(reader.GetOrdinal("validationrules"))
+            // MySql.Data GetOrdinal is not reliably case-insensitive; use the exact
+            // column casing returned by sp_Dunnage_CustomFields_GetByType.
+            Id = reader.GetInt32(reader.GetOrdinal("ID")),
+            DunnageTypeId = reader.GetInt32(reader.GetOrdinal("DunnageTypeID")),
+            FieldName = reader.GetString(reader.GetOrdinal("FieldName")),
+            FieldType = reader.GetString(reader.GetOrdinal("FieldType")),
+            DisplayOrder = reader.GetInt32(reader.GetOrdinal("DisplayOrder")),
+            IsRequired = reader.GetBoolean(reader.GetOrdinal("IsRequired")),
+            Unit = reader.IsDBNull(reader.GetOrdinal("Unit"))
                 ? null
-                : reader.GetString(reader.GetOrdinal("validationrules")),
-            CreatedDate = reader.GetDateTime(reader.GetOrdinal("createddate")),
-            CreatedBy = reader.GetString(reader.GetOrdinal("createdby")),
+                : reader.GetString(reader.GetOrdinal("Unit")),
+            MinValue = reader.IsDBNull(reader.GetOrdinal("MinValue"))
+                ? null
+                : reader.GetDecimal(reader.GetOrdinal("MinValue")),
+            MaxValue = reader.IsDBNull(reader.GetOrdinal("MaxValue"))
+                ? null
+                : reader.GetDecimal(reader.GetOrdinal("MaxValue")),
+            DefaultValue = reader.IsDBNull(reader.GetOrdinal("DefaultValue"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("DefaultValue")),
+            ValidationRules = reader.IsDBNull(reader.GetOrdinal("ValidationRules"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("ValidationRules")),
+            CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
+            CreatedBy = reader.GetString(reader.GetOrdinal("CreatedBy")),
         };
     }
 }

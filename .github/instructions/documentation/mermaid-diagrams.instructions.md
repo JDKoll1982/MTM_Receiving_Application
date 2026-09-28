@@ -2,6 +2,27 @@
 applyTo: "**/*.md, **/*.mmd"
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: mermaid-diagrams.instructions.md
+- Description: Guidelines for creating clear, maintainable, and correctly-rendered Mermaid diagrams for workflow visualization, system architecture, and technical documentation.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 5-8: # Mermaid Diagram Creation Guidelines
+  - Line 9-16: ## General Principles
+  - Line 17-81: ## Critical Rule: Unique Node IDs
+  - Line 82-116: ## Flowchart Best Practices
+  - Line 117-177: ## Common Diagram Types
+  - Line 178-208: ## Naming Conventions
+  - Line 209-233: ## Multi-Branch End States Pattern
+  - Line 234-291: ## Common Mistakes to Avoid
+  - Line 292-327: ## Advanced Patterns
+  - Line 328-341: ## Diagram Quality Checklist
+  - Line 415-438: ## Testing Your Diagram
+- Critical Notes: Every node must have a unique ID, and multi-diagram files require namespace prefixes (e.g., W1_1_Start) to avoid parser conflicts.
+[DOC-META-END]
+-->
+
 # Mermaid Diagram Creation Guidelines
 
 Instructions for creating clear, maintainable, and correctly-rendered Mermaid diagrams for workflow visualization, system architecture, and technical documentation.

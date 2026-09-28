@@ -1,3 +1,26 @@
+<!-- 
+[DOC-META-START]
+- File Name: help_system_architecture.md
+- Description: In-app help system: service/model/enums, content keys, integration, threading, and extensibility.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 24-27: # Help System Architecture
+  - Line 28-31: ## Overview
+  - Line 32-107: ## Components
+  - Line 108-179: ## Content Organization
+  - Line 180-232: ## Integration Patterns
+  - Line 233-245: ## Data Flow
+  - Line 246-251: ## Threading Model
+  - Line 252-258: ## Performance Considerations
+  - Line 259-278: ## Extensibility
+  - Line 279-284: ## Testing Strategy
+  - Line 285-292: ## Migration Path (From Hard-Coded to Service)
+  - Line 293-299: ## Known Limitations
+  - Line 300-308: ## Future Enhancements
+- Critical Notes: Help content keys use Tooltip./Placeholder./Tip./InfoBar. prefixes.
+[DOC-META-END]
+-->
+
 # Help System Architecture
 
 Last Updated: 2026-03-21

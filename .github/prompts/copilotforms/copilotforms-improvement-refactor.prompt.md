@@ -5,6 +5,19 @@ agent: agent
 argument-hint: 'Link an improvement refactor export from docs/CopilotForms/outputs/improvement-refactor and describe any non-negotiable boundaries'
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: copilotforms-improvement-refactor.prompt.md
+- Description: Read a saved CopilotForms improvement refactor export and perform the requested maintainability refactor.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8: # CopilotForms Improvement Refactor
+  - Line 12: ## Workflow
+  - Line 21: ## Output Expectations
+- Critical Notes: Refactor only within the requested scope; preserve behavior unless explicitly allowed.
+[DOC-META-END]
+-->
+
 # CopilotForms Improvement Refactor
 
 Read the linked export from `docs/CopilotForms/outputs/improvement-refactor/` and refactor the targeted code for maintainability or structure improvements.

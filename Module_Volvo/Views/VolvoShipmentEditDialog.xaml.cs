@@ -7,6 +7,7 @@ using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Helpers;
 using MTM_Receiving_Application.Module_Volvo.Models;
 
@@ -49,6 +50,7 @@ public sealed partial class VolvoShipmentEditDialog : ContentDialog
         PartsDataGrid.ItemsSource = Lines;
     }
 
+    
     public void PrepareDialogSize()
     {
         if (XamlRoot is null)

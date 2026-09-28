@@ -5,6 +5,25 @@ description: >
   Claude Code, Claude Desktop, Codex, JetBrains, and other clients.
 ---
 
+<!-- 
+[DOC-META-START]
+- File Name: serena-05-clients.instructions.md
+- Description: How to connect Serena MCP server to MCP clients — VSCode (primary for MTM), Claude Code, Claude Desktop, Codex, JetBrains, and other clients.
+- Last Updated: 2026-08-28
+- Quick TOC:
+  - Line 8-16: # Connecting Serena to MCP Clients
+  - Line 17-57: ## VSCode (Primary for MTM Project)
+  - Line 58-95: ## Claude Code
+  - Line 96-122: ## Claude Desktop
+  - Line 123-145: ## Codex (OpenAI)
+  - Line 146-159: ## JetBrains Junie / AI Assistant
+  - Line 160-185: ## Antigravity and Other Clients
+  - Line 186-198: ## Context Selection Guide
+  - Line 199-206: ## MTM VSCode Setup Checklist
+- Critical Notes: All clients launch Serena as a uvx stdio subprocess; use the ide context for VSCode.
+[DOC-META-END]
+-->
+
 # Connecting Serena to MCP Clients
 
 Official docs: <https://oraios.github.io/serena/02-usage/030_clients.html>

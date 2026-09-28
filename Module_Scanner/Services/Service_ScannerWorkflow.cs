@@ -11,90 +11,96 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 namespace MTM_Receiving_Application.Module_Scanner.Services;
 
 /// <summary>
-/// Scanner workflow orchestration service backed by scanner DAOs.
+/// Scanner workflow orchestration: the persisted current list, History, and profiles.
 /// </summary>
 public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 {
 	private readonly Dao_ScannerBatchSession _sessionDao;
 	private readonly Dao_ScannerBatchItem _itemDao;
-	private readonly Dao_ScannerRunHistory _runHistoryDao;
 	private readonly Dao_ScannerProfile _profileDao;
 
 	public Service_ScannerWorkflow(
 		Dao_ScannerBatchSession sessionDao,
 		Dao_ScannerBatchItem itemDao,
-		Dao_ScannerRunHistory runHistoryDao,
 		Dao_ScannerProfile profileDao
 	)
 	{
 		_sessionDao = sessionDao ?? throw new ArgumentNullException(nameof(sessionDao));
 		_itemDao = itemDao ?? throw new ArgumentNullException(nameof(itemDao));
-		_runHistoryDao = runHistoryDao ?? throw new ArgumentNullException(nameof(runHistoryDao));
 		_profileDao = profileDao ?? throw new ArgumentNullException(nameof(profileDao));
 	}
 
-	public Task<Model_Dao_Result<Model_ScannerSessionStartResponse>> StartSessionAsync(
-		Model_ScannerSessionStartRequest request,
+	public async Task<Model_Dao_Result<Model_ScannerBatchSession>> EnsureCurrentSessionAsync(
+		string ownerUserId,
+		string ownerDisplayName,
+		Guid activeProfileId,
 		CancellationToken cancellationToken = default
 	)
 	{
-		if (request is null)
+		if (string.IsNullOrWhiteSpace(ownerUserId))
 		{
-			return Task.FromResult(
-				Model_Dao_Result_Factory.Failure<Model_ScannerSessionStartResponse>(
-					"Request is required."
-				)
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				"OwnerUserId is required."
 			);
 		}
 
-		if (string.IsNullOrWhiteSpace(request.OwnerUserId))
+		var sessionsResult = await _sessionDao.GetSessionsByUserAsync(ownerUserId);
+		if (!sessionsResult.Success)
 		{
-			return Task.FromResult(
-				Model_Dao_Result_Factory.Failure<Model_ScannerSessionStartResponse>(
-					"OwnerUserId is required."
-				)
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				sessionsResult.ErrorMessage,
+				sessionsResult.Exception
 			);
 		}
 
-		var session = new Model_ScannerBatchSession
+		// Resume the most recent non-terminal session if one exists; otherwise create a new
+		// current list.
+		var current = sessionsResult.Data?
+			.Where(static session => session.Status is
+				Enum_ScannerSessionStatus.Ready or
+				Enum_ScannerSessionStatus.Running or
+				Enum_ScannerSessionStatus.Stopped)
+			.OrderByDescending(session => session.LastUpdatedUtc)
+			.FirstOrDefault();
+
+		if (current is not null)
+		{
+			var loadItems = await _itemDao.GetItemsBySessionAsync(current.SessionId);
+			if (loadItems.Success && loadItems.Data is not null)
+			{
+				foreach (var item in loadItems.Data.OrderBy(item => item.SequenceNumber))
+				{
+					current.Items.Add(item);
+				}
+
+				current.RecalculateItemCounters();
+			}
+
+			return Model_Dao_Result_Factory.Success(current);
+		}
+
+		var created = new Model_ScannerBatchSession
 		{
 			SessionId = Guid.NewGuid(),
-			OwnerUserId = request.OwnerUserId.Trim(),
-			OwnerDisplayName = request.OwnerDisplayName?.Trim() ?? string.Empty,
-			ActiveProfileId = request.ActiveProfileId,
-			AppWindowTitleSnapshot = request.AppWindowTitleSnapshot?.Trim() ?? string.Empty,
-			AppWindowClassSnapshot = request.AppWindowClassSnapshot?.Trim() ?? string.Empty,
-			SessionName = BuildDefaultSessionName(request.OwnerDisplayName),
-			Status = Enum_ScannerSessionStatus.Draft,
+			OwnerUserId = ownerUserId.Trim(),
+			OwnerDisplayName = ownerDisplayName?.Trim() ?? string.Empty,
+			ActiveProfileId = activeProfileId,
+			SessionName = BuildDefaultSessionName(ownerDisplayName),
+			Status = Enum_ScannerSessionStatus.Ready,
 			CreatedUtc = DateTime.UtcNow,
 			LastUpdatedUtc = DateTime.UtcNow,
 		};
 
-		return PersistAndReturnStartResponseAsync(session);
-	}
-
-	private async Task<Model_Dao_Result<Model_ScannerSessionStartResponse>> PersistAndReturnStartResponseAsync(
-		Model_ScannerBatchSession session
-	)
-	{
-		var persist = await _sessionDao.UpsertSessionAsync(session);
+		var persist = await _sessionDao.UpsertSessionAsync(created);
 		if (!persist.Success)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerSessionStartResponse>(
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
 				persist.ErrorMessage,
 				persist.Exception
 			);
 		}
 
-		var response = new Model_ScannerSessionStartResponse
-		{
-			SessionId = session.SessionId,
-			Status = Enum_ScannerSessionStatus.Draft,
-			CreatedUtc = session.CreatedUtc,
-			Message = "Scanner session initialized.",
-		};
-
-		return Model_Dao_Result_Factory.Success(response);
+		return Model_Dao_Result_Factory.Success(created);
 	}
 
 	public async Task<Model_Dao_Result<Model_ScannerBatchSession>> UpsertBatchItemAsync(
@@ -115,19 +121,27 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>("Item is required.");
 		}
 
-		var existing = session.Items.FirstOrDefault(candidate => candidate.ItemId == item.ItemId);
-		if (existing is null)
+		var existingIndex = -1;
+		for (var index = 0; index < session.Items.Count; index++)
+		{
+			if (session.Items[index].ItemId == item.ItemId)
+			{
+				existingIndex = index;
+				break;
+			}
+		}
+
+		var isNew = existingIndex < 0;
+
+		if (isNew)
 		{
 			item.SessionId = session.SessionId;
 			item.SequenceNumber = session.Items.Count + 1;
-			session.Items.Add(item);
 		}
 		else
 		{
-			var index = session.Items.IndexOf(existing);
 			item.SessionId = session.SessionId;
-			item.SequenceNumber = existing.SequenceNumber;
-			session.Items[index] = item;
+			item.SequenceNumber = session.Items[existingIndex].SequenceNumber;
 		}
 
 		var persistItem = await _itemDao.UpsertItemAsync(item);
@@ -137,6 +151,17 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 				persistItem.ErrorMessage,
 				persistItem.Exception
 			);
+		}
+
+		// Only mutate the in-memory session after the database write succeeded so a failed
+		// save cannot leave a "ghost" row in the current list.
+		if (isNew)
+		{
+			session.Items.Add(item);
+		}
+		else
+		{
+			session.Items[existingIndex] = item;
 		}
 
 		session.RecalculateItemCounters();
@@ -152,68 +177,68 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 		return Model_Dao_Result_Factory.Success(session);
 	}
 
-	public async Task<Model_Dao_Result<Model_ScannerRun>> BuildRunSnapshotAsync(
+	public async Task<Model_Dao_Result<Model_ScannerBatchSession>> ReplaceSessionItemsAsync(
 		Model_ScannerBatchSession session,
 		CancellationToken cancellationToken = default
 	)
 	{
 		if (session is null)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRun>("Session is required.");
-		}
-
-		session.LastSendStartedUtc ??= DateTime.UtcNow;
-		var snapshot = session.ToRunSnapshot();
-
-		var startRun = await _runHistoryDao.StartRunAsync(snapshot);
-		if (!startRun.Success)
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRun>(
-				startRun.ErrorMessage,
-				startRun.Exception
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				"Session is required."
 			);
 		}
 
-		foreach (var runItem in snapshot.Items.OrderBy(item => item.SequenceNumber))
+		var deleteResult = await _itemDao.DeleteBySessionAsync(session.SessionId);
+		if (!deleteResult.Success)
 		{
-			var insertResult = await _runHistoryDao.InsertRunItemAsync(runItem);
-			if (!insertResult.Success)
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				deleteResult.ErrorMessage,
+				deleteResult.Exception
+			);
+		}
+
+		foreach (var item in session.Items.OrderBy(candidate => candidate.SequenceNumber))
+		{
+			item.SessionId = session.SessionId;
+			var persistItem = await _itemDao.UpsertItemAsync(item);
+			if (!persistItem.Success)
 			{
-				return Model_Dao_Result_Factory.Failure<Model_ScannerRun>(
-					insertResult.ErrorMessage,
-					insertResult.Exception
+				return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+					persistItem.ErrorMessage,
+					persistItem.Exception
 				);
 			}
 		}
 
-		snapshot.EndedUtc = DateTime.UtcNow;
-		var completeRun = await _runHistoryDao.CompleteRunAsync(snapshot);
-		if (!completeRun.Success)
+		session.RecalculateItemCounters();
+		var persistSession = await _sessionDao.UpsertSessionAsync(session);
+		if (!persistSession.Success)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRun>(
-				completeRun.ErrorMessage,
-				completeRun.Exception
+			return Model_Dao_Result_Factory.Failure<Model_ScannerBatchSession>(
+				persistSession.ErrorMessage,
+				persistSession.Exception
 			);
 		}
 
-		return Model_Dao_Result_Factory.Success(snapshot);
+		return Model_Dao_Result_Factory.Success(session);
 	}
 
-	public async Task<Model_Dao_Result<Model_ScannerRunHistoryQueryResult>> GetRunHistoryAsync(
-		Model_ScannerRunHistoryQueryRequest request,
+	public async Task<Model_Dao_Result<Model_ScannerHistoryQueryResult>> GetHistoryAsync(
+		Model_ScannerHistoryQueryRequest request,
 		CancellationToken cancellationToken = default
 	)
 	{
 		if (request is null)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRunHistoryQueryResult>(
+			return Model_Dao_Result_Factory.Failure<Model_ScannerHistoryQueryResult>(
 				"Request is required."
 			);
 		}
 
 		if (string.IsNullOrWhiteSpace(request.OwnerUserId))
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRunHistoryQueryResult>(
+			return Model_Dao_Result_Factory.Failure<Model_ScannerHistoryQueryResult>(
 				"OwnerUserId is required."
 			);
 		}
@@ -221,14 +246,26 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 		var sessionsResult = await _sessionDao.GetSessionsByUserAsync(request.OwnerUserId);
 		if (!sessionsResult.Success || sessionsResult.Data is null)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerRunHistoryQueryResult>(
+			return Model_Dao_Result_Factory.Failure<Model_ScannerHistoryQueryResult>(
 				sessionsResult.ErrorMessage,
 				sessionsResult.Exception
 			);
 		}
 
+		// The current list (latest non-terminal session) is never part of History.
+		var currentListId = sessionsResult.Data
+			.Where(static session => session.Status is
+				Enum_ScannerSessionStatus.Ready or
+				Enum_ScannerSessionStatus.Running or
+				Enum_ScannerSessionStatus.Stopped)
+			.OrderByDescending(session => session.LastUpdatedUtc)
+			.Select(session => session.SessionId)
+			.FirstOrDefault();
+
 		var maxResults = request.MaxResults <= 0 ? 100 : request.MaxResults;
-		var sessions = sessionsResult.Data.AsEnumerable();
+		var sessions = sessionsResult.Data
+			.Where(session => session.SessionId != currentListId)
+			.AsEnumerable();
 
 		if (request.DateFromUtc.HasValue)
 		{
@@ -245,20 +282,21 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 			sessions = sessions.Where(session => session.Status == request.StatusFilter.Value);
 		}
 
-		var result = new Model_ScannerRunHistoryQueryResult();
+		var result = new Model_ScannerHistoryQueryResult();
 		foreach (
 			var session in sessions
 				.OrderByDescending(candidate => candidate.LastUpdatedUtc)
 				.Take(maxResults)
 		)
 		{
-			var run = new Model_ScannerRun
+			var entry = new Model_ScannerHistoryEntry
 			{
-				RunId = Guid.NewGuid(),
+				HistoryEntryId = Guid.NewGuid(),
 				SessionId = session.SessionId,
 				ProfileId = session.ActiveProfileId,
 				OwnerUserId = session.OwnerUserId,
 				OwnerDisplayName = session.OwnerDisplayName,
+				SessionName = session.SessionName,
 				StartedUtc = session.LastSendStartedUtc ?? session.CreatedUtc,
 				EndedUtc = session.LastSendEndedUtc,
 				FinalStatus = session.Status,
@@ -276,16 +314,15 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 			{
 				foreach (var item in itemResult.Data.OrderBy(item => item.SequenceNumber))
 				{
-					run.Items.Add(item.ToRunItem(run.RunId));
+					entry.Items.Add(item.ToHistoryItem(entry.HistoryEntryId));
 				}
 
-				run.TotalItems = run.Items.Count;
+				entry.TotalItems = entry.Items.Count;
 			}
 
-			result.Runs.Add(run);
+			result.Entries.Add(entry);
 		}
 
-		result.TotalMatched = result.Runs.Count;
 		return Model_Dao_Result_Factory.Success(result);
 	}
 
@@ -301,8 +338,16 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 			);
 		}
 
-		cancellationToken.ThrowIfCancellationRequested();
-		return await _profileDao.GetProfilesByUserAsync(ownerUserId.Trim());
+		var result = await _profileDao.GetProfilesByUserAsync(ownerUserId);
+		if (!result.Success || result.Data is null)
+		{
+			return Model_Dao_Result_Factory.Failure<List<Model_ScannerProfile>>(
+				result.ErrorMessage,
+				result.Exception
+			);
+		}
+
+		return Model_Dao_Result_Factory.Success(result.Data);
 	}
 
 	public async Task<Model_Dao_Result<Model_ScannerProfile>> SaveProfileAsync(
@@ -310,88 +355,46 @@ public sealed class Service_ScannerWorkflow : IService_ScannerWorkflow
 		CancellationToken cancellationToken = default
 	)
 	{
-		if (profile is null)
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerProfile>("Profile is required.");
-		}
-
-		if (string.IsNullOrWhiteSpace(profile.OwnerUserId))
+		var persist = await _profileDao.UpsertProfileAsync(profile);
+		if (!persist.Success)
 		{
 			return Model_Dao_Result_Factory.Failure<Model_ScannerProfile>(
-				"OwnerUserId is required."
+				persist.ErrorMessage,
+				persist.Exception
 			);
 		}
 
-		if (string.IsNullOrWhiteSpace(profile.ProfileName))
+		if (profile.IsDefaultForUser)
 		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerProfile>(
-				"Profile name is required."
-			);
-		}
-
-		if (string.IsNullOrWhiteSpace(profile.AppWindowTitle))
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerProfile>(
-				"App window title is required."
-			);
-		}
-
-		cancellationToken.ThrowIfCancellationRequested();
-		var save = await _profileDao.UpsertProfileAsync(profile);
-		if (!save.Success)
-		{
-			return Model_Dao_Result_Factory.Failure<Model_ScannerProfile>(
-				save.ErrorMessage,
-				save.Exception
-			);
+			await _profileDao.SetDefaultProfileAsync(profile.ProfileId, profile.OwnerUserId);
 		}
 
 		return Model_Dao_Result_Factory.Success(profile);
 	}
 
-	public async Task<Model_Dao_Result> SetDefaultProfileAsync(
+	public Task<Model_Dao_Result> SetDefaultProfileAsync(
 		Guid profileId,
 		string ownerUserId,
 		CancellationToken cancellationToken = default
 	)
 	{
-		if (profileId == Guid.Empty)
-		{
-			return Model_Dao_Result_Factory.Failure("Profile id is required.");
-		}
-
-		if (string.IsNullOrWhiteSpace(ownerUserId))
-		{
-			return Model_Dao_Result_Factory.Failure("OwnerUserId is required.");
-		}
-
-		cancellationToken.ThrowIfCancellationRequested();
-		return await _profileDao.SetDefaultProfileAsync(profileId, ownerUserId.Trim());
+		return _profileDao.SetDefaultProfileAsync(profileId, ownerUserId);
 	}
 
-	public async Task<Model_Dao_Result> DeleteProfileAsync(
+	public Task<Model_Dao_Result> DeleteProfileAsync(
 		Guid profileId,
 		string ownerUserId,
 		CancellationToken cancellationToken = default
 	)
 	{
-		if (profileId == Guid.Empty)
-		{
-			return Model_Dao_Result_Factory.Failure("Profile id is required.");
-		}
-
-		if (string.IsNullOrWhiteSpace(ownerUserId))
-		{
-			return Model_Dao_Result_Factory.Failure("OwnerUserId is required.");
-		}
-
-		cancellationToken.ThrowIfCancellationRequested();
-		return await _profileDao.DeleteProfileAsync(profileId, ownerUserId.Trim());
+		return _profileDao.DeleteProfileAsync(profileId, ownerUserId);
 	}
 
 	private static string BuildDefaultSessionName(string? ownerDisplayName)
 	{
-		var display = string.IsNullOrWhiteSpace(ownerDisplayName) ? "Operator" : ownerDisplayName.Trim();
-		return $"{display} Draft {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}";
+		var display = string.IsNullOrWhiteSpace(ownerDisplayName)
+			? "Scanner"
+			: ownerDisplayName.Trim();
+		return $"{display} {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}";
 	}
 }

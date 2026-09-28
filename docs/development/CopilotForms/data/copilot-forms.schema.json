@@ -18,14 +18,6 @@
         "defaultBranch": {
           "type": "string"
         },
-        "moduleMetadataIndexes": {
-          "description": "Ordered list of split module manifest files. In the normal fetch path the runtime loads these manifests, then merges their feature files ahead of the inline features array so matching feature ids from split metadata take precedence. The inline features array should still remain usable as a fallback for manual local-config loading.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^data/module-metadata/.+/index\\.json$"
-          }
-        },
         "notes": {
           "type": "array",
           "items": {
@@ -65,7 +57,7 @@
       "additionalProperties": true
     },
     "features": {
-      "description": "Inline feature catalog consumed by the runtime to populate the Module, Feature, and Sub-Feature selectors and to attach prompt context to a selected feature. This array also serves as the fallback catalog for the HTML local-config loader. When split module metadata is fetched through project.moduleMetadataIndexes, matching feature ids from those manifests override the inline fallback entries.",
+      "description": "Inline feature catalog consumed by the runtime to populate the Module, Feature, and Sub-Feature selectors and to attach prompt context to a selected feature.",
       "type": "array",
       "items": {
         "type": "object",

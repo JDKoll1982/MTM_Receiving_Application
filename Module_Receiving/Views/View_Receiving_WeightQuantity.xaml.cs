@@ -30,78 +30,48 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             new PropertyMetadata(null)
         );
         private readonly IService_Focus _focusService;
+        private readonly IService_AdaptiveLayout _adaptiveLayout;
 
         public View_Receiving_WeightQuantity(
             ViewModel_Receiving_WeightQuantity viewModel,
-            IService_Focus focusService
+            IService_Focus focusService,
+            IService_AdaptiveLayout adaptiveLayout
         )
         {
             ArgumentNullException.ThrowIfNull(viewModel);
             ArgumentNullException.ThrowIfNull(focusService);
+            ArgumentNullException.ThrowIfNull(adaptiveLayout);
 
             ViewModel = viewModel;
             _focusService = focusService;
+            _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
             this.InitializeComponent();
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             Loaded += View_Receiving_WeightQuantity_Loaded;
+            SizeChanged += View_Receiving_WeightQuantity_SizeChanged;
             this.Unloaded += View_Receiving_WeightQuantity_Unloaded;
-            AttachLoadFocus();
             InitializeCurrentTotalReminderAnimation();
-
             CurrentTotalReminderTextBlock.Foreground = _currentTotalReminderBrush;
         }
 
         /// <summary>
         /// Moves focus to the first weight or quantity input whenever guided mode re-enters this step.
         /// </summary>
-        public void FocusForAccess()
+        public bool FocusForAccess()
         {
-            FocusFirstLoadQuantityInput();
+            return FocusFirstLoadQuantityInput();
         }
 
-        private void AttachLoadFocus()
+        private bool FocusFirstLoadQuantityInput()
         {
-            this.Loaded += (_, _) =>
+            if (this.Visibility != Visibility.Visible)
             {
-                if (this.Visibility == Visibility.Visible)
-                {
-                    FocusFirstLoadQuantityInput();
-                }
-            };
-            this.RegisterPropertyChangedCallback(
-                UIElement.VisibilityProperty,
-                (_, _) =>
-                {
-                    if (this.Visibility == Visibility.Visible)
-                    {
-                        FocusFirstLoadQuantityInput();
-                    }
-                }
-            );
-        }
-
-        private void FocusFirstLoadQuantityInput()
-        {
-            if (this.DispatcherQueue == null || this.Visibility != Visibility.Visible)
-            {
-                return;
+                return false;
             }
 
-            this.DispatcherQueue.TryEnqueue(() =>
-            {
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    var target = FindDescendant<NumberBox>(LoadsItemsControl);
-                    if (target != null)
-                    {
-                        _focusService.SetFocus(target);
-                        return;
-                    }
-
-                    _focusService.SetFocusFirstInput(this);
-                });
-            });
+            var target = FindDescendant<NumberBox>(LoadsItemsControl);
+            return target is not null && _focusService.TrySetFocus(target);
         }
 
         private void View_Receiving_WeightQuantity_Unloaded(object sender, RoutedEventArgs e)
@@ -110,17 +80,32 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             this.Unloaded -= View_Receiving_WeightQuantity_Unloaded;
             Loaded -= View_Receiving_WeightQuantity_Loaded;
+            SizeChanged -= View_Receiving_WeightQuantity_SizeChanged;
         }
 
         private void View_Receiving_WeightQuantity_Loaded(object sender, RoutedEventArgs e)
         {
             _isViewLoaded = true;
+            ApplyAdaptiveLayout();
 
             if (_pendingCurrentTotalReminderAnimation)
             {
                 _pendingCurrentTotalReminderAnimation = false;
                 StartCurrentTotalReminderAnimation();
             }
+        }
+
+        private void View_Receiving_WeightQuantity_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _ = sender;
+            _ = e;
+            ApplyAdaptiveLayout();
+        }
+
+        private void ApplyAdaptiveLayout()
+        {
+            var state = _adaptiveLayout.ResolveReceivingLayoutState(ActualWidth);
+            _ = VisualStateManager.GoToState(this, state, false);
         }
 
         private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
