@@ -64,6 +64,14 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
             )
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            // Scanner Access is admin-or-above only. This gate is deliberately independent of
+            // the Scanner allow-list itself so an admin cannot lock themselves out of it.
+            ScannerAccessButton.Visibility = _userPrivileges.HasPermissionLevel(
+                Enum_SettingsPermissionLevel.Admin
+            )
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
@@ -73,6 +81,7 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
             );
             SystemSettingsButton.Visibility = Visibility.Collapsed;
             DatabaseConfigButton.Visibility = Visibility.Collapsed;
+            ScannerAccessButton.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -214,5 +223,19 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         }
 
         NavigateUsingServiceProvider(typeof(View_Settings_DatabaseConfig));
+    }
+
+    private void OnNavigateScannerAccess(object sender, RoutedEventArgs e)
+    {
+        if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)
+        {
+            _logger.LogWarning(
+                "Blocked navigation to Scanner Access due to insufficient privileges.",
+                "Settings.Navigation"
+            );
+            return;
+        }
+
+        NavigateUsingServiceProvider(typeof(View_Settings_ScannerAccess));
     }
 }

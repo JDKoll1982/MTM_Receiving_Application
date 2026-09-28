@@ -4,9 +4,10 @@ using MTM_Receiving_Application.Module_Core.Models.Systems;
 namespace MTM_Receiving_Application.Module_Scanner.Helpers;
 
 /// <summary>
-/// Scanner module access policy. The Scanner navigation entry and automation engine are
-/// intended for developers during rollout; this helper decides whether the current user is
-/// a developer who may use the Scanner module.
+/// Legacy developer-only Scanner rollout rule. This is the fallback used by
+/// <see cref="MTM_Receiving_Application.Module_Scanner.Contracts.IService_ScannerAccessPolicy"/>
+/// while the plant-wide allow-list has not been configured; once an admin or developer saves
+/// an allow-list the configured employees are authoritative.
 /// </summary>
 public static class Helper_ScannerAccess
 {

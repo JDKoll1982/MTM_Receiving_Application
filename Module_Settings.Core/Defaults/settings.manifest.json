@@ -212,6 +212,17 @@
       "validationRules": "Path to .lbl file"
     },
     {
+      "category": "Scanner",
+      "key": "Scanner.Access.AllowedEmployeeNumbers",
+      "displayName": "Scanner Access - Allowed Users",
+      "defaultValue": "[]",
+      "dataType": "Json",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "JSON array of employee numbers allowed to use the Scanner module. An empty array falls back to the legacy developer-only rule."
+    },
+    {
       "category": "Receiving",
       "key": "Receiving.Labels.ReceivingLabelPath",
       "displayName": "Receiving Label Path",

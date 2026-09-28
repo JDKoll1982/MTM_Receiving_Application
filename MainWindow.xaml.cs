@@ -22,7 +22,6 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
-using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
@@ -54,6 +53,10 @@ namespace MTM_Receiving_Application
         private bool _isWindowActive = true;
         private bool _isUpdatingNavSelection;
         private bool _isSettingsMode;
+        private bool _isScannerAccessAllowed;
+        private bool _isScannerHotkeyRegistered;
+        private bool _hasAttemptedScannerHotkeyRegistration;
+        private bool _hasRefreshedScannerAccess;
         private int _labelButtonsPageIndex;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
@@ -293,8 +296,7 @@ namespace MTM_Receiving_Application
                 ApplyNavigationMode(isSettingsMode: false);
             }
 
-            ApplyScannerNavigationGate();
-            InitializeScannerHotkeys();
+            _ = ApplyScannerAccessAsync();
 
             UpdateHeaderBackButton();
             UpdateStatusInfoBarActionButton();
@@ -363,48 +365,91 @@ namespace MTM_Receiving_Application
         }
 
         /// <summary>
-        /// Shows the Scanner navigation entry only for developer users; for everyone else the
-        /// entry is hidden entirely from the nav bar. The scanner automation engine is
-        /// implemented but not yet verified against a real VMINVENT terminal, so it is
-        /// restricted to developers during rollout.
+        /// Applies the plant-wide Scanner access policy to the navigation entry and the global
+        /// send hotkey. The allow-list is a shared, system-scoped setting, so the result is
+        /// cached briefly and re-evaluated when the user actually tries to open Scanner.
         /// </summary>
-        private void ApplyScannerNavigationGate()
+        private async Task ApplyScannerAccessAsync()
         {
             try
             {
-                var scannerItem = FindNavigationItemByTag("ScannerMainPage");
-                if (scannerItem is null)
+                var accessPolicy = _serviceProvider.GetService<IService_ScannerAccessPolicy>();
+                if (accessPolicy is null)
                 {
                     return;
                 }
 
-                var isDeveloper = Helper_ScannerAccess.IsDeveloperUser(
+                _isScannerAccessAllowed = await accessPolicy.IsUserAllowedAsync(
                     _sessionManager.CurrentSession?.User,
                     Environment.UserName
                 );
-                scannerItem.Visibility = isDeveloper
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-                scannerItem.IsEnabled = isDeveloper;
+
+                var scannerItem = FindNavigationItemByTag("ScannerMainPage");
+                if (scannerItem is not null)
+                {
+                    scannerItem.Visibility = _isScannerAccessAllowed
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    scannerItem.IsEnabled = _isScannerAccessAllowed;
+                }
+
+                ApplyScannerHotkey(_isScannerAccessAllowed);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(
-                    $"Unable to apply Scanner navigation gate: {ex.Message}",
+                    $"Unable to apply Scanner access policy: {ex.Message}",
                     nameof(MainWindow)
                 );
             }
         }
 
+        private void NotifyScannerAccessDenied()
+        {
+            ViewModel.NotificationService.ShowStatus(
+                "Scanner is not enabled for your user name. Ask an admin or developer to add you in Core Settings ▸ Scanner Access.",
+                global::MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Warning
+            );
+        }
+
+        /// <summary>
+        /// Re-checks Scanner access with a fresh read of the plant-wide allow-list. Used when a
+        /// user actually tries to open Scanner so a just-saved change takes effect immediately.
+        /// </summary>
+        private async Task<bool> RefreshScannerAccessAsync()
+        {
+            _serviceProvider.GetService<IService_ScannerAccessPolicy>()?.InvalidateCache();
+            await ApplyScannerAccessAsync();
+            return _isScannerAccessAllowed;
+        }
+
         /// <summary>
         /// Registers the global scanner send hotkey (Ctrl+Alt+M) against the main window and
-        /// unregisters it when the window closes. The shortcut is active for the app lifetime
-        /// so the operator can trigger a send while VMINVENT is focused.
+        /// unregisters it when the window closes. The shortcut is only registered for users who
+        /// may use Scanner so the chord stays free for everyone else.
         /// </summary>
-        private void InitializeScannerHotkeys()
+        private void ApplyScannerHotkey(bool isAllowed)
         {
             try
             {
+                if (!isAllowed)
+                {
+                    if (_isScannerHotkeyRegistered)
+                    {
+                        _serviceProvider.GetService<IService_ScannerHotkey>()?.Unregister();
+                        _isScannerHotkeyRegistered = false;
+                    }
+
+                    return;
+                }
+
+                if (_hasAttemptedScannerHotkeyRegistration)
+                {
+                    return;
+                }
+
+                _hasAttemptedScannerHotkeyRegistration = true;
+
                 var hotkey = _serviceProvider.GetService<IService_ScannerHotkey>();
                 if (hotkey is null)
                 {
@@ -412,15 +457,16 @@ namespace MTM_Receiving_Application
                 }
 
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                var registered = hotkey.TryRegister(hwnd, "Ctrl+Alt+M");
-                if (!registered)
+                if (!hotkey.TryRegister(hwnd, "Ctrl+Alt+M"))
                 {
                     _logger.LogWarning(
                         "Unable to register global scanner hotkeys. Another application may already own the chord.",
                         nameof(MainWindow)
                     );
+                    return;
                 }
 
+                _isScannerHotkeyRegistered = true;
                 Closed += (_, _) => hotkey.Unregister();
             }
             catch (Exception ex)
@@ -445,6 +491,14 @@ namespace MTM_Receiving_Application
             {
                 _sessionManager.UpdateLastActivity();
                 _ = LoadConfiguredLabelButtonsAsync();
+
+                // The window can be laid out before the user session exists, so re-evaluate the
+                // plant-wide Scanner access policy once the app is actually in front of a user.
+                if (!_hasRefreshedScannerAccess)
+                {
+                    _hasRefreshedScannerAccess = true;
+                    _ = ApplyScannerAccessAsync();
+                }
 
                 // Navigate to Receiving workflow on first activation
                 if (!_hasNavigatedOnStartup)
@@ -624,6 +678,15 @@ namespace MTM_Receiving_Application
 
             if (!_navRoutes.TryGetValue(tag, out var route))
             {
+                return;
+            }
+
+            // Scanner is gated by a plant-wide allow-list that an admin can change at any time,
+            // so re-read it before allowing entry instead of trusting the cached nav state.
+            if (tag == "ScannerMainPage" && await RefreshScannerAccessAsync() is false)
+            {
+                NotifyScannerAccessDenied();
+                SetNavigationSelectionByTag(GetCurrentRouteTag());
                 return;
             }
 

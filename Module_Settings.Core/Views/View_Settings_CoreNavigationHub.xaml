@@ -231,6 +231,37 @@
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Button>
+
+            <Button
+                x:Name="ScannerAccessButton"
+                Grid.Row="2"
+                Grid.Column="1"
+                Width="280"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnNavigateScannerAccess"
+                CornerRadius="8"
+                Visibility="Collapsed">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE72E;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Scanner Access" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Choose which users may use the Scanner module on any workstation."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
         </Grid>
     </Grid>
 </Page>

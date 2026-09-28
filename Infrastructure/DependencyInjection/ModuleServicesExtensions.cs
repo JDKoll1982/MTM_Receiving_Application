@@ -123,6 +123,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_ScannerInputEngine, Service_ScannerInputEngine>();
         services.AddSingleton<IService_ScannerHotkey, Service_ScannerHotkey>();
         services.AddSingleton<IService_ScannerExecution, Service_ScannerExecution>();
+        services.AddSingleton<IService_ScannerAccessPolicy, Service_ScannerAccessPolicy>();
 
         services.AddTransient<ViewModel_Scanner_Main>();
         services.AddTransient<ViewModel_Scanner_Workbench>();
@@ -433,6 +434,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_UserPreferences, Service_UserPreferences>();
         services.AddSingleton<IService_SettingsErrorHandler, Service_SettingsErrorHandler>();
         services.AddSingleton<IService_SettingsUserLabelButtons, Service_SettingsUserLabelButtons>();
+        services.AddSingleton<IService_SettingsUserDirectory, Service_SettingsUserDirectory>();
 
         // Database Config (admin/developer): runtime MySQL target selection + SyncTool launcher
         services.AddSingleton<IService_DatabaseTargetManager, Service_DatabaseTargetManager>();
@@ -459,6 +461,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_LabelViewExecutable>();
         services.AddTransient<ViewModel_Settings_MaterialAvailabilityBoardFields>();
         services.AddTransient<ViewModel_Settings_DatabaseConfig>();
+        services.AddTransient<ViewModel_Settings_ScannerAccess>();
 
         // Navigation Hubs
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_CategoryHub>();
@@ -510,6 +513,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_DatabaseConfig>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_ScannerAccess>();
 
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();

@@ -419,6 +419,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Material Availability Fields",
                 "Control which work-order details are shown in the Material Availability dialog and print output."
             ),
+            "View_Settings_ScannerAccess" => (
+                "Scanner Access",
+                "Choose which users may open the Scanner module. This allow-list applies to every workstation."
+            ),
 
             _ => (string.Empty, string.Empty),
         };
