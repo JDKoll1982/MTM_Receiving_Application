@@ -1,0 +1,32 @@
+# Markdown Preview Enhanced (MPE) shared pandoc export options for this folder.
+#
+# MPE resolves this file relative to the document being exported, so it must sit in the
+# SAME folder as the .md file. It exists so that individual documents do not each need
+# front matter just to be exportable.
+#
+# MPE behaviour (verified against shd101wyy.markdown-preview-enhanced 0.8.39):
+#   - The `output:` wrapper is REQUIRED. RStudio accepts a bare `pdf_document:` key at
+#     the document level; MPE reads only `output`, so the bare form silently fails with
+#     "Output format needs to be specified."
+#   - The FIRST key under `output` is the default export target, so `pdf_document` is
+#     listed first.
+#   - To export a different format from one document, give that document front matter
+#     containing `output: word_document`. MPE then resolves the options for that key
+#     from this file.
+#
+# `latex_engine: typst` is set because no LaTeX distribution is installed on this
+# machine. Change it to pdflatex/xelatex/lualatex if a TeX distribution is added later.
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    latex_engine: typst
+    # 10pt keeps a 70-character code span inside the text block. Typst cannot break a
+    # `code` span across lines, and several file paths and test names in these specs run
+    # past 65 characters, which overflows at the 11pt default.
+    pandoc_args: ["-M", "fontsize=10pt"]
+    # Left-aligns table cells; see _pandoc-tables.typ.
+    includes:
+      in_header: _pandoc-tables.typ
+  word_document:
+    toc: true

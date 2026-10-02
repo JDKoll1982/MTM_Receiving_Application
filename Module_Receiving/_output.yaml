@@ -1,0 +1,17 @@
+# Markdown Preview Enhanced (MPE) shared pandoc export options for documents in this folder.
+#
+# MPE resolves this file relative to the document being exported, so it must sit in the
+# same folder as the .md file. See docs/specs/_output.yaml for the full explanation of
+# why the `output:` wrapper is required and why `latex_engine` is set to typst.
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    latex_engine: typst
+    # 10pt keeps a 70-character code span inside the text block; see docs/specs/_output.yaml.
+    pandoc_args: ["-M", "fontsize=10pt"]
+    # Left-aligns table cells; see docs/specs/_pandoc-tables.typ.
+    includes:
+      in_header: _pandoc-tables.typ
+  word_document:
+    toc: true
