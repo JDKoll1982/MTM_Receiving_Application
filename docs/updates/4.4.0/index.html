@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.4.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.4.0</h1>
+                    <p class="hero-copy">This release makes it faster to work a whole section of the warehouse at once. Scanner can now load every location between a start and a stop location in a single pass, and it answers Infor Visual's "assign this part to a location" prompts for you while a transfer is being saved. The Material Availability Board groups results into one collapsible section per location and accepts a location range too, and its printed Transaction Sheet is rebuilt as one clean table per part for handwriting. Every location box in the application now follows one shared rule, so the same text always resolves to the same location no matter where you type it.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.4.0</span>
+                <span class="meta-text">Released October 06, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.4.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.4.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Scanner works a whole location range</p>
+                            <p class="highlight-text">Switch Search By to Location, turn on the <strong>Location range</strong> toggle, and type a start and stop location. Scanner loads the parts found in every real location between them in one pass, with each location shown in its own card and a Select All button to take them all.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Availability Board grouped by location</p>
+                            <p class="highlight-text">Searches by warehouse location - including a range - now group results into one collapsible section per location, with the location and its part count in the header. Sections you are not working can be folded away while their headers stay in view.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Locations resolve the same everywhere</p>
+                            <p class="highlight-text">One shared rule now formats every location box, so <strong>va001</strong>, <strong>V-A001</strong>, and <strong>VA-A0-1</strong> all become <strong>V-A0-01</strong>, and shorter forms like <strong>r04</strong> become <strong>R-04</strong> - the same value whether you type it in Scanner, on the board, or in a lookup.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Scanner loads every location in a range at once</summary>
+                        <p>The Workbench gained a location range mode. Flip <strong>Search By</strong> to <strong>Location</strong> and turn on the <strong>Location range</strong> toggle; the single location box is replaced by <strong>Start location</strong> and <strong>Stop location</strong>. Type the range and press <strong>Enter</strong> or click <strong>Load Range</strong>.</p>
+                        <p>Both bounds are auto-formatted. If the start location sorts after the stop location the two are swapped automatically, and only locations that actually exist in Infor Visual are returned, so gaps in the warehouse map are skipped instead of inventing empty locations. A range is capped at 60 locations - a wider range loads the first 60 and says so in the status bar.</p>
+                        <p>Each location is shown in its own compact card, with a <strong>Select All</strong> button that covers every card at once. Every row keeps the source location of the part it came from, so one range can feed rows from several locations. Switching <strong>Search By</strong> back to <strong>Part</strong> turns the range off and restores the single part-number box.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Material Availability Board groups results by location</summary>
+                        <p>The board's <strong>Warehouse Location</strong> mode now accepts a range of locations instead of a single one, so a whole aisle or rack bank can be reviewed in one search. Turn on the <strong>Location range</strong> toggle, type the range, then press <strong>Enter</strong> or click <strong>Load Range</strong>.</p>
+                        <p>Results are grouped into <strong>one collapsible section per location</strong>. Each section header shows the location ID and how many parts were found there, and the section can be collapsed or expanded by clicking the header. Every section starts expanded, and padding and row spacing are kept tight so more locations fit on screen at once.</p>
+                        <p><strong>Look Ahead</strong> applies to every location in the range, and a location with no positive-quantity parts is skipped rather than producing an empty section. <strong>Print</strong> uses the range as the report's search term, so the printed header reads <strong>V-A0-01 to V-A0-05</strong>; collapsing a section is a screen convenience only and does not change the printout. Switching the mode to <strong>Part Number</strong> turns the range off and restores the single search box.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Transaction Sheet prints one clean table per part</summary>
+                        <p>The handwritten move sheet for a warehouse location is rebuilt. The sheet is now grouped by location: every part is printed under the location it was found in, and each location begins on a new page, with the page subtitle repeating that location. Five parts are printed per page so a location's blocks keep fitting one printed page.</p>
+                        <p>Each part is now a single table - <strong>Qty 1</strong> through <strong>Qty 8</strong> across the top, four blank rows, and a smaller <strong>Total</strong> row underneath - replacing the four separate Qty/Take To pairs that used to force you to hunt across four blocks for a single move. That is sixteen handwriting cells per part.</p>
+                        <p>The part card now includes the <strong>Description</strong> so the material can be confirmed without going back to the screen, and the destination location prints on its own small row above the table, which frees all eight columns for quantities. Parts with no description on file print <strong>Not available</strong> instead of a blank line.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>One location rule for the whole application</summary>
+                        <p>Location boxes used to follow different rules on different screens, so the same typed text could resolve to different values depending on where you typed it. Every screen now uses one shared rule, so a location always resolves to the same value.</p>
+                        <p>More typing styles are accepted. <strong>va001</strong>, <strong>VA001</strong>, <strong>V-A001</strong>, <strong>VA0-01</strong>, and <strong>VA-A0-1</strong> all become <strong>V-A0-01</strong>. Shorter forms with no middle block are supported too: <strong>r04</strong>, <strong>R04</strong>, <strong>R-04</strong>, and <strong>R4</strong> become <strong>R-04</strong>, <strong>s00</strong> becomes <strong>S-00</strong>, and <strong>w04</strong> becomes <strong>W-04</strong>. Any value that matches no known pattern, such as <strong>RECV</strong>, is left exactly as you typed it.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Infor Visual save dialogs are answered for you</summary>
+                        <p>When Infor Visual saves a transfer for a part that has never been at the destination location, it can raise two dialogs: an <strong>Inventory Transaction Entry</strong> prompt asking to assign the part to the location, and the <strong>Add Part Location</strong> form that creates the assignment.</p>
+                        <p>While the Workbench is showing <strong>"Was the transaction saved in Infor Visual?"</strong>, the application now watches for those two dialogs and answers them with Enter (Yes, then OK) so you can keep working. The watch polls every 300&nbsp;ms, runs for at most 30 seconds, and only touches windows owned by the Infor Visual process - a same-titled window from another application is ignored. It stops as soon as you answer <strong>Yes</strong> or <strong>No</strong>, or when you leave the Workbench page.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>New Scanner help pages</summary>
+                        <p>In-app help gained dedicated Scanner guides for the <strong>Workbench</strong>, <strong>History</strong>, and <strong>Settings</strong>, plus a Scanner overview, so operators can read up on the transfer workflow without leaving the application. Several existing help pages were refreshed at the same time.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Fewer keystrokes per move</h3>
+                            <p>A single range loads many locations at once, and the destination dialogs that used to interrupt a save no longer need a manual answer in the middle of the transfer.</p>
+                        </article>
+                        <article>
+                            <h3>Consistent location entry</h3>
+                            <p>The same text always resolves to the same location, wherever it is typed, so a location entered in one screen reliably matches the same shelf everywhere else.</p>
+                        </article>
+                        <article>
+                            <h3>Cleaner paper</h3>
+                            <p>The Transaction Sheet gives each part one table to write in and keeps each location's handwritten moves together on its own page.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Nothing to set up</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <ul class="action-list">
+                        <li>There is nothing to configure - your preferences, saved Scanner sessions, and existing records carry over unchanged.</li>
+                        <li>Regular operators can continue using the same screens; the new location range options appear only when you turn them on.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a location range loads the wrong locations, a location you type does not resolve the way you expect, an Infor Visual save dialog is not answered automatically, or the Transaction Sheet is missing a part, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
