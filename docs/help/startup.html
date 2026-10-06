@@ -68,6 +68,8 @@
             <li><a href="../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
             <li><a href="../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
             <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
             <li><a href="index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
         </ul>
     </nav>
@@ -84,6 +86,7 @@
         <ul class="sidebar-nav">
             <li><a href="#what-you-see">What You See</a></li>
             <li><a href="#status-messages">Status Messages</a></li>
+            <li><a href="#workstation">Personal or Shared?</a></li>
             <li><a href="#first-time">First Time on This Computer?</a></li>
             <li><a href="#faq">Common Questions</a></li>
         </ul>
@@ -120,6 +123,14 @@
         </nav>
 
         <!-- Hero -->
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
         <div class="tut-hero">
             <div class="module-badge">🎓 End-User Help</div>
             <h1>Starting the App</h1>
@@ -138,8 +149,8 @@
             <h2>What You See</h2>
             <p>
                 While the app is loading you will see a startup window with the MTM logo,
-                the application name and version, a short status message, and a blue
-                progress bar.
+                the application name and version, a short status message, how far along the
+                startup steps are as a percentage, and a blue progress bar.
             </p>
 
             <div class="splash-screenshot-wrap">
@@ -148,7 +159,7 @@
                    data-caption="Startup screen — MTM logo, version, status message, and blue progress bar"
                    aria-label="Click to enlarge: startup screen">
                     <img src="../Tutorial_Images/Module_Shared/View_Shared_SplashScreenWindow/View_Shared_SplashScreenWindow-Main.png"
-                         alt="MTM Receiving Application startup window showing the MTM Tool and Mfg logo, version 1.2.0, the text 'Creating user session...' and a blue progress bar at 90%" />
+                         alt="MTM Receiving Application startup window showing the MTM Tool and Mfg logo, version 4.3.0, the text 'Creating user session...', a blue progress bar at 90%, and the text 90%" />
                 </a>
             </div>
             <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:-0.5rem; margin-bottom:1.25rem;">
@@ -172,7 +183,7 @@
             <h2>Status Messages</h2>
             <p>
                 The text underneath the progress bar changes as the app moves through each
-                startup step.  Here is what each message means:
+                startup step.  Here is what each message means, in the order they appear:
             </p>
 
             <table class="status-table">
@@ -184,40 +195,138 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Initializing…</td>
-                        <td>Setting up internal components — this is the very first step.</td>
+                        <td>Starting application…</td>
+                        <td>Kicking off startup — the very first step.</td>
                     </tr>
                     <tr>
-                        <td>Loading settings…</td>
-                        <td>Reading your saved preferences and application configuration.</td>
+                        <td>Loading main window…</td>
+                        <td>Building the main application window behind the startup screen.</td>
                     </tr>
                     <tr>
-                        <td>Connecting to database…</td>
-                        <td>Establishing a connection to MySQL and verifying the InforVisual (ERP) database is reachable.</td>
+                        <td>Initializing services…</td>
+                        <td>Setting up the app's internal components and background services.</td>
                     </tr>
                     <tr>
-                        <td>Loading label templates…</td>
-                        <td>Preparing the LabelView templates used for printing receiving labels.</td>
+                        <td>Preparing Dunnage image assets…</td>
+                        <td>Checking the Dunnage image folder on this computer.</td>
+                    </tr>
+                    <tr>
+                        <td>Syncing Dunnage images from network…</td>
+                        <td>Copying Dunnage images that are not on this computer yet.  The progress bar pauses on this step because the amount of work is not known in advance.</td>
+                    </tr>
+                    <tr>
+                        <td>Dunnage image assets ready.</td>
+                        <td>Dunnage images are up to date.</td>
+                    </tr>
+                    <tr>
+                        <td>Checking user account…</td>
+                        <td>Looking up your Windows username in the user database.</td>
+                    </tr>
+                    <tr>
+                        <td>User account not found. Waiting for account creation…</td>
+                        <td>No profile exists for your Windows username, so the <strong>New User Entry</strong> window has opened over the startup screen.  The bar pauses until you finish or cancel.</td>
+                    </tr>
+                    <tr>
+                        <td>Employee account created…</td>
+                        <td>Your new account was saved and the app is reloading it.</td>
+                    </tr>
+                    <tr>
+                        <td>Account created for <em>your name</em></td>
+                        <td>Your new account is ready and being loaded.</td>
+                    </tr>
+                    <tr>
+                        <td>Detecting workstation configuration…</td>
+                        <td>Working out whether this computer is a personal workstation or a shared terminal.</td>
+                    </tr>
+                    <tr>
+                        <td>Personal workstation - Windows authentication</td>
+                        <td>This is your own computer, so you are signed in automatically with your Windows login.  No PIN is needed.</td>
+                    </tr>
+                    <tr>
+                        <td>Shared terminal detected. Waiting for PIN login…</td>
+                        <td>This is a shared terminal, so the <strong>Shared Terminal Login</strong> window is asking for your username and 4-digit PIN.  The bar pauses until you log in.</td>
+                    </tr>
+                    <tr>
+                        <td>Welcome, <em>your name</em></td>
+                        <td>Your identity is confirmed.</td>
                     </tr>
                     <tr>
                         <td>Creating user session…</td>
-                        <td>Looking up your Windows login in the user database and building your session profile.</td>
+                        <td>Building your session profile from your saved preferences.</td>
                     </tr>
                     <tr>
-                        <td>Ready</td>
+                        <td>Initializing core settings…</td>
+                        <td>Loading the application settings that every module shares.</td>
+                    </tr>
+                    <tr>
+                        <td>Verifying application version…</td>
+                        <td>Confirming the installed version is correct before the module windows open.</td>
+                    </tr>
+                    <tr>
+                        <td>Ready!</td>
                         <td>Startup complete — the main window is about to open.</td>
                     </tr>
                 </tbody>
             </table>
 
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>The progress bar pauses on some steps.</strong>
+                    Messages such as <em>Syncing Dunnage images from network…</em>,
+                    <em>User account not found…</em> and
+                    <em>Shared terminal detected…</em> stay on screen until the app has
+                    finished that step or until you complete a window it opened.  You will
+                    not see every message on every computer.
+                </div>
+            </div>
+
             <div class="callout callout-warning">
                 <span class="callout-icon" aria-hidden="true">⚠️</span>
                 <div class="callout-body">
                     <strong>The startup screen stays open for longer than usual?</strong>
-                    If the progress bar stalls for more than 20–30 seconds on
-                    <em>Connecting to database…</em>, the app may not be able to reach a
-                    required database.  Check that you are on the plant network (or VPN) and
-                    let your supervisor or IT know.
+                    The two slowest steps are <em>Syncing Dunnage images from network…</em>,
+                    which copies image files the first time you use a computer, and
+                    <em>Detecting workstation configuration…</em>, which reaches the
+                    database.  If the app sits on <em>Preparing Dunnage image assets…</em> or
+                    <em>Detecting workstation configuration…</em> for more than 20–30 seconds,
+                    the app may not be able to reach the network.  Check that you are on the
+                    plant network (or VPN) and let your supervisor or IT know.
+                </div>
+            </div>
+        </section>
+
+        <section id="workstation" class="content-section">
+            <h2>Personal Computer or Shared Terminal?</h2>
+            <p>
+                Partway through startup the app works out what kind of computer it is running
+                on, because that decides how you sign in.  You do not choose this — it is
+                configured per computer by IT.
+            </p>
+
+            <h3>Personal workstation</h3>
+            <ul>
+                <li>The computer is yours, so you are signed in <strong>automatically</strong> using your Windows login.</li>
+                <li>No login window appears and no PIN is needed.</li>
+                <li>The status message reads <em>Personal workstation - Windows authentication</em>.</li>
+            </ul>
+
+            <h3>Shared terminal</h3>
+            <ul>
+                <li>The computer is used by many people, so the app cannot assume who you are.</li>
+                <li>A <strong>Shared Terminal Login</strong> window opens asking for your <strong>Username</strong> and your <strong>4-digit PIN</strong>.</li>
+                <li>Select <strong>Login</strong> to continue, or <strong>Cancel</strong> to close the application.</li>
+                <li>If the details are wrong you will see a <em>Login Failed</em> message and can try again.</li>
+                <li>After too many failed attempts the app locks the login and closes for security — ask your supervisor if this happens.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Choosing your PIN.</strong>
+                    The PIN you set during New User Entry is what you type at a shared terminal.
+                    It is entered on its own after your username, so it does not need to be
+                    shared with anyone else.
                 </div>
             </div>
         </section>
@@ -228,30 +337,79 @@
         <section id="first-time" class="content-section">
             <h2>First Time on This Computer?</h2>
             <p>
-                When the app reaches <em>Creating user session…</em>, it checks whether your
+                When the app reaches <em>Checking user account…</em>, it checks whether your
                 Windows username already has a profile in the receiving database.
             </p>
             <ul>
                 <li>
-                    <strong>Returning user</strong> — your profile is found and the app opens
-                    the main window straight away.
+                    <strong>Returning user</strong> — your profile is found and startup
+                    carries on to the login step for this computer.
                 </li>
                 <li>
                     <strong>First time on this computer</strong> — no profile is found for your
-                    Windows username, so the app automatically opens the
-                    <strong>New User Entry</strong> form where you enter your name, employee
-                    number, department, shift, PIN, and InforVisual credentials.
+                    Windows username, so the app opens the
+                    <strong>New User Entry</strong> window on top of the startup screen.
+                    The progress bar pauses while it is open.
                 </li>
             </ul>
+
+            <p>
+                The New User Entry window collects everything the app needs about you, grouped
+                into six sections:
+            </p>
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>Section</th>
+                        <th>What you provide</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td>Your first and last name.</td>
+                    </tr>
+                    <tr>
+                        <td>Employee Details</td>
+                        <td>Your employee number.  Your Windows username is filled in for you.</td>
+                    </tr>
+                    <tr>
+                        <td>Department Assignment</td>
+                        <td>Your department, or a custom department name if yours is not in the list.</td>
+                    </tr>
+                    <tr>
+                        <td>Work Schedule</td>
+                        <td>Your shift.</td>
+                    </tr>
+                    <tr>
+                        <td>Account Security</td>
+                        <td>A 4-digit PIN, entered twice.  This is the PIN you use to log in at a shared terminal.</td>
+                    </tr>
+                    <tr>
+                        <td>ERP System Access</td>
+                        <td>Your Infor Visual (ERP) username and password.</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="callout callout-info">
                 <span class="callout-icon" aria-hidden="true">📋</span>
                 <div class="callout-body">
-                    <strong>New User Entry will open automatically</strong> — you do not need
-                    to find it yourself.  Have your employee number, shift, department, and
-                    InforVisual (ERP) username and password ready.
+                    <strong>New User Entry opens automatically</strong> — you do not need
+                    to find it yourself.  Have your employee number, department, shift, and
+                    Infor Visual (ERP) username and password ready.
                     <br /><br />
                     <a href="new-user-setup.html">See the New User Setup guide for a complete walkthrough →</a>
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>If you close the New User Entry window without finishing, the
+                    application closes.</strong>
+                    Nothing is saved and you are back where you started.  Start the app again
+                    and complete the form in one go.
                 </div>
             </div>
         </section>
@@ -284,15 +442,45 @@
                 </details>
 
                 <details class="faq-item">
+                    <summary>A "Shared Terminal Login" window is asking for a PIN. What is that?</summary>
+                    <div class="faq-body">
+                        This computer is set up as a shared terminal, so the app cannot tell who
+                        is sitting at it.  Enter your username and the 4-digit PIN you created
+                        during New User Entry, then select <strong>Login</strong>.  On a personal
+                        workstation this window never appears.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The app closed itself during login. Why?</summary>
+                    <div class="faq-body">
+                        <p>Two things close the application on purpose:</p>
+                        <ul>
+                            <li><strong>You cancelled the login</strong> — selecting
+                                <strong>Cancel</strong> on the Shared Terminal Login window, or
+                                closing the New User Entry window without finishing, ends
+                                startup.</li>
+                            <li><strong>Too many failed PIN attempts</strong> — the app locks
+                                the login and closes for security.  Ask your supervisor to help
+                                you get back in.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="faq-item">
                     <summary>The app shows an error during startup instead of opening normally.</summary>
                     <div class="faq-body">
                         <p>Common causes:</p>
                         <ul>
                             <li><strong>Not on the plant network</strong> — the app needs to reach
-                                the MySQL and InforVisual servers.  Make sure you are connected to
-                                the plant LAN or the company VPN.</li>
+                                the MySQL and Infor Visual servers, and to sync Dunnage images.
+                                Make sure you are connected to the plant LAN or the company VPN.</li>
                             <li><strong>Database server is down</strong> — contact IT to check
                                 server status.</li>
+                            <li><strong>The installed version is out of date</strong> — if
+                                startup stops on <em>Verifying application version…</em>, the app
+                                is telling you it needs updating.  Contact IT for the current
+                                installer.</li>
                             <li><strong>App needs to be re-installed</strong> — if the error
                                 mentions a missing file, contact IT for a fresh installation.</li>
                         </ul>

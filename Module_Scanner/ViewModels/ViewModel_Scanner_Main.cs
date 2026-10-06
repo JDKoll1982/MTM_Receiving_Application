@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
@@ -69,4 +70,16 @@ public partial class ViewModel_Scanner_Main
             _ => "Scanner",
         };
     }
+
+    /// <summary>Switches the module host to the Workbench page.</summary>
+    [RelayCommand]
+    private void ShowWorkbench() => _navigationService.ShowWorkbench();
+
+    /// <summary>Switches the module host to the History page.</summary>
+    [RelayCommand]
+    private void ShowHistory() => _navigationService.ShowHistory();
+
+    /// <summary>Switches the module host to the Settings page.</summary>
+    [RelayCommand]
+    private void ShowSettings() => _navigationService.ShowSettings();
 }

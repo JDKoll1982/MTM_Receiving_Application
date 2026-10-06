@@ -108,6 +108,58 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         SearchBox.DispatcherQueue?.TryEnqueue(() => SearchBox.Focus(FocusState.Programmatic));
     }
 
+    /// <summary>Formats a Start/Stop range box with the shared warehouse-location rule.</summary>
+    private void RangeBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox box)
+        {
+            ApplyRangeFormatting(box);
+        }
+    }
+
+    /// <summary>Enter in either range box formats both bounds, then loads the range.</summary>
+    private void RangeBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != Windows.System.VirtualKey.Enter)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ApplyRangeFormatting(RangeStartBox);
+        ApplyRangeFormatting(RangeStopBox);
+
+        if (ViewModel.LoadLocationRangeCommand.CanExecute(null))
+        {
+            ViewModel.LoadLocationRangeCommand.Execute(null);
+        }
+    }
+
+    private void ApplyRangeFormatting(TextBox box)
+    {
+        if (box is null)
+        {
+            return;
+        }
+
+        var formatted = ViewModel.FormatLocation(box.Text ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(formatted))
+        {
+            return;
+        }
+
+        box.Text = formatted;
+
+        if (ReferenceEquals(box, RangeStartBox))
+        {
+            ViewModel.RangeStartLocation = formatted;
+        }
+        else if (ReferenceEquals(box, RangeStopBox))
+        {
+            ViewModel.RangeStopLocation = formatted;
+        }
+    }
+
     private async void IncomingDetailsButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: Model_Tool_MaterialAvailabilityCard card })

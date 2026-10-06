@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scanner — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#access">Who Can Use Scanner</a></li>
+            <li><a href="#tabs">The Three Tabs</a></li>
+            <li><a href="#workflow">The Transfer Workflow</a></li>
+            <li><a href="#locations">About Locations</a></li>
+            <li><a href="#quick-ref">Quick Reference</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Scanner Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html" class="is-active">Overview</a></li>
+            <li><a href="workbench.html">The Workbench</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="settings.html">Profiles &amp; Settings</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="../index.html">← Help Center</a></li>
+            <li><a href="../../index.html">← Docs Home</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Scanner</span>
+        </nav>
+
+        <!-- Hero -->
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Scanner Workbench</h1>
+            <p class="lead">
+                The Scanner module moves material between locations in Infor Visual. You build a
+                short list of lines — each line says <em>which part</em>, <em>from where</em>,
+                <em>to where</em>, and <em>how many</em> — and then send the lines one at a time
+                while Infor Visual is open.
+            </p>
+        </div>
+
+        <!-- -------- Overview -------- -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Scanner is a <strong>transfer</strong> tool. It does not receive material and it
+                does not change quantities on a Purchase Order. It records that a quantity of a
+                part moved from one warehouse location to another.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+               class="screenshot-wrap"
+               data-caption="Scanner Workbench with a current list ready to send"
+               aria-label="Click to enlarge: Scanner Workbench with rows">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+                     alt="Scanner Workbench showing three tabs, the location range inputs, and a table of six transfer lines" />
+            </a>
+            <span class="screenshot-caption">The Scanner Workbench — entry bar at the top, the current list in the middle, actions at the bottom</span>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Everything you see on this screen is one list.</strong>
+                    The app saves that list as you go, so if you close the app and come back
+                    later, the lines you had not sent yet are still waiting for you.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Access -------- -->
+        <section id="access" class="content-section">
+            <h2>Who Can Use Scanner</h2>
+            <p>
+                Scanner is restricted. If your employee number is not on the approved list,
+                the <strong>Scanner</strong> button does not appear in the left-hand navigation
+                bar and the keyboard shortcut does nothing.
+            </p>
+            <ul>
+                <li>The approved list is maintained plant-wide by an administrator.</li>
+                <li>It is managed from <strong>Core Settings ▸ Scanner Access</strong>.</li>
+                <li>Changes apply to every workstation — there is nothing to install.</li>
+                <li>Access is re-checked each time you open Scanner, so a change takes effect immediately.</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Scanner is missing from your navigation?</strong>
+                    Your employee number is not on the allow-list. Ask a supervisor or an
+                    administrator to add you in <strong>Core Settings ▸ Scanner Access</strong>.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Tabs -------- -->
+        <section id="tabs" class="content-section">
+            <h2>The Three Tabs</h2>
+            <p>
+                The Scanner screen has three tabs across the top. You can switch between them at
+                any time without losing the list you are working on.
+            </p>
+
+            <div class="mode-card-grid">
+                <div class="mode-card">
+                    <div class="mode-card-icon">🖥️</div>
+                    <div class="mode-card-name">Workbench</div>
+                    <div class="mode-card-desc">
+                        The list you are working on right now. Add lines, fill in destinations,
+                        and send them to Infor Visual.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-card-icon">🕘</div>
+                    <div class="mode-card-name">History</div>
+                    <div class="mode-card-desc">
+                        Past scanner lists and the lines they contained. Read-only reference.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-card-icon">⚙️</div>
+                    <div class="mode-card-name">Settings</div>
+                    <div class="mode-card-desc">
+                        The Infor Visual profiles Scanner uses — window titles, defaults, and the
+                        send shortcut.
+                    </div>
+                </div>
+            </div>
+
+            <div class="related-links">
+                <a href="workbench.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🖥️</span>
+                    <span class="related-link-text">
+                        <strong>The Workbench</strong>
+                        <span>Part search, location search, ranges, the table, and sending.</span>
+                    </span>
+                </a>
+                <a href="history.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🕘</span>
+                    <span class="related-link-text">
+                        <strong>History</strong>
+                        <span>Find a past list and read the lines it contained.</span>
+                    </span>
+                </a>
+                <a href="settings.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">⚙️</span>
+                    <span class="related-link-text">
+                        <strong>Profiles &amp; Settings</strong>
+                        <span>Configure how Scanner talks to Infor Visual.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+        <!-- -------- Workflow -------- -->
+        <section id="workflow" class="content-section">
+            <h2>The Transfer Workflow</h2>
+            <p>
+                Every transfer follows the same five steps. The first three happen in the app,
+                the last two happen in Infor Visual.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Find the material</h4>
+                    <p>
+                        Search by <strong>part number</strong>, or switch to searching by
+                        <strong>location</strong> if you would rather start from a shelf.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Pick the lines to move</h4>
+                    <p>
+                        A picker window opens with the parts and their on-hand quantities.
+                        Tick the rows you want and choose <strong>Use Selected</strong>.
+                        Each pick becomes one line in the current list.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Fill in the destination</h4>
+                    <p>
+                        Type the <strong>To</strong> location for each line. Scanner tidies up the
+                        location text for you and tells you straight away whether the line is
+                        ready. When every line is green, the list is ready.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">4</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Send the line</h4>
+                    <p>
+                        Select a green line and press the blue <strong>Send</strong> button.
+                        Scanner switches to Infor Visual and fills in the transfer for you.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">5</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Confirm it saved</h4>
+                    <p>
+                        Scanner asks
+                        <strong>“Was the transaction saved in Infor Visual?”</strong>
+                        Answer <strong>Yes</strong> to clear the line from your list, or
+                        <strong>No</strong> to keep it and try again.
+                    </p>
+                </div>
+            </div>
+
+            <div class="callout callout-success">
+                <span class="callout-icon" aria-hidden="true">✅</span>
+                <div class="callout-body">
+                    <strong>One line at a time.</strong>
+                    Scanner sends the line you selected, not the whole list. This keeps the
+                    Infor Visual entries reliable and lets you confirm each save.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Locations -------- -->
+        <section id="locations" class="content-section">
+            <h2>About Locations</h2>
+            <p>
+                Location names in Infor Visual come in a few shapes. Scanner recognises all of
+                them and rewrites what you type into one standard form, so you do not have to
+                remember the exact spelling.
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>You type</th>
+                            <th>Scanner uses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>va001</code> &nbsp;or&nbsp; <code>VA001</code> &nbsp;or&nbsp; <code>Va001</code></td><td><code>V-A0-01</code></td></tr>
+                        <tr><td><code>V-A001</code> &nbsp;or&nbsp; <code>VA0-01</code></td><td><code>V-A0-01</code></td></tr>
+                        <tr><td><code>VA-A001</code> &nbsp;or&nbsp; <code>VAA001</code></td><td><code>VA-A0-01</code></td></tr>
+                        <tr><td><code>r04</code> &nbsp;or&nbsp; <code>R04</code> &nbsp;or&nbsp; <code>R4</code></td><td><code>R-04</code></td></tr>
+                        <tr><td><code>s00</code> &nbsp;or&nbsp; <code>S0</code></td><td><code>S-00</code></td></tr>
+                        <tr><td><code>w04</code> &nbsp;or&nbsp; <code>W-4</code></td><td><code>W-04</code></td></tr>
+                        <tr><td><code>RECV</code></td><td><code>RECV</code> &nbsp;(left as typed)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    If what you typed does not match any known pattern, Scanner leaves it exactly
+                    as you typed it. Transfers always move material within the same warehouse
+                    (<code>002</code>); there is nothing to choose.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Quick reference -------- -->
+        <section id="quick-ref" class="content-section">
+            <h2>Quick Reference</h2>
+            <p>Find the task you are trying to do and jump straight to the guide.</p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>I want to…</th>
+                            <th>Go to</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Start a transfer by part number</td>
+                            <td><a href="workbench.html#part-mode">Workbench → Search by Part</a></td>
+                        </tr>
+                        <tr>
+                            <td>Start a transfer from a shelf location</td>
+                            <td><a href="workbench.html#location-mode">Workbench → Search by Location</a></td>
+                        </tr>
+                        <tr>
+                            <td>Move material from several locations at once</td>
+                            <td><a href="workbench.html#range">Workbench → Location Range</a></td>
+                        </tr>
+                        <tr>
+                            <td>Understand what the green/red/gray icons mean</td>
+                            <td><a href="workbench.html#status">Workbench → Line Status</a></td>
+                        </tr>
+                        <tr>
+                            <td>Send a line and confirm it saved</td>
+                            <td><a href="workbench.html#send">Workbench → Sending a Line</a></td>
+                        </tr>
+                        <tr>
+                            <td>Open Infor Visual’s Inventory Transfers window</td>
+                            <td><a href="workbench.html#actions">Workbench → Action Buttons</a></td>
+                        </tr>
+                        <tr>
+                            <td>Look up a list I worked on earlier</td>
+                            <td><a href="history.html">History</a></td>
+                        </tr>
+                        <tr>
+                            <td>Change which Infor Visual window Scanner targets</td>
+                            <td><a href="settings.html#profiles">Profiles &amp; Settings</a></td>
+                        </tr>
+                        <tr>
+                            <td>Give another employee access to Scanner</td>
+                            <td><a href="settings.html#access">Profiles &amp; Settings → Scanner Access</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- -------- FAQ -------- -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Does Scanner change the quantity on hand?</summary>
+                    <div class="faq-body">
+                        It moves quantity from one location to another. The total quantity for the
+                        part does not change — only <em>where</em> the material is recorded as
+                        being.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I closed the app. Did I lose my list?</summary>
+                    <div class="faq-body">
+                        No. The current list is saved as you work. Reopen Scanner and the lines you
+                        had not sent are still there.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I work on more than one list at a time?</summary>
+                    <div class="faq-body">
+                        No. Scanner keeps one current list. If you want to start over, use
+                        <strong>Clear list</strong> and then add new lines.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Why is the Scanner button missing from my navigation?</summary>
+                    <div class="faq-body">
+                        Scanner access is limited to an approved list of employee numbers. Ask an
+                        administrator to add you in
+                        <strong>Core Settings ▸ Scanner Access</strong>.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Infor Visual opened but nothing was filled in.</summary>
+                    <div class="faq-body">
+                        Scanner needs Infor Visual to be at the window named in its profile. Check
+                        <a href="settings.html#profiles">Profiles &amp; Settings</a>, or ask a
+                        developer if the Infor Visual window title has changed.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="../index.html">Help Center</a>
+    <span aria-hidden="true">·</span>
+    <span>Scanner Overview</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

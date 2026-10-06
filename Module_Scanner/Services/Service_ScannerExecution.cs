@@ -22,11 +22,37 @@ namespace MTM_Receiving_Application.Module_Scanner.Services;
 public sealed partial class Service_ScannerExecution : ObservableObject, IService_ScannerExecution
 {
 	private const ushort VkTab = 0x09;
+	private const ushort VkReturn = 0x0D;
+
+	/// <summary>
+	/// Infor Visual dialogs that can appear after Save when a part has never been inventoried at
+	/// the destination location. Enter confirms the default button on each dialog - "Yes" on the
+	/// assignment question and "OK" on the Add Part Location form.
+	/// </summary>
+	private static readonly string[] AssignmentDialogTitles =
+	[
+		"Inventory Transaction Entry",
+		"Add Part Location",
+	];
+
+	/// <summary>
+	/// Settle time after the dialog is brought to the foreground and before Enter is injected.
+	/// Without it the keystroke can land on the window behind the dialog.
+	/// </summary>
+	private static readonly TimeSpan DialogFocusSettleDelay = TimeSpan.FromMilliseconds(120);
 
 	private readonly IService_ScannerInputEngine _engine;
 	private readonly Dao_ScannerBatchItem _itemDao;
 	private readonly IService_LoggingUtility _logger;
 	private readonly SemaphoreSlim _executionGate = new(1, 1);
+
+	private CancellationTokenSource? _dialogWatcherTokenSource;
+
+	/// <inheritdoc />
+	public TimeSpan TransferDialogPollInterval { get; set; } = TimeSpan.FromMilliseconds(300);
+
+	/// <inheritdoc />
+	public TimeSpan TransferDialogWatchTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
 	/// <summary>
 	/// True while an automated send cycle is active. The Workbench binds inputs to the
@@ -128,6 +154,129 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 		}
 
 		return await ExecuteItemAsync(session, item, profile, cancellationToken);
+	}
+
+	/// <inheritdoc />
+	public void StartTransferDialogWatcher(Model_ScannerProfile profile)
+	{
+		ArgumentNullException.ThrowIfNull(profile);
+
+		// Restart cleanly so a leftover watcher from a previous line cannot answer for this one.
+		StopTransferDialogWatcher();
+
+		var tokenSource = new CancellationTokenSource();
+		_dialogWatcherTokenSource = tokenSource;
+
+		_ = Task.Run(() => WatchForAssignmentDialogsAsync(profile, tokenSource), CancellationToken.None);
+	}
+
+	/// <inheritdoc />
+	public void StopTransferDialogWatcher()
+	{
+		var tokenSource = Interlocked.Exchange(ref _dialogWatcherTokenSource, null);
+		if (tokenSource is null)
+		{
+			return;
+		}
+
+		try
+		{
+			tokenSource.Cancel();
+		}
+		catch (ObjectDisposedException)
+		{
+			// Already stopped by the watcher itself.
+		}
+	}
+
+	/// <summary>
+	/// Polls for the Infor Visual part-assignment dialogs until the watch window expires or the
+	/// operator answers the Workbench "Was the transaction saved?" prompt (which stops the watcher).
+	/// Every dialog found is answered with Enter, so a first-time part/location assignment never
+	/// leaves the Infor Visual save blocked on a modal.
+	/// </summary>
+	private async Task WatchForAssignmentDialogsAsync(
+		Model_ScannerProfile profile,
+		CancellationTokenSource tokenSource
+	)
+	{
+		var token = tokenSource.Token;
+		var deadline = DateTime.UtcNow + TransferDialogWatchTimeout;
+
+		try
+		{
+			while (DateTime.UtcNow < deadline)
+			{
+				token.ThrowIfCancellationRequested();
+
+				// Answer at most one dialog per tick, then re-check: confirming the assignment
+				// question is what makes the Add Part Location form appear.
+				await TryDismissAssignmentDialogAsync(profile, token);
+
+				await Task.Delay(TransferDialogPollInterval, token);
+			}
+
+			_logger.LogInfo(
+				$"Stopped watching for Infor Visual assignment dialogs after {TransferDialogWatchTimeout.TotalSeconds:0} seconds.",
+				nameof(Service_ScannerExecution)
+			);
+		}
+		catch (OperationCanceledException)
+		{
+			// Expected: the operator answered Yes/No on the Workbench prompt.
+		}
+		catch (ObjectDisposedException)
+		{
+			// Expected: the watcher was stopped and its token source disposed.
+		}
+		finally
+		{
+			Interlocked.CompareExchange(ref _dialogWatcherTokenSource, null, tokenSource);
+			tokenSource.Dispose();
+		}
+	}
+
+	/// <summary>
+	/// Brings the first matching assignment dialog to the front and confirms it with Enter.
+	/// Returns true when a dialog was answered.
+	/// </summary>
+	private async Task<bool> TryDismissAssignmentDialogAsync(
+		Model_ScannerProfile profile,
+		CancellationToken cancellationToken
+	)
+	{
+		foreach (var title in AssignmentDialogTitles)
+		{
+			if (!_engine.TryFindWindow(null, title, out var dialogHandle) || dialogHandle == IntPtr.Zero)
+			{
+				continue;
+			}
+
+			// Guard against an unrelated application owning a window with the same title.
+			if (
+				!_engine.TryGetWindowProcessName(dialogHandle, out var processName)
+				|| !Helper_ScannerSequence.IsTargetProcess(processName, profile.TargetExecutableName)
+			)
+			{
+				continue;
+			}
+
+			_logger.LogInfo(
+				$"Auto-confirming Infor Visual dialog '{title}'.",
+				nameof(Service_ScannerExecution)
+			);
+
+			if (!_engine.TrySetForeground(dialogHandle))
+			{
+				continue;
+			}
+
+			await Task.Delay(DialogFocusSettleDelay, cancellationToken);
+			_engine.SendKeyPress(VkReturn);
+			return true;
+		}
+
+		return false;
 	}
 
 	public Task<Model_Dao_Result> ClearTargetFormAsync(

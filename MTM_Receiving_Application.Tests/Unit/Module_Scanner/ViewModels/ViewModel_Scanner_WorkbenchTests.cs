@@ -8,7 +8,9 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.ViewModels;
 
@@ -1330,12 +1332,265 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.SelectedSessionItem.Should().BeSameAs(first);
     }
 
+    // ── Location range (Location mode + range toggle) ───────────────────────────
+
+    [Fact]
+    public void LocationRange_ShouldReplaceTheSingleLookup_OnlyInLocationMode()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+
+        viewModel.IsLocationRangeToggleVisible.Should().BeFalse();
+        viewModel.IsSingleLocationLookupVisible.Should().BeTrue();
+
+        viewModel.IsLocationModeEnabled = true;
+        viewModel.IsLocationRangeEnabled = true;
+
+        viewModel.IsLocationRangeToggleVisible.Should().BeTrue();
+        viewModel.IsLocationRangeInputVisible.Should().BeTrue();
+        viewModel.IsSingleLocationLookupVisible.Should().BeFalse();
+    }
+
+    [Fact]
+    public void LocationRange_ShouldReturnToTheSingleLookup_WhenSearchBySwitchesBackToPart()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.IsLocationModeEnabled = true;
+        viewModel.IsLocationRangeEnabled = true;
+
+        viewModel.IsLocationModeEnabled = false;
+
+        viewModel.IsLocationRangeEnabled.Should().BeFalse();
+        viewModel.IsLocationRangeInputVisible.Should().BeFalse();
+        viewModel.IsSingleLocationLookupVisible.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LocationRangeValidationCompletedAsync_ShouldPopulateRowsFromEveryPickedLocation()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var workflow = SetupUpsertWorkflow(session);
+        workflow
+            .Setup(service =>
+                service.EnsureCurrentSessionAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(session));
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.GetPartsAtLocationAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                (string locationId, string warehouseCode, CancellationToken _) =>
+                    Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+                        [
+                            new Model_InforVisualMaterialLocationRow
+                            {
+                                PartId = "MMC0000650",
+                                LocationId = locationId,
+                                WarehouseCode = warehouseCode,
+                                Quantity = 25m,
+                            },
+                        ]
+                    )
+            );
+
+        var locationRange = new Mock<IService_SharedLocationRange>();
+        locationRange
+            .Setup(service =>
+                service.ResolveRangeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_SharedLocationRangeResult
+                    {
+                        StartLocation = "V-A0-01",
+                        StopLocation = "V-A0-02",
+                        Locations = ["V-A0-01", "V-A0-02"],
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            validation.Object,
+            locationRange: locationRange.Object
+        );
+        viewModel.LocationRangePartsPickerRequested += (_, _) =>
+            Task.FromResult<IReadOnlyList<Model_ScannerStockPick>>(
+                [
+                    new Model_ScannerStockPick
+                    {
+                        PartId = "MMC0000650",
+                        Location = "V-A0-01",
+                        OnHand = 25m,
+                        Quantity = "10",
+                    },
+                    new Model_ScannerStockPick
+                    {
+                        PartId = "MMC0000651",
+                        Location = "V-A0-02",
+                        OnHand = 25m,
+                        Quantity = "5",
+                    },
+                ]
+            );
+
+        await viewModel.EnsureCurrentSessionAsync();
+        await viewModel.LocationRangeValidationCompletedAsync("va0-01", "V-A0-2");
+
+        // Each pick keeps its own source location, and the canonical range is echoed back.
+        viewModel.SessionItems.Should().HaveCount(2);
+        viewModel.SessionItems[0].PayloadFromLocation.Should().Be("V-A0-01");
+        viewModel.SessionItems[0].PayloadQuantity.Should().Be("10");
+        viewModel.SessionItems[1].PayloadFromLocation.Should().Be("V-A0-02");
+        viewModel.SessionItems[1].PayloadQuantity.Should().Be("5");
+        viewModel.RangeStartLocation.Should().Be("V-A0-01");
+        viewModel.RangeStopLocation.Should().Be("V-A0-02");
+        viewModel.IsHeaderErrorVisible.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LocationRangeValidationCompletedAsync_ShouldShowHeaderError_WhenNoLocationExistsInRange()
+    {
+        var locationRange = new Mock<IService_SharedLocationRange>();
+        locationRange
+            .Setup(service =>
+                service.ResolveRangeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_SharedLocationRangeResult
+                    {
+                        StartLocation = "V-A0-01",
+                        StopLocation = "V-A0-05",
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(locationRange: locationRange.Object);
+        var pickerRequested = false;
+        viewModel.LocationRangePartsPickerRequested += (_, _) =>
+        {
+            pickerRequested = true;
+            return Task.FromResult<IReadOnlyList<Model_ScannerStockPick>>([]);
+        };
+
+        await viewModel.LocationRangeValidationCompletedAsync("V-A0-01", "V-A0-05");
+
+        viewModel.IsHeaderErrorVisible.Should().BeTrue();
+        viewModel.HeaderErrorText.Should().Contain("No warehouse locations exist");
+        pickerRequested.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LocationRangeValidationCompletedAsync_ShouldShowHeaderError_WhenRangeCannotBeResolved()
+    {
+        var locationRange = new Mock<IService_SharedLocationRange>();
+        locationRange
+            .Setup(service =>
+                service.ResolveRangeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<Model_SharedLocationRangeResult>(
+                    "'RECV' is not a recognizable start location."
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(locationRange: locationRange.Object);
+
+        await viewModel.LocationRangeValidationCompletedAsync("RECV", "V-A0-05");
+
+        viewModel.IsHeaderErrorVisible.Should().BeTrue();
+        viewModel.HeaderErrorText.Should().Contain("recognizable");
+    }
+
+    [Fact]
+    public async Task LocationRangeValidationCompletedAsync_WhenPickerCancelled_ShouldAddNoRows()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.GetPartsAtLocationAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<IReadOnlyList<Model_InforVisualMaterialLocationRow>>(
+                    [new Model_InforVisualMaterialLocationRow { PartId = "MMC0000650", LocationId = "V-A0-01", Quantity = 5m }]
+                )
+            );
+
+        var locationRange = new Mock<IService_SharedLocationRange>();
+        locationRange
+            .Setup(service =>
+                service.ResolveRangeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_SharedLocationRangeResult
+                    {
+                        StartLocation = "V-A0-01",
+                        StopLocation = "V-A0-01",
+                        Locations = ["V-A0-01"],
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(
+            validation: validation.Object,
+            locationRange: locationRange.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [];
+        viewModel.LocationRangePartsPickerRequested += (_, _) =>
+            Task.FromResult<IReadOnlyList<Model_ScannerStockPick>>([]);
+
+        await viewModel.LocationRangeValidationCompletedAsync("V-A0-01", "V-A0-01");
+
+        viewModel.SessionItems.Should().BeEmpty();
+        viewModel.IsHeaderErrorVisible.Should().BeFalse();
+    }
+
     // ── Helpers ─────────────────────────────────────────────────────────────────
 
     private static ViewModel_Scanner_Workbench CreateWorkbenchViewModel(
         IService_ScannerWorkflow? workflow = null,
         IService_ScannerValidation? validation = null,
-        IService_ScannerExecution? execution = null
+        IService_ScannerExecution? execution = null,
+        IService_SharedLocationRange? locationRange = null
     )
     {
         return new ViewModel_Scanner_Workbench(
@@ -1345,6 +1600,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
             execution ?? new Mock<IService_ScannerExecution>().Object,
             new Mock<IService_ScannerHotkey>().Object,
             new Mock<IService_Window>().Object,
+            locationRange ?? new Mock<IService_SharedLocationRange>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

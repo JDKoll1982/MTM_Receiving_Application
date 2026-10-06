@@ -41,11 +41,11 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" Click="AddItem_Click" Content="Add Item" />
-            <Button Grid.Column="1" Style="{StaticResource ScannerActionButtonStyle}" Click="DuplicateItem_Click" Content="Duplicate" />
-            <Button Grid.Column="2" Style="{StaticResource ScannerActionButtonStyle}" Click="MoveUpItem_Click" Content="Move Up" />
-            <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" Click="MoveDownItem_Click" Content="Move Down" />
-            <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" Click="DeleteItem_Click" Content="Delete" />
+            <Button Grid.Column="0" Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerManageAddItemButton" Click="AddItem_Click" Content="Add Item" />
+            <Button Grid.Column="1" Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerManageDuplicateButton" Click="DuplicateItem_Click" Content="Duplicate" />
+            <Button Grid.Column="2" Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerManageMoveUpButton" Click="MoveUpItem_Click" Content="Move Up" />
+            <Button Grid.Column="3" Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerManageMoveDownButton" Click="MoveDownItem_Click" Content="Move Down" />
+            <Button Grid.Column="4" Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerManageDeleteButton" Click="DeleteItem_Click" Content="Delete" />
         </Grid>
 
         <ScrollViewer
@@ -58,6 +58,7 @@
             <ListView
                 x:Name="ItemsListView"
                 SelectionMode="Single"
+                AutomationProperties.AutomationId="ScannerManageItemsList"
                 ItemsSource="{x:Bind Items, Mode=OneWay}"
                 SelectedItem="{x:Bind SelectedItem, Mode=TwoWay}">
                 <ListView.ItemTemplate>

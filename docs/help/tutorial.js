@@ -127,4 +127,33 @@
         if (e.key === "Escape") closeLightbox();
     });
 
+    // ----------------------------------------------------------
+    // Print this Guide
+    //   Collapsed <details> elements print empty, which would drop every FAQ
+    //   answer from the paper copy. Open them for the duration of the print
+    //   job and restore the reader's state afterwards. Registered globally so
+    //   Ctrl+P gets the same result as the button.
+    // ----------------------------------------------------------
+    const openedForPrint = [];
+
+    function expandForPrint() {
+        openedForPrint.length = 0;
+        document.querySelectorAll("details:not([open])").forEach((details) => {
+            openedForPrint.push(details);
+            details.open = true;
+        });
+    }
+
+    function restoreAfterPrint() {
+        openedForPrint.forEach((details) => { details.open = false; });
+        openedForPrint.length = 0;
+    }
+
+    window.addEventListener("beforeprint", expandForPrint);
+    window.addEventListener("afterprint", restoreAfterPrint);
+
+    document.querySelectorAll("[data-print-guide]").forEach((button) => {
+        button.addEventListener("click", () => window.print());
+    });
+
 })();

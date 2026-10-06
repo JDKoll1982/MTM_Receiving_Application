@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>volvo_label_history — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../volvo_label_data/index.html">volvo_label_data</a></li>
+            <li><a href="../volvo_line_data/index.html">volvo_line_data</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>volvo_label_history</code></h1>
+            <p class="lead">
+                A permanent archive of Volvo shipments that have been cleared from the active
+                queue. Unlike the live table, nothing here is ever edited — it is the record of
+                what was shipped and when it was cleared.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                When an operator runs <strong>Clear Label Data</strong>, completed shipments are
+                copied out of <code>volvo_label_data</code> into this table and flagged archived in
+                the source. Each archived row keeps its original primary key in
+                <code>original_id</code> so it can always be traced back.
+            </p>
+            <p>
+                Every row carries an <code>archive_batch_id</code> — a UUID shared by all the rows
+                cleared in the same operation. That makes one Clear run a single, auditable unit.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INT AUTO_INCREMENT PK</td><td>No</td><td>Surrogate primary key for this history record</td></tr>
+                        <tr><td><code>original_id</code></td><td>INT</td><td>No</td><td>The <code>volvo_label_data.id</code> preserved at the time of archive</td></tr>
+                        <tr><td><code>shipment_date</code></td><td>DATE</td><td>No</td><td>Date of the original shipment (local business date)</td></tr>
+                        <tr><td><code>shipment_number</code></td><td>INT</td><td>No</td><td>Shipment sequence number within that day</td></tr>
+                        <tr><td><code>po_number</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Purchase order number, populated when the shipment was completed</td></tr>
+                        <tr><td><code>receiver_number</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Receiver number from Infor Visual</td></tr>
+                        <tr><td><code>employee_number</code></td><td>VARCHAR(20)</td><td>No</td><td>Employee identifier who created or owned the shipment</td></tr>
+                        <tr><td><code>notes</code></td><td>TEXT</td><td>Yes</td><td>Free-text notes about the shipment</td></tr>
+                        <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>No</td><td>Lifecycle status at the time of archive (typically <em>completed</em>)</td></tr>
+                        <tr><td><code>created_date</code></td><td>DATETIME</td><td>No</td><td>Timestamp when the original active record was created</td></tr>
+                        <tr><td><code>modified_date</code></td><td>DATETIME</td><td>No</td><td>Timestamp of the last modification before archiving</td></tr>
+                        <tr><td><code>archived_at</code></td><td>DATETIME</td><td>No</td><td>When the record was moved here by Clear Label Data</td></tr>
+                        <tr><td><code>archived_by</code></td><td>VARCHAR(100)</td><td>No</td><td>Employee number who triggered Clear Label Data</td></tr>
+                        <tr><td><code>archive_batch_id</code></td><td>CHAR(36)</td><td>No</td><td>UUID shared by all records moved in the same Clear Label Data operation</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>idx_original_id</code></td><td><code>original_id</code></td><td>INDEX</td><td>Look up history by the original active-table ID</td></tr>
+                        <tr><td><code>idx_archive_batch_id</code></td><td><code>archive_batch_id</code></td><td>INDEX</td><td>Retrieve every record moved in one Clear operation</td></tr>
+                        <tr><td><code>idx_shipment_date</code></td><td><code>shipment_date</code></td><td>INDEX</td><td>Filter history by shipment date</td></tr>
+                        <tr><td><code>idx_employee_number</code></td><td><code>employee_number</code></td><td>INDEX</td><td>Filter history by employee</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>This table is append-only in normal use. Rows are written by Clear Label Data and should not be edited afterwards.</li>
+                <li><code>archived_at</code> is when the row was cleared; <code>shipment_date</code> is when the shipment actually occurred. Report on the business date.</li>
+                <li><code>archive_batch_id</code> is the practical way to audit or reverse a single Clear operation — every row from that run shares the same UUID.</li>
+                <li><code>status</code> is a plain string here rather than an enum, so it can hold whatever value existed at archive time.</li>
+                <li>Line-level detail is <em>not</em> copied into history — to reconstruct the parts on a shipment, join back to <code>volvo_line_data</code> using <code>original_id</code> while the lines still exist.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>volvo_label_history</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

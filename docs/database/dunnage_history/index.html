@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dunnage_history — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../dunnage_parts/index.html">dunnage_parts</a></li>
+            <li><a href="../dunnage_types/index.html">dunnage_types</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>dunnage_history</code></h1>
+            <p class="lead">
+                The transaction ledger for received dunnage. Rows arrive here when the
+                <strong>Clear Label Data</strong> action moves the active dunnage queue out of
+                <code>dunnage_label_data</code>, so this table contains only completed work.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Each row is one dunnage receipt: a part, a quantity, the date it was received, and
+                who recorded it. Because the row is a copy of an active queue row, it also carries
+                snapshots of the dunnage type and the user-defined column captions exactly as they
+                were at the time.
+            </p>
+            <p>
+                Every archive operation stamps the same <code>archive_batch_id</code> onto all the
+                rows it moved, which makes a single Clear Label Data run easy to isolate or reverse.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>load_uuid</code></td><td>CHAR(36) PK</td><td>No</td><td>Unique identifier for the load transaction</td></tr>
+                        <tr><td><code>part_id</code></td><td>VARCHAR(50)</td><td>No</td><td>Foreign key to <code>dunnage_parts</code></td></tr>
+                        <tr><td><code>quantity</code></td><td>DECIMAL(10,2)</td><td>No</td><td>Quantity received in this transaction</td></tr>
+                        <tr><td><code>quantity_type</code></td><td>VARCHAR(100)</td><td>No</td><td>Quantity label header snapshot preserved when queue rows move to history. Defaults to <code>Quantity</code>.</td></tr>
+                        <tr><td><code>received_date</code></td><td>DATETIME</td><td>No</td><td>Date and time the dunnage was received</td></tr>
+                        <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Yes</td><td>Original queue-row insert timestamp, copied from <code>dunnage_label_data</code> for payload parity</td></tr>
+                        <tr><td><code>created_by</code></td><td>VARCHAR(50)</td><td>No</td><td>Username of the user who created the record</td></tr>
+                        <tr><td><code>user_id</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Application user identifier copied from the active queue row</td></tr>
+                        <tr><td><code>employee_number</code></td><td>INT</td><td>Yes</td><td>Employee identifier preserved from the active queue row</td></tr>
+                        <tr><td><code>created_date</code></td><td>DATETIME</td><td>No</td><td>Timestamp when the record was created</td></tr>
+                        <tr><td><code>modified_by</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Username of the user who last modified the record</td></tr>
+                        <tr><td><code>modified_date</code></td><td>DATETIME</td><td>Yes</td><td>Timestamp when the record was last modified</td></tr>
+                        <tr><td><code>po_number</code></td><td>VARCHAR(50)</td><td>Yes</td><td>PO number snapshot; NULL for non-PO items</td></tr>
+                        <tr><td><code>type_id</code></td><td>INT</td><td>Yes</td><td>FK to <code>dunnage_types.id</code>; snapshot at time of archive</td></tr>
+                        <tr><td><code>type_name</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Type name snapshot (for example <em>Corrugated Cardboard</em>)</td></tr>
+                        <tr><td><code>type_icon</code></td><td>VARCHAR(100)</td><td>Yes</td><td><code>MaterialIconKind</code> string snapshot (for example <code>PackageVariantClosed</code>)</td></tr>
+                        <tr><td><code>dunnage_type_id</code></td><td>INT</td><td>Yes</td><td>Compatibility alias for <code>dunnage_label_data.dunnage_type_id</code></td></tr>
+                        <tr><td><code>dunnage_type_name</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Compatibility alias for <code>dunnage_label_data.dunnage_type_name</code></td></tr>
+                        <tr><td><code>dunnage_type_icon</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Compatibility alias for <code>dunnage_label_data.dunnage_type_icon</code></td></tr>
+                        <tr><td><code>location</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Warehouse location for the received dunnage</td></tr>
+                        <tr><td><code>label_number</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Label number for this row (supports multi-label splits)</td></tr>
+                        <tr><td><code>part_skid_sequence</code></td><td>INT</td><td>Yes</td><td>Position of this skid among all skids for the same part in the saved batch</td></tr>
+                        <tr><td><code>part_skid_total</code></td><td>INT</td><td>Yes</td><td>Total skids for the same part in the saved batch</td></tr>
+                        <tr><td><code>udc1</code> … <code>udc10</code></td><td>VARCHAR(255)</td><td>Yes</td><td>User Defined Column snapshots 1–10; the value is the display name captured from <code>dunnage_custom_fields</code></td></tr>
+                        <tr><td><code>archived_at</code></td><td>DATETIME</td><td>Yes</td><td>Timestamp when the row was moved from the active queue to history</td></tr>
+                        <tr><td><code>archived_by</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Username of the user who triggered Clear Label Data</td></tr>
+                        <tr><td><code>archive_batch_id</code></td><td>CHAR(36)</td><td>Yes</td><td>UUID shared by all rows archived in the same Clear Label Data operation</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>load_uuid</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>IDX_LOADS_DATE</code></td><td><code>received_date</code></td><td>INDEX</td><td>Edit Mode date-range filtering</td></tr>
+                        <tr><td><code>IDX_LOADS_USER</code></td><td><code>created_by</code></td><td>INDEX</td><td>Edit Mode user filtering</td></tr>
+                        <tr><td><code>IDX_LOADS_EMPLOYEE</code></td><td><code>employee_number</code></td><td>INDEX</td><td>Edit Mode employee filtering</td></tr>
+                        <tr><td><code>IDX_HISTORY_ARCHIVE_BATCH</code></td><td><code>archive_batch_id</code></td><td>INDEX</td><td>Clear Label Data archive-batch lookups</td></tr>
+                        <tr><td><code>IDX_HISTORY_PO_NUMBER</code></td><td><code>po_number</code></td><td>INDEX</td><td>PO-based dunnage history queries</td></tr>
+                        <tr><td><code>FK_dunnage_history_part_id</code></td><td><code>part_id</code></td><td>INDEX</td><td>Foreign key to <code>dunnage_parts</code> (<code>ON DELETE RESTRICT</code>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>Filter by <code>received_date</code> for date-range reporting — it is the indexed business date.</li>
+                <li><code>archived_at</code> is the technical move time; <code>received_date</code> is when the dunnage actually arrived. They are usually different.</li>
+                <li>Use <code>archive_batch_id</code> to find every row produced by one Clear Label Data run.</li>
+                <li>The <code>type_*</code> and <code>dunnage_type_*</code> pairs hold the same meaning; older rows populate the first set, newer rows may populate either. Check both when reading history.</li>
+                <li>Snapshot columns preserve what the record looked like at archive time — do not join back to <code>dunnage_parts</code> or <code>dunnage_types</code> expecting identical values.</li>
+                <li><code>po_number IS NULL</code> indicates a non-PO dunnage receipt.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>dunnage_history</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Scanner.Data;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Services;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 
 namespace MTM_Receiving_Application.Tests.Integration.Module_Scanner;
 
@@ -138,6 +139,7 @@ public sealed class WorkbenchInputLockoutTests
             execution,
             new Mock<IService_ScannerHotkey>().Object,
             new Mock<IService_Window>().Object,
+            new Mock<IService_SharedLocationRange>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

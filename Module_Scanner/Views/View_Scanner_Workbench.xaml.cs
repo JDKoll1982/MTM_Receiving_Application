@@ -328,6 +328,8 @@ public sealed partial class View_Scanner_Workbench : Page
     {
         ViewModel.FromLocationInventoryPickerRequested += OnFromLocationInventoryPickerRequestedAsync;
         ViewModel.LocationPartsPickerRequested += OnLocationPartsPickerRequestedAsync;
+        ViewModel.LocationRangePartsPickerRequested += OnLocationRangePartsPickerRequestedAsync;
+        ViewModel.LocationRangeFocusRequested += OnLocationRangeFocusRequested;
         ViewModel.PartIdFocusRequested += OnPartIdFocusRequested;
         ViewModel.PartIdClearRequested += OnPartIdClearRequested;
         ViewModel.FirstRowToCellFocusRequested += OnFirstRowToCellFocusRequested;
@@ -349,6 +351,8 @@ public sealed partial class View_Scanner_Workbench : Page
     {
         ViewModel.FromLocationInventoryPickerRequested -= OnFromLocationInventoryPickerRequestedAsync;
         ViewModel.LocationPartsPickerRequested -= OnLocationPartsPickerRequestedAsync;
+        ViewModel.LocationRangePartsPickerRequested -= OnLocationRangePartsPickerRequestedAsync;
+        ViewModel.LocationRangeFocusRequested -= OnLocationRangeFocusRequested;
         ViewModel.PartIdFocusRequested -= OnPartIdFocusRequested;
         ViewModel.PartIdClearRequested -= OnPartIdClearRequested;
         ViewModel.FirstRowToCellFocusRequested -= OnFirstRowToCellFocusRequested;
@@ -578,6 +582,364 @@ public sealed partial class View_Scanner_Workbench : Page
                 TransactionCount = Math.Max(1, row.TransactionCount),
             })
             .ToList();
+    }
+
+    // ── Location range inputs (Start/Stop) ───────────────────────────────────────
+
+    /// <summary>Formats a Start/Stop range box with the same rule the location lookup uses.</summary>
+    private void RangeLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox box)
+        {
+            ApplyRangeLocationFormatting(box);
+        }
+    }
+
+    /// <summary>Enter in either range box formats both, then loads the range.</summary>
+    private void RangeLocationTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != VirtualKey.Enter)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        if (sender is TextBox box)
+        {
+            ApplyRangeLocationFormatting(box);
+        }
+
+        _ = LoadLocationRangeAsync();
+    }
+
+    private async void LoadLocationRange_Click(object sender, RoutedEventArgs e)
+    {
+        ApplyRangeLocationFormatting(RangeStartTextBox);
+        ApplyRangeLocationFormatting(RangeStopTextBox);
+        await LoadLocationRangeAsync();
+    }
+
+    private void OnLocationRangeFocusRequested()
+    {
+        RangeStartTextBox?.Focus(FocusState.Programmatic);
+    }
+
+    private void ApplyRangeLocationFormatting(TextBox box)
+    {
+        if (box is null)
+        {
+            return;
+        }
+
+        var formatted = ViewModel.FormatLocation(box.Text ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(formatted))
+        {
+            return;
+        }
+
+        box.Text = formatted;
+
+        // Keep the ViewModel in step so the range request carries the canonical values.
+        if (ReferenceEquals(box, RangeStartTextBox))
+        {
+            ViewModel.RangeStartLocation = formatted;
+        }
+        else if (ReferenceEquals(box, RangeStopTextBox))
+        {
+            ViewModel.RangeStopLocation = formatted;
+        }
+    }
+
+    private async Task LoadLocationRangeAsync()
+    {
+        await ViewModel.LocationRangeValidationCompletedAsync(
+            RangeStartTextBox.Text ?? string.Empty,
+            RangeStopTextBox.Text ?? string.Empty
+        );
+    }
+
+    // ── Location range picker (one low-padding card per location) ────────────────
+
+    private async Task<IReadOnlyList<Model_ScannerStockPick>> OnLocationRangePartsPickerRequestedAsync(
+        IReadOnlyList<Model_InforVisualMaterialLocationRow> rows,
+        string warehouseCode
+    )
+    {
+        if (_isPickerOpen)
+        {
+            return [];
+        }
+
+        _isPickerOpen = true;
+        try
+        {
+            return await ShowLocationRangePickerDialogAsync(rows, warehouseCode);
+        }
+        finally
+        {
+            _isPickerOpen = false;
+        }
+    }
+
+    private async Task<IReadOnlyList<Model_ScannerStockPick>> ShowLocationRangePickerDialogAsync(
+        IReadOnlyList<Model_InforVisualMaterialLocationRow> rows,
+        string warehouseCode
+    )
+    {
+        var xamlRoot = XamlRoot ?? this.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return [];
+        }
+
+        // Group by location so every location gets its own card, and keep the order the
+        // ViewModel produced (locations already arrive in warehouse walking order).
+        var groups = rows
+            .GroupBy(row => row.LocationId, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new
+            {
+                LocationId = group.Key,
+                Rows = group
+                    .Select(row => new StockPickRow
+                    {
+                        PartId = row.PartId,
+                        LocationId = row.LocationId,
+                        WarehouseCode = string.IsNullOrWhiteSpace(row.WarehouseCode)
+                            ? warehouseCode
+                            : row.WarehouseCode,
+                        OnHand = row.Quantity,
+                        OnHandDisplay = FormatDecimal(row.Quantity),
+                        Quantity = FormatDecimal(row.Quantity),
+                        TransactionCount = 1,
+                    })
+                    .ToList(),
+            })
+            .ToList();
+
+        var allRows = groups.SelectMany(group => group.Rows).ToList();
+
+        var cardPanel = new StackPanel { Spacing = 4 };
+        foreach (var group in groups)
+        {
+            cardPanel.Children.Add(BuildLocationGroupCard(group.LocationId, group.Rows));
+        }
+
+        var scrollViewer = new ScrollViewer
+        {
+            MaxHeight = 430,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Content = cardPanel,
+        };
+
+        var selectAllButton = new Button
+        {
+            Content = "Select All",
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Padding = new Thickness(12, 4, 12, 4),
+        };
+        WireSelectAll(selectAllButton, allRows);
+
+        var errorText = BuildPickerErrorText();
+
+        var panel = new StackPanel { Spacing = 6, MinWidth = 860 };
+        panel.Children.Add(selectAllButton);
+        panel.Children.Add(scrollViewer);
+        panel.Children.Add(errorText);
+
+        var dialog = new ContentDialog
+        {
+            Title = $"Parts in {groups.Count} location(s) from {groups[0].LocationId} to {groups[^1].LocationId}",
+            Content = panel,
+            PrimaryButtonText = "Use Selected",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = xamlRoot,
+        };
+        ApplyPickerDialogSizing(dialog);
+        dialog.PrimaryButtonClick += (_, clickArgs) =>
+        {
+            var message = ValidatePickRowsForSubmit(allRows);
+            if (message is not null)
+            {
+                clickArgs.Cancel = true;
+                errorText.Text = message;
+                errorText.Visibility = Visibility.Visible;
+            }
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return [];
+        }
+
+        return allRows
+            .Where(row => row.IsChecked)
+            .Select(row => new Model_ScannerStockPick
+            {
+                PartId = row.PartId,
+                Location = row.LocationId,
+                OnHand = row.OnHand,
+                Quantity = ClampQuantity(row.Quantity, row.OnHand),
+                TransactionCount = Math.Max(1, row.TransactionCount),
+            })
+            .ToList();
+    }
+
+    /// <summary>
+    /// One compact card per location: a tight header plus its part rows. Padding and spacing are
+    /// deliberately small so a multi-location range still fits without a lot of scrolling.
+    /// </summary>
+    private static Border BuildLocationGroupCard(string locationId, IReadOnlyList<StockPickRow> rows)
+    {
+        var content = new StackPanel { Spacing = 2 };
+        content.Children.Add(
+            new TextBlock
+            {
+                Text = locationId,
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 13,
+            }
+        );
+        content.Children.Add(BuildCompactColumnHeader());
+
+        foreach (var row in rows)
+        {
+            content.Children.Add(BuildCompactPickRow(row));
+        }
+
+        return new Border
+        {
+            Padding = new Thickness(6, 4, 6, 6),
+            CornerRadius = new CornerRadius(6),
+            BorderThickness = new Thickness(1),
+            Background = TryGetThemeBrush("CardBackgroundFillColorDefaultBrush"),
+            BorderBrush = TryGetThemeBrush("CardStrokeColorDefaultBrush"),
+            Child = content,
+        };
+    }
+
+    private static Grid BuildCompactColumnHeader()
+    {
+        var header = new Grid { ColumnSpacing = 8, Padding = new Thickness(2, 0, 2, 0) };
+        AddCompactColumns(header);
+        AddCompactHeaderCell(header, 1, "Part");
+        AddCompactHeaderCell(header, 2, "On hand");
+        AddCompactHeaderCell(header, 3, "Qty");
+        AddCompactHeaderCell(header, 4, "# Trans");
+        return header;
+    }
+
+    private static void AddCompactColumns(Grid grid)
+    {
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(32) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.4, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(90) });
+    }
+
+    private static void AddCompactHeaderCell(Grid header, int column, string text)
+    {
+        var label = new TextBlock
+        {
+            Text = text,
+            FontSize = 11,
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = TryGetThemeBrush("TextFillColorSecondaryBrush"),
+        };
+        Grid.SetColumn(label, column);
+        header.Children.Add(label);
+    }
+
+    /// <summary>
+    /// Builds one picker row with real controls and direct event handlers. No XAML template is
+    /// used here so the row stays compact and no runtime {Binding} is introduced.
+    /// </summary>
+    private static Grid BuildCompactPickRow(StockPickRow row)
+    {
+        var grid = new Grid { ColumnSpacing = 8, Padding = new Thickness(2, 1, 2, 1) };
+        AddCompactColumns(grid);
+
+        var checkBox = new CheckBox { VerticalAlignment = VerticalAlignment.Center };
+        checkBox.Checked += (_, _) => row.IsChecked = true;
+        checkBox.Unchecked += (_, _) => row.IsChecked = false;
+        Grid.SetColumn(checkBox, 0);
+
+        var partText = new TextBlock
+        {
+            Text = row.PartId,
+            FontWeight = FontWeights.SemiBold,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(partText, 1);
+
+        var onHandText = new TextBlock
+        {
+            Text = row.OnHandDisplay,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(onHandText, 2);
+
+        var quantityBox = new TextBox
+        {
+            Text = row.Quantity,
+            MinWidth = 0,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        quantityBox.TextChanged += (_, _) => row.Quantity = quantityBox.Text;
+        Grid.SetColumn(quantityBox, 3);
+
+        var transactionBox = new NumberBox
+        {
+            Minimum = 1,
+            SmallChange = 1,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
+            Value = row.TransactionCount,
+            MinWidth = 0,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        transactionBox.ValueChanged += (_, args) =>
+            row.TransactionCount = double.IsNaN(args.NewValue) ? 1 : (int)args.NewValue;
+        Grid.SetColumn(transactionBox, 4);
+
+        grid.Children.Add(checkBox);
+        grid.Children.Add(partText);
+        grid.Children.Add(onHandText);
+        grid.Children.Add(quantityBox);
+        grid.Children.Add(transactionBox);
+        return grid;
+    }
+
+    private static TextBlock BuildPickerErrorText()
+    {
+        var errorText = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Visibility = Visibility.Collapsed,
+        };
+
+        if (
+            Application.Current.Resources.TryGetValue(
+                "SystemFillColorCriticalBrush",
+                out var criticalBrush
+            ) && criticalBrush is Brush criticalBrushBrush
+        )
+        {
+            errorText.Foreground = criticalBrushBrush;
+        }
+
+        return errorText;
+    }
+
+    private static Brush? TryGetThemeBrush(string resourceKey)
+    {
+        return Application.Current.Resources.TryGetValue(resourceKey, out var value)
+            && value is Brush brush
+            ? brush
+            : null;
     }
 
     private static void WireSelectAll(Button selectAllButton, IReadOnlyList<StockPickRow> pickRows)

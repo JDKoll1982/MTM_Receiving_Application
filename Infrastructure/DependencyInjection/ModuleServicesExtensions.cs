@@ -562,6 +562,9 @@ public static class ModuleServicesExtensions
         services.AddSingleton<ISharedLookupStrategy, Strategy_SharedLocationLookup>();
         services.AddSingleton<IService_SharedLookupWorkflow, Service_SharedLookupWorkflow>();
 
+        // Shared location-range expansion (used by Scanner and ShipRec Tools range searches)
+        services.AddSingleton<IService_SharedLocationRange, Service_SharedLocationRange>();
+
         // Shared ViewModels (Transient)
         services.AddTransient<ViewModel_Shared_MainWindow>();
         services.AddTransient<ViewModel_Shared_SplashScreen>();

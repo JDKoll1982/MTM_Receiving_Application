@@ -48,16 +48,19 @@
                 <CalendarDatePicker
                     Grid.Column="0"
                     HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="ScannerHistoryFromPicker"
                     Header="From"
                     Date="{x:Bind ViewModel.DateFromUtc, Mode=TwoWay}" />
                 <CalendarDatePicker
                     Grid.Column="1"
                     HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="ScannerHistoryToPicker"
                     Header="To"
                     Date="{x:Bind ViewModel.DateToUtc, Mode=TwoWay}" />
                 <ComboBox
                     Grid.Column="2"
                     MinWidth="150"
+                    AutomationProperties.AutomationId="ScannerHistoryStatusFilter"
                     Header="Status"
                     ItemsSource="{x:Bind ViewModel.StatusOptions, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.StatusFilter, Mode=TwoWay}" />
@@ -70,6 +73,7 @@
                     Padding="0"
                     VerticalAlignment="Bottom"
                     Style="{StaticResource ScannerActionButtonStyle}"
+                    AutomationProperties.AutomationId="ScannerHistoryRefreshButton"
                     Command="{x:Bind ViewModel.RefreshHistoryCommand}"
                     ToolTipService.ToolTip="Refresh">
                     <FontIcon FontSize="16" Glyph="&#xE72C;" />
@@ -82,6 +86,7 @@
                     Padding="0"
                     VerticalAlignment="Bottom"
                     Style="{StaticResource ScannerActionButtonStyle}"
+                    AutomationProperties.AutomationId="ScannerHistoryClearFiltersButton"
                     Command="{x:Bind ViewModel.ClearFiltersCommand}"
                     ToolTipService.ToolTip="Clear filters">
                     <FontIcon FontSize="16" Glyph="&#xE711;" />
@@ -103,6 +108,7 @@
                         Height="34"
                         MinWidth="0"
                         Padding="0"
+                        AutomationProperties.AutomationId="ScannerHistoryHelpButton"
                         AutomationProperties.Name="Help"
                         Style="{StaticResource ScannerActionButtonStyle}"
                         Click="OnHelpClick"
@@ -121,6 +127,7 @@
 
             <ListView
                 Grid.Column="0"
+                AutomationProperties.AutomationId="ScannerHistoryList"
                 ItemsSource="{x:Bind ViewModel.Entries, Mode=OneWay}"
                 SelectedItem="{x:Bind ViewModel.SelectedEntry, Mode=TwoWay}"
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -138,6 +145,7 @@
             <ListView
                 Grid.Column="1"
                 Header="Items"
+                AutomationProperties.AutomationId="ScannerHistoryItemsList"
                 ItemsSource="{x:Bind ViewModel.SelectedEntryItems, Mode=OneWay}"
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.ItemTemplate>

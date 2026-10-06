@@ -10,6 +10,8 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
+using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -27,6 +29,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
 
     private readonly IService_Tool_MaterialAvailabilityBoard _service;
     private readonly IService_ShipRecToolsSettings _shipRecToolsSettings;
+    private readonly IService_SharedLocationRange _locationRangeService;
     private readonly bool _isMockDataEnabled;
 
     [ObservableProperty]
@@ -35,14 +38,43 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     [NotifyPropertyChangedFor(nameof(IsSearchByLocation))]
     [NotifyPropertyChangedFor(nameof(IsSearchByPart))]
     [NotifyPropertyChangedFor(nameof(MockDataHintText))]
+    [NotifyPropertyChangedFor(nameof(IsLocationRangeToggleVisible))]
+    [NotifyPropertyChangedFor(nameof(IsLocationRangeInputVisible))]
+    [NotifyPropertyChangedFor(nameof(IsSingleLocationSearchVisible))]
     private bool _isSearchByLocationMode = true;
 
     [ObservableProperty]
     private string _searchTerm = string.Empty;
 
+    /// <summary>
+    /// When on, the single warehouse-location box is swapped for the Start/Stop range inputs.
+    /// Location mode only; switching to Part Number clears it.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsLocationRangeInputVisible))]
+    [NotifyPropertyChangedFor(nameof(IsSingleLocationSearchVisible))]
+    private bool _isLocationRangeEnabled;
+
+    [ObservableProperty]
+    private string _rangeStartLocation = string.Empty;
+
+    [ObservableProperty]
+    private string _rangeStopLocation = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasCards))]
+    [NotifyPropertyChangedFor(nameof(ShowFlatCards))]
+    [NotifyPropertyChangedFor(nameof(ShowGroupedCards))]
     private ObservableCollection<Model_Tool_MaterialAvailabilityCard> _cards = new();
+
+    /// <summary>
+    /// Collapsible per-location sections. Populated only when the board was loaded from a
+    /// location range; the flat <see cref="Cards"/> list holds the same cards for printing.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowFlatCards))]
+    [NotifyPropertyChangedFor(nameof(ShowGroupedCards))]
+    private ObservableCollection<Model_Tool_MaterialAvailabilityLocationGroup> _cardGroups = new();
 
     [ObservableProperty]
     private string _selectedLookAheadOption = "30";
@@ -80,9 +112,27 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
 
     public string SearchPlaceholder => IsSearchByLocationMode ? "e.g. RECV" : "e.g. MMC0000658";
 
+    /// <summary>True when the range toggle should be offered (warehouse-location mode only).</summary>
+    public bool IsLocationRangeToggleVisible => IsSearchByLocationMode;
+
+    /// <summary>True when the Start/Stop range inputs replace the single location box.</summary>
+    public bool IsLocationRangeInputVisible => IsSearchByLocationMode && IsLocationRangeEnabled;
+
+    /// <summary>True when the single search box should be shown instead.</summary>
+    public bool IsSingleLocationSearchVisible => !IsLocationRangeInputVisible;
+
     public string LookAheadLabel => "Look Ahead:";
 
     public bool HasCards => Cards.Count > 0;
+
+    /// <summary>
+    /// True when the board was loaded from a location range, so results are shown as one
+    /// collapsible section per location instead of a flat card list.
+    /// </summary>
+    public bool ShowGroupedCards => CardGroups.Count > 0;
+
+    /// <summary>True when the flat card list should be shown instead of the location sections.</summary>
+    public bool ShowFlatCards => ShowGroupedCards is false && Cards.Count > 0;
 
     public bool IsMockDataHintVisible => _isMockDataEnabled;
 
@@ -95,6 +145,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     public ViewModel_Tool_MaterialAvailabilityBoard(
         IService_Tool_MaterialAvailabilityBoard service,
         IService_ShipRecToolsSettings shipRecToolsSettings,
+        IService_SharedLocationRange locationRangeService,
         IService_AppSettings appSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
@@ -104,9 +155,11 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     {
         ArgumentNullException.ThrowIfNull(service);
         ArgumentNullException.ThrowIfNull(shipRecToolsSettings);
+        ArgumentNullException.ThrowIfNull(locationRangeService);
         ArgumentNullException.ThrowIfNull(appSettings);
         _service = service;
         _shipRecToolsSettings = shipRecToolsSettings;
+        _locationRangeService = locationRangeService;
         _isMockDataEnabled = appSettings.GetUseInforVisualMockData();
     }
 
@@ -135,6 +188,11 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     private void SetSearchByPart()
     {
         IsSearchByLocationMode = false;
+
+        // The range only applies to warehouse locations, so Part Number mode always returns
+        // to the single search box.
+        IsLocationRangeEnabled = false;
+
         SearchTerm = string.Empty;
         ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
         SetLocalStatus("Enter a part number and click Search.");
@@ -206,6 +264,151 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                 ? "Enter a warehouse location and click Search."
                 : "Enter a part number and click Search."
         );
+    }
+
+    /// <summary>
+    /// Loads the board for every location in the operator-entered Start/Stop range. Each location
+    /// becomes its own card group, marked with a header strip, so a range reads as one section per
+    /// location instead of one undifferentiated list.
+    /// </summary>
+    [RelayCommand]
+    private async Task LoadLocationRangeAsync()
+    {
+        if (
+            string.IsNullOrWhiteSpace(RangeStartLocation)
+            || string.IsNullOrWhiteSpace(RangeStopLocation)
+        )
+        {
+            await _errorHandler.ShowUserErrorAsync(
+                "Enter both a start and a stop location for the range.",
+                "Input Required",
+                nameof(LoadLocationRangeAsync)
+            );
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            SetLocalStatus(
+                $"Resolving the location range {RangeStartLocation} to {RangeStopLocation}…"
+            );
+
+            var rangeResult = await _locationRangeService.ResolveRangeAsync(
+                RangeStartLocation,
+                RangeStopLocation,
+                DefaultWarehouseCode
+            );
+
+            if (!rangeResult.IsSuccess || rangeResult.Data is null)
+            {
+                ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
+                SetLocalStatus(
+                    string.IsNullOrWhiteSpace(rangeResult.ErrorMessage)
+                        ? "The location range could not be resolved."
+                        : rangeResult.ErrorMessage,
+                    InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            var range = rangeResult.Data;
+
+            // Show the canonical values back so the operator sees the formatted range.
+            RangeStartLocation = range.StartLocation;
+            RangeStopLocation = range.StopLocation;
+
+            if (range.Locations.Count == 0)
+            {
+                ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
+                SetLocalStatus(
+                    $"No warehouse locations exist between {range.StartLocation} and {range.StopLocation}.",
+                    InfoBarSeverity.Warning
+                );
+                return;
+            }
+
+            var lookAheadDays = GetSelectedLookAheadDays();
+            var allCards = new List<Model_Tool_MaterialAvailabilityCard>();
+            var locationGroups = new List<Model_Tool_MaterialAvailabilityLocationGroup>();
+
+            foreach (var location in range.Locations)
+            {
+                var boardResult = await _service.GetBoardByLocationAsync(
+                    location,
+                    DefaultWarehouseCode,
+                    lookAheadDays
+                );
+
+                if (!boardResult.IsSuccess || boardResult.Data is null)
+                {
+                    ReplaceCards(Array.Empty<Model_Tool_MaterialAvailabilityCard>());
+                    SetLocalStatus(
+                        string.IsNullOrWhiteSpace(boardResult.ErrorMessage)
+                            ? $"The board for location {location} could not be loaded."
+                            : boardResult.ErrorMessage,
+                        InfoBarSeverity.Warning
+                    );
+                    return;
+                }
+
+                var locationCards = boardResult.Data;
+                if (locationCards.Count == 0)
+                {
+                    continue;
+                }
+
+                // One collapsible section per location so the operator can collapse the
+                // locations they are not working while keeping the location headers in view.
+                var group = new Model_Tool_MaterialAvailabilityLocationGroup
+                {
+                    LocationId = location,
+                };
+
+                foreach (var card in locationCards)
+                {
+                    group.Cards.Add(card);
+                    allCards.Add(card);
+                }
+
+                locationGroups.Add(group);
+            }
+
+            ReplaceCards(allCards, locationGroups);
+            SearchTerm = $"{range.StartLocation} to {range.StopLocation}";
+
+            var status =
+                allCards.Count > 0
+                    ? $"Found {allCards.Count} part card(s) across {range.Locations.Count} location(s) from {range.StartLocation} to {range.StopLocation}."
+                    : $"No positive-quantity parts were found in the {range.Locations.Count} location(s) from {range.StartLocation} to {range.StopLocation}.";
+
+            if (range.WasSwapped)
+            {
+                status +=
+                    " Start and stop were swapped so the range runs in warehouse order.";
+            }
+
+            if (range.WasTruncated)
+            {
+                status +=
+                    $" The range was limited to the first {_locationRangeService.MaxLocationsInRange} locations.";
+            }
+
+            SetLocalStatus(status);
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(LoadLocationRangeAsync),
+                nameof(ViewModel_Tool_MaterialAvailabilityBoard)
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -488,6 +691,33 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     private void ReplaceCards(IEnumerable<Model_Tool_MaterialAvailabilityCard> cards)
     {
         Cards = new ObservableCollection<Model_Tool_MaterialAvailabilityCard>(cards);
+
+        // Any caller that does not supply location groups (single location or part search)
+        // clears whatever grouped range results were on screen.
+        CardGroups = new ObservableCollection<Model_Tool_MaterialAvailabilityLocationGroup>();
+    }
+
+    /// <summary>
+    /// Replaces the board contents with location-range results: the same cards are exposed flat
+    /// for printing and grouped into collapsible per-location sections for display.
+    /// </summary>
+    private void ReplaceCards(
+        IEnumerable<Model_Tool_MaterialAvailabilityCard> cards,
+        IEnumerable<Model_Tool_MaterialAvailabilityLocationGroup> groups
+    )
+    {
+        Cards = new ObservableCollection<Model_Tool_MaterialAvailabilityCard>(cards);
+        CardGroups = new ObservableCollection<Model_Tool_MaterialAvailabilityLocationGroup>(groups);
+    }
+
+    /// <summary>
+    /// Applies the shared warehouse-location rule to a typed range bound so "r04" displays as
+    /// "R-04" and "va001" as "V-A0-01", exactly like the location lookup used elsewhere.
+    /// </summary>
+    /// <param name="location">Raw location text from the Start/Stop box.</param>
+    public string FormatLocation(string location)
+    {
+        return Helper_SharedLocationFormat.FormatOrPassThrough(location);
     }
 
     private int? GetSelectedLookAheadDays()

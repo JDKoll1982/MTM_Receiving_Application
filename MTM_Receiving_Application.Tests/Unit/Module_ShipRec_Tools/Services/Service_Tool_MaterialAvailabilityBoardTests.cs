@@ -1346,21 +1346,171 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.Should().NotBeNull();
         result.Data!.DocumentTitle.Should().Be("Material Availability Transaction Sheet");
         result.Data.HtmlFragment.Should().Contain("Material Availability Transaction Sheet");
-        result.Data.HtmlFragment.Should().Contain("Part Number / Quantity");
+        result.Data.HtmlFragment.Should().Contain("Part Number / Description / Quantity");
         result.Data.HtmlFragment.Should().Contain("<strong>Warehouse Location:</strong> RECV");
         result.Data.HtmlFragment.Should().Contain("Page 1 of 1");
         result.Data.HtmlFragment.Should().NotContain("Taken From");
         result.Data.HtmlFragment.Should().NotContain("Warehouse scope:");
         result.Data.HtmlFragment.Should().NotContain("Look Ahead:");
         result.Data.HtmlFragment.Should().Contain("Coil Transfer Entries");
-        result.Data.HtmlFragment.Should().Contain("Take To 1");
-        result.Data.HtmlFragment.Should().Contain("Take To 4");
-        result.Data.HtmlFragment.Should().NotContain("Take To 5");
         result.Data.HtmlFragment.Should().Contain("MMC0000850");
         result.Data.PageCss.Should().Contain("thead { display: table-header-group; }");
         result.Data.PageCss.Should().Contain("margin: 0.2in");
         result.Data.PageCss.Should().Contain(".identity-cell { width: 2.1in;");
         result.Data.PageCss.Should().NotContain("display: flex");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldUseOneEntryTablePerPart_WithLocationRowAndEightQuantityColumns()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new()
+            {
+                PartId = "T68048",
+                PartDescription = "Coil, 24Ga X 12.837",
+                SearchLocationId = "RECV",
+            },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+
+        // The location is auto-filled on its own compact row above the table, so it no longer
+        // takes a column and all eight columns carry quantities.
+        result.Data!.HtmlFragment.Should().Contain("class='entry-location-row'");
+        result.Data.HtmlFragment.Should().Contain("entry-location-value'>RECV<");
+        result.Data.HtmlFragment.Should().NotContain("entry-location-header");
+        result.Data.HtmlFragment.Should().Contain(">Qty 1<");
+        result.Data.HtmlFragment.Should().Contain(">Qty 8<");
+        result.Data.HtmlFragment.Should().NotContain(">Qty 9<");
+
+        // Four handwriting rows plus a smaller total row underneath (a full-width label cell).
+        result.Data.HtmlFragment.Should().Contain("class='entry-total-row'");
+        result.Data.HtmlFragment.Should().Contain("entry-total-label' colspan='7'>Total<");
+        result.Data.HtmlFragment.Should().Contain("class='entry-total-value'");
+        result.Data.HtmlFragment.Should().NotContain("Take To");
+        result.Data.HtmlFragment.Should().NotContain("entry-spacer");
+
+        // Each part card carries the description alongside the part number and quantity.
+        result.Data.HtmlFragment.Should().Contain(">Description<");
+        result.Data.HtmlFragment.Should().Contain("Coil, 24Ga X 12.837");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldStartANewPageForEachLocation()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "A-001", SearchLocationId = "V-A0-01" },
+            new() { PartId = "A-002", SearchLocationId = "V-A0-01" },
+            new() { PartId = "B-001", SearchLocationId = "V-A0-02" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "V-A0-01 to V-A0-02",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+
+        // A location's data never shares a page with the next location.
+        Regex.Matches(result.Data!.HtmlFragment, "class='transaction-sheet-page'")
+            .Should()
+            .HaveCount(2);
+        result.Data.HtmlFragment.Should().Contain("Page 1 of 2");
+        result.Data.HtmlFragment.Should().Contain("Page 2 of 2");
+
+        var secondPageStart = result.Data.HtmlFragment.IndexOf("Page 1 of 2", StringComparison.Ordinal);
+        var firstPage = result.Data.HtmlFragment[..secondPageStart];
+        var secondPage = result.Data.HtmlFragment[secondPageStart..];
+
+        firstPage.Should().Contain("V-A0-01").And.Contain("A-001").And.Contain("A-002");
+        firstPage.Should().NotContain("V-A0-02");
+        secondPage.Should().Contain("V-A0-02").And.Contain("B-001");
+        secondPage.Should().NotContain("V-A0-01");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldPaginateTransactionSheet_FivePartsPerLocationPage()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = Enumerable
+            .Range(1, 7)
+            .Select(index => new Model_Tool_MaterialAvailabilityCard
+            {
+                PartId = $"PART-{index:00}",
+                PartDescription = $"Description {index:00}",
+                SearchLocationId = "RECV",
+            })
+            .ToList();
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.HtmlFragment.Should().Contain("Page 1 of 2");
+
+        // Exactly one entry table per part, and every part still gets a card.
+        Regex.Matches(result.Data.HtmlFragment, "class='entry-grid'").Should().HaveCount(7);
+        foreach (var card in cards)
+        {
+            result.Data.HtmlFragment.Should().Contain(card.PartId);
+        }
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldShowNotAvailable_WhenTransactionSheetPartHasNoDescription()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "T68048", PartDescription = "  ", SearchLocationId = "RECV" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.HtmlFragment.Should().Contain(">Not available<");
     }
 
     [Fact]

@@ -1216,6 +1216,67 @@ public class Service_InforVisualConnect : IService_InforVisual
     }
 
     /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationRow>>
+    > GetLocationsInRangeAsync(
+        string locationIdStart,
+        string locationIdEnd,
+        string warehouseCode,
+        int maxResults = 60
+    )
+    {
+        if (string.IsNullOrWhiteSpace(locationIdStart))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationRow>>(
+                "Start location cannot be empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(locationIdEnd))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationRow>>(
+                "Stop location cannot be empty"
+            );
+        }
+
+        if (string.IsNullOrWhiteSpace(warehouseCode))
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationRow>>(
+                "Warehouse code cannot be empty"
+            );
+        }
+
+        var start = locationIdStart.Trim();
+        var stop = locationIdEnd.Trim();
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo(
+                $"[MOCK DATA MODE] Listing mock locations between '{start}' and '{stop}' in warehouse '{warehouseCode}'"
+            );
+
+            var mockRows = _mockDataCatalog
+                .GetLocations()
+                .Where(locationId =>
+                    string.Compare(locationId, start, StringComparison.OrdinalIgnoreCase) >= 0
+                    && string.Compare(locationId, stop, StringComparison.OrdinalIgnoreCase) <= 0
+                )
+                .OrderBy(locationId => locationId, StringComparer.OrdinalIgnoreCase)
+                .Take(maxResults)
+                .Select(locationId => new Model_InforVisualLocationRow
+                {
+                    LocationId = locationId,
+                    WarehouseCode = warehouseCode.Trim(),
+                })
+                .ToList();
+
+            return Model_Dao_Result_Factory.Success(mockRows);
+        }
+
+        return await _dao.GetLocationsInRangeAsync(start, stop, warehouseCode, maxResults);
+    }
+
+    /// <inheritdoc />
     public async Task<Model_Dao_Result<bool>> PartExistsAsync(string partId)
     {
         if (string.IsNullOrWhiteSpace(partId))

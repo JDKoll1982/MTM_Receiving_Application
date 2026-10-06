@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profiles &amp; Settings — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">What a Profile Is</a></li>
+            <li><a href="#profiles">Working with Profiles</a></li>
+            <li><a href="#fields">Profile Fields</a></li>
+            <li><a href="#actions">Save, Delete, Set Default</a></li>
+            <li><a href="#access">Scanner Access</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Scanner Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="workbench.html">The Workbench</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="settings.html" class="is-active">Profiles &amp; Settings</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="../index.html">← Help Center</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="index.html">Scanner</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">Profiles &amp; Settings</span>
+        </nav>
+
+        <!-- Hero -->
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>Scanner Profiles &amp; Settings</h1>
+            <p class="lead">
+                A profile tells Scanner how to drive Infor Visual — which program to use, which
+                window to type into, and which shortcut triggers a send. Most operators never
+                need to change anything here.
+            </p>
+        </div>
+
+        <div class="callout callout-warning">
+            <span class="callout-icon" aria-hidden="true">⚠️</span>
+            <div class="callout-body">
+                <strong>This tab is for setup and troubleshooting.</strong>
+                Changing a profile can stop Scanner from sending. If you are unsure, ask a
+                developer before saving.
+            </div>
+        </div>
+
+        <!-- -------- Overview -------- -->
+        <section id="overview" class="content-section">
+            <h2>What a Profile Is</h2>
+            <p>
+                Scanner does not talk to Infor Visual behind the scenes — it drives the same
+                windows you would use by hand. A profile is the set of instructions it follows:
+            </p>
+
+            <ul>
+                <li>Which <strong>program</strong> to start or find.</li>
+                <li>Which <strong>window title</strong> to wait for before typing.</li>
+                <li>Which <strong>warehouse numbers</strong> to use by default.</li>
+                <li>Which <strong>keyboard shortcut</strong> performs the send.</li>
+            </ul>
+
+            <p>
+                Different sites, or different Infor Visual versions, can need different values —
+                that is why the profile is editable rather than fixed in the program.
+            </p>
+        </section>
+
+        <!-- -------- Profiles -------- -->
+        <section id="profiles" class="content-section">
+            <h2>Working with Profiles</h2>
+            <p>
+                The tab splits in two. The left side lists every profile; the right side is the
+                editor for whichever profile is selected.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Settings/View_Scanner_Settings-Main.png"
+               class="screenshot-wrap"
+               data-caption="Scanner Settings — profile list on the left, profile editor on the right"
+               aria-label="Click to enlarge: Scanner Settings">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Settings/View_Scanner_Settings-Main.png"
+                     alt="Scanner Settings tab showing a Profiles list with a Reload button and a Profile Editor with several fields" />
+            </a>
+            <span class="screenshot-caption">Profile list (left) · profile editor (right)</span>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Pick a profile from the list</h4>
+                    <p>
+                        Click a profile. Its current settings load into the editor on the right.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Change the fields you need</h4>
+                    <p>
+                        See <a href="#fields">Profile Fields</a> below for what each one means.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Press Save</h4>
+                    <p>
+                        Nothing is written until you save. The message strip confirms
+                        <em>“Scanner profile saved.”</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Reload</strong> under the list re-reads the profiles from the
+                    database. Use it if someone else changed a profile while you had this tab
+                    open.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Fields -------- -->
+        <section id="fields" class="content-section">
+            <h2>Profile Fields</h2>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>What it means</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Profile Name</strong></td>
+                            <td>A label for the profile. Must be unique — you cannot save two profiles with the same name.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Target Executable</strong></td>
+                            <td>The Infor Visual program Scanner starts or looks for. Required.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>App Window Title</strong></td>
+                            <td>The main window title Scanner waits for before it starts typing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Child Window Title</strong></td>
+                            <td>The inner window Scanner expects to work in. Required.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Window Class</strong></td>
+                            <td>A technical hint used to tell the right window apart from others with a similar title.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>From Warehouse Default</strong></td>
+                            <td>The warehouse number pre-filled on the From side.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>To Warehouse Default</strong></td>
+                            <td>The warehouse number pre-filled on the To side.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Send Shortcut Chord</strong></td>
+                            <td>The key combination that performs a send, for example <code>Ctrl+Alt+M</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Profile Name, Target Executable, and Child Window Title are required.</strong>
+                    Scanner refuses to save the profile without them and tells you which one is
+                    missing.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Actions -------- -->
+        <section id="actions" class="content-section">
+            <h2>Save, Delete, Set Default</h2>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Button</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Save</strong></td>
+                            <td>Writes the fields you changed back to the profile.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Delete</strong></td>
+                            <td>Removes the selected profile. Select a profile first.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Set Default</strong></td>
+                            <td>Makes the selected profile the one Scanner uses automatically. Select a profile first.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Each action confirms itself in the message strip — for example
+                <em>“Default scanner profile updated.”</em> If you press Delete or Set Default
+                without a profile selected, Scanner tells you to pick one first.
+            </p>
+        </section>
+
+        <!-- -------- Access -------- -->
+        <section id="access" class="content-section">
+            <h2>Scanner Access</h2>
+            <p>
+                Who may use Scanner is controlled separately, from the main application settings
+                rather than from this tab.
+            </p>
+
+            <ol>
+                <li>Open <strong>Settings</strong> from the left-hand navigation bar.</li>
+                <li>Choose the <strong>Scanner Access</strong> card.</li>
+                <li>Add or remove employee numbers, then save.</li>
+            </ol>
+
+            <ul>
+                <li>The list applies to <strong>every workstation</strong> at once.</li>
+                <li>Only administrators and developers can see the Scanner Access card.</li>
+                <li>Each affected operator sees the change the next time they open Scanner.</li>
+                <li>While the list is empty, Scanner falls back to its built-in developer rule.</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Removing the last entry can lock people out.</strong>
+                    Make sure at least one person who needs Scanner stays on the list before you
+                    save.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- FAQ -------- -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Do I need to change anything here?</summary>
+                    <div class="faq-body">
+                        Almost never. The profile is set up once for your site. Only change it if a
+                        developer asks you to, or if Infor Visual has been updated.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Save told me a name already exists.</summary>
+                    <div class="faq-body">
+                        Profile names must be unique. Choose a different name, or edit the existing
+                        profile instead of creating a second one with the same name.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Delete or Set Default says no profile is selected.</summary>
+                    <div class="faq-body">
+                        Click a profile in the list on the left first, then press the button again.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Scanner opens Infor Visual but nothing is typed.</summary>
+                    <div class="faq-body">
+                        The window title in the profile probably does not match the Infor Visual
+                        window on your machine. Compare the profile’s
+                        <strong>App Window Title</strong> and <strong>Child Window Title</strong>
+                        with the Infor Visual windows, and ask a developer before changing them.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I have more than one profile?</summary>
+                    <div class="faq-body">
+                        Yes. Multiple profiles can exist, for example one per site or per Infor
+                        Visual version. <strong>Set Default</strong> chooses which one Scanner
+                        uses.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- Related links -->
+        <section class="content-section">
+            <h2>Next Steps</h2>
+            <div class="related-links">
+                <a href="workbench.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🖥️</span>
+                    <span class="related-link-text">
+                        <strong>The Workbench</strong>
+                        <span>Build and send a transfer list.</span>
+                    </span>
+                </a>
+                <a href="index.html#access" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🔐</span>
+                    <span class="related-link-text">
+                        <strong>Scanner Overview → Who Can Use Scanner</strong>
+                        <span>How the access allow-list works.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="index.html">Scanner Help</a>
+    <span aria-hidden="true">·</span>
+    <span>Profiles &amp; Settings</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

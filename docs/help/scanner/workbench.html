@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Workbench — MTM Receiving Help</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+    <link rel="stylesheet" href="../tutorial.css" />
+    <style>
+        /* ---- narrow inline screenshot for a single control group ---- */
+        .shot-narrow { max-width: 420px; }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================================================
+     Top navigation bar
+     ============================================================ -->
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ============================================================
+     Page layout
+     ============================================================ -->
+<div class="page-layout">
+
+    <!-- ---- Sidebar ---- -->
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#layout">Screen Layout</a></li>
+            <li><a href="#part-mode">Search by Part</a></li>
+            <li><a href="#location-mode">Search by Location</a></li>
+            <li><a href="#range">Location Range</a></li>
+            <li><a href="#table">The Current List</a></li>
+            <li><a href="#status">Line Status</a></li>
+            <li><a href="#editing">Editing a Line</a></li>
+            <li><a href="#send">Sending a Line</a></li>
+            <li><a href="#actions">Action Buttons</a></li>
+            <li><a href="#dialogs">Dialogs You May See</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Scanner Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="workbench.html" class="is-active">The Workbench</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="settings.html">Profiles &amp; Settings</a></li>
+        </ul>
+
+        <p class="sidebar-section-label">Quick Links</p>
+        <ul class="sidebar-nav">
+            <li><a href="../index.html">← Help Center</a></li>
+        </ul>
+    </nav>
+
+    <!-- ---- Main ---- -->
+    <main id="main-content" class="main-content">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="../../index.html">Docs</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="../index.html">Help Center</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="index.html">Scanner</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span class="breadcrumb-current">The Workbench</span>
+        </nav>
+
+        <!-- Hero -->
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
+        <div class="tut-hero">
+            <div class="module-badge">🎓 End-User Help</div>
+            <h1>The Scanner Workbench</h1>
+            <p class="lead">
+                The Workbench is where you build and send your transfer list. This page walks
+                through every part of the screen, one region at a time.
+            </p>
+        </div>
+
+        <!-- -------- Layout -------- -->
+        <section id="layout" class="content-section">
+            <h2>Screen Layout</h2>
+            <p>The Workbench has three regions, top to bottom.</p>
+
+            <ol>
+                <li>
+                    <strong>Entry bar</strong> — where you look up a part or a location. It changes
+                    depending on whether you are searching by part or by location.
+                </li>
+                <li>
+                    <strong>Current list</strong> — the table of lines you are working on. Each
+                    line is one transfer.
+                </li>
+                <li>
+                    <strong>Action bar</strong> — the buttons along the bottom for checking,
+                    sending, clearing, and exporting.
+                </li>
+            </ol>
+
+            <p>
+                A coloured message strip can appear directly under the page title. Scanner uses it
+                to report a problem without interrupting you — for example
+                <em>“Part number … was not found”</em>. The message clears itself after a few
+                seconds, or you can dismiss it with the ✕ on the right.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Main.png"
+               class="screenshot-wrap"
+               data-caption="The Workbench with a current list loaded"
+               aria-label="Click to enlarge: Workbench with a current list">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Main.png"
+                     alt="Scanner Workbench showing the entry bar, the table of lines, and the bottom action bar" />
+            </a>
+            <span class="screenshot-caption">Entry bar (top) · current list (middle) · action bar (bottom)</span>
+        </section>
+
+        <!-- -------- Part mode -------- -->
+        <section id="part-mode" class="content-section">
+            <h2>Search by Part</h2>
+            <p>
+                This is the default mode. Use it when you know the part number you want to move.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Make sure the toggle says “Part”</h4>
+                    <p>
+                        The <strong>Search By</strong> switch in the bottom-right corner should read
+                        <strong>Part</strong>. The text box is then labelled
+                        <em>Part</em> and reads <em>Enter part number</em>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Scan or type the part number and press Enter</h4>
+                    <p>
+                        Scanner looks the part up in Infor Visual. If it is found, a window opens
+                        listing every stock location that holds the part, with the quantity on hand.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Choose the source location and quantity</h4>
+                    <p>
+                        Tick the location you are moving from. Adjust <strong>Qty</strong> if you are
+                        not moving everything, and set <strong># Trans</strong> if the move should be
+                        split into several Infor Visual transactions. Choose
+                        <strong>Use Selected</strong> to add the line, or <strong>Cancel</strong> to
+                        back out.
+                    </p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Quantity starts at the full on-hand amount.</strong>
+                    Type a smaller number if you are only moving part of the stock. The quantity
+                    cannot be higher than what is on hand at that location.
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Typed a part number that does not exist?</strong>
+                    The message strip reports that the part was not found and, when there are
+                    close matches, Scanner offers a list to pick from. Pick the right part, or
+                    correct the number and press Enter again.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Location mode -------- -->
+        <section id="location-mode" class="content-section">
+            <h2>Search by Location</h2>
+            <p>
+                Use this when you are standing at a shelf and want to see everything stored
+                there. Instead of a part number, you type the location.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Flip the Search By toggle to “Location”</h4>
+                    <p>
+                        The text box relabels itself to <em>Location</em> and now reads
+                        <em>Enter location</em>. A second switch, <strong>Location range</strong>,
+                        appears to its left.
+                    </p>
+
+                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationMode.png"
+                       class="screenshot-wrap"
+                       data-caption="Location mode — the lookup box relabels and the range switch appears"
+                       aria-label="Click to enlarge: Location mode">
+                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationMode.png"
+                             alt="Scanner Workbench with Search By set to Location and a Location range switch visible" />
+                    </a>
+                    <span class="screenshot-caption">Location mode — “Single location” is the default</span>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Type the location and press Enter</h4>
+                    <p>
+                        You do not need the exact spelling — Scanner rewrites what you type into
+                        the standard form (see
+                        <a href="index.html#locations">About Locations</a>).
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Pick the parts you want to move</h4>
+                    <p>
+                        A window lists every part with stock at that location. It has a
+                        <strong>Select All</strong> button if you want the whole shelf in one go.
+                        Choose <strong>Use Selected</strong> to add the lines.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Range -------- -->
+        <section id="range" class="content-section">
+            <h2>Location Range</h2>
+            <p>
+                A range loads parts from several locations in one pass — useful for a whole aisle
+                or a block of shelves.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Switch <em>Location range</em> on</h4>
+                    <p>
+                        The single lookup box is replaced by two boxes:
+                        <strong>Start location</strong> and <strong>Stop location</strong>.
+                    </p>
+
+                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange.png"
+                       class="screenshot-wrap"
+                       data-caption="Range inputs — Start location and Stop location"
+                       aria-label="Click to enlarge: range inputs">
+                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange.png"
+                             alt="Scanner Workbench showing Start location and Stop location boxes with a Load Range button" />
+                    </a>
+                    <span class="screenshot-caption">Start and Stop boxes, with the <strong>Load Range</strong> button on the right</span>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Type the range and press Enter — or press <strong>Load Range</strong></h4>
+                    <p>
+                        Scanner tidies up both ends of the range automatically. If you type them the
+                        wrong way round, it swaps them for you.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Pick the parts from the grouped list</h4>
+                    <p>
+                        Every location in the range gets its own card, so you can see at a glance
+                        which shelf each part is on. <strong>Select All</strong> covers every card.
+                        Choose <strong>Use Selected</strong> when you are done.
+                    </p>
+
+                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange-Picker.png"
+                       class="screenshot-wrap"
+                       data-caption="Range picker — one card per location, with on-hand quantity and transaction count"
+                       aria-label="Click to enlarge: range picker">
+                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange-Picker.png"
+                             alt="Range picker window showing one card per location listing parts, on-hand quantity and transaction count" />
+                    </a>
+                    <span class="screenshot-caption">One card per location — tick the parts you want, then <strong>Use Selected</strong></span>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Only real locations come back.</strong>
+                    If a location in your range has no stock record at all, it is skipped rather
+                    than invented. A range is capped at <strong>60 locations</strong>; if yours is
+                    wider, the first 60 load and the message strip tells you so.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Table -------- -->
+        <section id="table" class="content-section">
+            <h2>The Current List</h2>
+            <p>
+                Everything you pick becomes a line in the table. The columns are:
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>What it holds</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>#</strong></td><td>The line number. It renumbers itself when lines are added or removed.</td></tr>
+                        <tr><td><strong>Part</strong></td><td>The part number being moved.</td></tr>
+                        <tr><td><strong>From</strong></td><td>The source location the part came from.</td></tr>
+                        <tr><td><strong>To</strong></td><td>The destination — <em>you fill this in</em>.</td></tr>
+                        <tr><td><strong>Qty</strong></td><td>How many are moving. It starts at the on-hand amount from the picker.</td></tr>
+                        <tr><td><strong>Status</strong></td><td>A coloured icon telling you whether the line is ready to send.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+               class="screenshot-wrap"
+               data-caption="A fresh list — destinations still blank, so every status is “Enter destination”"
+               aria-label="Click to enlarge: current list with rows">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+                     alt="Scanner current list with six lines; the To column is empty and each status icon is grey" />
+            </a>
+            <span class="screenshot-caption">A new list — Scanner confirms how many lines were added</span>
+        </section>
+
+        <!-- -------- Status -------- -->
+        <section id="status" class="content-section">
+            <h2>Line Status</h2>
+            <p>
+                The status icon is your checklist. A line is only sendable when it is green.
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Meaning</th>
+                            <th>What to do</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🟢</td>
+                            <td><strong>Ready!</strong></td>
+                            <td>Nothing — the line can be sent.</td>
+                        </tr>
+                        <tr>
+                            <td>🔴</td>
+                            <td><strong>! &lt;reason&gt;</strong></td>
+                            <td>Fix the reason shown: <em>To location required</em>, <em>Qty less than 1</em>, <em>Qty too High</em>, or <em>From location required</em>.</td>
+                        </tr>
+                        <tr>
+                            <td>⚪</td>
+                            <td><strong>Enter destination</strong></td>
+                            <td>Type a <strong>To</strong> location. The line has not been checked yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Click the status icon on any line to open a short explanation of exactly what that
+                line is waiting for.
+            </p>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-RowStatus.png"
+               class="screenshot-wrap"
+               data-caption="Clicking a status icon explains what the line needs"
+               aria-label="Click to enlarge: line status dialog">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-RowStatus.png"
+                     alt="Line status dialog explaining that the line is not validated and needs a destination" />
+            </a>
+            <span class="screenshot-caption">The <strong>Line status</strong> dialog — click any status icon to open it</span>
+        </section>
+
+        <!-- -------- Editing -------- -->
+        <section id="editing" class="content-section">
+            <h2>Editing a Line</h2>
+            <p>
+                Only <strong>To</strong> and <strong>Qty</strong> can be edited in the table. Part,
+                From, and the line number come from the picker.
+            </p>
+
+            <ul>
+                <li>Type the destination, then press <strong>Tab</strong> or click elsewhere — Scanner checks the line immediately.</li>
+                <li>Quantity accepts decimal numbers only. No thousands separators.</li>
+                <li>A quantity higher than the on-hand amount at the source location is rejected.</li>
+            </ul>
+
+            <h3>Moving between cells with the keyboard</h3>
+            <ul>
+                <li><strong>Tab</strong> — moves To → Qty → next line’s To → Qty, and so on.</li>
+                <li><strong>Enter</strong> — moves To → next line’s Qty, or Qty → next line’s To.</li>
+                <li>After the last line, focus returns to the lookup box at the top, ready for your next scan.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    Checking a line never moves your cursor. You can keep typing down the list and
+                    the statuses update behind you.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- Send -------- -->
+        <section id="send" class="content-section">
+            <h2>Sending a Line</h2>
+            <p>
+                Sending happens one line at a time, and Scanner always asks you to confirm before
+                it clears a line from your list.
+            </p>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">1</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Select a green line</h4>
+                    <p>Click the line. The blue button at the bottom becomes available.</p>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">2</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Press the blue Send button</h4>
+                    <p>
+                        Scanner switches to Infor Visual and enters the transfer. While it works,
+                        the table is locked so a stray scan cannot change things mid-flight.
+                    </p>
+                    <div class="callout callout-warning">
+                        <span class="callout-icon" aria-hidden="true">⚠️</span>
+                        <div class="callout-body">
+                            If the selected line is not green, the button reports the problem
+                            instead of sending.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tut-step">
+                <div class="tut-step-num-col">
+                    <div class="tut-step-num">3</div>
+                    <div class="tut-step-line"></div>
+                </div>
+                <div class="tut-step-body">
+                    <h4>Answer “Was the transaction saved in Infor Visual?”</h4>
+                    <p>
+                        Back in the app you get a Yes / No prompt.
+                    </p>
+                    <ul>
+                        <li><strong>Yes</strong> — the line is removed from your list and the next line is selected.</li>
+                        <li><strong>No</strong> — the line stays exactly where it was so you can try again.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout callout-success">
+                <span class="callout-icon" aria-hidden="true">✅</span>
+                <div class="callout-body">
+                    <strong>Scanner never assumes the save worked.</strong>
+                    A line only leaves your list when you say it saved. If you are unsure, answer
+                    <strong>No</strong> — the line stays and you can check Infor Visual first.
+                </div>
+            </div>
+
+            <h3>Infor Visual prompts that answer themselves</h3>
+            <p>
+                When a part has never been stored at a destination before, Infor Visual raises two
+                extra windows — <em>Inventory Transaction Entry</em> and <em>Add Part Location</em>.
+                While the Yes / No prompt is on screen, Scanner answers those two windows for you
+                so the save is not left waiting.
+            </p>
+        </section>
+
+        <!-- -------- Actions -------- -->
+        <section id="actions" class="content-section">
+            <h2>Action Buttons</h2>
+            <p>
+                The buttons along the bottom of the Workbench, left to right:
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Button</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Check all</strong></td><td>Re-checks every line that is not already green, so the statuses are up to date. Nothing is sent.</td></tr>
+                        <tr><td><strong>Send</strong> (blue)</td><td>Sends the selected line to Infor Visual.</td></tr>
+                        <tr><td><strong>Clear list</strong></td><td>Empties the current list. Use this when you are starting a new batch.</td></tr>
+                        <tr><td><strong>Open inventory</strong></td><td>Brings Infor Visual forward and opens its Inventory Transfers window, so you can work in it directly.</td></tr>
+                        <tr><td><strong>Export</strong></td><td>Writes the current list out to a file.</td></tr>
+                        <tr><td><strong>Manage items</strong></td><td>Opens a window for editing the whole list at once — see below.</td></tr>
+                        <tr><td><strong>Search By</strong></td><td>Switches between Part and Location lookup.</td></tr>
+                        <tr><td><strong>Remove Selected</strong></td><td>Deletes the selected line from the list.</td></tr>
+                        <tr><td><strong>Help</strong></td><td>Opens a short reminder of what this screen does.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    Buttons that do not apply are greyed out. For example,
+                    <strong>Send</strong> and <strong>Remove Selected</strong> stay unavailable
+                    until you select a line.
+                </div>
+            </div>
+
+            <h3>Manage items</h3>
+            <p>
+                <strong>Manage items</strong> opens the entire list in one window so you can add a
+                blank line, duplicate a line, reorder lines with <strong>Move Up</strong> and
+                <strong>Move Down</strong>, or delete lines. Nothing changes until you press
+                <strong>Apply</strong>; <strong>Cancel</strong> leaves the list as it was.
+            </p>
+
+            <p>Each line in the window shows the same values as the table, plus a Notes row:</p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Editable here?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Part</strong></td><td>Yes</td></tr>
+                        <tr><td><strong>From WH</strong></td><td>No — the warehouse is read-only</td></tr>
+                        <tr><td><strong>From Loc</strong></td><td>Yes</td></tr>
+                        <tr><td><strong>To WH</strong></td><td>No — the warehouse is read-only</td></tr>
+                        <tr><td><strong>To Loc</strong></td><td>Yes</td></tr>
+                        <tr><td><strong>Qty</strong></td><td>Yes</td></tr>
+                        <tr><td><strong>Status</strong></td><td>No — shows <em>Invalid</em> or <em>NotValidated</em></td></tr>
+                        <tr><td><strong>Notes</strong></td><td>No — explains what the line still needs</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ManageItems.png"
+               class="screenshot-wrap"
+               data-caption="Manage items — edit, reorder, duplicate, or delete lines, then Apply"
+               aria-label="Click to enlarge: Manage items dialog">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ManageItems.png"
+                     alt="Manage items window listing the current lines with Add Item, Duplicate, Move Up, Move Down and Delete buttons" />
+            </a>
+            <span class="screenshot-caption">Manage items — reorder or fix several lines before sending</span>
+        </section>
+
+        <!-- -------- Dialogs -------- -->
+        <section id="dialogs" class="content-section">
+            <h2>Dialogs You May See</h2>
+            <p>
+                Scanner uses pop-up windows for the things it needs you to confirm or choose.
+                Each one can be dismissed without saving anything unless you press its primary
+                button. Problems with what you typed are reported differently — in the coloured
+                message strip at the top of the screen, not in a pop-up.
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Dialog</th>
+                            <th>When it appears</th>
+                            <th>Buttons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Help</strong></td>
+                            <td>When you press the Help button.</td>
+                            <td><em>Close</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Part problem</strong></td>
+                            <td>Not a dialog. Appears in the message strip when a part number has no match, or exists but has no quantity in-house.</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stock locations for …</strong></td>
+                            <td>After a successful part lookup — lists every location holding that part.</td>
+                            <td><em>Use Selected</em> / <em>Cancel</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Parts at …</strong></td>
+                            <td>After a location lookup — lists every part held at that location.</td>
+                            <td><em>Use Selected</em> / <em>Cancel</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Parts in N location(s) …</strong></td>
+                            <td>After a location range load — one card per location.</td>
+                            <td><em>Use Selected</em> / <em>Cancel</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Add duplicate lines?</strong></td>
+                            <td>When the lines you picked are the same part from the same location as a line you already have.</td>
+                            <td><em>Add Anyway</em> / <em>Cancel</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fix the issues before sending</strong></td>
+                            <td>When you press Send on a line that is not green.</td>
+                            <td><em>OK</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Line status</strong></td>
+                            <td>When you click a status icon on a line.</td>
+                            <td><em>Close</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Manage Items</strong></td>
+                            <td>When you press Manage items.</td>
+                            <td><em>Apply</em> / <em>Cancel</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Help</h3>
+            <p>
+                A short reminder of what the Scanner module does. Nothing here changes your list.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-HelpDialog.png"
+               class="screenshot-wrap"
+               data-caption="The Scanner help dialog"
+               aria-label="Click to enlarge: Scanner help dialog">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-HelpDialog.png"
+                     alt="Scanner help dialog describing the workbench, history and settings" />
+            </a>
+            <span class="screenshot-caption">Help — press the ? button in the bottom-right corner to open it</span>
+
+            <h3>Part not found, or no stock</h3>
+            <p>
+                Scanner reports part problems in the coloured message strip under the page title,
+                not in a pop-up window. You will see
+                <em>“Part number … was not found.”</em> when the number does not exist in Infor
+                Visual, or <em>“The part number does not have any quantity in-house.”</em> when
+                the part exists but has no stock anywhere. The strip clears itself after a few
+                seconds.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartNoStock.png"
+               class="screenshot-wrap"
+               data-caption="A part problem reported in the message strip"
+               aria-label="Click to enlarge: part message strip">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartNoStock.png"
+                     alt="Red message strip under the page title reporting that the part number does not have any quantity in-house" />
+            </a>
+            <span class="screenshot-caption">Part problems appear in the message strip and clear themselves</span>
+
+            <h3>Stock locations for a part</h3>
+            <p>
+                After a successful part lookup, this window lists every location that holds the
+                part, with the quantity on hand. Tick the source location you are moving from,
+                adjust <strong>Qty</strong> if needed, then choose <strong>Use Selected</strong>.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-StockLocationPicker.png"
+               class="screenshot-wrap"
+               data-caption="Stock locations for a part"
+               aria-label="Click to enlarge: stock location picker">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-StockLocationPicker.png"
+                     alt="Stock location picker listing each location holding the part with its on-hand quantity" />
+            </a>
+            <span class="screenshot-caption">Stock locations — choose the source location and quantity</span>
+
+            <h3>Parts at a location</h3>
+            <p>
+                The location-mode equivalent: every part currently held at the location you
+                searched, with its quantity. Use <strong>Select All</strong> to take the whole
+                shelf, then <strong>Use Selected</strong>.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartsAtLocation.png"
+               class="screenshot-wrap"
+               data-caption="Parts held at a single location"
+               aria-label="Click to enlarge: parts at location picker">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartsAtLocation.png"
+                     alt="Picker listing every part held at the searched location with its quantity on hand" />
+            </a>
+            <span class="screenshot-caption">Parts at a location — one row per part, with Select All available</span>
+
+            <h3>Add duplicate lines?</h3>
+            <p>
+                Scanner spots when the lines you picked repeat a part and source location you
+                already have. Choose <strong>Add Anyway</strong> only if you really do want two
+                identical lines; otherwise choose <strong>Cancel</strong>.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-DuplicateLines.png"
+               class="screenshot-wrap"
+               data-caption="Add duplicate lines? confirmation"
+               aria-label="Click to enlarge: duplicate lines confirmation">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-DuplicateLines.png"
+                     alt="Confirmation dialog asking whether to add duplicate lines, with Add Anyway and Cancel buttons" />
+            </a>
+            <span class="screenshot-caption">Duplicate warning — only add the lines again if you mean to</span>
+
+            <h3>Fix the issues before sending</h3>
+            <p>
+                Pressing Send on a line that is not green does not send anything. Instead
+                Scanner explains exactly what the line is missing.
+            </p>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-FixIssues.png"
+               class="screenshot-wrap"
+               data-caption="Fix the issues before sending"
+               aria-label="Click to enlarge: fix issues dialog">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-FixIssues.png"
+                     alt="Dialog titled Fix the issues before sending, explaining that the line needs a destination" />
+            </a>
+            <span class="screenshot-caption">Sending an unfinished line explains what is missing</span>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>You can back out of any of these.</strong>
+                    <em>Cancel</em> and <em>Close</em> never change your list. Only
+                    <em>Use Selected</em>, <em>Apply</em>, and <em>Add Anyway</em> write anything.
+                </div>
+            </div>
+        </section>
+
+        <!-- -------- FAQ -------- -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>The Send button is greyed out.</summary>
+                    <div class="faq-body">
+                        Either no line is selected, or the selected line is not green.
+                        Click the line, then check its status icon — a red or grey icon means
+                        something still needs fixing.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>I pressed Send and nothing happened.</summary>
+                    <div class="faq-body">
+                        If the selected line is not ready, Scanner shows you what is wrong instead
+                        of sending. Fix the line and try again.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Why is my quantity rejected?</summary>
+                    <div class="faq-body">
+                        Quantity must be a positive number, with a period as the decimal
+                        separator, and it cannot be more than the on-hand amount at the source
+                        location. Whole numbers only may be required for some parts.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>The same part appears twice in my list.</summary>
+                    <div class="faq-body">
+                        Scanner warns you before adding a line that matches a part and source
+                        location you already have. Choose <strong>Cancel</strong> unless you really
+                        do want two identical lines.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I tidy up the list order?</summary>
+                    <div class="faq-body">
+                        Yes — use <strong>Manage items</strong> and the
+                        <strong>Move Up</strong> / <strong>Move Down</strong> buttons, then
+                        <strong>Apply</strong>.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What does the message strip at the top mean?</summary>
+                    <div class="faq-body">
+                        It is Scanner telling you something did not work — a part was not found, a
+                        location was not recognised, or a range found nothing. It clears itself
+                        after a few seconds.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- Related links -->
+        <section class="content-section">
+            <h2>Next Steps</h2>
+            <div class="related-links">
+                <a href="history.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">🕘</span>
+                    <span class="related-link-text">
+                        <strong>History</strong>
+                        <span>Find a list you sent earlier and read its lines.</span>
+                    </span>
+                </a>
+                <a href="settings.html" class="related-link">
+                    <span class="related-link-icon" aria-hidden="true">⚙️</span>
+                    <span class="related-link-text">
+                        <strong>Profiles &amp; Settings</strong>
+                        <span>Configure the Infor Visual window Scanner targets.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============================================================
+     Footer
+     ============================================================ -->
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <a href="index.html">Scanner Help</a>
+    <span aria-hidden="true">·</span>
+    <span>The Workbench</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close image preview">✕</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" />
+    <span id="lightbox-caption" class="lightbox-caption"></span>
+</div>
+
+<script src="../../features/shared/app.js"></script>
+<script src="../tutorial.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>reporting_scheduled_reports — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../index.html">All tables</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>reporting_scheduled_reports</code></h1>
+            <p class="lead">
+                Configuration rows for reports that are meant to run and email themselves on a
+                recurring schedule — who receives them, how often, and when they last ran.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                This table holds <em>settings</em>, not results. Each row pairs a report type with a
+                human-readable schedule string, a recipient list, and an active flag. The
+                <code>next_run_date</code> and <code>last_run_date</code> columns let the reporting
+                module work out what is due.
+            </p>
+            <p>
+                Because the schedule is stored as free text, the schedule semantics live in
+                application code — changing the wording of a schedule string in the database is not
+                the supported way to change timing.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INT AUTO_INCREMENT PK</td><td>No</td><td>Unique scheduled report identifier</td></tr>
+                        <tr><td><code>report_type</code></td><td>VARCHAR(50)</td><td>No</td><td>Report name or type this schedule applies to</td></tr>
+                        <tr><td><code>schedule</code></td><td>VARCHAR(100)</td><td>No</td><td>Human-readable schedule string (for example <em>Daily at 8:00 AM</em>)</td></tr>
+                        <tr><td><code>email_recipients</code></td><td>TEXT</td><td>Yes</td><td>Comma-separated list of recipient email addresses</td></tr>
+                        <tr><td><code>is_active</code></td><td>BOOLEAN</td><td>Yes</td><td>Whether this schedule is enabled. Defaults to TRUE.</td></tr>
+                        <tr><td><code>next_run_date</code></td><td>DATETIME</td><td>Yes</td><td>Calculated next run time for the schedule</td></tr>
+                        <tr><td><code>last_run_date</code></td><td>DATETIME</td><td>Yes</td><td>Timestamp of the last execution</td></tr>
+                        <tr><td><code>created_at</code></td><td>DATETIME</td><td>Yes</td><td>Record creation timestamp. Defaults to <code>CURRENT_TIMESTAMP</code>.</td></tr>
+                        <tr><td><code>updated_at</code></td><td>DATETIME</td><td>Yes</td><td>Last update timestamp. Defaults to <code>CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</code>.</td></tr>
+                        <tr><td><code>created_by</code></td><td>INT</td><td>Yes</td><td>FK to the <code>auth_users</code> table — who created this schedule</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>idx_next_run</code></td><td><code>next_run_date</code></td><td>INDEX</td><td>Find schedules that are due</td></tr>
+                        <tr><td><code>idx_active</code></td><td><code>is_active</code></td><td>INDEX</td><td>Filter to enabled schedules only</td></tr>
+                        <tr><td><code>idx_report_type</code></td><td><code>report_type</code></td><td>INDEX</td><td>Look up schedules for a given report</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li>The <code>idx_next_run</code> and <code>idx_active</code> indexes are designed to be used together: <code>WHERE is_active = 1 AND next_run_date &lt;= NOW()</code>.</li>
+                <li><code>is_active = 0</code> is how a schedule is paused; do not delete the row if you only want to stop it running.</li>
+                <li><code>next_run_date</code> being NULL with <code>is_active = 1</code> means the schedule has never been calculated — it will not fire until it is.</li>
+                <li><code>created_by</code> stores an <code>auth_users.id</code>, not an employee number or username.</li>
+                <li>Recipient addresses are stored as one comma-separated string, so reporting queries should not assume one address per row.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>reporting_scheduled_reports</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

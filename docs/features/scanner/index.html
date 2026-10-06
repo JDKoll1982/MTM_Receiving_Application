@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scanner — MTM Receiving Application</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../scanner/index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#what-it-does">What Scanner Does</a></li>
+            <li><a href="#access">Access Control</a></li>
+            <li><a href="#tabs">The Three Tabs</a></li>
+            <li><a href="#workflow">Transfer Workflow</a></li>
+            <li><a href="#data">Data &amp; Integrations</a></li>
+            <li><a href="#faq">Common Questions</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related</p>
+        <ul class="sidebar-nav">
+            <li><a href="../../help/scanner/index.html">End-user guide</a></li>
+            <li><a href="../../database/index.html#receiving">Scanner tables</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🖥️ Module</div>
+            <h1>Scanner</h1>
+            <p class="lead">
+                A batch transfer tool. Build a short list of location-to-location moves, then let
+                Scanner drive Infor Visual's Inventory Transfers screen and send each line for you.
+            </p>
+        </div>
+
+        <!-- Overview -->
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Moving material between locations one screen at a time is slow and error-prone.
+                Scanner turns that into a two-part job: compose the whole list up front in a
+                spreadsheet-style grid, then run it while Infor Visual works through the lines.
+            </p>
+            <p>
+                The list is a <strong>session</strong>. It is saved to MySQL as you type, so a
+                crash, a restart, or a shift change does not lose the lines that have not been
+                sent yet.
+            </p>
+
+            <figure class="doc-figure">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+                     alt="Scanner Workbench showing the tab switcher, location range inputs, and a table of transfer lines" />
+                <figcaption class="doc-figure-caption">The Scanner Workbench — entry bar at the top, the current list in the middle, send actions at the bottom</figcaption>
+            </figure>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">🧾</div>
+                    <h3>Compose first, send later</h3>
+                    <p>Add every line before touching Infor Visual. Validate the list, fix the
+                    problems Scanner identifies, then send.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">🔄</div>
+                    <h3>Resumable sessions</h3>
+                    <p>Lines are persisted individually with their own status, so a partially
+                    sent list can be picked up again without re-entering anything.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- What Scanner Does -->
+        <section id="what-it-does" class="content-section">
+            <h2>What Scanner Does</h2>
+            <p>
+                Scanner is a <strong>transfer</strong> tool. Its only job is to tell Infor Visual
+                that a quantity of a part moved from one warehouse location to another.
+            </p>
+
+            <h3>Each line records</h3>
+            <ul>
+                <li>The <strong>part</strong> being moved</li>
+                <li>The <strong>from</strong> warehouse and location</li>
+                <li>The <strong>to</strong> warehouse and location</li>
+                <li>The <strong>quantity</strong></li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Scanner does not receive material and does not change purchase
+                    orders.</strong> Receiving quantities live in the
+                    <a href="../receiving/index.html">Receiving</a> module. Scanner only moves
+                    stock that is already on hand.
+                </div>
+            </div>
+        </section>
+
+        <!-- Access Control -->
+        <section id="access" class="content-section">
+            <h2>Access Control</h2>
+            <p>
+                Scanner is restricted to an approved list of employee numbers. The approval list
+                is plant-wide and maintained from <strong>Core Settings ▸ Scanner Access</strong>.
+            </p>
+            <ul>
+                <li>If your employee number is not on the list, the Scanner button is hidden from the module navigation.</li>
+                <li>The keyboard shortcut will not open it either.</li>
+                <li>There is nothing to install per workstation — the change applies everywhere at once.</li>
+                <li>Access is re-checked each time Scanner is opened, so a change takes effect immediately.</li>
+            </ul>
+        </section>
+
+        <!-- Tabs -->
+        <section id="tabs" class="content-section">
+            <h2>The Three Tabs</h2>
+            <p>
+                Scanner hosts three views behind a tab switcher at the top of the page. Switching
+                tabs never discards the list you are working on.
+            </p>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon">🖥️</div>
+                    <h3>Workbench</h3>
+                    <p>The list you are working on now. Search parts or locations, build lines,
+                    validate, and send them to Infor Visual.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon">🕘</div>
+                    <h3>History</h3>
+                    <p>Read-only review of past sessions and the lines they contained, including
+                    per-line outcomes.</p>
+                </div>
+                <div class="info-card card-gold">
+                    <div class="info-card-icon">⚙️</div>
+                    <h3>Settings</h3>
+                    <p>The Infor Visual sending profiles — target window titles, warehouse
+                    defaults, and timing.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow -->
+        <section id="workflow" class="content-section">
+            <h2>Transfer Workflow</h2>
+            <p>
+                Every transfer follows the same five steps. The first three happen entirely inside
+                Scanner; the last two are driven by Scanner while Infor Visual is open.
+            </p>
+
+            <ol>
+                <li><strong>Find the material</strong> — search by part number, or switch to location search and start from a shelf.</li>
+                <li><strong>Add lines to the list</strong> — each added line carries its own from/to locations and quantity.</li>
+                <li><strong>Validate and fix</strong> — Scanner highlights lines that cannot be sent and explains why, so they can be corrected before the send starts.</li>
+                <li><strong>Send</strong> — Scanner activates Infor Visual, enters each line, and moves to the next one.</li>
+                <li><strong>Review the results</strong> — each line finishes as Sent or Failed, with a message recorded on the line and in History.</li>
+            </ol>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Do not use the mouse or keyboard while a send is running.</strong>
+                    Scanner is driving Infor Visual through window activation and keystrokes, so
+                    interference can misplace a value or stop the run.
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="info-card card-blue">
+                    <div class="info-card-icon" aria-hidden="true">🖥️</div>
+                    <h3><a href="../../help/scanner/workbench.html">Workbench guide</a></h3>
+                    <p>Step-by-step instructions with screenshots.</p>
+                </div>
+                <div class="info-card card-green">
+                    <div class="info-card-icon" aria-hidden="true">⚙️</div>
+                    <h3><a href="../../help/scanner/settings.html">Profiles and settings guide</a></h3>
+                    <p>How to configure Scanner for a workstation or an Infor Visual version.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data -->
+        <section id="data" class="content-section">
+            <h2>Data &amp; Integrations</h2>
+            <p>
+                Scanner reads part and location data from Infor Visual (SQL Server, read-only) and
+                stores its own lists in MySQL. Three MySQL tables back the module:
+            </p>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Table</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>receiving_scanner_session</code></td><td>One row per current list, with its name, status, and sent / failed / waiting counters</td></tr>
+                        <tr><td><code>receiving_scanner_item</code></td><td>The ordered lines of a list, with validation state, send status, and any failure message</td></tr>
+                        <tr><td><code>receiving_scanner_profile</code></td><td>User-scoped sending profiles: target window titles, warehouse defaults, and timing values</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Sending to Infor Visual</h3>
+            <p>
+                Scanner does not call an Infor Visual API. It drives the desktop client directly:
+                it locates the Inventory Transfers window using the titles configured in the
+                active profile, then enters each line and confirms it.
+            </p>
+            <ul>
+                <li>Infor Visual must be <strong>open</strong> and on the transfers screen before a send starts.</li>
+                <li>Window titles differ by Infor Visual version and language, which is why they are configurable rather than hard-coded.</li>
+                <li>Timing values in the profile control how long Scanner waits between fields and popups — raise them on a slow workstation.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    Scanner never writes to Infor Visual's database. Every change it makes is a
+                    normal transaction entered through the client, so the ERP audit trail is
+                    identical to manual entry.
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="content-section">
+            <h2>Common Questions</h2>
+
+            <h3>Scanner is missing from my navigation bar</h3>
+            <p>
+                Your employee number is not on the approved list. Ask a supervisor or administrator
+                to add you in <strong>Core Settings ▸ Scanner Access</strong>.
+            </p>
+
+            <h3>The send stops partway through my list</h3>
+            <p>
+                Lines that already succeeded are marked Sent and are not resent. Check the failure
+                message on the stopped line, correct it, and resume — the remaining lines are still
+                waiting.
+            </p>
+
+            <h3>A line will not validate</h3>
+            <p>
+                Validation runs against Infor Visual's current part and location data. A line
+                usually fails because the part is not stocked at the source location, the location
+                does not exist, or the quantity exceeds what is available there.
+            </p>
+
+            <h3>Can two people work on the same list?</h3>
+            <p>
+                No. Sessions and profiles are owned by the user who created them, and the profile
+                that governs sending is user-scoped.
+            </p>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>Scanner</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../shared/app.js"></script>
+</body>
+</html>

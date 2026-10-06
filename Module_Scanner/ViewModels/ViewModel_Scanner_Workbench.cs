@@ -19,6 +19,7 @@ using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.Views;
+using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -37,6 +38,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerExecution _executionService;
     private readonly IService_ScannerHotkey _hotkeyService;
     private readonly IService_Window _windowService;
+    private readonly IService_SharedLocationRange _locationRangeService;
 
     // ── Entry fields ─────────────────────────────────────────────────────────────
     [ObservableProperty]
@@ -68,15 +70,55 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public string LookupPlaceholderText =>
         IsLocationModeEnabled ? "Enter location" : "Enter part number";
 
+    // ── Location range (Location mode only) ──────────────────────────────────────
+    /// <summary>
+    /// When on, the single location lookup is swapped for the Start/Stop range inputs. Only
+    /// meaningful in Location mode; switching the search-by toggle back to Part clears it.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isLocationRangeEnabled;
+
+    [ObservableProperty]
+    private string _rangeStartLocation = string.Empty;
+
+    [ObservableProperty]
+    private string _rangeStopLocation = string.Empty;
+
+    /// <summary>True when the range toggle itself should be offered (Location mode only).</summary>
+    public bool IsLocationRangeToggleVisible => IsLocationModeEnabled;
+
+    /// <summary>True when the Start/Stop range inputs replace the single location lookup.</summary>
+    public bool IsLocationRangeInputVisible => IsLocationModeEnabled && IsLocationRangeEnabled;
+
+    /// <summary>True when the single part/location lookup should be shown instead.</summary>
+    public bool IsSingleLocationLookupVisible => !IsLocationRangeInputVisible;
+
+    partial void OnIsLocationRangeEnabledChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsLocationRangeInputVisible));
+        OnPropertyChanged(nameof(IsSingleLocationLookupVisible));
+    }
+
     partial void OnIsLocationModeEnabledChanged(bool value)
     {
         // Clear the lookup input so a stale value is not re-validated in the other mode.
         NewPartId = string.Empty;
         PartIdClearRequested?.Invoke();
+
+        // The range only exists for locations, so switching to Part restores the single
+        // part-number textbox and drops any half-entered range.
+        if (value is false)
+        {
+            IsLocationRangeEnabled = false;
+        }
+
         OnPropertyChanged(nameof(SearchMode));
         OnPropertyChanged(nameof(LookupType));
         OnPropertyChanged(nameof(LookupHeaderText));
         OnPropertyChanged(nameof(LookupPlaceholderText));
+        OnPropertyChanged(nameof(IsLocationRangeToggleVisible));
+        OnPropertyChanged(nameof(IsLocationRangeInputVisible));
+        OnPropertyChanged(nameof(IsSingleLocationLookupVisible));
     }
 
     // ── Header error area (non-blocking, 5-second auto-clear) ────────────────────
@@ -146,6 +188,20 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// <summary>Raised so the view can show the parts-at-location picker (location search mode).</summary>
     public event Func<string, string, Task<IReadOnlyList<Model_ScannerStockPick>>>? LocationPartsPickerRequested;
 
+    /// <summary>
+    /// Raised so the view can show the grouped range picker. The rows carry every part found in
+    /// the range together with that part's own source location, so the view can group them into
+    /// one low-padding card per location and return the operator's selection.
+    /// </summary>
+    public event Func<
+        IReadOnlyList<Model_InforVisualMaterialLocationRow>,
+        string,
+        Task<IReadOnlyList<Model_ScannerStockPick>>
+    >? LocationRangePartsPickerRequested;
+
+    /// <summary>Raised so the view can return focus to the range Start input.</summary>
+    public event Action? LocationRangeFocusRequested;
+
     /// <summary>Raised so the view can return focus to the Part lookup (Step 6b-a2).</summary>
     public event Action? PartIdFocusRequested;
 
@@ -169,6 +225,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         IService_ScannerExecution executionService,
         IService_ScannerHotkey hotkeyService,
         IService_Window windowService,
+        IService_SharedLocationRange locationRangeService,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -181,12 +238,14 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         ArgumentNullException.ThrowIfNull(executionService);
         ArgumentNullException.ThrowIfNull(hotkeyService);
         ArgumentNullException.ThrowIfNull(windowService);
+        ArgumentNullException.ThrowIfNull(locationRangeService);
         _navigationService = navigationService;
         _workflowService = workflowService;
         _validationService = validationService;
         _executionService = executionService;
         _hotkeyService = hotkeyService;
         _windowService = windowService;
+        _locationRangeService = locationRangeService;
 
         // Input lockout while automation runs (ScannerUpdate.md Task 1).
         _executionService.PropertyChanged += OnExecutionPropertyChanged;
@@ -430,6 +489,155 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         await ApplyLocationPartsSelectionAsync(picks, canonicalLocation);
+    }
+
+    // ── Location range workflow (Location mode + range toggle) ───────────────────
+
+    /// <summary>
+    /// Resolves the operator-entered Start/Stop range into the warehouse locations that exist,
+    /// collects every part holding stock in those locations, and hands the flat row set to the
+    /// view's grouped range picker. Each returned pick keeps its own source location, so a
+    /// single run can add rows from several locations at once.
+    /// </summary>
+    /// <param name="startLocation">Raw start location typed by the operator.</param>
+    /// <param name="stopLocation">Raw stop location typed by the operator.</param>
+    public async Task LocationRangeValidationCompletedAsync(
+        string startLocation,
+        string stopLocation
+    )
+    {
+        if (_isValidationFlowRunning)
+        {
+            return;
+        }
+
+        _isValidationFlowRunning = true;
+
+        // A range reads parts from every location in turn, so show the busy state to keep the
+        // operator from re-submitting the same range while it runs.
+        IsBusy = true;
+        try
+        {
+            await RunLocationRangeValidationCoreAsync(startLocation, stopLocation);
+        }
+        finally
+        {
+            IsBusy = false;
+            _isValidationFlowRunning = false;
+        }
+    }
+
+    private async Task RunLocationRangeValidationCoreAsync(
+        string startLocation,
+        string stopLocation
+    )
+    {
+        ClearHeaderError();
+
+        if (string.IsNullOrWhiteSpace(startLocation) || string.IsNullOrWhiteSpace(stopLocation))
+        {
+            ShowHeaderError("Enter both a start and a stop location for the range.");
+            LocationRangeFocusRequested?.Invoke();
+            return;
+        }
+
+        var rangeResult = await _locationRangeService.ResolveRangeAsync(
+            startLocation,
+            stopLocation,
+            NewFromWarehouse
+        );
+
+        if (!rangeResult.Success || rangeResult.Data is null)
+        {
+            ShowHeaderError(
+                string.IsNullOrWhiteSpace(rangeResult.ErrorMessage)
+                    ? "The location range could not be resolved."
+                    : rangeResult.ErrorMessage
+            );
+            LocationRangeFocusRequested?.Invoke();
+            return;
+        }
+
+        var range = rangeResult.Data;
+
+        // Reflect the canonical values back so the operator sees the formatted range.
+        RangeStartLocation = range.StartLocation;
+        RangeStopLocation = range.StopLocation;
+
+        if (range.WasSwapped)
+        {
+            ShowStatus(
+                $"Start and stop were swapped so the range runs {range.StartLocation} to {range.StopLocation}.",
+                InfoBarSeverity.Informational
+            );
+        }
+
+        if (range.WasTruncated)
+        {
+            ShowStatus(
+                $"That range contains more than {_locationRangeService.MaxLocationsInRange} locations. Only the first {_locationRangeService.MaxLocationsInRange} were loaded.",
+                InfoBarSeverity.Warning
+            );
+        }
+
+        if (range.Locations.Count == 0)
+        {
+            ShowHeaderError(
+                $"No warehouse locations exist between {range.StartLocation} and {range.StopLocation}."
+            );
+            LocationRangeFocusRequested?.Invoke();
+            return;
+        }
+
+        if (LocationRangePartsPickerRequested is null)
+        {
+            ShowHeaderError("The location range picker is not available.");
+            return;
+        }
+
+        var rows = new List<Model_InforVisualMaterialLocationRow>();
+        foreach (var location in range.Locations)
+        {
+            var parts = await _validationService.GetPartsAtLocationAsync(
+                location,
+                NewFromWarehouse
+            );
+
+            if (!parts.Success || parts.Data is null)
+            {
+                ShowHeaderError(
+                    string.IsNullOrWhiteSpace(parts.ErrorMessage)
+                        ? $"Parts could not be read for location {location}."
+                        : parts.ErrorMessage
+                );
+                return;
+            }
+
+            rows.AddRange(parts.Data);
+        }
+
+        if (rows.Count == 0)
+        {
+            ShowHeaderError(
+                $"No parts have quantity in the {range.Locations.Count} location(s) from {range.StartLocation} to {range.StopLocation}."
+            );
+            LocationRangeFocusRequested?.Invoke();
+            return;
+        }
+
+        var picks = await LocationRangePartsPickerRequested(rows, NewFromWarehouse);
+        if (picks is null || picks.Count == 0)
+        {
+            ShowStatus("Part selection cancelled.", InfoBarSeverity.Informational);
+            return;
+        }
+
+        // Every pick carries its own part and source location, so no fallbacks are needed.
+        await PopulateLinesAsync(
+            picks,
+            fallbackPartId: string.Empty,
+            fallbackFromLocation: string.Empty
+        );
     }
 
     private async Task ApplyStockLocationSelectionAsync(IReadOnlyList<Model_ScannerStockPick> picks)
@@ -993,6 +1201,11 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                 // app, so a line is only cleared from the list on an explicit Yes.
                 _pendingSendItem = SelectedSessionItem;
                 IsSendPromptVisible = true;
+
+                // While that prompt waits, poll for the two Infor Visual dialogs that appear when
+                // the part has never been inventoried at the destination location, and answer
+                // them so the save is never blocked on a modal.
+                _executionService.StartTransferDialogWatcher(profile);
                 return;
             }
 
@@ -1045,6 +1258,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         var savedItem = _pendingSendItem;
         _pendingSendItem = null;
         IsSendPromptVisible = false;
+        _executionService.StopTransferDialogWatcher();
 
         if (CurrentSession is not null && savedItem is not null)
         {
@@ -1083,6 +1297,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         var keptItem = _pendingSendItem;
         _pendingSendItem = null;
         IsSendPromptVisible = false;
+        _executionService.StopTransferDialogWatcher();
 
         // Edge-case fix: treat the line as never sent - keep it in the list, restore its
         // Waiting state, and persist so it can be sent again on a retry.
@@ -1316,6 +1531,10 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public void Deactivate()
     {
         _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
+
+        // Leaving the Workbench abandons the "Was the transaction saved?" prompt, so stop
+        // answering Infor Visual dialogs on the operator's behalf.
+        _executionService.StopTransferDialogWatcher();
     }
 
     private void OnSendShortcutPressed(object? sender, EventArgs e)

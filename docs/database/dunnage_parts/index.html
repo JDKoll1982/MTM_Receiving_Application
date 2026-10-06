@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dunnage_parts — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../dunnage_types/index.html">dunnage_types</a></li>
+            <li><a href="../dunnage_history/index.html">dunnage_history</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>dunnage_parts</code></h1>
+            <p class="lead">
+                Master data for the physical dunnage items the plant tracks. Each row links a
+                scannable part identifier to a dunnage type, a printed quantity label, and the
+                site-specific custom columns the operator fills in.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                This table is the dunnage equivalent of a part master. When dunnage is received,
+                the operator scans or picks a <code>part_id</code> from here, and the
+                <code>quantity_type</code> supplies the header shown on the printed label
+                (for example <em>Quantity</em> or <em>Skids</em>).
+            </p>
+            <p>
+                The ten <code>udc</code> slots are generic user-defined columns. Their display
+                names come from <code>dunnage_custom_fields</code>, which lets each plant rename
+                the extra fields without a schema change.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INT AUTO_INCREMENT PK</td><td>No</td><td>Surrogate primary key</td></tr>
+                        <tr><td><code>part_id</code></td><td>VARCHAR(50)</td><td>No</td><td>Business identifier (barcode, SKU) for the dunnage part. Unique.</td></tr>
+                        <tr><td><code>type_id</code></td><td>INT</td><td>No</td><td>Foreign key to <code>dunnage_types</code> — what kind of dunnage this is</td></tr>
+                        <tr><td><code>udc1</code> … <code>udc10</code></td><td>VARCHAR(255)</td><td>Yes</td><td>User Defined Column slots 1–10; display names come from <code>dunnage_custom_fields</code></td></tr>
+                        <tr><td><code>image_path</code></td><td>VARCHAR(255)</td><td>Yes</td><td>Relative PNG path for app-managed part imagery held in local app data</td></tr>
+                        <tr><td><code>quantity_type</code></td><td>VARCHAR(100)</td><td>No</td><td>Label header used for quantity on printed dunnage labels. Defaults to <code>Quantity</code>.</td></tr>
+                        <tr><td><code>home_location</code></td><td>VARCHAR(100)</td><td>Yes</td><td>Default storage location for this dunnage part</td></tr>
+                        <tr><td><code>created_by</code></td><td>VARCHAR(50)</td><td>No</td><td>User who created the record</td></tr>
+                        <tr><td><code>created_date</code></td><td>DATETIME</td><td>No</td><td>Timestamp when the record was created</td></tr>
+                        <tr><td><code>modified_by</code></td><td>VARCHAR(50)</td><td>Yes</td><td>User who last modified the record</td></tr>
+                        <tr><td><code>modified_date</code></td><td>DATETIME</td><td>Yes</td><td>Timestamp when the record was last modified</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>part_id</code></td><td><code>part_id</code></td><td>UNIQUE</td><td>One row per dunnage part identifier; also the scan lookup path</td></tr>
+                        <tr><td><code>FK_dunnage_parts_type_id</code></td><td><code>type_id</code></td><td>INDEX</td><td>Auto-created for the foreign key to <code>dunnage_types</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li><code>part_id</code> is the value an operator scans, so it must match the physical label exactly.</li>
+                <li>A part cannot be deleted while <code>dunnage_history</code> rows reference it — the foreign key is <code>RESTRICT</code>.</li>
+                <li><code>quantity_type</code> travels with the part; changing it here affects future labels, not ones already printed.</li>
+                <li>Do not treat the <code>udc</code> columns as having fixed meanings — read <code>dunnage_custom_fields</code> for the current labels before writing queries for reports.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>dunnage_parts</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

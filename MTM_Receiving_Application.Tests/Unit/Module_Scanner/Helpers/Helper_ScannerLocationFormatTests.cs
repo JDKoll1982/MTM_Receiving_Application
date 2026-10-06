@@ -57,6 +57,25 @@ public sealed class Helper_ScannerLocationFormatTests
         Helper_ScannerLocationFormat.SanitizeLocationFormat("va-a0-01").Should().Be("VA-A0-01");
     }
 
+    // ── Two-segment layouts (no middle block) ───────────────────────────────────
+
+    [Theory]
+    [InlineData("r04", "R-04")]
+    [InlineData("R04", "R-04")]
+    [InlineData("s00", "S-00")]
+    [InlineData("S00", "S-00")]
+    [InlineData("w04", "W-04")]
+    [InlineData("W04", "W-04")]
+    public void SanitizeLocationFormat_ShouldNormalizeTwoSegmentLayouts(
+        string rawInput,
+        string expected
+    )
+    {
+        // The per-row "To" cell shares the canonical formatter with the location lookup, so a
+        // short location such as R04 must resolve the same way in both places.
+        Helper_ScannerLocationFormat.SanitizeLocationFormat(rawInput).Should().Be(expected);
+    }
+
     [Fact]
     public void SanitizeLocationFormat_ShouldReturnNull_WhenInputDoesNotMatchLayout()
     {

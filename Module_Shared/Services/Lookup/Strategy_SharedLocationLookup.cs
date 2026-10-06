@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -8,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 
 namespace MTM_Receiving_Application.Module_Shared.Services.Lookup;
@@ -17,16 +17,6 @@ namespace MTM_Receiving_Application.Module_Shared.Services.Lookup;
 /// </summary>
 public sealed class Strategy_SharedLocationLookup : ISharedLookupStrategy
 {
-    private static readonly Regex VaPattern = new(
-        "^VA(?<digits>\\d{3})$",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant
-    );
-
-    private static readonly Regex RackPattern = new(
-        "^R(?<digits>\\d{1,2})$",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant
-    );
-
     private readonly IService_InforVisual _inforVisualService;
 
     public Strategy_SharedLocationLookup(IService_InforVisual inforVisualService)
@@ -49,40 +39,25 @@ public sealed class Strategy_SharedLocationLookup : ISharedLookupStrategy
     public Model_SharedLookupFormattingResult ApplyFormatting(Model_SharedLookupRequest request)
     {
         var raw = (request.RawInput ?? string.Empty).Trim().ToUpperInvariant();
-        var compact = raw.Replace("-", string.Empty).Replace(" ", string.Empty);
 
-        var vaMatch = VaPattern.Match(compact);
-        if (vaMatch.Success)
+        // One canonical formatter shared by every module so a location typed here matches the
+        // same value the Scanner Workbench and ShipRec Tools write (V-A0-01, R-04, S-00, ...).
+        var canonical = Helper_SharedLocationFormat.Sanitize(raw);
+        if (canonical is null)
         {
-            var digits = vaMatch.Groups["digits"].Value;
-            var formattedVa = $"V-A{digits[0]}-{digits.Substring(1, 2)}";
             return new Model_SharedLookupFormattingResult
             {
-                FormattedValue = formattedVa,
-                HasFormattingRule = true,
-                WasFormatted = string.Equals(formattedVa, raw, StringComparison.Ordinal) is false,
-            };
-        }
-
-        var rackMatch = RackPattern.Match(compact);
-        if (rackMatch.Success)
-        {
-            var digits = rackMatch.Groups["digits"].Value.PadLeft(2, '0');
-            var formattedRack = $"R-{digits}";
-            return new Model_SharedLookupFormattingResult
-            {
-                FormattedValue = formattedRack,
-                HasFormattingRule = true,
-                WasFormatted =
-                    string.Equals(formattedRack, raw, StringComparison.Ordinal) is false,
+                FormattedValue = raw,
+                HasFormattingRule = false,
+                WasFormatted = false,
             };
         }
 
         return new Model_SharedLookupFormattingResult
         {
-            FormattedValue = raw,
-            HasFormattingRule = false,
-            WasFormatted = false,
+            FormattedValue = canonical,
+            HasFormattingRule = true,
+            WasFormatted = string.Equals(canonical, raw, StringComparison.Ordinal) is false,
         };
     }
 

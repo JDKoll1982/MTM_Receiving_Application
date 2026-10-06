@@ -70,4 +70,17 @@ public sealed class Helper_SqlQueryLoaderTests
         query.Should().NotContain("r.WAREHOUSE_ID = np.WarehouseCode");
         query.Should().NotContain("wo.WAREHOUSE_ID = np.WarehouseCode");
     }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldResolveLocationsInRangeQuery()
+    {
+        // Guards the embedded-resource name and the shape the range service depends on:
+        // an inclusive BETWEEN on the location ID with a TOP row cap.
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("34_GetLocationsInRange.sql");
+
+        query.Should().StartWith("SELECT TOP (@MaxResults)");
+        query.Should().Contain("l.ID BETWEEN @LocationIdStart AND @LocationIdEnd");
+        query.Should().Contain("l.WAREHOUSE_ID = @WarehouseCode");
+        query.Should().NotContain("DECLARE");
+    }
 }

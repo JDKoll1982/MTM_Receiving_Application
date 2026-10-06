@@ -25,6 +25,18 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private const int PartColorClassCount = 15;
     private const int ManualTransferRowCount = 5;
 
+    /// <summary>Quantity columns in the printed transaction sheet entry table.</summary>
+    private const int TransactionQuantityColumnCount = 8;
+
+    /// <summary>Blank handwriting rows in the transaction sheet entry table.</summary>
+    private const int TransactionEntryRowCount = 4;
+
+    /// <summary>
+    /// Part rows printed per transaction sheet page. Sized so the eight-column, four-row entry
+    /// table together with its location and total rows still fits one printed sheet page.
+    /// </summary>
+    private const int TransactionSheetRowsPerPage = 5;
+
     private static readonly Dictionary<string, string> UsageUnitMap = new(
         StringComparer.OrdinalIgnoreCase
     )
@@ -1582,9 +1594,26 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         var html = new StringBuilder();
         var plainText = new StringBuilder();
         var orderedCards = cards
-            .OrderBy(card => card.PartId, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(card => ResolveCardLocation(card, locationId), StringComparer.OrdinalIgnoreCase)
+            .ThenBy(card => card.PartId, StringComparer.OrdinalIgnoreCase)
             .ToList();
-        var pages = orderedCards.Chunk(7).ToList();
+
+        // One page group per location. A location's parts never share a page with another
+        // location, so the sheet starts a fresh page as soon as a location's data ends.
+        var locationPages = orderedCards
+            .GroupBy(
+                card => ResolveCardLocation(card, locationId),
+                StringComparer.OrdinalIgnoreCase
+            )
+            .Select(group => new
+            {
+                Location = group.Key,
+                Pages = group.Chunk(TransactionSheetRowsPerPage).ToList(),
+            })
+            .ToList();
+
+        var totalPages = locationPages.Sum(group => group.Pages.Count);
+        var pageNumber = 0;
 
         html.AppendLine("<div class='transaction-sheet-wrapper'>");
 
@@ -1592,57 +1621,75 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         plainText.AppendLine($"Warehouse Location: {locationId}");
         plainText.AppendLine();
 
-        for (var pageIndex = 0; pageIndex < pages.Count; pageIndex++)
+        foreach (var locationGroup in locationPages)
         {
-            html.AppendLine("<div class='transaction-sheet-page'>");
-            html.AppendLine(
-                "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
-            );
-            html.AppendLine(
-                $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationId)}</div>"
-            );
-            html.AppendLine("<table class='transaction-sheet'>");
-            html.AppendLine(
-                "<thead><tr><th class='identity-header'>Part Number / Quantity</th><th class='entries-header'>Coil Transfer Entries</th></tr></thead>"
-            );
-            html.AppendLine("<tbody>");
-
-            foreach (var card in pages[pageIndex])
+            foreach (var page in locationGroup.Pages)
             {
-                html.AppendLine("<tr class='transaction-row'>");
-                html.AppendLine("<td class='identity-cell'>");
-                html.AppendLine("<div class='identity-card'>");
-                html.AppendLine("<div class='identity-label'>Part Number</div>");
+                pageNumber++;
+
+                html.AppendLine("<div class='transaction-sheet-page'>");
                 html.AppendLine(
-                    $"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>"
+                    "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
                 );
-                html.AppendLine("<div class='identity-divider'></div>");
-                html.AppendLine("<div class='identity-label'>Quantity</div>");
                 html.AppendLine(
-                    $"<div class='identity-from-value'>{HtmlEncode(card.QuantitySummaryDisplay)}</div>"
+                    $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationGroup.Location)}</div>"
+                );
+                html.AppendLine("<table class='transaction-sheet'>");
+                html.AppendLine(
+                    "<thead><tr><th class='identity-header'>Part Number / Description / Quantity</th><th class='entries-header'>Coil Transfer Entries</th></tr></thead>"
+                );
+                html.AppendLine("<tbody>");
+
+                foreach (var card in page)
+                {
+                    var description = string.IsNullOrWhiteSpace(card.PartDescription)
+                        ? "Not available"
+                        : card.PartDescription;
+
+                    html.AppendLine("<tr class='transaction-row'>");
+                    html.AppendLine("<td class='identity-cell'>");
+                    html.AppendLine("<div class='identity-card'>");
+                    html.AppendLine("<div class='identity-label'>Part Number</div>");
+                    html.AppendLine(
+                        $"<div class='identity-part-value'>{HtmlEncode(card.PartId)}</div>"
+                    );
+                    html.AppendLine("<div class='identity-divider'></div>");
+                    html.AppendLine("<div class='identity-label'>Description</div>");
+                    html.AppendLine(
+                        $"<div class='identity-description-value'>{HtmlEncode(description)}</div>"
+                    );
+                    html.AppendLine("<div class='identity-divider'></div>");
+                    html.AppendLine("<div class='identity-label'>Quantity</div>");
+                    html.AppendLine(
+                        $"<div class='identity-from-value'>{HtmlEncode(card.QuantitySummaryDisplay)}</div>"
+                    );
+                    html.AppendLine("</div>");
+                    html.AppendLine("</td>");
+                    html.AppendLine("<td class='entries-cell'>");
+                    AppendTransactionLocationRow(html, locationGroup.Location);
+                    AppendTransactionEntryGrid(html);
+                    html.AppendLine("</td>");
+                    html.AppendLine("</tr>");
+
+                    plainText.AppendLine($"Location: {locationGroup.Location}");
+                    plainText.AppendLine($"Part Number: {card.PartId}");
+                    plainText.AppendLine($"Description: {description}");
+                    plainText.AppendLine($"Quantity: {card.QuantitySummaryDisplay}");
+                    plainText.AppendLine(
+                        $"Transfer entries: {TransactionEntryRowCount} rows of {TransactionQuantityColumnCount} quantity columns, with a total row underneath."
+                    );
+                    plainText.AppendLine();
+                }
+
+                html.AppendLine("</tbody>");
+                html.AppendLine("</table>");
+                html.AppendLine(
+                    $"<div class='transaction-sheet-footer'>Page {pageNumber} of {totalPages}</div>"
                 );
                 html.AppendLine("</div>");
-                html.AppendLine("</td>");
-                html.AppendLine("<td class='entries-cell'>");
-                AppendTransactionEntryGrid(html);
-                html.AppendLine("</td>");
-                html.AppendLine("</tr>");
-
-                plainText.AppendLine($"Part Number: {card.PartId}");
-                plainText.AppendLine($"Quantity: {card.QuantitySummaryDisplay}");
-                plainText.AppendLine(
-                    "Coil Transfer Entries: 3 rows with 4 quantity/to pairs each."
-                );
-                plainText.AppendLine();
             }
-
-            html.AppendLine("</tbody>");
-            html.AppendLine("</table>");
-            html.AppendLine(
-                $"<div class='transaction-sheet-footer'>Page {pageIndex + 1} of {pages.Count}</div>"
-            );
-            html.AppendLine("</div>");
         }
+
         html.AppendLine("</div>");
 
         return new Model_FormattedReportDocument
@@ -1654,41 +1701,67 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         };
     }
 
+    /// <summary>
+    /// Location a part belongs to on the transaction sheet. Falls back to the searched location
+    /// when the card carries none, so a part-number search still produces a labelled sheet.
+    /// </summary>
+    private static string ResolveCardLocation(
+        Model_Tool_MaterialAvailabilityCard card,
+        string fallbackLocationId
+    )
+    {
+        return string.IsNullOrWhiteSpace(card.SearchLocationId)
+            ? fallbackLocationId
+            : card.SearchLocationId;
+    }
+
+    /// <summary>
+    /// Prints the destination location on its own compact row above the entry table, so the
+    /// operator never has to write it and the table is free to use all of its columns for
+    /// quantities.
+    /// </summary>
+    private static void AppendTransactionLocationRow(StringBuilder html, string location)
+    {
+        html.AppendLine(
+            $"<div class='entry-location-row'><span class='entry-location-label'>Location</span><span class='entry-location-value'>{HtmlEncode(location)}</span></div>"
+        );
+    }
+
+    /// <summary>
+    /// Handwritten entry table for one part: eight quantity columns four rows deep, with a
+    /// smaller total row underneath for the summed quantity.
+    /// </summary>
     private static void AppendTransactionEntryGrid(StringBuilder html)
     {
         html.AppendLine("<table class='entry-grid'>");
         html.AppendLine("<thead><tr>");
-        for (var columnIndex = 1; columnIndex <= 4; columnIndex++)
+        for (var columnIndex = 1; columnIndex <= TransactionQuantityColumnCount; columnIndex++)
         {
             html.AppendLine($"<th>Qty {columnIndex}</th>");
-            html.AppendLine($"<th>Take To {columnIndex}</th>");
-
-            if (columnIndex < 4)
-            {
-                html.AppendLine("<th class='entry-spacer-header'></th>");
-            }
         }
         html.AppendLine("</tr></thead>");
         html.AppendLine("<tbody>");
 
-        for (var rowIndex = 0; rowIndex < 3; rowIndex++)
+        for (var rowIndex = 0; rowIndex < TransactionEntryRowCount; rowIndex++)
         {
             html.AppendLine("<tr>");
-            for (var columnIndex = 1; columnIndex <= 4; columnIndex++)
+            for (var columnIndex = 1; columnIndex <= TransactionQuantityColumnCount; columnIndex++)
             {
                 html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
-                html.AppendLine("<td class='entry-cell'>&nbsp;</td>");
-
-                if (columnIndex < 4)
-                {
-                    html.AppendLine("<td class='entry-spacer-cell'></td>");
-                }
             }
+
             html.AppendLine("</tr>");
         }
 
-        html.AppendLine("</tbody>");
-        html.AppendLine("</table>");
+        // Smaller bottom row: the label spans every column but the last, which collects the total.
+        html.AppendLine("<tr class='entry-total-row'>");
+        html.AppendLine(
+            $"<td class='entry-total-label' colspan='{TransactionQuantityColumnCount - 1}'>Total</td>"
+        );
+        html.AppendLine("<td class='entry-total-value'>&nbsp;</td>");
+        html.AppendLine("</tr>");
+
+        html.AppendLine("</tbody></table>");
     }
 
     private static string GetSummaryPrintCss()
@@ -1876,22 +1949,37 @@ body { margin: 0; background: #ffffff; }
     color: #1f2937;
     margin: 0;
 }
+.identity-description-value {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
 .identity-divider {
     height: 1px;
-    margin: 8px 0 7px 0;
+    margin: 6px 0 5px 0;
     background: rgba(107, 33, 168, 0.22);
 }
 .entries-cell { width: auto; padding: 2px; }
+.entry-location-row { margin: 0 0 2px 0; }
+.entry-location-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b21a8;
+    margin-right: 4px;
+}
+.entry-location-value { font-size: 9.5pt; font-weight: 700; color: #111827; }
 .entry-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .entry-grid th, .entry-grid td { border: 1px solid #9ca3af; padding: 2px 3px; }
-.entry-grid th { background: #ffffff; font-size: 8pt; font-weight: 600; }
-.entry-spacer-header, .entry-spacer-cell {
-    border: none !important;
-    background: transparent !important;
-    padding: 0 !important;
-    width: 10px;
-}
+.entry-grid th { background: #ffffff; font-size: 8pt; font-weight: 600; text-align: left; }
 .entry-cell { height: 26px; }
+.entry-total-row td { height: 16px; background: #f9fafb; }
+.entry-total-label { font-size: 8pt; font-weight: 600; text-align: right; }
+.entry-total-value { background: #ffffff; }
 """;
     }
 

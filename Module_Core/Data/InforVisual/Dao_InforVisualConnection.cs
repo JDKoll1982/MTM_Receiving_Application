@@ -1370,6 +1370,72 @@ public class Dao_InforVisualConnection
     }
 
     /// <summary>
+    /// Returns every location that actually exists between two inclusive location IDs, ordered
+    /// by location ID. Used to expand a typed location range (for example "V-A0-01" to
+    /// "V-A0-05") into the real warehouse locations before stock is queried.
+    /// Uses: 34_GetLocationsInRange.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="locationIdStart">Inclusive lower bound location ID (e.g. "V-A0-01").</param>
+    /// <param name="locationIdEnd">Inclusive upper bound location ID (e.g. "V-A0-05").</param>
+    /// <param name="warehouseCode">Warehouse to restrict results to (e.g. "002").</param>
+    /// <param name="maxResults">Row cap so an accidentally huge range cannot flood the UI.</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualLocationRow>>
+    > GetLocationsInRangeAsync(
+        string locationIdStart,
+        string locationIdEnd,
+        string warehouseCode,
+        int maxResults = 60
+    )
+    {
+        try
+        {
+            _logger?.LogInfo(
+                $"Listing locations between '{locationIdStart}' and '{locationIdEnd}' in warehouse '{warehouseCode}' (max {maxResults})"
+            );
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery("34_GetLocationsInRange.sql");
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@LocationIdStart", locationIdStart);
+            command.Parameters.AddWithValue("@LocationIdEnd", locationIdEnd);
+            command.Parameters.AddWithValue("@WarehouseCode", warehouseCode);
+            command.Parameters.AddWithValue("@MaxResults", maxResults);
+
+            var results = new List<Model_InforVisualLocationRow>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                results.Add(
+                    new Model_InforVisualLocationRow
+                    {
+                        LocationId = reader["LocationId"].ToString() ?? string.Empty,
+                        WarehouseCode = reader["WarehouseCode"].ToString() ?? string.Empty,
+                        Description = reader["Description"].ToString() ?? string.Empty,
+                    }
+                );
+            }
+
+            _logger?.LogInfo(
+                $"Location range '{locationIdStart}'..'{locationIdEnd}' returned {results.Count} location(s)"
+            );
+            return Model_Dao_Result_Factory.Success(results);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error listing locations in range: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualLocationRow>>(
+                $"Error listing locations in range: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
     /// Retrieves current positive-quantity warehouse locations for either one exact part or all parts
     /// currently found in the requested warehouse location.
     /// Uses: 18_GetMaterialAvailabilityCurrentStock.sql

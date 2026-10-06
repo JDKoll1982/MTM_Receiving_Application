@@ -159,6 +159,8 @@
             <li><a href="../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
             <li><a href="../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
             <li><a href="../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
             <li><a href="index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
         </ul>
     </nav>
@@ -178,6 +180,7 @@
             <li><a href="#reporting">📊 Reporting</a></li>
             <li><a href="#volvo">🚚 Volvo</a></li>
             <li><a href="#shiprec-tools">🛠️ ShipRec Tools</a></li>
+            <li><a href="#scanner">🖥️ Scanner</a></li>
         </ul>
 
         <p class="sidebar-section-label">Getting Started</p>
@@ -194,9 +197,18 @@
             <li><a href="receiving/label-buttons.html">Label Buttons</a></li>
         </ul>
 
+        <p class="sidebar-section-label">Scanner Guides</p>
+        <ul class="sidebar-nav">
+            <li><a href="scanner/index.html">Scanner Overview</a></li>
+            <li><a href="scanner/workbench.html">The Workbench</a></li>
+            <li><a href="scanner/history.html">History</a></li>
+            <li><a href="scanner/settings.html">Profiles &amp; Settings</a></li>
+        </ul>
+
         <p class="sidebar-section-label">Quick Links</p>
         <ul class="sidebar-nav">
-            <li><a href="#quick-ref">Quick Reference</a></li>
+            <li><a href="#quick-ref">Quick Reference — Receiving</a></li>
+            <li><a href="#quick-ref-scanner">Quick Reference — Scanner</a></li>
             <li><a href="../index.html">← Docs Home</a></li>
         </ul>
     </nav>
@@ -265,6 +277,13 @@
                 <span class="help-module-card-count">Guides not yet published</span>
                 <span class="help-module-card-desc">Shipping and receiving utilities and pack slip tools.</span>
             </span>
+
+            <a href="#scanner" class="help-module-card">
+                <span class="help-module-card-icon" aria-hidden="true">🖥️</span>
+                <span class="help-module-card-title">Scanner</span>
+                <span class="help-module-card-count">4 guides available</span>
+                <span class="help-module-card-desc">Move material between locations — part and location search, ranges, sending, history, and profiles.</span>
+            </a>
 
         </nav>
 
@@ -366,6 +385,70 @@
                     <p class="guide-item-desc">
                         How the Receiving footer label buttons work, what they open, what happens when setup is missing,
                         and how to review saved label paths from Settings.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <!-- ================================================================
+             SCANNER
+             ================================================================ -->
+        <div class="module-section-header" id="scanner">
+            <span class="module-section-header-icon" aria-hidden="true">🖥️</span>
+            <h2>Scanner</h2>
+        </div>
+        <p>
+            The Scanner module moves material between warehouse locations in Infor Visual.
+            You build a short list of transfers and send them one line at a time, confirming
+            each save. These guides cover the whole module, from picking the material to
+            checking what you sent earlier.
+        </p>
+
+        <div class="guide-list">
+            <a href="scanner/index.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🖥️</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">Scanner Overview</p>
+                    <p class="guide-item-desc">
+                        What the Scanner module does, who is allowed to use it, the three tabs,
+                        and the five-step transfer workflow.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="scanner/workbench.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🔎</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">The Workbench</p>
+                    <p class="guide-item-desc">
+                        Search by part or by location, load a location range, fill in destinations,
+                        read the status icons, and send a line to Infor Visual.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="scanner/history.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">🕘</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">History</p>
+                    <p class="guide-item-desc">
+                        Find a past scanner list, filter it by date and status, and read the lines
+                        it contained.
+                    </p>
+                </span>
+                <span class="guide-item-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="scanner/settings.html" class="guide-item">
+                <span class="guide-item-icon" aria-hidden="true">⚙️</span>
+                <span class="guide-item-body">
+                    <p class="guide-item-title">Profiles &amp; Settings</p>
+                    <p class="guide-item-desc">
+                        What a Scanner profile is, what each field means, and how to manage who can
+                        use Scanner.
                     </p>
                 </span>
                 <span class="guide-item-arrow" aria-hidden="true">→</span>
@@ -479,6 +562,71 @@
                         <tr>
                             <td>Use the Reconcile feature</td>
                             <td><a href="receiving/mode-selection.html#reconcile">Mode Selection → Reconcile</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             QUICK REFERENCE — SCANNER
+             ================================================================ -->
+        <section id="quick-ref-scanner" class="content-section" style="margin-top: 2.5rem;">
+            <h2>Quick Reference — Scanner</h2>
+            <p>Common Scanner tasks, and where to read about them.</p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>I want to…</th>
+                            <th>Go to</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Learn what the Scanner module is for</td>
+                            <td><a href="scanner/index.html">Scanner Overview</a></td>
+                        </tr>
+                        <tr>
+                            <td>Find out whether I am allowed to use Scanner</td>
+                            <td><a href="scanner/index.html#access">Scanner Overview → Who Can Use Scanner</a></td>
+                        </tr>
+                        <tr>
+                            <td>Start a transfer from a part number</td>
+                            <td><a href="scanner/workbench.html#part-mode">Workbench → Search by Part</a></td>
+                        </tr>
+                        <tr>
+                            <td>Start a transfer from a shelf location</td>
+                            <td><a href="scanner/workbench.html#location-mode">Workbench → Search by Location</a></td>
+                        </tr>
+                        <tr>
+                            <td>Load several locations in one pass</td>
+                            <td><a href="scanner/workbench.html#range">Workbench → Location Range</a></td>
+                        </tr>
+                        <tr>
+                            <td>Understand the green / red / gray status icons</td>
+                            <td><a href="scanner/workbench.html#status">Workbench → Line Status</a></td>
+                        </tr>
+                        <tr>
+                            <td>Send a line and confirm it saved</td>
+                            <td><a href="scanner/workbench.html#send">Workbench → Sending a Line</a></td>
+                        </tr>
+                        <tr>
+                            <td>Know what a pop-up window is asking me</td>
+                            <td><a href="scanner/workbench.html#dialogs">Workbench → Dialogs You May See</a></td>
+                        </tr>
+                        <tr>
+                            <td>Look up a list I sent earlier</td>
+                            <td><a href="scanner/history.html">History</a></td>
+                        </tr>
+                        <tr>
+                            <td>Change which Infor Visual window Scanner targets</td>
+                            <td><a href="scanner/settings.html#fields">Profiles &amp; Settings → Profile Fields</a></td>
+                        </tr>
+                        <tr>
+                            <td>Give another employee access to Scanner</td>
+                            <td><a href="scanner/settings.html#access">Profiles &amp; Settings → Scanner Access</a></td>
                         </tr>
                     </tbody>
                 </table>

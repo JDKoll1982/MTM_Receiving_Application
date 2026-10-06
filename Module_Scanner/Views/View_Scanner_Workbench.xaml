@@ -42,6 +42,7 @@
             x:Name="HeaderErrorBar"
             Grid.Row="0"
             Margin="16,8,16,0"
+            AutomationProperties.AutomationId="ScannerHeaderErrorBar"
             IsClosable="False"
             IsOpen="{x:Bind ViewModel.IsHeaderErrorVisible, Mode=OneWay}"
             Message="{x:Bind ViewModel.HeaderErrorText, Mode=OneWay}"
@@ -57,18 +58,78 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Entry form: part/location lookup (fills the row) -->
-            <Grid>
+            <!-- Entry form: single part/location lookup, or a Start/Stop location range -->
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Range toggle: Location mode only, hidden for part-number mode -->
+                <ToggleSwitch
+                    x:Name="LocationRangeToggle"
+                    Grid.Column="0"
+                    MinWidth="0"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.AutomationId="ScannerLocationRangeToggle"
+                    OffContent="Single location"
+                    OnContent="Location range"
+                    IsOn="{x:Bind ViewModel.IsLocationRangeEnabled, Mode=TwoWay}"
+                    Visibility="{x:Bind ViewModel.IsLocationRangeToggleVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
                 <sharedControls:Control_Shared_TypedLookupTextBox
                     x:Name="PartIdLookupControl"
+                    Grid.Column="1"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
                     AutoResolveFuzzyMatches="False"
                     HeaderText="{x:Bind ViewModel.LookupHeaderText, Mode=OneWay}"
                     InputValue="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
                     LookupType="{x:Bind ViewModel.LookupType, Mode=OneWay}"
                     PlaceholderText="{x:Bind ViewModel.LookupPlaceholderText, Mode=OneWay}"
-                    ValidationCompleted="PartIdLookupControl_ValidationCompleted" />
+                    ValidationCompleted="PartIdLookupControl_ValidationCompleted"
+                    Visibility="{x:Bind ViewModel.IsSingleLocationLookupVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <!-- Start/Stop range replaces the single lookup while the range toggle is on -->
+                <Grid
+                    Grid.Column="1"
+                    ColumnSpacing="8"
+                    Visibility="{x:Bind ViewModel.IsLocationRangeInputVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="RangeStartTextBox"
+                        Grid.Column="0"
+                        Header="Start location"
+                        AutomationProperties.AutomationId="ScannerRangeStartBox"
+                        IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
+                        KeyDown="RangeLocationTextBox_KeyDown"
+                        LostFocus="RangeLocationTextBox_LostFocus"
+                        PlaceholderText="e.g. V-A0-01"
+                        Text="{x:Bind ViewModel.RangeStartLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        x:Name="RangeStopTextBox"
+                        Grid.Column="1"
+                        Header="Stop location"
+                        AutomationProperties.AutomationId="ScannerRangeStopBox"
+                        IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
+                        KeyDown="RangeLocationTextBox_KeyDown"
+                        LostFocus="RangeLocationTextBox_LostFocus"
+                        PlaceholderText="e.g. V-A0-05"
+                        Text="{x:Bind ViewModel.RangeStopLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="2"
+                        MinWidth="104"
+                        VerticalAlignment="Bottom"
+                        AutomationProperties.AutomationId="ScannerLoadRangeButton"
+                        Click="LoadLocationRange_Click"
+                        Content="Load Range"
+                        IsEnabled="{x:Bind ViewModel.IsPartEditable, Mode=OneWay}"
+                        Style="{StaticResource ScannerActionButtonStyle}" />
+                </Grid>
             </Grid>
 
             <!-- Current list -->
@@ -99,6 +160,7 @@
                     x:Name="SessionItemsListView"
                     Grid.Row="1"
                     VerticalAlignment="Stretch"
+                    AutomationProperties.AutomationId="ScannerSessionList"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     ItemsSource="{x:Bind ViewModel.SessionItems, Mode=OneWay}"
@@ -121,6 +183,7 @@
                                 <TextBox
                                     Grid.Column="3"
                                     Tag="ToCell"
+                                    AutomationProperties.AutomationId="ScannerRowToBox"
                                     PlaceholderText="To"
                                     Text="{x:Bind PayloadToLocation, Mode=TwoWay}"
                                     LostFocus="SessionItemToTextBox_LostFocus"
@@ -129,6 +192,7 @@
                                 <TextBox
                                     Grid.Column="4"
                                     Tag="QtyCell"
+                                    AutomationProperties.AutomationId="ScannerRowQtyBox"
                                     PlaceholderText="Qty"
                                     Text="{x:Bind PayloadQuantity, Mode=TwoWay}"
                                     BeforeTextChanging="SessionItemQtyTextBox_BeforeTextChanging"
@@ -144,6 +208,7 @@
                                     Padding="0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    AutomationProperties.AutomationId="ScannerRowStatusButton"
                                     Click="StatusIconButton_Click"
                                     Tag="{x:Bind}"
                                     ToolTipService.ToolTip="{x:Bind StatusText}">
@@ -161,6 +226,7 @@
                                     Margin="2,0,0,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    AutomationProperties.AutomationId="ScannerRowAddLinesButton"
                                     Click="AddLinesSplitButton_Click"
                                     Tag="{x:Bind}"
                                     ToolTipService.ToolTip="Add lines of this part">
@@ -227,6 +293,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource ScannerActionButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerCheckAllButton"
                             Command="{x:Bind ViewModel.CheckAllCommand}"
                             ToolTipService.ToolTip="Check all">
                             <FontIcon FontSize="16" Glyph="&#xE8B3;" />
@@ -237,6 +304,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource AccentButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerSendButton"
                             Command="{x:Bind ViewModel.SendSelectedCommand}"
                             ToolTipService.ToolTip="{x:Bind ViewModel.SendButtonText, Mode=OneWay}">
                             <FontIcon FontSize="16" Glyph="&#xE724;" />
@@ -255,6 +323,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource ScannerActionButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerClearListButton"
                             Command="{x:Bind ViewModel.ClearListCommand}"
                             ToolTipService.ToolTip="Clear list">
                             <FontIcon FontSize="16" Glyph="&#xE711;" />
@@ -265,6 +334,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource ScannerActionButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerOpenInventoryButton"
                             Command="{x:Bind ViewModel.OpenInventoryCommand}"
                             ToolTipService.ToolTip="Open inventory">
                             <FontIcon FontSize="16" Glyph="&#xE8E5;" />
@@ -275,6 +345,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource ScannerActionButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerExportButton"
                             Command="{x:Bind ViewModel.ExportCommand}"
                             ToolTipService.ToolTip="Export">
                             <FontIcon FontSize="16" Glyph="&#xE74E;" />
@@ -285,6 +356,7 @@
                             MinWidth="0"
                             Padding="0"
                             Style="{StaticResource ScannerActionButtonStyle}"
+                            AutomationProperties.AutomationId="ScannerManageItemsButton"
                             Command="{x:Bind ViewModel.ManageItemsDialogCommand}"
                             ToolTipService.ToolTip="Manage items">
                             <FontIcon FontSize="16" Glyph="&#xE70F;" />
@@ -306,6 +378,7 @@
                         <ToggleSwitch
                             MinWidth="0"
                             VerticalAlignment="Center"
+                            AutomationProperties.AutomationId="ScannerSearchByToggle"
                             OffContent="Part"
                             OnContent="Location"
                             IsOn="{x:Bind ViewModel.IsLocationModeEnabled, Mode=TwoWay}" />
@@ -313,6 +386,7 @@
                             Height="34"
                             Padding="14,0"
                             VerticalAlignment="Center"
+                            AutomationProperties.AutomationId="ScannerRemoveSelectedButton"
                             Background="#C42B1C"
                             BorderThickness="0"
                             Command="{x:Bind ViewModel.RemoveSelectedSessionItemCommand}"
@@ -331,6 +405,7 @@
                             MinWidth="0"
                             Padding="0"
                             VerticalAlignment="Center"
+                            AutomationProperties.AutomationId="ScannerHelpButton"
                             AutomationProperties.Name="Help"
                             Style="{StaticResource ScannerActionButtonStyle}"
                             Click="OnHelpClick"
@@ -347,8 +422,8 @@
                     Spacing="6"
                     Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Was the transaction saved in Infor Visual?" />
-                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmSavedCommand}" Content="Yes" />
-                    <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.ConfirmNotSavedCommand}" Content="No" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerSendPromptYes" Command="{x:Bind ViewModel.ConfirmSavedCommand}" Content="Yes" />
+                    <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerSendPromptNo" Command="{x:Bind ViewModel.ConfirmNotSavedCommand}" Content="No" />
                 </StackPanel>
             </StackPanel>
         </Border>

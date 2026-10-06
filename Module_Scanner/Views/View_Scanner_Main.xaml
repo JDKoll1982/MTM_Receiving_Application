@@ -16,22 +16,60 @@
         Margin="16,0,16,16"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch">
-        <ContentControl
-            x:Name="WorkbenchHost"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            Visibility="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <ContentControl
-            x:Name="HistoryHost"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            Visibility="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <!-- Module page switcher: Workbench / History / Settings. Each tab reports its
+             checked state from the navigation service so the active page is always reflected. -->
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,8"
+            AutomationProperties.AutomationId="ScannerPageSwitcher"
+            Orientation="Horizontal"
+            Spacing="6">
+            <ToggleButton
+                AutomationProperties.AutomationId="ScannerWorkbenchTab"
+                AutomationProperties.Name="Workbench"
+                Command="{x:Bind ViewModel.ShowWorkbenchCommand}"
+                Content="Workbench"
+                IsChecked="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay}" />
+            <ToggleButton
+                AutomationProperties.AutomationId="ScannerHistoryTab"
+                AutomationProperties.Name="History"
+                Command="{x:Bind ViewModel.ShowHistoryCommand}"
+                Content="History"
+                IsChecked="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay}" />
+            <ToggleButton
+                AutomationProperties.AutomationId="ScannerSettingsTab"
+                AutomationProperties.Name="Settings"
+                Command="{x:Bind ViewModel.ShowSettingsCommand}"
+                Content="Settings"
+                IsChecked="{x:Bind ViewModel.IsSettingsVisible, Mode=OneWay}" />
+        </StackPanel>
 
-        <ContentControl
-            x:Name="SettingsHost"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            Visibility="{x:Bind ViewModel.IsSettingsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Grid Grid.Row="1">
+            <ContentControl
+                x:Name="WorkbenchHost"
+                AutomationProperties.AutomationId="ScannerWorkbenchHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <ContentControl
+                x:Name="HistoryHost"
+                AutomationProperties.AutomationId="ScannerHistoryHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsHistoryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            <ContentControl
+                x:Name="SettingsHost"
+                AutomationProperties.AutomationId="ScannerSettingsHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsSettingsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
     </Grid>
 </Page>

@@ -34,6 +34,7 @@
             Padding="0"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
+            AutomationProperties.AutomationId="ScannerSettingsHelpButton"
             AutomationProperties.Name="Help"
             Background="{ThemeResource LayerFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -53,6 +54,7 @@
             <TextBlock Style="{StaticResource ScannerSectionHeaderStyle}" Text="Profiles" />
             <ListView
                 Grid.Row="1"
+                AutomationProperties.AutomationId="ScannerProfilesList"
                 ItemsSource="{x:Bind ViewModel.Profiles, Mode=OneWay}"
                 SelectedItem="{x:Bind ViewModel.SelectedProfile, Mode=TwoWay}"
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -70,6 +72,7 @@
                 VerticalAlignment="Bottom"
                 Margin="0,8,0,0"
                 Style="{StaticResource ScannerActionButtonStyle}"
+                AutomationProperties.AutomationId="ScannerReloadProfilesButton"
                 Command="{x:Bind ViewModel.LoadProfilesCommand}"
                 Content="Reload" />
         </Grid>
@@ -89,18 +92,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Style="{StaticResource ScannerSectionHeaderStyle}" Text="Profile Editor" />
-            <TextBox Grid.Row="1" Header="Profile Name" Text="{x:Bind ViewModel.ProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="2" Header="Target Executable" Text="{x:Bind ViewModel.TargetExecutableName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="3" Header="App Window Title" Text="{x:Bind ViewModel.AppWindowTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="4" Header="Child Window Title" Text="{x:Bind ViewModel.TargetChildWindowTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="5" Header="Window Class" Text="{x:Bind ViewModel.AppWindowClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="6" Header="From Warehouse Default" Text="{x:Bind ViewModel.FromWarehouseDefault, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="7" Header="To Warehouse Default" Text="{x:Bind ViewModel.ToWarehouseDefault, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="8" Header="Send Shortcut Chord" Text="{x:Bind ViewModel.SendShortcutChord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="1" Header="Profile Name" AutomationProperties.AutomationId="ScannerProfileNameBox" Text="{x:Bind ViewModel.ProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="2" Header="Target Executable" AutomationProperties.AutomationId="ScannerProfileTargetExecutableBox" Text="{x:Bind ViewModel.TargetExecutableName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="3" Header="App Window Title" AutomationProperties.AutomationId="ScannerProfileAppWindowTitleBox" Text="{x:Bind ViewModel.AppWindowTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="4" Header="Child Window Title" AutomationProperties.AutomationId="ScannerProfileChildWindowTitleBox" Text="{x:Bind ViewModel.TargetChildWindowTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="5" Header="Window Class" AutomationProperties.AutomationId="ScannerProfileWindowClassBox" Text="{x:Bind ViewModel.AppWindowClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="6" Header="From Warehouse Default" AutomationProperties.AutomationId="ScannerProfileFromWarehouseBox" Text="{x:Bind ViewModel.FromWarehouseDefault, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="7" Header="To Warehouse Default" AutomationProperties.AutomationId="ScannerProfileToWarehouseBox" Text="{x:Bind ViewModel.ToWarehouseDefault, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Grid.Row="8" Header="Send Shortcut Chord" AutomationProperties.AutomationId="ScannerProfileSendChordBox" Text="{x:Bind ViewModel.SendShortcutChord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <StackPanel Grid.Row="9" Orientation="Horizontal" Spacing="8">
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.SaveProfileCommand}" Content="Save" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.DeleteProfileCommand}" Content="Delete" />
-                <Button Style="{StaticResource ScannerActionButtonStyle}" Command="{x:Bind ViewModel.SetDefaultProfileCommand}" Content="Set Default" />
+                <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerProfileSaveButton" Command="{x:Bind ViewModel.SaveProfileCommand}" Content="Save" />
+                <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerProfileDeleteButton" Command="{x:Bind ViewModel.DeleteProfileCommand}" Content="Delete" />
+                <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerProfileSetDefaultButton" Command="{x:Bind ViewModel.SetDefaultProfileCommand}" Content="Set Default" />
             </StackPanel>
         </Grid>
     </Grid>

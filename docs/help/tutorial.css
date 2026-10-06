@@ -381,3 +381,129 @@ body {
     .screenshot-inline { max-width: 100%; }
     .tut-step { grid-template-columns: 36px 1fr; gap: 0 10px; }
 }
+
+/* ----------------------------------------------------------
+   Guide actions -- "Print this Guide"
+   ---------------------------------------------------------- */
+.guide-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 10px;
+}
+.tut-print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 15px;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--surface);
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background var(--transition), border-color var(--transition),
+                box-shadow var(--transition);
+}
+.tut-print-btn:hover,
+.tut-print-btn:focus-visible {
+    background: var(--blue-soft);
+    border-color: var(--blue);
+    box-shadow: var(--shadow-sm);
+    outline: none;
+}
+.tut-print-btn-icon { font-size: 0.95rem; line-height: 1; }
+
+/* ----------------------------------------------------------
+   Print -- a clean paper copy of the guide.
+   Screen-only chrome is dropped, boxes keep visible outlines
+   because backgrounds are not printed by default, and blocks
+   are kept from splitting across pages.
+   ---------------------------------------------------------- */
+@media print {
+    @page { margin: 14mm; }
+
+    html,
+    body {
+        background: #fff !important;
+        background-image: none !important;
+        color: #000;
+    }
+
+    /* Chrome that only makes sense on screen. */
+    .top-nav,
+    .sidebar,
+    .guide-toolbar,
+    .back-to-top,
+    .lightbox-overlay,
+    .page-footer,
+    .skip-link,
+    .related-links { display: none !important; }
+
+    /* The sidebar column would otherwise still reserve its grid track. */
+    .page-layout { display: block; }
+    .main-content {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .breadcrumb { margin-bottom: 10px; }
+    .breadcrumb a { color: #000; text-decoration: none; }
+
+    .tut-hero { margin-bottom: 18px; }
+    .tut-hero h1 { font-size: 1.6rem; }
+    .module-badge {
+        background: none !important;
+        border: 1px solid #999;
+        color: #000 !important;
+        padding: 1px 8px;
+    }
+
+    /* Backgrounds are not printed, so outlines carry the meaning instead. */
+    .callout,
+    .quality-hold-banner,
+    .mode-card,
+    .coming-soon-block,
+    .db-table th,
+    .db-table td,
+    .status-table th,
+    .status-table td {
+        background: none !important;
+        box-shadow: none !important;
+        border-color: #999 !important;
+    }
+    .callout,
+    .quality-hold-banner { border: 1px solid #999 !important; }
+
+    .screenshot-wrap,
+    .screenshot-inline,
+    .splash-screenshot-wrap a {
+        border: 1px solid #999 !important;
+        box-shadow: none !important;
+        cursor: default;
+    }
+    img { max-width: 100% !important; height: auto !important; }
+
+    /* Do not split a step, a FAQ answer, or a table across two pages. */
+    h2,
+    h3,
+    h4 { break-after: avoid; page-break-after: avoid; }
+    .tut-step,
+    .faq-item,
+    .mode-card,
+    .screenshot-wrap,
+    .screenshot-inline,
+    .db-table-wrap,
+    table { break-inside: avoid; page-break-inside: avoid; }
+
+    a { color: #000; text-decoration: none; }
+    .content-section a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+
+    .tut-step-num { background: #444 !important; color: #fff !important; }
+    .tut-step-line { background: #bbb !important; }
+}

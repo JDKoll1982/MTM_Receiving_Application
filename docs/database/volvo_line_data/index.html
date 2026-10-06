@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>volvo_line_data — Database Reference</title>
+    <link rel="stylesheet" href="../../features/shared/styles.css" />
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="top-nav" role="banner">
+    <a href="../../index.html" class="top-nav-brand" aria-label="MTM home">MTM</a>
+    <div class="top-nav-sep" aria-hidden="true"></div>
+    <nav aria-label="Module navigation">
+        <ul class="top-nav-links">
+            <li><a href="../../features/receiving/index.html"><span class="nav-icon" aria-hidden="true">📦</span> Receiving</a></li>
+            <li><a href="../../features/dunnage/index.html"><span class="nav-icon" aria-hidden="true">📋</span> Dunnage</a></li>
+            <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
+            <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
+            <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
+            <li><a href="../../help/index.html"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="page-layout">
+
+    <nav class="sidebar" aria-label="On this page">
+        <p class="sidebar-label">On this page</p>
+        <ul class="sidebar-nav">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#columns">Columns</a></li>
+            <li><a href="#indexes">Indexes</a></li>
+            <li><a href="#notes">Usage Notes</a></li>
+        </ul>
+        <p class="sidebar-section-label">Related tables</p>
+        <ul class="sidebar-nav">
+            <li><a href="../volvo_label_data/index.html">volvo_label_data</a></li>
+            <li><a href="../volvo_label_history/index.html">volvo_label_history</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="main-content">
+
+        <div class="module-hero">
+            <div class="module-badge">🗄️ Table</div>
+            <h1><code>volvo_line_data</code></h1>
+            <p class="lead">
+                The part-level detail of each Volvo shipment. Every row is one part on one
+                shipment — how many skids were counted, how many pieces that works out to, and
+                whether the count disagreed with Volvo's packlist.
+            </p>
+        </div>
+
+        <section id="overview" class="content-section">
+            <h2>Overview</h2>
+            <p>
+                Lines belong to a shipment header through <code>shipment_id</code>. Each line
+                carries a quantity-per-skid snapshot taken from master data, the skid count the
+                operator entered, and a stored piece count so historical figures do not shift when
+                master data changes later.
+            </p>
+            <p>
+                A line is <em>Pending</em> until it has been received in Infor Visual, at which
+                point <code>po_status</code> becomes <em>Received</em>.
+            </p>
+        </section>
+
+        <section id="columns" class="content-section">
+            <h2>Columns</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INT AUTO_INCREMENT PK</td><td>No</td><td>Primary key for the shipment line</td></tr>
+                        <tr><td><code>shipment_id</code></td><td>INT</td><td>No</td><td>FK to <code>volvo_label_data.id</code> — the shipment header</td></tr>
+                        <tr><td><code>part_number</code></td><td>VARCHAR(20)</td><td>No</td><td>Part number sourced from <code>volvo_masterdata</code></td></tr>
+                        <tr><td><code>po_status</code></td><td>VARCHAR(20)</td><td>No</td><td>Card status. Defaults to <code>Pending</code>; becomes <code>Received</code> once received.</td></tr>
+                        <tr><td><code>location</code></td><td>VARCHAR(50)</td><td>Yes</td><td>Warehouse location for this shipment line</td></tr>
+                        <tr><td><code>quantity_per_skid</code></td><td>INT</td><td>No</td><td>Cached quantity per skid from master data, captured at the time of shipment. Defaults to <code>0</code>.</td></tr>
+                        <tr><td><code>received_skid_count</code></td><td>INT</td><td>No</td><td>Actual skid count entered by the operator</td></tr>
+                        <tr><td><code>calculated_piece_count</code></td><td>INT</td><td>No</td><td>Stored snapshot of the piece count produced by the component explosion</td></tr>
+                        <tr><td><code>has_discrepancy</code></td><td>TINYINT(1)</td><td>No</td><td>Set when the expected and received counts disagree. <code>0</code> = no, <code>1</code> = yes.</td></tr>
+                        <tr><td><code>expected_skid_count</code></td><td>INT</td><td>Yes</td><td>Volvo packlist quantity when a discrepancy exists; NULL otherwise</td></tr>
+                        <tr><td><code>discrepancy_note</code></td><td>TEXT</td><td>Yes</td><td>Optional note describing the discrepancy or how it was resolved</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="indexes" class="content-section">
+            <h2>Indexes</h2>
+            <div class="table-wrapper">
+                <table class="schema-table">
+                    <thead>
+                        <tr><th>Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>PRIMARY</code></td><td><code>id</code></td><td>PRIMARY</td><td>Row identity</td></tr>
+                        <tr><td><code>idx_shipment_id</code></td><td><code>shipment_id</code></td><td>INDEX</td><td>Load all lines for a shipment</td></tr>
+                        <tr><td><code>idx_part_number</code></td><td><code>part_number</code></td><td>INDEX</td><td>Find every shipment that included a part</td></tr>
+                        <tr><td><code>idx_po_status</code></td><td><code>po_status</code></td><td>INDEX</td><td>Filter lines by Pending / Received state</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="notes" class="content-section">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li><code>quantity_per_skid</code> and <code>calculated_piece_count</code> are deliberate snapshots. Do not recompute them from master data when reporting history — the numbers would change.</li>
+                <li><code>po_status</code> is free text, not an enum, so filters should be written case-insensitively or matched exactly as written by the app (<em>Pending</em>, <em>Received</em>).</li>
+                <li>Discrepancy reporting should filter on <code>has_discrepancy = 1</code> rather than comparing counts at query time.</li>
+                <li>Deleting a shipment header cascades and removes its lines.</li>
+                <li>A part cannot be removed from master data while shipment lines reference it — the foreign key is <code>RESTRICT</code>.</li>
+            </ul>
+        </section>
+
+    </main>
+</div>
+
+<footer class="page-footer" role="contentinfo">
+    <span>MTM Receiving Application</span>
+    <span aria-hidden="true">·</span>
+    <span>volvo_line_data</span>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+<script src="../../features/shared/app.js"></script>
+</body>
+</html>

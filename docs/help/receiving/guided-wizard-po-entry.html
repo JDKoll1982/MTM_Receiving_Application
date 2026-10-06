@@ -55,6 +55,8 @@
             <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
             <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
             <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
             <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
         </ul>
     </nav>
@@ -107,6 +109,14 @@
         </nav>
 
         <!-- Hero -->
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
         <div class="tut-hero">
             <div class="module-badge">🎓 End-User Help</div>
             <h1>PO Entry — Guided Wizard</h1>
@@ -245,8 +255,9 @@
                         <span class="callout-icon" aria-hidden="true">⚠️</span>
                         <div class="callout-body">
                             If a part row shows its Part ID in <strong style="color:#8b2020;">red</strong>,
-                            it is flagged for a <strong>Quality Hold</strong>.  Read the
-                            <a href="#quality-hold">Quality Hold section below</a> before selecting it.
+                            it is flagged for a <strong>Quality Hold</strong>.  A notice window
+                            appears the moment you select that row, so read the
+                            <a href="#quality-hold">Quality Hold section below</a> before you click it.
                         </div>
                     </div>
                 </div>
@@ -283,8 +294,9 @@
                         Type the Part ID (e.g. <code>MMC-001</code> or <code>MMF-456</code>) into the
                         <strong>Part Identifier</strong> field.
                         The <strong>Package Type</strong> line below automatically updates
-                        to show the detected package category (such as <em>Skids</em>, <em>Coils</em>,
-                        <em>Sheet Material</em>, etc.) once you type a recognized part.
+                        to show the detected package category — <em>Coils</em> for parts starting
+                        with <code>MMC</code>, <em>Sheets</em> for parts starting with
+                        <code>MMF</code>, and <em>Skids</em> for everything else.
                     </p>
                     <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-NonPO-Step1.png"
                        class="screenshot-wrap"
@@ -428,9 +440,10 @@
             <div class="callout callout-info">
                 <span class="callout-icon" aria-hidden="true">ℹ️</span>
                 <div class="callout-body">
-                    If <strong>Next</strong> is still greyed out after clicking a row, check
-                    whether the part is on Quality Hold — you may need to complete the
-                    acknowledgment first.  See the <a href="#quality-hold">Quality Hold section</a>.
+                    If <strong>Next</strong> is greyed out after you clicked a row, you most
+                    likely cancelled the Quality Hold acknowledgment — cancelling clears the
+                    selection.  Click the row again and approve the notice this time.
+                    See the <a href="#quality-hold">Quality Hold section</a>.
                 </div>
             </div>
         </section>
@@ -440,8 +453,9 @@
             <h2>Quality Hold Parts</h2>
             <p>
                 Some parts are flagged in InforVisual as requiring a <strong>Quality Hold</strong>.
-                The app detects these automatically and requires two acknowledgments before
-                you can proceed.  <strong>This cannot be bypassed.</strong>
+                The app detects these automatically and asks you to acknowledge the hold
+                <strong>twice</strong> — once when you pick the part, and once when you save.
+                <strong>This cannot be bypassed.</strong>
             </p>
 
             <h3>How to identify a Quality Hold part</h3>
@@ -459,11 +473,11 @@
             </a>
             <span class="screenshot-caption">The Quality Hold part (MMFSR0001) is displayed in red in the parts table</span>
 
-            <h3>The Quality Hold acknowledgment dialog</h3>
+            <h3>When you select a Quality Hold part</h3>
             <p>
-                When you select a Quality Hold part and click <strong>Next</strong>, the app
-                shows an acknowledgment dialog.  There are <strong>two</strong> acknowledgments —
-                you must confirm both before the wizard can continue.
+                The first acknowledgment appears <strong>as soon as you click the row</strong> —
+                before you press <strong>Next</strong>.  Its title is
+                <em>QUALITY HOLD - Acknowledgment 1 of 2</em>.
             </p>
 
             <a href="../../Tutorial_Images/Module_Receiving/Mode-Guided_Wizard/View_Receiving_POEntry/View_Receiving_POEntry-Both-QualityHold-Notice.png"
@@ -495,20 +509,56 @@
                     <thead>
                         <tr>
                             <th>Button</th>
+                            <th>Dialog</th>
                             <th>What it does</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="col-name">I Understand — Will Contact Quality</td>
-                            <td>Confirms you have read the notice and will contact the Quality team.  Click this to advance to Acknowledgment 2 of 2.</td>
+                            <td class="col-name">I Understand - Will Contact Quality</td>
+                            <td>Acknowledgment 1 of 2</td>
+                            <td>Confirms you have read the notice and will contact the Quality team.  The part stays selected and you can press <strong>Next</strong>.</td>
                         </tr>
                         <tr>
                             <td class="col-name">Cancel Entry</td>
-                            <td>Cancels the current selection and returns to the parts table so you can choose a different part or stop the transaction.</td>
+                            <td>Acknowledgment 1 of 2</td>
+                            <td>Deselects the part and clears it from the wizard, so the <strong>Next</strong> button goes inactive again.  Use this if you picked the wrong row.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">✓ YES - Save Now</td>
+                            <td>Final confirmation</td>
+                            <td>Confirms for the second and final time and saves the load.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">✗ NO - Cancel Save</td>
+                            <td>Final confirmation</td>
+                            <td>Cancels the save.  Nothing is written to the label queue.  This is the default button, so pressing <kbd>Enter</kbd> does <em>not</em> save by accident.</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <h3>The second acknowledgment happens at save time</h3>
+            <p>
+                The second dialog does <strong>not</strong> appear when you pick the part — it
+                appears when you save the load.  It is titled
+                <em>FINAL QUALITY HOLD CONFIRMATION - Action Required</em> and lists every
+                Quality Hold part in the load along with its restriction type.
+            </p>
+            <ul>
+                <li>It asks you to confirm three things: that you contacted Quality, that Quality physically inspected the loads, and that Quality accepted them.</li>
+                <li>Both buttons are shown in dark red to make the checkpoint hard to miss.</li>
+                <li>If you choose <strong>✗ NO - Cancel Save</strong>, the load stays on screen so you can contact Quality and try again.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>Why two dialogs?</strong>
+                    The first one warns you the moment you pick the part.  The second one makes
+                    you confirm again at the point of no return, after you have had time to
+                    actually reach the Quality team.
+                </div>
             </div>
 
             <div class="callout callout-danger">

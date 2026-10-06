@@ -21,6 +21,8 @@
             <li><a href="../../features/reporting/index.html"><span class="nav-icon" aria-hidden="true">📊</span> Reporting</a></li>
             <li><a href="../../features/volvo/index.html"><span class="nav-icon" aria-hidden="true">🚚</span> Volvo</a></li>
             <li><a href="../../features/shiprec-tools/index.html"><span class="nav-icon" aria-hidden="true">🛠️</span> ShipRec Tools</a></li>
+            <li><a href="../../features/scanner/index.html"><span class="nav-icon" aria-hidden="true">🖥️</span> Scanner</a></li>
+            <li><a href="../../database/index.html"><span class="nav-icon" aria-hidden="true">🗄️</span> Database</a></li>
             <li><a href="../index.html" class="is-current"><span class="nav-icon" aria-hidden="true">🎓</span> Help</a></li>
         </ul>
     </nav>
@@ -34,6 +36,7 @@
             <li><a href="#overview">Overview</a></li>
             <li><a href="#where">Where the buttons are</a></li>
             <li><a href="#what-they-open">What each button opens</a></li>
+            <li><a href="#managing">Managing your buttons</a></li>
             <li><a href="#before-you-use">Before you use them</a></li>
             <li><a href="#missing-setup">If setup is missing</a></li>
             <li><a href="#settings-help">Checking saved paths in Settings</a></li>
@@ -64,21 +67,30 @@
             <span class="breadcrumb-current">Label Buttons</span>
         </nav>
 
+        <!-- Print action: opens the browser print dialog for a paper copy of this guide. -->
+        <div class="guide-toolbar">
+            <button type="button" class="tut-print-btn" data-print-guide>
+                <span class="tut-print-btn-icon" aria-hidden="true">🖨️</span>
+                Print this Guide
+            </button>
+        </div>
+
         <div class="tut-hero">
             <div class="module-badge">🎓 End-User Help</div>
-            <h1>Using the Receiving Label Buttons</h1>
+            <h1>Using the Label Buttons</h1>
             <p class="lead">
-                The Receiving workflow includes two quick label buttons that open the configured LabelView templates
-                without leaving the workflow. This page explains what each button does, what the app checks first,
-                and what happens if a required path is missing.
+                The main window has a row of label shortcut buttons at the bottom of the left navigation
+                pane.  Each one opens a configured LabelView template in a single click.  This page explains
+                which buttons you get, how to change them, what the app checks first, and what happens if a
+                required path is missing.
             </p>
         </div>
 
         <section id="overview" class="content-section">
             <h2>Overview</h2>
             <p>
-                The label buttons are shortcut actions for the templates most Receiving users need during daily work.
-                They are meant to save time by opening the configured label directly from the workflow instead of making
+                The label buttons are shortcut actions for the label templates you use most often.
+                They save time by opening the configured label directly instead of making
                 you browse to the label file by hand.
             </p>
 
@@ -94,31 +106,102 @@
         <section id="where" class="content-section">
             <h2>Where the buttons are</h2>
             <p>
-                The label buttons sit in the bottom-right utility area of the Receiving workflow beside the
-                <strong>Help</strong> button. They use compact icons so they do not crowd the main <strong>Back</strong>
-                and <strong>Next</strong> workflow buttons.
+                The buttons sit in a row at the <strong>bottom of the left navigation pane</strong>,
+                underneath the module links and just above the bottom edge of the window.  They appear on
+                every screen, so you do not need to navigate anywhere first.
+            </p>
+            <p>
+                Each button is a small square icon button.  Hover over one and a tooltip tells you exactly
+                which label it opens — for example <em>Open Receiving</em>.
+            </p>
+            <p>
+                If you have more buttons than fit on one row, a pair of small <strong>up and down arrow</strong>
+                buttons appears at the right-hand end of the row.  Use them to page through the rest of your
+                buttons.
             </p>
 
             <div class="callout callout-success">
                 <span class="callout-icon" aria-hidden="true">✅</span>
                 <div class="callout-body">
                     Keep using <strong>Back</strong> and <strong>Next</strong> for the workflow itself.
-                    The label icons are utility shortcuts and do not change your current wizard step.
+                    The label buttons are shortcuts and do not change your current wizard step.
                 </div>
             </div>
         </section>
 
         <section id="what-they-open" class="content-section">
             <h2>What each button opens</h2>
+            <p>
+                A new user starts with <strong>four</strong> label buttons:
+            </p>
             <ul>
-                <li><strong>Receiving Label</strong> opens the main Receiving label template.</li>
-                <li><strong>Mini-Receiving Label</strong> opens the smaller Receiving label template.</li>
+                <li><strong>Receiving</strong> (green) — the main Receiving label template.</li>
+                <li><strong>Mini Receiving</strong> (red) — the smaller Receiving label template.</li>
+                <li><strong>Dunnage</strong> (blue) — the Dunnage label template.</li>
+                <li><strong>Volvo</strong> (black) — the Volvo label template.</li>
             </ul>
 
             <p>
-                Each button uses the path saved in the Receiving settings page. If your workstation is configured correctly,
-                the app opens the selected <strong>.lbl</strong> file the same way a Windows shortcut would open it.
+                Each button uses a path saved in your own settings, so different operators on the same
+                computer can point at different files.  When the path is valid, the app opens the
+                selected <strong>.lbl</strong> file the same way a Windows shortcut would open it.
             </p>
+
+            <div class="callout callout-info">
+                <span class="callout-icon" aria-hidden="true">ℹ️</span>
+                <div class="callout-body">
+                    <strong>The set of buttons is yours to change.</strong>
+                    You can add, copy, rename, or remove buttons, and you can turn individual buttons off
+                    without deleting them — up to ten enabled buttons.  See the next section.
+                </div>
+            </div>
+        </section>
+
+        <section id="managing" class="content-section">
+            <h2>Managing your buttons</h2>
+            <p>
+                <strong>Right-click any label button</strong> to open its menu.  The menu has three
+                options:
+            </p>
+
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Menu option</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-name">Edit</td>
+                            <td>Opens the <strong>LabelView</strong> settings page so you can review or correct the saved executable path.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Duplicate</td>
+                            <td>Creates a copy of the button directly after it, named the same with <em>Copy</em> appended.  The copy starts with the same label path, so edit it afterwards.</td>
+                        </tr>
+                        <tr>
+                            <td class="col-name">Delete</td>
+                            <td>Removes the button from your row.  The other buttons close the gap and stay in order.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                Your button setup is saved to your own account, not to the computer, so it follows you to
+                any workstation you log into.
+            </p>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    <strong>Ten enabled buttons is the limit.</strong>
+                    If you try to duplicate past ten, the app shows a message instead of adding one.
+                    Remove a button you no longer need, or disable it, if you have run out of room.
+                </div>
+            </div>
         </section>
 
         <section id="before-you-use" class="content-section">
@@ -183,7 +266,9 @@
                 <details class="faq-item" open>
                     <summary>The label file path is missing or invalid</summary>
                     <div class="faq-body">
-                        The app opens the <strong>Receiving Label Files</strong> settings page so the saved template path can be corrected.
+                        The app opens the label-file settings page for that button's module — for example
+                        <strong>Receiving Label Files</strong> for the Receiving buttons, or the Dunnage or
+                        Volvo label-file page for those buttons — so the saved template path can be corrected.
                     </div>
                 </details>
             </div>

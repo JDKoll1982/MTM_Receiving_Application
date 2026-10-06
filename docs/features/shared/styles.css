@@ -502,21 +502,24 @@ kbd {
 /* ----------------------------------------------------------
    Data table (database docs)
    ---------------------------------------------------------- */
-.db-table-wrap {
+.db-table-wrap,
+.table-wrapper {
     overflow-x: auto;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     margin: 16px 0;
 }
 
-.db-table {
+.db-table,
+.schema-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8125rem;
     background: var(--surface-strong);
 }
 
-.db-table thead th {
+.db-table thead th,
+.schema-table thead th {
     background: var(--surface-muted);
     padding: 10px 14px;
     text-align: left;
@@ -529,16 +532,19 @@ kbd {
     white-space: nowrap;
 }
 
-.db-table tbody td {
+.db-table tbody td,
+.schema-table tbody td {
     padding: 10px 14px;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border);
     vertical-align: top;
 }
 
-.db-table tbody tr:last-child td { border-bottom: none; }
+.db-table tbody tr:last-child td,
+.schema-table tbody tr:last-child td { border-bottom: none; }
 
-.db-table tbody tr:hover td { background: var(--surface-muted); }
+.db-table tbody tr:hover td,
+.schema-table tbody tr:hover td { background: var(--surface-muted); }
 
 .db-table .col-name  { font-family: "Consolas","Cascadia Code",monospace; color: var(--blue); font-weight: 600; }
 .db-table .col-type  { font-family: "Consolas","Cascadia Code",monospace; color: var(--text-muted); white-space: nowrap; }
@@ -548,6 +554,29 @@ kbd {
 .badge-idx  { display: inline-block; padding: 1px 7px; border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green); font-size: 0.6875rem; font-weight: 700; }
 .badge-fk   { display: inline-block; padding: 1px 7px; border-radius: var(--radius-pill); background: var(--gold-soft);  color: var(--gold);  font-size: 0.6875rem; font-weight: 700; }
 .badge-null { display: inline-block; padding: 1px 7px; border-radius: var(--radius-pill); background: var(--surface-muted); color: var(--text-muted); font-size: 0.6875rem; font-weight: 600; }
+
+/* ----------------------------------------------------------
+   Doc figure (screenshot on feature / database pages)
+   ---------------------------------------------------------- */
+.doc-figure {
+    margin: 18px 0;
+}
+
+.doc-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-strong);
+}
+
+.doc-figure-caption {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
 
 /* ----------------------------------------------------------
    FAQ / accordion

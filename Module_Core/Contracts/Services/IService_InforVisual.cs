@@ -221,6 +221,22 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         );
 
         /// <summary>
+        /// Returns every location that actually exists between two inclusive location IDs,
+        /// ordered by location ID, scoped to <paramref name="warehouseCode"/>.
+        /// Used to expand a typed location range into real warehouse locations.
+        /// </summary>
+        /// <param name="locationIdStart">Inclusive lower bound location ID (e.g. "V-A0-01").</param>
+        /// <param name="locationIdEnd">Inclusive upper bound location ID (e.g. "V-A0-05").</param>
+        /// <param name="warehouseCode">Warehouse code to scope results (e.g. "002").</param>
+        /// <param name="maxResults">Row cap so an accidentally huge range cannot flood the UI.</param>
+        public Task<Model_Dao_Result<List<Model_InforVisualLocationRow>>> GetLocationsInRangeAsync(
+            string locationIdStart,
+            string locationIdEnd,
+            string warehouseCode,
+            int maxResults = 60
+        );
+
+        /// <summary>
         /// Returns current positive-quantity warehouse locations for either one exact part or all
         /// parts currently found in the requested warehouse location.
         /// </summary>
