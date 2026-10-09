@@ -1,6 +1,6 @@
 # Material Availability Transaction Sheet
 
-Last Updated: 2026-10-06
+Last Updated: 2026-10-07
 
 ## What this sheet is
 
@@ -21,9 +21,11 @@ Each part occupies one row of the sheet:
 | ----------- | -------------------------------------------------------------------------------------------- |
 | Part card   | **Part Number**, **Description**, and **Quantity** (quantity on hand in the searched location) |
 | Location    | The destination location, auto-filled on its own small row above the entry table               |
-| Entry table | **Qty 1** through **Qty 8** across the top, four blank rows, and a smaller **Total** row underneath |
+| Entry table | **Qty 1** through **Qty 8** across the top, three blank rows, and a smaller **Total** row underneath |
 
-- Sixteen quantity cells per part (eight columns by four rows) are available for handwriting.
+- Twenty-four quantity cells per part (eight columns by three rows) are available for handwriting.
+- Three entry rows is the deepest the table can go and still keep five part blocks on one printed
+  page. A fourth row pushed the fifth block onto a new sheet and left the rest of the page blank.
 - The bottom **Total** row is shorter than the quantity rows; its label spans the first seven
   columns and the last cell collects the summed quantity.
 - The location is printed for the operator, so the table needs no location column and all eight
@@ -53,8 +55,9 @@ Each part occupies one row of the sheet:
 
 ## Notes
 
-- Sheet size is Letter portrait with 0.2in margins.
+- Sheet size is Letter portrait with 0.2in margins, which leaves about 10.6in of usable height.
 - A part block never splits across pages; if a block does not fit, it moves whole to the next page.
+- Five part blocks measure roughly 9.3in, so a page has headroom for a wrapped description.
 - Changing the number of quantity columns, entry rows, or parts per page means editing the
   `Transaction*` constants in the service and the expectations in
   `Service_Tool_MaterialAvailabilityBoardTests`.

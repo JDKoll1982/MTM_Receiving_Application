@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -70,8 +71,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return false;
             }
 
-            var target = FindDescendant<NumberBox>(LoadsItemsControl);
+            var target = FindDescendant<TextBox>(LoadsItemsControl);
             return target is not null && _focusService.TrySetFocus(target);
+        }
+
+        /// <summary>
+        /// Blocks any keystroke that would put a non-digit character into a weight or quantity box,
+        /// so the live Current Total can never be computed from unparseable input.
+        /// </summary>
+        private void WeightQuantityTextBox_BeforeTextChanging(
+            TextBox sender,
+            TextBoxBeforeTextChangingEventArgs args
+        )
+        {
+            _ = sender;
+            args.Cancel = args.NewText.Any(character => !char.IsDigit(character));
         }
 
         private void View_Receiving_WeightQuantity_Unloaded(object sender, RoutedEventArgs e)

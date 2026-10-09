@@ -45,6 +45,32 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### Weight/Quantity boxes accept digits only and update Current Total while typing (2026-10-08)
+
+- **Symptom:** On the guided **Receiving - Enter Weight & Quantity** step, the **Current Total**
+  readout did not move until a box was committed (Enter, spin-button click, or clicking away), so
+  users could not watch the running total while keying loads.
+- **Cause:** Each load row used a `NumberBox` with `AcceptsExpression="True"`. `NumberBox` only
+  commits `Value` on Enter, spin-button click, or focus change, so the bound
+  `Model_ReceivingLoad.WeightQuantity` — and therefore `CurrentTotal` — stayed behind the typed
+  text. `AcceptsExpression` also allowed expressions such as `2+3`, and unparseable text resolved
+  to `NaN`, which the decimal converter silently turned into `0`.
+- **Fix:** Each load row is now a `TextBox` (`InputScope="Number"`) bound per keystroke
+  (`UpdateSourceTrigger=PropertyChanged`) through the new `Converter_DecimalToBlankText`, so
+  `WeightQuantity` — and the `CurrentTotal` the view model already recalculates from
+  `Model_ReceivingLoad.PropertyChanged` — update on every digit. A `BeforeTextChanging` handler
+  cancels any keystroke containing a non-digit character, so an unparseable value can never reach
+  the model and Current Total can never be computed from bad input.
+- **Notes:** Weight/Quantity stays whole-number entry, matching the `Enter whole number`
+  placeholder and the label-side rounding in `Dao_ReceivingLabelData`. The blank sentinel is `0`,
+  so `Converter_DecimalToBlankText` renders `0` as an empty box, mirroring
+  `Converter_IntToBlankText`. Focus-on-step-entry now targets the first `TextBox`.
+- Files changed:
+  - `Module_Receiving/Views/View_Receiving_WeightQuantity.xaml`
+  - `Module_Receiving/Views/View_Receiving_WeightQuantity.xaml.cs`
+  - `Module_Core/Converters/Converter_DecimalToBlankText.cs`
+  - `MTM_Receiving_Application.Tests/Unit/Module_Core/Converters/Converter_DecimalToBlankTextTests.cs`
+
 #### Package Type counts start empty and update EA per Package while typing (2026-09-24)
 
 - **Symptom:** The guided **Receiving - Enter Package Type** step opened with `1` already shown in

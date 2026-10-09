@@ -15,6 +15,7 @@
         <converters:Converter_IntToVisibility x:Key="IntToVisibilityConverter" />
         <converters:Converter_DoubleToDecimal x:Key="DoubleToDecimalConverter" />
         <converters:Converter_DecimalToDouble x:Key="DecimalToDoubleConverter" />
+        <converters:Converter_DecimalToBlankText x:Key="DecimalToBlankTextConverter" />
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
@@ -277,14 +278,17 @@
                                         Glyph="&#xE7B8;" />
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind LoadNumber, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='Load #{0}'}" />
                                 </StackPanel>
-                                <NumberBox
+                                <!--  A TextBox (not a NumberBox) is used so the quantity, and the Current
+                                      Total readout above it, update on every keystroke. BeforeTextChanging
+                                      rejects non-digit input so an unparseable value can never reach the model.  -->
+                                <TextBox
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
-                                    AcceptsExpression="True"
                                     AutomationProperties.Name="{Binding ElementName=Root, Path=ViewModel.WeightQuantityAccessibilityName}"
-                                    Minimum="0"
+                                    BeforeTextChanging="WeightQuantityTextBox_BeforeTextChanging"
+                                    InputScope="Number"
                                     PlaceholderText="{Binding ElementName=Root, Path=ViewModel.WeightQuantityPlaceholderText}"
-                                    Value="{x:Bind WeightQuantity, Mode=TwoWay, Converter={StaticResource DecimalToDoubleConverter}}" />
+                                    Text="{x:Bind WeightQuantity, Mode=TwoWay, Converter={StaticResource DecimalToBlankTextConverter}, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

@@ -28,8 +28,12 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     /// <summary>Quantity columns in the printed transaction sheet entry table.</summary>
     private const int TransactionQuantityColumnCount = 8;
 
-    /// <summary>Blank handwriting rows in the transaction sheet entry table.</summary>
-    private const int TransactionEntryRowCount = 4;
+    /// <summary>
+    /// Blank handwriting rows in the transaction sheet entry table. Kept at three so a part block
+    /// (card + location row + entry table + total row) fits five to a printed sheet page; a fourth
+    /// row pushed the fifth block onto the next physical page and left a large gap.
+    /// </summary>
+    private const int TransactionEntryRowCount = 3;
 
     /// <summary>
     /// Part rows printed per transaction sheet page. Sized so the eight-column, four-row entry
@@ -1728,8 +1732,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     }
 
     /// <summary>
-    /// Handwritten entry table for one part: eight quantity columns four rows deep, with a
-    /// smaller total row underneath for the summed quantity.
+    /// Handwritten entry table for one part: eight quantity columns three rows deep, with a
+    /// smaller total row underneath for the summed quantity. Three rows is the deepest the table
+    /// can go before a five-part page overflows the printable area.
     /// </summary>
     private static void AppendTransactionEntryGrid(StringBuilder html)
     {

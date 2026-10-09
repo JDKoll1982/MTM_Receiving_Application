@@ -1397,12 +1397,15 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain(">Qty 8<");
         result.Data.HtmlFragment.Should().NotContain(">Qty 9<");
 
-        // Four handwriting rows plus a smaller total row underneath (a full-width label cell).
+        // Three handwriting rows plus a smaller total row underneath (a full-width label cell).
+        // A fourth row made a five-part page taller than the printable area, which pushed the
+        // last block onto a new sheet and left a large gap, so the row count is pinned here.
         result.Data.HtmlFragment.Should().Contain("class='entry-total-row'");
         result.Data.HtmlFragment.Should().Contain("entry-total-label' colspan='7'>Total<");
         result.Data.HtmlFragment.Should().Contain("class='entry-total-value'");
         result.Data.HtmlFragment.Should().NotContain("Take To");
         result.Data.HtmlFragment.Should().NotContain("entry-spacer");
+        Regex.Matches(result.Data.HtmlFragment, "class='entry-cell'").Should().HaveCount(24);
 
         // Each part card carries the description alongside the part number and quantity.
         result.Data.HtmlFragment.Should().Contain(">Description<");
