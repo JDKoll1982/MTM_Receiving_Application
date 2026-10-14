@@ -280,6 +280,62 @@ public class Dao_Tool_LotMarking
         );
     }
 
+    /// <summary>
+    /// Lists the unmarked receiving rows of one part, grouped by the heat value as it was captured
+    /// and the supplier. Read only: the preview writes nothing.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_Tool_UnmarkedLotRow>>> GetUnmarkedLotRowsAsync(
+        string partId
+    )
+    {
+        var parameters = new Dictionary<string, object> { { "p_part_id", partId } };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Tool_UnmarkedLotRow>(
+            _connectionString,
+            "sp_Receiving_UnmarkedLotMarkings_Preview",
+            MapUnmarkedLotRow,
+            parameters
+        );
+    }
+
+    /// <summary>
+    /// Writes one lot's resolved marking onto every unmarked row that belongs to it, in both the
+    /// queue and receiving history. Returns the total number of rows written.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> ApplyUnmarkedLotMarkingAsync(
+        string partId,
+        string heat,
+        string supplierName,
+        string shapeGlyph,
+        string colorCode
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_part_id", partId },
+            { "p_heat", heat },
+            { "p_supplier_name", supplierName },
+            { "p_heat_shape_code", shapeGlyph },
+            { "p_heat_color_code", colorCode },
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<int>(
+            _connectionString,
+            "sp_Receiving_UnmarkedLotMarkings_Apply",
+            reader => ReadInt(reader, "queue_rows_updated") + ReadInt(reader, "history_rows_updated"),
+            parameters
+        );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
+        }
+
+        return Model_Dao_Result_Factory.Success<int>(
+            result.Data is { Count: > 0 } ? result.Data[0] : 0
+        );
+    }
+
     private static Model_Tool_LotMarking MapMarking(IDataReader reader) =>
         new()
         {
@@ -309,6 +365,14 @@ public class Dao_Tool_LotMarking
             AddedAt = ReadNullableDateTime(reader, "added_at"),
         };
 
+    private static Model_Tool_UnmarkedLotRow MapUnmarkedLotRow(IDataReader reader) =>
+        new(
+            ReadString(reader, "source"),
+            ReadString(reader, "heat"),
+            ReadString(reader, "supplier_name"),
+            ReadInt(reader, "row_count")
+        );
+
     private static string ReadString(IDataReader reader, string column)
     {
         var ordinal = reader.GetOrdinal(column);
@@ -319,6 +383,12 @@ public class Dao_Tool_LotMarking
     {
         var ordinal = reader.GetOrdinal(column);
         return !reader.IsDBNull(ordinal) && Convert.ToInt32(reader.GetValue(ordinal)) != 0;
+    }
+
+    private static int ReadInt(IDataReader reader, string column)
+    {
+        var ordinal = reader.GetOrdinal(column);
+        return reader.IsDBNull(ordinal) ? 0 : Convert.ToInt32(reader.GetValue(ordinal));
     }
 
     private static DateTime? ReadNullableDateTime(IDataReader reader, string column)

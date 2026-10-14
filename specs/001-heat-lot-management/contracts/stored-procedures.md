@@ -31,6 +31,14 @@ file they already occupy under `Database/Database_Deployment/Sql_Files/StoredPro
   `heat_shape_code`, `heat_color_code`, `source`, `is_locked`, `override_reason`, `notes`,
   `modified_by`, `created_at`, `updated_at`. A unique key on (`heat_key`, `supplier_group`) enforces
   one marking per lot (FR-001, FR-003, FR-005).
+- **As built (2026-10-14).** The shipped table names these columns `heat_number`,
+  `heat_number_normalized`, `supplier_id`, `supplier_name`, `shape_code`, `color_code`,
+  `marking_source`, `resolved_by` and `resolved_at`, and it holds the supplier **group** in
+  `supplier_id` rather than in a separate `supplier_group` column. What matters here is the width:
+  the group is `VARCHAR(255)`, sized for the normalized vendor name it falls back to, and not the
+  `VARCHAR(15)` of an id. A 15 character column and matching procedure parameters rejected real
+  vendor names with error 1406 and stopped markings being recorded, which is why
+  `17_Migration_lot_markings_supplier_group_width.sql` exists.
 - `lot_marking_part_scope` — new,
   `Database/Database_Deployment/Sql_Files/Schemas/51_Table_lot_marking_part_scope.sql`. One row per
   part number: `id`, `part_id`, `is_enabled`, `added_by`, `created_at`, `updated_at`. A unique key on

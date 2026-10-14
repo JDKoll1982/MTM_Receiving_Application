@@ -68,4 +68,27 @@ public interface IService_Tool_LotMarking
         string? shapeGlyph,
         string? colorCode
     );
+
+    /// <summary>
+    /// Reports how many rows and how many distinct lots filling in the unmarked lots of one part
+    /// would cover. Writes nothing, so it is safe to call before the user confirms.
+    /// </summary>
+    /// <remarks>
+    /// Two spellings that normalize to one heat number count as one lot, and a row whose heat
+    /// number is missing or blank is not a lot at all and is not counted.
+    /// </remarks>
+    Task<Model_Dao_Result<Model_Tool_LotMarkingBackfillPreview>> PreviewUnmarkedLotMarkingsAsync(
+        string partId
+    );
+
+    /// <summary>
+    /// Fills in every unmarked lot of one part, returning the number of rows written. Only rows
+    /// that carry no marking are touched, so running it twice writes nothing the second time.
+    /// </summary>
+    /// <remarks>
+    /// Does nothing and returns <c>0</c> when the system-wide switch is off or when there is
+    /// nothing unmarked. A lot that already has a recorded marking is filled in with that same
+    /// marking rather than a new one, because a marking is never recomputed.
+    /// </remarks>
+    Task<Model_Dao_Result<int>> FillUnmarkedLotMarkingsAsync(string partId, string actingUser);
 }

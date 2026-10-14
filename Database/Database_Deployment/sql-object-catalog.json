@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T14:59:24.9585670-05:00",
+  "generatedAt": "2026-10-14T16:19:12.3990441-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1636,6 +1636,57 @@
         {
           "alias": "rld",
           "object": "receiving_label_data"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/17_Migration_lot_markings_supplier_group_width.sql",
+      "category": "migration_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_mig17_apply",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [
+        {
+          "name": "v_length",
+          "sqlType": "INT DEFAULT NULL"
+        }
+      ],
+      "referencedObjects": [
+        "__system__:columns",
+        "__system__:PARAMETERS"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [
+        "sp_mig17_apply"
+      ],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [
+        "v_length"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "__system__:COLUMNS",
+          "object": "__system__:COLUMNS"
+        },
+        {
+          "alias": "c",
+          "object": "__system__:COLUMNS"
+        },
+        {
+          "alias": "__system__:PARAMETERS",
+          "object": "__system__:PARAMETERS"
+        },
+        {
+          "alias": "p",
+          "object": "__system__:PARAMETERS"
         }
       ]
     },
@@ -13740,6 +13791,147 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Apply.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_UnmarkedLotMarkings_Apply",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_heat",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_supplier_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_heat_shape_code",
+          "sqlType": "VARCHAR(32)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_heat_color_code",
+          "sqlType": "VARCHAR(32)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_is_enabled",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_queue_rows",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_history_rows",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "lot_marking_part_scope"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "receiving_label_data",
+          "columns": [
+            "heat_shape_code"
+          ]
+        },
+        {
+          "table": "receiving_history",
+          "columns": [
+            "heat_shape_code"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id",
+        "p_heat",
+        "p_supplier_name",
+        "p_heat_shape_code",
+        "p_heat_color_code"
+      ],
+      "variableTokensUsed": [
+        "v_is_enabled",
+        "v_queue_rows",
+        "v_history_rows"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "lot_marking_part_scope",
+          "object": "lot_marking_part_scope"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Preview.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_UnmarkedLotMarkings_Preview",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_label_data",
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_receiving_vendor_variables_delete.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -15396,7 +15588,7 @@
         {
           "direction": "IN",
           "name": "p_supplier_id",
-          "sqlType": "VARCHAR(15)"
+          "sqlType": "VARCHAR(255)"
         },
         {
           "direction": "IN",
@@ -15500,7 +15692,7 @@
         {
           "direction": "IN",
           "name": "p_supplier_id",
-          "sqlType": "VARCHAR(15)"
+          "sqlType": "VARCHAR(255)"
         }
       ],
       "declaredVariables": [],

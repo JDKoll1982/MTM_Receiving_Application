@@ -5,7 +5,8 @@
 -- Parameters:
 --   p_heat_number            VARCHAR(100) - Heat number as captured.
 --   p_heat_number_normalized VARCHAR(100) - Matching key.
---   p_supplier_id            VARCHAR(15)  - Supplier group, or 'NONPO'.
+--   p_supplier_id            VARCHAR(255) - Supplier group: the official supplier id, the
+--                                           normalized supplier name when no id resolved, or 'NONPO'.
 --   p_supplier_name          VARCHAR(255) - Supplier name as seen on the receipt.
 --   p_shape_code             VARCHAR(32)  - Assigned shape code.
 --   p_color_code             VARCHAR(32)  - Assigned color code.
@@ -23,7 +24,7 @@ DELIMITER $$
 CREATE PROCEDURE `sp_LotMarkings_Insert`(
     IN p_heat_number VARCHAR(100),
     IN p_heat_number_normalized VARCHAR(100),
-    IN p_supplier_id VARCHAR(15),
+    IN p_supplier_id VARCHAR(255),
     IN p_supplier_name VARCHAR(255),
     IN p_shape_code VARCHAR(32),
     IN p_color_code VARCHAR(32),

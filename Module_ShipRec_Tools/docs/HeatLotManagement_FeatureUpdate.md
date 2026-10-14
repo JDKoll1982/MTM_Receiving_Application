@@ -2,7 +2,7 @@
 
 - **Last Updated:** 2026-10-14
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
-- **Status:** Shipped 2026-10-14 — complete, 60 of 60 tasks. Build green, 802 of 802 tests pass.
+- **Status:** Shipped 2026-10-14 — complete, 60 of 60 tasks. Build green, 811 of 811 tests pass. Lot marking backfill added 2026-10-14 (user story 6), supplier group width fixed 2026-10-14.
 - **New tables:** `lot_markings`, `lot_marking_part_scope` (MySQL, `mtm_receiving_application` schema)
 - **Existing lot key:** `receiving_label_data.heat` and `receiving_history.heat` already store the lot number — no new lot column is introduced
 
@@ -165,6 +165,7 @@ round trip for both purchase-order and non-PO receipts.
 - `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Get.sql`
 - `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_GetForReprint.sql`
 - `Database/Database_Deployment/Sql_Files/Migrations/16_Migration_lot_markings.sql`
+- `Database/Database_Deployment/Sql_Files/Migrations/17_Migration_lot_markings_supplier_group_width.sql`
 - `Database/SyncTool/sync_policy.yml`
 - `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Helpers/Helper_LotMarkingResolverTests.cs`
 - `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
@@ -350,3 +351,69 @@ Settings manifest entry, matching the existing `ShipRecTools` category shape.
 - All settings are editable through the settings core and governed by the existing permission model.
 - Tests exist and pass for the resolver, the service, the view model, and the new stored procedures.
 - Database artifacts and module documentation are updated to match the shipped state.
+
+## Lot Marking Backfill (user story 6, added 2026-10-14)
+
+A lot is only marked when its receipt is saved and its part is already on the enabled list. Receipts
+taken before a part was added therefore stayed unmarked forever, leaving an operator looking at a
+part with some lots marked and others blank. The tool can now fill those in, one enabled part at a
+time, from the part list on the tool page.
+
+- **Scope**: unmarked rows in both `receiving_label_data` and `receiving_history`, for one part that
+  is already on the enabled list. A part that is not enabled cannot be filled in.
+- **Preview first**: the action reports how many distinct lots and how many rows it would touch and
+  writes nothing until the user confirms. Cancel is the dialog's default button, because this writes
+  to historical records.
+- **Only NULLs are filled.** A row that already carries a marking is never touched, so no handler ever
+  sees a marking change under them, and running the action a second time writes nothing.
+- **One lot, one marking**: rows are grouped by the normalized heat number plus the normalized
+  supplier, so two raw spellings that normalize to one lot receive the same shape and color.
+- **Blank heat stays unmarked**, including the `"Nothing Entered"` sentinel, matching the save path.
+
+New database surface, both under `Sql_Files/StoredProcedures/Receiving/`:
+
+- `sp_Receiving_UnmarkedLotMarkings_Preview` — read only. Lists the unmarked rows grouped by raw heat
+  and supplier with a row count, so the application can count distinct lots. The heat is returned as
+  captured because normalization belongs to the application.
+- `sp_Receiving_UnmarkedLotMarkings_Apply` — fills one lot in a single statement across both tables,
+  and refuses when the part is not enabled, when the heat is blank, or when a shape or color is
+  missing.
+
+The ledger stays authoritative throughout: a lot that already has a row, locked or not, is filled in
+with that row's existing codes rather than a new pair.
+
+## Supplier Group Width Fix (2026-10-14)
+
+The tool refused to record a marking on real data with:
+
+> Stored procedure 'sp_LotMarkings_Resolve' failed: Data too long for column 'p_supplier_id' at row 1
+
+The supplier group is the official supplier id when the Infor Visual vendor search returns exactly one
+match, and the normalized vendor name otherwise. The name is the common case: a fuzzy vendor search
+that returns nothing, or several vendors, falls back to it. Vendor names are `VARCHAR(255)` on both
+receiving tables, but the group column and the `p_supplier_id` parameter of both lot marking
+procedures were declared `VARCHAR(15)`, which is the width of an id rather than of a name. MySQL
+validated the value against the declared parameter and rejected it with error 1406 before any marking
+could be written, so the failure happened at the procedure boundary and the column would have refused
+the value too.
+
+Shortening the name to make it fit was rejected deliberately. Two vendors can share their first
+fifteen characters, for example two divisions of one manufacturer. A shortened key would merge them
+into a single lot and give them one shared marking, which is what the rule against that exists to
+prevent. The group key has to carry the whole name.
+
+- `lot_markings.supplier_id` and the `p_supplier_id` parameter of `sp_LotMarkings_Resolve` and
+  `sp_LotMarkings_Insert` are now `VARCHAR(255)`.
+- `17_Migration_lot_markings_supplier_group_width.sql` widens an installed database. It is idempotent
+  and widens only, and it also pins the table to `ROW_FORMAT DYNAMIC`, because the wider key makes
+  `uq_lot_markings_heat_supplier` 1420 bytes in utf8mb4 and that needs the larger key limit.
+- The migration cannot widen a parameter, because procedures are deployed from their own files. It
+  ends with a verification query that reports the declared width of the column and of both
+  parameters, so a hand run can see whether the procedures have been re-created yet.
+
+The contract for this feature asked for a group column at `VARCHAR(255)` from the start. The schema
+shipped it at `VARCHAR(15)`, and no test could catch the difference, because the tests run against an
+in-memory ledger that has no column width. The regression guard added alongside the fix,
+`ResolveMarkingAsync_ShouldKeepTheWholeSupplierName_WhenTwoVendorsShareAnIdLengthPrefix`, pins the
+intent instead: it asserts that two vendors sharing a fifteen character prefix stay two separate lots,
+so a future attempt to shorten the key fails a test rather than merging two suppliers' markings.

@@ -131,6 +131,31 @@ changed.
 4. **Given** the tool is open, **When** a user opens the palette view, **Then** every available shape
    and color is listed.
 
+### User Story 6 - Filling in lots that were never marked (Priority: P2)
+
+A part only receives markings once it is on the enabled list. Every receipt taken before that has no
+marking, so a handler can see some lots of a part marked and others blank. The tool lets a user pick
+an enabled part, see how many of its rows and lots are unmarked, and mark them once they confirm.
+
+**Why this priority**: The gap is visible and confusing to operators, but it does not stop the
+feature working for new receipts. It closes the hole left behind when a part is added late.
+
+**Independent Test**: Take an enabled part with unmarked history rows, run the action, and confirm
+every row that carries a heat number is marked and no already-marked row changed.
+
+**Acceptance Scenarios**:
+
+1. **Given** an enabled part with unmarked rows, **When** the user asks for a preview, **Then** the
+   number of rows and the number of distinct lots are shown and nothing is written.
+2. **Given** a preview is shown, **When** the user confirms, **Then** every unmarked row of each listed
+   lot is written with the shape and color that lot resolves to, in both the queue and history.
+3. **Given** a part whose rows all already carry markings, **When** the user runs the action, **Then**
+   the preview reports nothing to do and no row is written.
+4. **Given** the action has already run for a part, **When** it is run again, **Then** nothing further
+   is written because no unmarked rows remain.
+5. **Given** several rows that normalize to one lot, **When** that lot is filled in, **Then** every one
+   of those rows carries the same shape and color.
+
 ### Edge Cases
 
 - A lot whose heat number is missing, blank, or only whitespace must receive no marking and must not
@@ -149,6 +174,14 @@ changed.
 - A receipt created before this feature has no recorded marking. Reviewing or reprinting it must work
   exactly as it does today.
 - Extremely long or unusual heat values must not stop a receipt from being saved.
+- A part number that is not on the enabled list must not be filled in at all; adding the part is a
+  separate, deliberate act.
+- Filling in markings must never change a row that already carries one, including a row whose lot is
+  locked, which keeps the marking it already has.
+- Rows whose heat number is blank, or is the sentinel the receiving flow substitutes for blank, must
+  stay unmarked when their part is filled in.
+- A part whose history spans both the queue and receiving history must end up consistently marked on
+  both sides, never on one alone.
 
 ## Requirements
 
@@ -193,6 +226,19 @@ changed.
   tool.
 - **FR-022**: Access to the marking tool MUST be limited to users who already have access to the
   Ship/Rec Tools module.
+- **FR-023**: A user MUST be able to fill in the unmarked lots of one enabled part number on demand.
+- **FR-024**: The system MUST report how many rows and how many distinct lots would be filled before
+  writing anything, and MUST write nothing until the user confirms.
+- **FR-025**: Filling in MUST cover unmarked rows in both the receiving queue and receiving history.
+- **FR-026**: Filling in MUST write only to rows that carry no marking. A row that already has one
+  MUST NOT be altered.
+- **FR-027**: Every row of one lot MUST be given the same shape and color, resolved once for that lot.
+- **FR-028**: A lot that already has a recorded marking, including a protected one, MUST be filled in
+  with that same marking rather than a new one.
+- **FR-029**: Rows whose heat number is missing, blank, or the value the receiving flow substitutes
+  for blank MUST be left unmarked.
+- **FR-030**: Filling in MUST be offered only for part numbers already on the enabled list.
+- **FR-031**: Running the action again for the same part MUST be safe and MUST write nothing further.
 
 ### Key Entities
 
@@ -224,6 +270,9 @@ changed.
 - **SC-009**: A handler can find a lot's marking from its heat number in under 10 seconds.
 - **SC-010**: No receipts are lost or altered during the change; every receipt that could be created
   before the change can still be created after it.
+- **SC-011**: After filling in an enabled part, 100% of its rows that carry a heat number hold a
+  marking, and zero rows that already held one changed.
+- **SC-012**: Running the fill-in twice changes nothing the second time.
 
 ## Assumptions
 

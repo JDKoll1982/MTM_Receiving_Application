@@ -3,7 +3,8 @@
 --           authoritative: the caller must use it and must not compute a new marking.
 -- Parameters:
 --   p_heat_number_normalized VARCHAR(100) - The matching key produced by the normalizer.
---   p_supplier_id            VARCHAR(15)  - Supplier group, or 'NONPO'.
+--   p_supplier_id            VARCHAR(255) - Supplier group: the official supplier id, the
+--                                           normalized supplier name when no id resolved, or 'NONPO'.
 -- Returns:  The same column list as sp_LotMarkings_GetAll, or no row when the lot is new.
 -- Errors:   none.
 
@@ -14,7 +15,7 @@ DROP PROCEDURE IF EXISTS `sp_LotMarkings_Resolve`;
 DELIMITER $$
 CREATE PROCEDURE `sp_LotMarkings_Resolve`(
     IN p_heat_number_normalized VARCHAR(100),
-    IN p_supplier_id VARCHAR(15)
+    IN p_supplier_id VARCHAR(255)
 )
 BEGIN
     SELECT

@@ -7,13 +7,19 @@
 -- Notes: supplier_id is never NULL. MySQL treats NULLs in a unique key as
 --        distinct, so a NULL supplier would allow duplicate rows for one
 --        lot. Receipts with no supplier use the literal 'NONPO'.
+--        supplier_id holds the supplier group, which is the official
+--        supplier id when one resolved and the normalized supplier name
+--        otherwise, so it is sized for the 255 character vendor name it
+--        can carry rather than for the length of an id. Width is what
+--        makes the unique key 1420 bytes, which is why the table is
+--        pinned to ROW_FORMAT DYNAMIC.
 -- =====================================================================
 
 CREATE TABLE IF NOT EXISTS `lot_markings` (
     `id`                     INT          NOT NULL AUTO_INCREMENT COMMENT 'Surrogate key',
     `heat_number`            VARCHAR(100) NOT NULL COMMENT 'Heat/lot number exactly as captured, never rewritten',
     `heat_number_normalized` VARCHAR(100) NOT NULL COMMENT 'Matching key: upper case, separators and whitespace removed',
-    `supplier_id`            VARCHAR(15)  NOT NULL DEFAULT 'NONPO' COMMENT 'Supplier group: official supplier id, or NONPO',
+    `supplier_id`            VARCHAR(255) NOT NULL DEFAULT 'NONPO' COMMENT 'Supplier group: official supplier id, the normalized supplier name when no id resolved, or NONPO',
     `supplier_name`          VARCHAR(255) NULL COMMENT 'Supplier name as it appeared on the receipt',
     `shape_code`             VARCHAR(32)  NOT NULL COMMENT 'Assigned shape emoji, e.g. ⚡',
     `color_code`             VARCHAR(32)  NOT NULL COMMENT 'Assigned color code, e.g. TEAL',
@@ -32,4 +38,5 @@ CREATE TABLE IF NOT EXISTS `lot_markings` (
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC
   COMMENT = 'Permanent heat/lot shape and color markings, one row per lot and supplier';

@@ -34,7 +34,7 @@ written once, when the lot is first seen, and are read back unchanged on every l
 | `id` | `INT` | `AUTO_INCREMENT`, PK | Surrogate key. |
 | `heat_number` | `VARCHAR(100)` | `NOT NULL` | Heat number exactly as seen, never rewritten. |
 | `heat_number_normalized` | `VARCHAR(100)` | `NOT NULL` | The matching key produced by `Helper_LotNumberNormalizer`. |
-| `supplier_id` | `VARCHAR(15)` | `NOT NULL`, default `'NONPO'` | Supplier group; never null. |
+| `supplier_id` | `VARCHAR(255)` | `NOT NULL`, default `'NONPO'` | Supplier group; never null. Sized for the normalized supplier name it falls back to, which is why the unique key needs `ROW_FORMAT DYNAMIC`. |
 | `supplier_name` | `VARCHAR(255)` | `NULL` | Supplier name as it appeared on the receipt. |
 | `shape_code` | `VARCHAR(32)` | `NOT NULL` | Assigned shape. Holds the emoji itself, which is the persisted value. |
 | `color_code` | `VARCHAR(32)` | `NOT NULL` | Assigned color, an `Enum_LotColor` name. |
@@ -50,7 +50,8 @@ written once, when the lot is first seen, and are read back unchanged on every l
 ### Keys
 
 - `PRIMARY KEY` (`id`).
-- `UNIQUE KEY` `uq_lot_markings_heat_supplier` (`heat_number_normalized`, `supplier_id`).
+- `UNIQUE KEY` `uq_lot_markings_heat_supplier` (`heat_number_normalized`, `supplier_id`). 1420 bytes
+  in utf8mb4, so the table is pinned to `ROW_FORMAT DYNAMIC` and the 3072 byte large-prefix limit.
 - `KEY` `ix_lot_markings_marking` (`shape_code`, `color_code`).
 
 ### Validation Rules

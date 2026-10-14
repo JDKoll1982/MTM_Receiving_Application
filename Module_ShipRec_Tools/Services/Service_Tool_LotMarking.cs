@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -23,11 +24,17 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 {
     private readonly Dao_Tool_LotMarking _dao;
     private readonly IService_LoggingUtility _logger;
+    private readonly IService_ShipRecToolsSettings _settings;
 
-    public Service_Tool_LotMarking(Dao_Tool_LotMarking dao, IService_LoggingUtility logger)
+    public Service_Tool_LotMarking(
+        Dao_Tool_LotMarking dao,
+        IService_LoggingUtility logger,
+        IService_ShipRecToolsSettings settings
+    )
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
     /// <inheritdoc />
@@ -369,4 +376,178 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
         return result;
     }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<Model_Tool_LotMarkingBackfillPreview>> PreviewUnmarkedLotMarkingsAsync(
+        string partId
+    )
+    {
+        var groups = await LoadUnmarkedLotGroupsAsync(partId);
+        if (!groups.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<Model_Tool_LotMarkingBackfillPreview>(
+                groups.ErrorMessage,
+                groups.Exception
+            );
+        }
+
+        return Model_Dao_Result_Factory.Success(
+            new Model_Tool_LotMarkingBackfillPreview(
+                groups.Data!.Count,
+                groups.Data.SelectMany(group => group.Rows).Sum(row => row.RowCount)
+            )
+        );
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<int>> FillUnmarkedLotMarkingsAsync(
+        string partId,
+        string actingUser
+    )
+    {
+        if (!await _settings.GetLotMarkingEnabledAsync())
+        {
+            return Model_Dao_Result_Factory.Success<int>(0);
+        }
+
+        var groups = await LoadUnmarkedLotGroupsAsync(partId);
+        if (!groups.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(groups.ErrorMessage, groups.Exception);
+        }
+
+        if (groups.Data!.Count == 0)
+        {
+            return Model_Dao_Result_Factory.Success<int>(0);
+        }
+
+        var policy = await _settings.GetLotMarkingCollisionPolicyAsync();
+        var trimmedPartId = partId.Trim();
+        var rowsWritten = 0;
+        var writesSucceeded = 0;
+        var stepsFailed = 0;
+        var lastFailure = string.Empty;
+        Exception? lastException = null;
+
+        foreach (var group in groups.Data)
+        {
+            // The lot is the normalized pair, but the ledger is keyed on the spelling it captured,
+            // so the first raw spelling of the group stands in for the lot the first time it is seen.
+            var representative = group.Rows[0];
+            var marking = await ResolveMarkingAsync(
+                representative.Heat,
+                representative.SupplierName,
+                policy
+            );
+
+            if (!marking.IsSuccess)
+            {
+                stepsFailed++;
+                lastFailure = marking.ErrorMessage;
+                lastException = marking.Exception;
+                continue;
+            }
+
+            if (marking.Data is null)
+            {
+                continue;
+            }
+
+            // One call per raw spelling, because a group collapses spellings that the stored
+            // procedure matches literally. Every one of them ends up carrying the same codes.
+            foreach (var row in group.Rows)
+            {
+                var applied = await _dao.ApplyUnmarkedLotMarkingAsync(
+                    trimmedPartId,
+                    row.Heat,
+                    row.SupplierName,
+                    marking.Data.ShapeCode,
+                    marking.Data.ColorCode
+                );
+
+                if (!applied.IsSuccess)
+                {
+                    stepsFailed++;
+                    lastFailure = applied.ErrorMessage;
+                    lastException = applied.Exception;
+                    _logger.LogError(
+                        $"LotMarking: failed to fill in the unmarked rows of part '{partId}' for heat '{row.Heat}'. {applied.ErrorMessage}",
+                        applied.Exception
+                    );
+                    continue;
+                }
+
+                writesSucceeded++;
+                rowsWritten += applied.Data;
+            }
+        }
+
+        if (writesSucceeded == 0 && stepsFailed > 0)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(lastFailure, lastException);
+        }
+
+        if (rowsWritten > 0)
+        {
+            _logger.LogInfo(
+                $"LotMarking: filled in {rowsWritten} unmarked row(s) of part '{partId}' for '{actingUser}'."
+            );
+        }
+
+        return Model_Dao_Result_Factory.Success<int>(rowsWritten);
+    }
+
+    /// <summary>
+    /// Reads the unmarked rows of a part and groups them into lots, skipping every row that carries
+    /// no heat number so a fill-in never promises to mark one.
+    /// </summary>
+    private async Task<Model_Dao_Result<List<UnmarkedLotGroup>>> LoadUnmarkedLotGroupsAsync(
+        string partId
+    )
+    {
+        if (string.IsNullOrWhiteSpace(partId))
+        {
+            return Model_Dao_Result_Factory.Failure<List<UnmarkedLotGroup>>(
+                "A part number is required."
+            );
+        }
+
+        var rows = await _dao.GetUnmarkedLotRowsAsync(partId.Trim());
+        if (!rows.IsSuccess)
+        {
+            _logger.LogError(
+                $"LotMarking: failed to read the unmarked rows of part '{partId}'. {rows.ErrorMessage}",
+                rows.Exception
+            );
+            return Model_Dao_Result_Factory.Failure<List<UnmarkedLotGroup>>(
+                rows.ErrorMessage,
+                rows.Exception
+            );
+        }
+
+        var unmarkedRows = rows.Data ?? new List<Model_Tool_UnmarkedLotRow>();
+
+        var groups = unmarkedRows
+            .Where(row => !Helper_LotNumberNormalizer.IsBlank(row.Heat))
+            .GroupBy(row =>
+                (
+                    Heat: Helper_LotNumberNormalizer.Normalize(row.Heat),
+                    Supplier: Helper_LotMarkingResolver.NormalizeSupplier(row.SupplierName)
+                )
+            )
+            .Select(group => new UnmarkedLotGroup(group.Key.Heat, group.Key.Supplier, group.ToList()))
+            .ToList();
+
+        return Model_Dao_Result_Factory.Success(groups);
+    }
+
+    /// <summary>
+    /// One lot found by the preview, with every raw heat and supplier spelling the stored procedure
+    /// reported for it. Normalization collapses spellings, so a group can hold more than one row.
+    /// </summary>
+    private sealed record UnmarkedLotGroup(
+        string NormalizedHeat,
+        string NormalizedSupplier,
+        IReadOnlyList<Model_Tool_UnmarkedLotRow> Rows
+    );
 }

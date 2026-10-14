@@ -621,7 +621,8 @@ public static class ModuleServicesExtensions
         {
             var dao = sp.GetRequiredService<Dao_Tool_LotMarking>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Tool_LotMarking(dao, logger);
+            var settings = sp.GetRequiredService<IService_ShipRecToolsSettings>();
+            return new Service_Tool_LotMarking(dao, logger, settings);
         });
 
         // Services (Singleton)

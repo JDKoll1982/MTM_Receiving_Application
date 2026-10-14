@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Data;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -110,6 +111,40 @@ public sealed class Service_Tool_LotMarkingTests
     }
 
     [Fact]
+    public async Task ResolveMarkingAsync_ShouldKeepTheWholeSupplierName_WhenTwoVendorsShareAnIdLengthPrefix()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+
+        // The supplier group is the vendor name whenever the Infor Visual lookup is not an
+        // unambiguous single match, and vendor names are far longer than a supplier id. It was
+        // sized like an id once, which MySQL refused with error 1406 before any marking was
+        // written. Shortening the name to make it fit is not a fix: these two vendors share their
+        // first fifteen characters, so a shortened key would merge them into one lot.
+        const string firstSupplier = "TEST-PARKER HANNIFIN HYDRAULICS";
+        const string secondSupplier = "TEST-PARKER HANNIFIN PNEUMATICS";
+
+        var first = await service.ResolveMarkingAsync(
+            "TEST-HEAT-4004",
+            firstSupplier,
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+        var second = await service.ResolveMarkingAsync(
+            "TEST-HEAT-4004",
+            secondSupplier,
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        ledger.RecordedMarkings.Should().HaveCount(2);
+        ledger
+            .RecordedMarkings.Select(marking => marking.SupplierId)
+            .Should()
+            .BeEquivalentTo(new[] { firstSupplier, secondSupplier });
+
+        second.Data!.Id.Should().NotBe(first.Data!.Id);
+    }
+
+    [Fact]
     public async Task OverrideMarkingAsync_ShouldRecordTheReasonAndTheActingUser_WhenTheMarkingIsChangedByHand()
     {
         var ledger = new FakeLotMarkingLedger();
@@ -202,8 +237,168 @@ public sealed class Service_Tool_LotMarkingTests
         }
     }
 
-    private static Service_Tool_LotMarking CreateService(Dao_Tool_LotMarking dao) =>
-        new(dao, new Mock<IService_LoggingUtility>().Object);
+    private static Service_Tool_LotMarking CreateService(
+        Dao_Tool_LotMarking dao,
+        IService_ShipRecToolsSettings? settings = null
+    ) =>
+        new(dao, new Mock<IService_LoggingUtility>().Object, settings ?? CreateSettings(true));
+
+    private static IService_ShipRecToolsSettings CreateSettings(bool isEnabled)
+    {
+        var settings = new Mock<IService_ShipRecToolsSettings>();
+        settings.Setup(service => service.GetLotMarkingEnabledAsync()).ReturnsAsync(isEnabled);
+        settings
+            .Setup(service => service.GetLotMarkingCollisionPolicyAsync())
+            .ReturnsAsync(Enum_LotMarkingCollisionPolicy.Probe);
+
+        return settings.Object;
+    }
+
+    [Fact]
+    public async Task PreviewUnmarkedLotMarkingsAsync_ShouldCountOneLot_WhenTwoSpellingsNormalizeToTheSameHeat()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-5005", "TEST-SUP-A", 2);
+        ledger.SeedUnmarkedRow("history", " test heat 5005 ", "TEST-SUP-A", 3);
+        var service = CreateService(ledger);
+
+        var preview = await service.PreviewUnmarkedLotMarkingsAsync("TEST-PART-1");
+
+        preview.IsSuccess.Should().BeTrue();
+        preview.Data!.DistinctLots.Should().Be(1);
+        preview.Data.TotalRows.Should().Be(5);
+        ledger.AppliedMarkings.Should().BeEmpty("a preview writes nothing");
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldWriteEverySpellingOfOneLot_WhenTheyNormalizeToTheSameHeat()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-5005", "TEST-SUP-A", 2);
+        ledger.SeedUnmarkedRow("history", " test heat 5005 ", "TEST-SUP-A", 3);
+        var service = CreateService(ledger);
+
+        var filled = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+
+        filled.IsSuccess.Should().BeTrue();
+        filled.Data.Should().Be(5);
+        ledger.RecordedMarkings.Should().ContainSingle("one lot resolves to one marking");
+        ledger.AppliedMarkings.Should().HaveCount(2, "each raw spelling is matched literally");
+
+        var shape = ledger.RecordedMarkings.Single().ShapeCode;
+        var color = ledger.RecordedMarkings.Single().ColorCode;
+        ledger
+            .AppliedMarkings.Should()
+            .OnlyContain(apply => apply.ShapeCode == shape && apply.ColorCode == color);
+    }
+
+    [Fact]
+    public async Task PreviewUnmarkedLotMarkingsAsync_ShouldNotCountARowWithNoHeat_WhenTheHeatIsBlankOrTheSentinel()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-6006", "TEST-SUP-A", 1);
+        ledger.SeedUnmarkedRow("queue", string.Empty, "TEST-SUP-A", 4);
+        ledger.SeedUnmarkedRow("history", "   ", "TEST-SUP-A", 2);
+        ledger.SeedUnmarkedRow("history", "Nothing Entered", "TEST-SUP-A", 3);
+        var service = CreateService(ledger);
+
+        var preview = await service.PreviewUnmarkedLotMarkingsAsync("TEST-PART-1");
+
+        preview.Data!.DistinctLots.Should().Be(1);
+        preview.Data.TotalRows.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldLeaveRowsWithNoHeatUnmarked_WhenTheHeatIsBlankOrTheSentinel()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-6006", "TEST-SUP-A", 1);
+        ledger.SeedUnmarkedRow("queue", string.Empty, "TEST-SUP-A", 4);
+        ledger.SeedUnmarkedRow("history", "   ", "TEST-SUP-A", 2);
+        ledger.SeedUnmarkedRow("history", "Nothing Entered", "TEST-SUP-A", 3);
+        var service = CreateService(ledger);
+
+        var filled = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+
+        filled.Data.Should().Be(1);
+        ledger.AppliedMarkings.Should().ContainSingle();
+        ledger
+            .UnmarkedRows.Should()
+            .HaveCount(3, "a row with no heat number is not a lot and stays unmarked");
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldWriteNothing_WhenThePartHasNothingUnmarked()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+
+        var preview = await service.PreviewUnmarkedLotMarkingsAsync("TEST-PART-2");
+        var filled = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-2", "TEST-USER-1");
+
+        preview.IsSuccess.Should().BeTrue();
+        preview.Data!.DistinctLots.Should().Be(0);
+        preview.Data.TotalRows.Should().Be(0);
+        filled.IsSuccess.Should().BeTrue();
+        filled.Data.Should().Be(0);
+        ledger.AppliedMarkings.Should().BeEmpty();
+        ledger.RecordedMarkings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldWriteNothing_WhenTheFeatureSwitchIsOff()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-7007", "TEST-SUP-A", 3);
+        var service = CreateService(ledger, CreateSettings(false));
+
+        var filled = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+
+        filled.IsSuccess.Should().BeTrue();
+        filled.Data.Should().Be(0);
+        ledger.AppliedMarkings.Should().BeEmpty();
+        ledger.RecordedMarkings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldUseTheRecordedCodes_WhenTheLotAlreadyHasAMarking()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        var existing = await service.ResolveMarkingAsync(
+            "TEST-HEAT-8008",
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+        var shape = existing.Data!.ShapeCode;
+        var color = existing.Data.ColorCode;
+        ledger.SeedUnmarkedRow("history", "test heat 8008", "TEST-SUP-A", 4);
+
+        var filled = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+
+        filled.Data.Should().Be(4);
+        ledger.RecordedMarkings.Should().ContainSingle("a marking is never recomputed");
+        ledger.AppliedMarkings.Should().ContainSingle();
+        ledger.AppliedMarkings.Single().ShapeCode.Should().Be(shape);
+        ledger.AppliedMarkings.Single().ColorCode.Should().Be(color);
+    }
+
+    [Fact]
+    public async Task FillUnmarkedLotMarkingsAsync_ShouldWriteNothingFurther_WhenTheSamePartIsFilledInTwice()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedUnmarkedRow("queue", "TEST-HEAT-9009", "TEST-SUP-A", 2);
+        ledger.SeedUnmarkedRow("history", "TEST-HEAT-9009", "TEST-SUP-A", 1);
+        var service = CreateService(ledger);
+
+        var first = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+        var second = await service.FillUnmarkedLotMarkingsAsync("TEST-PART-1", "TEST-USER-1");
+
+        first.Data.Should().Be(3);
+        second.IsSuccess.Should().BeTrue();
+        second.Data.Should().Be(0);
+        ledger.AppliedMarkings.Should().HaveCount(1, "the second run finds nothing unmarked");
+    }
 
     /// <summary>
     /// An in-memory stand-in for the ledger table, so the tests can assert how many markings were
@@ -319,6 +514,74 @@ public sealed class Service_Tool_LotMarkingTests
             stored.ResolvedBy = actingUser;
 
             return Task.FromResult(Model_Dao_Result_Factory.Success<int>(1));
+        }
+
+        /// <summary>One call the service made to write a lot's marking onto its unmarked rows.</summary>
+        public sealed record AppliedLotMarking(
+            string Heat,
+            string SupplierName,
+            string ShapeCode,
+            string ColorCode
+        );
+
+        private readonly List<Model_Tool_UnmarkedLotRow> _unmarkedRows = new();
+
+        private readonly List<AppliedLotMarking> _appliedMarkings = new();
+
+        public IReadOnlyList<Model_Tool_UnmarkedLotRow> UnmarkedRows => _unmarkedRows;
+
+        public IReadOnlyList<AppliedLotMarking> AppliedMarkings => _appliedMarkings;
+
+        public void SeedUnmarkedRow(string source, string heat, string supplierName, int rowCount) =>
+            _unmarkedRows.Add(new Model_Tool_UnmarkedLotRow(source, heat, supplierName, rowCount));
+
+        public override Task<Model_Dao_Result<List<Model_Tool_UnmarkedLotRow>>> GetUnmarkedLotRowsAsync(
+            string partId
+        ) => Task.FromResult(Model_Dao_Result_Factory.Success(_unmarkedRows.ToList()));
+
+        public override Task<Model_Dao_Result<int>> ApplyUnmarkedLotMarkingAsync(
+            string partId,
+            string heat,
+            string supplierName,
+            string shapeGlyph,
+            string colorCode
+        )
+        {
+            if (
+                string.IsNullOrWhiteSpace(heat)
+                || string.IsNullOrWhiteSpace(shapeGlyph)
+                || string.IsNullOrWhiteSpace(colorCode)
+            )
+            {
+                return Task.FromResult(
+                    Model_Dao_Result_Factory.Failure<int>(
+                        "A shape and a color are both required to mark a lot."
+                    )
+                );
+            }
+
+            // The stored procedure matches the heat and the supplier literally, and writes every
+            // matching row in one statement, so the double removes them the same way.
+            var matches = _unmarkedRows
+                .Where(row =>
+                    string.Equals(row.Heat, heat, StringComparison.Ordinal)
+                    && string.Equals(row.SupplierName, supplierName, StringComparison.Ordinal)
+                )
+                .ToList();
+
+            var rowsUpdated = matches.Sum(row => row.RowCount);
+
+            if (matches.Count > 0)
+            {
+                _appliedMarkings.Add(new AppliedLotMarking(heat, supplierName, shapeGlyph, colorCode));
+
+                foreach (var match in matches)
+                {
+                    _unmarkedRows.Remove(match);
+                }
+            }
+
+            return Task.FromResult(Model_Dao_Result_Factory.Success<int>(rowsUpdated));
         }
     }
 }

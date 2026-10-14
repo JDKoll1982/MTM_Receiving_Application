@@ -760,6 +760,62 @@
         "T027",
         "T028"
       ]
+    },
+    "FR-031": {
+      "title": "Running it again writes nothing further",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteNothingFurther_WhenTheSamePartIsFilledInTwice"
+      ]
+    },
+    "FR-023": {
+      "title": "Fill in the unmarked lots of one enabled part on demand",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteEverySpellingOfOneLot_WhenTheyNormalizeToTheSameHeat",
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteNothing_WhenThePartHasNothingUnmarked"
+      ]
+    },
+    "FR-024": {
+      "title": "Report rows and distinct lots before writing anything",
+      "tests": [
+        "Service_Tool_LotMarkingTests.PreviewUnmarkedLotMarkingsAsync_ShouldCountOneLot_WhenTwoSpellingsNormalizeToTheSameHeat"
+      ]
+    },
+    "FR-025": {
+      "title": "Cover unmarked rows in both the queue and history",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteEverySpellingOfOneLot_WhenTheyNormalizeToTheSameHeat"
+      ]
+    },
+    "FR-026": {
+      "title": "Write only to rows that carry no marking",
+      "tests": [
+        "sp_Receiving_UnmarkedLotMarkings_Apply (heat_shape_code IS NULL predicate)"
+      ]
+    },
+    "FR-027": {
+      "title": "One lot receives one shape and one color",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteEverySpellingOfOneLot_WhenTheyNormalizeToTheSameHeat"
+      ]
+    },
+    "FR-028": {
+      "title": "A lot with a recorded marking keeps its recorded codes",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldUseTheRecordedCodes_WhenTheLotAlreadyHasAMarking"
+      ]
+    },
+    "FR-029": {
+      "title": "Blank heat and the substitute sentinel stay unmarked",
+      "tests": [
+        "Service_Tool_LotMarkingTests.PreviewUnmarkedLotMarkingsAsync_ShouldNotCountARowWithNoHeat_WhenTheHeatIsBlankOrTheSentinel",
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldLeaveRowsWithNoHeatUnmarked_WhenTheHeatIsBlankOrTheSentinel"
+      ]
+    },
+    "FR-030": {
+      "title": "Offered only for parts already on the enabled list",
+      "tests": [
+        "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteNothing_WhenTheFeatureSwitchIsOff"
+      ]
     }
   },
   "sizeprobe": 1,
@@ -895,6 +951,12 @@
     },
     {
       "decision": "The docs/database reference pages were not written because the repository contains no generator for them; they are hand-authored HTML over a curated subset of tables"
+    },
+    {
+      "decision": "Lot marking backfill (user story 6, FR-023..FR-031) folded into spec 001 rather than opened as a new 002 spec, because it extends the same tool and the same ledger. The empty 002 directory was deleted."
+    },
+    {
+      "decision": "Fixed the shipped supplier group width defect (error 1406, Data too long for column p_supplier_id). The group key is widened to VARCHAR(255) in lot_markings.supplier_id and in the p_supplier_id parameter of sp_LotMarkings_Resolve and sp_LotMarkings_Insert, with migration 17. Truncating the name to fit 15 characters was rejected because two vendors sharing a prefix would merge into one lot and share a marking, which FR-005 forbids."
     }
   ],
   "step_summaries": {
@@ -1478,6 +1540,12 @@
     },
     {
       "note": "Stale references to the retired dunnage_specs and sp_Dunnage_Specs objects remain in StoredProcedure-Test-Checklist.md, docs/database/index.html and StoredProcedureInitialCoverageIntegrationTests.cs. Out of scope here."
+    },
+    {
+      "note": "The backfill UI flow is compile-verified only; it was never run. No desktop automation was available in this environment, so the dialog, the preview count, and the apply round trip have not been exercised."
+    },
+    {
+      "note": "The supplier group width defect could not be caught by any test, because the service tests run against an in-memory ledger that has no column width. The new test pins the intent (two vendors sharing a 15 character prefix stay two lots) but only the real database can catch a width regression. Migration 17 also cannot widen a procedure parameter, so it must be followed by re-deploying sp_LotMarkings_Resolve.sql and sp_LotMarkings_Insert.sql; the migration ends with a query that reports whether that has happened."
     }
   ],
   "unattended": true

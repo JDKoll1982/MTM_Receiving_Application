@@ -151,6 +151,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanRemovePart))]
     [NotifyPropertyChangedFor(nameof(CanReEnablePart))]
+    [NotifyPropertyChangedFor(nameof(CanFillUnmarkedLots))]
     private Model_Tool_LotMarkingScope? _selectedPart;
 
     /// <summary>True when the list has no rows at all.</summary>
@@ -161,7 +162,13 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
     public bool CanReEnablePart => SelectedPart is { IsEnabled: false } && !IsBusy;
 
-    // ─── Fuzzy picker bridge ────────────────────────────────────────────────
+    /// <summary>
+    /// True when the selected row is an enabled part, so its earlier unmarked lots can be filled in.
+    /// A removed part is not offered, because adding a part back is a deliberate separate act.
+    /// </summary>
+    public bool CanFillUnmarkedLots => SelectedPart is { IsEnabled: true } && !IsBusy;
+
+    // ─── Dialog bridges ─────────────────────────────────────────────────────
 
     /// <summary>
     /// Set by the view's code-behind so the ViewModel can ask for a part to be confirmed without
@@ -173,6 +180,14 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         string,
         Task<Model_FuzzySearchResult?>
     >? ShowFuzzyPickerAsync { get; set; }
+
+    /// <summary>
+    /// Set by the view's code-behind so the ViewModel can put the counted preview in front of a
+    /// user before anything is written.
+    /// Parameters: (partId, preview) → true when the user confirms. Null, or false, means nothing
+    /// is written.
+    /// </summary>
+    public Func<string, Model_Tool_LotMarkingBackfillPreview, Task<bool>>? ConfirmBackfillAsync { get; set; }
 
     // ─── Property change plumbing ───────────────────────────────────────────
 
@@ -189,6 +204,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     {
         RemovePartCommand.NotifyCanExecuteChanged();
         ReEnablePartCommand.NotifyCanExecuteChanged();
+        FillUnmarkedLotsCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnPartSearchTextChanged(string value)
@@ -525,6 +541,76 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         {
             _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(ReEnablePartAsync), nameof(ViewModel_Tool_LotMarking));
             ShowStatus("The part could not be re-enabled.", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    // ─── Filling in the lots that were never marked ─────────────────────────
+
+    /// <summary>
+    /// Gives a marking to the earlier lots of the selected enabled part. The counts are gathered
+    /// first and shown to the user, and nothing is written until that preview is confirmed.
+    /// </summary>
+    /// <remarks>
+    /// Which rows qualify, how lots group, and which rows are skipped are all the service's
+    /// decisions. This method only asks, confirms, and reports.
+    /// </remarks>
+    [RelayCommand(CanExecute = nameof(CanFillUnmarkedLots))]
+    private async Task FillUnmarkedLotsAsync()
+    {
+        var part = SelectedPart;
+        if (part is null)
+        {
+            return;
+        }
+
+        var partId = part.PartId;
+        IsBusy = true;
+        try
+        {
+            ShowStatus($"Counting the unmarked lots of {partId}...", InfoBarSeverity.Informational);
+
+            var preview = await _service.PreviewUnmarkedLotMarkingsAsync(partId);
+            if (!preview.IsSuccess || preview.Data is null)
+            {
+                ShowStatus(preview.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            if (preview.Data.DistinctLots == 0)
+            {
+                ShowStatus($"Every lot of {partId} already has a marking.", InfoBarSeverity.Informational);
+                return;
+            }
+
+            if (ConfirmBackfillAsync is null || !await ConfirmBackfillAsync(partId, preview.Data))
+            {
+                ShowStatus("Cancelled.", InfoBarSeverity.Informational);
+                return;
+            }
+
+            var filled = await _service.FillUnmarkedLotMarkingsAsync(partId, Environment.UserName);
+            if (!filled.IsSuccess)
+            {
+                ShowStatus(filled.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            await LoadMarkingsAsync(HeatSearchText);
+            await LoadPartsAsync(PartSearchText);
+
+            ShowStatus(
+                $"{partId}: {preview.Data.DistinctLots} lot(s) marked across {filled.Data} row(s).",
+                InfoBarSeverity.Success
+            );
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(FillUnmarkedLotsAsync), nameof(ViewModel_Tool_LotMarking));
+            ShowStatus("The unmarked lots could not be filled in.", InfoBarSeverity.Error);
         }
         finally
         {

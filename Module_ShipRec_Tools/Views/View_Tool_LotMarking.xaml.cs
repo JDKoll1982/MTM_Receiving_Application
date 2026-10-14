@@ -15,7 +15,8 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
 /// <summary>
 /// Heat / Lot Management tool view. Business logic stays in the ViewModel; this file only supplies
-/// the fuzzy-picker dialog, the help call, and the Enter key on the two search boxes.
+/// the fuzzy-picker and backfill-confirm dialogs, the help call, and the Enter key on the two
+/// search boxes.
 /// </summary>
 public sealed partial class View_Tool_LotMarking : Page
 {
@@ -29,6 +30,7 @@ public sealed partial class View_Tool_LotMarking : Page
         InitializeComponent();
 
         ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
+        ViewModel.ConfirmBackfillAsync = ConfirmBackfillDialogAsync;
     }
 
     private async void OnHelpClick(object sender, RoutedEventArgs e)
@@ -67,6 +69,19 @@ public sealed partial class View_Tool_LotMarking : Page
 
         var result = await dialog.ShowAsync();
         return result == ContentDialogResult.Primary ? dialog.SelectedResult : null;
+    }
+
+    private async Task<bool> ConfirmBackfillDialogAsync(
+        string partId,
+        Model_Tool_LotMarkingBackfillPreview preview
+    )
+    {
+        var dialog = new Dialog_LotMarkingBackfillConfirm(partId, preview)
+        {
+            XamlRoot = XamlRoot,
+        };
+
+        return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
     private void HeatSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)

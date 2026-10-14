@@ -1,6 +1,6 @@
 # Stored Procedure Test Checklist
 
-Progress: 173/182 stored procedures covered
+Progress: 173/184 stored procedures covered
 
 Update rule: mark completed procedures every 5 stored-procedure tests finished.
 
@@ -18,6 +18,8 @@ Update rule: mark completed procedures every 5 stored-procedure tests finished.
 - [ ] sp_LotMarkingPartScope_Search
 - [ ] sp_LotMarkingPartScope_SetEnabled
 - [ ] sp_LotMarkingPartScope_Upsert
+- [ ] sp_Receiving_UnmarkedLotMarkings_Apply
+- [ ] sp_Receiving_UnmarkedLotMarkings_Preview
 
 The three receiving procedures this feature changed are listed under Receiving. Only
 `sp_Receiving_LabelData_SetMarking` is exercised directly today, by
