@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Enums;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Settings;
 
@@ -182,6 +183,44 @@ public sealed class Service_ShipRecToolsSettings : IService_ShipRecToolsSettings
 
         return Model_Dao_Result_Factory.Success();
     }
+
+    public async Task<bool> GetLotMarkingEnabledAsync() =>
+        await GetBoolAsync(ShipRecToolsSettingsKeys.LotMarking.Enabled, true);
+
+    public async Task<Enum_LotMarkingCollisionPolicy> GetLotMarkingCollisionPolicyAsync()
+    {
+        var raw = await GetStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.CollisionPolicy,
+            nameof(Enum_LotMarkingCollisionPolicy.Probe)
+        );
+
+        return Enum.TryParse<Enum_LotMarkingCollisionPolicy>(raw, true, out var policy)
+            ? policy
+            : Enum_LotMarkingCollisionPolicy.Probe;
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetLotMarkingEnabledShapesAsync()
+    {
+        var allGlyphs = Model_LotMarkingPalette.Shapes.Select(static shape => shape.Glyph).ToList();
+        return await GetStringSetAsync(
+            ShipRecToolsSettingsKeys.LotMarking.PaletteEnabledShapes,
+            allGlyphs,
+            allGlyphs
+        );
+    }
+
+    public async Task<IReadOnlyCollection<string>> GetLotMarkingEnabledColorsAsync()
+    {
+        var allCodes = Model_LotMarkingPalette.Colors.Select(static color => color.Code).ToList();
+        return await GetStringSetAsync(
+            ShipRecToolsSettingsKeys.LotMarking.PaletteEnabledColors,
+            allCodes,
+            allCodes
+        );
+    }
+
+    public async Task<bool> GetLotMarkingShapeFirstAsync() =>
+        await GetBoolAsync(ShipRecToolsSettingsKeys.LotMarking.DisplayShapeFirst, true);
 
     private async Task<HashSet<string>> GetFieldIdSetAsync(
         string key,

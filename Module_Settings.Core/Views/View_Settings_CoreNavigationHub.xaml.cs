@@ -211,6 +211,11 @@ public sealed partial class View_Settings_CoreNavigationHub : Page
         NavigateUsingServiceProvider(typeof(View_Settings_MaterialAvailabilityBoardFields));
     }
 
+    private void OnNavigateLotMarking(object sender, RoutedEventArgs e)
+    {
+        NavigateUsingServiceProvider(typeof(View_Settings_LotMarking));
+    }
+
     private void OnNavigateDatabaseConfig(object sender, RoutedEventArgs e)
     {
         if (_userPrivileges.HasPermissionLevel(Enum_SettingsPermissionLevel.Admin) is false)

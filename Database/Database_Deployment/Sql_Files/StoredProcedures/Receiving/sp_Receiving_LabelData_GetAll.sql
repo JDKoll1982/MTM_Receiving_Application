@@ -29,6 +29,8 @@ BEGIN
         load_number,
         weight_quantity,
         heat,
+        heat_shape_code,
+        heat_color_code,
         initial_location,
         packages_per_load,
         package_type_name,

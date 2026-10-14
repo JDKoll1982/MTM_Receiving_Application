@@ -1,8 +1,30 @@
 # Stored Procedure Test Checklist
 
-Progress: 170/170 stored procedures covered
+Progress: 173/182 stored procedures covered
 
 Update rule: mark completed procedures every 5 stored-procedure tests finished.
+
+## Heat / Lot Management
+
+- [x] sp_Receiving_LabelData_SetMarking
+- [ ] sp_LotMarkings_GetAll
+- [ ] sp_LotMarkings_GetByHeat
+- [ ] sp_LotMarkings_Insert
+- [ ] sp_LotMarkings_Resolve
+- [ ] sp_LotMarkings_SetLocked
+- [ ] sp_LotMarkings_UpdateMarking
+- [ ] sp_LotMarkingPartScope_Delete
+- [ ] sp_LotMarkingPartScope_GetAll
+- [ ] sp_LotMarkingPartScope_Search
+- [ ] sp_LotMarkingPartScope_SetEnabled
+- [ ] sp_LotMarkingPartScope_Upsert
+
+The three receiving procedures this feature changed are listed under Receiving. Only
+`sp_Receiving_LabelData_SetMarking` is exercised directly today, by
+`LotMarkingStoredProceduresIntegrationTests`, which also checks that
+`sp_Receiving_LabelData_ClearToHistory` and `sp_Receiving_LabelData_InsertFromHistory` carry the
+codes through promotion and a re-queue unchanged. The ledger and scope families are exercised
+through the service with a substituted DAO, which does not count as procedure coverage.
 
 ## Auth
 

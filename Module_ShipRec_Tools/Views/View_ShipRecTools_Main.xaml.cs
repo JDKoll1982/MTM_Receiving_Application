@@ -19,6 +19,7 @@ public sealed partial class View_ShipRecTools_Main : Page
     private readonly ViewModel_Tool_WeldedCoils _weldedCoilsViewModel;
     private readonly ViewModel_Tool_ReceivingAnalytics _receivingAnalyticsViewModel;
     private readonly ViewModel_Tool_DeliverySchedule _deliveryScheduleViewModel;
+    private readonly ViewModel_Tool_LotMarking _lotMarkingViewModel;
 
     public ViewModel_ShipRecTools_Main ViewModel { get; }
 
@@ -31,7 +32,8 @@ public sealed partial class View_ShipRecTools_Main : Page
         View_Tool_DunnageBook dunnageBookView,
         View_Tool_WeldedCoils weldedCoilsView,
         View_Tool_ReceivingAnalytics receivingAnalyticsView,
-        View_Tool_DeliverySchedule deliveryScheduleView
+        View_Tool_DeliverySchedule deliveryScheduleView,
+        View_Tool_LotMarking lotMarkingView
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
@@ -43,6 +45,7 @@ public sealed partial class View_ShipRecTools_Main : Page
         ArgumentNullException.ThrowIfNull(weldedCoilsView);
         ArgumentNullException.ThrowIfNull(receivingAnalyticsView);
         ArgumentNullException.ThrowIfNull(deliveryScheduleView);
+        ArgumentNullException.ThrowIfNull(lotMarkingView);
 
         ViewModel = viewModel;
         _toolSelectionViewModel = toolSelectionView.ViewModel;
@@ -53,6 +56,7 @@ public sealed partial class View_ShipRecTools_Main : Page
         _weldedCoilsViewModel = weldedCoilsView.ViewModel;
         _receivingAnalyticsViewModel = receivingAnalyticsView.ViewModel;
         _deliveryScheduleViewModel = deliveryScheduleView.ViewModel;
+        _lotMarkingViewModel = lotMarkingView.ViewModel;
         InitializeComponent();
 
         ToolSelectionHost.Content = toolSelectionView;
@@ -63,6 +67,7 @@ public sealed partial class View_ShipRecTools_Main : Page
         WeldedCoilsHost.Content = weldedCoilsView;
         ReceivingAnalyticsHost.Content = receivingAnalyticsView;
         DeliveryScheduleHost.Content = deliveryScheduleView;
+        HeatLotManagementHost.Content = lotMarkingView;
 
         // Wire tool selection events to main ViewModel navigation
         toolSelectionView.ViewModel.ToolSelected += ViewModel.NavigateToTool;
@@ -82,6 +87,7 @@ public sealed partial class View_ShipRecTools_Main : Page
                 or nameof(ViewModel_ShipRecTools_Main.IsWeldedCoilsVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsReceivingAnalyticsVisible)
                 or nameof(ViewModel_ShipRecTools_Main.IsDeliveryScheduleVisible)
+                or nameof(ViewModel_ShipRecTools_Main.IsHeatLotManagementVisible)
         )
         {
             UpdateActiveViewStatus();
@@ -135,6 +141,12 @@ public sealed partial class View_ShipRecTools_Main : Page
         if (ViewModel.IsDeliveryScheduleVisible)
         {
             _deliveryScheduleViewModel.ActivateView();
+            return;
+        }
+
+        if (ViewModel.IsHeatLotManagementVisible)
+        {
+            _lotMarkingViewModel.ActivateView();
         }
     }
 }

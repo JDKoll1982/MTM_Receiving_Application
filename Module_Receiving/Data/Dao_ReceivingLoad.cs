@@ -468,6 +468,12 @@ LIMIT 1;";
         var labelNumber = reader.IsDBNull(reader.GetOrdinal("label_number"))
             ? (int?)null
             : reader.GetInt32(reader.GetOrdinal("label_number"));
+        var heatShapeCode = reader.IsDBNull(reader.GetOrdinal("heat_shape_code"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("heat_shape_code"));
+        var heatColorCode = reader.IsDBNull(reader.GetOrdinal("heat_color_code"))
+            ? string.Empty
+            : reader.GetString(reader.GetOrdinal("heat_color_code"));
 
         return new Model_ReprintHistoryRow
         {
@@ -478,6 +484,8 @@ LIMIT 1;";
                 ? 0m
                 : Convert.ToDecimal(reader.GetValue(reader.GetOrdinal("quantity"))),
             Reference = BuildReceivingReference(poNumber, loadNumber, labelNumber),
+            HeatShapeCode = heatShapeCode,
+            HeatColorCode = heatColorCode,
             AlreadyQueued =
                 !reader.IsDBNull(reader.GetOrdinal("already_queued"))
                 && reader.GetInt32(reader.GetOrdinal("already_queued")) == 1,
@@ -637,6 +645,8 @@ LIMIT 1;";
             LoadNumber = ReadInt(row, "load_number", "label_number"),
             WeightQuantity = ReadDecimal(row, "weight_quantity", "quantity"),
             HeatLotNumber = ReadString(row, "heat"),
+            HeatShapeCode = ReadString(row, "heat_shape_code"),
+            HeatColorCode = ReadString(row, "heat_color_code"),
             InitialLocation = ReadString(row, "initial_location"),
             PackagesPerLoad = ReadInt(row, "packages_per_load"),
             PackageTypeName = ReadString(row, "package_type_name"),

@@ -86,6 +86,35 @@ public sealed class ViewModel_ShipRecTools_MainTests
         viewModel.CurrentHeaderTitle.Should().Be("Material Availability Board");
     }
 
+    [Fact]
+    public void NavigateToTool_ShouldShowHeatLotManagement_WhenToolIsSelected()
+    {
+        var navigationServiceMock = new Mock<IService_ShipRecTools_Navigation>();
+        var headerBackServiceMock = new Mock<IService_HeaderBackNavigation>();
+        navigationServiceMock
+            .Setup(service => service.GetToolByKey("HeatLotManagement"))
+            .Returns(
+                new Model_ToolDefinition
+                {
+                    ToolKey = "HeatLotManagement",
+                    Title = "Heat / Lot Management",
+                }
+            );
+
+        var viewModel = CreateViewModel(navigationServiceMock.Object, headerBackServiceMock.Object);
+
+        viewModel.NavigateToTool("HeatLotManagement");
+
+        viewModel.IsHeatLotManagementVisible.Should().BeTrue();
+        viewModel.IsMaterialAvailabilityBoardVisible.Should().BeFalse();
+        viewModel.IsToolSelectionVisible.Should().BeFalse();
+        viewModel.CurrentHeaderTitle.Should().Be("Heat / Lot Management");
+        headerBackServiceMock.Verify(
+            service => service.RegisterBackAction(It.IsAny<System.Func<Task>>(), "Back to Tools"),
+            Times.Once
+        );
+    }
+
     private static ViewModel_ShipRecTools_Main CreateViewModel(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation

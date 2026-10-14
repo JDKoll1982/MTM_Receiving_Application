@@ -52,6 +52,9 @@ public partial class ViewModel_ShipRecTools_Main
     [ObservableProperty]
     private bool _isDeliveryScheduleVisible;
 
+    [ObservableProperty]
+    private bool _isHeatLotManagementVisible;
+
     public ViewModel_ShipRecTools_Main(
         IService_ShipRecTools_Navigation navigationService,
         IService_HeaderBackNavigation headerBackNavigation,
@@ -127,6 +130,12 @@ public partial class ViewModel_ShipRecTools_Main
                     ShowHeaderBackButton();
                     break;
 
+                case "HeatLotManagement":
+                    IsHeatLotManagementVisible = true;
+                    CurrentToolTitle = toolTitle;
+                    ShowHeaderBackButton();
+                    break;
+
                 default:
                     _logger.LogInfo($"Unknown tool key '{toolKey}' - returning to tool selection.");
                     ShowToolSelection();
@@ -179,5 +188,6 @@ public partial class ViewModel_ShipRecTools_Main
         IsWeldedCoilsVisible = false;
         IsReceivingAnalyticsVisible = false;
         IsDeliveryScheduleVisible = false;
+        IsHeatLotManagementVisible = false;
     }
 }

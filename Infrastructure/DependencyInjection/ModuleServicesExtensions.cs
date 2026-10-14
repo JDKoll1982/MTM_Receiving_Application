@@ -460,6 +460,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Settings_SharedPaths>();
         services.AddTransient<ViewModel_Settings_LabelViewExecutable>();
         services.AddTransient<ViewModel_Settings_MaterialAvailabilityBoardFields>();
+        services.AddTransient<ViewModel_Settings_LotMarking>();
         services.AddTransient<ViewModel_Settings_DatabaseConfig>();
         services.AddTransient<ViewModel_Settings_ScannerAccess>();
 
@@ -512,6 +513,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Users>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_Theme>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_MaterialAvailabilityBoardFields>();
+        services.AddTransient<Module_Settings.Core.Views.View_Settings_LotMarking>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_DatabaseConfig>();
         services.AddTransient<Module_Settings.Core.Views.View_Settings_ScannerAccess>();
 
@@ -613,6 +615,15 @@ public static class ModuleServicesExtensions
             return new Service_Tool_WeldedCoils(dao, inforVisual, logger);
         });
 
+        // Heat / Lot Management tool: DAO and service.
+        services.AddSingleton(_ => new Dao_Tool_LotMarking(mySqlConnectionString));
+        services.AddSingleton<IService_Tool_LotMarking>(sp =>
+        {
+            var dao = sp.GetRequiredService<Dao_Tool_LotMarking>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_LotMarking(dao, logger);
+        });
+
         // Services (Singleton)
         services.AddSingleton<IService_ShipRecTools_Navigation, Service_ShipRecTools_Navigation>();
         services.AddSingleton<IService_Tool_OutsideServiceHistory>(sp =>
@@ -663,6 +674,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_WeldedCoils>();
         services.AddTransient<ViewModel_Tool_ReceivingAnalytics>();
         services.AddTransient<ViewModel_Tool_DeliverySchedule>();
+        services.AddTransient<ViewModel_Tool_LotMarking>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_ShipRec_Tools.Views.View_ShipRecTools_Main>();
@@ -674,6 +686,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_WeldedCoils>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalytics>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DeliverySchedule>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_LotMarking>();
 
         return services;
     }

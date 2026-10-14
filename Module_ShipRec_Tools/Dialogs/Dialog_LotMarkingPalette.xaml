@@ -1,0 +1,90 @@
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs.Dialog_LotMarkingPalette"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    mc:Ignorable="d"
+    DefaultButton="Primary"
+    PrimaryButtonText="Close"
+    MinWidth="560"
+    MaxWidth="720"
+    MaxHeight="640">
+
+    <StackPanel Spacing="10">
+        <TextBlock
+            x:Name="SummaryText"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource BodyTextBlockStyle}"
+            TextWrapping="WrapWholeWords" />
+
+        <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Spacing="10">
+                <TextBlock
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="Shapes" />
+
+                <ItemsControl x:Name="ShapesItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_LotMarkingShape">
+                            <StackPanel
+                                Width="76"
+                                Margin="0,2,8,2"
+                                ToolTipService.ToolTip="{x:Bind DisplayName}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="18"
+                                    Text="{x:Bind Glyph}" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="11"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind DisplayName}"
+                                    TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock
+                    Margin="0,6,0,0"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="Colors" />
+
+                <ItemsControl x:Name="ColorsItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_LotMarkingColor">
+                            <StackPanel
+                                Width="76"
+                                Margin="0,2,8,2"
+                                ToolTipService.ToolTip="{x:Bind DisplayName}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    FontSize="12"
+                                    Text="{x:Bind Code}" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="11"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind DisplayName}"
+                                    TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
+</ContentDialog>

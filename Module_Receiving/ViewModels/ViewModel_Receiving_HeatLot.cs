@@ -19,7 +19,7 @@ using MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_HeatLot : ViewModel_Shared_Base
+    public partial class ViewModel_Receiving_HeatLot : ViewModel_Receiving_StepBase
     {
         private readonly IService_MySQL_ReceivingVendorVariable _vendorVariableService;
         private readonly IService_ReceivingWorkflow _workflowService;
@@ -228,6 +228,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ? new List<Model_ReceivingLoad>()
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
+            RefreshReceiptLotMarkings(Loads);
 
             RefreshCurrentPartInfo();
 

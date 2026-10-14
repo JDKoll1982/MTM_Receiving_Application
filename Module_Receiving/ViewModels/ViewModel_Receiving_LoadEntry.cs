@@ -17,7 +17,7 @@ using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
-    public partial class ViewModel_Receiving_LoadEntry : ViewModel_Shared_Base, IResettableViewModel
+    public partial class ViewModel_Receiving_LoadEntry : ViewModel_Receiving_StepBase, IResettableViewModel
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_ReceivingValidation _validationService;
@@ -178,6 +178,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
 
                 Location = _workflowService.CurrentLocation;
+                RefreshReceiptLotMarkings(_workflowService.CurrentSession?.Loads);
                 _ = RefreshRecommendedLocationsAsync();
             }
         }

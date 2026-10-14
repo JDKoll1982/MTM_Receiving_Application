@@ -25,6 +25,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
+        /// <summary>
+        /// The receipt's distinct lot markings, one entry per unique shape and color pair, shape
+        /// first. Empty when no line on the receipt carries a marking.
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<string> _receiptLotMarkings = new();
+
         [ObservableProperty]
         private bool _isSingleView = true; // Default to single entry view
 
@@ -58,6 +65,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _reviewHeatLotNumberText = "Heat/Lot Number";
+
+        [ObservableProperty]
+        private string _reviewHeatShapeText = "Shape";
+
+        [ObservableProperty]
+        private string _reviewHeatColorText = "Color";
 
         [ObservableProperty]
         private string _reviewLocationText = "Location";
@@ -103,6 +116,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _reviewColumnHeatLotText = "Heat/Lot #";
+
+        [ObservableProperty]
+        private string _reviewColumnHeatShapeText = "Shape";
+
+        [ObservableProperty]
+        private string _reviewColumnHeatColorText = "Color";
 
         [ObservableProperty]
         private string _reviewColumnLocationText = "Location";
@@ -300,6 +319,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ? new List<Model_ReceivingLoad>()
                 : _workflowService.CurrentSession.Loads;
             Loads = new ObservableCollection<Model_ReceivingLoad>(sessionLoads);
+            ReceiptLotMarkings = BuildReceiptLotMarkings(Loads);
 
             // Set current entry to first load if available
             if (Loads.Count > 0)
@@ -317,6 +337,36 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             OnPropertyChanged(nameof(DisplayIndex));
             OnPropertyChanged(nameof(IsTableView));
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Builds the receipt's distinct lot markings. A line missing either half of its marking is
+        /// skipped, so an unmarked receipt yields nothing and the header stays as it is today.
+        /// </summary>
+        private static ObservableCollection<string> BuildReceiptLotMarkings(
+            IEnumerable<Model_ReceivingLoad> loads
+        )
+        {
+            var markings = new List<string>();
+
+            foreach (var load in loads)
+            {
+                if (
+                    string.IsNullOrWhiteSpace(load.HeatShapeCode)
+                    || string.IsNullOrWhiteSpace(load.HeatColorCode)
+                )
+                {
+                    continue;
+                }
+
+                var marking = $"{load.HeatShapeCode} {load.HeatColorCode}";
+                if (!markings.Contains(marking))
+                {
+                    markings.Add(marking);
+                }
+            }
+
+            return new ObservableCollection<string>(markings);
         }
 
         [RelayCommand]

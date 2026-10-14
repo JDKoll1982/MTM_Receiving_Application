@@ -26,6 +26,8 @@ BEGIN
         rh.po_number                                       AS po_number,
         COALESCE(rh.vendor_name, rh.po_vendor)             AS vendor_name,
         rh.heat                                            AS heat,
+        rh.heat_shape_code                                 AS heat_shape_code,
+        rh.heat_color_code                                 AS heat_color_code,
         rh.load_number                                     AS load_number,
         rh.label_number                                    AS label_number,
         rh.quantity                                        AS quantity,

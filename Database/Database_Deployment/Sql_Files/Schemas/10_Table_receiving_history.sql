@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS receiving_history (
     po_vendor VARCHAR(255) NULL COMMENT 'Compatibility alias for receiving_label_data.po_vendor',
     employee_number INT NOT NULL DEFAULT 0 COMMENT 'Employee ID who processed the receiving',
     heat VARCHAR(100) COMMENT 'Heat/lot number for material traceability (optional)',
+    heat_shape_code VARCHAR(32) NULL COMMENT 'Heat/lot marking shape code, resolved once from lot_markings.shape_code',
+    heat_color_code VARCHAR(32) NULL COMMENT 'Heat/lot marking color code, resolved once from lot_markings.color_code',
     received_date DATETIME NULL COMMENT 'Compatibility alias for receiving_label_data.received_date',
     transaction_date DATE NOT NULL COMMENT 'Date the receiving transaction occurred',
     initial_location VARCHAR(50) COMMENT 'Initial warehouse location for received parts (optional)',

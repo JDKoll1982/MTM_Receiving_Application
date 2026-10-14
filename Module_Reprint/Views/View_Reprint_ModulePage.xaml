@@ -173,11 +173,13 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="90" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="130" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="DateHeader" Grid.Column="1" FontWeight="SemiBold" Text="Date" />
                     <TextBlock x:Name="PartHeader" Grid.Column="2" FontWeight="SemiBold" Text="Part" />
                     <TextBlock x:Name="QtyHeader" Grid.Column="3" HorizontalAlignment="Right" FontWeight="SemiBold" Text="Qty" />
                     <TextBlock x:Name="ReferenceHeader" Grid.Column="4" FontWeight="SemiBold" Text="Reference" />
+                    <TextBlock x:Name="MarkingHeader" Grid.Column="5" FontWeight="SemiBold" Text="Marking" />
                 </Grid>
 
                 <Grid Grid.Row="2">
@@ -191,7 +193,7 @@
                                 <Border Background="{x:Bind RowBackground}">
                                     <Grid
                                         Padding="8,4"
-                                        ColumnDefinitions="36,*,*,90,*"
+                                        ColumnDefinitions="36,*,*,90,*,130"
                                         ColumnSpacing="8">
                                         <CheckBox
                                             x:Phase="0"
@@ -227,6 +229,18 @@
                                             Text="{x:Bind Reference}"
                                             TextTrimming="CharacterEllipsis"
                                             Visibility="{x:Bind ShowReferenceColumn, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <!--  Lot marking copied verbatim from the history record; blank cells show nothing.  -->
+                                        <StackPanel
+                                            Grid.Column="5"
+                                            Orientation="Horizontal"
+                                            Spacing="6"
+                                            VerticalAlignment="Center">
+                                            <TextBlock
+                                                x:Phase="1"
+                                                FontFamily="Segoe UI Emoji"
+                                                Text="{x:Bind Row.HeatShapeCode, Mode=OneTime}" />
+                                            <TextBlock x:Phase="1" Text="{x:Bind Row.HeatColorCode, Mode=OneTime}" />
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

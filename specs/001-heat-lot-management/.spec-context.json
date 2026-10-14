@@ -1,0 +1,1484 @@
+{
+  "workflow": "companion",
+  "specName": "Heat / Lot Management",
+  "branch": "master",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-14T16:38:49.015Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-14T16:41:43.364Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-14T16:41:52.961Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:46:39.769Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:51:41.313Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:51:41.710Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-14T16:52:02.080Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:52:48.523Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:52:48.959Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:42.306Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:42.680Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:43.065Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:43.450Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:43.850Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:44.300Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:44.631Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:45.088Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:53:45.504Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:57:16.904Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:57:17.395Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:57:17.794Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T16:57:18.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:01:58.758Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:01:59.096Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:12:43.634Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:12:44.010Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:15:03.444Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:21:54.481Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:21:54.839Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:26:55.405Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T17:27:52.649Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-14T18:45:18.289Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:47:34.794Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:50:04.820Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:50:05.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:52:20.331Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:56:39.904Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T18:56:40.269Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:04:23.559Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:04:28.765Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:05:05.860Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:05:06.199Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:05:49.090Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:05:49.396Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:07:42.932Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:13:42.888Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:13:49.669Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:13:56.237Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:16:10.988Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:16:16.596Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:16:22.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:08.754Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:20.657Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:23.194Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:25.903Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:28.693Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:31.911Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:34.093Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:38.482Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:26:57.914Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:27:03.338Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:27:09.032Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:27:14.769Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:52:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:52:45.249Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:52:45.595Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:52:45.946Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T19:53:02.865Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T20:01:11.849Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T20:10:53.296Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-14T20:10:53.392Z"
+    }
+  ],
+  "telemetryInstanceId": "179c7961-a74a-4a23-91a6-97a3d2a3746d",
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 40,
+    "projectedTasks": 28,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "coverage": {
+    "FR-001": {
+      "title": "Every heat number and supplier combination gets exactly one shape and color.",
+      "tasks": [
+        "T011",
+        "T012",
+        "T019",
+        "T023",
+        "T037"
+      ]
+    },
+    "FR-002": {
+      "title": "The system chooses the marking, not the user.",
+      "tasks": [
+        "T011",
+        "T023",
+        "T037"
+      ]
+    },
+    "FR-003": {
+      "title": "The same heat number and supplier always resolve to the same marking.",
+      "tasks": [
+        "T010",
+        "T011",
+        "T023",
+        "T034"
+      ]
+    },
+    "FR-004": {
+      "title": "A marking is fixed on first sight and never changes.",
+      "tasks": [
+        "T011",
+        "T012",
+        "T023",
+        "T038"
+      ]
+    },
+    "FR-005": {
+      "title": "The same heat number from two suppliers produces two markings.",
+      "tasks": [
+        "T011",
+        "T012",
+        "T023",
+        "T034"
+      ]
+    },
+    "FR-006": {
+      "title": "Supplier identity comes from the official supplier record.",
+      "tasks": [
+        "T023"
+      ]
+    },
+    "FR-007": {
+      "title": "Receipts with no supplier share one common group.",
+      "tasks": [
+        "T010",
+        "T011",
+        "T012",
+        "T038"
+      ]
+    },
+    "FR-008": {
+      "title": "A blank heat number gets no marking and blocks nothing.",
+      "tasks": [
+        "T010",
+        "T023",
+        "T037",
+        "T038"
+      ]
+    },
+    "FR-009": {
+      "title": "Only enabled part numbers receive markings.",
+      "tasks": [
+        "T013",
+        "T017",
+        "T039",
+        "T040"
+      ]
+    },
+    "FR-010": {
+      "title": "Parts off the list stay fully receivable.",
+      "tasks": [
+        "T023",
+        "T037",
+        "T039"
+      ]
+    },
+    "FR-011": {
+      "title": "Parts are added to the list by searching, not by typing from memory.",
+      "tasks": [
+        "T040",
+        "T041",
+        "T042"
+      ]
+    },
+    "FR-012": {
+      "title": "Removing a part leaves existing markings unchanged.",
+      "tasks": [
+        "T017",
+        "T039",
+        "T040"
+      ]
+    },
+    "FR-013": {
+      "title": "One system-wide switch turns the feature off without deleting markings.",
+      "tasks": [
+        "T021",
+        "T022"
+      ]
+    },
+    "FR-014": {
+      "title": "Each receipt line and each receipt shows its lots shapes and colors.",
+      "tasks": [
+        "T043",
+        "T044",
+        "T045",
+        "T046"
+      ]
+    },
+    "FR-015": {
+      "title": "A lot colliding with an active lot gets a different marking automatically.",
+      "tasks": [
+        "T011",
+        "T012",
+        "T023",
+        "T038"
+      ]
+    },
+    "FR-016": {
+      "title": "Markings survive history promotion and reprint.",
+      "tasks": [
+        "T018",
+        "T019",
+        "T047",
+        "T048",
+        "T049",
+        "T050"
+      ]
+    },
+    "FR-017": {
+      "title": "Markings can be found by heat number search.",
+      "tasks": [
+        "T016",
+        "T053",
+        "T054"
+      ]
+    },
+    "FR-018": {
+      "title": "A user can replace a marking by hand with a recorded reason.",
+      "tasks": [
+        "T051",
+        "T052",
+        "T053"
+      ]
+    },
+    "FR-019": {
+      "title": "A locked marking is never changed by the system.",
+      "tasks": [
+        "T016",
+        "T023",
+        "T051"
+      ],
+      "tests": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs"
+      ]
+    },
+    "FR-020": {
+      "title": "Manual changes record who and when.",
+      "tasks": [
+        "T012",
+        "T023",
+        "T052"
+      ]
+    },
+    "FR-021": {
+      "title": "The full shape and color set is visible in the tool.",
+      "tasks": [
+        "T007",
+        "T053",
+        "T054"
+      ]
+    },
+    "FR-022": {
+      "title": "Tool access is limited to Ship-Rec Tools users.",
+      "tasks": [
+        "T027",
+        "T028"
+      ]
+    }
+  },
+  "sizeprobe": 1,
+  "expectations": [
+    "Volvo receiving markings",
+    "Dunnage receiving markings",
+    "Printing markings on physical labels",
+    "Retention or purge of recorded markings",
+    "Analytics and reporting surfaces for markings"
+  ],
+  "context": [
+    "area: Module_ShipRec_Tools tool pattern (WeldedCoils template, navigation keys, main-view host, per-tool settings keys)",
+    "area: Database/Database_Deployment (schemas numbered to 49, migrations to 15, Receiving and Settings procedure families)",
+    "area: Module_Receiving label data and load DAOs, queue-to-history promotion, and reprint round trip",
+    "area: Module_Settings.Core settings manifest with the existing ShipRecTools category and the settings core facade",
+    "area: Module_Core help articles and Infrastructure DependencyInjection per-tool registration",
+    "constraint: MVVM flow View to ViewModel to Service to DAO to stored procedures; no raw MySQL SQL in C#",
+    "constraint: Infor Visual SQL Server is read-only",
+    "constraint: the lot number already exists as the heat column, so no second lot column is introduced",
+    "constraint: receipts store the supplier as a name only, so the supplier id must be resolved during assignment",
+    "constraint: Dialog_FuzzySearchPicker is the shared part-search modal to reuse"
+  ],
+  "intent": "Give every unique heat number and supplier a permanent automatic shape-and-color marking that shows on receipts and survives history and reprint.",
+  "decisions": [
+    {
+      "decision": "A lot is identified by the pair (normalized heat number, supplier group).",
+      "why": "Two suppliers using the same heat number must stay visually distinct, and the receipt tables store the supplier as a name only.",
+      "rejected": "Keying on the heat number alone, or on heat plus part number, either merges two suppliers or splits one physical lot."
+    },
+    {
+      "decision": "The hash is only a seed; the ledger row is authoritative once written.",
+      "why": "A live recompute would repaint every historical lot when a shape or color is added later, while the physical marking cannot change.",
+      "rejected": "Pure recompute with no ledger, or a cache-only ledger rebuilt on demand."
+    },
+    {
+      "decision": "Collisions are resolved by a bounded deterministic probe against other live markings, with the policy exposed as a setting.",
+      "why": "156 combinations collide about 70 percent of the time once twenty lots are active, and the ledger already holds what the probe needs.",
+      "rejected": "Ignoring collisions, or adding a fill-pattern dimension before the need is proven."
+    },
+    {
+      "decision": "The marking is resolved once at save time and copied verbatim through promotion and reprint, never recomputed.",
+      "why": "Promotion and reprint happen later than the receipt, so a recompute would disagree with what the handler saw, and reprint rows never re-resolve.",
+      "rejected": "Resolving lazily at display time, or resolving again at promotion."
+    },
+    {
+      "decision": "A heat number counts as blank when it is null, empty, whitespace only, or the literal string the receiving flow substitutes for blank.",
+      "why": "Blank heat values are stored as that literal, so treating it as a real lot would collapse every blank-heat line into one shared lot.",
+      "rejected": "Treating only null and whitespace as blank, or removing the sentinel at its source."
+    },
+    {
+      "decision": "A dedicated normalizer builds the matching key and the stored heat value is left untouched.",
+      "why": "The key must collapse separators and casing, but existing rows and the reprint procedure copy the stored value verbatim.",
+      "rejected": "Reusing the model's trim-and-uppercase normalization."
+    },
+    {
+      "decision": "The supplier is resolved from the receipt's name to the official supplier id, falling back to the normalized name, and the non-supplier group uses the literal sentinel.",
+      "why": "The official record must be authoritative, but only a fuzzy vendor search exists, and a unique key cannot hold a NULL without permitting duplicates.",
+      "rejected": "Comparing normalized names only, or failing the receipt when the supplier cannot be resolved."
+    },
+    {
+      "decision": "The enabled part list is a table with a unique key and an active flag, and removal deactivates rather than deletes.",
+      "why": "It is data rather than a preference, and the active flag satisfies the requirement that removal leaves recorded markings untouched.",
+      "rejected": "A JSON settings value, or hard deletion on removal."
+    },
+    {
+      "decision": "New settings join the existing ShipRecTools category, and only the system-wide switch is gated above a normal user.",
+      "why": "The category needs no parser change, and a missing manifest entry fails closed, so under-permissioning is the safe direction.",
+      "rejected": "Making every key user level, or creating a new settings category."
+    },
+    {
+      "decision": "The marking shows on each receipt line, on the per-step receipt header, and in the reprint grid.",
+      "why": "The reprint grid is where a reprinted receipt is reviewed, and its mapper currently discards the heat value the procedure already returns.",
+      "rejected": "Receipt lines only, which fails the receipt-level requirement."
+    },
+    {
+      "decision": "The schema change ships as both a numbered schema file and a migration, and the migration re-creates the receiving procedures it invalidates.",
+      "why": "Schema files use CREATE TABLE IF NOT EXISTS and cannot alter an installed database, and the affected procedures enumerate their columns explicitly.",
+      "rejected": "Migration only, schema files only, or relying on a separate procedure re-deployment."
+    },
+    {
+      "decision": "The manual override records an explicit change reason separate from the operator notes field.",
+      "why": "A reason is required and must be queryable, which free-text notes cannot provide.",
+      "rejected": "Overloading the notes column, or adding a separate audit table."
+    },
+    {
+      "decision": "The four write procedures (sp_Receiving_LabelData_Insert, sp_Receiving_LabelData_Update, sp_Receiving_Load_Insert, sp_Receiving_Load_Update) keep their current signatures until the receiving row model and queue DAO change lands with them.",
+      "why": "MySQL stored procedures do not support default parameter values, so adding the two marking parameters now would break every existing caller with an incorrect-argument-count error until the DAO passes them.",
+      "rejected": "Adding the parameters immediately and leaving the receiving workflow broken until the DAO change lands."
+    },
+    {
+      "decision": "The shape vocabulary is emoji only, and the emoji itself is the value persisted in shape_code and heat_shape_code.",
+      "why": "The shape must render on screen and be stored as the same thing, so the drawn value and the stored value can never drift apart, and no mapping layer can fall out of step.",
+      "rejected": "Keeping abstract name codes and mapping them to emoji at display time."
+    },
+    {
+      "decision": "Enum_LotShape was deleted, and the palette split into Model_LotMarkingShape (Glyph, DisplayName, SortOrder) and Model_LotMarkingColor (Code, DisplayName, HexToken, SortOrder).",
+      "why": "With the glyph as the value, an enum of name codes is dead and misleading, and a shape carries no hex token because the emoji brings its own colour.",
+      "rejected": "Leaving the enum in place as a record of the old vocabulary."
+    },
+    {
+      "decision": "The property stays named ShapeCode and the column stays named shape_code, with the XML documentation stating that it holds the emoji.",
+      "why": "The property mirrors its column name, which is the convention elsewhere in this module, and renaming a column nobody asked to rename is churn.",
+      "rejected": "Renaming the property to ShapeGlyph, which would break the column-mirroring convention used across the module."
+    },
+    {
+      "decision": "Core was deployed only after the test database proved the same ordered manifest, a backup was taken, and the procedures were smoke tested.",
+      "why": "The seven re-deployed receiving procedures are the only change that touches existing behaviour, and the running build calls them.",
+      "rejected": "Applying to core first and verifying afterwards, which would have risked the running build the deployment had to protect."
+    },
+    {
+      "decision": "The sync policy admits lot_marking_part_scope as reference data and excludes lot_markings, because the ledger key is heat plus supplier and copying rows would collide and replace a marking a handler has already seen"
+    },
+    {
+      "decision": "The settings page view and view model are registered in DI although the task named only three registration sites, because the settings search path resolves the page from the container and GetService returns null when it is missing"
+    },
+    {
+      "decision": "The palette row type for the settings page lives inside the settings view model file rather than a new Models file, because the task file list did not include one"
+    },
+    {
+      "decision": "Shape and color render as text, the glyph itself and the color code, because the repository has no hex to brush converter and adding one was outside scope"
+    },
+    {
+      "decision": "The collision policy is read from settings by the receiving caller and passed to the resolver, because the already built service takes it as an argument"
+    },
+    {
+      "decision": "T045 was unblocked with a new shared ViewModel_Receiving_StepBase for the four guided-step view models, rather than adding a receiving concept to ViewModel_Shared_Base and so to every view model in the application"
+    },
+    {
+      "decision": "The receipt header card binds one joined line, ReceiptLotMarkingsText, instead of an item template, because a one-line display does not justify a DataTemplate and its x:DataType dependency"
+    },
+    {
+      "decision": "The 21 objects the catalog regeneration dropped are retired rather than lost: migration 13 retired dunnage_specs and its procedures, and no matching SQL files remain, so the committed catalog was stale"
+    },
+    {
+      "decision": "The docs/database reference pages were not written because the repository contains no generator for them; they are hand-authored HTML over a curated subset of tables"
+    }
+  ],
+  "step_summaries": {
+    "specify": {
+      "summary": "60 tasks across Setup, Foundational, five user-story phases and Polish, with the tool page and its wiring placed in Foundational because two stories would otherwise share those files.",
+      "key_finding": "The receiving flow stores a blank heat number as the literal string Nothing Entered, so the resolver must treat that value as blank or every blank-heat line in the application would collapse into one shared lot."
+    },
+    "implement": {
+      "summary": "Heat / Lot Management shipped: two tables with eleven procedures plus the additive SetMarking procedure, the tool page and its settings page fully wired, markings resolved once on the receiving save path and copied verbatim through promotion and reprint, and twenty new tests. Two tasks remain open: the per-step receipt header card and the regenerated SQL object catalog."
+    }
+  },
+  "approach": "Give every unique heat number and supplier pair a permanent shape-and-color marking. The marking is pinned in a new ledger table on first sight, written onto the receiving queue row, and copied verbatim through promotion and reprint. Only part numbers on an enabled list receive markings, maintained from a new settings page that reuses the existing fuzzy-search picker.",
+  "currentTask": null,
+  "task_summaries": {
+    "T003": {
+      "status": "DONE",
+      "did": "Added the 13-value shape enum with the pinned codes.",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_LotShape.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added the 12-value color enum with the pinned codes.",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_LotColor.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added the marking source enum.",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_LotMarkingSource.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added the collision policy enum with Allow, Probe and Warn.",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_LotMarkingCollisionPolicy.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added the palette catalog with 13 shapes, 12 colors and lookups by code.",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_LotMarkingPalette.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added the observable ledger row model.",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Added the observable enabled-part row model.",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_LotMarkingScope.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Added the heat normalizer and the blank detector, including the blank sentinel.",
+      "files": [
+        "Module_ShipRec_Tools/Helpers/Helper_LotNumberNormalizer.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Added the resolver: seeded choice, stored row wins, bounded probe, supplier grouping.",
+      "files": [
+        "Module_ShipRec_Tools/Helpers/Helper_LotMarkingResolver.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added the ledger table with its unique key on normalized heat plus supplier.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Schemas/50_Table_lot_markings.sql"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added the enabled-part table with its unique part key.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Schemas/51_Table_lot_marking_part_scope.sql"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added the six ledger procedures: get all, get by heat, resolve, insert, update marking, set locked.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_LotMarkings_GetAll.sql",
+        "sp_LotMarkings_GetByHeat.sql",
+        "sp_LotMarkings_Resolve.sql",
+        "sp_LotMarkings_Insert.sql",
+        "sp_LotMarkings_UpdateMarking.sql",
+        "sp_LotMarkings_SetLocked.sql"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added the five enabled-part procedures: get all, search, upsert, set enabled, delete.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_LotMarkingPartScope_GetAll.sql",
+        "sp_LotMarkingPartScope_Search.sql",
+        "sp_LotMarkingPartScope_Upsert.sql",
+        "sp_LotMarkingPartScope_SetEnabled.sql",
+        "sp_LotMarkingPartScope_Delete.sql"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Added heat_shape_code and heat_color_code to the history table definition, after heat.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Schemas/10_Table_receiving_history.sql"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added heat_shape_code and heat_color_code to the queue table definition, after heat.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Schemas/11_Table_receiving_label_data.sql"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Carried the marking through every read, the promotion and the reprint, added an additive setter so the write procedures keep their signatures, and aligned both arms of the history view.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_SetMarking.sql",
+        "sp_Receiving_LabelData_GetAll.sql",
+        "sp_Receiving_LabelData_ClearToHistory.sql",
+        "sp_Receiving_LabelData_InsertFromHistory.sql",
+        "sp_Receiving_Load_GetAll.sql",
+        "sp_Receiving_History_Get.sql",
+        "sp_Receiving_History_GetForReprint.sql",
+        "sp_Receiving_History_Import.sql",
+        "Database/Database_Deployment/Sql_Files/Views/02_View_receiving_history.sql"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Wrote the additive idempotent migration for both column pairs plus a reprint backfill, and applied the ordered deployment to the test database where it verified at 2 tables, 4 columns and 11 routines.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Migrations/16_Migration_lot_markings.sql"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Confirmed file 16 and internal sp_mig16 were free, recorded it in the migration header, and proved it by applying cleanly to both databases.",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/Migrations/16_Migration_lot_markings.sql"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Added the marking DAO: one method per procedure, parameterized reads via the helper dictionary overload, and null-safe row mappers.",
+      "files": [
+        "Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Added the service contract and implementation: blank-heat short circuit, stored row wins, race-safe insert, palette validation on override, reason required.",
+      "files": [
+        "Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs",
+        "Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Added the marking shape and color properties to the shared receiving row model, deliberately persisted rather than ignored because they are real recorded data.",
+      "files": [
+        "Module_Receiving/Models/Model_ReceivingLoad.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Both receiving row mappers now read the marking columns. The write half is met by sp_Receiving_LabelData_SetMarking through the DAO and service rather than by new parameters, because adding parameters to the insert and update procedures would break any deployed build.",
+      "files": [
+        "Module_Receiving/Data/Dao_ReceivingLabelData.cs",
+        "Module_Receiving/Data/Dao_ReceivingLoad.cs"
+      ]
+    },
+    "T001": {
+      "status": "DONE",
+      "did": "Baseline build green before any change",
+      "files": [
+        "MTM_Receiving_Application.slnx"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Added the five LotMarking settings accessors to IService_ShipRecToolsSettings and Service_ShipRecToolsSettings",
+      "files": [
+        "Module_ShipRec_Tools/Contracts/IService_ShipRecToolsSettings.cs",
+        "Module_ShipRec_Tools/Services/Service_ShipRecToolsSettings.cs",
+        "Module_ShipRec_Tools/Settings/ShipRecToolsSettingsKeys.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Registered the five LotMarking manifest entries, switch at Admin scope System",
+      "files": [
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Added ViewModel_Tool_LotMarking with heat search, ledger, override, lock, part list, palette legend and fuzzy-picker delegate",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Added View_Tool_LotMarking view and code-behind: x:Bind only, picker delegate and help in code-behind",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml",
+        "Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Added the LotMarking settings page and view model over the settings core facade",
+      "files": [
+        "Module_Settings.Core/Views/View_Settings_LotMarking.xaml",
+        "Module_Settings.Core/Views/View_Settings_LotMarking.xaml.cs",
+        "Module_Settings.Core/ViewModels/ViewModel_Settings_LotMarking.cs"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Added the Heat / Lot Management host ContentControl to the main tool view, binding Visibility to IsHeatLotManagementVisible with the sibling OneWay BooleanToVisibility converter",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Wired the Heat/Lot Management tool into the main tools code-behind: view injection, view-model capture, host content, property-change branch and activation chain",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Added the Heat / Lot Management visibility flag, its navigation case and its hide branch to the Ship/Rec Tools main view model.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Added the ShipRecTools.LotMarking help article for the Heat / Lot Management tool.",
+      "files": [
+        "Module_Core/Services/Help/Service_Help.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Registered the Heat / Lot Management tool definition with key HeatLotManagement, title, description, Utilities category and glyph.",
+      "files": [
+        "Module_ShipRec_Tools/Services/Service_ShipRecTools_Navigation.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Registered the LotMarking DAO, service, view model and view in the Ship/Rec Tools block off the existing MySQL connection-string local.",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Wired the settings page into the hub button, the settings window header switch, the settings search destinations and DI (the search path resolves the page from the container).",
+      "files": [
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml",
+        "Module_Settings.Core/Views/View_Settings_CoreNavigationHub.xaml.cs",
+        "Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs",
+        "MainWindow.xaml.cs",
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Added read-only Shape and Color marking columns beside Heat/Lot in the edit-mode grid, with matching sort arms",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Added read-only Shape and Color columns to the review table and matching Shape/Color blocks to the single-entry card",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Review.xaml",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "Exposed ReceiptLotMarkings (distinct shape+color pairs) from both view models, rebuilt by instance replacement",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Added Service_Tool_LotMarkingTests: a marking is resolved once and reused for the same heat and supplier, and a second supplier gets a second marking",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Resolved the lot marking in Service_MySQL_Receiving.SaveReceivingLoadsAsync before the queue write and wrote the codes onto the row via ApplyMarkingToQueueRowAsync; feature switch and blank heat skip it, failures never block the save",
+      "files": [
+        "Module_Receiving/Services/Service_MySQL_Receiving.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Added Helper_LotMarkingResolverTests: determinism, normalization collapse, blank and sentinel handling, supplier separation, the sentinel group, probe bounds, and a locked row never moving",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Helpers/Helper_LotMarkingResolverTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Added the part-list view model tests: empty list, added part, and a removed part keeping its recorded markings.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarkingTests.cs"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Added the promotion/reprint integration test: a marked queue row is promoted, its codes arrive on the history row unchanged, and re-queueing returns them unchanged.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/Database/LotMarkingStoredProceduresIntegrationTests.cs"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Closed the enabled-part gaps on the service: list, search, add, deactivate and reactivate all present, with every write path validating the row id.",
+      "files": [
+        "Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Read the two marking columns in the history-side reprint mapper; the history update path needs no marking parameters because sp_Receiving_Load_Update keeps its signature and never writes those columns.",
+      "files": [
+        "Module_Receiving/Data/Dao_ReceivingLoad.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Completed the part-list region in the view model: a row-taking RemovePartRowAsync so each row can remove itself, a correct Remove guard, and the typed search term confirmed into a part number through ShowFuzzyPickerAsync.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Added HeatShapeCode and HeatColorCode to the reprinted-row model, empty by default so a pre-feature history row renders without a marking.",
+      "files": [
+        "Module_Core/Models/Reprint/Model_ReprintHistoryRow.cs"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Gave each part row its own Remove button using the module's Tag={x:Bind} pattern, with a code-behind click handler that forwards the row to ViewModel.RemovePartRowAsync.",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml",
+        "Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml.cs"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Showed the original marking in the reprint grid: a Marking column that renders the shape glyph in Segoe UI Emoji and the color by its code, bound with x:Bind only and copied verbatim from the history row.",
+      "files": [
+        "Module_Reprint/Views/View_Reprint_ModulePage.xaml"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Added the override, lock and palette-legend tests: an override records the acting user, the reason, the shape and the color; a locked lot is returned untouched and stays overridable; the palette lists every shape and color.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "Hardened OverrideMarkingAsync and SetMarkingLockedAsync: both require a reason and record the acting user, both reject a missing row, and the override deliberately does not consult is_locked.",
+      "files": [
+        "Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Completed the search, override, lock and legend region: the legend always exposes the full palette when settings come back empty, a failed heat search now keeps the rows already on screen, and the empty state distinguishes an empty ledger from a search with no match.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "Completed the search, override, lock and legend region in the view: x:Bind only, shape glyphs drawn as text, colors shown by code, and the empty state now bound to the view model's wording.",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "Allowed lot_marking_part_scope through as reference data and excluded lot_markings from the sync tool with a written reason.",
+      "files": [
+        "Database/SyncTool/sync_policy.yml"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "Added the twelve new procedures to the test inventory and moved progress to 173/182.",
+      "files": [
+        "Database/Database_Deployment/StoredProcedure-Test-Checklist.md"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "Added the HeatLotManagement navigation case to the main tool view model tests.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_MainTests.cs"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "Corrected the module feature doc to the shipped status and the landed HeatLotManagement names.",
+      "files": [
+        "Module_ShipRec_Tools/docs/HeatLotManagement_FeatureUpdate.md"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Validated: solution build green and the full suite passes 802 of 802.",
+      "files": [
+        "MTM_Receiving_Application.slnx"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Regenerated the SQL object catalog under pwsh; it now holds 276 objects including both new tables and all twelve new procedures, reported no undeclared-parameter or missing-table errors, and incidentally repaired a corrupt trailing fragment in the committed file.",
+      "files": [
+        "Database/Database_Deployment/sql-object-catalog.json"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Added ViewModel_Receiving_StepBase, derived the four guided-step view models from it and showed the receipt markings in all four header cards.",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_StepBase.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_HeatLot.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_WeightQuantity.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_PackageType.cs",
+        "Module_Receiving/Views/View_Receiving_HeatLot.xaml",
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_WeightQuantity.xaml",
+        "Module_Receiving/Views/View_Receiving_PackageType.xaml"
+      ]
+    }
+  },
+  "verified": [
+    {
+      "what": "dotnet build MTM_Receiving_Application.csproj succeeds with 0 warnings and 0 errors after the nine foundational files were added."
+    },
+    {
+      "what": "The promotion procedure carries the two marking columns in all three of its enumerations: the insert column list, the select list, and the duplicate-key update list."
+    },
+    {
+      "what": "The reprint procedure carries the two marking columns in both of its enumerations."
+    },
+    {
+      "what": "Both arms of the history view gain the two columns in the same position, so the union column sets stay aligned."
+    },
+    {
+      "what": "dotnet build MTM_Receiving_Application.csproj succeeds with 0 warnings and 0 errors after the emoji palette, the quoted glyphs, and the enum removal."
+    },
+    {
+      "what": "Enum_LotShape.cs is deleted; the Enums folder now holds only Enum_ToolCategory, Enum_LotColor, Enum_LotMarkingSource and Enum_LotMarkingCollisionPolicy."
+    },
+    {
+      "what": "The stale shape-code references were cleared from the spec, plan, research, task list, data model, both interface contracts, the ledger column comment, and the module feature document. Only the append-only run history still records the old vocabulary, which is correct because history is never rewritten."
+    },
+    {
+      "what": "The core database mtm_receiving_application at 172.16.1.104 now has both new tables, both new column pairs and eleven new routines, verified at 2/2, 4/4 and 11."
+    },
+    {
+      "what": "The same objects are present on mtm_receiving_application_test, which is where the ordered deployment was proven first."
+    },
+    {
+      "what": "Six procedures execute cleanly on core, including the modified sp_Receiving_LabelData_GetAll which returned 175 real rows, and the modified sp_Receiving_LabelData_ClearToHistory which reached its validation guard and returned without touching a row."
+    },
+    {
+      "what": "No statement aborted during either apply; the runner aborts on the first error and the log records no abort."
+    },
+    {
+      "what": "A pre-change backup of core exists at C:\\Users\\jkoll\\MTM_DB_Backups\\mtm_receiving_application-20261014-121429.sql, 4.36 MB, with routines and events included, taken with mysqldump exit 0."
+    },
+    {
+      "what": "The four write procedures keep their original signatures, so a build predating this feature calls them exactly as before and cannot break."
+    },
+    {
+      "what": "solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 11.6,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:11.40"
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo",
+      "source": "derived",
+      "exitCode": 1,
+      "durationSeconds": 15.8,
+      "result": "--- End of stack trace from previous location --- · Failed!  - Failed:     1, Passed:   801, Skipped:     0, Total:   802, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0) · [xUnit.net 00:00:00.68]     MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.Services.Service_Tool_DunnageBookTests.BuildBookAsync_ShouldEmbedSharedRootImage_WhenCachedCopyIsStale [FAIL]",
+      "warnings": [
+        "exited 1"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "note": "The palette carries a text glyph only for the shapes that have a dependable Unicode character; the remaining shapes show their display name. A dedicated shape icon set is the next step for the marking display."
+    },
+    {
+      "note": "T018 is partly complete: seven of the eleven procedures are updated, and the four write procedures are deliberately deferred to land with T035 and T036 so the receiving workflow never breaks in between."
+    },
+    {
+      "note": "The shape set fell from 13 to 10, so the combination space dropped from 156 to 120 and accidental collisions become slightly more likely. The probe policy absorbs it, but it is a real reduction in distinct markings."
+    },
+    {
+      "note": "An emoji brings its own colour, so a marking now shows two colour signals: the emoji and the colour swatch. The two can disagree in tone, and the red cross or red circle emoji will never match a blue lot colour."
+    },
+    {
+      "note": "Shape code length is now variable because some emoji are two code points, so shape_code and heat_shape_code must remain at least VARCHAR(32) and the column must stay utf8mb4 to hold them."
+    },
+    {
+      "note": "T045 is still open. The marking on the per-step receipt header card cannot be bound from the four guided-step views as the task specifies: they share no member carrying receipt markings, and ViewModel_Receiving_LoadEntry exposes no loads collection at all. Unblocking needs one shared member on the four step view models or on a common base, which is outside the task file list"
+    },
+    {
+      "note": "T059 is still open. Build-SqlObjectCatalog.ps1 cannot run here: it calls System.IO.Path.GetRelativePath, which needs PowerShell 7, and only Windows PowerShell 5.1 is installed. Its failed run truncated Database/Database_Deployment/sql-object-catalog.json, which was restored from git and verified byte identical to HEAD with an empty diff"
+    },
+    {
+      "note": "The ledger and part scope procedure families have no coverage against a real database. The unit tests substitute the DAO, the procedure test inventory moved to 173 of 182, and the T047 integration test could not reach a test schema in this environment"
+    },
+    {
+      "note": "The written contract in contracts/service.md is stale against the implemented interface: it names GetPaletteAsync, GetMarkingsAsync, FindByHeatAsync and SetPartEnabledAsync by part id, while the code has GetAllMarkingsAsync, SearchMarkingsByHeatAsync and SetPartEnabledAsync by row id"
+    },
+    {
+      "note": "The feature switch on the settings page is gated at Admin, so a normal user who saves that page gets a permission failure surfaced as an error dialog rather than a disabled control"
+    },
+    {
+      "note": "sql-object-catalog.json carries content past its first complete JSON document, so a plain json.load reports extra data at line 13182. This is pre-existing in the committed file, not introduced by this run"
+    },
+    {
+      "note": "SUPERSEDES the two notes above that T045 and T059 were still open. Both are complete. T059 was unblocked by installing PowerShell 7 and regenerated the catalog reporting no errors. T045 was unblocked by a new shared ViewModel_Receiving_StepBase."
+    },
+    {
+      "note": "SUPERSEDES the note above about sql-object-catalog.json carrying trailing content. The regenerated file is one valid document. The old one was corrupt: a complete document plus 112KB of stale fragment from an earlier longer write."
+    },
+    {
+      "note": "The docs/database reference pages were not extended with lot_markings or lot_marking_part_scope, which T059 named. The repo has no generator for those pages, so a follow-up must author them by hand."
+    },
+    {
+      "note": "The regenerated catalog is a near full-file rewrite, since 89 objects were added beyond the corruption. Review the added and removed object names rather than the roughly 23000 changed lines."
+    },
+    {
+      "note": "Stale references to the retired dunnage_specs and sp_Dunnage_Specs objects remain in StoredProcedure-Test-Checklist.md, docs/database/index.html and StoredProcedureInitialCoverageIntegrationTests.cs. Out of scope here."
+    }
+  ],
+  "unattended": true
+}

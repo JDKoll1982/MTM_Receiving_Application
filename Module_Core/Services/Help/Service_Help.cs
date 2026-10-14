@@ -1117,6 +1117,25 @@ public class Service_Help : IService_Help
                 RelatedKeys = new List<string>(),
             }
         );
+
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "ShipRecTools.LotMarking",
+                Title = "Heat / Lot Management",
+                Content =
+                    "Every lot gets its own marking: one shape and one color for one heat number from one supplier.\n\n"
+                    + "• The same heat number from the same supplier always shows the same marking\n"
+                    + "• A marking is chosen once and never recalculated, so labels already printed keep their meaning\n"
+                    + "• Only the parts on the part list get markings - add a part to start marking it\n"
+                    + "• You can change a marking by hand if you give a reason, and you can lock a marking so it never changes again",
+                Category = "ShipRec Tools",
+                HelpType = Enum_HelpType.Info,
+                Icon = "Shape",
+                Severity = Enum_HelpSeverity.Info,
+                RelatedKeys = new List<string>(),
+            }
+        );
     }
 
     private void InitializeDialogHelp()

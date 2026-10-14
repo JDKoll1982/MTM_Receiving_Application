@@ -62,6 +62,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads;
 
+        /// <summary>
+        /// The distinct lot markings on the loaded rows, one entry per unique shape and color
+        /// pair, shape first. Empty when nothing loaded carries a marking.
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<string> _receiptLotMarkings = new();
+
         /// <summary>All column definitions, in order. Driven by column-chooser dialog.</summary>
         public ObservableCollection<Model_EditModeColumn> ColumnSettings { get; } = new();
 
@@ -853,6 +860,24 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                                 StringComparer.OrdinalIgnoreCase
                             )
                             .ToList(),
+                "HeatShapeCode" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.HeatShapeCode, StringComparer.OrdinalIgnoreCase)
+                            .ToList()
+                        : lst.OrderByDescending(
+                                l => l.HeatShapeCode,
+                                StringComparer.OrdinalIgnoreCase
+                            )
+                            .ToList(),
+                "HeatColorCode" => lst =>
+                    ascending
+                        ? lst.OrderBy(l => l.HeatColorCode, StringComparer.OrdinalIgnoreCase)
+                            .ToList()
+                        : lst.OrderByDescending(
+                                l => l.HeatColorCode,
+                                StringComparer.OrdinalIgnoreCase
+                            )
+                            .ToList(),
                 "InitialLocation" => lst =>
                     ascending
                         ? lst.OrderBy(l => l.InitialLocation, StringComparer.OrdinalIgnoreCase)
@@ -1113,6 +1138,37 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void ReplaceLoads(IEnumerable<Model_ReceivingLoad> loads)
         {
             Loads = new ObservableCollection<Model_ReceivingLoad>(loads);
+            ReceiptLotMarkings = BuildReceiptLotMarkings(_allLoads);
+        }
+
+        /// <summary>
+        /// Builds the receipt's distinct lot markings. A row missing either half of its marking is
+        /// skipped, so an unmarked load contributes nothing rather than a half-empty entry.
+        /// </summary>
+        private static ObservableCollection<string> BuildReceiptLotMarkings(
+            IEnumerable<Model_ReceivingLoad> loads
+        )
+        {
+            var markings = new List<string>();
+
+            foreach (var load in loads)
+            {
+                if (
+                    string.IsNullOrWhiteSpace(load.HeatShapeCode)
+                    || string.IsNullOrWhiteSpace(load.HeatColorCode)
+                )
+                {
+                    continue;
+                }
+
+                var marking = $"{load.HeatShapeCode} {load.HeatColorCode}";
+                if (!markings.Contains(marking))
+                {
+                    markings.Add(marking);
+                }
+            }
+
+            return new ObservableCollection<string>(markings);
         }
 
         /// <summary>

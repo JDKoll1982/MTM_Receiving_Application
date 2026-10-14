@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS receiving_label_data (
     user_set_customer_name VARCHAR(255) NULL COMMENT 'Matched vendor/customer name that enables the user-set variable field',
     user_set_variable VARCHAR(255) NULL COMMENT 'User-entered variable value captured for the matched vendor/customer',
     heat VARCHAR(100) NULL COMMENT 'Heat/lot number for material traceability',
+    heat_shape_code VARCHAR(32) NULL COMMENT 'Heat/lot marking shape code, resolved once from lot_markings.shape_code',
+    heat_color_code VARCHAR(32) NULL COMMENT 'Heat/lot marking color code, resolved once from lot_markings.color_code',
     received_date DATETIME NULL COMMENT 'Full timestamp when the record was received',
     transaction_date DATE NOT NULL COMMENT 'Date portion of the receiving transaction',
     initial_location VARCHAR(50) NULL COMMENT 'Initial warehouse location for received parts',

@@ -596,6 +596,8 @@ LIMIT 1;";
             LoadNumber = ReadInt(row, "load_number", "label_number"),
             WeightQuantity = ReadDecimal(row, "weight_quantity", "quantity"),
             HeatLotNumber = ReadString(row, "heat"),
+            HeatShapeCode = ReadString(row, "heat_shape_code"),
+            HeatColorCode = ReadString(row, "heat_color_code"),
             InitialLocation = ReadString(row, "initial_location"),
             PackagesPerLoad = ReadInt(row, "packages_per_load"),
             PackageTypeName = ReadString(row, "package_type_name"),

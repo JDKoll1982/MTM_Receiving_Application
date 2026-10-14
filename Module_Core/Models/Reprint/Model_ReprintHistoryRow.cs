@@ -27,6 +27,17 @@ public class Model_ReprintHistoryRow
     public string Reference { get; set; } = string.Empty;
 
     /// <summary>
+    /// The lot's marking shape emoji, copied verbatim from the history record. Empty for a row
+    /// recorded before the marking feature existed, or for a lot that carries no heat number.
+    /// </summary>
+    public string HeatShapeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The lot's marking color code. Always set and cleared together with the shape.
+    /// </summary>
+    public string HeatColorCode { get; set; } = string.Empty;
+
+    /// <summary>
     /// True when an <c>is_reprint = 1</c> row already exists in the active label queue for this
     /// history record. Such rows render red and cannot be selected for reprint.
     /// </summary>

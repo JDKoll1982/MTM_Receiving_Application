@@ -2,7 +2,7 @@
 
 - **Last Updated:** 2026-10-14
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
-- **Status:** Proposed — all design decisions confirmed 2026-10-14, not implemented
+- **Status:** Shipped 2026-10-14 — complete, 60 of 60 tasks. Build green, 802 of 802 tests pass.
 - **New tables:** `lot_markings`, `lot_marking_part_scope` (MySQL, `mtm_receiving_application` schema)
 - **Existing lot key:** `receiving_label_data.heat` and `receiving_history.heat` already store the lot number — no new lot column is introduced
 
@@ -58,7 +58,7 @@ All items below were confirmed by the product owner on 2026-10-14.
 - Shape is the primary identifier; color is secondary. Shape never carries meaning by position alone.
 - Marking is **in-app only** in this feature. Printed-label rendering is explicitly deferred, but the persisted columns must be data-ready for it.
 - Colors — 12 total, duplicate Yellow removed: `BLUE`, `RED`, `GREEN`, `WHITE`, `YELLOW`, `BLACK`, `PURPLE`, `ORANGE`, `PINK`, `GRAY`, `BROWN`, `TEAL`.
-- Shapes — 13 total, spelling corrected (`Cylinder`, `Crescent`): `LIGHTNING`, `HEART`, `CRESCENT`, `STAR`, `CYLINDER`, `DIAMOND`, `SQUARE`, `HEXAGON`, `TRIANGLE`, `OVAL`, `CROSS`, `ARROW`, `PENTAGON`.
+- Shapes — 10 total, stored as the emoji itself: `⚡`, `💗`, `🌙`, `⭐`, `💎`, `⬛`, `🔺`, `⭕`, `❌`, `➡️`. Cylinder, Hexagon and Pentagon are dropped because no dependable Segoe UI Emoji character exists for them, and Oval became a circle for the same reason.
 - The part-number scope list is an **inclusion list that starts empty**. A part number receives no marking until it is added. A global master switch disables the feature entirely.
 - Parts are added **one at a time**, chosen through the app's existing fuzzy-search picker modal (`Dialog_FuzzySearchPicker`) rather than typed as free text.
 - The marking appears **on each receipt line and on the load/receipt header**. A whole-load marking summary strip is not required.
@@ -108,7 +108,7 @@ round trip for both purchase-order and non-PO receipts.
 - `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs` — ledger row model.
 - `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingScope.cs` — part-number scope row model.
 - `Module_ShipRec_Tools/Models/Model_LotMarkingPalette.cs` — shape/color catalog with code, display name, glyph key, hex token, sort order.
-- `Module_ShipRec_Tools/Enums/Enum_LotShape.cs`, `Enum_LotColor.cs`, `Enum_LotMarkingSource.cs`, `Enum_LotMarkingCollisionPolicy.cs` — stable code enums.
+- `Module_ShipRec_Tools/Enums/Enum_LotColor.cs`, `Enum_LotMarkingSource.cs`, `Enum_LotMarkingCollisionPolicy.cs` — stable code enums.
 - `Module_ShipRec_Tools/Helpers/Helper_LotNumberNormalizer.cs` — canonical lot token; the single source of truth for normalization.
 - `Module_ShipRec_Tools/Helpers/Helper_LotMarkingResolver.cs` — deterministic seed + collision probe; pure and unit-testable.
 - `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs` — resolves the receipt supplier name to an Infor Visual supplier id, and falls back to the `NONPO` group when no supplier applies.
@@ -119,8 +119,8 @@ round trip for both purchase-order and non-PO receipts.
 - `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs` — inherits `ViewModel_Tool_Base`; search, override, lock, scope CRUD.
 - `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml` and `.xaml.cs` — tool page; code-behind only wires `XamlRoot` and the help call.
 - `Module_ShipRec_Tools/Services/Service_ShipRecTools_Navigation.cs` — add the `HeatLotManagement` tool key.
-- `Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs` — add `IsLotMarkingVisible` and the `case "HeatLotManagement"` branch.
-- `Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml` and `.xaml.cs` — add the `LotMarkingHost` ContentControl and activation hook.
+- `Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs` — add `IsHeatLotManagementVisible` and the `case "HeatLotManagement"` branch.
+- `Module_ShipRec_Tools/Views/View_ShipRecTools_Main.xaml` and `.xaml.cs` — add the `HeatLotManagementHost` ContentControl and activation hook.
 - `Module_ShipRec_Tools/Settings/ShipRecToolsSettingsKeys.cs` and `Services/Service_ShipRecToolsSettings.cs` — add `LotMarking.*` keys and accessors.
 - `Module_Settings.Core/Defaults/settings.manifest.json` — add the `ShipRecTools` / `LotMarking.*` definitions.
 - `Module_Core/Services/Help/Service_Help.cs` — add the `ShipRecTools.LotMarking` article.
@@ -140,7 +140,6 @@ round trip for both purchase-order and non-PO receipts.
 - `Module_Settings.Core/Defaults/settings.manifest.json`
 - `Module_Receiving/Data/Dao_ReceivingLabelData.cs`
 - `Module_Receiving/Data/Dao_ReceivingLoad.cs`
-- `Module_ShipRec_Tools/Enums/Enum_LotShape.cs`
 - `Module_ShipRec_Tools/Enums/Enum_LotColor.cs`
 - `Module_ShipRec_Tools/Enums/Enum_LotMarkingSource.cs`
 - `Module_ShipRec_Tools/Enums/Enum_LotMarkingCollisionPolicy.cs`
@@ -185,7 +184,7 @@ CREATE TABLE lot_markings (
     heat_number_normalized VARCHAR(100) NOT NULL COMMENT 'Canonical uppercase token used for matching',
     supplier_id            VARCHAR(15)  NOT NULL DEFAULT 'NONPO' COMMENT 'Infor Visual VENDOR.ID, or NONPO',
     supplier_name          VARCHAR(255) NULL COMMENT 'Supplier name as seen on the receipt, for display and audit',
-    shape_code             VARCHAR(32)  NOT NULL COMMENT 'Enum_LotShape code, e.g. HEXAGON',
+    shape_code             VARCHAR(32)  NOT NULL COMMENT 'Assigned shape emoji, e.g. ⚡',
     color_code             VARCHAR(32)  NOT NULL COMMENT 'Enum_LotColor code, e.g. TEAL',
     marking_source         VARCHAR(16)  NOT NULL DEFAULT 'Auto' COMMENT 'Auto | Manual | Import',
     is_locked              TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '1 = never recompute or probe',
@@ -266,7 +265,7 @@ Settings manifest entry, matching the existing `ShipRecTools` category shape.
 ## Implementation Steps
 
 1. Confirm the next migration number first. File prefixes run `01`-`15`, but the internal procedure names diverge (`01_Migration_receiving_label_queue_history_alignment.sql` uses `sp_mig38`, `09` uses `sp_mig09`, `12` uses `sp_mig12`). Verify against whatever ledger records applied migrations before naming a new one, or you may collide on a procedure name.
-2. Add `Enum_LotShape`, `Enum_LotColor`, `Enum_LotMarkingSource`, and `Enum_LotMarkingCollisionPolicy` with the 13 shapes and 12 colors agreed above.
+2. Add `Enum_LotColor`, `Enum_LotMarkingSource`, and `Enum_LotMarkingCollisionPolicy`, and fill in the 10 emoji shapes and 12 colors. There is no shape enum.
 3. Add `Model_LotMarkingPalette` holding code, display name, glyph key, hex token, and sort order per value; expose shape and color as `IReadOnlyList` lookups by code.
 4. Add `Helper_LotNumberNormalizer.Normalize` — trim, collapse internal whitespace, uppercase, and strip known vendor separators. Make it the only normalization path in the app.
 5. Add `Helper_LotMarkingResolver.Resolve` — FNV-1a 32-bit hash over the normalized heat token combined with the supplier id, `shapeIndex = hash % shapeCount`, `colorIndex = (hash / shapeCount) % colorCount`, then apply the collision policy.
@@ -289,7 +288,7 @@ Settings manifest entry, matching the existing `ShipRecTools` category shape.
 ## Task Checklist
 
 - [ ] Next migration number confirmed against the applied-migration ledger before authoring.
-- [ ] Palette enums and models added with 13 shapes and 12 colors.
+- [ ] Palette models added with 10 emoji shapes and 12 colors.
 - [ ] Heat-number normalization helper added and unit-tested.
 - [ ] Deterministic resolver added and unit-tested, including supplier separation and probe behavior.
 - [ ] Ledger table and scope table created with the (heat, supplier) unique key.

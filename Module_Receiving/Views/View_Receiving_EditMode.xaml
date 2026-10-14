@@ -405,6 +405,22 @@
                     Header="{x:Bind ViewModel.EditModeColumnHeatLotText, Mode=OneWay}"
                     Tag="HeatLotNumber" />
 
+                <!--  HeatShapeCode — the lot's marking shape, drawn as text  -->
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding HeatShapeCode}"
+                    Header="Shape"
+                    IsReadOnly="True"
+                    Tag="HeatShapeCode" />
+
+                <!--  HeatColorCode — the lot's marking color  -->
+                <controls:DataGridTextColumn
+                    Width="Auto"
+                    Binding="{Binding HeatColorCode}"
+                    Header="Color"
+                    IsReadOnly="True"
+                    Tag="HeatColorCode" />
+
                 <!--  InitialLocation  -->
                 <controls:DataGridTemplateColumn
                     Width="Auto"

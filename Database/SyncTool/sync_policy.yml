@@ -175,3 +175,22 @@ excluded:
     reason: Operational outside-service request packages owned by core.
   - table: reporting_scheduled_reports
     reason: Reporting schedule configuration owned by core.
+
+  - table: lot_marking_part_scope
+    direction: test -> core
+    mode: upsert
+    natural_keys: [part_id]
+    ignore_columns: [added_by, added_at]
+    comment: >-
+      The inclusion list of part numbers that receive heat/lot markings. This is
+      configuration, not a record of work done, so it is kept identical across
+      databases. part_id is the business key. added_by and added_at record who
+      first put the part on the list in each database, so they stay local.
+
+  - table: lot_markings
+    reason: >-
+      The marking ledger. Each row is issued by receiving in the database it was
+      created in, and the unique key is (heat_number_normalized, supplier_id), so
+      copying rows across databases would collide with lots the target already
+      marked and would replace the shape and color a handler has already seen.
+      A marking is written once and then only ever read, so it is never synced.

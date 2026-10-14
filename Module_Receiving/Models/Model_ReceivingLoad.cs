@@ -59,6 +59,20 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         [ObservableProperty]
         private string _heatLotNumber = string.Empty; // Default to empty, set to "Nothing Entered" on save if blank
 
+        /// <summary>
+        /// The lot's marking shape emoji, recorded when the lot was first seen. Empty when the
+        /// line has no heat number or its part number is not on the enabled list.
+        /// Persisted, so it is deliberately not ignored during session restore.
+        /// </summary>
+        [ObservableProperty]
+        private string _heatShapeCode = string.Empty;
+
+        /// <summary>
+        /// The lot's marking color code. Always set and cleared together with the shape.
+        /// </summary>
+        [ObservableProperty]
+        private string _heatColorCode = string.Empty;
+
         [ObservableProperty]
         private string _initialLocation = string.Empty; // Optional, validated only when populated
 

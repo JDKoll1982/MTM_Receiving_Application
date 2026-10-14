@@ -29,4 +29,21 @@ public static class ShipRecToolsSettingsKeys
 
         public const string VisibleColumnKeys = "POLineSpecSearch.Options.VisibleColumnKeys";
     }
+
+    /// <summary>
+    /// Heat / Lot Management. <see cref="Enabled"/> is the system-wide switch and is the only key
+    /// in this category that is gated above a normal user; the rest may be changed by any user.
+    /// </summary>
+    public static class LotMarking
+    {
+        public const string Enabled = "LotMarking.Enabled";
+
+        public const string CollisionPolicy = "LotMarking.CollisionPolicy";
+
+        public const string PaletteEnabledShapes = "LotMarking.Palette.EnabledShapes";
+
+        public const string PaletteEnabledColors = "LotMarking.Palette.EnabledColors";
+
+        public const string DisplayShapeFirst = "LotMarking.Display.ShapeFirst";
+    }
 }

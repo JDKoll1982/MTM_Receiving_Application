@@ -1211,6 +1211,16 @@ namespace MTM_Receiving_Application
                     "work order details"
                 ),
                 CreateSettingsDestination(
+                    typeof(Module_Settings.Core.Views.View_Settings_LotMarking),
+                    "Heat / Lot Management",
+                    "Choose how lots are marked, which shapes and colors are offered, and which parts receive markings",
+                    "heat lot management",
+                    "lot marking",
+                    "heat number",
+                    "lot marking palette",
+                    "marked parts"
+                ),
+                CreateSettingsDestination(
                     typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub),
                     "Receiving Settings",
                     "Receiving settings categories",
@@ -2590,6 +2600,17 @@ namespace MTM_Receiving_Application
         /// </summary>
         public void UpdateUserDisplay()
         {
+            // Startup enqueues this across a dispatcher boundary, so the header can still be
+            // unrealized when it runs. Skipping the label beats failing startup over it.
+            if (UserDisplayTextBlock is null || UserPicture is null)
+            {
+                _logger.LogWarning(
+                    "Header user display is not realized yet; skipped the user display update.",
+                    nameof(MainWindow)
+                );
+                return;
+            }
+
             if (_sessionManager.CurrentSession?.User != null)
             {
                 var user = _sessionManager.CurrentSession.User;

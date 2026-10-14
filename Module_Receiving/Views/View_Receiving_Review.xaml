@@ -242,6 +242,76 @@
                                     Text="{x:Bind ViewModel.CurrentEntry.HeatLotNumber, Mode=OneWay}" />
                             </controls:UniformGrid>
 
+                            <!--  Heat Shape  -->
+
+                            <controls:UniformGrid
+                                Margin="0,0,8,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Columns="1"
+                                Rows="2">
+                                <Border
+                                    Grid.Row="0"
+                                    Padding="12,6"
+                                    HorizontalAlignment="Stretch"
+                                    Background="{ThemeResource CardStrokeColorDefault}"
+                                    CornerRadius="8,8,0,0">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon
+                                            FontSize="14"
+                                            Foreground="{ThemeResource TextFillColorPrimary}"
+                                            Glyph="&#xE7C1;" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorPrimary}"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind ViewModel.ReviewHeatShapeText, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBox
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Background="{ThemeResource ControlFillColorDisabledBrush}"
+                                    CornerRadius="0,0,8,8"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentEntry.HeatShapeCode, Mode=OneWay}" />
+                            </controls:UniformGrid>
+
+                            <!--  Heat Color  -->
+
+                            <controls:UniformGrid
+                                Margin="0,0,8,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Columns="1"
+                                Rows="2">
+                                <Border
+                                    Grid.Row="0"
+                                    Padding="12,6"
+                                    HorizontalAlignment="Stretch"
+                                    Background="{ThemeResource CardStrokeColorDefault}"
+                                    CornerRadius="8,8,0,0">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon
+                                            FontSize="14"
+                                            Foreground="{ThemeResource TextFillColorPrimary}"
+                                            Glyph="&#xE790;" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorPrimary}"
+                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                            Text="{x:Bind ViewModel.ReviewHeatColorText, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBox
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Background="{ThemeResource ControlFillColorDisabledBrush}"
+                                    CornerRadius="0,0,8,8"
+                                    IsHitTestVisible="False"
+                                    IsReadOnly="True"
+                                    Text="{x:Bind ViewModel.CurrentEntry.HeatColorCode, Mode=OneWay}" />
+                            </controls:UniformGrid>
+
                             <!--  Location  -->
 
                             <controls:UniformGrid
@@ -425,6 +495,16 @@
                                 Width="Auto"
                                 Binding="{Binding HeatLotNumber}"
                                 Header="{x:Bind ViewModel.ReviewColumnHeatLotText, Mode=OneWay}" />
+                            <controls:DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding HeatShapeCode}"
+                                Header="{x:Bind ViewModel.ReviewColumnHeatShapeText, Mode=OneWay}"
+                                IsReadOnly="True" />
+                            <controls:DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding HeatColorCode}"
+                                Header="{x:Bind ViewModel.ReviewColumnHeatColorText, Mode=OneWay}"
+                                IsReadOnly="True" />
                             <controls:DataGridTextColumn
                                 Width="Auto"
                                 Binding="{Binding InitialLocation}"

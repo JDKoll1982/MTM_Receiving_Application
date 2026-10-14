@@ -190,6 +190,61 @@
       "validationRules": "JSON string array of allowed PO line spec search column keys"
     },
     {
+      "category": "ShipRecTools",
+      "key": "LotMarking.Enabled",
+      "displayName": "Heat / Lot Management - Feature Enabled",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "Boolean"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.CollisionPolicy",
+      "displayName": "Heat / Lot Management - Marking Collision Policy",
+      "defaultValue": "Probe",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Allowed: Allow, Probe, Warn"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.Palette.EnabledShapes",
+      "displayName": "Heat / Lot Management - Enabled Shapes",
+      "defaultValue": "[\"⚡\",\"💗\",\"🌙\",\"⭐\",\"💎\",\"⬛\",\"🔺\",\"⭕\",\"❌\",\"➡️\"]",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of shape glyphs"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.Palette.EnabledColors",
+      "displayName": "Heat / Lot Management - Enabled Colors",
+      "defaultValue": "[\"BLUE\",\"RED\",\"GREEN\",\"WHITE\",\"YELLOW\",\"BLACK\",\"PURPLE\",\"ORANGE\",\"PINK\",\"GRAY\",\"BROWN\",\"TEAL\"]",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of color codes"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.Display.ShapeFirst",
+      "displayName": "Heat / Lot Management - Show Shape Before Color",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Boolean"
+    },
+    {
       "category": "Dunnage",
       "key": "Dunnage.Labels.DunnageLabelPath",
       "displayName": "Dunnage Label Path",

@@ -1,0 +1,221 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Core.Views.View_Settings_LotMarking"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Core.ViewModels"
+    xmlns:toolModels="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibility" />
+        <converters:Converter_InverseBooleanToVisibility x:Key="InverseBoolToVisibility" />
+    </Page.Resources>
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="10">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Heat / Lot Management" />
+                    <TextBlock
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Give every unique heat number and supplier a permanent shape and color, chosen once and then copied onto every receipt line, promotion and reprint."
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+
+                <ToggleSwitch
+                    Grid.Column="1"
+                    Header="Feature enabled"
+                    IsOn="{x:Bind ViewModel.IsFeatureEnabled, Mode=TwoWay}"
+                    OffContent="Off"
+                    OnContent="On" />
+
+                <ComboBox
+                    Grid.Column="2"
+                    MinWidth="180"
+                    Header="When two lots collide"
+                    ItemsSource="{x:Bind ViewModel.CollisionPolicyOptions}"
+                    SelectedItem="{x:Bind ViewModel.CollisionPolicy, Mode=TwoWay}" />
+
+                <StackPanel
+                    Grid.Column="3"
+                    VerticalAlignment="Bottom"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+            <StackPanel Spacing="12">
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="How a marking reads" />
+                        <ToggleSwitch
+                            Header="Shape before color"
+                            IsOn="{x:Bind ViewModel.IsShapeFirst, Mode=TwoWay}"
+                            OffContent="Color first"
+                            OnContent="Shape first" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Only changes how a marking is written out. The stored shape and color never change."
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Shapes offered" />
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.ShapeOptions}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_Settings_LotMarkingPaletteOption">
+                                    <CheckBox
+                                        MinWidth="120"
+                                        Content="{x:Bind DisplayName}"
+                                        IsChecked="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Colors offered" />
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.ColorOptions}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_Settings_LotMarkingPaletteOption">
+                                    <CheckBox
+                                        MinWidth="120"
+                                        Content="{x:Bind DisplayName}"
+                                        IsChecked="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Part numbers that receive markings" />
+
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                KeyDown="PartSearchBox_KeyDown"
+                                PlaceholderText="Type a part number to add..."
+                                Text="{x:Bind ViewModel.PartSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{x:Bind ViewModel.AddPartCommand}"
+                                Content="Add part"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Command="{x:Bind ViewModel.RemovePartCommand}" Content="Remove selected" />
+                            <Button Command="{x:Bind ViewModel.ReEnablePartCommand}" Content="Re-enable selected" />
+                            <ProgressRing
+                                Width="20"
+                                Height="20"
+                                VerticalAlignment="Center"
+                                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <ListView
+                            MaxHeight="260"
+                            ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionMode="Single"
+                            SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="toolModels:Model_Tool_LotMarkingScope">
+                                    <Grid ColumnSpacing="12" Padding="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind PartId}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            FontSize="11"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="removed"
+                                            Visibility="{x:Bind IsEnabled, Mode=OneWay, Converter={StaticResource InverseBoolToVisibility}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

@@ -1,0 +1,406 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_LotMarking"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibility" />
+        <converters:Converter_InverseBooleanToVisibility x:Key="InverseBoolToVisibility" />
+    </Page.Resources>
+
+    <Grid Padding="16,8,16,24" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Utility card: heat search and the palette summary  -->
+        <Border
+            Grid.Row="0"
+            Padding="16,12"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            x:Name="HeatSearchBox"
+                            Grid.Column="0"
+                            KeyDown="HeatSearchBox_KeyDown"
+                            PlaceholderText="Search a heat or lot number..."
+                            Text="{x:Bind ViewModel.HeatSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            Grid.Column="1"
+                            Command="{x:Bind ViewModel.SearchMarkingsCommand}"
+                            Content="Search"
+                            Style="{StaticResource AccentButtonStyle}" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Spacing="16">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontWeight="SemiBold"
+                            Text="{x:Bind ViewModel.PaletteSummary, Mode=OneWay}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="A lot keeps the shape and color it was first given. Nothing here recomputes a marking."
+                            TextTrimming="CharacterEllipsis" />
+                        <ProgressRing
+                            Width="20"
+                            Height="20"
+                            VerticalAlignment="Center"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Rectangle
+                        Width="1"
+                        Height="24"
+                        Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <Button
+                        Width="34"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Palette"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Click="OnShowPaletteClick"
+                        CornerRadius="4"
+                        ToolTipService.ToolTip="Palette">
+                        <FontIcon FontSize="16" Glyph="&#xE790;" />
+                    </Button>
+                    <Button
+                        Width="34"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Help"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Click="OnHelpClick"
+                        CornerRadius="4"
+                        ToolTipService.ToolTip="Help">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  Ledger on the left, change-this-marking and the legend on the right  -->
+        <Grid Grid.Row="1" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Column="0"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="Markings already recorded" />
+
+                    <Grid Grid.Row="1" ColumnSpacing="12" Padding="4,0,4,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="1.6*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Lot" />
+                        <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Marked" />
+                        <TextBlock Grid.Column="2" FontWeight="SemiBold" Text="Heat as captured" />
+                        <TextBlock Grid.Column="3" FontWeight="SemiBold" Text="Supplier" />
+                        <TextBlock Grid.Column="4" FontWeight="SemiBold" Text="State" />
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <ListView
+                            ItemsSource="{x:Bind ViewModel.Markings, Mode=OneWay}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionMode="Single"
+                            SelectedItem="{x:Bind ViewModel.SelectedMarking, Mode=TwoWay}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_Tool_LotMarking">
+                                    <Grid ColumnSpacing="12" Padding="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="1.6*" />
+                                            <ColumnDefinition Width="1.2*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            MinWidth="48"
+                                            VerticalAlignment="Center"
+                                            FontSize="18"
+                                            Text="{x:Bind ShapeCode}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            MinWidth="72"
+                                            VerticalAlignment="Center"
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind ColorCode}" />
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind HeatNumber}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Column="3"
+                                            VerticalAlignment="Center"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{x:Bind SupplierId}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Column="4"
+                                            VerticalAlignment="Center"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="locked"
+                                            Visibility="{x:Bind IsLocked, Converter={StaticResource BoolToVisibility}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0,2" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            IsHitTestVisible="False"
+                            Text="{x:Bind ViewModel.MarkingListEmptyText, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.IsMarkingListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Top"
+                Spacing="12">
+                <!--  Change this marking  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="Change this marking" />
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.SelectedMarkingSummary, Mode=OneWay}"
+                            TextWrapping="WrapWholeWords" />
+
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            Header="Shape"
+                            ItemsSource="{x:Bind ViewModel.LegendShapes, Mode=OneWay}"
+                            SelectedValue="{x:Bind ViewModel.OverrideShape, Mode=TwoWay}"
+                            SelectedValuePath="Glyph">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_LotMarkingShape">
+                                    <TextBlock Text="{x:Bind DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <ComboBox
+                            HorizontalAlignment="Stretch"
+                            Header="Color"
+                            ItemsSource="{x:Bind ViewModel.LegendColors, Mode=OneWay}"
+                            SelectedValue="{x:Bind ViewModel.OverrideColor, Mode=TwoWay}"
+                            SelectedValuePath="Code">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:Model_LotMarkingColor">
+                                    <TextBlock Text="{x:Bind DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBox
+                            Header="Reason (required)"
+                            PlaceholderText="Why is the marking changing?"
+                            Text="{x:Bind ViewModel.OverrideReason, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            TextWrapping="Wrap" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button
+                                Command="{x:Bind ViewModel.SaveOverrideCommand}"
+                                Content="Save change"
+                                Style="{StaticResource AccentButtonStyle}" />
+                            <Button Command="{x:Bind ViewModel.ToggleLockCommand}" Content="Lock / unlock" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="A locked lot is never recomputed. A hand-made change is always allowed and records who made it and why."
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Grid>
+
+        <!--  Part numbers that receive markings  -->
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="360" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <TextBlock
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="Part numbers that receive markings" />
+
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox
+                            Grid.Column="0"
+                            KeyDown="PartSearchBox_KeyDown"
+                            PlaceholderText="Filter the list, or type a part to add..."
+                            Text="{x:Bind ViewModel.PartSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button
+                            Grid.Column="1"
+                            Command="{x:Bind ViewModel.SearchPartsCommand}"
+                            Content="Filter" />
+                        <Button
+                            Grid.Column="2"
+                            Command="{x:Bind ViewModel.AddPartCommand}"
+                            Content="Add part"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button
+                            Grid.Column="3"
+                            Command="{x:Bind ViewModel.RemovePartCommand}"
+                            Content="Remove selected" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{x:Bind ViewModel.ReEnablePartCommand}" Content="Re-enable selected" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="Removing a part stops new markings. Markings already recorded keep their meaning."
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid Grid.Column="1" MaxHeight="180">
+                    <ListView
+                        ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single"
+                        SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_Tool_LotMarkingScope">
+                                <Grid ColumnSpacing="12" Padding="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Text="{x:Bind PartId}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontSize="11"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="removed"
+                                        Visibility="{x:Bind IsEnabled, Converter={StaticResource InverseBoolToVisibility}}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.Name="Remove part"
+                                        Click="RemovePartRowButton_Click"
+                                        Content="Remove"
+                                        IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
+                                        Tag="{x:Bind}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsHitTestVisible="False"
+                        Text="No parts on the list yet."
+                        Visibility="{x:Bind ViewModel.IsPartListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

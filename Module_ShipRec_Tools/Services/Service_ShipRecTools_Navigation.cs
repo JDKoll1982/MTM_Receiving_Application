@@ -157,5 +157,18 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
                 IsAvailable = true,
             }
         );
+
+        RegisterTool(
+            new Model_ToolDefinition
+            {
+                ToolKey = "HeatLotManagement",
+                Title = "Heat / Lot Management",
+                Description =
+                    "Look up a lot's shape and color marking, correct it, and choose which parts are marked.",
+                IconGlyph = "\uE790",
+                Category = Enum_ToolCategory.Utilities,
+                IsAvailable = true,
+            }
+        );
     }
 }
