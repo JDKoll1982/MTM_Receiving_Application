@@ -478,10 +478,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         /// </summary>
         /// <remarks>
         /// A marking is chosen once per lot and then copied verbatim, so nothing here recomputes a
-        /// marking that already exists. Every expected outcome - no heat number, feature switched
-        /// off, part not listed, unresolvable supplier - leaves the load untouched, and a failure to
-        /// reach the ledger is logged rather than thrown, because a marking must never stop a
-        /// receipt from being saved.
+        /// marking that already exists. Every expected outcome - no heat number, no part number,
+        /// feature switched off, part not on the enabled list, unresolvable supplier - leaves the
+        /// load untouched, and a failure to reach the ledger is logged rather than thrown, because a
+        /// marking must never stop a receipt from being saved.
         /// </remarks>
         private async Task AttachLotMarkingsAsync(List<Model_ReceivingLoad> loads)
         {
@@ -513,6 +513,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     var supplierKey = await ResolveSupplierKeyAsync(load.PoVendor, supplierKeys);
                     var resolved = await _lotMarking.ResolveMarkingAsync(
                         load.HeatLotNumber,
+                        load.PartID,
                         supplierKey,
                         policy
                     );
@@ -526,8 +527,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         continue;
                     }
 
-                    // Null data means the lot needs no marking: the part is not enabled, or the
-                    // receipt carries nothing the ledger can key on.
+                    // Null data means the lot needs no marking: the part is not on the enabled list,
+                    // or the receipt carries nothing the ledger can key on.
                     if (resolved.Data is null)
                     {
                         continue;

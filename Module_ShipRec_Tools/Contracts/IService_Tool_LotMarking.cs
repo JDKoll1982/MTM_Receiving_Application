@@ -15,6 +15,27 @@ public interface IService_Tool_LotMarking
     /// <summary>Lists every recorded marking, newest first.</summary>
     Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> GetAllMarkingsAsync();
 
+    /// <summary>
+    /// Lists the recordings for the tool's own list, each carrying how many receiving lines rely on it,
+    /// when it was last seen, and which part numbers carry it. Optionally filtered by lot number, and
+    /// by the one part number a user has chosen.
+    /// </summary>
+    /// <remarks>
+    /// Read only, and not to be confused with <see cref="GetAllMarkingsAsync"/>, which the resolver's
+    /// probe reads on every new lot and which stays as lean as it is for that reason. The counts, dates
+    /// and parts are worked out when the list is read and are never stored.
+    /// With no part chosen the list is already scoped: it holds a lot only when at least one enabled
+    /// part carries it, or when no receiving row carries its number at all, because such a lot cannot
+    /// be attributed to a part and dropping it would hide a lot whose number was corrected away.
+    /// </remarks>
+    /// <param name="partId">
+    /// The part number to narrow the list to, or null for the whole of the enabled scope.
+    /// </param>
+    Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> GetLedgerAsync(
+        string? heatSearch,
+        string? partId = null
+    );
+
     /// <summary>Finds markings whose heat number contains the supplied text.</summary>
     Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> SearchMarkingsByHeatAsync(string? searchText);
 
@@ -23,6 +44,16 @@ public interface IService_Tool_LotMarking
     /// Returns <c>null</c> data when the lot has no heat number, which is not an error.
     /// A marking already recorded is always returned unchanged.
     /// </summary>
+    /// <remarks>
+    /// A marking is only ever created for a part number on the enabled list. The list is consulted
+    /// here, when a marking would be created, and never when a marking is read, so a lot recorded
+    /// before its part was removed still resolves to the marking a handler has already seen.
+    /// </remarks>
+    /// <param name="partId">
+    /// The part number on the receipt. The lot gets no marking unless this part is on the enabled
+    /// list, and an empty value gets no marking at all because a marking that cannot be attributed
+    /// to a part cannot be shown to belong to one.
+    /// </param>
     /// <param name="supplierKey">
     /// The supplier group: the official supplier id when the caller resolved one, otherwise the
     /// supplier name. Resolving a name to the official id is the caller's job, because the
@@ -31,6 +62,7 @@ public interface IService_Tool_LotMarking
     /// </param>
     Task<Model_Dao_Result<Model_Tool_LotMarking?>> ResolveMarkingAsync(
         string? heatNumber,
+        string? partId,
         string? supplierKey,
         Enum_LotMarkingCollisionPolicy policy
     );
@@ -91,4 +123,30 @@ public interface IService_Tool_LotMarking
     /// marking rather than a new one, because a marking is never recomputed.
     /// </remarks>
     Task<Model_Dao_Result<int>> FillUnmarkedLotMarkingsAsync(string partId, string actingUser);
+
+    /// <summary>
+    /// Works out everything Update All Lots would do, writing nothing: which marked rows no longer
+    /// agree with the list for the lot number they now carry, which lot numbers would become lots, and
+    /// which lots no longer appear on any receiving row.
+    /// </summary>
+    /// <remarks>
+    /// Safe to call before the user confirms. A lot whose marking is protected is never planned for
+    /// change or for removal, and is reported instead, because protection means a person deliberately
+    /// fixed that marking.
+    /// </remarks>
+    Task<Model_Dao_Result<Model_Tool_LotMarkingRealignPreview>> PreviewUpdateAllLotsAsync();
+
+    /// <summary>
+    /// Applies Update All Lots: rows are given the marking their lot number now calls for, lot numbers
+    /// that had none become lots, and lots whose number appears on no receiving row are removed so
+    /// their shape and color are free again.
+    /// </summary>
+    /// <remarks>
+    /// The plan is worked out again from the data as it stands at the moment it runs rather than taken
+    /// as an argument, so an interval between the report and the confirmation can never cause a stale
+    /// change.
+    /// </remarks>
+    Task<Model_Dao_Result<Model_Tool_LotMarkingRealignResult>> UpdateAllLotsAsync(
+        string actingUser
+    );
 }

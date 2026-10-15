@@ -118,7 +118,7 @@ public sealed class ViewModel_Tool_LotMarkingTests
 
         var service = CreateServiceReturningParts(row);
         service
-            .Setup(s => s.GetAllMarkingsAsync())
+            .Setup(s => s.GetLedgerAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_Tool_LotMarking> { recorded }));
         service
             .Setup(s => s.SetPartEnabledAsync(row.Id, false))
@@ -135,5 +135,47 @@ public sealed class ViewModel_Tool_LotMarkingTests
         viewModel
             .Markings.Should()
             .ContainSingle(marking => marking.Id == recorded.Id && marking.ShapeCode == "⚡");
+    }
+
+    [Fact]
+    public async Task SelectedPart_ShouldReadThatPartsLots_WhenTheListHasNoPartChosenToBeginWith()
+    {
+        var row = CreatePartRow(9, TestPartId);
+        var service = CreateServiceReturningParts(row);
+        var askedFor = new TaskCompletionSource<string?>();
+
+        // The read is started from the property change rather than awaited there, so the test waits
+        // for the call itself instead of sleeping and hoping.
+        service
+            .Setup(s => s.GetLedgerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback((string? _, string? partId) => askedFor.TrySetResult(partId))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_Tool_LotMarking>()));
+
+        var viewModel = CreateViewModel(service.Object);
+        await viewModel.SearchPartsCommand.ExecuteAsync(null);
+
+        viewModel.SelectedPart = row;
+
+        var chosen = await askedFor.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        chosen.Should().Be(TestPartId);
+    }
+
+    [Fact]
+    public async Task SelectedPart_ShouldAskForEveryPart_WhenNoPartIsChosen()
+    {
+        var row = CreatePartRow(11, TestPartId);
+        var service = CreateServiceReturningParts(row);
+        var askedFor = new TaskCompletionSource<string?>();
+        service
+            .Setup(s => s.GetLedgerAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback((string? _, string? partId) => askedFor.TrySetResult(partId))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_Tool_LotMarking>()));
+
+        var viewModel = CreateViewModel(service.Object);
+
+        await viewModel.SearchMarkingsCommand.ExecuteAsync(null);
+
+        var chosen = await askedFor.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        chosen.Should().BeNull();
     }
 }

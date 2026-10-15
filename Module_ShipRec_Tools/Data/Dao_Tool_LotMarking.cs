@@ -336,6 +336,113 @@ public class Dao_Tool_LotMarking
         );
     }
 
+    /// <summary>
+    /// Lists every distinct heat and supplier pair any receiving row carries, with the marking those
+    /// rows hold and how many there are, across both the queue and history. Read only.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_Tool_ReceivingHeatLotKey>>>
+        GetReceivingHeatLotKeysAsync() =>
+        await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Tool_ReceivingHeatLotKey>(
+            _connectionString,
+            "sp_Receiving_HeatLotKeys_GetAll",
+            MapHeatLotKey
+        );
+
+    /// <summary>
+    /// Puts one shape and color onto every marked row matching one raw heat and supplier, in both
+    /// tables, and returns the total number of rows changed.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> RealignLotMarkingRowsAsync(
+        string heat,
+        string supplierName,
+        string shapeGlyph,
+        string colorCode
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_heat", heat },
+            { "p_supplier_name", supplierName },
+            { "p_heat_shape_code", shapeGlyph },
+            { "p_heat_color_code", colorCode },
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<int>(
+            _connectionString,
+            "sp_Receiving_LotMarking_RealignRows",
+            reader =>
+                ReadInt(reader, "queue_rows_updated") + ReadInt(reader, "history_rows_updated"),
+            parameters
+        );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
+        }
+
+        return Model_Dao_Result_Factory.Success<int>(
+            result.Data is { Count: > 0 } ? result.Data[0] : 0
+        );
+    }
+
+    /// <summary>
+    /// Removes the marking from every row matching one raw heat and supplier, in both tables, for a
+    /// lot number that was corrected to nothing. Returns the total number of rows cleared.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> ClearLotMarkingRowsAsync(
+        string heat,
+        string supplierName
+    )
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_heat", heat },
+            { "p_supplier_name", supplierName },
+        };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<int>(
+            _connectionString,
+            "sp_Receiving_LotMarking_ClearRows",
+            reader =>
+                ReadInt(reader, "queue_rows_cleared") + ReadInt(reader, "history_rows_cleared"),
+            parameters
+        );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
+        }
+
+        return Model_Dao_Result_Factory.Success<int>(
+            result.Data is { Count: > 0 } ? result.Data[0] : 0
+        );
+    }
+
+    /// <summary>
+    /// Removes one lot from the list, so its shape and color are free for a later lot. A protected lot
+    /// is refused by the procedure as well as by the service.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<int>> DeleteMarkingAsync(int id)
+    {
+        var parameters = new Dictionary<string, object> { { "p_id", id } };
+
+        var result = await Helper_Database_StoredProcedure.ExecuteListAsync<int>(
+            _connectionString,
+            "sp_LotMarkings_Delete",
+            reader => ReadInt(reader, "rows_deleted"),
+            parameters
+        );
+
+        if (!result.IsSuccess)
+        {
+            return Model_Dao_Result_Factory.Failure<int>(result.ErrorMessage, result.Exception);
+        }
+
+        return Model_Dao_Result_Factory.Success<int>(
+            result.Data is { Count: > 0 } ? result.Data[0] : 0
+        );
+    }
+
     private static Model_Tool_LotMarking MapMarking(IDataReader reader) =>
         new()
         {
@@ -371,6 +478,18 @@ public class Dao_Tool_LotMarking
             ReadString(reader, "heat"),
             ReadString(reader, "supplier_name"),
             ReadInt(reader, "row_count")
+        );
+
+    private static Model_Tool_ReceivingHeatLotKey MapHeatLotKey(IDataReader reader) =>
+        new(
+            ReadString(reader, "source"),
+            ReadString(reader, "heat"),
+            ReadString(reader, "supplier_name"),
+            ReadString(reader, "part_id"),
+            ReadString(reader, "shape_code"),
+            ReadString(reader, "color_code"),
+            ReadInt(reader, "row_count"),
+            ReadNullableDateTime(reader, "last_line_date")
         );
 
     private static string ReadString(IDataReader reader, string column)

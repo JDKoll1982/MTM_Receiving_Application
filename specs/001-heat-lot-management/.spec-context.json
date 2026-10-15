@@ -816,6 +816,221 @@
       "tests": [
         "Service_Tool_LotMarkingTests.FillUnmarkedLotMarkingsAsync_ShouldWriteNothing_WhenTheFeatureSwitchIsOff"
       ]
+    },
+    "FR-032": {
+      "title": "Update All Lots runs on demand from the tool",
+      "tasks": [
+        "T069",
+        "T072"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-033": {
+      "title": "Report what would be created, removed and changed before writing",
+      "tasks": [
+        "T061",
+        "T069",
+        "T070"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-034": {
+      "title": "A dismissed report changes nothing",
+      "tasks": [
+        "T061"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-035": {
+      "title": "Both the queue and history are considered",
+      "tasks": [
+        "T062"
+      ],
+      "tests": [
+        "sp_Receiving_HeatLotKeys_GetAll"
+      ]
+    },
+    "FR-036": {
+      "title": "A row whose marking disagrees with its lot number needs repair",
+      "tasks": [
+        "T062",
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-037": {
+      "title": "An existing lot number's recorded marking is applied to the row",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-038": {
+      "title": "An unrecorded lot number becomes a new lot with a shape and color",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-039": {
+      "title": "A new lot gets a combination no other lot holds",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-040": {
+      "title": "A lot whose number appears on no row is removed and its pair freed",
+      "tasks": [
+        "T065",
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-041": {
+      "title": "A lot still referenced by any row is never removed",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-042": {
+      "title": "A protected lot is neither altered nor removed, and is reported",
+      "tasks": [
+        "T065",
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-043": {
+      "title": "A blank number clears the row's marking and does not become a lot",
+      "tasks": [
+        "T064"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-044": {
+      "title": "Blank is decided by the shared lot number normalization",
+      "tasks": [
+        "T063",
+        "T069"
+      ],
+      "tests": [
+        "Helper_LotNumberNormalizer.IsBlank"
+      ]
+    },
+    "FR-045": {
+      "title": "No receiving value other than markings is changed",
+      "tasks": [
+        "T063",
+        "T067"
+      ],
+      "tests": [
+        "sp_Receiving_LotMarking_RealignRows"
+      ]
+    },
+    "FR-046": {
+      "title": "Who ran it and when is recorded on every marking written",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-047": {
+      "title": "A second run reports nothing",
+      "tasks": [
+        "T061"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-048": {
+      "title": "The action does not depend on the enabled part list",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-049": {
+      "title": "It never runs as part of saving an edit",
+      "tasks": [
+        "T072"
+      ],
+      "tests": [
+        "ViewModel_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-050": {
+      "title": "Lots already correct are counted so an empty result is distinguishable",
+      "tasks": [
+        "T069"
+      ],
+      "tests": [
+        "Service_Tool_LotMarkingTests"
+      ]
+    },
+    "FR-063": {
+      "title": "A marking is not created for a part number that is not on the enabled list"
+    },
+    "FR-064": {
+      "title": "An already recorded marking is returned unchanged whatever part arrives against it"
+    },
+    "FR-065": {
+      "title": "The enabled list is consulted when a marking would be created, never when one is read"
+    },
+    "FR-066": {
+      "title": "A receipt whose part number is absent receives no marking"
+    },
+    "FR-067": {
+      "title": "The lot list shows only lots that at least one enabled part carries"
+    },
+    "FR-068": {
+      "title": "Choosing a part number narrows the lot list to the lots that part carries"
+    },
+    "FR-069": {
+      "title": "Removing a part does not withhold its recorded markings from a user who chooses it"
+    },
+    "FR-070": {
+      "title": "A lot whose number appears on no receiving row stays in the list"
+    },
+    "FR-071": {
+      "title": "Each lot reports the part numbers that carry it"
+    },
+    "FR-072": {
+      "title": "A lot is attributed to parts from its receiving rows, not from a value on the marking"
+    },
+    "FR-073": {
+      "title": "An empty heat search says the list covers only the parts on the enabled list"
+    },
+    "FR-074": {
+      "title": "An unreadable enabled list creates no marking"
     }
   },
   "sizeprobe": 1,
@@ -838,7 +1053,7 @@
     "constraint: receipts store the supplier as a name only, so the supplier id must be resolved during assignment",
     "constraint: Dialog_FuzzySearchPicker is the shared part-search modal to reuse"
   ],
-  "intent": "Give every unique heat number and supplier a permanent automatic shape-and-color marking that shows on receipts and survives history and reprint.",
+  "intent": "Stop generating shapes and colors for material off the approved list, and show only the chosen material's lots",
   "decisions": [
     {
       "decision": "A lot is identified by the pair (normalized heat number, supplier group).",
@@ -957,6 +1172,30 @@
     },
     {
       "decision": "Fixed the shipped supplier group width defect (error 1406, Data too long for column p_supplier_id). The group key is widened to VARCHAR(255) in lot_markings.supplier_id and in the p_supplier_id parameter of sp_LotMarkings_Resolve and sp_LotMarkings_Insert, with migration 17. Truncating the name to fit 15 characters was rejected because two vendors sharing a prefix would merge into one lot and share a marking, which FR-005 forbids."
+    },
+    {
+      "decision": "The Update All Lots capability was folded into spec 001 as User Story 7, FR-032 to FR-050 and SC-013 to SC-019, and specs/002-update-all-lots was deleted. The user directed this: it extends the same tool and the same ledger as Stories 1 to 5, so it is not a separable capability."
+    },
+    {
+      "decision": "001's rule that recorded markings are kept permanently is superseded for exactly one case: a lot whose lot number appears on no receiving row is removed by Update All Lots together with its shape and color, freeing the pair for a later lot. A protected lot is never removed."
+    },
+    {
+      "decision": "A corrected lot number that already exists takes that lot's marking; one that does not exist becomes a new lot with a shape and color chosen the same way a receipt chooses one. This reversed the author's first reading, which had been to keep the row's existing marking."
+    },
+    {
+      "decision": "Update All Lots is run on demand by a person from the tool, never as part of saving an edit, and it shows what it will do before writing anything."
+    },
+    {
+      "decision": "A lot is removed by deletion rather than by clearing its marking, because the one-row-per-lot-number-and-supplier rule would otherwise stop that number ever being recorded again, contradicting the case where a removed number is received later and treated as new."
+    },
+    {
+      "decision": "Unmarked rows are out of scope for Update All Lots. It puts existing markings right and does not introduce new ones, which Story 6's fill-in covers."
+    },
+    {
+      "decision": "User Story 6 had requirements FR-023 to FR-031 but no entries in tasks.md, because it was implemented before the file was extended. It is now back-recorded as Phase 11, T077 to T080, so every requirement in the spec traces to a task."
+    },
+    {
+      "decision": "The five open questions for Stories 8 and 9 were answered by the author because the user was unavailable. The reprint work covers the receiving labels only, because the marking columns exist on the receiving tables and nowhere else and the Volvo and Dunnage paths are out of scope. The lot list's count is the number of receiving lines carrying the lot, and its date is the most recent receipt date falling back to when the line was written. The changed procedures were loaded into the test schema only; production was left untouched."
     }
   ],
   "step_summaries": {
@@ -1546,6 +1785,36 @@
     },
     {
       "note": "The supplier group width defect could not be caught by any test, because the service tests run against an in-memory ledger that has no column width. The new test pins the intent (two vendors sharing a 15 character prefix stay two lots) but only the real database can catch a width regression. Migration 17 also cannot widen a procedure parameter, so it must be followed by re-deploying sp_LotMarkings_Resolve.sql and sp_LotMarkings_Insert.sql; the migration ends with a query that reports whether that has happened."
+    },
+    {
+      "note": "Spec 001 was status completed when this capability was appended. The append step normally refuses a completed spec, and the author proceeded only because the user directed it. Until the new tasks are implemented, 001 carries unchecked tasks while its status still reads completed, so its status is briefly untrue."
+    },
+    {
+      "note": "Assigning a new marking to a corrected lot number means a label printed before the correction still shows the old shape and color, so the floor and the tool disagree until the label is reprinted. Reprinting is out of scope, and the handler reading the label is the person who would be misled."
+    },
+    {
+      "note": "Removing a lot frees its shape-and-color pair, so a later lot can be given a pair that a printed label still shows. Freeing is necessary because the pool of pairs is finite, but one pair can now mean two lots at different times, which weakens the guarantee that a marking identifies one lot forever."
+    },
+    {
+      "note": "Detecting a lot whose number no longer exists needs the set of live lot numbers, and normalization lives in C#, so the preview has to read every distinct heat and supplier pair from both tables and normalize in the application. On a long receiving history that is the largest read in the feature and its cost is not measured."
+    },
+    {
+      "note": "A lot's supplier group is the official supplier id when the receiving side resolved the vendor to a single match, and the normalized supplier name otherwise, while a receiving row only ever carries the name. Update All Lots therefore matches a row to a lot on either the id or the name, which is deliberately forgiving because failing to find a lot that exists would create a second lot for the same material and give one physical lot two markings. This is the piece of Story 7 most likely to misbehave on real data, and whether the receiving side and the repair actions should key the group the same way needs a decision from the user."
+    },
+    {
+      "note": "Update All Lots and the earlier supplier-width migration are both unverified against a live database. Both write to receiving history and the lot ledger, and Update All Lots can also delete lots, so both should be run against a copy before they are run for real."
+    },
+    {
+      "note": "Verified against the test schema: the reprint insert now produces a copy with zero differences from its source, and the sample proved the two skid columns that were previously dropped entirely are now carried. Measured against production data, the skid columns were a live loss on all 6050 history rows, the discarded part type affected 24 rows that actually carry one, and the weight being filled from the quantity never changed a value because weight equals quantity in every row of both datasets. All three were defects in the code; only the first two were observable."
+    },
+    {
+      "note": "Story 9's marking push is diagnosed but not implemented. The receiving reprint path already copies heat_shape_code and heat_color_code from history, so the real gap is a history row that carries no marking, which is the normal case for anything received before the marking feature existed. That case needs the marking resolved in the application and written onto the queued row, which means reading the queued row's lot identity first."
+    },
+    {
+      "note": "The two changed procedures have been loaded into mtm_receiving_application_test only. Production still runs the old versions, so a reprinted row there still loses its skid sequence and skid total and still discards its part type. Production also needs the updated files deployed before any of this is live. Spec 001's status still reads completed while tasks T081 to T093 are open, so the status is stale until those are done."
+    },
+    {
+      "note": "The author deleted spec 001's .spec-context.json by mistake while clearing a stray temporary file, and the companion writer then recreated it nearly empty. It was restored from git and the session's decisions, concerns and requirement coverage were re-recorded. Anything captured between the last commit and the deletion that the author did not have in the transcript is gone."
     }
   ],
   "unattended": true

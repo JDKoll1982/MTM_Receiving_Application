@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T16:19:12.3990441-05:00",
+  "generatedAt": "2026-10-15T15:27:14.6128937-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -10582,6 +10582,48 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_HeatLotKeys_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_label_data",
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_History_Get.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -11720,12 +11762,22 @@
         {
           "qualifier": "rh",
           "resolvedObject": "receiving_history",
+          "column": "weight_quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
           "column": "part_id"
         },
         {
           "qualifier": "rh",
           "resolvedObject": "receiving_history",
           "column": "part_description"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_type"
         },
         {
           "qualifier": "rh",
@@ -11871,6 +11923,16 @@
           "qualifier": "rh",
           "resolvedObject": "receiving_history",
           "column": "quality_hold_restriction_type"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_skid_sequence"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_skid_total"
         }
       ],
       "insertTargets": [
@@ -11912,7 +11974,9 @@
             "is_quality_hold_required",
             "is_quality_hold_acknowledged",
             "is_reprint",
-            "quality_hold_restriction_type"
+            "quality_hold_restriction_type",
+            "part_skid_sequence",
+            "part_skid_total"
           ]
         }
       ],
@@ -12770,6 +12834,140 @@
       ],
       "variableTokensUsed": [
         "v_old_foreign_key_checks"
+      ],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_ClearRows.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_LotMarking_ClearRows",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_heat",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_supplier_name",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_queue_rows",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_history_rows",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "receiving_label_data",
+          "columns": [
+            "heat_shape_code"
+          ]
+        },
+        {
+          "table": "receiving_history",
+          "columns": [
+            "heat_shape_code"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_heat",
+        "p_supplier_name"
+      ],
+      "variableTokensUsed": [
+        "v_queue_rows",
+        "v_history_rows"
+      ],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_RealignRows.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Receiving_LotMarking_RealignRows",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_heat",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_supplier_name",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_heat_shape_code",
+          "sqlType": "VARCHAR(32)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_heat_color_code",
+          "sqlType": "VARCHAR(32)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_queue_rows",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_history_rows",
+          "sqlType": "INT DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "receiving_label_data",
+          "columns": [
+            "heat_shape_code"
+          ]
+        },
+        {
+          "table": "receiving_history",
+          "columns": [
+            "heat_shape_code"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_heat",
+        "p_supplier_name",
+        "p_heat_shape_code",
+        "p_heat_color_code"
+      ],
+      "variableTokensUsed": [
+        "v_queue_rows",
+        "v_history_rows"
       ],
       "temporaryTables": [],
       "aliasMap": []
@@ -15496,6 +15694,59 @@
         {
           "alias": "lot_marking_part_scope",
           "object": "lot_marking_part_scope"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_LotMarkings_Delete.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_LotMarkings_Delete",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_id",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_exists",
+          "sqlType": "INT DEFAULT 0"
+        },
+        {
+          "name": "v_is_locked",
+          "sqlType": "TINYINT(1) DEFAULT 0"
+        }
+      ],
+      "referencedObjects": [
+        "lot_markings"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "lot_markings"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_id"
+      ],
+      "variableTokensUsed": [
+        "v_exists",
+        "v_is_locked"
+      ],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "lot_markings",
+          "object": "lot_markings"
         }
       ]
     },

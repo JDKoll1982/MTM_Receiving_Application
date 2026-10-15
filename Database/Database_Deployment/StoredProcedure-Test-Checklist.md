@@ -1,12 +1,13 @@
 # Stored Procedure Test Checklist
 
-Progress: 173/184 stored procedures covered
+Progress: 167/184 stored procedures covered
 
 Update rule: mark completed procedures every 5 stored-procedure tests finished.
 
 ## Heat / Lot Management
 
 - [x] sp_Receiving_LabelData_SetMarking
+- [ ] sp_LotMarkings_Delete
 - [ ] sp_LotMarkings_GetAll
 - [ ] sp_LotMarkings_GetByHeat
 - [ ] sp_LotMarkings_Insert
@@ -18,6 +19,9 @@ Update rule: mark completed procedures every 5 stored-procedure tests finished.
 - [ ] sp_LotMarkingPartScope_Search
 - [ ] sp_LotMarkingPartScope_SetEnabled
 - [ ] sp_LotMarkingPartScope_Upsert
+- [ ] sp_Receiving_HeatLotKeys_GetAll
+- [ ] sp_Receiving_LotMarking_ClearRows
+- [ ] sp_Receiving_LotMarking_RealignRows
 - [ ] sp_Receiving_UnmarkedLotMarkings_Apply
 - [ ] sp_Receiving_UnmarkedLotMarkings_Preview
 

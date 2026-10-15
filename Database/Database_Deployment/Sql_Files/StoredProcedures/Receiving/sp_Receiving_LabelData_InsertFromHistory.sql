@@ -4,6 +4,15 @@
 --              identified in Edit Mode and skipped when ClearToHistory runs.
 --              Uses the history row's load_guid as the new load_id so the UNIQUE
 --              constraint on receiving_label_data.load_id prevents double-queuing.
+-- Notes:    This is a copy and must stay one. Every column the history row carries is carried
+--           across, and no column is filled from a different one. Two defects were corrected
+--           here on 2026-10-15: the weight was being filled from the quantity, which silently
+--           restated a reprinted row's weight as its piece count, and the part type was being
+--           written as NULL even though the history row held one. The skid sequence and skid
+--           total were never carried at all.
+--           The two marking columns are copied like any other value. A resolved marking for the
+--           lot is put on afterwards by the caller, because the matching key behind a marking is
+--           produced in the application and not in SQL.
 
 USE mtm_receiving_application;
 
@@ -76,16 +85,18 @@ BEGIN
             is_quality_hold_required,
             is_quality_hold_acknowledged,
             is_reprint,
-            quality_hold_restriction_type
+            quality_hold_restriction_type,
+            part_skid_sequence,
+            part_skid_total
         )
         SELECT
             COALESCE(rh.load_id, rh.load_guid),
             rh.load_number,
             rh.quantity,
-            CAST(rh.quantity AS DECIMAL(18,2)),
+            rh.weight_quantity,
             rh.part_id,
             rh.part_description,
-            NULL,
+            rh.part_type,
             rh.po_number,
             rh.po_line_number,
             COALESCE(rh.po_vendor, rh.vendor_name),
@@ -114,7 +125,9 @@ BEGIN
             rh.is_quality_hold_required,
             rh.is_quality_hold_acknowledged,
             1,
-            rh.quality_hold_restriction_type
+            rh.quality_hold_restriction_type,
+            rh.part_skid_sequence,
+            rh.part_skid_total
         FROM receiving_history rh
         WHERE rh.id = p_history_id;
 

@@ -229,9 +229,120 @@ Blocks every story. No user-story work begins until this phase is done.
 - [x] **T059** Regenerate the database object catalog and the generated database reference pages, then resolve any undeclared-parameter or missing-table error they report · `Database/Database_Deployment/sql-object-catalog.json`, `docs/database/**`
 - [x] **T060** Validate against the Success Criteria: run the build and the focused test suites, and confirm each measurable outcome in the spec holds.
 
+## Phase 9: User Story 7 — A wrong lot number is put right on the lots it already marked (P2)
+
+**Files**: `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`, `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_RealignRows.sql`, `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_ClearRows.sql`, `Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_LotMarkings_Delete.sql`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`, `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingRealignConfirm.xaml`, `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingRealignConfirm.xaml.cs`, `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml.cs`
+
+### Tests
+
+- [x] **T061** [US7] Add the realign tests to the lot marking service tests: a corrected number that already exists takes that lot's marking, a number that does not exist becomes a new lot with a free shape and color, a lot whose number appears on no row is removed, a protected lot is left alone and reported, a blank number clears the row, and a second run reports nothing · `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
+
+### Implementation
+
+**Wave 1 — independent (different files):**
+
+- [x] **T062** [P] [US7] Add the read procedure returning every distinct heat and supplier pair across the queue and history with its marking and row count, so the application can decide which rows disagree and which lots are orphaned. Normalization stays in the application, so the heat is returned exactly as captured · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`
+- [x] **T063** [P] [US7] Add the write procedure that puts one shape and color onto every queue and history row matching one raw heat and supplier · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_RealignRows.sql`
+- [x] **T064** [P] [US7] Add the write procedure that clears the marking from every row matching one raw heat and supplier, for a number that was corrected to nothing · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LotMarking_ClearRows.sql`
+- [x] **T065** [P] [US7] Add the procedure that removes one lot by id, so its shape and color are free for a later lot · `Database/Database_Deployment/Sql_Files/StoredProcedures/Settings/sp_LotMarkings_Delete.sql`
+- [x] **T066** [P] [US7] Add the plan and preview models: one entry per row group with what will happen to it, and the counts the report shows · `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`
+- [x] **T067** [P] [US7] Add the preview and apply operations to the lot marking service contract · `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`
+
+**⟶ Wait for the whole of Wave 1 to finish, then:**
+
+- [x] **T068** [US7] Add the data access methods for the three new procedures, reusing the existing insert and get-all for the lot record itself · `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`
+
+**⟶ Wait for T068 to finish, then:**
+
+- [x] **T069** [US7] Add the service: build the preview from the ledger and the row groups, resolve a free shape and color for a number that does not exist yet, refuse to touch a protected lot, and apply the plan recording who ran it · `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`
+
+**⟶ Wait for T069 to finish, then:**
+
+- [x] **T070** [US7] Add the confirmation dialog listing the lots to be created, the lots to be removed, and the rows to be changed · `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingRealignConfirm.xaml`, `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingRealignConfirm.xaml.cs`
+
+**⟶ Wait for T070 to finish, then:**
+
+- [x] **T071** [US7] Add the preview and apply region to the view model, behind a confirm delegate, with the run wired to reload the list afterwards · `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`
+
+**⟶ Wait for T071 to finish, then:**
+
+- [x] **T072** [US7] Add the Update All Lots button to the tool's top card and wire the dialog · `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml.cs`
+
+**Checkpoint**: Story 7 is independently functional. A corrected lot number can be put right across the queue and history, and lots that no longer exist are cleared out of the list.
+
+## Phase 10: Polish
+
+**Wave 1 — independent (different files):**
+
+- [x] **T073** [P] Add the four new procedures to the hand-maintained procedure test inventory · `Database/Database_Deployment/StoredProcedure-Test-Checklist.md`
+- [x] **T074** [P] Update the module feature document with the Update All Lots action and the superseded keep-forever rule · `Module_ShipRec_Tools/docs/HeatLotManagement_FeatureUpdate.md`
+
+**⟶ Wait for Wave 1 to finish, then:**
+
+- [x] **T075** Regenerate the database object catalog and resolve anything it reports · `Database/Database_Deployment/sql-object-catalog.json`, `docs/database/**`
+- [x] **T076** Validate against the Success Criteria: run the build and the focused test suites, and confirm each measurable outcome for Story 7 holds.
+
+## Phase 12: User Story 8 — The lot list shows everything it holds (P2)
+
+**Files**: `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`, `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`, `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
+
+### Tests
+
+- [ ] **T081** [US8] Add tests for the lot list read: a lot with receiving lines reports the right count and the right most recent date, a lot with none reports zero and no date, and reading the list changes no marking · `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
+
+### Implementation
+
+**Wave 1 — independent (different files):**
+
+- [ ] **T082** [P] [US8] Extend the receiving group read to report the date of each group's most recent line, so the lot list can be built from the read the tool already needs, and leave the ledger's own read untouched because the resolver's probe uses it on every new lot · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`
+- [ ] **T083** [P] [US8] Add the two display fields to the marking model and the ledger read to the service contract · `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`
+
+**⟶ Wait for the whole of Wave 1 to finish, then:**
+
+- [ ] **T084** [US8] Add the data access method and the service operation for the ledger read, leaving the existing get-all alone because the resolver's probe reads its result on every new lot · `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`
+
+**⟶ Wait for T084 to finish, then:**
+
+- [ ] **T085** [US8] Point the list at the ledger read so each row carries its count and its date · `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`
+
+**⟶ Wait for T085 to finish, then:**
+
+- [ ] **T086** [US8] Rebuild the lot list so every column stays reachable at any window width, and add the count and date columns · `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`
+
+**Checkpoint**: Story 8 is independently functional. Every column of the lot list can be read, and each lot says how many lines it covers and when it was last seen.
+
+## Phase 13: User Story 9 — A reprinted label carries the marking and comes back complete (P2)
+
+**Files**: `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_InsertFromHistory.sql`, `Module_Receiving/Contracts/IService_Reprint_Receiving.cs`, `Module_Receiving/Services/Service_Reprint_Receiving.cs`, `MTM_Receiving_Application.Tests/Unit/Module_Reprint/Services/Service_ReprintTests.cs`
+
+### Tests
+
+- [ ] **T087** [US9] Add tests for reprint fidelity: the queued row is given the lot's recorded marking when the history row carries none, an existing marking is not replaced, a row with no lot number stays unmarked, and queuing twice is refused · `MTM_Receiving_Application.Tests/Unit/Module_Reprint/Services/Service_ReprintTests.cs`
+
+### Implementation
+
+**Wave 1 — independent (different files):**
+
+- [ ] **T088** [P] [US9] Fix the reprint insert so it carries every column of the history row, stops filling the weight from the quantity, stops discarding the part type, and carries the skid sequence and skid total · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_LabelData_InsertFromHistory.sql`
+- [ ] **T089** [P] [US9] Add the marking push to the reprint service: after a row is queued, resolve the marking for its lot number and supplier and write it onto the queued row, leaving the history row untouched · `Module_Receiving/Contracts/IService_Reprint_Receiving.cs`, `Module_Receiving/Services/Service_Reprint_Receiving.cs`
+
+**Checkpoint**: Story 9 is independently functional. A reprinted row matches its history row value for value and carries the lot's marking.
+
+## Phase 14: Polish
+
+**Wave 1 — independent (different files):**
+
+- [ ] **T090** [P] Check the hand-maintained procedure test inventory still counts every procedure, since this work extends one rather than adding one · `Database/Database_Deployment/StoredProcedure-Test-Checklist.md`
+- [ ] **T091** [P] Update the module feature document with the two new columns, the reprint fidelity fix and the reprint marking push · `Module_ShipRec_Tools/docs/HeatLotManagement_FeatureUpdate.md`
+
+**⟶ Wait for Wave 1 to finish, then:**
+
+- [ ] **T092** Regenerate the database object catalog and resolve anything it reports · `Database/Database_Deployment/sql-object-catalog.json`, `docs/database/**`
+- [ ] **T093** Validate: run the build and the focused tests, then load the changed procedures against the test database to confirm they create cleanly, and confirm each measurable outcome for Stories 8 and 9 holds.
+
 ## Dependencies & Execution Order
 
-Setup → Foundational → Story 1 → Story 2 → Story 3 → Story 4 → Story 5 → Polish. Story 1 and Story 2 are both priority one and both depend only on Foundational; Story 2 may run alongside Story 1. Stories 3, 4 and 5 each depend on the marking existing on a row, which Story 1 delivers.
+Setup → Foundational → Story 1 → Story 2 → Story 3 → Story 4 → Story 5 → Story 6 → Story 7 → Story 8 → Story 9 → Polish. Story 1 and Story 2 are both priority one and both depend only on Foundational; Story 2 may run alongside Story 1. Stories 3, 4 and 5 each depend on the marking existing on a row, which Story 1 delivers. Stories 6 and 7 both repair markings across the queue and history rather than creating them, so both depend on Story 4 having taught the receiving rows to carry a marking through history, and neither depends on the other. Story 8 reads the ledger and the receiving rows together and touches no marking, so it depends only on Story 1. Story 9 changes the reprint copy and needs the resolver, so it depends on Story 1 for the resolver and on Story 4 for the marking columns reaching history in the first place.
 
 Waves within a phase are the dependency order: Foundational wave 5 is the only one that must wait for
 all four earlier waves, and every story phase follows the same pattern of independent files first, then
@@ -240,3 +351,64 @@ the file that joins them.
 Ownership is disjoint: the tool page and its wiring belong to Foundational, the receiving model and
 queue DAO to Story 1, the part-list surface to Story 2, the receiving display files to Story 3, the
 reprint path to Story 4, and the override surface to Story 5. No path appears under two phases.
+
+## Phase 11: User Story 6 — back-recorded
+
+User Story 6 was implemented and shipped on 2026-10-14 under the specification that added it, before
+this file was extended, so it had requirements but no entries here. This phase records it after the
+fact. Every entry is complete.
+
+**Files**: `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Preview.sql`, `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Apply.sql`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingBackfill.cs`, `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingBackfillConfirm.xaml`, `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`
+
+- [x] **T077** [US6] Add the preview procedure listing the unmarked rows of one part grouped by the heat as captured and the supplier, read only · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Preview.sql`
+- [x] **T078** [US6] Add the apply procedure filling one lot across the queue and history in one statement, refusing a part that is not enabled, a blank heat, or a missing shape or color · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_UnmarkedLotMarkings_Apply.sql`
+- [x] **T079** [US6] Add the data access methods, the models, and the service operations, resolving each lot once and writing every spelling of it · `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`
+- [x] **T080** [US6] Add the fill-in command, its confirmation dialog, its button, and the eight service tests covering one lot written once, a blank heat skipped, and a second run writing nothing · `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
+
+**Checkpoint**: Story 6 is independently functional. An enabled part's unmarked lots can be filled in on demand.
+
+## Phase 15: User Story 10 — Only the parts on the list are marked, and the list shows one material's lots (P1)
+
+The gate this story restores was already specified by FR-009 and by Story 2's first acceptance
+scenario, and never implemented. So this phase makes existing requirements true rather than adding a
+capability, and it keeps the numbering it was given when it was appended.
+
+**Files**: `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`, `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`, `Module_Receiving/Services/Service_MySQL_Receiving.cs`, `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`, `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`, `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarkingTests.cs`
+
+`sp_Receiving_HeatLotKeys_GetAll.sql` is also owned by T082 in Phase 12, which is the same single
+`SELECT` and is already applied. Phase 15 extends that statement rather than replacing it, so T095
+must not run before T082 has landed.
+
+### Tests
+
+- [x] **T094** [US10] Add tests for the part gate and the list scope: a part that is not on the list creates no marking, a part that is creates one, an already-recorded marking is returned whatever the part, a lot an enabled part carries is listed, a lot carried only by other parts is not, choosing a part narrows the list, a lot with no receiving rows stays listed, an unreadable enabled list creates nothing, and the parts a lot is attributed to are read from its receiving rows rather than from the marking · `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_LotMarkingTests.cs`
+
+### Implementation
+
+**Wave 1 — independent (different files):**
+
+- [x] **T095** [P] [US10] Carry the part number of each group out of the receiving group read, grouping by it so one lot can be attributed to every part that carries it, and leaving the two counts and the date summed across those parts so no line is counted twice · `Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/sp_Receiving_HeatLotKeys_GetAll.sql`
+- [x] **T096** [P] [US10] Add the part number to the receiving group record · `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`
+- [x] **T097** [P] [US10] Add the parts field to the marking model, rendered as a dash when the lot is attributed to none, following the count and date fields beside it · `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs`
+
+**⟶ Wait for the whole of Wave 1 to finish, then:**
+
+- [x] **T098** [US10] Map the new column in the data access layer, and put the part number on the resolve and ledger operations in the contract · `Module_ShipRec_Tools/Data/Dao_Tool_LotMarking.cs`, `Module_ShipRec_Tools/Contracts/IService_Tool_LotMarking.cs`
+
+**⟶ Wait for T098 to finish, then:**
+
+- [x] **T099** [US10] Enforce the enabled list when a marking would be created and not when one is read, so a recorded marking is still returned for material no longer on the list, and scope the ledger to the lots that at least one enabled part carries while still showing a lot that no receiving row carries because it cannot be attributed to a part · `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`
+
+**⟶ Wait for T099 to finish, then:**
+
+**Wave 2 — independent (different files):**
+
+- [x] **T100** [P] [US10] Pass the load's part number into the resolver at the receiving call site, which is the value the gate was missing · `Module_Receiving/Services/Service_MySQL_Receiving.cs`
+- [x] **T101** [P] [US10] Read the marking list again when a part is chosen so the list follows the selection, pass the chosen part into every ledger read including the heat search, and word an empty search so it says the list covers only the parts on the enabled list · `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`
+
+**⟶ Wait for Wave 2 to finish, then:**
+
+- [x] **T102** [US10] Add the parts column to the lot list, between the supplier and the line count · `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`
+- [x] **T103** [US10] Update the view model tests for the ledger operation's new part argument · `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarkingTests.cs`
+
+**Checkpoint**: Story 10 is independently functional. No marking is created for a part that is not on the enabled list, and the lot list shows only the lots of material that is, narrowing to one part when one is chosen.

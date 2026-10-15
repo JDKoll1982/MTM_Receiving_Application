@@ -101,6 +101,9 @@ provides:
     - name: speckit.companion.living-sync
       file: commands/speckit.companion.living-sync.md
       description: "Sync living specs from your current changes — group working-tree changes (uncommitted included) by capability and update every affected spec in one pass (opt-in, update-not-regenerate, never halts)"
+    - name: speckit.companion.append
+      file: commands/speckit.companion.append.md
+      description: "Append a new capability to the active spec without regenerating its task list, preserving every completed task"
 
 hooks:
   before_specify:

@@ -33,11 +33,13 @@ public sealed class Service_Tool_LotMarkingTests
 
         var first = await service.ResolveMarkingAsync(
             "TEST-HEAT-1001",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
         var second = await service.ResolveMarkingAsync(
             "TEST-HEAT-1001",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -61,11 +63,13 @@ public sealed class Service_Tool_LotMarkingTests
 
         var first = await service.ResolveMarkingAsync(
             "TEST-HEAT-1001",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
         var respelled = await service.ResolveMarkingAsync(
             " test heat 1001 ",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -84,11 +88,13 @@ public sealed class Service_Tool_LotMarkingTests
 
         var firstSupplier = await service.ResolveMarkingAsync(
             "TEST-HEAT-2002",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
         var secondSupplier = await service.ResolveMarkingAsync(
             "TEST-HEAT-2002",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-B",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -126,11 +132,13 @@ public sealed class Service_Tool_LotMarkingTests
 
         var first = await service.ResolveMarkingAsync(
             "TEST-HEAT-4004",
+            FakeLotMarkingLedger.EnabledPartId,
             firstSupplier,
             Enum_LotMarkingCollisionPolicy.Probe
         );
         var second = await service.ResolveMarkingAsync(
             "TEST-HEAT-4004",
+            FakeLotMarkingLedger.EnabledPartId,
             secondSupplier,
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -151,6 +159,7 @@ public sealed class Service_Tool_LotMarkingTests
         var service = CreateService(ledger);
         var resolved = await service.ResolveMarkingAsync(
             "TEST-HEAT-3003",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -179,6 +188,7 @@ public sealed class Service_Tool_LotMarkingTests
         var service = CreateService(ledger);
         var created = await service.ResolveMarkingAsync(
             "TEST-HEAT-4004",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -188,6 +198,7 @@ public sealed class Service_Tool_LotMarkingTests
 
         var again = await service.ResolveMarkingAsync(
             "TEST-HEAT-4004",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -367,6 +378,7 @@ public sealed class Service_Tool_LotMarkingTests
         var service = CreateService(ledger);
         var existing = await service.ResolveMarkingAsync(
             "TEST-HEAT-8008",
+            FakeLotMarkingLedger.EnabledPartId,
             "TEST-SUP-A",
             Enum_LotMarkingCollisionPolicy.Probe
         );
@@ -400,18 +412,513 @@ public sealed class Service_Tool_LotMarkingTests
         ledger.AppliedMarkings.Should().HaveCount(1, "the second run finds nothing unmarked");
     }
 
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldApplyTheRecordedMarking_WhenTheCorrectedNumberAlreadyExists()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedMarking(1, "TEST-HEAT-7007", "TESTHEAT7007", "TEST-SUP-B", "TEST-SUP-B", "⭐", "RED");
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-7007", "TEST-SUP-B", "⚡", "TEAL", 2);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.RowsChanged.Should().Be(2);
+        ledger.Realigned.Should().ContainSingle();
+        ledger.Realigned.Single().ShapeCode.Should().Be("⭐");
+        ledger.Realigned.Single().ColorCode.Should().Be("RED");
+        ledger.RecordedMarkings.Should().ContainSingle("a number that already exists is not given a second lot");
+        ledger.RemovedIds.Should().BeEmpty("the number those rows now carry is still in use");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldCreateTheLot_WhenTheCorrectedNumberDoesNotExist()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-7008", "TEST-SUP-A", "⚡", "TEAL", 3);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-2");
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.LotsCreated.Should().Be(1);
+        ledger.RecordedMarkings.Should().ContainSingle();
+        ledger
+            .RecordedMarkings.Single()
+            .ResolvedBy.Should()
+            .Be("TEST-USER-2", "the lot is recorded against whoever ran the update");
+        ledger.Realigned.Should().ContainSingle();
+        ledger
+            .Realigned.Single()
+            .ShapeCode.Should()
+            .Be(ledger.RecordedMarkings.Single().ShapeCode, "the rows are given the marking the lot holds");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldCreateOneLot_WhenTwoSpellingsNormalizeToOneNumber()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-7013", "TEST-SUP-A", "⚡", "TEAL", 1);
+        ledger.SeedHeatLotKey("history", " test heat 7013 ", "TEST-SUP-A", "⚡", "TEAL", 2);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.Data!.LotsCreated.Should().Be(1, "two spellings are one lot");
+        result.Data!.RowsChanged.Should().Be(3);
+        ledger.RecordedMarkings.Should().ContainSingle();
+        ledger.Realigned.Should().HaveCount(2, "every spelling of the lot has to be written");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldRemoveTheLot_WhenNoRowCarriesItsNumberAnyMore()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedMarking(1, "TEST-HEAT-7009", "TESTHEAT7009", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.Data!.LotsRemoved.Should().Be(1);
+        ledger.RemovedIds.Should().ContainSingle().Which.Should().Be(1);
+        ledger.RecordedMarkings.Should().BeEmpty("its shape and color are free again");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldLeaveAProtectedLotAlone_WhenNoRowCarriesItsNumber()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedMarking(
+            1,
+            "TEST-HEAT-7010",
+            "TESTHEAT7010",
+            "TEST-SUP-A",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            isLocked: true
+        );
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.Data!.LotsRemoved.Should().Be(0);
+        result.Data!.LotsSkipped.Should().Be(1);
+        ledger.RemovedIds.Should().BeEmpty();
+        ledger.RecordedMarkings.Should().ContainSingle("a protected lot is never removed");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldClearTheRow_WhenTheNumberWasClearedToNothing()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedHeatLotKey("queue", string.Empty, "TEST-SUP-A", "⚡", "TEAL", 2);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.Data!.RowsCleared.Should().Be(2);
+        ledger.Cleared.Should().ContainSingle();
+        ledger.Realigned.Should().BeEmpty();
+        ledger.RecordedMarkings.Should().BeEmpty("a blank value never becomes a lot");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldNotIntroduceAMarking_WhenTheRowCarriesNone()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-7012", "TEST-SUP-A", string.Empty, string.Empty, 2);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.Data!.RowsChanged.Should().Be(0);
+        ledger.Realigned.Should().BeEmpty("putting markings right never introduces one");
+        ledger.RecordedMarkings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldReportNothingToDo_WhenItIsRunASecondTime()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-7011", "TEST-SUP-A", "⚡", "TEAL", 1);
+        var service = CreateService(ledger);
+
+        var first = await service.UpdateAllLotsAsync("TEST-USER-1");
+        var second = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        first.Data!.LotsCreated.Should().Be(1);
+        second.IsSuccess.Should().BeTrue();
+        second.Data!.RowsChanged.Should().Be(0);
+        second.Data!.LotsCreated.Should().Be(0);
+        second.Data!.LotsRemoved.Should().Be(0);
+        ledger.Realigned.Should().HaveCount(1, "the second run finds nothing to put right");
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldCreateNoMarking_WhenThePartIsNotOnTheEnabledList()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+
+        var result = await service.ResolveMarkingAsync(
+            "TEST-HEAT-6001",
+            "TEST-PART-OFF-LIST",
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        result.IsSuccess.Should().BeTrue("a part that is not listed is not an error");
+        result.Data.Should().BeNull();
+        ledger.RecordedMarkings.Should().BeEmpty();
+        ledger.InsertCallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldCreateNoMarking_WhenThePartWasRemovedFromTheList()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-REMOVED", isEnabled: false);
+        var service = CreateService(ledger);
+
+        var result = await service.ResolveMarkingAsync(
+            "TEST-HEAT-6002",
+            "TEST-PART-REMOVED",
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        result.Data.Should().BeNull("a removed part receives no new marking");
+        ledger.RecordedMarkings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldCreateNoMarking_WhenTheReceiptCarriesNoPartNumber()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+
+        var result = await service.ResolveMarkingAsync(
+            "TEST-HEAT-6003",
+            null,
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeNull();
+        ledger.RecordedMarkings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldCreateNoMarking_WhenTheEnabledListCannotBeRead()
+    {
+        var ledger = new FakeLotMarkingLedger { FailEnabledPartsRead = true };
+        var service = CreateService(ledger);
+
+        var result = await service.ResolveMarkingAsync(
+            "TEST-HEAT-6004",
+            FakeLotMarkingLedger.EnabledPartId,
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeNull();
+        ledger.RecordedMarkings.Should().BeEmpty(
+            "an unreadable list must refuse the marking rather than risk one on material nobody approved"
+        );
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldReturnTheRecordedMarking_WhenThePartHasSinceLeftTheList()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedMarking(
+            1,
+            "TEST-HEAT-6005",
+            "TESTHEAT6005",
+            "TEST-SUP-A",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL"
+        );
+        var service = CreateService(ledger);
+
+        var result = await service.ResolveMarkingAsync(
+            "TEST-HEAT-6005",
+            "TEST-PART-OFF-LIST",
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        result.Data.Should().NotBeNull("a marking a handler has already seen is never withdrawn");
+        result.Data!.ShapeCode.Should().Be("⚡");
+        result.Data.ColorCode.Should().Be("TEAL");
+        ledger.InsertCallCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ResolveMarkingAsync_ShouldRecordThePartThatFirstCreatedTheLot_WhenTheMarkingIsCreated()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+
+        await service.ResolveMarkingAsync(
+            "TEST-HEAT-6006",
+            FakeLotMarkingLedger.EnabledPartId,
+            "TEST-SUP-A",
+            Enum_LotMarkingCollisionPolicy.Probe
+        );
+
+        ledger.RecordedMarkings.Should().ContainSingle();
+        ledger.RecordedMarkings[0].FirstSeenPartNumber.Should().Be(FakeLotMarkingLedger.EnabledPartId);
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldListALot_WhenAnEnabledPartCarriesIt()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9001", "TESTHEAT9001", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9001",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            2,
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].PartsText.Should().Be(FakeLotMarkingLedger.EnabledPartId);
+        result.Data[0].FirstSeenPartNumber.Should().BeEmpty(
+            "the parts a lot belongs to come from the rows that carry it, not from the marking, "
+                + "so attribution is right for lots recorded before the list was consulted"
+        );
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldReportEveryPart_WhenAnOffListPartCarriesTheSameLot()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-OFF-LIST", isEnabled: false);
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9002", "TESTHEAT9002", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9002",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            2,
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9002",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            3,
+            partId: "TEST-PART-OFF-LIST"
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().ContainSingle("one of the parts carrying the lot is on the list");
+        result.Data![0]
+            .PartsText.Should()
+            .Be($"{FakeLotMarkingLedger.EnabledPartId}, TEST-PART-OFF-LIST");
+        result.Data[0].LineCount.Should().Be(5, "the lines behind both parts are still the lot's lines");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldLeaveOutALot_WhenOnlyPartsOffTheListCarryIt()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-OFF-LIST", isEnabled: false);
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9003", "TESTHEAT9003", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9003",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            2,
+            partId: "TEST-PART-OFF-LIST"
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldKeepALotThatNoReceivingRowCarries_WhenNothingCanAttributeIt()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9004", "TESTHEAT9004", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().ContainSingle(
+            "a lot no row carries cannot be blamed on a part, and hiding it would hide the lot a "
+                + "corrected number used to describe"
+        );
+        result.Data![0].PartsText.Should().Be("-");
+        result.Data[0].LineCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldNarrowToOnePart_WhenAPartIsChosen()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-2");
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9101", "TESTHEAT9101", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedMarking(2, "TEST-HEAT-9102", "TESTHEAT9102", "TEST-SUP-A", "TEST-SUP-A", "⭐", "RED");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9101",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey("queue", "TEST-HEAT-9102", "TEST-SUP-A", "⭐", "RED", 1, partId: "TEST-PART-2");
+
+        var everything = await service.GetLedgerAsync(null);
+        var firstOnly = await service.GetLedgerAsync(null, FakeLotMarkingLedger.EnabledPartId);
+        var secondOnly = await service.GetLedgerAsync(null, "TEST-PART-2");
+
+        everything.Data.Should().HaveCount(2);
+        firstOnly.Data.Should().ContainSingle();
+        firstOnly.Data![0].HeatNumber.Should().Be("TEST-HEAT-9101");
+        secondOnly.Data.Should().ContainSingle();
+        secondOnly.Data![0].HeatNumber.Should().Be("TEST-HEAT-9102");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldShowARemovedPartsLots_WhenThatPartIsChosen()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-REMOVED", isEnabled: false);
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9103", "TESTHEAT9103", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9103",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            partId: "TEST-PART-REMOVED"
+        );
+
+        var unasked = await service.GetLedgerAsync(null);
+        var chosen = await service.GetLedgerAsync(null, "TEST-PART-REMOVED");
+
+        unasked.Data.Should().BeEmpty();
+        chosen.Data.Should().ContainSingle(
+            "choosing a part is deliberate, and a removed part's recorded markings must stay reachable"
+        );
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldStillFilterByHeatNumber_WithinThePartScope()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9201", "TESTHEAT9201", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedMarking(2, "TEST-HEAT-9202", "TESTHEAT9202", "TEST-SUP-A", "TEST-SUP-A", "⭐", "RED");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9201",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9202",
+            "TEST-SUP-A",
+            "⭐",
+            "RED",
+            1,
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var searched = await service.GetLedgerAsync("9202");
+
+        searched.Data.Should().ContainSingle();
+        searched.Data![0].HeatNumber.Should().Be("TEST-HEAT-9202");
+    }
+
     /// <summary>
     /// An in-memory stand-in for the ledger table, so the tests can assert how many markings were
     /// recorded and read them back the way the stored procedures would.
     /// </summary>
     private sealed class FakeLotMarkingLedger : Dao_Tool_LotMarking
     {
+        /// <summary>
+        /// The part number the resolver tests mark against, and the one the fill-in tests pass.
+        /// It is on the enabled list from the start because a marking is only ever created for a
+        /// part that is, so without it every existing resolve test would be asserting the refusal
+        /// path by accident.
+        /// </summary>
+        public const string EnabledPartId = "TEST-PART-1";
+
         private readonly List<Model_Tool_LotMarking> _recordedMarkings = new();
 
+        private readonly List<Model_Tool_LotMarkingScope> _partScope = new();
+
         public FakeLotMarkingLedger()
-            : base(TestConnectionString) { }
+            : base(TestConnectionString)
+        {
+            SeedPart(EnabledPartId);
+        }
 
         public IReadOnlyList<Model_Tool_LotMarking> RecordedMarkings => _recordedMarkings;
+
+        public IReadOnlyList<Model_Tool_LotMarkingScope> PartScope => _partScope;
+
+        /// <summary>Makes the enabled-list read fail, so the fail-closed path can be asserted.</summary>
+        public bool FailEnabledPartsRead { get; set; }
+
+        /// <summary>
+        /// Puts a part on the list. The read returns every row rather than only the enabled ones,
+        /// because that is what the procedure does and the service is what filters.
+        /// </summary>
+        public void SeedPart(string partId, bool isEnabled = true) =>
+            _partScope.Add(
+                new Model_Tool_LotMarkingScope
+                {
+                    Id = _partScope.Count + 1,
+                    PartId = partId,
+                    IsEnabled = isEnabled,
+                }
+            );
+
+        public override Task<Model_Dao_Result<List<Model_Tool_LotMarkingScope>>>
+            GetEnabledPartsAsync() =>
+            Task.FromResult(
+                FailEnabledPartsRead
+                    ? Model_Dao_Result_Factory.Failure<List<Model_Tool_LotMarkingScope>>(
+                        "TEST-enabled-list-unavailable"
+                    )
+                    : Model_Dao_Result_Factory.Success(_partScope.ToList())
+            );
 
         public int InsertCallCount { get; private set; }
 
@@ -479,6 +986,8 @@ public sealed class Service_Tool_LotMarkingTests
                     ShapeCode = shapeGlyph,
                     ColorCode = colorCode,
                     MarkingSource = markingSource,
+                    FirstSeenPartNumber = firstSeenPartNumber ?? string.Empty,
+                    ResolvedBy = resolvedBy ?? string.Empty,
                 }
             );
 
@@ -582,6 +1091,189 @@ public sealed class Service_Tool_LotMarkingTests
             }
 
             return Task.FromResult(Model_Dao_Result_Factory.Success<int>(rowsUpdated));
+        }
+
+        /// <summary>One call the service made to write a marking onto rows that already had one.</summary>
+        public sealed record RealignedRowWrite(
+            string Heat,
+            string SupplierName,
+            string ShapeCode,
+            string ColorCode
+        );
+
+        /// <summary>One call the service made to take a marking off rows.</summary>
+        public sealed record ClearedRowWrite(string Heat, string SupplierName);
+
+        private readonly List<Model_Tool_ReceivingHeatLotKey> _heatLotKeys = new();
+
+        private readonly List<RealignedRowWrite> _realigned = new();
+
+        private readonly List<ClearedRowWrite> _cleared = new();
+
+        private readonly List<int> _removedIds = new();
+
+        public IReadOnlyList<Model_Tool_ReceivingHeatLotKey> HeatLotKeys => _heatLotKeys;
+
+        public IReadOnlyList<RealignedRowWrite> Realigned => _realigned;
+
+        public IReadOnlyList<ClearedRowWrite> Cleared => _cleared;
+
+        public IReadOnlyList<int> RemovedIds => _removedIds;
+
+        public void SeedMarking(
+            int id,
+            string heatNumber,
+            string heatNumberNormalized,
+            string supplierId,
+            string supplierName,
+            string shapeCode,
+            string colorCode,
+            bool isLocked = false
+        ) =>
+            _recordedMarkings.Add(
+                new Model_Tool_LotMarking
+                {
+                    Id = id,
+                    HeatNumber = heatNumber,
+                    HeatNumberNormalized = heatNumberNormalized,
+                    SupplierId = supplierId,
+                    SupplierName = supplierName,
+                    ShapeCode = shapeCode,
+                    ColorCode = colorCode,
+                    IsLocked = isLocked,
+                }
+            );
+
+        public void SeedHeatLotKey(
+            string source,
+            string heat,
+            string supplierName,
+            string shapeCode,
+            string colorCode,
+            int rowCount,
+            DateTime? lastLineDate = null,
+            string partId = ""
+        ) =>
+            _heatLotKeys.Add(
+                new Model_Tool_ReceivingHeatLotKey(
+                    source,
+                    heat,
+                    supplierName,
+                    partId,
+                    shapeCode,
+                    colorCode,
+                    rowCount,
+                    lastLineDate
+                )
+            );
+
+        public override Task<Model_Dao_Result<List<Model_Tool_ReceivingHeatLotKey>>>
+            GetReceivingHeatLotKeysAsync() =>
+            Task.FromResult(Model_Dao_Result_Factory.Success(_heatLotKeys.ToList()));
+
+        public override Task<Model_Dao_Result<int>> RealignLotMarkingRowsAsync(
+            string heat,
+            string supplierName,
+            string shapeGlyph,
+            string colorCode
+        )
+        {
+            if (string.IsNullOrWhiteSpace(shapeGlyph) || string.IsNullOrWhiteSpace(colorCode))
+            {
+                return Task.FromResult(
+                    Model_Dao_Result_Factory.Failure<int>(
+                        "A shape and a color are both required to put a marking right."
+                    )
+                );
+            }
+
+            var rows = 0;
+
+            // The stored procedure matches the heat and supplier literally, writes only rows that
+            // already carry a marking, and leaves the table showing the new codes.
+            for (var index = 0; index < _heatLotKeys.Count; index++)
+            {
+                var key = _heatLotKeys[index];
+                if (
+                    string.IsNullOrWhiteSpace(key.ShapeCode)
+                    || !string.Equals(key.Heat, heat, StringComparison.Ordinal)
+                    || !string.Equals(key.SupplierName, supplierName, StringComparison.Ordinal)
+                )
+                {
+                    continue;
+                }
+
+                rows += key.RowCount;
+                _heatLotKeys[index] = key with { ShapeCode = shapeGlyph, ColorCode = colorCode };
+            }
+
+            if (rows > 0)
+            {
+                _realigned.Add(new RealignedRowWrite(heat, supplierName, shapeGlyph, colorCode));
+            }
+
+            return Task.FromResult(Model_Dao_Result_Factory.Success<int>(rows));
+        }
+
+        public override Task<Model_Dao_Result<int>> ClearLotMarkingRowsAsync(
+            string heat,
+            string supplierName
+        )
+        {
+            var rows = 0;
+
+            for (var index = 0; index < _heatLotKeys.Count; index++)
+            {
+                var key = _heatLotKeys[index];
+                if (
+                    string.IsNullOrWhiteSpace(key.ShapeCode)
+                    || !string.Equals(key.Heat, heat, StringComparison.Ordinal)
+                    || !string.Equals(key.SupplierName, supplierName, StringComparison.Ordinal)
+                )
+                {
+                    continue;
+                }
+
+                rows += key.RowCount;
+                _heatLotKeys[index] = key with
+                {
+                    ShapeCode = string.Empty,
+                    ColorCode = string.Empty,
+                };
+            }
+
+            if (rows > 0)
+            {
+                _cleared.Add(new ClearedRowWrite(heat, supplierName));
+            }
+
+            return Task.FromResult(Model_Dao_Result_Factory.Success<int>(rows));
+        }
+
+        public override Task<Model_Dao_Result<int>> DeleteMarkingAsync(int id)
+        {
+            var stored = _recordedMarkings.FirstOrDefault(marking => marking.Id == id);
+            if (stored is null)
+            {
+                return Task.FromResult(
+                    Model_Dao_Result_Factory.Failure<int>("That lot is no longer in the list.")
+                );
+            }
+
+            // The stored procedure refuses a protected lot, so the double does too.
+            if (stored.IsLocked)
+            {
+                return Task.FromResult(
+                    Model_Dao_Result_Factory.Failure<int>(
+                        "That lot is protected, so it is never removed."
+                    )
+                );
+            }
+
+            _recordedMarkings.Remove(stored);
+            _removedIds.Add(id);
+
+            return Task.FromResult(Model_Dao_Result_Factory.Success<int>(1));
         }
     }
 }

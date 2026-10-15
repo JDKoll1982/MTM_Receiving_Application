@@ -91,13 +91,16 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     public bool IsMarkingListEmpty => Markings.Count == 0;
 
     /// <summary>
-    /// The wording shown in place of the list. An empty ledger and a search that matched nothing
-    /// are both normal, but they are not the same thing, so they do not read the same.
+    /// The wording shown in place of the list. An empty list and a search that matched nothing are
+    /// both normal, but they are not the same thing, so they do not read the same. A search that
+    /// matches nothing often means the lot is for material that is not on the part list, so the
+    /// wording says what the list covers instead of implying the lot carries no marking.
     /// </summary>
     public string MarkingListEmptyText =>
         string.IsNullOrWhiteSpace(HeatSearchText)
-            ? "No lots have been marked yet."
-            : "No marking found for that heat number.";
+            ? "No marked lots for the parts on the list. Choose a part to see its lots."
+            : "No marked lot in the list matches that heat number. The list covers only the parts "
+                + "listed below, so a lot whose material is not on that list is not shown.";
 
     /// <summary>
     /// A one-line reading of the selected lot, so a user can confirm they picked the right one
@@ -189,6 +192,13 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     /// </summary>
     public Func<string, Model_Tool_LotMarkingBackfillPreview, Task<bool>>? ConfirmBackfillAsync { get; set; }
 
+    /// <summary>
+    /// Set by the view's code-behind so the ViewModel can put the plan for Update All Lots in front of
+    /// a user before anything is written.
+    /// Parameters: (preview) → true when the user confirms. Null, or false, means nothing is written.
+    /// </summary>
+    public Func<Model_Tool_LotMarkingRealignPreview, Task<bool>>? ConfirmRealignAsync { get; set; }
+
     // ─── Property change plumbing ───────────────────────────────────────────
 
     partial void OnSelectedMarkingChanged(Model_Tool_LotMarking? value)
@@ -205,6 +215,18 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         RemovePartCommand.NotifyCanExecuteChanged();
         ReEnablePartCommand.NotifyCanExecuteChanged();
         FillUnmarkedLotsCommand.NotifyCanExecuteChanged();
+
+        // Choosing a part is how the list is read for one material, so the list follows the choice
+        // rather than waiting for the search button. Reading the part list also clears the selection,
+        // and that clearing happens while the view model is busy, so it is not read as a user
+        // choosing nothing and does not send the list back to the whole scope.
+        // The read is started and not awaited because a property setter cannot be asynchronous.
+        // LoadMarkingsAsync handles its own failures, so nothing here can escape. The read is also
+        // short, and setting IsBusy while it runs keeps a second selection from overlapping it.
+        if (!IsBusy)
+        {
+            _ = LoadMarkingsAsync(HeatSearchText);
+        }
     }
 
     partial void OnPartSearchTextChanged(string value)
@@ -287,12 +309,12 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
     private async Task LoadMarkingsAsync(string? heatSearch)
     {
+        var partId = SelectedPart?.PartId;
+
         IsBusy = true;
         try
         {
-            var result = string.IsNullOrWhiteSpace(heatSearch)
-                ? await _service.GetAllMarkingsAsync()
-                : await _service.SearchMarkingsByHeatAsync(heatSearch.Trim());
+            var result = await _service.GetLedgerAsync(heatSearch, partId);
 
             if (!result.IsSuccess)
             {
@@ -314,16 +336,16 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
             if (loaded.Count == 0)
             {
-                ShowStatus(
-                    string.IsNullOrWhiteSpace(heatSearch)
-                        ? "No lots have been marked yet."
-                        : $"No lot matching '{heatSearch}' has a marking.",
-                    InfoBarSeverity.Informational
-                );
+                ShowStatus(MarkingListEmptyText, InfoBarSeverity.Informational);
                 return;
             }
 
-            ShowStatus($"{loaded.Count} marking(s) found.", InfoBarSeverity.Success);
+            ShowStatus(
+                string.IsNullOrWhiteSpace(partId)
+                    ? $"{loaded.Count} marking(s) found."
+                    : $"{loaded.Count} marking(s) for {partId}.",
+                InfoBarSeverity.Success
+            );
         }
         catch (Exception ex)
         {
@@ -611,6 +633,90 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         {
             _errorHandler.HandleException(ex, Enum_ErrorSeverity.Medium, nameof(FillUnmarkedLotsAsync), nameof(ViewModel_Tool_LotMarking));
             ShowStatus("The unmarked lots could not be filled in.", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Puts the markings right after lot numbers have been corrected on the receiving rows: a row is
+    /// given the marking its lot number now calls for, a lot number that had none becomes a lot, and a
+    /// lot whose number no longer appears on any receiving row is removed from the list so its shape
+    /// and color are free again.
+    /// </summary>
+    /// <remarks>
+    /// The plan is worked out and shown first, and nothing is written until it is confirmed. This is
+    /// never triggered by saving an edit, and it is safe to run again at any time.
+    /// </remarks>
+    [RelayCommand]
+    private async Task UpdateAllLotsAsync()
+    {
+        // The command carries no CanExecute, because IsBusy lives on the shared base and cannot be
+        // watched from here, so it guards itself instead.
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            ShowStatus("Working out what needs putting right...", InfoBarSeverity.Informational);
+
+            var preview = await _service.PreviewUpdateAllLotsAsync();
+            if (!preview.IsSuccess || preview.Data is null)
+            {
+                ShowStatus(preview.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            if (!preview.Data.HasWork)
+            {
+                ShowStatus(
+                    $"Nothing to put right. {preview.Data.LotsAlreadyCorrect} lot(s) already agree with the rows that carry them.",
+                    InfoBarSeverity.Informational
+                );
+                return;
+            }
+
+            if (ConfirmRealignAsync is null || !await ConfirmRealignAsync(preview.Data))
+            {
+                ShowStatus("Cancelled.", InfoBarSeverity.Informational);
+                return;
+            }
+
+            var applied = await _service.UpdateAllLotsAsync(Environment.UserName);
+            if (!applied.IsSuccess || applied.Data is null)
+            {
+                ShowStatus(applied.ErrorMessage, InfoBarSeverity.Warning);
+                return;
+            }
+
+            await LoadMarkingsAsync(HeatSearchText);
+            await LoadPartsAsync(PartSearchText);
+
+            var result = applied.Data;
+            var summary =
+                $"{result.RowsChanged} row(s) changed, {result.RowsCleared} cleared, {result.LotsCreated} lot(s) created, {result.LotsRemoved} removed from the list.";
+
+            if (result.LotsSkipped > 0)
+            {
+                summary += $" {result.LotsSkipped} protected lot(s) left alone.";
+            }
+
+            ShowStatus(summary, InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(UpdateAllLotsAsync),
+                nameof(ViewModel_Tool_LotMarking)
+            );
+            ShowStatus("The markings could not be put right.", InfoBarSeverity.Error);
         }
         finally
         {

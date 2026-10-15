@@ -21,21 +21,33 @@ screen that shows a marking. Layout follows the module's existing tool pattern, 
   sent.
 - **Shows**: each matching lot with its heat number, supplier, shape, color, whether the marking was
   chosen automatically or set by hand, and whether it is locked.
-- **Empty state**: "No marking found for that heat number."
+- **Empty state**: "No marked lot in the list matches that heat number. The list covers only the parts
+  listed below, so a lot whose material is not on that list is not shown." The wording states the scope
+  rather than implying the lot carries no marking, because material that is not on the part list is a
+  normal reason for no match. **Satisfies**: FR-073.
 - **Failure modes**: a query failure shows the shared Infobar error and leaves the previous results
   in place. A no-match result is not an error.
 - **Satisfies**: FR-017, SC-009.
 
 ### Marking list
 
-- **Inputs**: none beyond an optional supplier filter; the list loads when the tool is first activated,
-  through `ActivateView`.
-- **Shows**: one row per lot — heat number, supplier, shape, color, source, locked badge, last changed
-  by, last changed at — newest first.
+- **Inputs**: the optional heat number from the heat search, and the part number chosen in the part
+  list. Choosing a part reads the list again, so the list follows the choice rather than waiting for
+  the search button. Reloading the part list clears its selection, which happens while the view model
+  is busy and is therefore not read as a user choosing nothing.
+- **Shows**: one row per lot — heat number, supplier, the part numbers that carry it, shape, color,
+  source, locked badge, last changed by, last changed at — newest first.
+- **Scope**: the list holds a lot when at least one enabled part carries it, or when no receiving row
+  carries its number at all, because such a lot cannot be attributed to a part and dropping it would
+  hide a lot whose number was corrected away. Choosing a part narrows the list to that part alone,
+  whether or not the part is still enabled, so a removed part's recorded markings stay reachable.
+  **Satisfies**: FR-067, FR-068, FR-069, FR-070, FR-071.
 - **Duplicate flag**: two rows holding the same shape and color are marked so the collision is visible
   rather than hidden. This is the visible half of the case where the palette is exhausted.
-- **Empty state**: "No lots have been marked yet."
+- **Empty state**: "No marked lots for the parts on the list. Choose a part to see its lots."
 - **Failure modes**: a load failure shows the Infobar error and an empty list; the tool stays usable.
+  A failure to read the enabled part list fails the load rather than showing every lot, because showing
+  everything again is the reading this scope exists to stop.
 - **Satisfies**: FR-018, FR-019, and the edge case requiring a shared marking to be visible in the tool.
 
 ### Override panel

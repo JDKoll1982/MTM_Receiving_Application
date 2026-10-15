@@ -2,7 +2,7 @@
 
 - **Last Updated:** 2026-10-14
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
-- **Status:** Shipped 2026-10-14 — complete, 60 of 60 tasks. Build green, 811 of 811 tests pass. Lot marking backfill added 2026-10-14 (user story 6), supplier group width fixed 2026-10-14.
+- **Status:** Shipped 2026-10-15. Build green, 819 of 819 tests pass, 80 of 80 tasks. Lot marking backfill (user story 6) and the supplier group width fix landed 2026-10-14; Update All Lots (user story 7) landed 2026-10-15.
 - **New tables:** `lot_markings`, `lot_marking_part_scope` (MySQL, `mtm_receiving_application` schema)
 - **Existing lot key:** `receiving_label_data.heat` and `receiving_history.heat` already store the lot number — no new lot column is introduced
 
@@ -417,3 +417,119 @@ in-memory ledger that has no column width. The regression guard added alongside 
 `ResolveMarkingAsync_ShouldKeepTheWholeSupplierName_WhenTwoVendorsShareAnIdLengthPrefix`, pins the
 intent instead: it asserts that two vendors sharing a fifteen character prefix stay two separate lots,
 so a future attempt to shorten the key fails a test rather than merging two suppliers' markings.
+
+## Update All Lots (user story 7, added 2026-10-15)
+
+A lot number can be typed wrong, and its marking is then chosen from a number the material never had.
+Correcting the number in Edit Mode rewrites it on both the queue row and the history row but leaves the
+marking behind, so the row keeps a shape and color belonging to no lot and the list keeps a lot that no
+longer describes anything.
+
+**Update All Lots**, a button in the tool's top card, puts that right. It reports first and writes
+nothing until the report is confirmed. It does three things:
+
+1. Where the corrected lot number already exists as a lot, the rows are changed to show that lot's
+   shape and color, so all the material for one number shows one marking.
+2. Where the corrected lot number carries no marking, the number becomes a lot and is given a shape and
+   color chosen the same way a receipt chooses one, by the same shared resolver, so a later receipt of
+   that number agrees with the rows.
+3. Where a lot's number appears on no receiving row at all, the lot is removed from the list and its
+   shape and color are freed for a later lot.
+
+Boundaries, each a deliberate decision rather than an accident:
+
+- Only rows that already carry a marking are changed. Update All Lots puts markings right and never
+  introduces one; the fill-in action covers unmarked rows.
+- A row whose lot number was cleared to blank loses its marking, and a blank value never becomes a lot.
+- A protected lot is neither changed nor removed, and is reported instead.
+- A lot number that still appears on even one row is never removed.
+
+## Only the listed parts are marked (user story 10, added 2026-10-15)
+
+The feature is opt-in per part number, and that opt-in was not working. Every receipt that carried a
+lot number was given a marking, whatever part it was for. The enabled list was read only by the
+fill-in action and by the tool's own part list, never by the path that creates a marking.
+
+The list of recorded markings showed the result: lots belonging to parts nobody had approved, sitting
+alongside the ones that were. On the production database at the time of the fix, 35 markings existed,
+of which 11 belonged only to parts that were not on the list.
+
+**What was wrong, precisely.** `ResolveMarkingAsync` had no part parameter at all, so it could not
+consult the list and could not record which part had created a lot. `lot_markings.first_seen_part_number`
+existed, the data access layer accepted it, and the model carried it; the automatic path passed null.
+The method's own remark claimed that "part not listed" produced no marking, and nothing implemented
+that claim.
+
+**The fix** gives the resolver the part number from the receipt and consults the enabled list at the
+one moment it matters:
+
+- A marking is created only for a part on the enabled list. A part that is absent, removed, or not
+  listed gets none.
+- The check happens **after** the ledger read, not before it. A lot that already has a marking keeps it
+  whatever part arrives against it, so removing a part cannot repaint a label a handler has already
+  seen, and a marking that a handler has already been shown is never withdrawn.
+- A receipt carrying no part number gets no marking, because the enabled list is a list of part
+  numbers and a marking nothing can be attributed to cannot be shown to belong to anything.
+- If the enabled list cannot be read, the marking is refused rather than risked. The receipt is still
+  saved; it is simply saved unmarked.
+
+**The list is now scoped to the same rule.** `sp_Receiving_HeatLotKeys_GetAll` carries each group's
+part number, and the tool keeps a lot when at least one enabled part carries it. A lot is carried by a
+set of parts rather than owned by one, so a lot used by both a listed part and an unlisted one is
+still shown, and the list reports every part that carries it.
+
+Choosing a part in the part list reads the marking list again and narrows it to that part alone. That
+is honoured whether or not the part is still enabled, because choosing a part is deliberate and a
+removed part's recorded markings must stay reachable.
+
+Two boundaries are worth stating, because each looks like an omission:
+
+- A lot whose number appears on **no** receiving row is still shown. It cannot be attributed to a
+  part, so hiding it would hide the lot a corrected number used to describe. This keeps story 8's
+  requirement that such a lot stay in the list rather than disappearing.
+- A lot's parts are read from the receiving rows that carry its number, not from
+  `first_seen_part_number`. The column is right only for lots created after this change, and the
+  attribution has to be right for every lot, including the ones recorded before the list was
+  consulted.
+
+**What was deliberately not done.** The markings already recorded against unlisted material are left
+exactly as they are, and nothing new is created for that material. Removing them would change what a
+label already on the floor says. They are simply out of the default list, and reachable by choosing
+the part number that carries them. Nothing was deleted or altered in production for this change.
+
+**Tests.** `Service_Tool_LotMarkingTests` covers the gate (an unlisted part creates nothing, a removed
+part creates nothing, a missing part number creates nothing, an unreadable list creates nothing, a
+recorded marking is returned whatever the part, and the creating part is recorded) and the scope (a
+lot an enabled part carries is listed, one carried only by unlisted parts is not, a lot with no rows
+is kept, choosing a part narrows, a removed part's lots stay reachable, the parts are read from rows,
+and the heat search still filters within the scope). `ViewModel_Tool_LotMarkingTests` covers the list
+following the chosen part and asking for the whole scope when nothing is chosen.
+- It never runs as part of saving an edit. It is only ever run by a person.
+- It never changes a lot number, a supplier, or any other receiving value.
+
+This supersedes the earlier rule that recorded markings are kept forever, for exactly one case: a lot
+whose number appears on no receiving row. Removal is a deletion, which is what frees the pair and lets
+that number be received again as a new lot. The list gives the removed number and the shape and color it
+was holding as the trace that survives.
+
+Two costs come with the behaviour. Both are known rather than overlooked:
+
+- A label printed before the correction still shows the marking chosen from the wrong number, so the
+  floor and the tool disagree until that label is reprinted. Reprinting is not handled here.
+- Freeing a pair means a later lot can be given a shape and color a printed label still shows, so one
+  pair can mean two lots at different times.
+
+The four new procedures are `sp_Receiving_HeatLotKeys_GetAll` (read only: every distinct heat and
+supplier pair across the queue and history with its marking and row count),
+`sp_Receiving_LotMarking_RealignRows`, `sp_Receiving_LotMarking_ClearRows` and `sp_LotMarkings_Delete`.
+Both write procedures touch only rows that already carry a marking, and each runs in a transaction so
+the queue and history cannot end up disagreeing. `sp_LotMarkings_Delete` refuses a protected lot, so no
+code path can remove one by mistake.
+
+One thing is not resolved, and it is the piece most likely to misbehave on real data. A lot's supplier
+group is the official supplier id when the receiving side resolved the vendor to a single match, and
+the normalized supplier name otherwise, while a receiving row only ever carries the name. The update
+therefore matches a row to a lot on either the id or the name, which is deliberately forgiving, because
+failing to find a lot that exists would create a second lot for it and give one physical lot two
+markings. Whether the receiving side and these repair actions should key the group the same way is a
+question for the user.
