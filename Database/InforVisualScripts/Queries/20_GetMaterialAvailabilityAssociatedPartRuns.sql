@@ -83,17 +83,34 @@ MatchingRequirements AS (
         r.HEIGHT                            AS Height,
         COALESCE(r.DRAWING_ID, op.DRAWING_ID, wo.DRAWING_ID, '') AS DrawingId,
         COALESCE(r.DRAWING_REV_NO, op.DRAWING_REV_NO, wo.DRAWING_REV_NO, '') AS DrawingRevision,
-        COALESCE(op.SCHED_START_DATE, wo.SCHED_START_DATE) AS NextDueToRunDate,
+        -- Effective "due to run" date. Only ~7% of open requirement rows carry an operation or
+        -- work-order schedule, so the requirement's own REQUIRED_DATE is the first realistic
+        -- fallback; the work-order want date is the last resort.
+        COALESCE(
+            op.SCHED_START_DATE,
+            wo.SCHED_START_DATE,
+            r.REQUIRED_DATE,
+            wo.DESIRED_WANT_DATE
+        )                                   AS NextDueToRunDate,
         CASE
             WHEN op.SCHED_START_DATE IS NOT NULL THEN 'OPERATION.SCHED_START_DATE'
             WHEN wo.SCHED_START_DATE IS NOT NULL THEN 'WORK_ORDER.SCHED_START_DATE'
+            WHEN r.REQUIRED_DATE IS NOT NULL THEN 'REQUIREMENT.REQUIRED_DATE'
+            WHEN wo.DESIRED_WANT_DATE IS NOT NULL THEN 'WORK_ORDER.DESIRED_WANT_DATE'
             ELSE 'NO SCHEDULED START DATE'
         END                                 AS NextDueDateSource,
+        -- Demand is open while neither the requirement nor the work order is closed or cancelled.
+        CASE
+            WHEN ISNULL(r.STATUS, '') NOT IN ('C', 'X')
+             AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
+                THEN CAST(1 AS bit)
+            ELSE CAST(0 AS bit)
+        END                                 AS IsOpenDemand,
         CASE
             WHEN COALESCE(
                 op.SCHED_START_DATE,
                 wo.SCHED_START_DATE
-            ) > CAST(GETDATE() AS date)
+            ) >= CAST(GETDATE() AS date)
              AND ISNULL(r.STATUS, '') NOT IN ('C', 'X')
              AND ISNULL(wo.STATUS, '') NOT IN ('C', 'X')
                 THEN CAST(1 AS bit)
@@ -107,10 +124,11 @@ MatchingRequirements AS (
                 THEN CAST(1 AS bit)
             ELSE CAST(0 AS bit)
         END                                 AS IsCurrentlyRunning,
+        -- "Past job" means the demand is closed, not merely dated in the past: an open,
+        -- past-due requirement is still live demand and must not be reported as history.
         CASE
             WHEN ISNULL(r.STATUS, '') IN ('C', 'X')
              OR ISNULL(wo.STATUS, '') IN ('C', 'X')
-             OR COALESCE(op.SCHED_FINISH_DATE, wo.SCHED_FINISH_DATE, r.CLOSE_DATE, wo.CLOSE_DATE) < CAST(GETDATE() AS date)
                 THEN CAST(1 AS bit)
             ELSE CAST(0 AS bit)
         END                                 AS IsPastJob
@@ -137,6 +155,39 @@ MatchingRequirements AS (
         ON wo.PART_ID = parent.ID
     WHERE ISNULL(r.STATUS, '') <> 'X'
       AND ISNULL(wo.STATUS, '') <> 'X'
+      -- Quote work orders never represent real production demand.
+      AND wo.TYPE <> 'Q'
+      -- Unreleased master ('M') work orders are make-to-stock planning shells. 8025 of the 8866
+      -- open requirement rows in MTMFG are these shells, 98.6% of them dated more than 90 days
+      -- ago, and they otherwise outrank the real released ('W') work orders.
+      AND NOT (wo.TYPE = 'M' AND ISNULL(wo.STATUS, '') = 'U')
+),
+-- A component part can have dozens of requirement rows per parent (one per piece, per operation,
+-- per year of history). The board only ever shows one row per component/parent pair, so the best
+-- row is chosen here. Without this the row budget is consumed by duplicates of the same demand and
+-- parts that only have closed history come back with no row at all.
+RankedRequirements AS (
+    SELECT
+        mr.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY mr.InputPartNumber, mr.AssociatedPartNumber
+            ORDER BY
+                CASE
+                    WHEN mr.IsCurrentlyRunning = 1 THEN 0
+                    WHEN mr.IsPastJob = 1 THEN 5
+                    WHEN mr.NextDueToRunDate IS NULL THEN 4
+                    WHEN mr.NextDueToRunDate < CAST(GETDATE() AS date) THEN 1
+                    ELSE 2
+                END,
+                CASE WHEN mr.IsPastJob = 0 THEN mr.NextDueToRunDate END,
+                CASE WHEN mr.IsPastJob = 1
+                     THEN COALESCE(mr.ScheduledFinishDate, mr.NextDueToRunDate)
+                END DESC,
+                mr.WorkOrderBaseId,
+                mr.OperationSeqNo,
+                mr.RequirementPieceNo
+        ) AS DemandRank
+    FROM MatchingRequirements mr
 )
 SELECT TOP (@MaxResults)
     InputPartNumber,
@@ -146,6 +197,7 @@ SELECT TOP (@MaxResults)
     AssociatedPartDescription,
     NextDueToRunDate,
     IsFutureOrTodayRun,
+    IsOpenDemand,
     NextDueDateSource,
     WorkOrderType,
     WorkOrderBaseId,
@@ -185,17 +237,20 @@ SELECT TOP (@MaxResults)
     DrawingRevision,
     IsCurrentlyRunning,
     IsPastJob
-FROM MatchingRequirements
+FROM RankedRequirements
+WHERE DemandRank = 1
 ORDER BY
     CASE
         WHEN IsCurrentlyRunning = 1 THEN 0
-        WHEN IsFutureOrTodayRun = 1 THEN 1
-        WHEN IsPastJob = 1 THEN 2
+        WHEN IsPastJob = 1 THEN 5
+        WHEN NextDueToRunDate IS NULL THEN 4
+        WHEN NextDueToRunDate < CAST(GETDATE() AS date) THEN 1
+        WHEN IsFutureOrTodayRun = 1 THEN 2
         ELSE 3
     END,
     CASE WHEN IsCurrentlyRunning = 1 THEN ScheduledStartDate END DESC,
-    CASE WHEN IsFutureOrTodayRun = 1 THEN ScheduledStartDate END,
-    CASE WHEN IsPastJob = 1 THEN COALESCE(ScheduledFinishDate, ScheduledStartDate) END DESC,
+    CASE WHEN IsPastJob = 0 AND NextDueToRunDate IS NOT NULL THEN NextDueToRunDate END,
+    CASE WHEN IsPastJob = 1 THEN COALESCE(ScheduledFinishDate, NextDueToRunDate) END DESC,
     AssociatedPartNumber,
     WorkOrderBaseId,
     OperationSeqNo,

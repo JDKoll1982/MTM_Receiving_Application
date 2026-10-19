@@ -281,11 +281,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             if (!card.HasIncomingDetails)
             {
                 html.AppendLine(
-                    "<div style='font-size: 10pt; color: #6b7280; margin: 0 0 16px 0;'>No qualifying incoming material was found for the selected look-ahead window.</div>"
+                    "<div style='font-size: 10pt; color: #6b7280; margin: 0 0 16px 0;'>No inbound material found for this part.</div>"
                 );
-                plainText.AppendLine(
-                    "No qualifying incoming material was found for the selected look-ahead window."
-                );
+                plainText.AppendLine("No inbound material found for this part.");
             }
             else
             {
@@ -672,6 +670,18 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     IncomingRollup = incomingPresentation.Rollup,
                     IncomingLines = incomingPresentation.IncomingLines,
                     UpcomingDates = incomingPresentation.UpcomingDates,
+                    HasConfirmedDelivery = incomingPresentation.EarliestConfirmedDate.HasValue,
+                    ConfirmedDeliveryDisplay = FormatDeliveryDisplay(
+                        "Confirmed",
+                        incomingPresentation.EarliestConfirmedDate,
+                        incomingWindowDays
+                    ),
+                    HasRequestedDelivery = incomingPresentation.EarliestRequestedDate.HasValue,
+                    RequestedDeliveryDisplay = FormatDeliveryDisplay(
+                        "Requested",
+                        incomingPresentation.EarliestRequestedDate,
+                        incomingWindowDays
+                    ),
                     AssociatedPartRuns = associatedPartPresentation.AssociatedPartRuns,
                     NextDateSummary = headerSummary,
                     EarliestRelevantDate =
@@ -714,27 +724,28 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                             row,
                             lastReceivedDate.Date,
                             "Last received on",
-                            true
+                            true,
+                            IsConfirmed: false
                         )
                     );
+                }
+
+                // A blanket release frequently carries a promise or desired date without ever
+                // having been received. Ignoring those dates left open blanket lines with a
+                // balance and a real date showing no delivery date at all.
+                var blanketDelivery = SelectBestIncomingDate(row);
+                if (blanketDelivery.Date.HasValue)
+                {
+                    qualifyingLines.Add(blanketDelivery);
                 }
 
                 continue;
             }
 
-            var selectedDate = SelectBestIncomingDate(row);
-            if (selectedDate is not null)
-            {
-                qualifyingRollupRows.Add(row);
-                qualifyingLines.Add(selectedDate);
-                continue;
-            }
-
-            if (selectedDate is null)
-            {
-                qualifyingRollupRows.Add(row);
-                continue;
-            }
+            // Undated lines are kept so the detail dialog still shows the quantity source with a
+            // "No delivery date on the PO" caption instead of dropping the purchase order.
+            qualifyingRollupRows.Add(row);
+            qualifyingLines.Add(SelectBestIncomingDate(row));
         }
 
         if (qualifyingRollupRows.Count == 0)
@@ -742,9 +753,13 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             return IncomingPresentation.Empty;
         }
 
-        var distinctDateLines = qualifyingLines
-            .GroupBy(line => new { line.Label, line.Date })
-            .Select(group => group.First())
+        var dateableLines = qualifyingLines.Where(line => line.Date.HasValue).ToList();
+
+        // One entry per calendar date. Several lines can share a date under different labels, and
+        // repeating the same date once per label made the printed date table hard to scan.
+        var distinctDateLines = dateableLines
+            .GroupBy(line => line.Date!.Value.Date)
+            .Select(group => group.OrderBy(line => line.IsHistorical ? 1 : 0).First())
             .OrderBy(line => line.IsHistorical ? 1 : 0)
             .ThenBy(line => line.IsHistorical ? DateTime.MaxValue : line.Date)
             .ThenByDescending(line => line.IsHistorical ? line.Date : DateTime.MinValue)
@@ -755,7 +770,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             line => new Model_Tool_MaterialAvailabilityIncomingDate
             {
                 Label = line.Label,
-                Date = line.Date,
+                Date = line.Date!.Value,
             }
         );
 
@@ -766,10 +781,13 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 POLineNumber = (line.Row.POLineNumber ?? string.Empty).Trim().ToUpperInvariant(),
             })
             .Select(group =>
-                group.OrderBy(line => line.IsHistorical ? 1 : 0).ThenBy(line => line.Date).First()
+                group
+                    .OrderBy(line => line.IsHistorical ? 1 : 0)
+                    .ThenBy(line => line.Date ?? DateTime.MaxValue)
+                    .First()
             )
             .OrderBy(line => line.IsHistorical ? 1 : 0)
-            .ThenBy(line => line.Date)
+            .ThenBy(line => line.Date ?? DateTime.MaxValue)
             .ThenBy(line => line.Row.PONumber, StringComparer.OrdinalIgnoreCase)
             .Select(line => new Model_Tool_MaterialAvailabilityIncomingLine
             {
@@ -778,6 +796,20 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 VendorName = line.Row.VendorName,
                 DateLabel = line.Label,
                 Date = line.Date,
+                DeliveryConfidence = line.IsHistorical ? "Received"
+                    : line.Date is null ? string.Empty
+                    : line.IsConfirmed ? "Confirmed"
+                    : "Requested",
+                IsOutsideHighlightWindow =
+                    line.IsHistorical is false
+                    && incomingWindowDays.HasValue
+                    && line.Date is DateTime outsideDate
+                    && outsideDate.Date > horizon,
+                IsOverdue =
+                    line.IsHistorical is false
+                    && line.Date is DateTime overdueDate
+                    && overdueDate.Date < today
+                    && line.Row.RemainingQty > 0,
                 OrderedQty = line.Row.OrderedQty,
                 ReceivedQty = line.Row.ReceivedQty,
                 RemainingQty = line.Row.RemainingQty,
@@ -807,10 +839,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         var earliestDisplayDate = distinctDateLines
             .Where(line => line.IsHistorical is false)
-            .Min(line => (DateTime?)line.Date);
+            .Min(line => line.Date);
         var latestHistoricalDate = distinctDateLines
             .Where(line => line.IsHistorical)
-            .Max(line => (DateTime?)line.Date);
+            .Max(line => line.Date);
 
         var sortBucket =
             earliestDisplayDate.HasValue ? 0
@@ -828,13 +860,23 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     ? $"No inbound material due in the next {incomingWindowDays.Value} days."
                     : "No inbound material found.";
 
+        var openDatedLines = dateableLines.Where(line => line.IsHistorical is false).ToList();
+        var earliestConfirmedDate = openDatedLines
+            .Where(line => line.IsConfirmed)
+            .Min(line => line.Date);
+        var earliestRequestedDate = openDatedLines
+            .Where(line => line.IsConfirmed is false)
+            .Min(line => line.Date);
+
         return new IncomingPresentation(
             distinctDates,
             incomingLines,
             rollup,
             nextDateSummary,
             sortBucket,
-            sortDate
+            sortDate,
+            earliestConfirmedDate,
+            earliestRequestedDate
         );
     }
 
@@ -878,13 +920,21 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 ComponentPartNumber = row.ComponentPartNumber,
                 NextDueToRunDate = row.NextDueToRunDate?.Date,
                 IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+                IsOpenDemand = row.IsOpenDemand,
                 IsCurrentlyRunning = row.IsCurrentlyRunning,
                 IsPastJob = row.IsPastJob,
                 IsOutsideSelectedLookAheadWindow =
                     row.NextDueToRunDate.HasValue
-                    && row.IsFutureOrTodayRun
+                    && row.IsPastJob is false
                     && incomingWindowDays.HasValue
                     && row.NextDueToRunDate.Value.Date > horizon,
+                OutsideWindowHintDisplay =
+                    row.NextDueToRunDate.HasValue
+                    && row.IsPastJob is false
+                    && incomingWindowDays.HasValue
+                    && row.NextDueToRunDate.Value.Date > horizon
+                        ? $"beyond {incomingWindowDays.Value}-day highlight"
+                        : string.Empty,
                 NextDueDateSource = row.NextDueDateSource,
                 WorkOrderDisplay = FormatInforVisualWorkOrder(row.WorkOrderBaseId),
                 WorkOrderStatus = row.WorkOrderStatus,
@@ -948,7 +998,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         );
     }
 
-    private static IncomingLinePresentation? SelectBestIncomingDate(
+    private static IncomingLinePresentation SelectBestIncomingDate(
         Model_InforVisualIncomingSupplyRow row
     )
     {
@@ -958,7 +1008,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 linePromiseDate.Date,
                 "Line promise delivery",
-                false
+                false,
+                IsConfirmed: true
             );
         }
 
@@ -968,7 +1019,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 linePromiseShipDate.Date,
                 "Line promise ship",
-                false
+                false,
+                IsConfirmed: true
             );
         }
 
@@ -978,7 +1030,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 headerPromiseDate.Date,
                 "PO promise delivery",
-                false
+                false,
+                IsConfirmed: true
             );
         }
 
@@ -988,7 +1041,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 headerPromiseShipDate.Date,
                 "PO promise ship",
-                false
+                false,
+                IsConfirmed: true
             );
         }
 
@@ -998,7 +1052,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 lineDesiredDate.Date,
                 "Line desired receive",
-                false
+                false,
+                IsConfirmed: false
             );
         }
 
@@ -1008,16 +1063,55 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 row,
                 headerDesiredDate.Date,
                 "PO desired receive",
-                false
+                false,
+                IsConfirmed: false
             );
         }
 
-        if (row.OrderDate is DateTime orderDate)
+        // The purchase-order order date is when the PO was written, not when material is due, so
+        // it is deliberately not used as a delivery date. The line is still reported, undated.
+        return new IncomingLinePresentation(
+            row,
+            Date: null,
+            Label: "No delivery date",
+            IsHistorical: false,
+            IsConfirmed: false
+        );
+    }
+
+    /// <summary>
+    /// Builds the "Confirmed: 12/11/2026 (beyond 30-day highlight)" style caption shown on the
+    /// incoming-material section. The prefix keeps a supplier promise separate from an internal
+    /// requested date, which the board previously showed as one unlabeled value.
+    /// </summary>
+    private static string FormatDeliveryDisplay(
+        string prefix,
+        DateTime? date,
+        int? highlightWindowDays
+    )
+    {
+        if (date is not DateTime deliveryDate)
         {
-            return new IncomingLinePresentation(row, orderDate.Date, "PO order date", false);
+            return string.Empty;
         }
 
-        return null;
+        var text = $"{prefix}: {deliveryDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}";
+        var today = DateTime.Today;
+
+        if (deliveryDate.Date < today)
+        {
+            var daysPast = (today - deliveryDate.Date).Days;
+            text += $" (overdue {daysPast} {(daysPast == 1 ? "day" : "days")})";
+        }
+        else if (
+            highlightWindowDays.HasValue
+            && deliveryDate.Date > today.AddDays(highlightWindowDays.Value)
+        )
+        {
+            text += $" (beyond {highlightWindowDays.Value}-day highlight)";
+        }
+
+        return text;
     }
 
     private static decimal CalculateRequiredPartsQuantity(Model_InforVisualAssociatedPartRunRow row)
@@ -1175,23 +1269,26 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             return 0;
         }
 
+        // Closed demand is history and must never outrank a live requirement, even a live
+        // requirement that has no schedule date yet.
+        if (row.IsPastJob)
+        {
+            return 5;
+        }
+
         if (!row.NextDueToRunDate.HasValue)
         {
             return 4;
         }
 
         var runDate = row.NextDueToRunDate.Value.Date;
-        if (row.IsFutureOrTodayRun)
+        if (runDate < DateTime.Today)
         {
-            return incomingWindowDays.HasValue && runDate > horizon ? 2 : 1;
+            // Open demand that is already overdue is the most urgent thing on the board.
+            return 1;
         }
 
-        if (row.IsPastJob)
-        {
-            return 3;
-        }
-
-        return 4;
+        return incomingWindowDays.HasValue && runDate > horizon ? 3 : 2;
     }
 
     private static DateTime GetAssociatedPartCurrentSortDate(
@@ -1207,7 +1304,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         Model_InforVisualAssociatedPartRunRow row
     )
     {
-        return row.NextDueToRunDate.HasValue && row.IsFutureOrTodayRun
+        return row.IsPastJob is false && row.NextDueToRunDate.HasValue
             ? row.NextDueToRunDate.Value.Date
             : DateTime.MaxValue;
     }
@@ -1225,32 +1322,27 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         Model_Tool_MaterialAvailabilityAssociatedPartRun associatedRun
     )
     {
-        if (associatedRun.NextDueToRunDate.HasValue is false)
-        {
-            return 4;
-        }
-
         if (associatedRun.IsCurrentlyRunning)
         {
             return 0;
         }
 
-        if (associatedRun.IsFutureOrTodayRun && !associatedRun.IsOutsideSelectedLookAheadWindow)
+        if (associatedRun.IsPastJob)
+        {
+            return 5;
+        }
+
+        if (associatedRun.NextDueToRunDate.HasValue is false)
+        {
+            return 4;
+        }
+
+        if (associatedRun.NextDueToRunDate.Value.Date < DateTime.Today)
         {
             return 1;
         }
 
-        if (associatedRun.IsFutureOrTodayRun)
-        {
-            return 2;
-        }
-
-        if (associatedRun.IsPastJob)
-        {
-            return 3;
-        }
-
-        return 4;
+        return associatedRun.IsOutsideSelectedLookAheadWindow ? 3 : 2;
     }
 
     private static void AppendLocationsSection(
@@ -1995,9 +2087,10 @@ body { margin: 0; background: #ffffff; }
 
     private sealed record IncomingLinePresentation(
         Model_InforVisualIncomingSupplyRow Row,
-        DateTime Date,
+        DateTime? Date,
         string Label,
-        bool IsHistorical
+        bool IsHistorical,
+        bool IsConfirmed
     );
 
     private sealed record IncomingPresentation(
@@ -2006,7 +2099,9 @@ body { margin: 0; background: #ffffff; }
         Model_Tool_MaterialAvailabilityRollup Rollup,
         string NextDateSummary,
         int SortBucket,
-        DateTime SortDate
+        DateTime SortDate,
+        DateTime? EarliestConfirmedDate,
+        DateTime? EarliestRequestedDate
     )
     {
         public static IncomingPresentation Empty { get; } =
@@ -2016,7 +2111,9 @@ body { margin: 0; background: #ffffff; }
                 Rollup: new Model_Tool_MaterialAvailabilityRollup(),
                 NextDateSummary: "No inbound material found.",
                 SortBucket: 2,
-                SortDate: DateTime.MaxValue
+                SortDate: DateTime.MaxValue,
+                EarliestConfirmedDate: null,
+                EarliestRequestedDate: null
             );
     }
 

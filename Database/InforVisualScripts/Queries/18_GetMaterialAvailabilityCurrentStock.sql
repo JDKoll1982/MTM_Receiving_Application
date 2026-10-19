@@ -33,7 +33,8 @@ RequestedParts AS (
     CROSS JOIN NormalizedParameters np
     WHERE np.PartId IS NULL
       AND np.LocationId IS NOT NULL
-      AND cpl.WAREHOUSE_ID = np.WarehouseCode
+      -- Trimmed because a handful of stock rows store the warehouse as ' 002'.
+      AND UPPER(LTRIM(RTRIM(cpl.WAREHOUSE_ID))) = np.WarehouseCode
       AND cpl.LOCATION_ID = np.LocationId
       AND COALESCE(cpl.QTY, 0) > 0
 )
@@ -50,7 +51,8 @@ INNER JOIN dbo.PART p
     ON p.ID = rp.PartId
 INNER JOIN dbo.CR_PART_LOCATION cpl
     ON cpl.ID = rp.PartId
-   AND cpl.WAREHOUSE_ID = np.WarehouseCode
+   -- Trimmed because a handful of stock rows store the warehouse as ' 002'.
+   AND UPPER(LTRIM(RTRIM(cpl.WAREHOUSE_ID))) = np.WarehouseCode
    AND (np.LocationId IS NULL OR cpl.LOCATION_ID = np.LocationId)
    AND NULLIF(LTRIM(RTRIM(cpl.LOCATION_ID)), '') IS NOT NULL
    AND COALESCE(cpl.QTY, 0) > 0

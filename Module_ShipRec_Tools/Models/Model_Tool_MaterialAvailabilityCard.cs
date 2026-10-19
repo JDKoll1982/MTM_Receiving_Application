@@ -26,6 +26,21 @@ public class Model_Tool_MaterialAvailabilityCard
 
     public List<Model_Tool_MaterialAvailabilityIncomingDate> UpcomingDates { get; set; } = [];
 
+    /// <summary>True when at least one inbound line carries a supplier promise date.</summary>
+    public bool HasConfirmedDelivery { get; set; }
+
+    /// <summary>Formatted confirmed delivery caption, for example "Confirmed: 12/11/2026".</summary>
+    public string ConfirmedDeliveryDisplay { get; set; } = string.Empty;
+
+    /// <summary>True when at least one inbound line carries only a desired-receive date.</summary>
+    public bool HasRequestedDelivery { get; set; }
+
+    /// <summary>Formatted requested delivery caption, for example "Requested: 12/05/2026".</summary>
+    public string RequestedDeliveryDisplay { get; set; } = string.Empty;
+
+    /// <summary>True when any inbound delivery date could be determined.</summary>
+    public bool HasDeliveryDate => HasConfirmedDelivery || HasRequestedDelivery;
+
     public List<Model_Tool_MaterialAvailabilityAssociatedPartRun> AssociatedPartRuns { get; set; } =
     [];
 

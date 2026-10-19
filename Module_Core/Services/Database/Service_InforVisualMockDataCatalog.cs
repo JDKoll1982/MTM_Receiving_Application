@@ -316,6 +316,7 @@ public class Service_InforVisualMockDataCatalog : IService_InforVisualMockDataCa
             AssociatedPartDescription = row.AssociatedPartDescription?.Trim() ?? string.Empty,
             NextDueToRunDate = row.NextDueToRunDate,
             IsFutureOrTodayRun = row.IsFutureOrTodayRun,
+            IsOpenDemand = row.IsOpenDemand,
             IsCurrentlyRunning = row.IsCurrentlyRunning,
             IsPastJob = row.IsPastJob,
             NextDueDateSource = row.NextDueDateSource?.Trim() ?? string.Empty,

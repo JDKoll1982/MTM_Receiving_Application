@@ -261,7 +261,7 @@
                                         <TextBlock
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource BodyTextBlockStyle}"
-                                            Text="No qualifying incoming material was found for the selected look-ahead window."
+                                            Text="No inbound material found for this part."
                                             Visibility="{x:Bind HasIncomingSupply, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                                         <Border
                                             Padding="6"
@@ -313,6 +313,22 @@
                                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                     Style="{StaticResource CaptionTextBlockStyle}"
                                                     Text="{x:Bind IncomingRollup.PercentCompleteSummary}" />
+                                                <StackPanel Spacing="2">
+                                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Expected delivery" />
+                                                    <TextBlock
+                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                        Text="{x:Bind ConfirmedDeliveryDisplay, Mode=OneTime}"
+                                                        Visibility="{x:Bind HasConfirmedDelivery, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                    <TextBlock
+                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                        Text="{x:Bind RequestedDeliveryDisplay, Mode=OneTime}"
+                                                        Visibility="{x:Bind HasRequestedDelivery, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                    <TextBlock
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Style="{StaticResource BodyTextBlockStyle}"
+                                                        Text="No delivery date on the PO"
+                                                        Visibility="{x:Bind HasDeliveryDate, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                                                </StackPanel>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -362,6 +378,12 @@
                                                                     HorizontalAlignment="Right"
                                                                     Style="{StaticResource BodyStrongTextBlockStyle}"
                                                                     Text="{x:Bind NextRunDateDisplay}" />
+                                                                <TextBlock
+                                                                    HorizontalAlignment="Right"
+                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                                    Text="{x:Bind OutsideWindowHintDisplay}"
+                                                                    Visibility="{x:Bind HasOutsideWindowHint, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                                             </StackPanel>
                                                         </Grid>
                                                     </Border>

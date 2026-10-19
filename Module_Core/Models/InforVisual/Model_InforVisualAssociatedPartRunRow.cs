@@ -21,8 +21,18 @@ public class Model_InforVisualAssociatedPartRunRow
 
     public bool IsFutureOrTodayRun { get; set; }
 
+    /// <summary>
+    /// True when neither the requirement nor its work order is closed or cancelled, meaning the
+    /// demand is still live even if its due date has already passed.
+    /// </summary>
+    public bool IsOpenDemand { get; set; }
+
     public bool IsCurrentlyRunning { get; set; }
 
+    /// <summary>
+    /// True when the requirement or its work order is closed, meaning this row is history rather
+    /// than outstanding demand.
+    /// </summary>
     public bool IsPastJob { get; set; }
 
     public string NextDueDateSource { get; set; } = string.Empty;

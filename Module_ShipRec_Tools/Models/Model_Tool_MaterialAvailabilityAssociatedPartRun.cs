@@ -19,11 +19,26 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public bool IsFutureOrTodayRun { get; set; }
 
+    /// <summary>
+    /// True when the underlying requirement and work order are still open, so the demand is live
+    /// even if <see cref="NextDueToRunDate"/> is already in the past.
+    /// </summary>
+    public bool IsOpenDemand { get; set; }
+
     public bool IsCurrentlyRunning { get; set; }
 
     public bool IsPastJob { get; set; }
 
     public bool IsOutsideSelectedLookAheadWindow { get; set; }
+
+    /// <summary>
+    /// Caption shown when the run sits beyond the selected highlight window, for example
+    /// "beyond 30-day highlight". The run stays visible; only the wording marks it.
+    /// </summary>
+    public string OutsideWindowHintDisplay { get; set; } = string.Empty;
+
+    public bool HasOutsideWindowHint =>
+        string.IsNullOrWhiteSpace(OutsideWindowHintDisplay) is false;
 
     public string NextDueDateSource { get; set; } = string.Empty;
 
@@ -100,6 +115,8 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
         NextDueToRunDate.HasValue is false ? "No scheduled job"
         : IsCurrentlyRunning ? "Currently Running"
         : IsPastJob ? "Past Job"
+        : NextDueToRunDate.Value.Date < DateTime.Today ? "Overdue"
+        : NextDueToRunDate.Value.Date == DateTime.Today ? "Due Today"
         : "Future Run";
 
     public string ScheduledFinishDateDisplay => FormatDate(ScheduledFinishDate);

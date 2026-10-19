@@ -73,13 +73,10 @@ LEFT JOIN dbo.VENDOR v
     ON v.ID = po.VENDOR_ID
 WHERE ISNULL(po.STATUS, '') NOT IN ('C', 'X')
     AND ISNULL(pol.LINE_STATUS, '') NOT IN ('C', 'X')
-  AND (
-        pol.WAREHOUSE_ID = np.WarehouseCode
-        OR (
-            NULLIF(LTRIM(RTRIM(pol.WAREHOUSE_ID)), '') IS NULL
-            AND po.WAREHOUSE_ID = np.WarehouseCode
-        )
-      )
+  -- No warehouse filter. Warehouse 002 is the only warehouse in MTMFG and the board is already
+  -- warehouse-scoped by configuration, while most coil purchase orders carry no warehouse at all
+  -- (899 of 969 open lines had neither a line nor a header warehouse). Filtering on it hid 93% of
+  -- inbound material. @WarehouseCode is still reported in the WarehouseCode column.
   AND (
                 ((RIGHT(RTRIM(po.ID), 1) = 'B' OR po.FREE_ON_BOARD LIKE '%BLANKET%') AND pol.LAST_RECEIVED_DATE IS NOT NULL)
         OR (pol.ORDER_QTY - pol.TOTAL_RECEIVED_QTY) > 0

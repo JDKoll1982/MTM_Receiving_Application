@@ -42,7 +42,7 @@ public sealed class Helper_SqlQueryLoaderTests
 
         var projection = query[projectionStart..];
         var fromIndex = projection.IndexOf(
-            "FROM MatchingRequirements",
+            "FROM RankedRequirements",
             StringComparison.OrdinalIgnoreCase
         );
 
@@ -69,6 +69,32 @@ public sealed class Helper_SqlQueryLoaderTests
 
         query.Should().NotContain("r.WAREHOUSE_ID = np.WarehouseCode");
         query.Should().NotContain("wo.WAREHOUSE_ID = np.WarehouseCode");
+    }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldNotFilterIncomingSupplyByWarehouse()
+    {
+        // Warehouse 002 is the only warehouse, the board is warehouse-scoped by configuration, and
+        // 899 of 969 open PO lines carry no warehouse at either level. Filtering on it hid 93% of
+        // inbound material, so the incoming query must not filter by warehouse.
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+            "19_GetMaterialAvailabilityIncomingSupply.sql"
+        );
+
+        query.Should().NotContain("pol.WAREHOUSE_ID = np.WarehouseCode");
+        query.Should().NotContain("po.WAREHOUSE_ID = np.WarehouseCode");
+    }
+
+    [Fact]
+    public void LoadAndPrepareQuery_ShouldTrimWarehouseWhenReadingStock()
+    {
+        // A handful of stock rows store the warehouse as ' 002'; the stock query must normalize
+        // the value so those rows are not silently dropped.
+        var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+            "18_GetMaterialAvailabilityCurrentStock.sql"
+        );
+
+        query.Should().Contain("UPPER(LTRIM(RTRIM(cpl.WAREHOUSE_ID))) = np.WarehouseCode");
     }
 
     [Fact]

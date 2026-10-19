@@ -1662,6 +1662,9 @@ public class Dao_InforVisualConnection
                         IsFutureOrTodayRun =
                             reader["IsFutureOrTodayRun"] != DBNull.Value
                             && Convert.ToBoolean(reader["IsFutureOrTodayRun"]),
+                        IsOpenDemand =
+                            reader["IsOpenDemand"] != DBNull.Value
+                            && Convert.ToBoolean(reader["IsOpenDemand"]),
                         IsCurrentlyRunning =
                             reader["IsCurrentlyRunning"] != DBNull.Value
                             && Convert.ToBoolean(reader["IsCurrentlyRunning"]),

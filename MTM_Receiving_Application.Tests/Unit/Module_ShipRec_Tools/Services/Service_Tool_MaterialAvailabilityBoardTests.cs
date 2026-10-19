@@ -237,7 +237,97 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
-    public async Task GetBoardByPartAsync_ShouldKeepIncomingRollupWhenDueDatesAreMissing()
+    public async Task GetBoardByPartAsync_ShouldUseBlanketPromiseDateWhenNoReceiptExists()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var promiseDate = DateTime.Today.AddDays(12);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-BLANKET-NORECEIPT"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-BLANKET-NORECEIPT",
+                        Description = "Blanket Part Without Receipt",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(
+                    null,
+                    "PART-BLANKET-NORECEIPT",
+                    "002"
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(
+                    null,
+                    "PART-BLANKET-NORECEIPT",
+                    "002"
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-BLANKET-NORECEIPT",
+                            PartDescription = "Blanket Part Without Receipt",
+                            WarehouseCode = "002",
+                            PONumber = "PO-BLK-2",
+                            POLineNumber = "1",
+                            OrderedQty = 100,
+                            ReceivedQty = 0,
+                            RemainingQty = 100,
+                            FreeOnBoard = "Blanket",
+                            IsBlanketOrder = true,
+                            HeaderPromiseDate = promiseDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+                    null,
+                    "PART-BLANKET-NORECEIPT",
+                    "002"
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-BLANKET-NORECEIPT", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        var card = result.Data![0];
+
+        card.HasIncomingSupply.Should().BeTrue();
+        card.UpcomingDates.Should().ContainSingle();
+        card.UpcomingDates[0].Label.Should().Be("PO promise delivery");
+        card.UpcomingDates[0].Date.Should().Be(promiseDate.Date);
+        card.HasConfirmedDelivery.Should().BeTrue();
+        card.ConfirmedDeliveryDisplay.Should().Be($"Confirmed: {promiseDate:MM/dd/yyyy}");
+        card.IncomingLines.Should().ContainSingle();
+        card.IncomingLines[0].Date.Should().Be(promiseDate.Date);
+        card.IncomingLines[0].DeliveryConfidence.Should().Be("Confirmed");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldKeepIncomingRollupWithoutUsingOrderDateAsDelivery()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();
         var orderDate = DateTime.Today.AddDays(-10);
@@ -302,10 +392,187 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.Should().ContainSingle();
         result.Data![0].HasIncomingSupply.Should().BeTrue();
         result.Data[0].IncomingRollup.POLineCount.Should().Be(1);
-        result.Data[0].UpcomingDates.Should().ContainSingle();
-        result.Data[0].UpcomingDates[0].Label.Should().Be("PO order date");
-        result.Data[0].UpcomingDates[0].Date.Should().Be(orderDate.Date);
-        result.Data[0].NextDateSummary.Should().Contain("PO order date");
+        result.Data[0].UpcomingDates.Should().BeEmpty();
+        result.Data[0].HasDeliveryDate.Should().BeFalse();
+        result.Data[0].IncomingLines.Should().ContainSingle();
+        result.Data[0].IncomingLines[0].Date.Should().BeNull();
+        result.Data[0].IncomingLines[0].DateDisplay.Should().Be("No delivery date on the PO");
+        result.Data[0].IncomingLines[0].DateLabel.Should().Be("No delivery date");
+        result.Data[0].NextDateSummary.Should().Contain("no qualifying due dates");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldShowConfirmedAndRequestedDeliverySeparately()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+        var confirmedDate = today.AddDays(10);
+        var requestedDate = today.AddDays(45);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-DUALDATE"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-DUALDATE",
+                        Description = "Dual Date Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-DUALDATE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-DUALDATE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-DUALDATE",
+                            PartDescription = "Dual Date Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-4001",
+                            POLineNumber = "1",
+                            OrderedQty = 12,
+                            ReceivedQty = 0,
+                            RemainingQty = 12,
+                            LinePromiseDate = confirmedDate,
+                        },
+                        new()
+                        {
+                            PartId = "PART-DUALDATE",
+                            PartDescription = "Dual Date Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-4002",
+                            POLineNumber = "1",
+                            OrderedQty = 8,
+                            ReceivedQty = 0,
+                            RemainingQty = 8,
+                            HeaderDesiredReceiveDate = requestedDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-DUALDATE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-DUALDATE", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        var card = result.Data![0];
+
+        card.HasConfirmedDelivery.Should().BeTrue();
+        card.ConfirmedDeliveryDisplay.Should().Be($"Confirmed: {confirmedDate:MM/dd/yyyy}");
+        card.HasRequestedDelivery.Should().BeTrue();
+        card.RequestedDeliveryDisplay.Should()
+            .Be($"Requested: {requestedDate:MM/dd/yyyy} (beyond 30-day highlight)");
+        card.HasDeliveryDate.Should().BeTrue();
+
+        card.IncomingLines.Should().HaveCount(2);
+        card.IncomingLines[0].DeliveryConfidence.Should().Be("Confirmed");
+        card.IncomingLines[0].IsOutsideHighlightWindow.Should().BeFalse();
+        card.IncomingLines[0].HasStatusNote.Should().BeFalse();
+        card.IncomingLines[1].DeliveryConfidence.Should().Be("Requested");
+        card.IncomingLines[1].IsOutsideHighlightWindow.Should().BeTrue();
+        card.IncomingLines[1].StatusNoteDisplay.Should().Be("Beyond highlight window");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldMarkPastRequestedDeliveryAsOverdue()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+        var overdueDate = today.AddDays(-3);
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-LATEDELIVERY"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-LATEDELIVERY",
+                        Description = "Late Delivery Part",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-LATEDELIVERY", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-LATEDELIVERY", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualIncomingSupplyRow>
+                    {
+                        new()
+                        {
+                            PartId = "PART-LATEDELIVERY",
+                            PartDescription = "Late Delivery Part",
+                            WarehouseCode = "002",
+                            PONumber = "PO-4101",
+                            POLineNumber = "1",
+                            OrderedQty = 5,
+                            ReceivedQty = 0,
+                            RemainingQty = 5,
+                            LineDesiredReceiveDate = overdueDate,
+                        },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+                    null,
+                    "PART-LATEDELIVERY",
+                    "002"
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualAssociatedPartRunRow>())
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-LATEDELIVERY", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        var card = result.Data![0];
+
+        card.HasConfirmedDelivery.Should().BeFalse();
+        card.HasRequestedDelivery.Should().BeTrue();
+        card.RequestedDeliveryDisplay.Should()
+            .Be($"Requested: {overdueDate:MM/dd/yyyy} (overdue 3 days)");
+        card.IncomingLines.Should().ContainSingle();
+        card.IncomingLines[0].IsOverdue.Should().BeTrue();
+        card.IncomingLines[0].StatusNoteDisplay.Should().Be("Overdue by 3 days");
     }
 
     [Fact]
@@ -547,19 +814,26 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         card.IncomingRollup.PurchaseOrderCount.Should().Be(3);
         card.IncomingRollup.POLineCount.Should().Be(3);
         card.IncomingLines.Should().HaveCount(3);
-        card.UpcomingDates.Should().HaveCount(3);
+        card.UpcomingDates.Should().HaveCount(2);
 
         card.IncomingLines[0].PurchaseOrderLineDisplay.Should().Be("PO-74401 / Line 1");
         card.IncomingLines[0].DateLabel.Should().Be("Line promise delivery");
         card.IncomingLines[0].Date.Should().Be(firstPromiseDeliveryDate.Date);
+        card.IncomingLines[0].DeliveryConfidence.Should().Be("Confirmed");
 
         card.IncomingLines[1].PurchaseOrderLineDisplay.Should().Be("PO-74402 / Line 2");
         card.IncomingLines[1].DateLabel.Should().Be("Line promise ship");
         card.IncomingLines[1].Date.Should().Be(secondPromiseShipDate.Date);
+        card.IncomingLines[1].DeliveryConfidence.Should().Be("Confirmed");
 
         card.IncomingLines[2].PurchaseOrderLineDisplay.Should().Be("PO-74403 / Line 3");
-        card.IncomingLines[2].DateLabel.Should().Be("PO order date");
-        card.IncomingLines[2].Date.Should().Be(thirdOrderDate.Date);
+        card.IncomingLines[2].DateLabel.Should().Be("No delivery date");
+        card.IncomingLines[2].Date.Should().BeNull();
+        card.IncomingLines[2].DateDisplay.Should().Be("No delivery date on the PO");
+
+        card.HasConfirmedDelivery.Should().BeTrue();
+        card.ConfirmedDeliveryDisplay.Should().Contain("Confirmed: 04/22/2026");
+        card.HasRequestedDelivery.Should().BeFalse();
 
         card.NextDateSummary.Should().Contain("Line promise delivery");
         card.NextDateSummary.Should().Contain("04/22/2026");
@@ -652,8 +926,15 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data![0].AssociatedPartRuns.Should().HaveCount(2);
         result.Data[0].AssociatedPartRuns[0].AssociatedPartNumber.Should().Be("ASSY-10");
         result.Data[0].AssociatedPartRuns[0].RunTimingLabel.Should().Be("Future Run");
+        result.Data[0].AssociatedPartRuns[0].HasOutsideWindowHint.Should().BeFalse();
         result.Data[0].AssociatedPartRuns[1].AssociatedPartNumber.Should().Be("ASSY-45");
         result.Data[0].AssociatedPartRuns[1].RunTimingLabel.Should().Be("Future Run");
+        result.Data[0].AssociatedPartRuns[1].HasOutsideWindowHint.Should().BeTrue();
+        result
+            .Data[0]
+            .AssociatedPartRuns[1]
+            .OutsideWindowHintDisplay.Should()
+            .Be("beyond 30-day highlight");
         result.Data[0].NextDateSummary.Should().Contain("ASSY-10");
     }
 
@@ -1077,6 +1358,210 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task GetBoardByPartAsync_ShouldPreferOpenDemandWithoutScheduleOverClosedHistory()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-OPENDEMAND"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-OPENDEMAND",
+                        Description = "Open Demand Component",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-OPENDEMAND", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-OPENDEMAND", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(
+                    null,
+                    "PART-OPENDEMAND",
+                    "002"
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "PART-OPENDEMAND",
+                            AssociatedPartNumber = "ASSY-OPENDEMAND",
+                            AssociatedPartDescription = "Open Demand Assembly",
+                            NextDueToRunDate = today.AddDays(-200),
+                            ScheduledStartDate = today.AddDays(-200),
+                            ScheduledFinishDate = today.AddDays(-199),
+                            IsFutureOrTodayRun = false,
+                            IsOpenDemand = false,
+                            IsPastJob = true,
+                            NextDueDateSource = "OPERATION.SCHED_START_DATE",
+                            WorkOrderType = "W",
+                            WorkOrderBaseId = "WO-070001",
+                            WorkOrderLotId = "1",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 10,
+                            RequirementPieceNo = 1,
+                        },
+                        new()
+                        {
+                            InputPartNumber = "PART-OPENDEMAND",
+                            AssociatedPartNumber = "ASSY-OPENDEMAND",
+                            AssociatedPartDescription = "Open Demand Assembly",
+                            NextDueToRunDate = today,
+                            ScheduledStartDate = null,
+                            ScheduledFinishDate = null,
+                            IsFutureOrTodayRun = true,
+                            IsOpenDemand = true,
+                            IsPastJob = false,
+                            NextDueDateSource = "REQUIREMENT.REQUIRED_DATE",
+                            WorkOrderType = "W",
+                            WorkOrderBaseId = "WO-075089",
+                            WorkOrderLotId = "1",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 10,
+                            RequirementPieceNo = 1,
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-OPENDEMAND", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-075089");
+        result.Data[0].AssociatedPartRuns[0].RunTimingLabel.Should().Be("Due Today");
+        result.Data[0].NextDateSummary.Should().Contain("Due Today:");
+        result.Data[0].NextDateSummary.Should().NotContain("Past Job");
+    }
+
+    [Fact]
+    public async Task GetBoardByPartAsync_ShouldLabelOpenPastDueDemandAsOverdue()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+
+        inforVisualMock
+            .Setup(service => service.GetPartByIDAsync("PART-OVERDUE"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart
+                    {
+                        PartID = "PART-OVERDUE",
+                        Description = "Overdue Demand Component",
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityCurrentStockAsync(null, "PART-OVERDUE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualMaterialLocationRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityIncomingSupplyAsync(null, "PART-OVERDUE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service =>
+                service.GetMaterialAvailabilityAssociatedPartRunsAsync(null, "PART-OVERDUE", "002")
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        new()
+                        {
+                            InputPartNumber = "PART-OVERDUE",
+                            AssociatedPartNumber = "ASSY-OVERDUE",
+                            AssociatedPartDescription = "Overdue Assembly",
+                            NextDueToRunDate = today.AddDays(-1),
+                            ScheduledStartDate = today.AddDays(-1),
+                            ScheduledFinishDate = today.AddDays(-1),
+                            IsFutureOrTodayRun = false,
+                            IsOpenDemand = false,
+                            IsPastJob = true,
+                            NextDueDateSource = "OPERATION.SCHED_START_DATE",
+                            WorkOrderType = "W",
+                            WorkOrderBaseId = "WO-070002",
+                            WorkOrderLotId = "1",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 10,
+                            RequirementPieceNo = 1,
+                        },
+                        new()
+                        {
+                            InputPartNumber = "PART-OVERDUE",
+                            AssociatedPartNumber = "ASSY-OVERDUE",
+                            AssociatedPartDescription = "Overdue Assembly",
+                            NextDueToRunDate = today.AddDays(-3),
+                            ScheduledStartDate = today.AddDays(-3),
+                            ScheduledFinishDate = today.AddDays(-2),
+                            IsFutureOrTodayRun = false,
+                            IsOpenDemand = true,
+                            IsPastJob = false,
+                            NextDueDateSource = "OPERATION.SCHED_START_DATE",
+                            WorkOrderType = "W",
+                            WorkOrderBaseId = "WO-074826",
+                            WorkOrderLotId = "1",
+                            WorkOrderSplitId = "0",
+                            WorkOrderSubId = "0",
+                            OperationSeqNo = 19,
+                            RequirementPieceNo = 1,
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object
+        );
+
+        var result = await service.GetBoardByPartAsync("PART-OVERDUE", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().ContainSingle();
+        result.Data![0].AssociatedPartRuns.Should().ContainSingle();
+        result.Data[0].AssociatedPartRuns[0].WorkOrderDisplay.Should().Be("WO-074826");
+        result.Data[0].AssociatedPartRuns[0].RunTimingLabel.Should().Be("Overdue");
+        result.Data[0].NextDateSummary.Should().Contain("Overdue:");
+        result.Data[0].NextDateSummary.Should().Contain(
+            today.AddDays(-3).ToString("MM/dd/yyyy")
+        );
+    }
+
+    [Fact]
     public async Task FormatBoardForPrintAsync_ShouldCreateReportingStyleHtmlDocument()
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
@@ -1230,11 +1715,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
         result.Data!.HtmlFragment.Should().NotContain("Incoming Material");
-        result
-            .Data.HtmlFragment.Should()
-            .NotContain(
-                "No qualifying incoming material was found for the selected look-ahead window."
-            );
+        result.Data.HtmlFragment.Should().NotContain("No inbound material found for this part.");
     }
 
     [Fact]

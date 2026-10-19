@@ -121,7 +121,11 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     /// <summary>True when the single search box should be shown instead.</summary>
     public bool IsSingleLocationSearchVisible => !IsLocationRangeInputVisible;
 
-    public string LookAheadLabel => "Look Ahead:";
+    /// <summary>
+    /// The selector does not hide rows; it marks dates that fall beyond the chosen window. The
+    /// label says "Highlight" so it does not promise a filter.
+    /// </summary>
+    public string LookAheadLabel => "Highlight window:";
 
     public bool HasCards => Cards.Count > 0;
 
