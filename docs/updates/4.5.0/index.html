@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.5.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.5.0</h1>
+                    <p class="hero-copy">This release adds a Heat / Lot Management tool that gives every heat number and supplier a permanent shape and color, so lots can be told apart at a glance. The Material Availability Board now shows the job that actually still needs the material, with dates you can trust and the inbound coil orders that used to be missing from the board. On the Receiving weight and quantity step, Current Total now updates while you type.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.5.0</span>
+                <span class="meta-text">Released October 19, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.5.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.5.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Every lot gets its own shape and color</p>
+                            <p class="highlight-text">A new <strong>Heat / Lot Management</strong> tool in Ship/Rec Tools gives each heat number and supplier a permanent shape and color. The marking is chosen once, then carried onto every receipt line, history row, and reprint for that lot.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">The board shows the real next run</p>
+                            <p class="highlight-text">Associated Parts now shows the job that still needs the material instead of an old finished job, uses the required date when no schedule exists, and labels each row <strong>Currently Running</strong>, <strong>Overdue</strong>, <strong>Due Today</strong>, or <strong>Past Job</strong>. Inbound coil orders that carry no warehouse appear again.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Current Total updates as you type</p>
+                            <p class="highlight-text">On the Receiving <strong>Enter Weight &amp; Quantity</strong> step, each box now accepts digits only and the running <strong>Current Total</strong> moves on every keystroke instead of waiting for you to leave the box.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="fixes">Fixes</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>New Heat / Lot Management tool</summary>
+                        <p>Ship/Rec Tools gained a <strong>Heat / Lot Management</strong> tool. Every unique heat number and supplier is given one shape and one color the first time it is seen, and that marking is kept forever. The same lot number from two different suppliers receives two different markings, so they never look alike.</p>
+                        <p>Search by heat or lot number to see existing markings. Select a marking to <strong>change</strong> its shape or color; a reason is required, and the change is recorded with who made it and when. Any marking can also be <strong>locked</strong> so later maintenance cannot change it.</p>
+                        <p>Two maintenance actions are available from the tool:</p>
+                        <ul>
+                            <li><strong>Fill unmarked lots</strong> works on the selected part number. It previews how many receiving queue and history rows have no marking, then fills only those rows.</li>
+                            <li><strong>Update All Lots</strong> previews and then rewrites the marking on rows that already carry one, for the case where a lot number was corrected after labels were printed. Rows with no marking are left alone, and locked lots are never changed.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Markings appear while you receive</summary>
+                        <p>The Receiving <strong>Heat/Lot</strong> step now shows the marking for the lot you entered, so the shape and color can be checked before the receipt is saved. The marking is stored with the receipt and travels through the queue, into history, and out again on a reprint.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Lot marking settings</summary>
+                        <p>Core Settings gained a <strong>Heat / Lot Management</strong> page. It controls whether markings are used at all, chooses what happens when two lots would collide, sets whether a marking reads shape first or color first, and limits the shapes and colors on offer.</p>
+                        <p>The page also holds the list of part numbers that receive markings. The list starts empty, so nothing changes until a part is added. Parts are added by typing a part number and choosing it from the match list, not by free text.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Associated Parts shows the job that is actually next</summary>
+                        <p>The board used to treat &quot;the date has passed&quot; as &quot;the job is finished&quot;, so a closed job from last year could be shown as the next run while a work order released that morning was hidden. Ranking is now based on whether the work order and its material requirement are still open:</p>
+                        <ul>
+                            <li>A job running right now comes first, then an open job that is past due, then an open job due soonest.</li>
+                            <li>Finished jobs are kept only as a fallback when nothing is open, and are labeled <strong>Past Job</strong>.</li>
+                            <li>An open job that has blown its date is labeled <strong>Overdue</strong>, and a job due today is labeled <strong>Due Today</strong>.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Jobs without a schedule now show a real date</summary>
+                        <p>Most open material requirements in Infor Visual have no operation schedule and no work-order schedule, so the card said <strong>No scheduled date</strong> for almost every open job. The board now falls back to the requirement's required date, then the work order's want date, and shows the best available date. Only released and open work orders are counted as demand; unreleased master planning records and quotes no longer appear.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Inbound coil orders appear again</summary>
+                        <p>Coil purchase orders are usually written without a warehouse because the receiving location decides where the coil lands. The board used to require a warehouse match, so those orders were dropped and the Incoming Material section stayed empty. Inbound material is no longer filtered by warehouse, and the large coil balances now show with their dates.</p>
+                        <p>Blanket orders also show a date now. Previously a blanket release with a balance but no receipt ever shown no date at all; it now uses its promise or requested date while keeping the last-received date as history.</p>
+                    </details>
+
+                    <details class="change-item" data-category="fixes" open>
+                        <summary>Delivery dates say whether they are confirmed or requested</summary>
+                        <p>The Incoming Material section now shows an <strong>Expected delivery</strong> block with two clearly worded lines: <strong>Confirmed</strong> when the date is a promise from the purchase order, and <strong>Requested</strong> when it is an internal desired-receive date. A past date with quantity still outstanding is marked <strong>overdue</strong>, and an order with no delivery date at all says <strong>No delivery date on the PO</strong> instead of showing the day the order was written.</p>
+                        <p>The <strong>Look Ahead</strong> selector is now called <strong>Highlight window</strong>. It still shows everything, but dates beyond the chosen window are marked so the window length is not mistaken for a filter.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Weight and quantity boxes update Current Total while typing</summary>
+                        <p>Each box on the <strong>Enter Weight &amp; Quantity</strong> step now accepts digits only, so expressions and stray characters cannot be entered. The value is applied on every keystroke, which means <strong>Current Total</strong> updates as you type rather than after you click away or press Enter. Focus on step entry lands in the first box.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>In-app help for lot marking</summary>
+                        <p>A new help article covers the Heat / Lot Management tool, including how markings are chosen, how to change or lock one, and what the two maintenance actions do. It is available from the help button on the tool page.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>Lots are easier to tell apart</h3>
+                            <p>Two coils with similar heat numbers no longer look the same. The shape and color travel with the receipt, so the marking you check at the Heat/Lot step is the marking you see later in history and on a reprint.</p>
+                        </article>
+                        <article>
+                            <h3>The board can be trusted for scheduling</h3>
+                            <p>A card that shows a next run now means a work order that still needs material. Overdue and Due Today labels point at the jobs that need attention, and the coil balances that were invisible are back on the card.</p>
+                        </article>
+                        <article>
+                            <h3>Fewer corrections while receiving</h3>
+                            <p>The running total is visible while you key weights, so a mis-typed digit is caught before you leave the box.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Set up lot marking when you are ready</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <ul class="action-list">
+                        <li>The new lot-marking tables and stored procedures are included in the installation package; there is nothing to run by hand.</li>
+                        <li>Markings stay off for every part until a part number is added to the list in <strong>Core Settings &rarr; Heat / Lot Management</strong>. Add parts there when your team is ready to start using markings.</li>
+                        <li>Existing receipts, history, and preferences carry over unchanged.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a lot shows a marking you did not expect, a marking cannot be changed, the Availability Board shows a job that looks wrong, inbound material is missing from a card, or Current Total does not follow your typing, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
