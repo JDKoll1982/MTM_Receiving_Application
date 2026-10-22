@@ -25,6 +25,7 @@ and related settings, reporting, and support tooling.
 - `docs/` — project documentation, CopilotForms assets, database references, and historical notes
 - `.github/` — active AI customization files, prompt library, instructions, agents, and archive
 - `MTM_Receiving_Application.Tests/` — unit and integration tests
+- `tools/` — standalone scratch tools excluded from the app build (see `PACKING_LIST_SCAN_PROBE.md`)
 
 ## Build And Test
 

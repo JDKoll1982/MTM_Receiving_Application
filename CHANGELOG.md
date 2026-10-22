@@ -7,6 +7,20 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### Packing list scan probe tool (2026-10-22)
+
+- **What changed:** Added `tools/PackingListScanProbe`, a standalone .NET 10 console tool that
+  OCRs scanned packing lists, bills of lading, ERP screenshots, and supplier emails using the
+  in-box `Windows.Media.Ocr` and `Windows.Data.Pdf` APIs, and prints the part numbers, purchase
+  orders, quantities, heats, dates, and warehouses it finds. Usage is documented in
+  `PACKING_LIST_SCAN_PROBE.md`.
+- **Why:** To evaluate scan-to-receive capture for the receiving workflow against real MTM
+  documents before wiring any of it into the app. `docling-parse` was evaluated first and cannot
+  do this: it parses born-digital PDFs and returns zero text on copier scans.
+- **Notes:** The tool is not referenced by the solution and the app project excludes `tools\**`;
+  `docling-parse` and full `docling` measurements are recorded in the new document. No app,
+  schema, or stored procedure change.
+
 #### WIP added to the dunnage Inventory Type options (2026-09-24)
 
 - **What changed:** The **Add New Dunnage Part** and **Edit Dunnage Part** dialogs now offer
