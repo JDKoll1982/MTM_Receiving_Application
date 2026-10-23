@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:enums="using:MTM_Receiving_Application.Module_Core.Models.Enums"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
     xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
     x:Name="Root"
@@ -53,6 +54,10 @@
                     <!--  separator  -->
                     <ColumnDefinition Width="Auto" />
                     <!--  Filter Date  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  separator  -->
+                    <ColumnDefinition Width="Auto" />
+                    <!--  Batch filter  -->
                     <ColumnDefinition Width="Auto" />
                     <!--  separator  -->
                     <ColumnDefinition Width="Auto" />
@@ -235,8 +240,36 @@
                     Margin="2,0"
                     Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
 
-                <!--  Group: Find (column picker)  -->
+                <!--  Group: Batch filter — the skids entered together for one part  -->
                 <StackPanel Grid.Column="6" Spacing="3">
+                    <ComboBox
+                        MinWidth="170"
+                        MaxWidth="240"
+                        ItemsSource="{x:Bind ViewModel.BatchFilters}"
+                        SelectedItem="{x:Bind ViewModel.SelectedBatchFilter, Mode=TwoWay}"
+                        ToolTipService.ToolTip="Show only the skids that were entered together in one workflow step">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_EditModeBatch">
+                                <TextBlock Text="{x:Bind Display}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Batch" />
+                </StackPanel>
+
+                <Rectangle
+                    Grid.Column="7"
+                    Width="1"
+                    Height="54"
+                    Margin="2,0"
+                    Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                <!--  Group: Find (column picker)  -->
+                <StackPanel Grid.Column="8" Spacing="3">
                     <ComboBox
                         MinWidth="110"
                         ItemsSource="{x:Bind ViewModel.SearchByOptions}"
@@ -250,7 +283,7 @@
 
                 <!--  Flexible search field (fills remaining width)  -->
                 <Grid
-                    Grid.Column="7"
+                    Grid.Column="9"
                     Margin="0,0,12,0"
                     VerticalAlignment="Top">
                     <TextBox
@@ -277,7 +310,7 @@
 
                 <!--  Result summary (right-aligned)  -->
                 <TextBlock
-                    Grid.Column="8"
+                    Grid.Column="10"
                     Margin="12,0,0,0"
                     VerticalAlignment="Center"
                     FontStyle="Italic"
@@ -331,13 +364,28 @@
                     IsReadOnly="True"
                     Tag="LoadNumber" />
 
-                <!--  ReceivedDate  -->
-                <controls:DataGridTextColumn
+                <!--  ReceivedDate — editable; the time of day is preserved -->
+                <controls:DataGridTemplateColumn
                     Width="Auto"
-                    Binding="{Binding ReceivedDate, Converter={StaticResource DateTimeToStringConverter}}"
                     Header="Received Date"
-                    IsReadOnly="True"
-                    Tag="ReceivedDate" />
+                    Tag="ReceivedDate">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_ReceivingLoad">
+                            <TextBlock
+                                Padding="12,0"
+                                VerticalAlignment="Center"
+                                Text="{x:Bind ReceivedDate, Converter={StaticResource DateTimeToStringConverter}, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                    <controls:DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate x:DataType="models:Model_ReceivingLoad">
+                            <CalendarDatePicker
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Date="{x:Bind ReceivedDateOffset, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellEditingTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!--  PartID — always visible, quality-hold coloured  -->
                 <controls:DataGridTemplateColumn

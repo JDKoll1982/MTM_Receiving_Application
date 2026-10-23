@@ -176,6 +176,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             PersistEditModePreferencesIfReady();
         }
 
+        // ------------------------------------------------------------------ batch filter
+        /// <summary>
+        /// Skid groups available in the loaded data, preceded by the "all batches" entry.
+        /// A group is one part entered in a single workflow step, so the six skids of a part
+        /// entered together can be viewed on their own.
+        /// </summary>
+        public ObservableCollection<Model_EditModeBatch> BatchFilters { get; } = new();
+
+        [ObservableProperty]
+        private Model_EditModeBatch? _selectedBatchFilter;
+
+        private bool _isRefreshingBatchFilters;
+
+        partial void OnSelectedBatchFilterChanged(Model_EditModeBatch? value)
+        {
+            if (_isRefreshingBatchFilters)
+            {
+                return;
+            }
+
+            FilterAndPaginate();
+        }
+
         // ------------------------------------------------------------------ date filter
         [ObservableProperty]
         private DateTimeOffset _filterStartDate = DateTimeOffset.Now.AddDays(-7);
@@ -373,6 +396,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             _logger.LogInfo("Edit Mode initialized");
 
+            RefreshBatchFilters();
+
             _ = LoadUITextAsync()
                 .ContinueWith(_ => LoadColumnVisibilityAsync(), TaskScheduler.Default);
         }
@@ -401,6 +426,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectAllButtonText = "Select All";
             StatusMessage = string.Empty;
             _currentLabelDataPath = null;
+            RefreshBatchFilters();
         }
 
         private bool CurrentUserHasFullEditModeAccess()
@@ -1101,6 +1127,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             TotalPages = _paginationService.TotalPages;
             GotoPageNumber = CurrentPage;
 
+            RefreshBatchFilters();
             NotifyPaginationCommands();
             NotifyCommands();
         }
@@ -1211,7 +1238,80 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Filters the master list by date and search term, then updates pagination.
+        /// Rebuilds the batch filter entries from the loaded rows, keeping the current
+        /// selection when that batch is still present.
+        /// </summary>
+        private void RefreshBatchFilters()
+        {
+            var previousKey = SelectedBatchFilter?.Key;
+
+            var entries = new List<Model_EditModeBatch>
+            {
+                new()
+                {
+                    Key = null,
+                    Count = _allLoads.Count,
+                    Display = $"All batches ({_allLoads.Count:N0})",
+                },
+            };
+
+            entries.AddRange(
+                _allLoads
+                    .GroupBy(load => load.BatchKey, StringComparer.OrdinalIgnoreCase)
+                    .OrderByDescending(group =>
+                        group.Max(load => load.CreatedAt ?? DateTime.MinValue)
+                    )
+                    .ThenBy(group => group.First().PartID, StringComparer.OrdinalIgnoreCase)
+                    .Select(BuildBatchFilterEntry)
+            );
+
+            _isRefreshingBatchFilters = true;
+            try
+            {
+                BatchFilters.Clear();
+                foreach (var entry in entries)
+                {
+                    BatchFilters.Add(entry);
+                }
+
+                SelectedBatchFilter =
+                    BatchFilters.FirstOrDefault(entry =>
+                        string.Equals(entry.Key, previousKey, StringComparison.OrdinalIgnoreCase)
+                    ) ?? BatchFilters[0];
+            }
+            finally
+            {
+                _isRefreshingBatchFilters = false;
+            }
+        }
+
+        private static Model_EditModeBatch BuildBatchFilterEntry(
+            IGrouping<string, Model_ReceivingLoad> group
+        )
+        {
+            var rows = group.ToList();
+            var firstRow = rows[0];
+            var unitLabel = rows.All(row => row.PackageType == Enum_PackageType.Skid)
+                ? "skid"
+                : "package";
+            var quantityLabel = rows.Count == 1 ? unitLabel : $"{unitLabel}s";
+            var savedLabel = firstRow.CreatedAt.HasValue
+                ? firstRow.ReceivedDate.ToString("MM/dd HH:mm")
+                : "not saved yet";
+
+            return new Model_EditModeBatch
+            {
+                Key = group.Key,
+                PartID = firstRow.PartID,
+                CreatedAt = firstRow.CreatedAt,
+                Count = rows.Count,
+                Display = $"{firstRow.PartID} — {rows.Count} {quantityLabel} · {savedLabel}",
+            };
+        }
+
+        /// <summary>
+        /// Filters the master list by date, selected batch, and search term, then updates
+        /// pagination.
         /// </summary>
         private void FilterAndPaginate()
         {
@@ -1221,6 +1321,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             List<Model_ReceivingLoad> result = _allLoads
                 .Where(l => l.ReceivedDate >= start && l.ReceivedDate <= end)
                 .ToList();
+
+            if (SelectedBatchFilter is { IsAllBatches: false } batchFilter)
+            {
+                result = result
+                    .Where(l =>
+                        string.Equals(
+                            l.BatchKey,
+                            batchFilter.Key,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    .ToList();
+            }
 
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
@@ -1278,18 +1391,25 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _filteredLoads = result;
             _paginationService.SetSource(_filteredLoads);
 
+            var batchSuffix =
+                SelectedBatchFilter is { IsAllBatches: false } selectedBatch
+                    ? $" in the {selectedBatch.PartID} batch"
+                    : string.Empty;
+
             ResultSummary = string.IsNullOrWhiteSpace(SearchText)
-                ? $"{_filteredLoads.Count:N0} record{(_filteredLoads.Count == 1 ? "" : "s")}"
-                : $"{_filteredLoads.Count:N0} of {_allLoads.Count:N0} record{(_allLoads.Count == 1 ? "" : "s")} matching \"{SearchText}\"";
+                ? $"{_filteredLoads.Count:N0} record{(_filteredLoads.Count == 1 ? "" : "s")}{batchSuffix}"
+                : $"{_filteredLoads.Count:N0} of {_allLoads.Count:N0} record{(_allLoads.Count == 1 ? "" : "s")} matching \"{SearchText}\"{batchSuffix}";
 
             if (_allLoads.Count > 0)
             {
                 _hasLoadedData = true;
             }
 
-            EmptyStateMessage = string.IsNullOrWhiteSpace(SearchText)
-                ? "No records found."
-                : $"No records match \"{SearchText}\".";
+            EmptyStateMessage = !string.IsNullOrWhiteSpace(SearchText)
+                ? $"No records match \"{SearchText}\"."
+                : SelectedBatchFilter is { IsAllBatches: false }
+                    ? "No records found in the selected batch."
+                    : "No records found.";
             OnPropertyChanged(nameof(ShowEmptyState));
         }
 
@@ -1581,6 +1701,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                 FilterEndDate = DateTimeOffset.Now;
 
+                RefreshBatchFilters();
                 FilterAndPaginate();
             }
             catch (Exception ex)
@@ -1663,6 +1784,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                 FilterEndDate = DateTimeOffset.Now;
 
+                RefreshBatchFilters();
                 FilterAndPaginate();
             }
             catch (Exception ex)
@@ -1725,6 +1847,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         FilterStartDate = DateTimeOffset.Now.AddYears(-1);
                         FilterEndDate = DateTimeOffset.Now;
 
+                        RefreshBatchFilters();
                         FilterAndPaginate();
                         return true;
                     }
@@ -1803,6 +1926,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 CurrentDataSource = Enum_DataSourceType.History;
                 SelectAllButtonText = "Select All";
 
+                RefreshBatchFilters();
                 FilterAndPaginate();
             }
             catch (Exception ex)
@@ -1878,6 +2002,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     Loads.Remove(load);
                 }
 
+                RefreshBatchFilters();
                 FilterAndPaginate();
             }
             else if (SelectedLoad != null)
@@ -1896,6 +2021,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _filteredLoads.Remove(SelectedLoad);
                 Loads.Remove(SelectedLoad);
 
+                RefreshBatchFilters();
                 FilterAndPaginate();
             }
             else

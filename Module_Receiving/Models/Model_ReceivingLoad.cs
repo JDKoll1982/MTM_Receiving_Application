@@ -97,6 +97,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         [ObservableProperty]
         private DateTime _receivedDate = DateTime.Now;
 
+        /// <summary>
+        /// Persistence timestamp for the row: the label-queue insert time for current labels and
+        /// the archived received timestamp for history rows. Null for loads that exist only in
+        /// the in-memory session. Together with the part it identifies the skids saved together.
+        /// </summary>
+        [ObservableProperty]
+        [JsonIgnore]
+        private DateTime? _createdAt;
+
         [ObservableProperty]
         private string? _userId;
 
@@ -192,6 +201,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
                     $"[Model_ReceivingLoad] OnPartIDChanged error: {ex.Message}"
                 );
             }
+
+            OnPropertyChanged(nameof(BatchKey));
         }
 
         partial void OnPackageTypeChanged(Enum_PackageType value)
@@ -257,6 +268,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
             CalculateWeightPerPackage();
         }
 
+        partial void OnReceivedDateChanged(DateTime value)
+        {
+            OnPropertyChanged(nameof(ReceivedDateOffset));
+        }
+
+        partial void OnCreatedAtChanged(DateTime? value)
+        {
+            OnPropertyChanged(nameof(BatchKey));
+        }
+
         partial void OnUnitOfMeasureChanged(string value)
         {
             OnPropertyChanged(nameof(WeightPerPackageLabel));
@@ -300,6 +321,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Models
         /// Display property for PO number handling null values.
         /// </summary>
         public string PONumberDisplay => string.IsNullOrEmpty(PoNumber) ? "N/A" : PoNumber;
+
+        /// <summary>
+        /// Date-only view of <see cref="ReceivedDate"/> used by the Edit Mode date editor.
+        /// Assigning a date keeps the existing time of day so the row keeps its place in
+        /// the save sequence. A null assignment (the editor was cleared) is ignored.
+        /// </summary>
+        public DateTimeOffset? ReceivedDateOffset
+        {
+            get => new(ReceivedDate);
+            set
+            {
+                if (value is not { } date)
+                {
+                    return;
+                }
+
+                var updated = date.Date.Add(ReceivedDate.TimeOfDay);
+                if (ReceivedDate != updated)
+                {
+                    ReceivedDate = updated;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Identity of the skid group this row was saved with: the part plus the second it was
+        /// persisted. Rows still held in the session share an "unsaved" key, so a part entered
+        /// in one go stays grouped before it reaches the database.
+        /// </summary>
+        public string BatchKey =>
+            CreatedAt.HasValue
+                ? $"{PartID}|{CreatedAt.Value.Ticks / TimeSpan.TicksPerSecond}"
+                : $"{PartID}|unsaved";
 
         /// <summary>
         /// Display property for load number (used in DataTemplates where x:Bind cannot call into the parent ViewModel).

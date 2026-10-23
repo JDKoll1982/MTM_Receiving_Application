@@ -604,6 +604,7 @@ LIMIT 1;";
             WeightPerPackage = ReadDecimal(row, "weight_per_package"),
             IsNonPOItem = ReadBool(row, "is_non_po_item"),
             ReceivedDate = ReadDateTime(row, "received_date", "created_at", "transaction_date"),
+            CreatedAt = ReadNullableDateTime(row, "created_at"),
             UserId = ReadNullableString(row, "user_id"),
             UserSetCustomerName = ReadString(row, "user_set_customer_name"),
             UserSetVariable = ReadString(row, "user_set_variable"),

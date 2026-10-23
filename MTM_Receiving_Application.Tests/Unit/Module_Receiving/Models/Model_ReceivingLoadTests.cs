@@ -71,4 +71,82 @@ public sealed class Model_ReceivingLoadTests
 
         load.HeatLotNumber.Should().Be("Refer to Vendor Tag");
     }
+
+    [Fact]
+    public void ReceivedDateOffset_WhenDateIsChanged_ShouldKeepTimeOfDay()
+    {
+        var load = new Model_ReceivingLoad
+        {
+            ReceivedDate = new DateTime(2026, 10, 2, 13, 45, 12),
+        };
+
+        load.ReceivedDateOffset = new DateTimeOffset(new DateTime(2026, 10, 5));
+
+        load.ReceivedDate.Should().Be(new DateTime(2026, 10, 5, 13, 45, 12));
+    }
+
+    [Fact]
+    public void ReceivedDateOffset_ShouldExposeReceivedDateDate()
+    {
+        var load = new Model_ReceivingLoad
+        {
+            ReceivedDate = new DateTime(2026, 10, 2, 13, 45, 12),
+        };
+
+        load.ReceivedDateOffset.Should().NotBeNull();
+        load.ReceivedDateOffset!.Value.Date.Should().Be(new DateTime(2026, 10, 2));
+    }
+
+    [Fact]
+    public void ReceivedDateOffset_WhenCleared_ShouldKeepReceivedDate()
+    {
+        var original = new DateTime(2026, 10, 2, 13, 45, 12);
+        var load = new Model_ReceivingLoad { ReceivedDate = original };
+
+        load.ReceivedDateOffset = null;
+
+        load.ReceivedDate.Should().Be(original);
+    }
+
+    [Fact]
+    public void BatchKey_WhenRowsSharePartAndSaveSecond_ShouldMatch()
+    {
+        var savedAt = new DateTime(2026, 10, 23, 9, 14, 7);
+        var firstSkid = new Model_ReceivingLoad { PartID = "MMC000659", CreatedAt = savedAt };
+        var sixthSkid = new Model_ReceivingLoad
+        {
+            PartID = "MMC000659",
+            CreatedAt = savedAt.AddMilliseconds(400),
+        };
+
+        sixthSkid.BatchKey.Should().Be(firstSkid.BatchKey);
+    }
+
+    [Fact]
+    public void BatchKey_WhenSamePartIsSavedInAnotherSecond_ShouldDiffer()
+    {
+        var firstBatch = new Model_ReceivingLoad
+        {
+            PartID = "MMC000659",
+            CreatedAt = new DateTime(2026, 10, 23, 9, 14, 7),
+        };
+        var secondBatch = new Model_ReceivingLoad
+        {
+            PartID = "MMC000659",
+            CreatedAt = new DateTime(2026, 10, 23, 9, 14, 8),
+        };
+
+        secondBatch.BatchKey.Should().NotBe(firstBatch.BatchKey);
+    }
+
+    [Fact]
+    public void BatchKey_WhenUnsaved_ShouldGroupByPartOnly()
+    {
+        var firstSkid = new Model_ReceivingLoad { PartID = "MMC000659" };
+        var secondSkid = new Model_ReceivingLoad { PartID = "MMC000659" };
+        var otherPart = new Model_ReceivingLoad { PartID = "MMC000767" };
+
+        secondSkid.BatchKey.Should().Be(firstSkid.BatchKey);
+        otherPart.BatchKey.Should().NotBe(firstSkid.BatchKey);
+    }
 }

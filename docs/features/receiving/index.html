@@ -354,11 +354,27 @@
             <h3>How to edit a record</h3>
             <ol>
                 <li>Select <strong>Edit Mode</strong> on the Mode Selection screen.</li>
-                <li>Search for the record by PO number, part number, or date.</li>
-                <li>Select the record from the results list.</li>
-                <li>Make your changes on the edit form.</li>
+                <li>Load the rows you want with the two File buttons, then narrow the list with the
+                    date filter, the batch list, or the search box.</li>
+                <li>Change a value directly in the grid. Quantities, heat/lot, packages, and the
+                    received date are editable; part numbers and locations validate as you type.</li>
                 <li>Save — the original record is updated and a change log entry is written.</li>
             </ol>
+
+            <h3>Changing the received date</h3>
+            <p>
+                The Received Date column is editable. Select the cell, pick the new date, and the
+                time of day is kept, so the row keeps its place in the saving sequence. Save writes
+                the new date to the label queue and to the history table.
+            </p>
+
+            <h3>Showing the skids that were entered together</h3>
+            <p>
+                The <strong>Batch</strong> list above the grid filters the rows down to one part
+                entry. When six skids of a part were added in one workflow step, that entry reads
+                like <code>MMC000659 — 6 skids · 10/23 08:14</code>, so you can review or correct
+                just that group. Choose <strong>All batches</strong> to clear the filter.
+            </p>
 
             <div class="callout callout-warning">
                 <span class="callout-icon" aria-hidden="true">⚠️</span>
