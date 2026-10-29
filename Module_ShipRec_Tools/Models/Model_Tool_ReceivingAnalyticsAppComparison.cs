@@ -42,6 +42,14 @@ public class Model_Tool_ReceivingAnalyticsAppComparison
     public IReadOnlyDictionary<string, int> ErpCategoryTotals { get; set; } =
         new Dictionary<string, int>();
 
+    /// <summary>
+    /// Purchase-order line counts per ERP category for the app side, keyed by the ERP name the
+    /// app's part type translates to. Both sides count PO lines so the two halves of the panel
+    /// compare classification over the same unit.
+    /// </summary>
+    public IReadOnlyDictionary<string, int> AppCategoryTotals { get; set; } =
+        new Dictionary<string, int>();
+
     /// <summary><see langword="false"/> when the ERP half could not be read.</summary>
     public bool ErpAvailable { get; set; } = true;
 }

@@ -61,6 +61,20 @@ range: 214 of the 524 distinct parts in the live data over a thirty-day window.
   describe the same material. ERP tabs are unaffected: they keep reading the aggregated history
   query.
 
+## Purchase-order-line unit (coverage and mix)
+
+Both sides count purchase-order lines, each attributed to the date it was last received, because
+Infor Visual dates a line that way. The app side is read through
+`sp_Reporting_ReceivingAnalyticsApp_GetCoverageLines`, which groups by PO number and line number,
+takes each line's final receipt date, and skips any line whose final date sits outside the range.
+
+Counting labels instead would compare unlike units: a thirty-day window holds 970 labels but only
+271 PO lines, against 291 Infor Visual lines for the same parts. On the line unit both sides read
+93 per cent coverage with a matching category shape, which is a figure a reader can act on.
+
+The category is derived from the part number, not the stored part type. The stored type is blank on
+1,492 of 1,493 app PO lines, so classifying from it would put almost every line in one category.
+
 - `Activity` shows loads per period and labels per period as two series, beside a quantity
   stack of one stacked bar per period with one segment per material category in scope.
 - `On Time` shows one chart of `Early`, `OnTime` and `Late` stacked per period, plus a readout

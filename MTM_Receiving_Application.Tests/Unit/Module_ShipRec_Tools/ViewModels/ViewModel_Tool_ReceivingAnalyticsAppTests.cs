@@ -708,13 +708,15 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
         DateTime date,
         int appCount,
         int erpCount,
-        Dictionary<string, int> erpTotals
+        Dictionary<string, int> erpTotals,
+        Dictionary<string, int>? appTotals = null
     ) =>
         new()
         {
             AppCoverageSeries = [new(date, appCount)],
             ErpCoverageSeries = [new(date, erpCount)],
             ErpCategoryTotals = erpTotals,
+            AppCategoryTotals = appTotals ?? new Dictionary<string, int>(),
         };
 
     [Fact]
@@ -772,16 +774,9 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     public async Task LoadAsync_ShouldNameTheSameFiveCategoriesOnBothSplits_EachSummingTo100()
     {
         var start = DateTime.Parse(MillTestStart);
-        // Quantity and receipt count are deliberately inverse here, so a share of quantity and a
-        // share of receipts cannot both satisfy the assertions below.
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
-            ActivityRows =
-            [
-                Activity(start, "STANDARD", "LB", 60m, receipts: 2),
-                Activity(start, "MMC-1", "LB", 30m, receipts: 5),
-                Activity(start, "MMF-1", "LB", 10m, receipts: 3),
-            ],
+            ActivityRows = [Activity(start, "STANDARD", "LB", 60m, receipts: 2)],
         };
         var comparison = ComparisonWithErpTotals(
             start,
@@ -794,6 +789,12 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
                 ["MMF Flat"] = 10,
                 ["Outside Service"] = 15,
                 ["Uninventoried"] = 5,
+            },
+            new Dictionary<string, int>
+            {
+                ["Parts"] = 2,
+                ["MMC Coils"] = 5,
+                ["MMF Flat"] = 3,
             }
         );
 
@@ -811,7 +812,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
         erp.Should().HaveCount(5);
         app.Sum().Should().BeApproximately(100d, 0.1d);
         erp.Sum().Should().BeApproximately(100d, 0.1d);
-        // 2, 5 and 3 receipts out of 10, not the 60, 30 and 10 in quantity.
+        // 2, 5 and 3 purchase-order lines out of 10, not the 60, 30 and 10 in quantity.
         app[0].Should().BeApproximately(20d, 0.05d);
         app[1].Should().BeApproximately(50d, 0.05d);
         app[2].Should().BeApproximately(30d, 0.05d);
@@ -822,15 +823,9 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     public async Task LoadAsync_ShouldGiveTheOneCategoryAMonthHolds_AHundredPerCentAppShare()
     {
         var start = DateTime.Parse(MillTestStart);
-        // One category, two units: the unit a label was recorded in does not split the split, so
-        // every receipt lands in Parts and the app side reads 100 per cent.
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
-            ActivityRows =
-            [
-                Activity(start, "STANDARD", "LB", 40m, receipts: 3),
-                Activity(start.AddDays(1), "STANDARD", "EA", 2m, receipts: 7),
-            ],
+            ActivityRows = [Activity(start, "STANDARD", "LB", 40m, receipts: 3)],
         };
         var comparison = ComparisonWithErpTotals(
             start,
@@ -843,7 +838,8 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
                 ["MMF Flat"] = 0,
                 ["Outside Service"] = 0,
                 ["Uninventoried"] = 0,
-            }
+            },
+            new Dictionary<string, int> { ["Parts"] = 10 }
         );
 
         var viewModel = CreateViewModel(CreateServiceMock(dataset, comparison));
@@ -874,7 +870,8 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
                 ["MMF Flat"] = 0,
                 ["Outside Service"] = 8,
                 ["Uninventoried"] = 2,
-            }
+            },
+            new Dictionary<string, int> { ["Parts"] = 3 }
         );
 
         var viewModel = CreateViewModel(CreateServiceMock(dataset, comparison));

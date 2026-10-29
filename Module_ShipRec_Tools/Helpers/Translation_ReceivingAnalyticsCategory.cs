@@ -114,14 +114,23 @@ public static class Translation_ReceivingAnalyticsCategory
     /// contains MMF -> Sheet, anything else (including null or blank) -> Standard.
     /// Comparisons ignore case.
     /// </summary>
-    public static string FromPartType(string? partType)
+    public static string FromPartType(string? partType) => ClassifyByCode(partType);
+
+    /// <summary>
+    /// Derives the application category from a part number, which is the only reliable code on a
+    /// receipt row: the stored part type is blank on almost every one. Same rule as
+    /// <see cref="FromPartType"/>: contains MMC -> Coil, contains MMF -> Sheet, else Standard.
+    /// </summary>
+    public static string FromPartNumber(string? partNumber) => ClassifyByCode(partNumber);
+
+    private static string ClassifyByCode(string? code)
     {
-        if (string.IsNullOrWhiteSpace(partType))
+        if (string.IsNullOrWhiteSpace(code))
         {
             return AppStandard;
         }
 
-        var upper = partType.ToUpperInvariant();
+        var upper = code.ToUpperInvariant();
 
         if (upper.Contains("MMC", StringComparison.Ordinal))
         {

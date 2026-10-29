@@ -792,29 +792,19 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
             .ToDictionary(group => group.Key, group => group.Sum(point => point.Count));
 
     /// <summary>
-    /// Both sides name the same five ERP categories and both count receipts: one app label against
-    /// one ERP receipt line. The app label goes through the one translation to the ERP name; an ERP
-    /// category with no app counterpart simply carries a zero app share instead of being merged or
-    /// dropped. Quantity is deliberately not used here, because a share of quantity and a share of
-    /// lines answer different questions and could not be compared side by side.
+    /// Both sides name the same five ERP categories and both count purchase-order lines, so a reader
+    /// is comparing classification and never two different units. The app's part type reaches the ERP
+    /// name through the one shared translation; an ERP category with no app counterpart simply
+    /// carries a zero app share instead of being merged or dropped.
     /// </summary>
     private void BuildCategoryMix(Model_Tool_ReceivingAnalyticsAppComparison comparison)
     {
         var appTotals = new Dictionary<string, decimal>(StringComparer.Ordinal);
         foreach (var category in Translation_ReceivingAnalyticsCategory.ErpCategories)
         {
-            appTotals[category] = 0m;
-        }
-
-        foreach (var row in _lastData!.ActivityRows)
-        {
-            var erpCategory = Translation_ReceivingAnalyticsCategory.ToErpCategory(
-                Translation_ReceivingAnalyticsCategory.FromPartType(row.PartType)
-            );
-            if (erpCategory is not null)
-            {
-                appTotals[erpCategory] += row.ReceiptCount;
-            }
+            appTotals[category] = comparison.AppCategoryTotals.TryGetValue(category, out var lines)
+                ? lines
+                : 0m;
         }
 
         var erpTotals = new Dictionary<string, decimal>(StringComparer.Ordinal);

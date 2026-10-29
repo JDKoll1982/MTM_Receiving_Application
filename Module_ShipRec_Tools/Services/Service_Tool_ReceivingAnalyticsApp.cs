@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Data;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services;
@@ -128,6 +129,21 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
             );
         }
 
+        var coverageResult = await _dao.GetCoverageLinesAsync(filter.StartDate, filter.EndDate);
+        if (!coverageResult.IsSuccess)
+        {
+            _logger.LogError(
+                $"ReceivingAnalytics comparison: app coverage-line read failed. {coverageResult.ErrorMessage}",
+                coverageResult.Exception
+            );
+            return Model_Dao_Result_Factory.Failure<Model_Tool_ReceivingAnalyticsAppComparison>(
+                coverageResult.ErrorMessage,
+                coverageResult.Exception
+            );
+        }
+
+        var appCoverageLines = coverageResult.Data ?? [];
+
         var partResult = await _dao.GetReceivedPartNumbersAsync(filter.StartDate, filter.EndDate);
         if (!partResult.IsSuccess)
         {
@@ -139,7 +155,8 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
             return Model_Dao_Result_Factory.Success(
                 new Model_Tool_ReceivingAnalyticsAppComparison
                 {
-                    AppCoverageSeries = BuildAppCoverage(activityResult.Data ?? []),
+                    AppCoverageSeries = BuildAppCoverage(appCoverageLines),
+                    AppCategoryTotals = BuildAppCategoryTotals(appCoverageLines),
                     ErpAvailable = false,
                 }
             );
@@ -147,7 +164,8 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
 
         var comparison = new Model_Tool_ReceivingAnalyticsAppComparison
         {
-            AppCoverageSeries = BuildAppCoverage(activityResult.Data ?? []),
+            AppCoverageSeries = BuildAppCoverage(appCoverageLines),
+            AppCategoryTotals = BuildAppCategoryTotals(appCoverageLines),
         };
 
         var appPartNumbers = new HashSet<string>(
@@ -192,22 +210,49 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
     }
 
     /// <summary>
-    /// One coverage point per received date for the app side. A receipt row's label count is a day
-    /// total repeated on every category and unit row of that day, so it is read once per day and
-    /// never summed across rows.
+    /// One coverage point per received date for the app side, counting purchase-order lines the same
+    /// way Infor Visual does: each line once, on the date it was last received.
     /// </summary>
     private static List<Model_Tool_ReceivingAnalyticsAppComparison.CoveragePoint> BuildAppCoverage(
-        IReadOnlyList<Model_Tool_ReceivingAnalyticsAppActivityRow> activityRows
+        IReadOnlyList<Model_Tool_ReceivingAnalyticsAppCoverageLine> coverageLines
     )
     {
-        return activityRows
-            .GroupBy(row => row.BucketDate.Date)
+        return coverageLines
+            .GroupBy(line => line.LastReceivedDate.Date)
             .Select(group => new Model_Tool_ReceivingAnalyticsAppComparison.CoveragePoint(
                 group.Key,
-                group.Max(row => row.LabelCount)
+                group.Sum(line => line.LineCount)
             ))
             .OrderBy(point => point.Date)
             .ToList();
+    }
+
+    /// <summary>
+    /// Purchase-order line counts per ERP category for the app side. The app's part type reaches the
+    /// ERP name through the one shared translation, so both halves of the mix name the same five
+    /// categories over the same unit.
+    /// </summary>
+    private static Dictionary<string, int> BuildAppCategoryTotals(
+        IReadOnlyList<Model_Tool_ReceivingAnalyticsAppCoverageLine> coverageLines
+    )
+    {
+        var totals = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var line in coverageLines)
+        {
+            var erpCategory = Translation_ReceivingAnalyticsCategory.ToErpCategory(
+                Translation_ReceivingAnalyticsCategory.FromPartNumber(line.PartId)
+            );
+            if (erpCategory is null)
+            {
+                continue;
+            }
+
+            totals[erpCategory] = totals.TryGetValue(erpCategory, out var running)
+                ? running + line.LineCount
+                : line.LineCount;
+        }
+
+        return totals;
     }
 
     /// <summary>One coverage point per received date for the ERP side, counted as the ERP counts.</summary>

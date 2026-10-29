@@ -366,7 +366,7 @@
                             Grid.Row="0"
                             FontSize="12"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Our own completed receipts beside what Infor Visual recorded for the same days and the same part numbers."
+                            Text="Our completed purchase-order lines beside what Infor Visual recorded for the same days and the same part numbers."
                             TextWrapping="Wrap" />
 
                         <TextBlock
@@ -449,7 +449,7 @@
                                 Grid.Row="2"
                                 FontSize="12"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="Both halves cover only the part numbers our own receipts carry for these dates, so material Infor Visual receives that never reaches the app is left out. Each half is a share of its own side's receipts."
+                                Text="Both halves cover only the part numbers our own receipts carry for these dates, and both count purchase-order lines on the day each was last received. Each half is a share of its own side's lines."
                                 TextWrapping="Wrap" />
                         </Grid>
                     </Grid>

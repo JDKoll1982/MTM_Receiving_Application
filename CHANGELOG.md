@@ -27,8 +27,11 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   receipts count towards no total, with the Infor Visual side of the coverage chart dropping the same
   weekend dates. The Coverage page compares only the part numbers our own receipts carry for the
   selected dates, because Infor Visual records material that never flows through the app; on live data
-  that limits a thirty-day comparison from 1,791 Infor Visual lines to 291. The category mix on the
-  same page uses that same cohort, and the ERP Data tab keeps reading all of Infor Visual.
+  that limits a thirty-day comparison from 1,791 Infor Visual lines to 291. Both sides of the
+  comparison count purchase-order lines on the date each was last received, the way Infor Visual dates
+  a line, rather than counting labels: the same window holds 970 labels but only 271 PO lines, so
+  labels would have reported 333 per cent coverage where the line unit reports 93. The category mix on
+  the same page uses that same cohort and unit, and the ERP Data tab keeps reading all of Infor Visual.
 - **Why:** Infor Visual knows what arrived at the plant; only the app knows what an operator
   completed and whether it was on time. The comparison panels are what prove the app is capturing
   the real work.

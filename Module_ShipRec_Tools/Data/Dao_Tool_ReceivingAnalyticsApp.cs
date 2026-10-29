@@ -128,6 +128,36 @@ public class Dao_Tool_ReceivingAnalyticsApp
         };
     }
 
+    /// <summary>
+    /// Reads the app's completed purchase-order lines attributed to the date each was last received,
+    /// which is how Infor Visual dates a PO line. Used by the coverage comparison so both sides
+    /// count the same thing.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<Model_Tool_ReceivingAnalyticsAppCoverageLine>>> GetCoverageLinesAsync(
+        DateTime startDate,
+        DateTime endDate
+    )
+    {
+        var parameters = BuildDateParameters(startDate, endDate);
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<
+            Model_Tool_ReceivingAnalyticsAppCoverageLine
+        >(
+            _connectionString,
+            "sp_Reporting_ReceivingAnalyticsApp_GetCoverageLines",
+            reader =>
+                new Model_Tool_ReceivingAnalyticsAppCoverageLine
+                {
+                    LastReceivedDate = reader.GetDateTime(
+                        reader.GetOrdinal("last_received_date")
+                    ),
+                    PartId = GetNullableString(reader, "part_id"),
+                    LineCount = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("line_count"))),
+                },
+            parameters
+        );
+    }
+
     private static Model_Tool_ReceivingAnalyticsAppActivityRow MapActivityRow(IDataReader reader)
     {
         return new Model_Tool_ReceivingAnalyticsAppActivityRow

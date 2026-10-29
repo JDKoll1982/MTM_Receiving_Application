@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T13:53:15.5052616-05:00",
+  "generatedAt": "2026-10-29T14:02:01.2650444-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -14597,6 +14597,59 @@
         {
           "alias": "bucket_date",
           "object": "__derived__:bucket_date"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetCoverageLines.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetCoverageLines",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "per_line",
+          "resolvedObject": "per_line",
+          "column": "part_id"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "last_received_date",
+          "object": "__derived__:last_received_date"
         }
       ]
     },

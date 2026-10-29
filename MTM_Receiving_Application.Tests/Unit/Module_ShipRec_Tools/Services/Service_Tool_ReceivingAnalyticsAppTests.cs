@@ -83,6 +83,26 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(new List<string> { "TEST-PART-1", "TEST-PART-2" })
             );
+        dao.Setup(x => x.GetCoverageLinesAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_Tool_ReceivingAnalyticsAppCoverageLine>
+                    {
+                        new()
+                        {
+                            LastReceivedDate = RangeStart,
+                            PartId = "TEST-STANDARD",
+                            LineCount = 3,
+                        },
+                        new()
+                        {
+                            LastReceivedDate = RangeStart,
+                            PartId = "MMC-TEST-1",
+                            LineCount = 1,
+                        },
+                    }
+                )
+            );
         return dao;
     }
 
@@ -289,6 +309,55 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
                 ),
             Times.Never
         );
+    }
+
+    [Fact]
+    public async Task GetComparisonAsync_ShouldCountAppPurchaseOrderLinesOnTheirLastReceivedDate()
+    {
+        var dao = CreateDaoMock();
+        dao.Setup(x => x.GetCoverageLinesAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_Tool_ReceivingAnalyticsAppCoverageLine>
+                    {
+                        new()
+                        {
+                            LastReceivedDate = RangeStart,
+                            PartId = "TEST-STANDARD",
+                            LineCount = 6,
+                        },
+                        new()
+                        {
+                            LastReceivedDate = RangeStart.AddDays(1),
+                            PartId = "MMF-TEST-1",
+                            LineCount = 2,
+                        },
+                    }
+                )
+            );
+
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(x =>
+                x.GetReceivingAnalyticsCoverageByPartAsync(
+                    It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualReceivingCoveragePoint>()
+                )
+            );
+
+        var service = CreateService(dao, inforVisual);
+
+        var result = await service.GetComparisonAsync(CreateFilter());
+
+        result.Data!.AppCoverageSeries.Should().HaveCount(2);
+        result.Data.AppCoverageSeries[0].Count.Should().Be(6);
+        result.Data.AppCoverageSeries[1].Count.Should().Be(2);
+        result.Data.AppCategoryTotals["Parts"].Should().Be(6);
+        result.Data.AppCategoryTotals["MMF Flat"].Should().Be(2);
     }
 
     [Fact]

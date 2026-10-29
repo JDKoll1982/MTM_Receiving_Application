@@ -59,10 +59,17 @@ thirty-day window holds. Material Infor Visual receives with no part number at a
 Service and Uninventoried, is outside the comparison by definition because the app does not carry it
 by part.
 
-- **Coverage.** Two lines over the same dates, one counting app labels per day and one counting Infor
+**Both sides count purchase-order lines.** Infor Visual counts a PO line once, on its last received
+date, so the app is anchored the same way: each of our PO lines is attributed to its own final
+receipt date. Counting labels instead would report several times the ERP's figure, because one PO
+line commonly arrives as many labelled packages. On live data a thirty-day window holds 970 labels
+but only 271 PO lines, against 291 for Infor Visual on the same parts, so the honest coverage figure
+is 93 per cent and not a meaningless ratio of labels to lines.
+
+- **Coverage.** Two lines over the same dates, one counting app PO lines per day and one counting Infor
   Visual receipt lines per day, with a day only one side recorded drawn at zero on the other line.
-- **Category mix.** The app's split of receipts beside Infor Visual's split of receipt lines, over the
-  same five ERP category names, each side summing to 100 per cent. Both halves count receipts, so a
+- **Category mix.** The app's split of PO lines beside Infor Visual's split of receipt lines, over the
+  same five ERP category names, each side summing to 100 per cent. Both halves count lines, so a
   reader is comparing classification and not two different measures. The app's three part types
   (Standard, Coil, Sheet) reach the five ERP names through one translation,
   `Translation_ReceivingAnalyticsCategory`, which both tabs read.
