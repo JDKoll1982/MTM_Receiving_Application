@@ -47,18 +47,17 @@ Each page says in one plain sentence what its figures are read from, rather than
 Every one of those sentences names completed receipts, because a receipt still in progress is not
 filed into `receiving_history` yet and would make today look lower than it is.
 
-## When Something Is Wrong
-
-A warning is not a line of small grey text. A red circular button carrying **!** replaces the status
-text, and pressing it opens a short heading plus a plain explanation of what went wrong and what to
-do next. That covers reversed dates, an unreadable app database, an empty range, an unreadable Infor
-Visual, and an unexpected failure. Ordinary messages such as "Filters cleared" still read as text,
-and the button disappears as soon as the next load succeeds.
-
 ## How The Two Sides Line Up
 
-The comparison panel is the only place two systems meet, so it states its alignment rule in the
-panel itself: **one app label against one Infor Visual receipt line**.
+The comparison panel is the only place two systems meet, so it states its rules in the panel itself.
+
+**Only part numbers the app also received.** Infor Visual records material that never flows through
+the receiving app, so counting all of it would report a shortfall that says nothing about what the
+app captured. Both the coverage chart and the category mix are limited to the part numbers our own
+receipts carry for the selected dates. On live data that is 214 of the 524 distinct parts a
+thirty-day window holds. Material Infor Visual receives with no part number at all, meaning Outside
+Service and Uninventoried, is outside the comparison by definition because the app does not carry it
+by part.
 
 - **Coverage.** Two lines over the same dates, one counting app labels per day and one counting Infor
   Visual receipt lines per day, with a day only one side recorded drawn at zero on the other line.

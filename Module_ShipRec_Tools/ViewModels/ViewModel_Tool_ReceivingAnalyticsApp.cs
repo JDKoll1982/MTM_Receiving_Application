@@ -221,22 +221,6 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     [NotifyPropertyChangedFor(nameof(ShowErpUnavailable))]
     private bool _isErpUnavailable = true;
 
-    /// <summary>
-    /// True while there is something wrong worth reading. The filter bar shows a red alert button
-    /// instead of a line of text, and the button opens <see cref="WarningTitle"/> and
-    /// <see cref="WarningDetail"/>.
-    /// </summary>
-    [ObservableProperty]
-    private bool _hasWarning;
-
-    /// <summary>One short line naming what went wrong, as the alert button's heading.</summary>
-    [ObservableProperty]
-    private string _warningTitle = string.Empty;
-
-    /// <summary>What went wrong and what to do about it, in plain language.</summary>
-    [ObservableProperty]
-    private string _warningDetail = string.Empty;
-
     /// <summary>Every quantity total is named by its unit, for example <c>Quantity (LB)</c>.</summary>
     public string QuantityLabel => $"Quantity ({NormalizeUnit(SelectedUnit)})";
 
@@ -318,34 +302,14 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
         RenderFromLastData();
     }
 
-    /// <summary>
-    /// Raises the red alert button with a plain explanation of what went wrong. The status line is
-    /// still updated, so the rest of the app keeps seeing the same severity it always did.
-    /// </summary>
-    private void ShowWarning(string title, string detail)
-    {
-        WarningTitle = title;
-        WarningDetail = detail;
-        HasWarning = true;
-        ShowStatus(title, InfoBarSeverity.Warning);
-    }
-
-    private void ClearWarning()
-    {
-        HasWarning = false;
-        WarningTitle = string.Empty;
-        WarningDetail = string.Empty;
-    }
-
     [RelayCommand]
     private async Task LoadAsync()
     {
         if (ToDate.Date < FromDate.Date)
         {
-            ShowWarning(
-                "The start and end dates are the wrong way round",
-                "The To date falls before the From date, so there is nothing to read. Move the To "
-                    + "date to the same day as the From date or later, then press Load."
+            ShowStatus(
+                "The end date is before the start date, so nothing was loaded.",
+                InfoBarSeverity.Warning
             );
             return;
         }
@@ -353,7 +317,6 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
         try
         {
             IsBusy = true;
-            ClearWarning();
             ShowStatus("Loading the app's receiving activity...", InfoBarSeverity.Informational);
 
             var filter = BuildFilter();
@@ -370,11 +333,7 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
                 _lastFilter = null;
                 _lastComparison = null;
                 ClearPanels();
-                ShowWarning(
-                    "The app's own records could not be read",
-                    $"Nothing was loaded, so every page is empty. {result.ErrorMessage} "
-                        + "Press Load to try again, and pass this message to IT if it keeps happening."
-                );
+                ShowStatus(result.ErrorMessage, InfoBarSeverity.Warning);
                 return;
             }
 
@@ -385,40 +344,22 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
 
             if (result.Data.IsEmpty)
             {
-                ShowWarning(
-                    "Nothing was received in that range",
-                    "No completed receipts fall between the From and To dates, so every page is "
-                        + "empty. Pick a wider range or different dates, then press Load. Weekend "
-                        + "days are never counted."
+                ShowStatus(
+                    "No completed receipts in the selected range.",
+                    InfoBarSeverity.Warning
                 );
                 return;
             }
 
-            if (IsErpUnavailable)
-            {
-                ShowWarning(
-                    "Infor Visual could not be read",
-                    $"The app's own figures loaded ({result.Data.ActivityRows.Count} row(s)), but the "
-                        + "Coverage page is empty because Infor Visual did not answer. The Activity, "
-                        + "On Time and Suppliers pages are unaffected. Press Load to retry."
-                );
-                return;
-            }
-
-            ClearWarning();
             ShowStatus(
-                $"Loaded {result.Data.ActivityRows.Count} activity row(s) from the app's records.",
-                InfoBarSeverity.Success
+                IsErpUnavailable
+                    ? $"Loaded {result.Data.ActivityRows.Count} activity row(s). Infor Visual could not be read, so the comparison panel is empty."
+                    : $"Loaded {result.Data.ActivityRows.Count} activity row(s) from the app's records.",
+                IsErpUnavailable ? InfoBarSeverity.Warning : InfoBarSeverity.Success
             );
         }
         catch (Exception ex)
         {
-            ShowWarning(
-                "Something went wrong while loading",
-                $"The load stopped before it finished, so the pages still show the previous figures. "
-                    + $"{ex.Message} Press Load to try again, and pass this message to IT if it repeats."
-            );
-
             _errorHandler.HandleException(
                 ex,
                 Enum_ErrorSeverity.Medium,
@@ -448,7 +389,6 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
         SelectedUnit = string.Empty;
         ClearPanels();
 
-        ClearWarning();
         ShowStatus("Filters cleared.", InfoBarSeverity.Informational);
     }
 

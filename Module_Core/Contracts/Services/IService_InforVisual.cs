@@ -355,5 +355,16 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<
             Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
         > GetReceivingAnalyticsForecastAsync(Model_InforVisualReceivingAnalyticsFilter filter);
+
+        /// <summary>
+        /// Returns receiving-history line counts at date, category and part grain, so the App Data
+        /// coverage panel can compare Infor Visual against the receiving app on the same part
+        /// numbers. Lines with no part number are excluded, because they cannot match an app part.
+        /// Read-only Infor Visual (MTMFG).
+        /// </summary>
+        /// <param name="filter">Filter/query options (see model for defaults).</param>
+        public Task<
+            Model_Dao_Result<List<Model_InforVisualReceivingCoveragePoint>>
+        > GetReceivingAnalyticsCoverageByPartAsync(Model_InforVisualReceivingAnalyticsFilter filter);
     }
 }

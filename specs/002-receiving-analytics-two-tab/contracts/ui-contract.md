@@ -40,7 +40,26 @@ Each page states plainly what its figures are read from, in one sentence above t
 | 1 | Loads, labels and quantity from our own completed receipts, counted on the day they were received. |
 | 2 | Our completed receipts measured against the date each purchase order was due. |
 | 3 | Our completed receipts grouped by the supplier named on each one. |
-| 4 | Our own completed receipts beside what Infor Visual recorded for the same days. |
+| 4 | Our own completed receipts beside what Infor Visual recorded for the same days and the same part numbers. |
+
+## Part-number cohort (coverage and mix)
+
+Infor Visual records material that never flows through the receiving app, so counting all of it
+would report a shortfall that says nothing about what the app captured. Both the coverage chart and
+the category mix are therefore limited to the part numbers the app itself received in the same date
+range: 214 of the 524 distinct parts in the live data over a thirty-day window.
+
+- The cohort comes from `sp_Reporting_ReceivingAnalyticsApp_GetReceivedPartNumbers`, so it is the
+  app's own receipts that define it, and it honours the same weekend rule as every other page.
+- Infor Visual is read at date, category and part grain through
+  `32_GetReceivingAnalyticsCoverageByPart.sql`, because the aggregated history query behind the ERP
+  Data tab cannot be narrowed to a set of part numbers.
+- Rows with no part number are excluded from the cohort by definition: they are Outside Service or
+  Uninventoried material the app does not carry by part.
+- Matching is case-insensitive and trims surrounding whitespace on both sides.
+- The two halves of the page share one cohort, so the coverage chart and the category mix always
+  describe the same material. ERP tabs are unaffected: they keep reading the aggregated history
+  query.
 
 - `Activity` shows loads per period and labels per period as two series, beside a quantity
   stack of one stacked bar per period with one segment per material category in scope.
@@ -75,26 +94,6 @@ coverage against Infor Visual.
 The range defaults to the last thirty days ending today, inclusive of today. The service converts
 that to an exclusive end for the stored procedures. `Clear` resets every filter to the defaults above
 and empties the panels.
-
-## Warnings
-
-A warning is never a line of text in the filter bar. When something is wrong, a red circular button
-carrying `!` takes the place of the status text, and pressing it opens a panel with two parts:
-
-- a short heading naming what went wrong, and
-- a plain-language explanation of what it means and what to do next.
-
-The status text stays for success and information, so `Filters cleared.` and
-`Loaded N activity row(s)` still read as before. The button clears itself when the next load
-succeeds, when `Clear` runs, and when a load begins after an error.
-
-| Warning | Heading | What the reader is told |
-| --- | --- | --- |
-| Dates reversed | The start and end dates are the wrong way round | The `To` date falls before `From`; move it to the same day or later, then press Load |
-| App read failed | The app's own records could not be read | Nothing loaded and every page is empty, the underlying message, then press Load and pass the message to IT if it repeats |
-| Empty range | Nothing was received in that range | No completed receipts fall between the dates, pick a wider range, and weekend days are never counted |
-| ERP unavailable | Infor Visual could not be read | The app's own figures did load, only the Coverage page is empty, the other three pages are unaffected, then press Load to retry |
-| Load threw | Something went wrong while loading | The load stopped, the pages still show the previous figures, the message, then press Load |
 
 ## Quantity label
 

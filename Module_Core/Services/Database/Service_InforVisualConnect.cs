@@ -1893,6 +1893,36 @@ public class Service_InforVisualConnect : IService_InforVisual
         return await _dao.GetReceivingAnalyticsForecastAsync(filter);
     }
 
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingCoveragePoint>>
+    > GetReceivingAnalyticsCoverageByPartAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo("[MOCK DATA MODE] Returning mock receiving analytics coverage by part.");
+            var mockPoints = new List<Model_InforVisualReceivingCoveragePoint>();
+            foreach (var point in CreateMockAnalyticsByDate(filter, isForecast: false))
+            {
+                mockPoints.Add(
+                    new Model_InforVisualReceivingCoveragePoint
+                    {
+                        ActivityDate = point.ActivityDate,
+                        Category = point.Category,
+                        PartId = "MOCK-PART",
+                        LineCount = point.LineCount,
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(mockPoints);
+        }
+
+        return await _dao.GetReceivingAnalyticsCoverageByPartAsync(filter);
+    }
+
     private static List<Model_InforVisualDeliveryScheduleLine> CreateMockDeliveryScheduleLines(
         Model_InforVisualDeliveryScheduleFilter filter
     )

@@ -96,6 +96,26 @@ public class Dao_Tool_ReceivingAnalyticsApp
         );
     }
 
+    /// <summary>
+    /// Reads the distinct part numbers the app itself received in the range
+    /// (start inclusive, end exclusive). This is the cohort the coverage comparison is limited to,
+    /// so Infor Visual is only counted for material the receiving app also handles.
+    /// </summary>
+    public virtual async Task<Model_Dao_Result<List<string>>> GetReceivedPartNumbersAsync(
+        DateTime startDate,
+        DateTime endDate
+    )
+    {
+        var parameters = BuildDateParameters(startDate, endDate);
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<string>(
+            _connectionString,
+            "sp_Reporting_ReceivingAnalyticsApp_GetReceivedPartNumbers",
+            reader => GetNullableString(reader, "part_id"),
+            parameters
+        );
+    }
+
     private static Dictionary<string, object> BuildDateParameters(
         DateTime startDate,
         DateTime endDate

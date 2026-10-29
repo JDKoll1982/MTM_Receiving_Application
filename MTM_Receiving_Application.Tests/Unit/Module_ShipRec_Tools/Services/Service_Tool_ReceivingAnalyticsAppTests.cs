@@ -79,6 +79,10 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
             );
         dao.Setup(x => x.GetMissingLoadNumberCountAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(Model_Dao_Result_Factory.Success<int>(4));
+        dao.Setup(x => x.GetReceivedPartNumbersAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<string> { "TEST-PART-1", "TEST-PART-2" })
+            );
         return dao;
     }
 
@@ -143,25 +147,26 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
     }
 
     [Fact]
-    public async Task GetComparisonAsync_ShouldPassTheSameBoundsAndAllFiveScopesToTheErpRead()
+    public async Task GetComparisonAsync_ShouldPassTheSameBoundsToTheErpRead()
     {
         Model_InforVisualReceivingAnalyticsFilter? requested = null;
         var inforVisual = new Mock<IService_InforVisual>();
         inforVisual
             .Setup(x =>
-                x.GetReceivingAnalyticsHistoryAsync(
+                x.GetReceivingAnalyticsCoverageByPartAsync(
                     It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
                 )
             )
             .Callback<Model_InforVisualReceivingAnalyticsFilter>(filter => requested = filter)
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Success(
-                    new List<Model_InforVisualReceivingAnalyticsPoint>
+                    new List<Model_InforVisualReceivingCoveragePoint>
                     {
                         new()
                         {
                             ActivityDate = RangeStart,
                             Category = "Parts",
+                            PartId = "TEST-PART-1",
                             LineCount = 5,
                         },
                     }
@@ -176,14 +181,114 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
         requested.Should().NotBeNull();
         requested!.FromDate.Should().Be(RangeStart);
         requested.ToDate.Should().Be(RangeEnd);
-        requested.ScopeParts.Should().BeTrue();
-        requested.ScopeCoils.Should().BeTrue();
-        requested.ScopeFlat.Should().BeTrue();
-        requested.ScopeOutside.Should().BeTrue();
-        requested.ScopeUninventoried.Should().BeTrue();
         result.Data!.ErpAvailable.Should().BeTrue();
         result.Data.ErpCoverageSeries.Should().ContainSingle();
         result.Data.ErpCategoryTotals["Parts"].Should().Be(5);
+    }
+
+    [Fact]
+    public async Task GetComparisonAsync_ShouldCountOnlyErpRowsWhosePartTheAppAlsoReceived()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(x =>
+                x.GetReceivingAnalyticsCoverageByPartAsync(
+                    It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualReceivingCoveragePoint>
+                    {
+                        new()
+                        {
+                            ActivityDate = RangeStart,
+                            Category = "Parts",
+                            PartId = "TEST-PART-1",
+                            LineCount = 3,
+                        },
+                        new()
+                        {
+                            ActivityDate = RangeStart,
+                            Category = "Parts",
+                            PartId = "TEST-PART-2",
+                            LineCount = 4,
+                        },
+                        new()
+                        {
+                            ActivityDate = RangeStart,
+                            Category = "MMC Coils",
+                            PartId = "TEST-NEVER-IN-APP",
+                            LineCount = 90,
+                        },
+                    }
+                )
+            );
+
+        var service = CreateService(inforVisual: inforVisual);
+
+        var result = await service.GetComparisonAsync(CreateFilter());
+
+        result.Data!.ErpCoverageSeries.Single().Count.Should().Be(7);
+        result.Data.ErpCategoryTotals["Parts"].Should().Be(7);
+        result.Data.ErpCategoryTotals.Should().NotContainKey("MMC Coils");
+    }
+
+    [Fact]
+    public async Task GetComparisonAsync_ShouldMatchPartNumbersRegardlessOfCase()
+    {
+        var inforVisual = new Mock<IService_InforVisual>();
+        inforVisual
+            .Setup(x =>
+                x.GetReceivingAnalyticsCoverageByPartAsync(
+                    It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualReceivingCoveragePoint>
+                    {
+                        new()
+                        {
+                            ActivityDate = RangeStart,
+                            Category = "Parts",
+                            PartId = " test-part-1 ",
+                            LineCount = 6,
+                        },
+                    }
+                )
+            );
+
+        var service = CreateService(inforVisual: inforVisual);
+
+        var result = await service.GetComparisonAsync(CreateFilter());
+
+        result.Data!.ErpCoverageSeries.Single().Count.Should().Be(6);
+    }
+
+    [Fact]
+    public async Task GetComparisonAsync_ShouldLeaveNoErpLine_WhenTheAppPartReadFails()
+    {
+        var dao = CreateDaoMock();
+        dao.Setup(x => x.GetReceivedPartNumbersAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<string>>("part numbers unavailable")
+            );
+
+        var inforVisual = new Mock<IService_InforVisual>();
+        var service = CreateService(dao, inforVisual);
+
+        var result = await service.GetComparisonAsync(CreateFilter());
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.ErpAvailable.Should().BeFalse();
+        inforVisual.Verify(
+            x =>
+                x.GetReceivingAnalyticsCoverageByPartAsync(
+                    It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
+                ),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -192,13 +297,13 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
         var inforVisual = new Mock<IService_InforVisual>();
         inforVisual
             .Setup(x =>
-                x.GetReceivingAnalyticsHistoryAsync(
+                x.GetReceivingAnalyticsCoverageByPartAsync(
                     It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()
                 )
             )
             .ReturnsAsync(
                 Model_Dao_Result_Factory.Failure<
-                    List<Model_InforVisualReceivingAnalyticsPoint>
+                    List<Model_InforVisualReceivingCoveragePoint>
                 >("MTMFG unreachable")
             );
 

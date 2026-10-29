@@ -96,11 +96,18 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
 
     /// <inheritdoc />
     /// <remarks>
+    /// The comparison is limited to the part numbers the receiving app itself received in the same
+    /// range. Infor Visual records material that never flows through the app, so counting all of it
+    /// would show a coverage gap that says nothing about what the app captured. Both coverage series
+    /// and the ERP category split are built from the same filtered rows, so the two halves of the
+    /// panel always cover the same material.
+    /// <para>
     /// Both category splits on the returned model are left empty here on purpose. The panel's app
     /// side must be scoped to one unit of measure, and that choice belongs to the view model, so the
     /// view model builds the two splits over the five ERP names from the rows it cached and the
     /// comparison returned here. What this method alone can know exactly is the two coverage series,
     /// the ERP's own per-category line counts and whether the ERP half was readable.
+    /// </para>
     /// </remarks>
     public async Task<
         Model_Dao_Result<Model_Tool_ReceivingAnalyticsAppComparison>
@@ -121,21 +128,38 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
             );
         }
 
+        var partResult = await _dao.GetReceivedPartNumbersAsync(filter.StartDate, filter.EndDate);
+        if (!partResult.IsSuccess)
+        {
+            _logger.LogError(
+                $"ReceivingAnalytics comparison: app part number read failed, no ERP line will be drawn. {partResult.ErrorMessage}",
+                partResult.Exception
+            );
+
+            return Model_Dao_Result_Factory.Success(
+                new Model_Tool_ReceivingAnalyticsAppComparison
+                {
+                    AppCoverageSeries = BuildAppCoverage(activityResult.Data ?? []),
+                    ErpAvailable = false,
+                }
+            );
+        }
+
         var comparison = new Model_Tool_ReceivingAnalyticsAppComparison
         {
             AppCoverageSeries = BuildAppCoverage(activityResult.Data ?? []),
         };
 
-        var erpResult = await _inforVisual.GetReceivingAnalyticsHistoryAsync(
+        var appPartNumbers = new HashSet<string>(
+            (partResult.Data ?? []).Where(part => !string.IsNullOrWhiteSpace(part)),
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        var erpResult = await _inforVisual.GetReceivingAnalyticsCoverageByPartAsync(
             new Model_InforVisualReceivingAnalyticsFilter
             {
                 FromDate = filter.StartDate,
                 ToDate = filter.EndDate,
-                ScopeParts = true,
-                ScopeCoils = true,
-                ScopeFlat = true,
-                ScopeOutside = true,
-                ScopeUninventoried = true,
                 MaxResults = 50000,
             }
         );
@@ -150,17 +174,18 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
             return Model_Dao_Result_Factory.Success(comparison);
         }
 
-        comparison.ErpCoverageSeries = BuildErpCoverage(
-            erpResult.Data ?? new List<Model_InforVisualReceivingAnalyticsPoint>()
-        );
-        comparison.ErpCategoryTotals = BuildErpCategoryTotals(
-            erpResult.Data ?? new List<Model_InforVisualReceivingAnalyticsPoint>()
-        );
+        var matchedErpRows = (erpResult.Data ?? [])
+            .Where(point => appPartNumbers.Contains(point.PartId.Trim()))
+            .ToList();
+
+        comparison.ErpCoverageSeries = BuildErpCoverage(matchedErpRows);
+        comparison.ErpCategoryTotals = BuildErpCategoryTotals(matchedErpRows);
         comparison.ErpAvailable = true;
 
         _logger.LogInfo(
-            $"ReceivingAnalytics comparison: app {comparison.AppCoverageSeries.Count} dates, "
-                + $"ERP {comparison.ErpCoverageSeries.Count} dates."
+            $"ReceivingAnalytics comparison: {appPartNumbers.Count} app part numbers, "
+                + $"app {comparison.AppCoverageSeries.Count} dates, "
+                + $"ERP {comparison.ErpCoverageSeries.Count} dates over {matchedErpRows.Count} matched part rows."
         );
 
         return Model_Dao_Result_Factory.Success(comparison);
@@ -187,7 +212,7 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
 
     /// <summary>One coverage point per received date for the ERP side, counted as the ERP counts.</summary>
     private static List<Model_Tool_ReceivingAnalyticsAppComparison.CoveragePoint> BuildErpCoverage(
-        IReadOnlyList<Model_InforVisualReceivingAnalyticsPoint> erpPoints
+        IReadOnlyList<Model_InforVisualReceivingCoveragePoint> erpPoints
     )
     {
         return erpPoints
@@ -206,7 +231,7 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
     /// the app has.
     /// </summary>
     private static Dictionary<string, int> BuildErpCategoryTotals(
-        IReadOnlyList<Model_InforVisualReceivingAnalyticsPoint> erpPoints
+        IReadOnlyList<Model_InforVisualReceivingCoveragePoint> erpPoints
     )
     {
         var totals = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

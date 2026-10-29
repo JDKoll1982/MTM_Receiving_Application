@@ -236,12 +236,13 @@ per cent. Passing this proves the app's coverage of real work is measurable.
   MUST appear as a bucket on a day axis, and the ERP side of the comparison MUST drop the same
   weekend dates so the two lines stay aligned.
 - **FR-025**: The coverage panel MUST draw two lines over the same dates, one counting the receipts
-  the app recorded and one counting the receipts Infor Visual recorded, counted the same way.
-  [NEEDS CLARIFICATION: what the two lines count. One app label against one ERP receipt line is
-  assumed; if the ERP records one line per PO line while the app records one per label, the two can
-  only be compared after a stated alignment rule.]
+  the app recorded and one counting the receipts Infor Visual recorded, counted the same way. The
+  Infor Visual line MUST be limited to the part numbers the app itself received in the same range,
+  so material that reaches Infor Visual but never flows through the app is not counted as a gap.
+  The two sides are aligned by received date and normalised category.
 - **FR-026**: The mix panel MUST show the app's category split beside Infor Visual's split for the
-  same period, naming the same five categories on both sides.
+  same period, naming the same five categories on both sides, over the same part-number cohort as
+  the coverage panel so the two halves of the page never cover different material.
 - **FR-027**: The translation between app categories and Infor Visual categories MUST live in exactly
   one place, and both tabs MUST read it, so the two tabs can never disagree.
 - **FR-028**: Both sides of a comparison MUST be requested with identical dates and filters.

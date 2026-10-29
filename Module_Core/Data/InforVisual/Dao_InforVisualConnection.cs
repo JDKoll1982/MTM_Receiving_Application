@@ -2067,6 +2067,65 @@ public class Dao_InforVisualConnection
         );
     }
 
+    /// <summary>
+    /// Returns receiving-history line counts at date, category and part grain, so the App Data
+    /// coverage panel can be narrowed to the part numbers the receiving app also handles.
+    /// Uses: 32_GetReceivingAnalyticsCoverageByPart.sql
+    /// ⚠️ READ-ONLY — no writes to Infor Visual.
+    /// </summary>
+    /// <param name="filter">Filter/query options (see model for defaults).</param>
+    public async Task<
+        Model_Dao_Result<List<Model_InforVisualReceivingCoveragePoint>>
+    > GetReceivingAnalyticsCoverageByPartAsync(Model_InforVisualReceivingAnalyticsFilter filter)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(filter);
+            _logger?.LogInfo(
+                $"Querying receiving coverage by part (from {filter.FromDate?.ToShortDateString() ?? "-"} "
+                    + $"to {filter.ToDate?.ToShortDateString() ?? "-"}, max {filter.MaxResults})"
+            );
+
+            var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(
+                "32_GetReceivingAnalyticsCoverageByPart.sql"
+            );
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FromDate", (object?)filter.FromDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@ToDate", (object?)filter.ToDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@MaxResults", Math.Max(1, filter.MaxResults));
+
+            var rows = new List<Model_InforVisualReceivingCoveragePoint>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                rows.Add(
+                    new Model_InforVisualReceivingCoveragePoint
+                    {
+                        ActivityDate = Convert.ToDateTime(reader["ActivityDate"]),
+                        Category = reader["Category"].ToString() ?? string.Empty,
+                        PartId = reader["PartId"].ToString() ?? string.Empty,
+                        LineCount = Convert.ToInt32(reader["LineCount"]),
+                    }
+                );
+            }
+
+            _logger?.LogInfo($"Returned {rows.Count} receiving coverage rows by part.");
+            return Model_Dao_Result_Factory.Success(rows);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError($"Error querying receiving coverage by part: {ex.Message}", ex);
+            return Model_Dao_Result_Factory.Failure<
+                List<Model_InforVisualReceivingCoveragePoint>
+            >($"Error querying receiving coverage by part: {ex.Message}", ex);
+        }
+    }
+
     private async Task<
         Model_Dao_Result<List<Model_InforVisualReceivingAnalyticsPoint>>
     > QueryReceivingAnalyticsByDateAsync(

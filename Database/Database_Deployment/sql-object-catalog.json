@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T12:54:33.3636445-05:00",
+  "generatedAt": "2026-10-29T13:53:15.5052616-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -14648,6 +14648,49 @@
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
       "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetReceivedPartNumbers.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetReceivedPartNumbers",
       "procedureCount": 1,
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
