@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.6.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.6.0</h1>
+                    <p class="hero-copy">Receiving Analytics now has a second tab that reports what our own dock actually did, page by page, instead of only what Infor Visual recorded. Edit Mode gained a Batch filter, so you can look at the skids that were entered together for one part without scrolling through everything else.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.6.0</span>
+                <span class="meta-text">Released October 29, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.6.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.6.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Analytics that report our own work</p>
+                            <p class="highlight-text">Receiving Analytics now opens with two tabs. <strong>ERP Data</strong> is the page you already know and is unchanged. <strong>App Data</strong> is new: it reads our own completed receipts and answers how busy the dock was, whether we were on time, which suppliers fill it, and how much of the real work the app captures.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">One panel per page</p>
+                            <p class="highlight-text">App Data shows <strong>Activity</strong>, <strong>On Time</strong>, <strong>Suppliers</strong> and <strong>Coverage</strong> as four pages behind a row of tabs, with the date range and filters sitting above them. One panel fills the screen at a time, so nothing is squeezed or scrolled.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Edit Mode Batch filter</p>
+                            <p class="highlight-text">Edit Mode has a new <strong>Batch</strong> list. Pick a batch and the grid shows only the skids that were entered together for that one part, so a correction stays focused on the work in front of you.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="reports">Reports</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="reports" open>
+                        <summary>Receiving Analytics is now two tabs</summary>
+                        <p>The page opens on <strong>ERP Data</strong>, which is exactly the page you had before: the same filters, the same charts, the same reading of Infor Visual. Nothing on that tab has been retuned or moved.</p>
+                        <p>The second tab, <strong>App Data</strong>, reads our own completed receiving records instead of Infor Visual. It carries its own date range, period and unit, so changing the App Data filters never disturbs the ERP Data tab, and changing the ERP Data filters never disturbs App Data.</p>
+                    </details>
+
+                    <details class="change-item" data-category="reports" open>
+                        <summary>Four App Data panels, one per page</summary>
+                        <p>App Data is split into four pages, chosen from a row of tabs with the filter bar above it:</p>
+                        <ul>
+                            <li><strong>Activity</strong>: loads, labels and quantity, switched between day, week and month.</li>
+                            <li><strong>On Time</strong>: receipts counted as early, on time or late against the purchase order due date, with an on-time percentage.</li>
+                            <li><strong>Suppliers</strong>: suppliers ranked by labels, quantity or loads, with the leading suppliers' share of the total and a remainder.</li>
+                            <li><strong>Coverage</strong>: our receipts beside what Infor Visual recorded for the same days and the same part numbers, plus how each side splits material by category.</li>
+                        </ul>
+                        <p>Each page carries one plain sentence above the chart saying what its figures are read from, and reloading or clearing the filters leaves you on the page you were reading.</p>
+                    </details>
+
+                    <details class="change-item" data-category="reports" open>
+                        <summary>On-time results turn red or green against a target</summary>
+                        <p>A new administrator setting, <strong>Receiving Analytics on-time target</strong>, defaults to 95 per cent. With a target set, the on-time percentage appears green at or above it and red below it, with the target shown beside the number. With no target configured, the percentage is shown plainly with no colour so it cannot be mistaken for a pass or a fail.</p>
+                    </details>
+
+                    <details class="change-item" data-category="reports" open>
+                        <summary>Weekends are left out of App Data</summary>
+                        <p>Saturday and Sunday are not counted on App Data. No weekend day appears on a day axis, and weekend receipts contribute to no total, including the supplier ranking. The Infor Visual side of the coverage chart drops the same weekend dates, so the two lines stay aligned.</p>
+                    </details>
+
+                    <details class="change-item" data-category="reports" open>
+                        <summary>Coverage compares only the material we handle</summary>
+                        <p>Infor Visual records material that never flows through this app, so counting all of it made the comparison look like the app was missing work it was never asked to capture. Coverage now counts only the part numbers our own receipts carry for the selected dates.</p>
+                        <p>Both sides also count purchase order lines on the day each line was last received, which is how Infor Visual dates a line. In a recent thirty-day window that gives 271 of our purchase order lines against 291 from Infor Visual, so the honest coverage figure is about 93 per cent rather than a misleading ratio of labels to lines.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Batch filter in Edit Mode</summary>
+                        <p>Edit Mode has a new <strong>Batch</strong> list beside the existing filters. Each entry is the set of skids that were entered together for a single part, and choosing one narrows the grid to that batch. The first entry clears the filter and shows every batch again.</p>
+                        <p>The list also tells you how many rows each batch holds, so it is clear before you pick one what you are about to work on.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>The app now starts and updates through MTM Loader</summary>
+                        <p>This release is published in the form the new <strong>MTM Loader</strong> expects, so the Receiving tile can copy the latest version onto a machine and start it without anyone reinstalling by hand.</p>
+                        <p>The application carries everything it needs, so a machine no longer depends on anything preinstalled, and it does not need administrator rights.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>You can see the work the ERP cannot</h3>
+                            <p>Infor Visual knows what arrived at the plant. Only this app knows who received it, when it was completed, and whether it beat the due date. App Data is the first place those answers are on screen.</p>
+                        </article>
+                        <article>
+                            <h3>You can tell whether the app is capturing the work</h3>
+                            <p>The Coverage page puts our receipts beside Infor Visual's for the same material. A gap there is real: it means material arrived that the app did not record.</p>
+                        </article>
+                        <article>
+                            <h3>Corrections stay focused</h3>
+                            <p>The Batch filter in Edit Mode shows the skids from one workflow step, instead of every load of that part that has ever been received.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Nothing is required to start using this release</h2>
+                    </div>
+                    <p class="action-state success">No action is required after this update.</p>
+                    <ul class="action-list">
+                        <li>ERP Data behaves exactly as it did before, so anyone who only uses that tab has nothing to learn.</li>
+                        <li>App Data is read only. It never changes a receiving record and never writes to Infor Visual.</li>
+                        <li>The on-time target is already set to 95 per cent. Ask your MTM IT support team if your area needs a different figure.</li>
+                        <li>The database changes that support App Data are applied separately by the MTM IT support team; there is nothing for you to run.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a figure on App Data does not match what you expect, the Coverage page shows a gap you cannot explain, an on-time percentage looks wrong, the Batch list in Edit Mode is empty, or the application will not start from the MTM Loader, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
