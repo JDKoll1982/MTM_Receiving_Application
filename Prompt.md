@@ -1,0 +1,1 @@
+read up on C:\\Users\\jkoll\\source\\repos\\MTM\_Loader\_WinUI3 to see how you should publish this app so it works properly with the MTM\_Luader\_WinUI3 app. then follow the instructions (without updating the live db yet) #mtm-update-application-version.prompt.md
