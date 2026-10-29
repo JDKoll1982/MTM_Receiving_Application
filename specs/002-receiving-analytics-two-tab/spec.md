@@ -232,7 +232,9 @@ per cent. Passing this proves the app's coverage of real work is measurable.
   other.
 - **FR-024**: All App Data time buckets MUST follow the receipt's received date and time, falling back
   to the date-only transaction day where the time is missing. A receipt MUST be counted once, never
-  twice.
+  twice. Saturday and Sunday receipts MUST be excluded from every App Data figure, no weekend day
+  MUST appear as a bucket on a day axis, and the ERP side of the comparison MUST drop the same
+  weekend dates so the two lines stay aligned.
 - **FR-025**: The coverage panel MUST draw two lines over the same dates, one counting the receipts
   the app recorded and one counting the receipts Infor Visual recorded, counted the same way.
   [NEEDS CLARIFICATION: what the two lines count. One app label against one ERP receipt line is

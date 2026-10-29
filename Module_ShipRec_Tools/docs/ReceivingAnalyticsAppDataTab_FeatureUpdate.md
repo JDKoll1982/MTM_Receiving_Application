@@ -39,6 +39,10 @@ so one range, period and unit choice drives every page.
 Because one panel owns the screen at a time, each one gets the full width and height below the
 navbar. Loading again or clearing the filters leaves you on the page you were reading.
 
+Saturday and Sunday are not read. Weekend days never appear on a day axis and weekend receipts
+count towards no total, including the supplier ranking and the missing-load-number line. The Infor
+Visual side of the coverage chart drops the same weekend dates, so the comparison stays honest.
+
 Every panel says that its figures cover completed work only, because a receipt still in progress is
 not filed into `receiving_history` yet and would make today look lower than it is.
 

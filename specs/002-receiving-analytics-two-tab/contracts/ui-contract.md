@@ -31,6 +31,14 @@ takes the full area below the navbar, so a panel never shares the window with an
 scrolls. The navbar index survives `Load` and `Clear`, so a reload leaves the user on the page they
 were reading.
 
+## Weekend rule
+
+Saturday and Sunday are not read. No weekend day appears as a bucket on a day axis, and weekend
+receipts contribute to no total on any page: they are excluded inside the stored procedures, so the
+supplier ranking and the missing-load-number disclosure drop them too. The ERP side of the coverage
+chart drops the same weekend dates, so excluding weekend work from the app never reads as lost
+coverage against Infor Visual.
+
 - `How busy were we` shows loads per period and labels per period as two series, beside a quantity
   stack of one stacked bar per period with one segment per material category in scope.
 - `Were we on time` shows one chart of `Early`, `OnTime` and `Late` stacked per period, plus a readout

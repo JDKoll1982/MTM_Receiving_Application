@@ -22,7 +22,9 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   does our app actually see** (two receipt-count coverage lines over the same dates, and the app's
   category split beside Infor Visual's over the same five categories). Each panel owns the full area
   below the navbar, so none of them scrolls, and reloading or clearing leaves you on the page you
-  were reading.
+  were reading. Saturdays and Sundays are not read: no weekend day appears on a day axis and weekend
+  receipts count towards no total, with the Infor Visual side of the coverage chart dropping the same
+  weekend dates.
 - **Why:** Infor Visual knows what arrived at the plant; only the app knows what an operator
   completed and whether it was on time. The comparison panels are what prove the app is capturing
   the real work.

@@ -23,6 +23,8 @@ BEGIN
             OR
             (received_date IS NULL AND transaction_date >= p_start_date AND transaction_date < p_end_date)
         )
+        -- DAYOFWEEK: 1 = Sunday, 7 = Saturday. The dock does not read weekend work.
+        AND DAYOFWEEK(COALESCE(received_date, transaction_date)) NOT IN (1, 7)
     GROUP BY
         DATE(COALESCE(received_date, transaction_date)),
         CASE

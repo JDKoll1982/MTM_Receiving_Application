@@ -227,16 +227,39 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
 
         await viewModel.LoadCommand.ExecuteAsync(null);
         var dailyLabelCount = AxisLabels(viewModel.LoadsLabelsXAxes).Count;
+        var weekdaysInRange = Enumerable
+            .Range(0, 30)
+            .Select(offset => DateTime.Today.AddDays(-29 + offset))
+            .Count(day => day.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday);
 
         viewModel.SelectedPeriodIndex = 1;
 
-        dailyLabelCount.Should().Be(30);
+        dailyLabelCount.Should().Be(weekdaysInRange);
         viewModel.Period.Should().Be("Week");
         AxisLabels(viewModel.LoadsLabelsXAxes).Count.Should().BeInRange(5, 6);
         serviceMock.Verify(
             service => service.GetAppDataAsync(It.IsAny<Model_Tool_ReceivingAnalyticsAppFilter>()),
             Times.Once
         );
+    }
+
+    [Fact]
+    public async Task LoadAsync_ShouldLeaveWeekendsOffTheDayAxis()
+    {
+        var viewModel = CreateViewModel(CreateServiceMock(SampleDataset()));
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        var weekendLabels = Enumerable
+            .Range(0, 30)
+            .Select(offset => DateTime.Today.AddDays(-29 + offset))
+            .Where(day => day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+            .Select(day => day.ToString("MM/dd"))
+            .ToList();
+
+        AxisLabels(viewModel.LoadsLabelsXAxes).Should().NotIntersectWith(weekendLabels);
+        AxisLabels(viewModel.OnTimeXAxes).Should().NotIntersectWith(weekendLabels);
+        AxisLabels(viewModel.CoverageXAxes).Should().NotIntersectWith(weekendLabels);
     }
 
     [Fact]

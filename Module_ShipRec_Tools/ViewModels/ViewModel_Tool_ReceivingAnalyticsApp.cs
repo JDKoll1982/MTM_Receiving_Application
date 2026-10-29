@@ -736,12 +736,15 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     /// <summary>
     /// Both lines are drawn over one set of dates, so a reader compares the same days on both
     /// sides. A date only one side recorded still gets a point, at zero, on the other line.
+    /// Weekend dates are dropped from both sides together, so excluding weekend work from the app
+    /// never reads as lost coverage against the ERP.
     /// </summary>
     private void BuildCoverage(Model_Tool_ReceivingAnalyticsAppComparison comparison)
     {
         var dates = comparison
             .AppCoverageSeries.Select(point => point.Date.Date)
             .Concat(comparison.ErpCoverageSeries.Select(point => point.Date.Date))
+            .Where(date => !IsWeekend(date))
             .Distinct()
             .Order()
             .ToList();
@@ -1110,6 +1113,10 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     /// The continuous bucket axis for the range: every day, Monday-to-Sunday week or calendar
     /// month is present, including the ones with no completed receipts.
     /// </summary>
+    /// <summary>A Saturday or Sunday. The panels do not read weekend work.</summary>
+    private static bool IsWeekend(DateTime date) =>
+        date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+
     private static List<Bucket> BuildBuckets(
         DateTime start,
         DateTime endExclusive,
@@ -1157,6 +1164,11 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
             default:
                 for (var day = rangeStart; day < endExclusive; day = day.AddDays(1))
                 {
+                    if (IsWeekend(day))
+                    {
+                        continue;
+                    }
+
                     buckets.Add(new Bucket(day, day.AddDays(1), day.ToString("MM/dd")));
                 }
 
