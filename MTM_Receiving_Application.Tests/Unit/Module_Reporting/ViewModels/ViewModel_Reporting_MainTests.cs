@@ -2,6 +2,7 @@ using System.Globalization;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Models;
@@ -237,17 +238,103 @@ public sealed class ViewModel_Reporting_MainTests
         columns.Should().OnlyContain(column => column.IsIncluded);
     }
 
-    private static ViewModel_Reporting_Main CreateViewModel()
+    [Fact]
+    public void ApplySavedModulePreferences_ShouldNotOverrideExplicitModuleSelection()
+    {
+        var settingsService = new StubReportingSettingsService(
+            new Model_ReportingPreviewSettings
+            {
+                ModuleSettings = new Dictionary<
+                    string,
+                    Model_ReportingPreviewModuleSettings
+                >(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Receiving"] = new() { IsIncluded = false },
+                },
+            }
+        );
+        var viewModel = CreateViewModel(reportingSettings: settingsService);
+        viewModel.IsReceivingEnabled = true;
+        viewModel.IsReceivingChecked = true;
+        var previewModuleCard = new Model_ReportingPreviewModuleCard
+        {
+            ModuleName = "Receiving",
+            IsIncluded = true,
+        };
+
+        InvokeApplySavedModulePreferences(viewModel, previewModuleCard);
+
+        previewModuleCard.IsIncluded.Should().BeTrue();
+        viewModel.IsReceivingChecked.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ChangingDateRange_ShouldNotChangeOutgoingPreviewModuleSelection()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.IsReceivingEnabled = true;
+        viewModel.IsReceivingChecked = true;
+        var outgoingPreviewModuleCard = new Model_ReportingPreviewModuleCard
+        {
+            ModuleName = "Receiving",
+            IsIncluded = true,
+        };
+        viewModel.PreviewModuleCards = [outgoingPreviewModuleCard];
+
+        viewModel.StartDate = viewModel.StartDate!.Value.AddDays(-2);
+
+        outgoingPreviewModuleCard.IsIncluded.Should().BeTrue();
+        viewModel.PreviewModuleCards.Should().BeEmpty();
+        viewModel.IsReceivingChecked.Should().BeFalse();
+        viewModel.IsReceivingEnabled.Should().BeFalse();
+    }
+
+    private static void InvokeApplySavedModulePreferences(
+        ViewModel_Reporting_Main viewModel,
+        Model_ReportingPreviewModuleCard previewModuleCard
+    )
+    {
+        var method = typeof(ViewModel_Reporting_Main).GetMethod(
+            "ApplySavedModulePreferences",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic
+        );
+
+        method.Should().NotBeNull();
+        method!.Invoke(viewModel, [previewModuleCard]);
+    }
+
+    private static ViewModel_Reporting_Main CreateViewModel(
+        IService_Reporting? reportingService = null,
+        IService_ReportingSettings? reportingSettings = null
+    )
     {
         return new ViewModel_Reporting_Main(
-            new Mock<IService_Reporting>().Object,
+            reportingService ?? new Mock<IService_Reporting>().Object,
             new Mock<IService_ReportingClipboard>().Object,
             new Mock<IService_ReportingRecipientSettings>().Object,
-            new Mock<IService_ReportingSettings>().Object,
+            reportingSettings ?? new Mock<IService_ReportingSettings>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
         );
+    }
+
+    private sealed class StubReportingSettingsService : IService_ReportingSettings
+    {
+        private readonly Model_ReportingPreviewSettings _initialSettings;
+
+        public StubReportingSettingsService(Model_ReportingPreviewSettings initialSettings)
+        {
+            _initialSettings = initialSettings;
+        }
+
+        public Task<Model_ReportingPreviewSettings> GetPreviewSettingsAsync(int? userId = null) =>
+            Task.FromResult(_initialSettings);
+
+        public Task<Model_Dao_Result> SavePreviewSettingsAsync(
+            Model_ReportingPreviewSettings settings,
+            int? userId = null
+        ) => Task.FromResult(Model_Dao_Result_Factory.Success());
     }
 
     private static List<Model_ReportingPreviewColumnOption> InvokeCreateDetailColumnOptions(

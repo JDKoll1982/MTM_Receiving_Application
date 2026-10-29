@@ -1,6 +1,6 @@
 ---
 description: Create or update the feature specification from a natural language feature description.
-handoffs: 
+handoffs:
   - label: Build Technical Plan
     agent: speckit.plan
     prompt: Create a plan for the spec. I am building with...
@@ -10,20 +10,6 @@ handoffs:
     send: true
 ---
 
-<!-- 
-[DOC-META-START]
-- File Name: speckit.specify.agent.md
-- Description: Create or update the feature specification from a natural language feature description.
-- Last Updated: 2026-08-28
-- Quick TOC:
-  - Line 13-20: ## User Input
-  - Line 21-370: ## Outline
-  - Line 371-372: ## General Guidelines
-  - Line 373-432: ## Quick Guidelines
-- Critical Notes: Creates/updates the feature spec from natural language descriptions and hands off to plan/clarify.
-[DOC-META-END]
--->
-
 ## User Input
 
 ```text
@@ -32,13 +18,48 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Pre-Execution Checks
+
+**Check for extension hooks (before specification)**:
+- Check if `.specify/extensions.yml` exists in the project root.
+- If it exists, read it and look for entries under the `hooks.before_specify` key
+- If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue normally
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+- For each executable hook, output the following based on its `optional` flag:
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Pre-Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+  - **Mandatory hook** (`optional: false`):
+    ```
+    ## Extension Hooks
+
+    **Automatic Pre-Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+
+    Wait for the result of the hook command before proceeding to the Outline.
+    ```
+    After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+
 ## Outline
 
 The text the user typed after `/speckit.specify` in the triggering message **is** the feature description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
 Given that feature description, do this:
 
-1. **Generate a concise short name** (2-4 words) for the branch:
+1. **Generate a concise short name** (2-4 words) for the feature:
    - Analyze the feature description and extract the most meaningful keywords
    - Create a 2-4 word short name that captures the essence of the feature
    - Use action-noun format when possible (e.g., "add-user-auth", "fix-payment-bug")
@@ -50,43 +71,51 @@ Given that feature description, do this:
      - "Create a dashboard for analytics" → "analytics-dashboard"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
-2. **Check for existing branches before creating new one**:
+2. **Branch creation** (optional, via hook):
 
-   a. First, fetch all remote branches to ensure we have the latest information:
+   If a `before_specify` hook ran successfully in the Pre-Execution Checks above, it will have created/switched to a git branch and output JSON containing `BRANCH_NAME` and `FEATURE_NUM`. Note these values for reference, but the branch name does **not** dictate the spec directory name.
 
-      ```bash
-      git fetch --all --prune
-      ```
+   If the user explicitly provided `GIT_BRANCH_NAME`, pass it through to the hook so the branch script uses the exact value as the branch name (bypassing all prefix/suffix generation).
 
-   b. Find the highest feature number across all sources for the short-name:
-      - Remote branches: `git ls-remote --heads origin | grep -E 'refs/heads/[0-9]+-<short-name>$'`
-      - Local branches: `git branch | grep -E '^[* ]*[0-9]+-<short-name>$'`
-      - Specs directories: Check for directories matching `specs/[0-9]+-<short-name>`
+3. **Create the spec feature directory**:
 
-   c. Determine the next available number:
-      - Extract all numbers from all three sources
-      - Find the highest number N
-      - Use N+1 for the new branch number
+   Specs live under the default `specs/` directory unless the user explicitly provides `SPECIFY_FEATURE_DIRECTORY`.
 
-   d. Run the script `.specify/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS"` with the calculated number and short-name:
-      - Pass `--number N+1` and `--short-name "your-short-name"` along with the feature description
-      - Bash example: `.specify/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS" --json --number 5 --short-name "user-auth" "Add user authentication"`
-      - PowerShell example: `.specify/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS" -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
+   **Resolution order for `SPECIFY_FEATURE_DIRECTORY`**:
+   1. If the user explicitly provided `SPECIFY_FEATURE_DIRECTORY` (e.g., via environment variable, argument, or configuration), use it as-is
+   2. Otherwise, auto-generate it under `specs/`:
+      - Check `.specify/init-options.json` for `feature_numbering` (preferred) or `branch_numbering` (deprecated, migration only — will be removed in a future release)
+      - If `"timestamp"`: prefix is `YYYYMMDD-HHMMSS` (current timestamp)
+      - If `"sequential"` or absent: prefix is `NNN` (next available 3-digit number after scanning existing directories in `specs/`)
+      - Construct the directory name: `<prefix>-<short-name>` (e.g., `003-user-auth` or `20260319-143022-user-auth`)
+      - Set `SPECIFY_FEATURE_DIRECTORY` to `specs/<directory-name>`
+      - If `branch_numbering` was used (and `feature_numbering` was absent), emit a one-line warning: "⚠️ `branch_numbering` in init-options.json is deprecated. Rename to `feature_numbering`."
+
+   **Create the directory and spec file**:
+   - `mkdir -p SPECIFY_FEATURE_DIRECTORY`
+   - Resolve the active `spec-template` through the Spec Kit preset/template resolution stack (equivalent to `specify preset resolve spec-template`)
+   - Copy the resolved `spec-template` file to `SPECIFY_FEATURE_DIRECTORY/spec.md` as the starting point
+   - Set `SPEC_FILE` to `SPECIFY_FEATURE_DIRECTORY/spec.md`
+   - Persist the resolved path to `.specify/feature.json`:
+     ```json
+     {
+       "feature_directory": "<resolved feature dir>"
+     }
+     ```
+     Write the actual resolved directory path value (for example, `specs/003-user-auth`), not the literal string `SPECIFY_FEATURE_DIRECTORY`.
+     This allows downstream commands (`/speckit.plan`, `/speckit.tasks`, etc.) to locate the feature directory without relying on git branch name conventions.
 
    **IMPORTANT**:
-   - Check all three sources (remote branches, local branches, specs directories) to find the highest number
-   - Only match branches/directories with the exact short-name pattern
-   - If no existing branches/directories found with this short-name, start with number 1
-   - You must only ever run this script once per feature
-   - The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for
-   - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
-   - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
+   - You must only create one feature per `/speckit.specify` invocation
+   - The spec directory name and the git branch name are independent — they may be the same but that is the user's choice
+   - The spec directory and file are always created by this command, never by the hook
 
-3. Load `.specify/templates/spec-template.md` to understand required sections.
+4. Load the resolved active `spec-template` file to understand required sections.
 
-4. Follow this execution flow:
+5. **IF EXISTS**: Load `.specify/memory/constitution.md` for project principles and governance constraints.
 
-    1. Parse user description from Input
+6. Follow this execution flow:
+    1. Parse user description from arguments
        If empty: ERROR "No feature description provided"
     2. Extract key concepts from description
        Identify: actors, actions, data, constraints
@@ -110,202 +139,28 @@ Given that feature description, do this:
     7. Identify Key Entities (if data involved)
     8. Return: SUCCESS (spec ready for planning)
 
-5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
+7. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
 
-5a. **Generate Workflow Data Blocks And Mermaid Diagrams**: For EACH user story that involves user workflows or interactions:
-   
-   **CRITICAL**: Generate structured WORKFLOW_DATA blocks first, then generate the matching raw Mermaid diagrams directly in the spec file. Do NOT rely on MermaidProcessor.ps1 or MermaidGenerator.ps1 being present.
-   
-   **Format**: Immediately after the user story's acceptance scenarios, add:
-   
-   ```markdown
-   ## User Story [N] Workflow Data
-   
-   <!-- WORKFLOW_START: {UserStory}.{Workflow} --><!--
-   WORKFLOW: {UserStory}.{Workflow}
-   TITLE: {Clear workflow description}
-   DIRECTION: {TD|LR|RL|BT}
-   DEPENDS_ON: {Comma-separated workflow IDs or NONE}
-   CONFLICTS_WITH: {Comma-separated workflow IDs or NONE}
-   INTERACTION: {How this relates to other workflows}
-   
-   NODE: {NodeName}
-   TYPE: {start|process|decision|end}
-   SHAPE: {stadium|rect|diamond|circle}
-   LABEL: {Display text - use <br/> for line breaks}
-   
-   NODE: {NodeName}
-   TYPE: {type}
-   SHAPE: {shape}
-   LABEL: {label}
-   
-   CONNECTION: {FromNode} -> {ToNode}
-   CONNECTION: {FromNode} -> {ToNode} [{Label}]
-   --><!-- WORKFLOW_END: {UserStory}.{Workflow} -->
-   ```
-   
-   **IMPORTANT**: The workflow data is wrapped in `<!--` and `-->` to hide it from markdown preview while keeping it machine-readable for future tooling.
-   ```
-   
-   **Field Requirements:**
-   - **WORKFLOW**: Format as `{UserStoryNumber}.{WorkflowNumber}` (e.g., 1.1, 1.2, 2.1)
-   - **TITLE**: Descriptive name for the workflow
-   - **DIRECTION**: 
-     - `TD` (top-down) - Default for most workflows
-     - `LR` (left-right) - For horizontal flows
-     - `RL` (right-left) - Rarely used
-     - `BT` (bottom-top) - Rarely used
-   - **DEPENDS_ON**: List workflow IDs that must complete first, or `NONE` if independent
-     - Examples: `NONE`, `1.1`, `1.1, 1.2, 2.1`
-   - **CONFLICTS_WITH**: List workflow IDs that cannot coexist with this one, or `NONE`
-     - Examples: `NONE`, `1.3`, `2.1, 2.2`
-   - **INTERACTION**: Free-text description of how this workflow relates to others
-     - Examples:
-       - `Primary happy path - foundation for all features`
-       - `Alternative to 1.1 - expert users skip wizard`
-       - `Extends 1.1 by adding bulk operations`
-       - `Conflicts with 3.6 because both modify same data simultaneously`
-   
-   **Node Requirements:**
-   - **NODE**: Simple identifier without spaces (e.g., `Start`, `ValidateStep1`, `ShowError`)
-   - **TYPE**: Semantic type for validation
-     - `start` - Workflow entry point (use stadium shape)
-     - `process` - Action or state (use rect shape)
-     - `decision` - Branching logic (use diamond shape)
-     - `end` - Workflow completion (use stadium shape)
-   - **SHAPE**: Mermaid shape name
-     - `stadium` - Rounded pill: `([text])`
-     - `rect` - Rectangle: `[text]`
-     - `diamond` - Diamond: `{text}`
-     - `circle` - Circle: `((text))`
-     - `hexagon` - Hexagon: `{{text}}`
-   - **LABEL**: Display text (use `<br/>` for multi-line labels)
-   
-   **Connection Requirements:**
-   - Format: `CONNECTION: FromNode -> ToNode` or `CONNECTION: FromNode -> ToNode [Label]`
-   - FromNode and ToNode must match NODE names exactly
-   - Optional label for decision branches (e.g., `[Yes]`, `[No]`, `[Success]`, `[Error]`)
-   
-   **Workflow Coverage:**
-   - Create separate workflows for:
-     - Primary happy path
-     - Error handling and edge cases
-     - Alternative paths (different modes, bulk operations)
-     - Complex multi-step interactions
-   - Number workflows sequentially: 1.1, 1.2, 1.3, etc.
-   
-   **After WORKFLOW_DATA blocks, add the actual Mermaid diagrams directly:**
-   
-   ```markdown
-   ## User Story [N] Workflow Diagrams
-   
-   ### Workflow {N}.{X}: {Title}
+8. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
 
-    ```mermaid
-    flowchart {DIRECTION}
-          Start([Start]) --> NextStep[Next Step]
-    ```
-   ```
-
-    **Diagram requirements:**
-    - Convert every WORKFLOW_DATA block into a Mermaid `flowchart` using the same direction.
-    - Emit one Mermaid fenced code block per workflow subsection.
-    - Map shapes as follows:
-       - `stadium` -> `([Label])`
-       - `rect` -> `[Label]`
-       - `diamond` -> `{Label}`
-       - `circle` -> `((Label))`
-       - `hexagon` -> `{{Label}}`
-    - Preserve edge labels from `CONNECTION: A -> B [Label]` as Mermaid edge text, e.g. `A -->|Yes| B`.
-    - Use the same node IDs as the WORKFLOW_DATA block where practical.
-    - Keep the diagrams in sync with the structured workflow data in the same spec revision.
-   
-   **Example Complete WORKFLOW_DATA Block:**
-   
-   ```markdown
-   ## User Story 1 Workflow Data
-   
-   <!-- WORKFLOW_START: 1.1 -->
-   WORKFLOW: 1.1
-   TITLE: Complete 3-Step Guided Workflow
-   DIRECTION: TD
-   DEPENDS_ON: NONE
-   CONFLICTS_WITH: 1.3
-   INTERACTION: Primary happy path - conflicts with Expert Mode (1.3) as user can only choose one
-   
-   NODE: Start
-   TYPE: start
-   SHAPE: stadium
-   LABEL: User selects<br/>Guided Mode
-   
-   NODE: Step1
-   TYPE: process
-   SHAPE: rect
-   LABEL: Step 1: Order & Part Selection
-   
-   NODE: ValidateStep1
-   TYPE: decision
-   SHAPE: diamond
-   LABEL: Step 1<br/>valid?
-   
-   NODE: ShowErrors
-   TYPE: process
-   SHAPE: rect
-   LABEL: Show validation errors
-   
-   NODE: Step2
-   TYPE: process
-   SHAPE: rect
-   LABEL: Step 2: Load Details
-   
-   NODE: End
-   TYPE: end
-   SHAPE: stadium
-   LABEL: Workflow complete
-   
-   CONNECTION: Start -> Step1
-   CONNECTION: Step1 -> ValidateStep1
-   CONNECTION: ValidateStep1 -> ShowErrors [No]
-   CONNECTION: ValidateStep1 -> Step2 [Yes]
-   CONNECTION: ShowErrors -> Step1
-   CONNECTION: Step2 -> End
-   <!-- WORKFLOW_END: 1.1 -->
-   
-      ## User Story 1 Workflow Diagrams
-
-      ### Workflow 1.1: Complete 3-Step Guided Workflow
-
-      ```mermaid
-      flowchart TD
-         Start([User selects<br/>Guided Mode]) --> Step1[Step 1: Order & Part Selection]
-         Step1 --> ValidateStep1{Step 1<br/>valid?}
-         ValidateStep1 -->|No| ShowErrors[Show validation errors]
-         ValidateStep1 -->|Yes| Step2[Step 2: Load Details]
-         ShowErrors --> Step1
-         Step2 --> End([Workflow complete])
-      ```
-   ```
-
-6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
-
-   a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure with these validation items:
+   a. **Create Spec Quality Checklist**: Generate a checklist file at `SPECIFY_FEATURE_DIRECTORY/checklists/requirements.md` using the checklist template structure with these validation items:
 
       ```markdown
       # Specification Quality Checklist: [FEATURE NAME]
-      
+
       **Purpose**: Validate specification completeness and quality before proceeding to planning
       **Created**: [DATE]
       **Feature**: [Link to spec.md]
-      
+
       ## Content Quality
-      
+
       - [ ] No implementation details (languages, frameworks, APIs)
       - [ ] Focused on user value and business needs
       - [ ] Written for non-technical stakeholders
       - [ ] All mandatory sections completed
-      
+
       ## Requirement Completeness
-      
+
       - [ ] No [NEEDS CLARIFICATION] markers remain
       - [ ] Requirements are testable and unambiguous
       - [ ] Success criteria are measurable
@@ -314,16 +169,16 @@ Given that feature description, do this:
       - [ ] Edge cases are identified
       - [ ] Scope is clearly bounded
       - [ ] Dependencies and assumptions identified
-      
+
       ## Feature Readiness
-      
+
       - [ ] All functional requirements have clear acceptance criteria
       - [ ] User scenarios cover primary flows
       - [ ] Feature meets measurable outcomes defined in Success Criteria
       - [ ] No implementation details leak into specification
-      
+
       ## Notes
-      
+
       - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`
       ```
 
@@ -333,7 +188,7 @@ Given that feature description, do this:
 
    c. **Handle Validation Results**:
 
-      - **If all items pass**: Mark checklist complete and proceed to step 6
+      - **If all items pass**: Mark checklist complete and proceed to the Mandatory Post-Execution Hooks section
 
       - **If items fail (excluding [NEEDS CLARIFICATION])**:
         1. List the failing items and specific issues
@@ -348,20 +203,20 @@ Given that feature description, do this:
 
            ```markdown
            ## Question [N]: [Topic]
-           
+
            **Context**: [Quote relevant spec section]
-           
+
            **What we need to know**: [Specific question from NEEDS CLARIFICATION marker]
-           
+
            **Suggested Answers**:
-           
+
            | Option | Answer | Implications |
            |--------|--------|--------------|
            | A      | [First suggested answer] | [What this means for the feature] |
            | B      | [Second suggested answer] | [What this means for the feature] |
            | C      | [Third suggested answer] | [What this means for the feature] |
            | Custom | Provide your own answer | [Explain how to provide custom input] |
-           
+
            **Your choice**: _[Wait for user response]_
            ```
 
@@ -378,11 +233,49 @@ Given that feature description, do this:
 
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
-7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
+## Mandatory Post-Execution Hooks
 
-**NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
+**You MUST complete this section before reporting completion to the user.**
 
-## General Guidelines
+Check if `.specify/extensions.yml` exists in the project root.
+- If it does not exist, or no hooks are registered under `hooks.after_specify`, skip to the Completion Report.
+- If it exists, read it and look for entries under the `hooks.after_specify` key.
+- If the YAML cannot be parsed or is invalid, do not skip silently: tell the user that `.specify/extensions.yml` could not be read (include the parser error) and that no hooks were checked, including any mandatory (`optional: false`) hooks registered there, then continue to the Completion Report.
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
+- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
+- For each executable hook, output the following based on its `optional` flag:
+  - **Mandatory hook** (`optional: false`) — **You MUST emit `EXECUTE_COMMAND:` for each mandatory hook**:
+    ```
+    ## Extension Hooks
+
+    **Automatic Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+    ```
+    After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+
+## Completion Report
+
+Report completion to the user with:
+- `SPECIFY_FEATURE_DIRECTORY` — the feature directory path
+- `SPEC_FILE` — the spec file path
+- Checklist results summary
+- Readiness for the next phase (`/speckit.clarify` or `/speckit.plan`)
+
+**NOTE:** Branch creation is handled by the `before_specify` hook (git extension). Spec directory and file creation are always handled by this core command.
 
 ## Quick Guidelines
 
@@ -420,7 +313,7 @@ When creating this spec from a user prompt:
 - Performance targets: Standard web/mobile app expectations unless specified
 - Error handling: User-friendly messages with appropriate fallbacks
 - Authentication method: Standard session-based or OAuth2 for web apps
-- Integration patterns: RESTful APIs unless specified otherwise
+- Integration patterns: Use project-appropriate patterns (REST/GraphQL for web services, function calls for libraries, CLI args for tools, etc.)
 
 ### Success Criteria Guidelines
 
@@ -444,3 +337,9 @@ Success criteria must be:
 - "Database can handle 1000 TPS" (implementation detail, use user-facing metric)
 - "React components render efficiently" (framework-specific)
 - "Redis cache hit rate above 80%" (technology-specific)
+
+## Done When
+
+- [ ] Specification written to `SPEC_FILE` and validated against quality checklist
+- [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
+- [ ] Completion reported to user with feature directory, spec file path, and checklist results

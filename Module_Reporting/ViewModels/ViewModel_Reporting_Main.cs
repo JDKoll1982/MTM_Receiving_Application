@@ -353,8 +353,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
             else
             {
-                ResetAvailabilityState();
                 ClearPreviewState();
+                ResetAvailabilityState();
                 ShowStatus(
                     result.ErrorMessage ?? "Failed to check availability",
                     InfoBarSeverity.Error
@@ -364,8 +364,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         catch (Exception ex)
         {
             _logger.LogError($"Error checking availability: {ex.Message}", ex);
-            ResetAvailabilityState();
             ClearPreviewState();
+            ResetAvailabilityState();
             ShowStatus("Error checking data availability", InfoBarSeverity.Error);
         }
         finally
@@ -718,8 +718,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         _isApplyingSavedPreviewSettings = true;
         try
         {
-            previewModuleCard.IsIncluded = savedSettings.IsIncluded;
-            SyncMainModuleSelection(previewModuleCard.ModuleName, previewModuleCard.IsIncluded);
+            // Module inclusion is an explicit per-run choice made with the entry page
+            // checkboxes; restoring it from saved settings would override that choice.
 
             if (savedSettings.IncludedColumnKeys is { Count: > 0 })
             {
@@ -1293,8 +1293,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
     private void ResetForDateRangeChange()
     {
-        ResetAvailabilityState();
+        // Clear the preview first so the availability reset cannot push stale card
+        // selections (and persist them as excluded modules) before the cards go away.
         ClearPreviewState();
+        ResetAvailabilityState();
         ShowStatus(
             "Date range changed. Check availability to refresh the report options.",
             InfoBarSeverity.Informational

@@ -1,6 +1,6 @@
 # Receiving Analytics & Delivery Schedule Tools — Feature Update
 
-- **Last Updated:** 2026-08-31
+- **Last Updated:** 2026-10-29
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
 - **Data Source:** Infor Visual SQL Server (MTMFG) — **read-only**
 - **Charting:** LiveCharts2 (WinUI) — `LiveChartsCore.SkiaSharpView.WinUI`
@@ -142,3 +142,9 @@ Reference: `ReceivingAnalytics_SQL_Queue_Sequences.md` (top-level).
   - `ViewModel_Tool_DeliveryScheduleTests.cs`
 - `MTM_Receiving_Application.Tests/LiveChartsTestInitializer.cs` — process-wide
   `LiveCharts.Configure(...)` for headless chart-image rendering in tests.
+
+## See Also
+
+- `Module_ShipRec_Tools/docs/ReceivingAnalytics_TwoTab_AnalyticsCatalog.md` — candidate analytics
+  for a planned two-tab split of Receiving Analytics (Tab 1 = Infor Visual, Tab 2 = application
+  database). Catalog only; not implemented.
