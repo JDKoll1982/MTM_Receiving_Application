@@ -136,8 +136,8 @@
             IsHeaderItemsCarouselEnabled="False"
             SelectedIndex="{x:Bind ViewModel.SelectedPanelIndex, Mode=TwoWay}">
 
-            <!--  Page 1: How busy were we  -->
-            <PivotItem Header="How busy were we">
+            <!--  Page 1: Activity  -->
+            <PivotItem Header="Activity">
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -155,7 +155,8 @@
                             Grid.Row="0"
                             FontSize="12"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Figures cover completed work only." />
+                            Text="Loads, labels and quantity from our own completed receipts, counted on the day they were received."
+                            TextWrapping="Wrap" />
 
                         <Grid Grid.Row="1" ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
@@ -208,8 +209,8 @@
                 </Border>
             </PivotItem>
 
-            <!--  Page 2: Were we on time  -->
-            <PivotItem Header="Were we on time">
+            <!--  Page 2: On Time  -->
+            <PivotItem Header="On Time">
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -226,7 +227,8 @@
                             Grid.Row="0"
                             FontSize="12"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Figures cover completed work only." />
+                            Text="Our completed receipts measured against the date each purchase order was due."
+                            TextWrapping="Wrap" />
 
                         <TextBlock
                             Grid.Row="1"
@@ -291,8 +293,8 @@
                 </Border>
             </PivotItem>
 
-            <!--  Page 3: Who is filling our dock  -->
-            <PivotItem Header="Who is filling our dock">
+            <!--  Page 3: Suppliers  -->
+            <PivotItem Header="Suppliers">
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -309,7 +311,8 @@
                             Grid.Row="0"
                             FontSize="12"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Figures cover completed work only." />
+                            Text="Our completed receipts grouped by the supplier named on each one."
+                            TextWrapping="Wrap" />
 
                         <TextBlock
                             Grid.Row="1"
@@ -345,8 +348,8 @@
                 </Border>
             </PivotItem>
 
-            <!--  Page 4: How much does our app actually see  -->
-            <PivotItem Header="How much does our app actually see">
+            <!--  Page 4: Coverage  -->
+            <PivotItem Header="Coverage">
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -363,7 +366,8 @@
                             Grid.Row="0"
                             FontSize="12"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="Figures cover completed work only." />
+                            Text="Our own completed receipts beside what Infor Visual recorded for the same days."
+                            TextWrapping="Wrap" />
 
                         <TextBlock
                             Grid.Row="1"

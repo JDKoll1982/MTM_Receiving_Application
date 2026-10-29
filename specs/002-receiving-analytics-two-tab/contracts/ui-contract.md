@@ -19,17 +19,40 @@ TabViewItem, untouched; the second TabViewItem hosts the App Data control.
 The four panels are four pages behind a navbar, in this order, with the filter bar above the navbar
 so every page is read through the same filters.
 
-| Page | Title | Draws |
+| Page | Header | Draws |
 | --- | --- | --- |
-| 1 | `How busy were we` | a loads-and-labels chart beside a quantity stack |
-| 2 | `Were we on time` | an early, on-time and late stack with the percentage readout and target |
-| 3 | `Who is filling our dock` | a supplier ranking with cumulative share |
-| 4 | `How much does our app actually see` | a two-line coverage chart over a two-sided category mix |
+| 1 | `Activity` | a loads-and-labels chart beside a quantity stack |
+| 2 | `On Time` | an early, on-time and late stack with the percentage readout and target |
+| 3 | `Suppliers` | a supplier ranking with cumulative share |
+| 4 | `Coverage` | a two-line coverage chart over a two-sided category mix |
 
-The four titles appear in this order as the navbar labels, and the page opens on page 1. Each page
-takes the full area below the navbar, so a panel never shares the window with another and never
+The four headers are the navbar labels, one or two words each, and the page opens on page 1. Each
+page takes the full area below the navbar, so a panel never shares the window with another and never
 scrolls. The navbar index survives `Load` and `Clear`, so a reload leaves the user on the page they
 were reading.
+
+### What each page reads
+
+Each page states plainly what its figures are read from, in one sentence above the chart.
+
+| Page | Line above the chart |
+| --- | --- |
+| 1 | Loads, labels and quantity from our own completed receipts, counted on the day they were received. |
+| 2 | Our completed receipts measured against the date each purchase order was due. |
+| 3 | Our completed receipts grouped by the supplier named on each one. |
+| 4 | Our own completed receipts beside what Infor Visual recorded for the same days. |
+
+- `Activity` shows loads per period and labels per period as two series, beside a quantity
+  stack of one stacked bar per period with one segment per material category in scope.
+- `On Time` shows one chart of `Early`, `OnTime` and `Late` stacked per period, plus a readout
+  strip carrying the percentage and its target. Receipts with no PO due date appear as a separate
+  remainder and are never counted as on time.
+- `Suppliers` shows one ranking chart plus a readout strip with the cumulative share of
+  the leading suppliers. Suppliers beyond the ranked few are grouped into one remainder so the shares
+  total 100 per cent.
+- `Coverage` shows two lines over the same dates, one counting the receipts
+  the app recorded and one counting the receipts Infor Visual recorded, over a two-sided category mix
+  that names the same five categories on both sides.
 
 ## Weekend rule
 
@@ -38,18 +61,6 @@ receipts contribute to no total on any page: they are excluded inside the stored
 supplier ranking and the missing-load-number disclosure drop them too. The ERP side of the coverage
 chart drops the same weekend dates, so excluding weekend work from the app never reads as lost
 coverage against Infor Visual.
-
-- `How busy were we` shows loads per period and labels per period as two series, beside a quantity
-  stack of one stacked bar per period with one segment per material category in scope.
-- `Were we on time` shows one chart of `Early`, `OnTime` and `Late` stacked per period, plus a readout
-  strip carrying the percentage and its target. Receipts with no PO due date appear as a separate
-  remainder and are never counted as on time.
-- `Who is filling our dock` shows one ranking chart plus a readout strip with the cumulative share of
-  the leading suppliers. Suppliers beyond the ranked few are grouped into one remainder so the shares
-  total 100 per cent.
-- `How much does our app actually see` shows two lines over the same dates, one counting the receipts
-  the app recorded and one counting the receipts Infor Visual recorded, over a two-sided category mix
-  that names the same five categories on both sides.
 
 ## Filter bar
 
@@ -84,7 +95,9 @@ chart of zeros.
 
 ## Completed-work statement
 
-Every panel states that its figures cover completed work only.
+Each page carries one plain sentence saying what its figures are read from, and every one of those
+sentences names completed receipts. The line describes the data rather than warning about it, so a
+reader learns what the chart counts instead of being told a caveat.
 
 ## Exposure rule
 

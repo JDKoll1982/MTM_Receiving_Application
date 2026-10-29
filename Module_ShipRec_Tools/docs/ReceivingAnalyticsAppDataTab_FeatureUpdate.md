@@ -29,12 +29,12 @@ because pounds, pieces and coils cannot be added.
 Each panel is its own page behind a navbar, in the order below. The filter bar sits above the navbar,
 so one range, period and unit choice drives every page.
 
-| Page | Panel | Question it answers | Catalog items |
-| --- | --- | --- | --- |
-| 1 | How busy were we | How many loads and labels, and what kind of material, per day, week or month | 1, 2, 3 |
-| 2 | Were we on time | Did the material arrive before the PO due date | 11 |
-| 3 | Who is filling our dock | Which suppliers account for the work, and how much the leading few add up to | 20 |
-| 4 | How much does our app actually see | How much of the real work the app captures, and whether it classifies it the way the ERP does | 8, 9 |
+| Page | Header | Question it answers | Reads | Catalog items |
+| --- | --- | --- | --- | --- |
+| 1 | Activity | How many loads and labels, and what kind of material, per day, week or month | Loads, labels and quantity from our own completed receipts, counted on the day they were received | 1, 2, 3 |
+| 2 | On Time | Did the material arrive before the PO due date | Our completed receipts measured against the date each purchase order was due | 11 |
+| 3 | Suppliers | Which suppliers account for the work, and how much the leading few add up to | Our completed receipts grouped by the supplier named on each one | 20 |
+| 4 | Coverage | How much of the real work the app captures, and whether it classifies it the way the ERP does | Our own completed receipts beside what Infor Visual recorded for the same days | 8, 9 |
 
 Because one panel owns the screen at a time, each one gets the full width and height below the
 navbar. Loading again or clearing the filters leaves you on the page you were reading.
@@ -43,8 +43,9 @@ Saturday and Sunday are not read. Weekend days never appear on a day axis and we
 count towards no total, including the supplier ranking and the missing-load-number line. The Infor
 Visual side of the coverage chart drops the same weekend dates, so the comparison stays honest.
 
-Every panel says that its figures cover completed work only, because a receipt still in progress is
-not filed into `receiving_history` yet and would make today look lower than it is.
+Each page says in one plain sentence what its figures are read from, rather than warning about them.
+Every one of those sentences names completed receipts, because a receipt still in progress is not
+filed into `receiving_history` yet and would make today look lower than it is.
 
 ## How The Two Sides Line Up
 

@@ -36,8 +36,7 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     private Model_Tool_ReceivingAnalyticsAppComparison? _lastComparison;
 
     /// <summary>
-    /// Which panel the navbar shows: 0 = How busy were we, 1 = Were we on time,
-    /// 2 = Who is filling our dock, 3 = How much does our app actually see.
+    /// Which panel the navbar shows: 0 = Activity, 1 = On Time, 2 = Suppliers, 3 = Coverage.
     /// </summary>
     [ObservableProperty]
     private int _selectedPanelIndex;

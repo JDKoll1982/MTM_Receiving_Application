@@ -15,14 +15,15 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   own date range and its own filters, so switching tabs does not disturb the other tab's state.
 - **What App Data shows**, in the pinned order, one panel per page behind a navbar with the filter
   bar above it:
-  **How busy were we** (loads, labels and quantity by category, switchable between day, week and
-  month), **Were we on time** (early, on time and late against the PO due date, with the on-time
-  percentage coloured against the configured target), **Who is filling our dock** (supplier ranking
-  by labels, quantity or loads, with the leading suppliers' share and a remainder), and **How much
-  does our app actually see** (two receipt-count coverage lines over the same dates, and the app's
+  **Activity** (loads, labels and quantity by category, switchable between day, week and
+  month), **On Time** (early, on time and late against the PO due date, with the on-time
+  percentage coloured against the configured target), **Suppliers** (supplier ranking
+  by labels, quantity or loads, with the leading suppliers' share and a remainder), and **Coverage**
+  (two receipt-count coverage lines over the same dates, and the app's
   category split beside Infor Visual's over the same five categories). Each panel owns the full area
   below the navbar, so none of them scrolls, and reloading or clearing leaves you on the page you
-  were reading. Saturdays and Sundays are not read: no weekend day appears on a day axis and weekend
+  were reading. Each page carries one plain sentence saying what its figures are read from.
+  Saturdays and Sundays are not read: no weekend day appears on a day axis and weekend
   receipts count towards no total, with the Infor Visual side of the coverage chart dropping the same
   weekend dates.
 - **Why:** Infor Visual knows what arrived at the plant; only the app knows what an operator
