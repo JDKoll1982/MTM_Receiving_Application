@@ -1066,10 +1066,12 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
         };
 
     /// <summary>A blank stored unit reads as EA, so the database and the screen agree.</summary>
+    /// <param name="unit">The stored unit of measure.</param>
     private static string NormalizeUnit(string? unit) =>
         string.IsNullOrWhiteSpace(unit) ? "EA" : unit.Trim().ToUpperInvariant();
 
     /// <summary>A blank supplier reads as Unknown, so its work stays in the ranking.</summary>
+    /// <param name="vendor">The stored supplier name.</param>
     private static string NormalizeVendor(string? vendor) =>
         string.IsNullOrWhiteSpace(vendor) ? "Unknown" : vendor.Trim();
 
@@ -1103,6 +1105,7 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     /// month is present, including the ones with no completed receipts.
     /// </summary>
     /// <summary>A Saturday or Sunday. The panels do not read weekend work.</summary>
+    /// <param name="date">The date to test.</param>
     private static bool IsWeekend(DateTime date) =>
         date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
 
