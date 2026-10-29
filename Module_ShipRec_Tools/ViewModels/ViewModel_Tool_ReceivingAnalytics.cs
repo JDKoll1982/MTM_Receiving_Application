@@ -30,12 +30,6 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 /// </summary>
 public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
 {
-    private const string PartsCategory = "Parts";
-    private const string CoilsCategory = "MMC Coils";
-    private const string FlatCategory = "MMF Flat";
-    private const string OutsideCategory = "Outside Service";
-    private const string UninventoriedCategory = "Uninventoried";
-
     private readonly IService_Tool_ReceivingAnalytics _service;
 
     /// <summary>
@@ -604,20 +598,20 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     {
         var categories = new[]
         {
-            (Key: PartsCategory, Label: "Parts", Color: SKColors.DodgerBlue),
-            (Key: CoilsCategory, Label: "MMC (Coils)", Color: SKColors.MediumSeaGreen),
-            (Key: FlatCategory, Label: "MMF (Flat)", Color: SKColors.MediumPurple),
-            (Key: OutsideCategory, Label: "Outside Service", Color: SKColors.Orange),
-            (Key: UninventoriedCategory, Label: "Uninventoried", Color: SKColors.Gray),
+            (Key: Translation_ReceivingAnalyticsCategory.ErpParts, Label: "Parts", Color: SKColors.DodgerBlue),
+            (Key: Translation_ReceivingAnalyticsCategory.ErpMmcCoils, Label: "MMC (Coils)", Color: SKColors.MediumSeaGreen),
+            (Key: Translation_ReceivingAnalyticsCategory.ErpMmfFlat, Label: "MMF (Flat)", Color: SKColors.MediumPurple),
+            (Key: Translation_ReceivingAnalyticsCategory.ErpOutsideService, Label: "Outside Service", Color: SKColors.Orange),
+            (Key: Translation_ReceivingAnalyticsCategory.ErpUninventoried, Label: "Uninventoried", Color: SKColors.Gray),
         };
 
         var enabled = new Dictionary<string, bool>(StringComparer.Ordinal)
         {
-            [PartsCategory] = ScopeParts,
-            [CoilsCategory] = ScopeCoils,
-            [FlatCategory] = ScopeFlat,
-            [OutsideCategory] = ScopeOutside,
-            [UninventoriedCategory] = ScopeUninventoried,
+            [Translation_ReceivingAnalyticsCategory.ErpParts] = ScopeParts,
+            [Translation_ReceivingAnalyticsCategory.ErpMmcCoils] = ScopeCoils,
+            [Translation_ReceivingAnalyticsCategory.ErpMmfFlat] = ScopeFlat,
+            [Translation_ReceivingAnalyticsCategory.ErpOutsideService] = ScopeOutside,
+            [Translation_ReceivingAnalyticsCategory.ErpUninventoried] = ScopeUninventoried,
         };
 
         // Build a sorted, distinct date index so each series uses a stable integer

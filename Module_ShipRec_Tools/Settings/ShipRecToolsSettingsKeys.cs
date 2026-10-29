@@ -34,6 +34,15 @@ public static class ShipRecToolsSettingsKeys
     /// Heat / Lot Management. <see cref="Enabled"/> is the system-wide switch and is the only key
     /// in this category that is gated above a normal user; the rest may be changed by any user.
     /// </summary>
+    /// <summary>
+    /// Receiving Analytics, App Data tab. The on-time target is administrator-editable so no
+    /// percentage is hard-coded in application code.
+    /// </summary>
+    public static class ReceivingAnalytics
+    {
+        public const string OnTimeTarget = "ReceivingAnalytics.OnTimeTarget";
+    }
+
     public static class LotMarking
     {
         public const string Enabled = "LotMarking.Enabled";

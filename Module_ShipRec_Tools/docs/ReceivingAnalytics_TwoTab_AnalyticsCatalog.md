@@ -2,7 +2,7 @@
 
 - **Last Updated:** 2026-10-29
 - **Module:** Ship/Rec Tools
-- **Status:** Catalog only — items marked as approved are decisions, nothing is built yet
+- **Status:** Delivery marked per item — **Built** shipped in the two-tab slice, **Deferred** is not built yet
 
 This document lists everything the Receiving Analytics page could show you once it is split into two
 tabs. Nothing here is a commitment. It is a menu to pick from.
@@ -22,6 +22,8 @@ knows who received it, how long it took, whether it was on time, and what went w
 ## How To Read This List
 
 - Each line has a number. Use the number when you tell me which ones you want.
+- Each line ends with its delivery status: **Built** means it shipped in the two-tab slice,
+  **Deferred** means it is not built yet.
 - Lines marked with a star are the ones worth building first.
 - Every line says what you would see on the page and what question it answers for you.
 - Items you already turned down have been removed, so the numbering has gaps. The numbers never
@@ -46,79 +48,79 @@ real work. Without them, Tab 2 is just another dashboard.
 
 ### How Busy We Were
 
-- **1 ★ Loads received** — one bar per day, with weekly and monthly trends. Tells you how many loads
+- **1 ★ Loads received** — one bar per day, with weekly and monthly trends. Tells you how many loads — **Built.**
   were worked.
-- **2 ★ Labels per day** — one line per day. Tells you how many labels were printed and applied.
-- **3 ★ Quantity by category** — stacked bars for Parts, Coils, Flat, Outside Service, and
+- **2 ★ Labels per day** — one line per day. Tells you how many labels were printed and applied. — **Built.**
+- **3 ★ Quantity by category** — stacked bars for Parts, Coils, Flat, Outside Service, and — **Built.**
   Uninventoried. Tells you what kind of material is coming in.
-- **5 Load density** — average labels per load and average quantity per label, by week. Tells you
+- **5 Load density** — average labels per load and average quantity per label, by week. Tells you — **Deferred.**
   whether loads are getting bigger or smaller.
-- **6 Receiving clock** — a grid of hour by weekday showing when the dock is busiest. Tells you when
+- **6 Receiving clock** — a grid of hour by weekday showing when the dock is busiest. Tells you when — **Deferred.**
   you need people.
-- **7 Touches per employee per day** — a top-ten bar. Tells you who is doing the receiving.
+- **7 Touches per employee per day** — a top-ten bar. Tells you who is doing the receiving. — **Deferred.**
 
 ### How We Compare To The System Of Record
 
-- **8 ★ Receipt coverage** — two lines on one chart: what our app recorded against what Infor Visual
+- **8 ★ Receipt coverage** — two lines on one chart: what our app recorded against what Infor Visual — **Built.**
   recorded for the same dates. Tells you how much of the real work we are capturing.
-- **9 ★ Category mix, side by side** — our app's split against Visual's split. Tells you whether we
+- **9 ★ Category mix, side by side** — our app's split against Visual's split. Tells you whether we — **Built.**
   classify material the same way the ERP does.
 
 ### Whether We Received On Time
 
-- **11 ★ On-time receipt** — stacked bars for early, on time, and late against the PO due date. Tells
+- **11 ★ On-time receipt** — stacked bars for early, on time, and late against the PO due date. Tells — **Built.**
   you whether suppliers and the dock are keeping their promises.
-- **12 Lateness spread** — how many days early or late, as a distribution. Tells you how late we are
+- **12 Lateness spread** — how many days early or late, as a distribution. Tells you how late we are — **Deferred.**
   when we are late.
 
 ### Suppliers
 
-- **20 ★ Supplier ranking** — a bar chart of the top suppliers plus the running share they add up to.
+- **20 ★ Supplier ranking** — a bar chart of the top suppliers plus the running share they add up to. — **Built.**
   Tells you who matters most.
-- **21 Supplier scorecard** — a scatter of how much each supplier sends against how often they are on
+- **21 Supplier scorecard** — a scatter of how much each supplier sends against how often they are on — **Deferred.**
   time. Separates the big reliable suppliers from the big unreliable ones.
 
 ### How The Material Was Packaged
 
-- **24 Package mix** — a breakdown of skids, coils, sheets, and other package types.
-- **25 Package density by supplier** — average quantity per package and average packages per load.
+- **24 Package mix** — a breakdown of skids, coils, sheets, and other package types. — **Deferred.**
+- **25 Package density by supplier** — average quantity per package and average packages per load. — **Deferred.**
   Tells you whether we are over-packaging.
-- **26 Coils per skid** — a distribution of how many coils went on each skid. Tells you whether the
+- **26 Coils per skid** — a distribution of how many coils went on each skid. Tells you whether the — **Deferred.**
   coil rules are being followed.
 
 ### Where Material Was Put
 
-- **28 Location heat** — the most used put-away locations as a bar chart. Tells you where material is
+- **28 Location heat** — the most used put-away locations as a bar chart. Tells you where material is — **Deferred.**
   piling up.
-- **29 Location drift** — how the mix of locations changes over time. Tells you whether a corner is
+- **29 Location drift** — how the mix of locations changes over time. Tells you whether a corner is — **Deferred.**
   quietly filling up that should not be.
 
 ### Dunnage
 
-- **30 Dunnage by type** — quantity of each dunnage type and unit per day.
-- **31 Dunnage by location** — where dunnage is being recorded.
-- **32 Dunnage to receiving ratio** — how many dunnage records we create for every receiving label.
+- **30 Dunnage by type** — quantity of each dunnage type and unit per day. — **Deferred.**
+- **31 Dunnage by location** — where dunnage is being recorded. — **Deferred.**
+- **32 Dunnage to receiving ratio** — how many dunnage records we create for every receiving label. — **Deferred.**
   Tells you whether the extra steps are earning their keep.
-- **33 Dunnage by user** — who is recording dunnage work.
+- **33 Dunnage by user** — who is recording dunnage work. — **Deferred.**
 
 ### Heat And Lot Markings
 
-- **39 Marking coverage** — the percentage of heat-bearing receipts that have a marking recorded.
+- **39 Marking coverage** — the percentage of heat-bearing receipts that have a marking recorded. — **Deferred.**
   Tells you whether every lot is marked.
-- **40 Manual overrides** — how often a marking had to be changed by hand, and the leading reasons.
+- **40 Manual overrides** — how often a marking had to be changed by hand, and the leading reasons. — **Deferred.**
   Tells you whether the automatic marking is good enough.
-- **41 Distinct heats per week** — how many different heats we handled, optionally by supplier.
-- **42 Missing heat** — the percentage of inventoried coils and flat stock received with no heat
+- **41 Distinct heats per week** — how many different heats we handled, optionally by supplier. — **Deferred.**
+- **42 Missing heat** — the percentage of inventoried coils and flat stock received with no heat — **Deferred.**
   number. Tells you whether we are losing traceability at the door.
 
 ### Who Is Using The App, And How Complete Is The Data
 
-- **46 Active users per day** — how many people used the app each day.
-- **48 How records were created** — the split between manual entry, edit mode, and the barcode
+- **46 Active users per day** — how many people used the app each day. — **Deferred.**
+- **48 How records were created** — the split between manual entry, edit mode, and the barcode — **Deferred.**
   scanner. Tells you whether the scanner is actually replacing typing.
-- **49 How long records sit** — the average time between a label being created and the receipt being
+- **49 How long records sit** — the average time between a label being created and the receipt being — **Deferred.**
   filed away.
-- **50 Cross-module activity** — receiving, dunnage, and Volvo work on one chart. Tells you how busy
+- **50 Cross-module activity** — receiving, dunnage, and Volvo work on one chart. Tells you how busy — **Deferred.**
   the whole department was, not just receiving.
 
 ## What Each "Quantity" On The Screen Actually Is

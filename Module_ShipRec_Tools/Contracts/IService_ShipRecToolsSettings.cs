@@ -33,4 +33,7 @@ public interface IService_ShipRecToolsSettings
 
     /// <summary>Returns whether a marking draws its shape before its color.</summary>
     Task<bool> GetLotMarkingShapeFirstAsync();
+
+    /// <summary>Returns the on-time target percentage for Receiving Analytics. Null when no target is configured.</summary>
+    Task<decimal?> GetReceivingAnalyticsOnTimeTargetAsync();
 }

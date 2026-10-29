@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalyticsApp"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_InverseBooleanToVisibility x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:Converter_BoolToColor x:Key="BoolToColorConverter" />
+    </UserControl.Resources>
+
+    <Grid Padding="16,8,16,16" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Filter bar  -->
+        <Border
+            Grid.Row="0"
+            Padding="16,10"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Range: the last day named is included  -->
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <TextBlock VerticalAlignment="Center" Text="Range:" />
+                    <CalendarDatePicker
+                        Width="130"
+                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                        PlaceholderText="From" />
+                    <TextBlock VerticalAlignment="Center" Text="to" />
+                    <CalendarDatePicker
+                        Width="130"
+                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                        PlaceholderText="To" />
+                </StackPanel>
+
+                <!--  Period  -->
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Period:" />
+                    <ComboBox
+                        MinWidth="100"
+                        SelectedIndex="{x:Bind ViewModel.SelectedPeriodIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="Day" />
+                        <ComboBoxItem Content="Week" />
+                        <ComboBoxItem Content="Month" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!--  Unit every quantity total is summed in  -->
+                <StackPanel
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Unit:" />
+                    <ComboBox
+                        MinWidth="100"
+                        ItemsSource="{x:Bind ViewModel.UnitOptions, Mode=OneWay}"
+                        PlaceholderText="All units"
+                        SelectedItem="{x:Bind ViewModel.SelectedUnit, Mode=TwoWay}" />
+                </StackPanel>
+
+                <!--  What the supplier ranking is measured by  -->
+                <StackPanel
+                    Grid.Column="3"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <TextBlock VerticalAlignment="Center" Text="Rank by:" />
+                    <ComboBox
+                        MinWidth="110"
+                        SelectedIndex="{x:Bind ViewModel.SelectedSupplierMeasureIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="Labels" />
+                        <ComboBoxItem Content="Quantity" />
+                        <ComboBoxItem Content="Loads" />
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="5"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="8">
+                    <Button
+                        Command="{x:Bind ViewModel.LoadCommand}"
+                        Content="Load"
+                        Style="{StaticResource AccentButtonStyle}" />
+                    <Button Command="{x:Bind ViewModel.ClearCommand}" Content="Clear" />
+                    <ProgressRing
+                        Width="20"
+                        Height="20"
+                        IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                </StackPanel>
+
+                <TextBlock
+                    Grid.Column="6"
+                    MaxWidth="360"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Border>
+
+        <!--  The four App Data panels, in contracted order  -->
+        <Grid
+            Grid.Row="1"
+            ColumnSpacing="12"
+            RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Top left: How busy were we  -->
+            <Border
+                Grid.Row="0"
+                Grid.Column="0"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="2">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Text="How busy were we" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Figures cover completed work only." />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+
+                        <lvc:CartesianChart
+                            Grid.Column="0"
+                            Series="{x:Bind ViewModel.LoadsLabelsSeries, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}"
+                            XAxes="{x:Bind ViewModel.LoadsLabelsXAxes, Mode=OneWay}"
+                            YAxes="{x:Bind ViewModel.LoadsLabelsYAxes, Mode=OneWay}" />
+
+                        <Grid Grid.Column="1" RowSpacing="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Grid.Row="0"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="{x:Bind ViewModel.QuantityLabel, Mode=OneWay}" />
+                            <lvc:CartesianChart
+                                Grid.Row="1"
+                                Series="{x:Bind ViewModel.QuantitySeries, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}"
+                                XAxes="{x:Bind ViewModel.QuantityXAxes, Mode=OneWay}"
+                                YAxes="{x:Bind ViewModel.QuantityYAxes, Mode=OneWay}" />
+                        </Grid>
+
+                        <TextBlock
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="No completed receipts in this range."
+                            Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="2"
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{x:Bind ViewModel.MissingLoadNumberText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+
+            <!--  Top right: Were we on time  -->
+            <Border
+                Grid.Row="0"
+                Grid.Column="1"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="2">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Text="Were we on time" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Figures cover completed work only." />
+                    </StackPanel>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="No completed receipts in this range."
+                        Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+
+                    <Grid
+                        Grid.Row="1"
+                        RowSpacing="6"
+                        Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--  Percentage readout, coloured only where a target is configured  -->
+                        <StackPanel
+                            Grid.Row="0"
+                            Orientation="Horizontal"
+                            Spacing="10">
+                            <TextBlock
+                                FontSize="24"
+                                FontWeight="SemiBold"
+                                Foreground="{x:Bind ViewModel.IsOnTimeBelowTarget, Converter={StaticResource BoolToColorConverter}, ConverterParameter='Red|Green', Mode=OneWay}"
+                                Text="{x:Bind ViewModel.OnTimePercentText, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.ShowTargetedPercentage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+                            <TextBlock
+                                FontSize="24"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.OnTimePercentText, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.ShowPlainPercentage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+                            <TextBlock
+                                VerticalAlignment="Bottom"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="{x:Bind ViewModel.OnTimeTargetText, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.HasTarget, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+                            <TextBlock
+                                VerticalAlignment="Bottom"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="no target configured"
+                                Visibility="{x:Bind ViewModel.HasTarget, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <lvc:CartesianChart
+                            Grid.Row="1"
+                            Series="{x:Bind ViewModel.OnTimeSeries, Mode=OneWay}"
+                            XAxes="{x:Bind ViewModel.OnTimeXAxes, Mode=OneWay}"
+                            YAxes="{x:Bind ViewModel.OnTimeYAxes, Mode=OneWay}" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.NoDueDateText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  Bottom left: Who is filling our dock  -->
+            <Border
+                Grid.Row="1"
+                Grid.Column="0"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="2">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Text="Who is filling our dock" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Figures cover completed work only." />
+                    </StackPanel>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="No completed receipts in this range."
+                        Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+
+                    <Grid
+                        Grid.Row="1"
+                        RowSpacing="6"
+                        Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <lvc:CartesianChart
+                            Grid.Row="0"
+                            Series="{x:Bind ViewModel.SupplierSeries, Mode=OneWay}"
+                            XAxes="{x:Bind ViewModel.SupplierXAxes, Mode=OneWay}"
+                            YAxes="{x:Bind ViewModel.SupplierYAxes, Mode=OneWay}" />
+
+                        <TextBlock
+                            Grid.Row="1"
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind ViewModel.SupplierLeadShareText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  Bottom right: How much does our app actually see  -->
+            <Border
+                Grid.Row="1"
+                Grid.Column="1"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="2">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Text="How much does our app actually see" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Figures cover completed work only." />
+                    </StackPanel>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="No completed receipts in this range."
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind ViewModel.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+
+                    <TextBlock
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Infor Visual could not be read, so the comparison is unavailable. The three app panels are unaffected."
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind ViewModel.ShowErpUnavailable, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
+
+                    <Grid
+                        Grid.Row="1"
+                        RowSpacing="6"
+                        Visibility="{x:Bind ViewModel.ShowComparison, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <lvc:CartesianChart
+                            Grid.Row="0"
+                            Series="{x:Bind ViewModel.CoverageSeries, Mode=OneWay}"
+                            XAxes="{x:Bind ViewModel.CoverageXAxes, Mode=OneWay}"
+                            YAxes="{x:Bind ViewModel.CoverageYAxes, Mode=OneWay}" />
+
+                        <!--  The app's split beside the ERP's, over the same five category names  -->
+                        <Grid
+                            Grid.Row="1"
+                            ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="{x:Bind ViewModel.AppMixLabel, Mode=OneWay}" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="ERP receipts" />
+
+                            <lvc:CartesianChart
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Series="{x:Bind ViewModel.MixAppSeries, Mode=OneWay}"
+                                XAxes="{x:Bind ViewModel.MixXAxes, Mode=OneWay}"
+                                YAxes="{x:Bind ViewModel.MixYAxes, Mode=OneWay}" />
+                            <lvc:CartesianChart
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Series="{x:Bind ViewModel.MixErpSeries, Mode=OneWay}"
+                                XAxes="{x:Bind ViewModel.MixXAxes, Mode=OneWay}"
+                                YAxes="{x:Bind ViewModel.MixYAxes, Mode=OneWay}" />
+                        </Grid>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Both halves are shares of receipts on the same dates: one app label against one Infor Visual receipt line, with Infor Visual counted the way it counts itself. Both splits name the same five categories."
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

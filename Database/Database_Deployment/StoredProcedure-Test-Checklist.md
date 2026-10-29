@@ -1,6 +1,6 @@
 # Stored Procedure Test Checklist
 
-Progress: 167/184 stored procedures covered
+Progress: 171/188 stored procedures covered
 
 Update rule: mark completed procedures every 5 stored-procedure tests finished.
 
@@ -154,8 +154,17 @@ through the service with a substituted DAO, which does not count as procedure co
 
 - [x] sp_Reporting_Availability_GetByDateRange
 - [x] sp_Reporting_DunnageHistory_GetByDateRange
+- [x] sp_Reporting_ReceivingAnalyticsApp_GetActivityByDay
+- [x] sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount
+- [x] sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay
+- [x] sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals
 - [x] sp_Reporting_ReceivingHistory_GetByDateRange
 - [x] sp_Reporting_VolvoHistory_GetByDateRange
+
+The four `sp_Reporting_ReceivingAnalyticsApp_*` procedures are exercised directly by
+`ReceivingAnalyticsAppStoredProcedureTests`, which seeds its own rows in a far-future window and
+deletes them again: the range boundary, a row carrying both date columns, a row carrying only
+`transaction_date`, a blank supplier, the missing-load count, and the four on-time statuses.
 
 ## Settings
 

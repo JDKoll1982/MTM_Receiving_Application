@@ -245,6 +245,17 @@
       "validationRules": "Boolean"
     },
     {
+      "category": "ShipRecTools",
+      "key": "ReceivingAnalytics.OnTimeTarget",
+      "displayName": "Receiving Analytics - On-Time Target (%)",
+      "defaultValue": "95",
+      "dataType": "Decimal",
+      "scope": "System",
+      "permissionLevel": "Admin",
+      "isSensitive": false,
+      "validationRules": "Percentage between 0 and 100"
+    },
+    {
       "category": "Dunnage",
       "key": "Dunnage.Labels.DunnageLabelPath",
       "displayName": "Dunnage Label Path",

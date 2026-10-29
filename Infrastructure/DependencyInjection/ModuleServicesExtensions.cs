@@ -657,6 +657,14 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_ReceivingAnalytics(inforVisual, logger);
         });
+        services.AddSingleton(_ => new Dao_Tool_ReceivingAnalyticsApp(mySqlConnectionString));
+        services.AddSingleton<IService_Tool_ReceivingAnalyticsApp>(sp =>
+        {
+            var dao = sp.GetRequiredService<Dao_Tool_ReceivingAnalyticsApp>();
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Service_Tool_ReceivingAnalyticsApp(dao, inforVisual, logger);
+        });
         services.AddSingleton<IService_Tool_DeliverySchedule>(sp =>
         {
             var inforVisual = sp.GetRequiredService<IService_InforVisual>();
@@ -674,6 +682,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_DunnageBook>();
         services.AddTransient<ViewModel_Tool_WeldedCoils>();
         services.AddTransient<ViewModel_Tool_ReceivingAnalytics>();
+        services.AddTransient<ViewModel_Tool_ReceivingAnalyticsApp>();
         services.AddTransient<ViewModel_Tool_DeliverySchedule>();
         services.AddTransient<ViewModel_Tool_LotMarking>();
 
@@ -686,6 +695,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DunnageBook>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_WeldedCoils>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalytics>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalyticsApp>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DeliverySchedule>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_LotMarking>();
 

@@ -11,21 +11,27 @@ using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
 /// <summary>
-/// Receiving Analytics tool view. All business logic lives in the ViewModel;
-/// this code-behind wires the HTML export delegate, closes the filter popover,
-/// and sets the DataContext.
+/// Receiving Analytics tool view: ERP Data is the page as it was, wrapped in a tab, and App Data
+/// is the module's own completed work. All business logic lives in the ViewModels; this
+/// code-behind wires the HTML export delegate, closes the filter popover, hands the App Data
+/// view model to the hosted control, and sets the DataContext.
 /// </summary>
 public sealed partial class View_Tool_ReceivingAnalytics : Page
 {
     public ViewModel_Tool_ReceivingAnalytics ViewModel { get; }
 
-    public View_Tool_ReceivingAnalytics(ViewModel_Tool_ReceivingAnalytics viewModel)
+    public View_Tool_ReceivingAnalytics(
+        ViewModel_Tool_ReceivingAnalytics viewModel,
+        ViewModel_Tool_ReceivingAnalyticsApp appViewModel
+    )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
+        ArgumentNullException.ThrowIfNull(appViewModel);
         ViewModel = viewModel;
         InitializeComponent();
         DataContext = ViewModel;
         ViewModel.RequestExportAsync = OpenExportDocumentAsync;
+        AppDataHost.Content = new View_Tool_ReceivingAnalyticsApp(appViewModel);
     }
 
     private async void OnHelpClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

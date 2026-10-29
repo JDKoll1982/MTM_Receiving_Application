@@ -12,6 +12,17 @@
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
+    <TabView
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        CanReorderTabs="False"
+        IsAddTabButtonVisible="False">
+        <TabViewItem
+            Header="ERP Data"
+            HorizontalContentAlignment="Stretch"
+            IsClosable="False">
+
     <Grid Padding="16,8,16,24" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -450,4 +461,17 @@
             </Grid>
         </Border>
     </Grid>
+        </TabViewItem>
+        <TabViewItem
+            Header="App Data"
+            HorizontalContentAlignment="Stretch"
+            IsClosable="False">
+            <ContentControl
+                x:Name="AppDataHost"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch" />
+        </TabViewItem>
+    </TabView>
 </Page>

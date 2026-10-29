@@ -7,6 +7,44 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### Receiving Analytics split into ERP Data and App Data tabs (2026-10-29)
+
+- **What changed:** The Receiving Analytics page is now two tabs. **ERP Data** is today's page,
+  unchanged, and stays the tab that opens. **App Data** is new: it reads the app's own
+  `receiving_history` instead of Infor Visual and answers what the dock actually did. It carries its
+  own date range and its own filters, so switching tabs does not disturb the other tab's state.
+- **What App Data shows**, in the pinned order, all fitting the default 1450 x 900 window:
+  **How busy were we** (loads, labels and quantity by category, switchable between day, week and
+  month), **Were we on time** (early, on time and late against the PO due date, with the on-time
+  percentage coloured against the configured target), **Who is filling our dock** (supplier ranking
+  by labels, quantity or loads, with the leading suppliers' share and a remainder), and **How much
+  does our app actually see** (two receipt-count coverage lines over the same dates, and the app's
+  category split beside Infor Visual's over the same five categories).
+- **Why:** Infor Visual knows what arrived at the plant; only the app knows what an operator
+  completed and whether it was on time. The comparison panels are what prove the app is capturing
+  the real work.
+- **Notes:** Both halves of the category mix count receipts, one app label against one Infor Visual
+  receipt line, which is the same alignment rule the coverage panel uses. App Data uses four new
+  stored procedures in the `sp_Reporting_ReceivingAnalyticsApp_*` family; the app database stays
+  read-only and Infor Visual is still opened with read-only intent. Nothing on the page names an
+  employee. New setting `ReceivingAnalytics.OnTimeTarget`, administrator scope, default **95**
+  per cent; with no value configured the percentage is shown plainly with no colour. Known limits
+  are inherited from the unchanged ERP query.
+- Files changed:
+  - `Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml`
+  - `Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml`
+  - `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsApp.cs`
+  - `Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsApp.cs`
+  - `Module_ShipRec_Tools/Data/Dao_Tool_ReceivingAnalyticsApp.cs`
+  - `Module_ShipRec_Tools/Helpers/Translation_ReceivingAnalyticsCategory.cs`
+  - `Module_ShipRec_Tools/Settings/ShipRecToolsSettingsKeys.cs`
+  - `Module_Settings.Core/Defaults/settings.manifest.json`
+  - `Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetActivityByDay.sql`
+  - `Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay.sql`
+  - `Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount.sql`
+  - `Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals.sql`
+  - `Module_ShipRec_Tools/docs/ReceivingAnalyticsAppDataTab_FeatureUpdate.md`
+
 #### Packing list scan probe tool (2026-10-22)
 
 - **What changed:** Added `tools/PackingListScanProbe`, a standalone .NET 10 console tool that

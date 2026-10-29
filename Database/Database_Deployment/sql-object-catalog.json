@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T15:27:14.6128937-05:00",
+  "generatedAt": "2026-10-29T10:45:48.7792258-05:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -14505,6 +14505,227 @@
         {
           "alias": "view_dunnage_history",
           "object": "view_dunnage_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetActivityByDay.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetActivityByDay",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "received_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_type"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "unit_of_measure"
+        },
+        {
+          "qualifier": "day_totals",
+          "resolvedObject": "day_totals",
+          "column": "load_count"
+        },
+        {
+          "qualifier": "day_totals",
+          "resolvedObject": "day_totals",
+          "column": "label_count"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "weight_quantity"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "quantity"
+        }
+      ],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "bucket_date",
+          "object": "__derived__:bucket_date"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
         }
       ]
     },

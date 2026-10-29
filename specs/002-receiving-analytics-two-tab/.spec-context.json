@@ -1,0 +1,1412 @@
+{
+  "workflow": "companion",
+  "specName": "Receiving Analytics App Data Tab",
+  "branch": "002-receiving-analytics-two-tab",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-29T14:22:45.588Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-29T14:26:00.326Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-29T14:26:46.792Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:32:54.252Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:46:04.130Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:46:32.041Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-29T14:46:57.607Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:52:08.911Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:52:17.470Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-29T14:53:12.906Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:14.267Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:14.697Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:15.178Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:15.618Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:18.768Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:55:19.174Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:56:09.932Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:57:26.928Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:57:26.967Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:31.122Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:34.835Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:38.966Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:54.675Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:54.720Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:54.919Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T14:59:59.423Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:03:09.846Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:03:27.186Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:03:33.950Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:05:00.521Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:05:00.561Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:07:37.008Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:14:15.636Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:14:19.269Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:14:19.425Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:15:36.657Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:15:36.803Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:20:20.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:20:20.603Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:20:24.351Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:26:29.267Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:26:32.502Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:27:22.868Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:31:38.810Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:31:42.191Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:32:31.232Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:37:14.290Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:37:17.578Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:37:21.068Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:48:10.842Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:50:08.704Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:50:09.057Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:50:09.419Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:50:31.684Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:52:30.229Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:56:34.765Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T15:56:34.857Z"
+    }
+  ],
+  "telemetryInstanceId": "4c438b9b-f4bc-4507-94d2-4a661d75b122",
+  "unattended": true,
+  "coverage": {
+    "FR-001": {
+      "title": "Exactly two tabs, ERP Data first and open by default",
+      "tasks": [
+        "T028",
+        "T030"
+      ]
+    },
+    "FR-002": {
+      "title": "The ERP Data tab keeps its filters, charts and behaviour unchanged",
+      "tasks": [
+        "T020",
+        "T028",
+        "T046"
+      ]
+    },
+    "FR-003": {
+      "title": "Each tab holds its own filter state and date range",
+      "tasks": [
+        "T025",
+        "T028",
+        "T030"
+      ]
+    },
+    "FR-004": {
+      "title": "App Data reports completed receipts only and says so on every panel",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T026"
+      ]
+    },
+    "FR-005": {
+      "title": "App Data is read only against both databases",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T017",
+        "T022"
+      ]
+    },
+    "FR-006": {
+      "title": "Four panels in the pinned order, all fitting the default window",
+      "tasks": [
+        "T026",
+        "T033",
+        "T036",
+        "T039",
+        "T046"
+      ]
+    },
+    "FR-007": {
+      "title": "Activity panel shows loads, labels and quantity by category, switchable between day, week and month",
+      "tasks": [
+        "T001",
+        "T025",
+        "T026"
+      ]
+    },
+    "FR-008": {
+      "title": "A load counts once per distinct load and a label once per label",
+      "tasks": [
+        "T001",
+        "T017",
+        "T025"
+      ]
+    },
+    "FR-009": {
+      "title": "One stacked bar per period with one segment per material category",
+      "tasks": [
+        "T025",
+        "T026"
+      ]
+    },
+    "FR-010": {
+      "title": "Each receipt classified early, on time or late, with the due date itself counted as on time",
+      "tasks": [
+        "T002",
+        "T032",
+        "T033"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldSplitDatedReceiptsIntoEarlyOnTimeAndLate",
+        "LoadAsync_ShouldCountAReceiptCompletedOnItsDueDateAsOnTime"
+      ]
+    },
+    "FR-011": {
+      "title": "Receipts with no due date shown as a remainder and never counted as on time",
+      "tasks": [
+        "T002",
+        "T032",
+        "T033"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldKeepTheNoDueDateRemainderOutOfThePercentage"
+      ]
+    },
+    "FR-012": {
+      "title": "On-time percentage is on or before the due date over receipts carrying a due date",
+      "tasks": [
+        "T032"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldKeepTheNoDueDateRemainderOutOfThePercentage",
+        "LoadAsync_ShouldLeaveThePercentageAbsent_WhenNoReceiptCarriesADueDate"
+      ]
+    },
+    "FR-013": {
+      "title": "Percentage green at or above the target and red below, with the target shown",
+      "tasks": [
+        "T032",
+        "T033"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldCompareThePercentageToTheConfiguredTarget"
+      ]
+    },
+    "FR-014": {
+      "title": "Target is administrator configuration, and no target means no colour",
+      "tasks": [
+        "T005",
+        "T006",
+        "T019",
+        "T032",
+        "T033"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldShowThePercentagePlainly_WhenNoTargetIsConfigured"
+      ]
+    },
+    "FR-015": {
+      "title": "Supplier ranking by labels, quantity or loads, defaulting to labels",
+      "tasks": [
+        "T003",
+        "T035"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldRankSuppliersByLabelsByDefault",
+        "SupplierMeasure_ShouldReRankWithoutQueryingAgain"
+      ]
+    },
+    "FR-016": {
+      "title": "Leading suppliers carry a cumulative share",
+      "tasks": [
+        "T035",
+        "T036"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldReachOneHundredPercent_ForASingleSupplier"
+      ]
+    },
+    "FR-017": {
+      "title": "Suppliers past the leading few grouped into one remainder so shares reach 100 per cent",
+      "tasks": [
+        "T035",
+        "T036"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldCollapseTheTailIntoOneRemainder_SoTheSharesReachOneHundred"
+      ]
+    },
+    "FR-018": {
+      "title": "A blank supplier ranks as Unknown rather than being excluded",
+      "tasks": [
+        "T003",
+        "T035"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldRankABlankSupplierAsUnknown"
+      ]
+    },
+    "FR-019": {
+      "title": "A quantity ranking sums within one unit",
+      "tasks": [
+        "T035"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldSumOnlyTheSelectedUnit_WhenRankingByQuantity"
+      ]
+    },
+    "FR-020": {
+      "title": "Every quantity total names its unit",
+      "tasks": [
+        "T025",
+        "T026"
+      ]
+    },
+    "FR-021": {
+      "title": "No total adds across units, with one line per unit when no single unit can be chosen",
+      "tasks": [
+        "T001",
+        "T003",
+        "T025",
+        "T035"
+      ]
+    },
+    "FR-022": {
+      "title": "A blank unit reads as each and is labelled accordingly",
+      "tasks": [
+        "T025"
+      ]
+    },
+    "FR-023": {
+      "title": "Weight and quantity are never compared against each other",
+      "tasks": [
+        "T001",
+        "T025"
+      ]
+    },
+    "FR-024": {
+      "title": "Buckets follow the received date, fall back to the date-only day, and count each receipt once",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T025",
+        "T032"
+      ]
+    },
+    "FR-025": {
+      "title": "Coverage draws app and ERP lines over the same dates, counted the same way",
+      "tasks": [
+        "T022",
+        "T038",
+        "T039"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldAlignBothCoverageLinesOnTheSameDates"
+      ]
+    },
+    "FR-026": {
+      "title": "The mix panel shows the app split beside the ERP split over the same five categories",
+      "tasks": [
+        "T038",
+        "T039"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldNameTheSameFiveCategoriesOnBothSplits_EachSummingTo100"
+      ]
+    },
+    "FR-027": {
+      "title": "The category translation lives in one place and both tabs read it",
+      "tasks": [
+        "T016",
+        "T020",
+        "T021",
+        "T038"
+      ]
+    },
+    "FR-028": {
+      "title": "Both sides of a comparison are requested with identical dates and filters",
+      "tasks": [
+        "T022",
+        "T038"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldRequestTheComparisonWithTheSameBoundsAsTheAppData"
+      ]
+    },
+    "FR-029": {
+      "title": "ERP categories with no app counterpart appear as their own segments",
+      "tasks": [
+        "T016",
+        "T021",
+        "T038",
+        "T039"
+      ],
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldKeepAnErpOnlyCategoryAsItsOwnSegment"
+      ]
+    },
+    "FR-030": {
+      "title": "No panel shows an individual person's name or employee number",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T039"
+      ]
+    },
+    "FR-031": {
+      "title": "New database objects only, with existing tables never altered",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T007"
+      ]
+    },
+    "FR-032": {
+      "title": "Generated views, functions and triggers were permitted but not needed",
+      "tasks": [
+        "T007"
+      ]
+    },
+    "FR-033": {
+      "title": "Infor Visual stays read only and its connection opens with read-only intent",
+      "tasks": [
+        "T022"
+      ]
+    },
+    "FR-034": {
+      "title": "Every read of the app database goes through a stored procedure",
+      "tasks": [
+        "T017"
+      ]
+    },
+    "FR-035": {
+      "title": "The number of receipts with no load number is disclosed",
+      "tasks": [
+        "T004",
+        "T017",
+        "T025",
+        "T026"
+      ],
+      "tests": [
+        "ReceivingAnalyticsAppStoredProcedureTests.cs::GetMissingLoadNumberCount_ShouldMatchTheSeededRow",
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldAskForTheInclusiveRangeAsAnExclusiveEnd"
+      ]
+    },
+    "SC-002": {
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldDrawOneQuantityLinePerUnit_WhenTwoUnitsTie",
+        "LoadAsync_ShouldSumOnlyTheSelectedUnit_WhenRankingByQuantity"
+      ]
+    },
+    "SC-003": {
+      "tests": [
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldNameTheSameFiveCategoriesOnBothSplits_EachSummingTo100",
+        "LoadAsync_ShouldGiveTheOneCategoryAMonthHolds_AHundredPerCentAppShare"
+      ]
+    },
+    "SC-007": {
+      "tests": [
+        "ReceivingAnalyticsAppStoredProcedureTests.cs::GetMissingLoadNumberCount_ShouldMatchTheSeededRow",
+        "ViewModel_Tool_ReceivingAnalyticsAppTests.cs::LoadAsync_ShouldAskForTheInclusiveRangeAsAnExclusiveEnd"
+      ]
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 20,
+    "projectedTasks": 28,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "expectations": [
+    "catalog 5, 6, 7 out of scope (load density, receiving clock, touches per employee)",
+    "catalog 12, 21 out of scope (lateness spread, supplier scorecard)",
+    "catalog 24, 25, 26 out of scope (package mix, package density by supplier, coils per skid)",
+    "catalog 28, 29 out of scope (location heat, location drift)",
+    "catalog 30, 31, 32, 33 out of scope (dunnage)",
+    "catalog 39, 40, 41, 42 out of scope (heat and lot markings), so the marking-coverage target is deferred with item 39 rather than invented",
+    "catalog 46, 48, 49, 50 out of scope (app usage and data completeness)",
+    "no weight against quantity comparison anywhere: the two stored columns are the same operator entry"
+  ],
+  "context": [
+    "source: Module_ShipRec_Tools/docs/ReceivingAnalytics_TwoTab_AnalyticsCatalog.md",
+    "area: Module_ShipRec_Tools analytics page (ViewModel_Tool_ReceivingAnalytics, View_Tool_ReceivingAnalytics, Service and IService_Tool_ReceivingAnalytics, analytics models)",
+    "area: MySQL receiving_history and view_receiving_history (completed versus in-progress receipts, weight_quantity and quantity, unit_of_measure, load_number and label_number)",
+    "area: Infor Visual read-only analytics filter and its five category names",
+    "constraint: constitution II and VI, MySQL through stored procedures only, Infor Visual read only with ApplicationIntent=ReadOnly",
+    "constraint: new database objects only, existing tables not altered, generated views and triggers approved"
+  ],
+  "intent": "Split Receiving Analytics into an unchanged ERP Data tab and a new App Data tab that reports the app own completed receiving work across four panels",
+  "verified": [
+    {
+      "what": "plan blocks check out",
+      "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/002-receiving-analytics-two-tab --strict",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 0.1,
+      "result": "[plan-check] plan.md: 2 screens, 16 parts. Every screen holds to its grammar."
+    },
+    {
+      "what": "solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 17.7,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:17.44"
+    },
+    {
+      "what": "translation category tests",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter FullyQualifiedName~Translation_ReceivingAnalyticsCategory --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 17.6,
+      "result": "Test run for C:\\Users\\jkoll\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    35, Skipped:     0, Total:    35, Duration: 47 ms - MTM_Receiving_Application.Tests.dll (net10.0)"
+    },
+    {
+      "what": "Solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 13.3,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:13.04"
+    },
+    {
+      "what": "App Data analytics tests",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter \"FullyQualifiedName~ViewModel_Tool_ReceivingAnalyticsApp|FullyQualifiedName~Service_Tool_ReceivingAnalyticsApp\" --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 17.2,
+      "result": "Test run for C:\\Users\\jkoll\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    35, Skipped:     0, Total:    35, Duration: 215 ms - MTM_Receiving_Application.Tests.dll (net10.0)"
+    },
+    {
+      "what": "Full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 7.0,
+      "result": "Test run for C:\\Users\\jkoll\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:   921, Skipped:     0, Total:   921, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0)"
+    },
+    {
+      "what": "SC-002 no quantity total mixes units",
+      "command": "review of BuildQuantityStack plus the suite",
+      "result": "The selected unit's totals are summed and the label names that unit; a tie draws one line per unit and never adds across them. Two view model tests cover it.",
+      "warnings": []
+    },
+    {
+      "what": "SC-003 both category splits name the same five categories and sum to 100",
+      "command": "review of SharesOf plus ViewModel_Tool_ReceivingAnalyticsAppTests",
+      "result": "Each side is normalised over the five ERP names. Both splits now count receipts, and the two split tests pass.",
+      "warnings": []
+    },
+    {
+      "what": "SC-007 receipts with no load number disclosed in one figure",
+      "command": "review plus view model and stored procedure integration tests",
+      "result": "MissingLoadNumberText comes from one count, is cleared with the panels, and the procedure test matches a seeded row exactly.",
+      "warnings": []
+    },
+    {
+      "what": "SC-008 ERP Data unchanged against a pre-change baseline",
+      "command": "git diff on Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml and ViewModel_Tool_ReceivingAnalytics.cs",
+      "result": "The markup gains only a TabView wrapper around the untouched grid: no ERP element added, removed or reindented. The view model swapped five category literals for shared constants with identical values. The existing ERP tests pass.",
+      "warnings": []
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 19.4,
+      "result": "Test run for C:\\Users\\jkoll\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:   929, Skipped:     0, Total:   929, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0)"
+    },
+    {
+      "what": "stored procedure integration tests on the live test database",
+      "command": "powershell -NoProfile -Command \"$j=Get-Content appsettings.json -Raw|ConvertFrom-Json; $env:MTM_TEST_MYSQL_CONNECTION_STRING=$j.ConnectionStrings.MySql.Replace(\\\"mtm_receiving_application\\\",\\\"mtm_receiving_application_test\\\"); dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo --filter FullyQualifiedName~ReceivingAnalyticsAppStoredProcedureTests\"",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 6.6,
+      "result": "Test run for C:\\Users\\jkoll\\source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:     6, Skipped:     0, Total:     6, Duration: 510 ms - MTM_Receiving_Application.Tests.dll (net10.0)"
+    }
+  ],
+  "planBlocks": [
+    "screens"
+  ],
+  "decisions": [
+    {
+      "decision": "On-time target is 95 per cent, held as an administrator-editable setting rather than in code",
+      "why": "The spec's working default becomes deterministic, and FR-014's no-rebuild requirement is met by the existing Settings.Core mechanism and its manifest entry",
+      "rejected": "Leaving it deferred to clarify, or a 95 constant in the view model, or appsettings.json which needs a file edit and a restart"
+    },
+    {
+      "decision": "Coverage counts one app label against one ERP receipt line, grouped by received date and normalised category, with ERP-only categories counting toward the ERP line",
+      "why": "The spec left the comparison unit unstated, and an unstated unit is how the coverage and mix panels would silently disagree with the ERP",
+      "rejected": "Comparing quantities across the two systems, which cannot be done without resolving units"
+    },
+    {
+      "decision": "A new IService_Tool_ReceivingAnalyticsApp, Dao_Tool_ReceivingAnalyticsApp and four stored procedures, leaving the ERP service untouched",
+      "why": "The existing service depends only on IService_InforVisual; giving it a MySQL dependency hands the ERP tab a data source it never uses",
+      "rejected": "Adding app methods to the existing service, or reading through IService_MySQL_Receiving which is the workflow surface not a reporting one"
+    },
+    {
+      "decision": "The ERP tab markup is wrapped in a TabViewItem rather than extracted into its own control",
+      "why": "Nothing moves, so the SC-008 regression risk is limited to runtime behaviour, and one view model per tab makes cross-tab filter leakage structurally impossible",
+      "rejected": "Extracting 400 lines of ERP markup into a UserControl, and a host view model holding one SelectedTabIndex"
+    },
+    {
+      "decision": "Four stored procedures return per-day grain and C# does the daily, weekly and monthly bucketing",
+      "why": "One fetch serves all three periods, so a period switch costs nothing and cannot disagree with itself, and the date arithmetic lives in one helper instead of four procedures",
+      "rejected": "Passing a period into SQL and re-querying on every switch, or returning raw receipt rows and aggregating everything client side"
+    },
+    {
+      "decision": "No new table, view, function or trigger; every total reads columns already on receiving_history",
+      "why": "FR-031 and FR-032 permit new objects, they do not require them, and a generated view would add a layer without removing work",
+      "rejected": "A generated totals view, or a summary table which would need a refresh and could go stale"
+    },
+    {
+      "decision": "A load is COUNT(DISTINCT COALESCE(load_id, load_guid, id)); labels are COUNT(*); the missing-load-number count is disclosed beside them",
+      "why": "label_number is written from the same session counter as load_number and load_id is fresh per row, so one completed receipt is one load and one label today; counting DISTINCT load_number would merge unrelated loads across sessions",
+      "rejected": "Counting DISTINCT load_number, or reporting one receipts figure and dropping the load count"
+    },
+    {
+      "decision": "One static Translation_ReceivingAnalyticsCategory owns both category vocabularies and the mapping; the app procedures pass part_type through untranslated",
+      "why": "FR-027 wants one place, and today the ERP vocabulary exists three times over; keeping the app names out of SQL means the vocabulary has one home",
+      "rejected": "A MySQL view holding the translation, which can only ever cover half of a cross-database mapping, or re-deriving app categories in SQL and duplicating the Model_ReceivingLoad rule"
+    },
+    {
+      "decision": "Quantity sums COALESCE(weight_quantity, quantity) within one unit, and a blank unit becomes EA in C#",
+      "why": "weight_quantity is the number the operator typed and quantity is that same number rounded; converting the blank unit in one C# helper keeps the pinned string in one place",
+      "rejected": "Summing quantity alone, which discards the operator's decimals, or coalescing the unit inside each of four procedures"
+    },
+    {
+      "decision": "The comparison reuses the existing Infor Visual query with identical bounds and all five scopes, and its inherited limits are documented rather than corrected",
+      "why": "FR-002 and FR-033 forbid changing the ERP path, and the panel can only claim what it really compares: app labels against ERP receipt lines counted as the ERP counts them",
+      "rejected": "A second ERP query tuned to match the app, which would drift and be the one nobody checks, and counting ERP quantities instead of lines"
+    },
+    {
+      "decision": "Four panels in a 2x2 grid using the existing LiveCharts CartesianChart",
+      "why": "Each quadrant is roughly 700x380 before headers, which holds two charts side by side but not two stacked, and LiveCharts is already referenced and used by this page",
+      "rejected": "Adding a second charting library, pie or donut charts for the mix, or a scrolling page with larger charts against FR-006"
+    },
+    {
+      "decision": "The four app reads run concurrently and any failure fails that dataset; the ERP comparison is a separate call whose failure is reported on its own panel",
+      "why": "SC-004 needs four panels inside three seconds, and a half-loaded dataset of three agreeing panels plus one silently missing is exactly the lie this tab exists to catch",
+      "rejected": "Sequential reads, or failing the whole tab when the ERP server is unreachable"
+    },
+    {
+      "decision": "No is_reprint predicate on receiving_history",
+      "why": "The flag marks a row re-queued for a reprint, and the completion procedure skips the insert for re-queued rows, so a reprint never creates a second history row; filtering it would delete real work",
+      "rejected": "Excluding is_reprint = 1, which looks right and would undercount"
+    },
+    {
+      "decision": "The app side of the category mix is quantity in the selected unit summed per ERP category",
+      "why": "The activity rows carry per-category quantity but only per-day label totals, and the view model owns the unit choice, so summing label totals per category would count the labels of one day once per category row",
+      "rejected": "Counting activity rows or per-day label totals per category"
+    },
+    {
+      "decision": "The ERP per-category line counts travel on the comparison result as ErpCategoryTotals",
+      "why": "The comparison carried only coverage points, so the view model had no ERP detail to build the ERP split from; the counts come from the ERP read already made, on identical bounds",
+      "rejected": "Computing both shares in the service, which loses the unit-scoped app side, or a second ERP read"
+    },
+    {
+      "decision": "The on-time target is read through IService_ShipRecToolsSettings on every load and an absent target shows a plain n/a",
+      "why": "No percentage is hard-coded; a target with no dated receipts must not be coloured green as though it passed",
+      "rejected": "A 95 default constant in the view model, and colouring the absent figure off IsOnTimeBelowTarget"
+    },
+    {
+      "decision": "The five leading suppliers are ranked individually and the tail becomes one Other suppliers entry",
+      "why": "The cumulative share only reaches one hundred per cent when the remainder is present",
+      "rejected": "Ranking every supplier and leaving the chart to scroll"
+    },
+    {
+      "decision": "Both coverage lines are drawn over the union of their dates, at zero where one side recorded nothing",
+      "why": "The reader compares the same days on both lines, and a date only one system recorded is a real difference rather than a gap",
+      "rejected": "Drawing each line over its own dates"
+    },
+    {
+      "decision": "Both halves of the category mix count receipts",
+      "why": "Item 9 asks whether we classify material the way the ERP does, and a share of quantity against a share of receipt lines cannot answer that question",
+      "rejected": "Keeping the app share on quantity and relabelling the panel"
+    },
+    {
+      "decision": "A per-group receipt_count column on GetActivityByDay rather than another procedure",
+      "why": "The panel already reads those rows, and load_count and label_count stay day totals that the activity panel depends on",
+      "rejected": "A fifth stored procedure, or deriving the receipt count from the existing day totals"
+    },
+    {
+      "decision": "The integration tests seed a far-future window and delete by part id prefix",
+      "why": "The counts they assert are their own even on a shared test schema",
+      "rejected": "Filtering existing history, which makes assertions depend on whatever the database holds"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Planned the two-tab split with a new App Data read path of four stored procedures, a shared category translation, and a settings-held on-time target",
+      "key_finding": "In the app's data model one completed receipt row is one load and one label at the same time, because label_number is written from the same session counter as load_number, so the two panel figures agree by construction and the missing-load-number disclosure is what makes that readable rather than suspicious"
+    },
+    "tasks": {
+      "summary": "46 tasks across 7 phases: setup 7, foundational 15, four story phases, polish 7"
+    },
+    "specify": {
+      "summary": "Phases 4 to 6 built: the on-time panel with a target-coloured percentage, the supplier ranking with a remainder, and the app-versus-ERP coverage and mix panels."
+    },
+    "implement": {
+      "summary": "Phase 7 closed: the category mix compares receipt shares on both sides, the four procedures have integration tests, the module docs and the ledger are updated, and the spec is validated."
+    }
+  },
+  "approach": "The page becomes a TabView whose first item wraps the untouched ERP markup and whose second hosts a new App Data control with its own view model. App Data reads MySQL through four new stored procedures in a new DAO and service, buckets the per-day rows in C# for daily, weekly and monthly views, and takes the ERP side of the comparison from the existing read-only Infor Visual query.",
+  "currentTask": null,
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Created GetActivityByDay stored procedure from the contract SQL",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetActivityByDay.sql"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Created GetOnTimeByDay stored procedure from the contract SQL",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay.sql"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Created GetSupplierTotals stored procedure from the contract SQL",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals.sql"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Created GetMissingLoadNumberCount stored procedure from the contract SQL",
+      "files": [
+        "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount.sql"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added ReceivingAnalytics.OnTimeTarget settings key",
+      "files": [
+        "Module_ShipRec_Tools/Settings/ShipRecToolsSettingsKeys.cs"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Declared ReceivingAnalytics.OnTimeTarget in the settings manifest (Decimal, Admin, default 95)",
+      "files": [
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Regenerated sql-object-catalog.json; the four new procedures are registered",
+      "files": [
+        "Database/Database_Deployment/sql-object-catalog.json"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppSupplierRow",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppSupplierRow.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Created Enum_ReceivingAnalyticsSupplierMeasure (Labels, Quantity, Loads)",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_ReceivingAnalyticsSupplierMeasure.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Created Enum_ReceivingAnalyticsPeriod (Day, Week, Month)",
+      "files": [
+        "Module_ShipRec_Tools/Enums/Enum_ReceivingAnalyticsPeriod.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppOnTimeRow",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppOnTimeRow.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Created Translation_ReceivingAnalyticsCategory with both directions and the part_type contains rule",
+      "files": [
+        "Module_ShipRec_Tools/Helpers/Translation_ReceivingAnalyticsCategory.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppComparison with both coverage series, both splits and ErpAvailable",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppComparison.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppActivityRow with the per-day repeat warning on both counts",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppActivityRow.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppFilter with the 30-day default range and a Reset to it",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppFilter.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Created Model_Tool_ReceivingAnalyticsAppDataset with the three row lists, the missing-load count and IsEmpty",
+      "files": [
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppDataset.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Created IService_Tool_ReceivingAnalyticsApp with GetAppDataAsync and GetComparisonAsync",
+      "files": [
+        "Module_ShipRec_Tools/Contracts/IService_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Replaced the five ERP category literals with Translation_ReceivingAnalyticsCategory constants; labels, colours and figures unchanged",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalytics.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Added GetReceivingAnalyticsOnTimeTargetAsync returning null when unset and never defaulting in code",
+      "files": [
+        "Module_ShipRec_Tools/Contracts/IService_ShipRecToolsSettings.cs",
+        "Module_ShipRec_Tools/Services/Service_ShipRecToolsSettings.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Created Translation_ReceivingAnalyticsCategory tests pinning both directions, the nulls and the contains rules",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Helpers/Translation_ReceivingAnalyticsCategoryTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Created Dao_Tool_ReceivingAnalyticsApp with four virtual async stored-procedure reads",
+      "files": [
+        "Module_ShipRec_Tools/Data/Dao_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Created Service_Tool_ReceivingAnalyticsApp: four concurrent DAO reads failing as a whole, ERP comparison with identical bounds and ErpAvailable false on ERP failure",
+      "files": [
+        "Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Wrote the view model tests: default 30-day range, exclusive end on load, dominant unit, empty state, period rebucket without re-query, Clear defaults, Quantity (EA) label",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsAppTests.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Wrote the service tests: four reads assemble one dataset, a failed read fails the dataset and carries its reason, comparison sends identical bounds and all five scopes",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsAppTests.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Built ViewModel_Tool_ReceivingAnalyticsApp: range/period/unit filters, cached dataset, Load and Clear, day-week-month buckets with empty buckets present, loads and labels series, quantity stack gated on the dominant unit, re-render from cache",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Created the App Data view: filter bar (range, period, unit, Load, Clear) and the 2x2 grid of the four titled cards in contracted order, each stating completed work only, with loads/labels and the quantity stack in card one and explicit empty states",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Added the App Data code-behind: injected view model exposed for x:Bind, InitializeComponent only",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Wrapped the page's existing root grid verbatim in a TabView: ERP Data first and open by declaration order, App Data second hosting a ContentControl, ERP markup untouched (diff is pure insertion)",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Injected ViewModel_Tool_ReceivingAnalyticsApp into the page and handed it to the hosted App Data control; existing help, filter flyout and export wiring untouched",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Registered the App Data DAO and service as singletons built from the MySQL connection string, and the App Data view model and view as transient, beside the existing Receiving Analytics registrations",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Added the on-time view model tests: bucket split, on-due-date as on time, percentage over dated receipts only, absent percentage, no target, and target comparison.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsAppTests.cs"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Added on-time bucketing, the dated-receipt percentage with an absent state, the settings-read target with HasTarget/IsOnTimeBelowTarget/OnTimePercentText and the no-due-date remainder to the view model.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Filled the Were we on time card: the Early/OnTime/Late stack, the percentage readout coloured through Converter_BoolToColor against the target in force, the plain uncoloured percentage with no target, and the no-due-date remainder line.",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Added the supplier tests: labels ranking by default, quantity summing only the selected unit, tail collapsed into a remainder reaching 100 percent, blank supplier as Unknown, single supplier at 100 percent, and re-ranking without a re-query.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsAppTests.cs"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Built the supplier ranking from the cached rows: Unknown for blanks, per-supplier totals read once, ranking by the selected measure within the selected unit, running cumulative share, one remainder entry for the tail, and re-render on a measure change without a re-query.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Filled the Who is filling our dock card with the ranking chart and the cumulative-share readout strip, and put the Rank by selector in the filter bar so the measure can be switched.",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Added the comparison tests: identical bounds for both requests, both coverage lines aligned on shared dates, the same five ERP names on both splits each summing to 100, an ERP-only category keeping its own segment, and IsErpUnavailable on a failed comparison or unreadable ERP side.",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsAppTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsAppTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Requested the comparison with the loaded filter bounds, aligned both coverage lines on one shared date axis, built both category splits over the five ERP names through Translation_ReceivingAnalyticsCategory, and confined an ERP failure to IsErpUnavailable with the app panels untouched.",
+      "files": [
+        "Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsApp.cs",
+        "Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppComparison.cs",
+        "Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsApp.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Filled the How much does our app actually see card: the two coverage lines over one axis, the app and ERP category splits over the shared five-name axis, the supporting text, and an in-panel message when Infor Visual could not be read.",
+      "files": [
+        "Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsApp.xaml"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Added ReceivingAnalyticsAppStoredProcedureTests; 6 integration tests pass against mtm_receiving_application_test",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/Database/StoredProcedures/ReceivingAnalyticsAppStoredProcedureTests.cs"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Wrote the module feature update: two tabs, four panels, receipt alignment rule, target key, four procedures, inherited ERP limits, deferred catalog items",
+      "files": [
+        "Module_ShipRec_Tools/docs/ReceivingAnalyticsAppDataTab_FeatureUpdate.md"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Marked delivery status on every catalog item (7 Built, 22 Deferred); wording, numbering and open questions untouched",
+      "files": [
+        "Module_ShipRec_Tools/docs/ReceivingAnalytics_TwoTab_AnalyticsCatalog.md"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Added the CHANGELOG entry for the two tabs, the four App Data panels and ReceivingAnalytics.OnTimeTarget",
+      "files": [
+        "CHANGELOG.md"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Ticked the four ReceivingAnalyticsApp procedures; progress 167/184 to 171/188",
+      "files": [
+        "Database/Database_Deployment/StoredProcedure-Test-Checklist.md"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Build 0 warnings 0 errors; full suite 928 passed 0 failed; 6 new integration tests also pass against the live test database",
+      "files": [
+        "MTM_Receiving_Application.slnx"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "Walked SC-001 to SC-009: SC-002/003/007/008 evidenced, SC-001/004/005/006/009 not measurable here and recorded as concerns",
+      "files": [
+        "specs/002-receiving-analytics-two-tab/tasks.md"
+      ]
+    }
+  },
+  "concerns": [
+    {
+      "note": "T038 assigns both category splits to the view model, but the comparison model carried no per-category ERP detail; a new ErpCategoryTotals field and a small service change were needed to build the ERP split.",
+      "step": "implement"
+    },
+    {
+      "note": "The two mix shares measure different things: the app side is quantity in the selected unit, the ERP side is receipt lines. The panel states this, but the two splits are comparable in shape rather than in unit.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-001 was not measured. The App Data tab is a star-row grid with no ScrollViewer, so the panels are laid out to fit rather than to scroll, but the visual check at 1450x900 on the shop floor terminal has not been done.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-004 was not measured. A thirty day range under three seconds needs the shop floor terminal and real data; the ERP read runs concurrently by code.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-005 was not measured. No hand count of a hundred sampled receipts was performed against live data; the early, on-time and late boundary is covered by unit tests only.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-006 was not produced twice live from both tabs. Identity rests on both tabs calling the same ERP read with the same bounds and all five scopes, which the service test asserts.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-009 was not exercised interactively. Ten tab switches with filter changes remain a manual check; each tab owns its own view model, so cross-tab leakage is structurally absent.",
+      "step": "implement"
+    },
+    {
+      "note": "39 pre-existing StoredProcedureInitialCoverageIntegrationTests fail when a live test connection string is supplied, because mtm_receiving_application_test is missing dunnage_specs and other objects. They early-return in the default run, which is why the 929-test baseline passes. Environmental and pre-existing, not caused by this change.",
+      "step": "implement"
+    },
+    {
+      "note": "The four new procedures were deployed into mtm_receiving_application_test by hand so the integration tests could run. They still need the standard deployment to production.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "T046 walked: build 0 warnings 0 errors, 929 tests pass, 6 stored procedure integration tests pass on the test database; SC-001, SC-004, SC-005, SC-006 and SC-009 were not measurable here and are recorded as concerns."
+}

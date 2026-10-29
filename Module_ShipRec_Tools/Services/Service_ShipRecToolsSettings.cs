@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -221,6 +222,31 @@ public sealed class Service_ShipRecToolsSettings : IService_ShipRecToolsSettings
 
     public async Task<bool> GetLotMarkingShapeFirstAsync() =>
         await GetBoolAsync(ShipRecToolsSettingsKeys.LotMarking.DisplayShapeFirst, true);
+
+    public async Task<decimal?> GetReceivingAnalyticsOnTimeTargetAsync()
+    {
+        var result = await _settings.GetSettingAsync(
+            ShipRecToolsSettingsKeys.Category,
+            ShipRecToolsSettingsKeys.ReceivingAnalytics.OnTimeTarget
+        );
+        if (
+            !result.IsSuccess
+            || result.Data is null
+            || string.IsNullOrWhiteSpace(result.Data.Value)
+        )
+        {
+            return null;
+        }
+
+        return decimal.TryParse(
+            result.Data.Value,
+            NumberStyles.Number,
+            CultureInfo.InvariantCulture,
+            out var parsed
+        )
+            ? parsed
+            : null;
+    }
 
     private async Task<HashSet<string>> GetFieldIdSetAsync(
         string key,
