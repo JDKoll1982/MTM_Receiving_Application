@@ -76,6 +76,26 @@ The range defaults to the last thirty days ending today, inclusive of today. The
 that to an exclusive end for the stored procedures. `Clear` resets every filter to the defaults above
 and empties the panels.
 
+## Warnings
+
+A warning is never a line of text in the filter bar. When something is wrong, a red circular button
+carrying `!` takes the place of the status text, and pressing it opens a panel with two parts:
+
+- a short heading naming what went wrong, and
+- a plain-language explanation of what it means and what to do next.
+
+The status text stays for success and information, so `Filters cleared.` and
+`Loaded N activity row(s)` still read as before. The button clears itself when the next load
+succeeds, when `Clear` runs, and when a load begins after an error.
+
+| Warning | Heading | What the reader is told |
+| --- | --- | --- |
+| Dates reversed | The start and end dates are the wrong way round | The `To` date falls before `From`; move it to the same day or later, then press Load |
+| App read failed | The app's own records could not be read | Nothing loaded and every page is empty, the underlying message, then press Load and pass the message to IT if it repeats |
+| Empty range | Nothing was received in that range | No completed receipts fall between the dates, pick a wider range, and weekend days are never counted |
+| ERP unavailable | Infor Visual could not be read | The app's own figures did load, only the Coverage page is empty, the other three pages are unaffected, then press Load to retry |
+| Load threw | Something went wrong while loading | The load stopped, the pages still show the previous figures, the message, then press Load |
+
 ## Quantity label
 
 Every quantity total is named by its unit, uppercased inside parentheses: `Quantity (LB)`,

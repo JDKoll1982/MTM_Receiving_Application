@@ -25,7 +25,8 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   were reading. Each page carries one plain sentence saying what its figures are read from.
   Saturdays and Sundays are not read: no weekend day appears on a day axis and weekend
   receipts count towards no total, with the Infor Visual side of the coverage chart dropping the same
-  weekend dates.
+  weekend dates. A warning shows as a red circular **!** button in place of the status text, and
+  pressing it explains in plain language what is wrong and what to do next.
 - **Why:** Infor Visual knows what arrived at the plant; only the app knows what an operator
   completed and whether it was on time. The comparison panels are what prove the app is capturing
   the real work.

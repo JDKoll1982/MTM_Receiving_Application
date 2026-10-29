@@ -120,13 +120,46 @@
                         IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
                 </StackPanel>
 
+                <!--  A warning is a red alert button rather than a line of text: pressing it says what is wrong  -->
+                <Button
+                    Grid.Column="6"
+                    Width="32"
+                    Height="32"
+                    Padding="0"
+                    AutomationProperties.Name="Show what is wrong"
+                    Background="{ThemeResource SystemFillColorCriticalBrush}"
+                    BorderThickness="0"
+                    CornerRadius="16"
+                    Visibility="{x:Bind ViewModel.HasWarning, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="!" />
+                    <Button.Flyout>
+                        <Flyout Placement="BottomEdgeAlignedRight">
+                            <StackPanel MaxWidth="360" Spacing="6">
+                                <TextBlock
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind ViewModel.WarningTitle, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind ViewModel.WarningDetail, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
                 <TextBlock
                     Grid.Column="6"
                     MaxWidth="360"
                     VerticalAlignment="Center"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    Visibility="{x:Bind ViewModel.HasWarning, Converter={StaticResource InverseBooleanToVisibilityConverter}, Mode=OneWay}" />
             </Grid>
         </Border>
 
