@@ -262,6 +262,29 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
         viewModel.MissingLoadNumberText.Should().BeEmpty();
     }
 
+    [Fact]
+    public void Constructor_ShouldOpenOnTheFirstPanel()
+    {
+        var viewModel = CreateViewModel(
+            CreateServiceMock(new Model_Tool_ReceivingAnalyticsAppDataset())
+        );
+
+        viewModel.SelectedPanelIndex.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Clear_ShouldLeaveTheNavbarOnThePanelTheUserChose()
+    {
+        var viewModel = CreateViewModel(CreateServiceMock(SampleDataset()));
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        viewModel.SelectedPanelIndex = 2;
+
+        viewModel.ClearCommand.Execute(null);
+
+        viewModel.SelectedPanelIndex.Should().Be(2);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("   ")]

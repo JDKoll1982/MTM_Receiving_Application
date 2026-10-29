@@ -35,6 +35,13 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
     private Model_Tool_ReceivingAnalyticsAppFilter? _lastFilter;
     private Model_Tool_ReceivingAnalyticsAppComparison? _lastComparison;
 
+    /// <summary>
+    /// Which panel the navbar shows: 0 = How busy were we, 1 = Were we on time,
+    /// 2 = Who is filling our dock, 3 = How much does our app actually see.
+    /// </summary>
+    [ObservableProperty]
+    private int _selectedPanelIndex;
+
     [ObservableProperty]
     private DateTimeOffset _fromDate = new(DateTime.Today.AddDays(-29));
 

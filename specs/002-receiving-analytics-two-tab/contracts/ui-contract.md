@@ -16,14 +16,20 @@ TabViewItem, untouched; the second TabViewItem hosts the App Data control.
 
 ## Panels
 
-| Position | Title | Draws |
-| --- | --- | --- |
-| Top left | `How busy were we` | a loads-and-labels chart beside a quantity stack |
-| Top right | `Were we on time` | an early, on-time and late stack with the percentage readout and target |
-| Bottom left | `Who is filling our dock` | a supplier ranking with cumulative share |
-| Bottom right | `How much does our app actually see` | a two-line coverage chart over a two-sided category mix |
+The four panels are four pages behind a navbar, in this order, with the filter bar above the navbar
+so every page is read through the same filters.
 
-The four titles appear in this order, and all four panels fit the default window without scrolling.
+| Page | Title | Draws |
+| --- | --- | --- |
+| 1 | `How busy were we` | a loads-and-labels chart beside a quantity stack |
+| 2 | `Were we on time` | an early, on-time and late stack with the percentage readout and target |
+| 3 | `Who is filling our dock` | a supplier ranking with cumulative share |
+| 4 | `How much does our app actually see` | a two-line coverage chart over a two-sided category mix |
+
+The four titles appear in this order as the navbar labels, and the page opens on page 1. Each page
+takes the full area below the navbar, so a panel never shares the window with another and never
+scrolls. The navbar index survives `Load` and `Clear`, so a reload leaves the user on the page they
+were reading.
 
 - `How busy were we` shows loads per period and labels per period as two series, beside a quantity
   stack of one stacked bar per period with one segment per material category in scope.

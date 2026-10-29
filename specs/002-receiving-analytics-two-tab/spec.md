@@ -193,8 +193,8 @@ per cent. Passing this proves the app's coverage of real work is measurable.
   from every panel, and each panel MUST state that its figures cover completed work.
 - **FR-005**: App Data MUST be read only against both databases.
 - **FR-006**: App Data MUST show four panels in this order: How busy were we, Were we on time, Who is
-  filling our dock, How much does our app actually see. All four MUST fit the default window without
-  scrolling.
+  filling our dock, How much does our app actually see. The four MUST be separate pages behind a
+  navbar, one panel on screen at a time, with the filter bar above the navbar.
 - **FR-007**: The activity panel MUST show loads per day, labels per day, and quantity by category,
   each switchable between daily, weekly and monthly over the selected range.
 - **FR-008**: A load MUST count once per distinct completed load, and a label MUST count once per
@@ -283,8 +283,9 @@ one place a weight comparison could have crept back in.
 
 ### Measurable Outcomes
 
-- **SC-001**: All four App Data panels are visible at once in the default window, with no scrolling:
-  pass or fail, verified on the shop floor terminal.
+- **SC-001**: Each App Data panel is readable on its own page without scrolling in the default
+  window, and the four navbar labels are reachable without scrolling the navbar: pass or fail,
+  verified on the shop floor terminal.
 - **SC-002**: Zero quantity totals on the page mix units. Every total names its unit.
 - **SC-003**: Both category splits name the same five categories, and each side's shares sum to 100
   per cent within one decimal place.
