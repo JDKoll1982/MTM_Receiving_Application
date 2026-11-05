@@ -28,19 +28,29 @@ public class Dao_DunnageLabelData
     }
 
     /// <summary>
-    /// Inserts each load in <paramref name="loads"/> into <c>dunnage_label_data</c> within a
-    /// single database transaction. Returns the count of rows successfully inserted.
-    /// Uses explicit <see cref="MySqlParameter"/> objects with declared types to avoid
-    /// "MySQL Error 0: Unhandled type encountered" when nullable values are DBNull.
+    /// Inserts a mixed batch in one transaction: the loads for parts that need a printed label go into the
+    /// <c>dunnage_label_data</c> queue, and the loads for parts that need none go straight into
+    /// <c>dunnage_history</c>.
     /// </summary>
-    /// <param name="loads">The list of dunnage loads to insert.</param>
+    /// <remarks>
+    /// Both halves are written by the same code against two procedures that take the same parameters, so a
+    /// row written straight to history is shaped exactly like one that was queued and archived later. They
+    /// share one transaction so a save either lands whole or not at all, whichever half a load belongs to.
+    /// Skid counters are numbered within each half, because a part only ever lives in one of them.
+    /// </remarks>
+    /// <param name="labelLoads">The loads that need a label in the queue.</param>
+    /// <param name="noLabelLoads">The loads whose part needs no printed label.</param>
     /// <param name="user">The user ID to record against each inserted row.</param>
-    public async Task<Model_Dao_Result<int>> InsertBatchAsync(
-        List<Model_DunnageLoad> loads,
+    public virtual async Task<Model_Dao_Result<int>> InsertBatchAsync(
+        List<Model_DunnageLoad>? labelLoads,
+        List<Model_DunnageLoad>? noLabelLoads,
         string user
     )
     {
-        if (loads == null || loads.Count == 0)
+        var queued = labelLoads ?? [];
+        var archived = noLabelLoads ?? [];
+
+        if (queued.Count == 0 && archived.Count == 0)
         {
             return Model_Dao_Result_Factory.Failure<int>("Loads list cannot be null or empty");
         }
@@ -52,18 +62,62 @@ public class Dao_DunnageLabelData
         try
         {
             int savedCount = 0;
-            var orderedLoads = OrderLoadsAndAssignPartSkidCounters(loads);
 
-            foreach (var load in orderedLoads)
+            savedCount += await InsertLoadsAsync(
+                connection,
+                transaction,
+                queued,
+                user,
+                "sp_Dunnage_LabelData_Insert"
+            );
+
+            savedCount += await InsertLoadsAsync(
+                connection,
+                transaction,
+                archived,
+                user,
+                "sp_Dunnage_History_Insert"
+            );
+
+            await transaction.CommitAsync();
+            return Model_Dao_Result_Factory.Success<int>(savedCount);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return Model_Dao_Result_Factory.Failure<int>(
+                $"Failed to save dunnage label data: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Writes one half of a batch through the procedure that owns its destination, numbering the skids
+    /// within that half. Returns how many rows it wrote.
+    /// </summary>
+    private static async Task<int> InsertLoadsAsync(
+        MySqlConnection connection,
+        System.Data.Common.DbTransaction transaction,
+        List<Model_DunnageLoad> loads,
+        string user,
+        string procedureName
+    )
+    {
+        if (loads.Count == 0)
+        {
+            return 0;
+        }
+
+        var savedCount = 0;
+        var orderedLoads = OrderLoadsAndAssignPartSkidCounters(loads);
+
+        foreach (var load in orderedLoads)
+        {
+            await using var command = new MySqlCommand(procedureName, connection, (MySqlTransaction)transaction)
             {
-                await using var command = new MySqlCommand(
-                    "sp_Dunnage_LabelData_Insert",
-                    connection,
-                    transaction
-                )
-                {
-                    CommandType = CommandType.StoredProcedure,
-                };
+                CommandType = CommandType.StoredProcedure,
+            };
 
                 command.Parameters.Add(
                     new MySqlParameter("p_load_uuid", MySqlDbType.VarChar, 36)
@@ -184,19 +238,9 @@ public class Dao_DunnageLabelData
 
                 await command.ExecuteNonQueryAsync();
                 savedCount++;
-            }
+        }
 
-            await transaction.CommitAsync();
-            return Model_Dao_Result_Factory.Success<int>(savedCount);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            return Model_Dao_Result_Factory.Failure<int>(
-                $"Failed to save dunnage label data: {ex.Message}",
-                ex
-            );
-        }
+        return savedCount;
     }
 
     /// <summary>

@@ -164,7 +164,12 @@ public static class ModuleServicesExtensions
 
         // Services (Singleton - Stateless business logic)
         services.AddSingleton<IService_MySQL_Receiving, Service_MySQL_Receiving>();
-        services.AddTransient<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+        services.AddSingleton<IService_MySQL_ReceivingLine, Service_MySQL_ReceivingLine>();
+        services.AddTransient<IService_ReceivingLabelOverlay, Service_ReceivingLabelOverlay>();
+        services.AddTransient<
+            IService_ReceivingLabelOverlaySettings,
+            Service_ReceivingLabelOverlaySettings
+        >();
         services.AddSingleton<IService_MySQL_PackagePreferences>(
             _ => new Service_MySQL_PackagePreferences(mySqlConnectionString)
         );
@@ -201,6 +206,7 @@ public static class ModuleServicesExtensions
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
         services.AddTransient<ViewModel_Receiving_ModeSelection>();
+        services.AddTransient<ViewModel_Receiving_LabelOverlay>();
         services.AddTransient<ViewModel_Receiving_ManualEntry>();
         services.AddTransient<ViewModel_Receiving_EditMode>();
         services.AddTransient<ViewModel_Receiving_POEntry>();
@@ -252,6 +258,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton(_ => new Dao_DunnageCustomField(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageUserPreference(mySqlConnectionString));
         services.AddSingleton(_ => new Dao_DunnageNonPOEntry(mySqlConnectionString));
+        services.AddSingleton(_ => new Dao_DunnageNoLabelPart(mySqlConnectionString));
 
         // Services
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();

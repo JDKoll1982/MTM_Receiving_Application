@@ -30,4 +30,4 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     INDEX idx_part_id (part_id) COMMENT 'Part-based queue queries',
     INDEX idx_employee_number (employee_number) COMMENT 'User-scoped clear queue filtering',
     INDEX idx_received_date (received_date) COMMENT 'Date range filtering for queue consumers'
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Active dunnage label queue. Rows are moved to dunnage_history on Clear Label Data. Do not write directly to dunnage_history from the workflow.';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Active dunnage label queue. Rows are moved to dunnage_history on Clear Label Data. Parts flagged in dunnage_no_label_parts never appear here: their loads go straight to dunnage_history.';

@@ -48,6 +48,9 @@ BEGIN
 
         -- Per-part non-PO reference defaults.
         DELETE FROM dunnage_non_po_part_defaults WHERE part_id = v_part_id;
+
+        -- The no-label flag (also cascades via FK; explicit for clarity).
+        DELETE FROM dunnage_no_label_parts WHERE part_id = v_part_id;
     END IF;
 
     DELETE FROM dunnage_parts WHERE id = p_id;

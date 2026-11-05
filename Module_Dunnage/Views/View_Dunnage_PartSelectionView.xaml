@@ -213,11 +213,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <Border Grid.Row="0"
                                 Grid.Column="0"
-                                Grid.RowSpan="3"
+                                Grid.RowSpan="4"
                             Width="88"
                             Height="88"
                             Margin="0,0,10,0"
@@ -268,6 +269,24 @@
                             <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        Text="No specs available for this part."
                                        Visibility="{x:Bind ViewModel.HasSelectedPartSpecs, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="1"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Text="Label:"
+                                   Visibility="{x:Bind ViewModel.IsSelectedPartNoLabelRequired, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <StackPanel Grid.Row="3"
+                                    Grid.Column="2"
+                                    Orientation="Horizontal"
+                                    Spacing="6"
+                                    Visibility="{x:Bind ViewModel.IsSelectedPartNoLabelRequired, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <FontIcon FontSize="14"
+                                      Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                      Glyph="&#xE946;"/>
+                            <TextBlock Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                       TextWrapping="WrapWholeWords"
+                                       Text="No printed label — this part's loads are saved straight to history."/>
                         </StackPanel>
                     </Grid>
 

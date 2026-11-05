@@ -170,6 +170,67 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     }
 
     [Fact]
+    public async Task ApplyDateTypeAsync_ShouldSetAnInclusiveSevenDayRangeAndReload()
+    {
+        Model_Tool_ReceivingAnalyticsAppFilter? requested = null;
+        var serviceMock = new Mock<IService_Tool_ReceivingAnalyticsApp>();
+        serviceMock
+            .Setup(service =>
+                service.GetAppDataAsync(It.IsAny<Model_Tool_ReceivingAnalyticsAppFilter>())
+            )
+            .Callback<Model_Tool_ReceivingAnalyticsAppFilter>(filter => requested = filter)
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(SampleDataset()));
+        serviceMock
+            .Setup(service =>
+                service.GetComparisonAsync(It.IsAny<Model_Tool_ReceivingAnalyticsAppFilter>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new Model_Tool_ReceivingAnalyticsAppComparison())
+            );
+
+        var viewModel = CreateViewModel(serviceMock);
+
+        await viewModel.ApplyDateTypeAsync("Last7Days");
+
+        viewModel.FromDate.Date.Should().Be(DateTime.Today.AddDays(-6));
+        viewModel.ToDate.Date.Should().Be(DateTime.Today);
+        requested.Should().NotBeNull();
+        requested!.StartDate.Should().Be(DateTime.Today.AddDays(-6));
+        requested.EndDate.Should().Be(DateTime.Today.AddDays(1));
+    }
+
+    [Fact]
+    public async Task ApplyDateTypeAsync_ShouldEndLastMonthOnItsOwnLastDay()
+    {
+        var viewModel = CreateViewModel(
+            CreateServiceMock(new Model_Tool_ReceivingAnalyticsAppDataset())
+        );
+        var lastMonth = DateTime.Today.AddMonths(-1);
+        var firstOfLastMonth = new DateTime(lastMonth.Year, lastMonth.Month, 1);
+
+        await viewModel.ApplyDateTypeAsync("LastMonth");
+
+        viewModel.FromDate.Date.Should().Be(firstOfLastMonth);
+        viewModel.ToDate.Date.Should().Be(firstOfLastMonth.AddMonths(1).AddDays(-1));
+    }
+
+    [Fact]
+    public async Task ApplyDateTypeAsync_ShouldLeaveTheRangeAlone_AndNotQuery_WhenThePresetIsBlank()
+    {
+        var serviceMock = CreateServiceMock(new Model_Tool_ReceivingAnalyticsAppDataset());
+        var viewModel = CreateViewModel(serviceMock);
+
+        await viewModel.ApplyDateTypeAsync("   ");
+
+        viewModel.FromDate.Date.Should().Be(DateTime.Today.AddDays(-29));
+        viewModel.ToDate.Date.Should().Be(DateTime.Today);
+        serviceMock.Verify(
+            service => service.GetAppDataAsync(It.IsAny<Model_Tool_ReceivingAnalyticsAppFilter>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
     public async Task LoadAsync_ShouldOpenOnTheDominantUnit()
     {
         var viewModel = CreateViewModel(CreateServiceMock(SampleDataset()));

@@ -122,6 +122,12 @@
                                 MaxLength="100"
                                 PlaceholderText="e.g. A-12-B, DOCK-2, Rack by 100-15" />
                         </StackPanel>
+
+                        <CheckBox
+                            x:Name="NoLabelRequiredCheckBox"
+                            AutomationProperties.Name="Needs no printed label"
+                            Content="Needs no printed label"
+                            ToolTipService.ToolTip="Saves this part's loads straight to history instead of queueing a label for LabelView" />
                     </StackPanel>
                 </Border>
 

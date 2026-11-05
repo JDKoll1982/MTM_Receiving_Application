@@ -453,13 +453,22 @@
                     Header="{x:Bind ViewModel.EditModeColumnHeatLotText, Mode=OneWay}"
                     Tag="HeatLotNumber" />
 
-                <!--  HeatShapeCode — the lot's marking shape, drawn as text  -->
-                <controls:DataGridTextColumn
+                <!--  HeatShapeCode — the lot's marking shape, drawn as a flat black glyph  -->
+                <controls:DataGridTemplateColumn
                     Width="Auto"
-                    Binding="{Binding HeatShapeCode}"
                     Header="Shape"
                     IsReadOnly="True"
-                    Tag="HeatShapeCode" />
+                    Tag="HeatShapeCode">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:Model_ReceivingLoad">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                IsColorFontEnabled="False"
+                                Text="{x:Bind HeatShapeCode, Mode=OneWay}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
 
                 <!--  HeatColorCode — the lot's marking color  -->
                 <controls:DataGridTextColumn

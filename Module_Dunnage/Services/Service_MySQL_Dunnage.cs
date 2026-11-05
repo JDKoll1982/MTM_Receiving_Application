@@ -29,6 +29,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly Dao_DunnageCustomField _daoCustomField;
         private readonly Dao_DunnageUserPreference _daoUserPreference;
         private readonly Dao_DunnageNonPOEntry _daoNonPOEntry;
+        private readonly Dao_DunnageNoLabelPart _daoNoLabelPart;
         private readonly IService_DunnageImageStorage _imageStorage;
 
         private string CurrentUser =>
@@ -47,6 +48,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             Dao_DunnageCustomField daoCustomField,
             Dao_DunnageUserPreference daoUserPreference,
             Dao_DunnageNonPOEntry daoNonPOEntry,
+            Dao_DunnageNoLabelPart daoNoLabelPart,
             IService_DunnageImageStorage imageStorage
         )
         {
@@ -62,6 +64,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _daoCustomField = daoCustomField;
             _daoUserPreference = daoUserPreference;
             _daoNonPOEntry = daoNonPOEntry;
+            _daoNoLabelPart = daoNoLabelPart;
             _imageStorage = imageStorage;
         }
 
@@ -1149,21 +1152,42 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     return Model_Dao_Result_Factory.Success();
                 }
 
-                await _logger.LogInfoAsync(
-                    $"Saving batch of {loads.Count} dunnage loads to active queue by user: {CurrentUser}"
+                // Parts on the no-label list need nothing printed, so their loads skip the queue and are
+                // written straight to history. The list is read once per save rather than per load.
+                var noLabelResult = await _daoNoLabelPart.GetPartIdsAsync();
+                if (!noLabelResult.IsSuccess)
+                {
+                    await _logger.LogErrorAsync(
+                        $"Failed to read the no-label part list: {noLabelResult.ErrorMessage}. Saving every load to the label queue."
+                    );
+                }
+
+                var (needsLabel, noLabel) = Helper_DunnageNoLabelParts.Split(
+                    loads,
+                    noLabelResult.IsSuccess ? noLabelResult.Data : []
                 );
-                var result = await _daoDunnageLabelData.InsertBatchAsync(loads, CurrentUser);
+
+                await _logger.LogInfoAsync(
+                    $"Saving batch of {loads.Count} dunnage loads by user: {CurrentUser} — "
+                        + $"{needsLabel.Count} to the label queue, {noLabel.Count} straight to history (no label needed)"
+                );
+
+                var result = await _daoDunnageLabelData.InsertBatchAsync(
+                    needsLabel,
+                    noLabel,
+                    CurrentUser
+                );
                 if (result.IsSuccess)
                 {
                     var totalQuantity = loads.Sum(l => l.Quantity);
                     await _logger.LogInfoAsync(
-                        $"Successfully queued {result.Data} of {loads.Count} dunnage loads (Total Quantity: {totalQuantity})"
+                        $"Successfully saved {result.Data} of {loads.Count} dunnage loads (Total Quantity: {totalQuantity})"
                     );
                 }
                 else
                 {
                     await _logger.LogErrorAsync(
-                        $"Failed to queue dunnage loads: {result.ErrorMessage}"
+                        $"Failed to save dunnage loads: {result.ErrorMessage}"
                     );
                 }
 
@@ -1185,6 +1209,85 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     nameof(Service_MySQL_Dunnage)
                 );
                 return Model_Dao_Result_Factory.Failure($"Error saving loads: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// The part numbers that need no printed label. Their loads are written straight to history instead
+        /// of being queued for LabelView.
+        /// </summary>
+        public async Task<Model_Dao_Result<List<string>>> GetNoLabelPartIdsAsync()
+        {
+            try
+            {
+                return await _daoNoLabelPart.GetPartIdsAsync();
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in GetNoLabelPartIdsAsync: {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(GetNoLabelPartIdsAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure<List<string>>(
+                    $"Error reading the no-label part list: {ex.Message}"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Turns the "needs no printed label" flag on or off for one part, as set on the part screens.
+        /// </summary>
+        public async Task<Model_Dao_Result> SetPartNoLabelAsync(
+            string partId,
+            bool needsNoLabel,
+            string user
+        )
+        {
+            try
+            {
+                var result = await _daoNoLabelPart.SetAsync(
+                    partId,
+                    needsNoLabel,
+                    string.IsNullOrWhiteSpace(user) ? CurrentUser : user
+                );
+
+                if (result.IsSuccess)
+                {
+                    await _logger.LogInfoAsync(
+                        $"Part '{partId}' now "
+                            + (needsNoLabel
+                                ? "needs no printed label; its loads go straight to history."
+                                : "needs a printed label again; its loads are queued for LabelView.")
+                    );
+                }
+                else
+                {
+                    await _logger.LogErrorAsync(
+                        $"Failed to save the no-label flag for part '{partId}': {result.ErrorMessage}"
+                    );
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _logger.LogErrorAsync(
+                    $"Exception in SetPartNoLabelAsync for '{partId}': {ex.Message}"
+                );
+                HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(SetPartNoLabelAsync),
+                    nameof(Service_MySQL_Dunnage)
+                );
+                return Model_Dao_Result_Factory.Failure(
+                    $"Error saving the no-label flag: {ex.Message}"
+                );
             }
         }
 

@@ -195,6 +195,29 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
+        /// Set by the view's code-behind so the mode can open the label overlay window without the
+        /// ViewModel taking a dependency on UI types.
+        /// </summary>
+        public Func<Task>? RequestOpenLabelOverlay { get; set; }
+
+        /// <summary>
+        /// Opens the label overlay mode. It is a window rather than a workflow step because it does not
+        /// change the receipt being entered: it repeats markings already recorded onto tags that are
+        /// already printed, so it can be opened, used and closed without disturbing the workflow.
+        /// </summary>
+        [RelayCommand]
+        private async Task OpenLabelOverlayAsync()
+        {
+            if (RequestOpenLabelOverlay is null)
+            {
+                return;
+            }
+
+            _logger.LogInfo("User selected Label Overlay.");
+            await RequestOpenLabelOverlay();
+        }
+
+        /// <summary>
         /// Shows confirmation dialog before mode change
         /// </summary>
         /// <returns>True if user confirmed, false if cancelled</returns>

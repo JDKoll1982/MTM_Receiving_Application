@@ -1,0 +1,915 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_LabelOverlayDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dev="using:DevWinUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
+    xmlns:shiprec="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibility" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <InfoBar
+            Grid.Row="0"
+            Margin="24,12,24,0"
+            IsOpen="{x:Bind ViewModel.IsStatusOpen, Mode=TwoWay}"
+            Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+            Severity="{x:Bind ToInfoBarSeverity(ViewModel.StatusSeverity), Mode=OneWay}" />
+
+        <TabView
+            Grid.Row="1"
+            CanDragTabs="False"
+            CanReorderTabs="False"
+            IsAddTabButtonVisible="False"
+            SelectedIndex="{x:Bind ViewModel.SelectedTabIndex, Mode=TwoWay}"
+            TabWidthMode="Equal">
+
+            <!--  ═══ Overlays  ═══  -->
+            <TabViewItem Header="Overlays">
+                <Grid Padding="24,16,24,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="0,0,0,12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Prints the lot marking onto tags you have already run through the label printer. Only the marking is printed — the receipt itself is not changed."
+                        TextWrapping="WrapWholeWords" />
+
+                    <!--  This tab's own filter  -->
+                    <Border
+                        Grid.Row="1"
+                        Margin="0,0,0,12"
+                        Padding="16"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <StackPanel Spacing="10">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Narrow this list" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Text="Received" />
+                                <CalendarDatePicker
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="First day"
+                                    Date="{x:Bind ViewModel.FilterFromDate, Mode=TwoWay}"
+                                    PlaceholderText="First day" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="to" />
+                                <CalendarDatePicker
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Last day"
+                                    Date="{x:Bind ViewModel.FilterToDate, Mode=TwoWay}"
+                                    PlaceholderText="Last day" />
+                                <Button
+                                    Grid.Column="4"
+                                    Command="{x:Bind ViewModel.ClearDateRangeCommand}"
+                                    Content="All dates"
+                                    ToolTipService.ToolTip="Remove the date limit"
+                                    Visibility="{x:Bind ViewModel.HasActiveFilter, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Sort by"
+                                    DisplayMemberPath="DisplayName"
+                                    Header="Sort by"
+                                    ItemsSource="{x:Bind ViewModel.SortOptions}"
+                                    SelectedItem="{x:Bind ViewModel.SelectedSortOption, Mode=TwoWay}" />
+                                <ToggleSwitch
+                                    Grid.Column="1"
+                                    MinWidth="0"
+                                    Header="Direction"
+                                    IsOn="{x:Bind ViewModel.IsSortDescending, Mode=TwoWay}"
+                                    OffContent="Low to high"
+                                    OnContent="High to low" />
+                                <DropDownButton
+                                    Grid.Column="2"
+                                    VerticalAlignment="Bottom"
+                                    AutomationProperties.Name="Columns"
+                                    Content="Columns">
+                                    <DropDownButton.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{x:Bind ViewModel.FilterColumns, Mode=OneWay}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="shiprec:Model_Tool_LotMarkingColumnOption">
+                                                        <CheckBox
+                                                            Content="{x:Bind DisplayName}"
+                                                            IsChecked="{x:Bind IsVisible, Mode=TwoWay}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </DropDownButton.Flyout>
+                                </DropDownButton>
+                            </Grid>
+
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.FilterSummary, Mode=OneWay}"
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Actions and running total  -->
+                    <StackPanel
+                        Grid.Row="2"
+                        Margin="0,0,0,10"
+                        Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button
+                                Command="{x:Bind ViewModel.SelectAllMarkedCommand}"
+                                Content="Select every tag with a marking" />
+                            <Button Command="{x:Bind ViewModel.ClearSelectionCommand}" Content="Clear" />
+                            <Button Command="{x:Bind ViewModel.ReloadCommand}" Content="Reload the queue" />
+                        </StackPanel>
+
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{x:Bind ViewModel.SelectionSummary, Mode=OneWay}"
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+
+                    <!--  The tags  -->
+                    <Border
+                        Grid.Row="3"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Grid.Row="0"
+                                Padding="12,10"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36" />
+                                    <ColumnDefinition Width="160" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="110" />
+                                    <ColumnDefinition Width="110" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Part number"
+                                    Visibility="{x:Bind ViewModel.ShowPartColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Heat / lot"
+                                    Visibility="{x:Bind ViewModel.ShowHeatColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Shape"
+                                    Visibility="{x:Bind ViewModel.ShowShapeColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="4"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Color"
+                                    Visibility="{x:Bind ViewModel.ShowColorColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="5"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Received"
+                                    Visibility="{x:Bind ViewModel.ShowReceivedColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="6"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Description" />
+                            </Grid>
+
+                            <Grid Grid.Row="1">
+                                <ListView
+                                    ItemsSource="{x:Bind ViewModel.Labels, Mode=OneWay}"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    SelectionMode="None">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                            <Setter Property="Padding" Value="12,6" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_ReceivingLabelOverlayItem">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="36" />
+                                                    <ColumnDefinition Width="160" />
+                                                    <ColumnDefinition Width="130" />
+                                                    <ColumnDefinition Width="110" />
+                                                    <ColumnDefinition Width="110" />
+                                                    <ColumnDefinition Width="130" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox
+                                                    Grid.Column="0"
+                                                    MinWidth="0"
+                                                    AutomationProperties.Name="Print this tag"
+                                                    IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
+
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind PartId}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Visibility="{x:Bind ShowPart, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind HeatLotNumber}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Visibility="{x:Bind ShowHeat, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ShapeName}"
+                                                    Visibility="{x:Bind ShowShape, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ColorName}"
+                                                    Visibility="{x:Bind ShowColor, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="5"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ReceivedText}"
+                                                    Visibility="{x:Bind ShowReceived, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="6"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="{x:Bind Description}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <TextBlock
+                                    Margin="24"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    IsHitTestVisible="False"
+                                    Text="{x:Bind ViewModel.LabelListEmptyText}"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="{x:Bind ViewModel.IsLabelListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!--  Advanced settings, closed until somebody needs them  -->
+                    <Expander
+                        Grid.Row="4"
+                        Margin="0,12,0,0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        AutomationProperties.Name="Advanced settings"
+                        IsExpanded="False">
+                        <Expander.Header>
+                            <StackPanel Spacing="2">
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Advanced settings — where the marking lands" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.GeometrySummary, Mode=OneWay}" />
+                            </StackPanel>
+                        </Expander.Header>
+
+                        <StackPanel Padding="0,4,0,8" Spacing="8">
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Measured in inches from the tag's top-left corner. Print one tag, lay it against a rule, and nudge these only if it sits wrong."
+                                TextWrapping="WrapWholeWords" />
+
+                            <Grid ColumnSpacing="12" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <NumberBox
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    AutomationProperties.Name="From the left"
+                                    Header="From the left (in)"
+                                    Maximum="11"
+                                    Minimum="0"
+                                    SmallChange="0.05"
+                                    SpinButtonPlacementMode="Compact"
+                                    Value="{x:Bind ViewModel.CenterXInches, Mode=TwoWay}" />
+                                <NumberBox
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    AutomationProperties.Name="From the top"
+                                    Header="From the top (in)"
+                                    Maximum="8.5"
+                                    Minimum="0"
+                                    SmallChange="0.05"
+                                    SpinButtonPlacementMode="Compact"
+                                    Value="{x:Bind ViewModel.CenterYInches, Mode=TwoWay}" />
+                                <NumberBox
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    AutomationProperties.Name="Circle size"
+                                    Header="Circle size (in)"
+                                    Maximum="6"
+                                    Minimum="0.25"
+                                    SmallChange="0.05"
+                                    SpinButtonPlacementMode="Compact"
+                                    Value="{x:Bind ViewModel.DiameterInches, Mode=TwoWay}" />
+
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    AutomationProperties.Name="Heading above the circle"
+                                    Header="Heading above the circle"
+                                    Text="{x:Bind ViewModel.HeadingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    Command="{x:Bind ViewModel.ResetGeometryCommand}"
+                                    Content="Reset to tag default"
+                                    ToolTipService.ToolTip="Put the measured position and size back" />
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+                </Grid>
+            </TabViewItem>
+
+            <!--  ═══ Cut-Out Cards  ═══  -->
+            <TabViewItem Header="Cut-Out Cards">
+                <Grid Padding="24,16,24,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="0,0,0,12"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Prints eight cut-out cards on one sheet of paper. Pick the part number first, then the lots you want cards for — every page carries the same cards so each one can be cut up."
+                        TextWrapping="WrapWholeWords" />
+
+                    <!--  Which part  -->
+                    <Border
+                        Grid.Row="1"
+                        Margin="0,0,0,12"
+                        Padding="16"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <StackPanel Spacing="8">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Which part number?" />
+
+                            <ComboBox
+                                HorizontalAlignment="Stretch"
+                                AutomationProperties.Name="Part number"
+                                Header="Part number"
+                                ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                                PlaceholderText="Choose a part number"
+                                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!--  This tab's own filter  -->
+                    <Border
+                        Grid.Row="2"
+                        Margin="0,0,0,12"
+                        Padding="16"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <StackPanel Spacing="10">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Narrow the lots" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Text="Received" />
+                                <CalendarDatePicker
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="First day"
+                                    Date="{x:Bind ViewModel.FilterFromDate, Mode=TwoWay}"
+                                    PlaceholderText="First day" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="to" />
+                                <CalendarDatePicker
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Last day"
+                                    Date="{x:Bind ViewModel.FilterToDate, Mode=TwoWay}"
+                                    PlaceholderText="Last day" />
+                                <Button
+                                    Grid.Column="4"
+                                    Command="{x:Bind ViewModel.ClearDateRangeCommand}"
+                                    Content="All dates"
+                                    ToolTipService.ToolTip="Remove the date limit"
+                                    Visibility="{x:Bind ViewModel.HasActiveFilter, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Sort by"
+                                    DisplayMemberPath="DisplayName"
+                                    Header="Sort by"
+                                    ItemsSource="{x:Bind ViewModel.SortOptions}"
+                                    SelectedItem="{x:Bind ViewModel.SelectedSortOption, Mode=TwoWay}" />
+                                <ToggleSwitch
+                                    Grid.Column="1"
+                                    MinWidth="0"
+                                    Header="Direction"
+                                    IsOn="{x:Bind ViewModel.IsSortDescending, Mode=TwoWay}"
+                                    OffContent="Low to high"
+                                    OnContent="High to low" />
+                                <DropDownButton
+                                    Grid.Column="2"
+                                    VerticalAlignment="Bottom"
+                                    AutomationProperties.Name="Columns"
+                                    Content="Columns">
+                                    <DropDownButton.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{x:Bind ViewModel.FilterColumns, Mode=OneWay}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="shiprec:Model_Tool_LotMarkingColumnOption">
+                                                        <CheckBox
+                                                            Content="{x:Bind DisplayName}"
+                                                            IsChecked="{x:Bind IsVisible, Mode=TwoWay}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </DropDownButton.Flyout>
+                                </DropDownButton>
+                            </Grid>
+
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.FilterSummary, Mode=OneWay}"
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Running total  -->
+                    <TextBlock
+                        Grid.Row="3"
+                        Margin="0,0,0,10"
+                        FontWeight="SemiBold"
+                        Text="{x:Bind ViewModel.SelectionSummary, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+
+                    <!--  The lots  -->
+                    <Border
+                        Grid.Row="4"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Grid.Row="0"
+                                Padding="12,10"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36" />
+                                    <ColumnDefinition Width="160" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="110" />
+                                    <ColumnDefinition Width="110" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Part number"
+                                    Visibility="{x:Bind ViewModel.ShowPartColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Heat / lot"
+                                    Visibility="{x:Bind ViewModel.ShowHeatColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Shape"
+                                    Visibility="{x:Bind ViewModel.ShowShapeColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="4"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Color"
+                                    Visibility="{x:Bind ViewModel.ShowColorColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="5"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Received"
+                                    Visibility="{x:Bind ViewModel.ShowReceivedColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock
+                                    Grid.Column="6"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Description" />
+                            </Grid>
+
+                            <Grid Grid.Row="1">
+                                <ListView
+                                    ItemsSource="{x:Bind ViewModel.CardSheetLabels, Mode=OneWay}"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    SelectionMode="None">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                            <Setter Property="Padding" Value="12,6" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Model_ReceivingLabelOverlayItem">
+                                            <Grid ColumnSpacing="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="36" />
+                                                    <ColumnDefinition Width="160" />
+                                                    <ColumnDefinition Width="130" />
+                                                    <ColumnDefinition Width="110" />
+                                                    <ColumnDefinition Width="110" />
+                                                    <ColumnDefinition Width="130" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox
+                                                    Grid.Column="0"
+                                                    MinWidth="0"
+                                                    AutomationProperties.Name="Print a card for this lot"
+                                                    IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
+
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind PartId}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Visibility="{x:Bind ShowPart, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind HeatLotNumber}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Visibility="{x:Bind ShowHeat, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ShapeName}"
+                                                    Visibility="{x:Bind ShowShape, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ColorName}"
+                                                    Visibility="{x:Bind ShowColor, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="5"
+                                                    VerticalAlignment="Center"
+                                                    Text="{x:Bind ReceivedText}"
+                                                    Visibility="{x:Bind ShowReceived, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                                <TextBlock
+                                                    Grid.Column="6"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="{x:Bind Description}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <TextBlock
+                                    Margin="24"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    IsHitTestVisible="False"
+                                    Text="{x:Bind ViewModel.CardSheetListEmptyText, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="{x:Bind ViewModel.IsCardSheetListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabViewItem>
+
+            <!--  ═══ Printer Settings  ═══  -->
+            <TabViewItem Header="Printer Settings">
+                <ScrollViewer Padding="24,16,24,16">
+                    <StackPanel Spacing="16">
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Each thing you print keeps its own setup, so the tags can go to one tray and the cut-out sheets to another. These are saved against your user, not on this PC, and they never change the printer's own defaults."
+                            TextWrapping="WrapWholeWords" />
+
+                        <Border
+                            Padding="16"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <StackPanel Spacing="10">
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Which output to set up"
+                                    Header="Which output are you setting up?"
+                                    SelectedIndex="{x:Bind ViewModel.SettingsTargetIndex, Mode=TwoWay}">
+                                    <x:String>Overlay tags</x:String>
+                                    <x:String>Cut-out cards</x:String>
+                                </ComboBox>
+
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="Printer"
+                                    Header="Send it to"
+                                    ItemsSource="{x:Bind ViewModel.Printers, Mode=OneWay}"
+                                    PlaceholderText="Choose a printer"
+                                    SelectedItem="{x:Bind ViewModel.SelectedPrinter, Mode=TwoWay}" />
+
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.PrintersSummary, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Padding="16"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <StackPanel Spacing="10">
+                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Page setup" />
+
+                                <Grid ColumnSpacing="12" RowSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <ComboBox
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.Name="Orientation"
+                                        Header="Orientation"
+                                        ItemsSource="{x:Bind ViewModel.OrientationOptions}"
+                                        SelectedIndex="{x:Bind ViewModel.SelectedOrientationIndex, Mode=TwoWay}" />
+
+                                    <ComboBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.Name="Paper size"
+                                        DisplayMemberPath="DisplayName"
+                                        Header="Paper size"
+                                        ItemsSource="{x:Bind ViewModel.Papers, Mode=OneWay}"
+                                        PlaceholderText="Choose a paper size"
+                                        SelectedItem="{x:Bind ViewModel.SelectedPaper, Mode=TwoWay}" />
+
+                                    <NumberBox
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        AutomationProperties.Name="Card sheet margin"
+                                        Header="Card margin (in)"
+                                        Maximum="1"
+                                        Minimum="0"
+                                        SmallChange="0.05"
+                                        SpinButtonPlacementMode="Compact"
+                                        Value="{x:Bind ViewModel.CardSheetMarginInches, Mode=TwoWay}"
+                                        Visibility="{x:Bind ViewModel.IsEditingCardSheetSettings, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+
+                                    <NumberBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        AutomationProperties.Name="Duplicates per lot"
+                                        Header="Duplicates per lot"
+                                        Maximum="{x:Bind ViewModel.MaximumCopies}"
+                                        Minimum="{x:Bind ViewModel.MinimumCopies}"
+                                        SmallChange="1"
+                                        SpinButtonPlacementMode="Compact"
+                                        Value="{x:Bind ViewModel.PrintCopies, Mode=TwoWay}"
+                                        Visibility="{x:Bind ViewModel.IsEditingCardSheetSettings, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.PaperSourcesSummary, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+
+                                    <ComboBox
+                                        Grid.Row="3"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.Name="Paper tray"
+                                        DisplayMemberPath="DisplayName"
+                                        Header="Paper tray"
+                                        ItemsSource="{x:Bind ViewModel.PaperSources, Mode=OneWay}"
+                                        PlaceholderText="The printer's own default"
+                                        SelectedItem="{x:Bind ViewModel.SelectedPaperSource, Mode=TwoWay}" />
+
+                                    <TextBlock
+                                        Grid.Row="4"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Each selected lot gets its own full page of eight identical cards, printed as many times as the duplicates below ask for. Lots are never mixed on one sheet."
+                                        TextWrapping="WrapWholeWords"
+                                        Visibility="{x:Bind ViewModel.IsEditingCardSheetSettings, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button
+                                        Command="{x:Bind ViewModel.OpenPrinterSetupCommand}"
+                                        Content="Printer setup…"
+                                        ToolTipService.ToolTip="Open the printer's own dialog for tray, media and quality" />
+                                    <Button
+                                        Command="{x:Bind ViewModel.ResetPrintSetupCommand}"
+                                        Content="Reset this output"
+                                        ToolTipService.ToolTip="Back to Letter, landscape, default margins" />
+                                </StackPanel>
+
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.PapersSummary, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.FormatDescription, Mode=OneWay}"
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+        </TabView>
+
+        <Border
+            Grid.Row="2"
+            Padding="24,12"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ProgressRing
+                    Grid.Column="0"
+                    Width="20"
+                    Height="20"
+                    HorizontalAlignment="Left"
+                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+
+                <!--  How many copies of this page to print, so the run can be allocated without opening
+                      the settings tab. The print dialog offers the same count and takes the last word.  -->
+                <NumberBox
+                    Grid.Column="1"
+                    Width="130"
+                    VerticalAlignment="Center"
+                    AutomationProperties.Name="Copies to print"
+                    Header="Copies"
+                    Maximum="{x:Bind ViewModel.MaximumCopies}"
+                    Minimum="{x:Bind ViewModel.MinimumCopies}"
+                    SmallChange="1"
+                    SpinButtonPlacementMode="Compact"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.PrintCopiesSummary, Mode=OneWay}"
+                    Value="{x:Bind ViewModel.PrintCopies, Mode=TwoWay}" />
+
+                <Button
+                    Grid.Column="2"
+                    Click="OnCloseClick"
+                    Content="Close" />
+
+                <!--  A print takes seconds, so the button carries the progress rather than a spinner.  -->
+                <dev:ProgressButton
+                    Grid.Column="3"
+                    Width="230"
+                    AutomationProperties.Name="Print"
+                    CheckedContent="{x:Bind ViewModel.PrintingStatus, Mode=OneWay}"
+                    Click="OnPrintClick"
+                    Content="{x:Bind ViewModel.PrintButtonText, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.IsPrinting, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.CanClickPrint, Mode=OneWay}"
+                    IsIndeterminateProgressRing="True"
+                    Progress="{x:Bind ViewModel.PrintProgress, Mode=OneWay}"
+                    ProgressForeground="{ThemeResource AccentFillColorDefaultBrush}"
+                    ProgressRingVisibility="Visible"
+                    ToolTipService.ToolTip="Open the print dialog, then send the markings to the printer" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

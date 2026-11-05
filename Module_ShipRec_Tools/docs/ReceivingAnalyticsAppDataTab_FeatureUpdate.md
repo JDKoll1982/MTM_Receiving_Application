@@ -1,6 +1,6 @@
 # Receiving Analytics: ERP Data and App Data
 
-Last Updated: 2026-10-29
+Last Updated: 2026-11-03
 
 ## Overview
 
@@ -18,6 +18,17 @@ date range and its own filters. Switching tabs never moves the other tab's dates
 3. Set the range (defaults to the last thirty days), the period (Day, Week or Month), the unit each
    quantity total is named in, and the supplier ranking measure (Labels, Quantity or Loads).
 4. Click **Load**. **Clear** resets the range and filters.
+
+### Choosing the range
+
+The range uses the same **Date Range** flyout as the rest of the tool. Click **Date Range** in the
+filter bar to open it, pick a From and To date, or choose a quick **Date Type** preset (Last 7 Days,
+Last 30 Days, Last 90 Days, This Month, Last Month, This Quarter, Last Quarter, This Year, Last 12
+Months), then click **Apply Date Range**. The last day named is included.
+
+Every preset looks backwards, because the App Data tab only reads receipts the app has already
+completed, and every preset stays bounded, so a preset never asks for an open-ended read. The range
+you choose here is the App Data tab's own; it never moves the ERP Data tab's dates.
 
 The unit list holds the units the loaded range actually contains. The unit the range's work happened
 in most often is chosen for you, and every quantity total then names that unit. When two units tie

@@ -200,6 +200,12 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         ?? SelectedPart?.DunnageTypeImageSource
         ?? SelectedTypeImageSource;
 
+    /// <summary>
+    /// True when the selected part is on the no-label list, so the details panel can say why no label will
+    /// be queued for it.
+    /// </summary>
+    public bool IsSelectedPartNoLabelRequired => SelectedPart?.NeedsNoLabel == true;
+
     #endregion
 
     #region Initialization
@@ -409,6 +415,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             if (result.IsSuccess && result.Data != null)
             {
                 AvailableParts = new ObservableCollection<Model_DunnagePart>(result.Data);
+                await ApplyNoLabelFlagsAsync(AvailableParts);
 
                 _logger.LogInfo(
                     $"PartSelection: Successfully loaded {AvailableParts.Count} parts",
@@ -447,6 +454,70 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
     #endregion
 
     #region Part Selection
+
+    /// <summary>
+    /// Keeps the part's "needs no printed label" choice. A failure is reported but does not fail the save:
+    /// the part itself was written, and the flag can be set again from the part screen.
+    /// </summary>
+    private async Task SaveNoLabelFlagAsync(string partId, bool needsNoLabel)
+    {
+        try
+        {
+            var result = await _dunnageService.SetPartNoLabelAsync(partId, needsNoLabel, string.Empty);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning(
+                    $"PartSelection: the no-label flag for '{partId}' was not saved: {result.ErrorMessage}",
+                    "PartSelection"
+                );
+                await _errorHandler.HandleDaoErrorAsync(result, nameof(SaveNoLabelFlagAsync), true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"PartSelection: saving the no-label flag for '{partId}' failed: {ex.Message}",
+                "PartSelection"
+            );
+        }
+    }
+
+    /// <summary>
+    /// Marks which loaded parts need no printed label, so the edit screen opens with its checkbox already
+    /// set. A list that cannot be read leaves every part needing a label, which is the safe default: a label
+    /// that was queued need not have been, but one that was skipped cannot be recovered.
+    /// </summary>
+    private async Task ApplyNoLabelFlagsAsync(IEnumerable<Model_DunnagePart> parts)
+    {
+        try
+        {
+            var result = await _dunnageService.GetNoLabelPartIdsAsync();
+
+            if (!result.IsSuccess || result.Data is null)
+            {
+                _logger.LogWarning(
+                    $"PartSelection: the no-label part list could not be read: {result.ErrorMessage}",
+                    "PartSelection"
+                );
+                return;
+            }
+
+            var flagged = result.Data.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var part in parts)
+            {
+                part.RequiresLabel = !flagged.Contains(part.PartId?.Trim() ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"PartSelection: marking the no-label parts failed: {ex.Message}",
+                "PartSelection"
+            );
+        }
+    }
 
     private void RestoreWorkflowSelectedPart(Model_DunnagePart? workflowSelectedPart = null)
     {
@@ -625,6 +696,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         // Notify that command can execute state changed
         OnPropertyChanged(nameof(SelectedPartVisualSource));
         OnPropertyChanged(nameof(HasSelectedPartVisual));
+        OnPropertyChanged(nameof(IsSelectedPartNoLabelRequired));
         SelectPartCommand.NotifyCanExecuteChanged();
         EditPartCommand.NotifyCanExecuteChanged();
         DeletePartCommand.NotifyCanExecuteChanged();
@@ -868,6 +940,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                 {
                     _logger.LogInfo($"Successfully added part: {partId}", "PartSelection");
 
+                    await SaveNoLabelFlagAsync(partId, dialog.NoLabelRequired);
+
                     // Reload parts to show new part
                     await LoadPartsAsync();
 
@@ -1058,6 +1132,8 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
                         $"Successfully updated part: {partIdToReselect} -> {updatedPartId}",
                         "PartSelection"
                     );
+
+                    await SaveNoLabelFlagAsync(updatedPartId, dialog.NoLabelRequired);
 
                     await LoadPartsAsync();
 

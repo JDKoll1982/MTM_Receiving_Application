@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,9 +9,11 @@ using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
@@ -21,6 +24,30 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_Help _helpService;
         private readonly IService_Window _windowService;
         private readonly IService_ReceivingSettings _receivingSettings;
+    private readonly IService_Tool_LotMarking _lotMarking;
+
+    /// <summary>
+    /// What the results page says about the lot shape treatment: the labels on this receipt whose part
+    /// number is on the enabled list, so each printed tag still needs its colored symbol added over it.
+    /// </summary>
+    public ObservableCollection<Model_ReceivingLotMarkingNeed> LotMarkingNeeds { get; } = [];
+
+    /// <summary>True when at least one label on the receipt needs the overlay.</summary>
+    public bool HasLotMarkingNeeds => LotMarkingNeeds.Count > 0;
+
+    /// <summary>
+    /// Which labels need the overlay, grouped by part and lot so the card reads at a glance. The card's
+    /// title says what to do with them and the count says how many, so this stays to naming them.
+    /// </summary>
+    public string LotMarkingNeedsText => Helper_ReceivingLotMarkingNeeds.Summarize(LotMarkingNeeds);
+
+    /// <summary>
+    /// How many labels the overlay has to be run for, so the card can say what the button will do.
+    /// </summary>
+    public string LotMarkingNeedsCountText =>
+        LotMarkingNeeds.Count == 1
+            ? "1 label"
+            : $"{LotMarkingNeeds.Count} labels";
 
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
@@ -180,6 +207,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_Help helpService,
             IService_Window windowService,
             IService_ReceivingSettings receivingSettings,
+            IService_Tool_LotMarking lotMarking,
             IService_ErrorHandler errorHandler,
             IService_LoggingUtility logger,
             IService_Notification notificationService
@@ -191,6 +219,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _helpService = helpService;
             _windowService = windowService;
             _receivingSettings = receivingSettings;
+            _lotMarking = lotMarking ?? throw new ArgumentNullException(nameof(lotMarking));
 
             _workflowService.StepChanged += OnStepChanged;
 
@@ -310,11 +339,57 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Review)
             {
                 _ = OnNavigatedToAsync();
+                return;
+            }
+
+            if (
+                _openOverlayAfterSave
+                && _workflowService.CurrentStep == Enum_ReceivingWorkflowStep.Complete
+            )
+            {
+                _openOverlayAfterSave = false;
+
+                var lots = _pendingOverlayLots;
+                _pendingOverlayLots = [];
+
+                _ = OpenOverlayForSavedLabelsAsync(lots);
+            }
+        }
+
+        /// <summary>
+        /// Opens the overlay window once the receipt that carries these labels has been written.
+        /// </summary>
+        private async Task OpenOverlayForSavedLabelsAsync(
+            IReadOnlyList<(string PartId, string HeatLotNumber)> lots
+        )
+        {
+            if (lots.Count == 0 || RequestOpenLabelOverlay is null)
+            {
+                return;
+            }
+
+            try
+            {
+                await RequestOpenLabelOverlay(lots);
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Medium,
+                    nameof(OpenOverlayForSavedLabelsAsync),
+                    nameof(ViewModel_Receiving_Review)
+                );
             }
         }
 
         public async Task OnNavigatedToAsync()
         {
+            // Entering this page always starts from a clean slate: a save that never reached the finish
+            // page must not leave a request behind that opens the overlay on a later run.
+            _openOverlayAfterSave = false;
+            _pendingOverlayLots = [];
+
             IEnumerable<Model_ReceivingLoad> sessionLoads = _workflowService.CurrentSession is null
                 ? new List<Model_ReceivingLoad>()
                 : _workflowService.CurrentSession.Loads;
@@ -332,11 +407,103 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault
             );
 
+            await RefreshLotMarkingNeedsAsync();
+
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoNext));
             OnPropertyChanged(nameof(DisplayIndex));
             OnPropertyChanged(nameof(IsTableView));
-            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Rebuilds the list of labels on this receipt whose part number is on the enabled list, so the page
+        /// can say which printed tags still need their colored symbol. A read that fails leaves the card
+        /// hidden rather than guessing: a wrong reminder would send the operator looking for a tag that
+        /// needs nothing.
+        /// </summary>
+        private async Task RefreshLotMarkingNeedsAsync()
+        {
+            LotMarkingNeeds.Clear();
+
+            try
+            {
+                foreach (var need in await Helper_ReceivingLotMarkingNeeds.BuildAsync(_lotMarking, Loads))
+                {
+                    LotMarkingNeeds.Add(need);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Receiving: the lot marking part list could not be read, so no overlay reminder is shown. {ex.Message}"
+                );
+                LotMarkingNeeds.Clear();
+            }
+
+            NotifyLotMarkingNeeds();
+        }
+
+        private void NotifyLotMarkingNeeds()
+        {
+            OnPropertyChanged(nameof(HasLotMarkingNeeds));
+            OnPropertyChanged(nameof(LotMarkingNeedsText));
+            OnPropertyChanged(nameof(LotMarkingNeedsCountText));
+        }
+
+        /// <summary>
+        /// Set by the view's code-behind so the page can open the label overlay window without the
+        /// ViewModel taking a dependency on UI types. The window is opened on the lots named here.
+        /// </summary>
+        public Func<IReadOnlyList<(string PartId, string HeatLotNumber)>, Task>? RequestOpenLabelOverlay { get; set; }
+
+        /// <summary>The lots the pending overlay request is for, held between the save and the window opening.</summary>
+        private IReadOnlyList<(string PartId, string HeatLotNumber)> _pendingOverlayLots = [];
+
+        private bool _openOverlayAfterSave;
+
+        /// <summary>
+        /// Saves the receipt, then opens the label overlay on the labels that need their colored symbol.
+        /// </summary>
+        /// <remarks>
+        /// The overlay reads the label queue, and a queued row only exists once the receipt is saved, so the
+        /// window has to wait for the save. The lots are captured before the save because the workflow
+        /// clears the session once the receipt has been written.
+        /// </remarks>
+        [RelayCommand]
+        private async Task SaveAndOpenOverlayAsync()
+        {
+            if (LotMarkingNeeds.Count == 0)
+            {
+                return;
+            }
+
+            _pendingOverlayLots = LotMarkingNeeds
+                .Select(need => (need.PartId, need.HeatLotNumber))
+                .ToList();
+            _openOverlayAfterSave = true;
+
+            _logger.LogInfo(
+                $"Receiving: saving the receipt, then opening the label overlay for {_pendingOverlayLots.Count} label(s)."
+            );
+
+            var result = await _workflowService.AdvanceToNextStepAsync();
+
+            if (result.Success)
+            {
+                return;
+            }
+
+            // The save never started, so the window would open on a queue that does not hold these tags.
+            _openOverlayAfterSave = false;
+            _pendingOverlayLots = [];
+
+            if (result.ValidationErrors.Count > 0)
+            {
+                await _errorHandler.HandleErrorAsync(
+                    string.Join(Environment.NewLine, result.ValidationErrors),
+                    Enum_ErrorSeverity.Warning
+                );
+            }
         }
 
         /// <summary>

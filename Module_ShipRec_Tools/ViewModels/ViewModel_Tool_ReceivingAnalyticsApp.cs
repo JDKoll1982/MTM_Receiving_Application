@@ -373,6 +373,60 @@ public partial class ViewModel_Tool_ReceivingAnalyticsApp : ViewModel_Tool_Base
         }
     }
 
+    /// <summary>
+    /// Applies a quick date-type range preset and reloads the analytics. Every preset looks
+    /// backwards, because the App Data tab only reads receipts the app has already completed.
+    /// The range stays bounded so a preset never asks for an open-ended scan.
+    /// </summary>
+    public async Task ApplyDateTypeAsync(string dateType)
+    {
+        if (string.IsNullOrWhiteSpace(dateType))
+        {
+            return;
+        }
+
+        var (from, to) = ResolveDateTypeRange(dateType);
+        FromDate = from;
+        ToDate = to;
+        await LoadAsync();
+    }
+
+    private static (DateTimeOffset From, DateTimeOffset To) ResolveDateTypeRange(string dateType)
+    {
+        var today = new DateTimeOffset(DateTime.Today);
+        return dateType switch
+        {
+            "Last7Days" => (today.AddDays(-6), today),
+            "Last30Days" => (today.AddDays(-29), today),
+            "Last90Days" => (today.AddDays(-89), today),
+            "ThisMonth" => (StartOfMonth(today), today),
+            "LastMonth" => (StartOfMonth(today.AddMonths(-1)), EndOfMonth(today.AddMonths(-1))),
+            "ThisQuarter" => (StartOfQuarter(today), today),
+            "LastQuarter" => (
+                StartOfQuarter(today.AddMonths(-3)),
+                EndOfQuarter(today.AddMonths(-3))
+            ),
+            "ThisYear" => (new DateTimeOffset(today.Year, 1, 1, 0, 0, 0, today.Offset), today),
+            "Last12Months" => (today.AddMonths(-12), today),
+            _ => (today.AddDays(-29), today),
+        };
+    }
+
+    private static DateTimeOffset StartOfMonth(DateTimeOffset value) =>
+        new(value.Year, value.Month, 1, 0, 0, 0, value.Offset);
+
+    private static DateTimeOffset EndOfMonth(DateTimeOffset value) =>
+        StartOfMonth(value).AddMonths(1).AddDays(-1);
+
+    private static DateTimeOffset StartOfQuarter(DateTimeOffset value)
+    {
+        var startMonth = ((value.Month - 1) / 3) * 3 + 1;
+        return new DateTimeOffset(value.Year, startMonth, 1, 0, 0, 0, value.Offset);
+    }
+
+    private static DateTimeOffset EndOfQuarter(DateTimeOffset value) =>
+        StartOfQuarter(value).AddMonths(3).AddDays(-1);
+
     [RelayCommand]
     private void Clear()
     {

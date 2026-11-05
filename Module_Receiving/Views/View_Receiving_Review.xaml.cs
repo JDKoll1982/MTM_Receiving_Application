@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using WinRT.Interop;
 
 namespace MTM_Receiving_Application.Module_Receiving.Views
 {
@@ -27,8 +30,34 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _adaptiveLayout = adaptiveLayout;
             DataContext = ViewModel;
             this.InitializeComponent();
+            ViewModel.RequestOpenLabelOverlay = ShowLabelOverlayAsync;
             Loaded += View_Receiving_Review_Loaded;
             SizeChanged += View_Receiving_Review_SizeChanged;
+        }
+
+        /// <summary>
+        /// Opens the label overlay window over the main window, with the labels from the receipt that was
+        /// just saved already ticked. Built here rather than in the ViewModel so the ViewModel stays free of
+        /// UI types.
+        /// </summary>
+        private async Task ShowLabelOverlayAsync(
+            IReadOnlyList<(string PartId, string HeatLotNumber)> lots
+        )
+        {
+            if (App.MainWindow is not { } owner)
+            {
+                return;
+            }
+
+            var overlayViewModel = App.GetService<ViewModel_Receiving_LabelOverlay>();
+            overlayViewModel.RequestPreselection(lots);
+
+            var window = new View_Receiving_LabelOverlayWindow(
+                overlayViewModel,
+                WindowNative.GetWindowHandle(owner)
+            );
+
+            await window.ShowModalAsync();
         }
 
         /// <summary>

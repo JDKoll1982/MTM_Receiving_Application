@@ -383,4 +383,26 @@ public static class ReceivingSettingsKeys
         public const string Enabled = "Receiving.PartNumberPadding.Enabled";
         public const string RulesJson = "Receiving.PartNumberPadding.RulesJson";
     }
+
+    /// <summary>
+    /// Label Overlay mode. Each output keeps its own printer setup and its own list filter, so the two
+    /// never overwrite one another and neither has to be re-entered on every open.
+    /// </summary>
+    public static class LabelOverlay
+    {
+        /// <summary>The printer setup used when overlaying pre-printed tags, stored as JSON.</summary>
+        public const string OverlayPrintProfile = "Receiving.LabelOverlay.Overlay.PrintProfile";
+
+        /// <summary>The printer setup used when printing the cut-out card sheet, stored as JSON.</summary>
+        public const string CardSheetPrintProfile = "Receiving.LabelOverlay.CardSheet.PrintProfile";
+
+        /// <summary>The date range, sort and columns the overlay tag list opens with, stored as JSON.</summary>
+        public const string OverlayListFilter = "Receiving.LabelOverlay.Overlay.ListFilter";
+
+        /// <summary>The date range, sort and columns the cut-out lot list opens with, stored as JSON.</summary>
+        public const string CardSheetListFilter = "Receiving.LabelOverlay.CardSheet.ListFilter";
+
+        /// <summary>The part the cut-out tab was last working on, so it reopens on the same stock.</summary>
+        public const string CardSheetPartId = "Receiving.LabelOverlay.CardSheet.PartId";
+    }
 }

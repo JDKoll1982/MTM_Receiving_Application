@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,10 +12,12 @@ using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
 
 namespace MTM_Receiving_Application.Module_Receiving.ViewModels
@@ -26,6 +31,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_LabelViewLauncher _labelViewLauncher;
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
+        private readonly IService_Tool_LotMarking _lotMarking;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
@@ -148,6 +154,26 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private Model_SaveResult? _lastSaveResult;
 
+        /// <summary>
+        /// The labels from the receipt that was just saved whose part number is on the list of parts that
+        /// get the lot shape treatment, so the finish page can say which printed tags still need their
+        /// colored symbol.
+        /// </summary>
+        public ObservableCollection<Model_ReceivingLotMarkingNeed> LotMarkingNeeds { get; } = [];
+
+        /// <summary>True when the receipt that was just saved carries at least one label needing the overlay.</summary>
+        public bool HasLotMarkingNeeds => LotMarkingNeeds.Count > 0;
+
+        /// <summary>
+        /// The labels needing the overlay, grouped by part and lot so the finish page reads at a glance.
+        /// </summary>
+        public string LotMarkingNeedsText =>
+            Helper_ReceivingLotMarkingNeeds.Summarize(LotMarkingNeeds);
+
+        /// <summary>How many labels the overlay has to be run for.</summary>
+        public string LotMarkingNeedsCountText =>
+            LotMarkingNeeds.Count == 1 ? "1 label" : $"{LotMarkingNeeds.Count} labels";
+
         [ObservableProperty]
         private string _saveProgressMessage = "Initializing...";
 
@@ -258,6 +284,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_LabelViewLauncher labelViewLauncher,
             IService_ReceivingSettings receivingSettings,
             IService_ViewModelRegistry viewModelRegistry,
+            IService_Tool_LotMarking lotMarking,
             IService_Notification notificationService
         )
             : base(errorHandler, logger, notificationService)
@@ -269,6 +296,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _labelViewLauncher = labelViewLauncher;
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
+            _lotMarking = lotMarking ?? throw new ArgumentNullException(nameof(lotMarking));
             _viewModelRegistry.Register(this);
             _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
@@ -678,11 +706,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 });
 
                 _logger.LogInfo("Calling _workflowService.SaveSessionAsync...");
+
+                // Held before the save, because the workflow clears the session once the receipt is
+                // written and the finish page still needs to name the labels that need the overlay.
+                var savedLoads = _workflowService.CurrentSession?.Loads.ToList() ?? [];
+
                 LastSaveResult = await _workflowService.SaveSessionAsync(
                     messageProgress,
                     percentProgress
                 );
                 _logger.LogInfo($"SaveSessionAsync returned. Success: {LastSaveResult.Success}");
+
+                await RefreshLotMarkingNeedsAsync(savedLoads, LastSaveResult.Success);
 
                 // Advance to Complete step
                 await _workflowService.AdvanceToNextStepAsync();
@@ -701,9 +736,88 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task OpenReceivingLabelAsync()
+        /// <summary>
+        /// Works out which of the labels that were just saved still need their colored symbol, so the
+        /// finish page can offer the overlay for them. Only a saved receipt can be overlaid, so a failed
+        /// save shows no reminder rather than sending the operator after tags that were never queued.
+        /// </summary>
+        private async Task RefreshLotMarkingNeedsAsync(
+            IReadOnlyList<Model_ReceivingLoad> savedLoads,
+            bool saveSucceeded
+        )
         {
+            LotMarkingNeeds.Clear();
+
+            try
+            {
+                if (saveSucceeded)
+                {
+                    foreach (var need in await Helper_ReceivingLotMarkingNeeds.BuildAsync(
+                        _lotMarking,
+                        savedLoads
+                    ))
+                    {
+                        LotMarkingNeeds.Add(need);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Receiving: the lot marking part list could not be read, so no overlay reminder is shown. {ex.Message}"
+                );
+                LotMarkingNeeds.Clear();
+            }
+
+            OnPropertyChanged(nameof(HasLotMarkingNeeds));
+            OnPropertyChanged(nameof(LotMarkingNeedsText));
+            OnPropertyChanged(nameof(LotMarkingNeedsCountText));
+        }
+
+        /// <summary>
+        /// Set by the view's code-behind so the finish page can open the label overlay window without the
+        /// ViewModel taking a dependency on UI types. The window is opened on the lots named here.
+        /// </summary>
+        public Func<IReadOnlyList<(string PartId, string HeatLotNumber)>, Task>? RequestOpenLabelOverlay { get; set; }
+
+        /// <summary>
+        /// Opens the label overlay on the labels this receipt left waiting for their colored symbol.
+        /// </summary>
+        /// <remarks>
+        /// Nothing is saved here: this page only shows after a successful save, so the tags are already in
+        /// the queue and the window can go straight to them.
+        /// </remarks>
+        [RelayCommand]
+        private async Task OpenLotMarkingOverlayAsync()
+        {
+            if (LotMarkingNeeds.Count == 0 || RequestOpenLabelOverlay is null)
+            {
+                return;
+            }
+
+            var lots = LotMarkingNeeds.Select(need => (need.PartId, need.HeatLotNumber)).ToList();
+
+            try
+            {
+                _logger.LogInfo(
+                    $"Receiving: opening the label overlay for {lots.Count} saved label(s) that need the colored symbol."
+                );
+
+                await RequestOpenLabelOverlay(lots);
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Medium,
+                    nameof(OpenLotMarkingOverlayAsync),
+                    nameof(ViewModel_Receiving_Workflow)
+                );
+            }
+        }
+
+        [RelayCommand]
+        private async Task OpenReceivingLabelAsync()        {
             await OpenLabelAsync(
                 ReceivingSettingsKeys.Labels.ReceivingLabelPath,
                 "Receiving Label"

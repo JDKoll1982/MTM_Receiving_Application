@@ -195,7 +195,7 @@
             <Button
                 Grid.Row="1"
                 Grid.Column="0"
-                Grid.ColumnSpan="3"
+                Grid.ColumnSpan="2"
                 Margin="12,24,12,0"
                 Padding="16"
                 HorizontalAlignment="Stretch"
@@ -216,6 +216,36 @@
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
                             Text="Use InforVisual transaction history plus current inventory to place each saved load only when InforVisual shows an exact quantity match."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <!--  Label Overlay: prints the lot marking onto tags that were already printed.  -->
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="12,24,12,0"
+                Padding="16"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                AutomationProperties.Name="Label Overlay"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.OpenLabelOverlayCommand}"
+                CornerRadius="8">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon
+                        FontSize="28"
+                        Foreground="{StaticResource ReceivingAccentBrush}"
+                        Glyph="&#xE7B8;" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Label Overlay" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Feed pre-printed tags back through the printer to add each lot's marking in the blank space at the left of the tag, or print a sheet of cut-out marking cards to keep beside the stock."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </StackPanel>

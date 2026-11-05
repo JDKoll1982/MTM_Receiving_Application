@@ -98,6 +98,18 @@ BEGIN
         udc10 = p_udc10
     WHERE part_id IN (p_original_part_id, p_new_part_id);
 
+    -- The no-label flag belongs to the part, not to a receipt, so it follows the rename
+    -- rather than being left pointing at a part number that no longer exists. Only the
+    -- original id is rewritten: part_id is unique here, so touching the new id as well would
+    -- collide whenever a flag somehow already exists under both.
+    UPDATE dunnage_no_label_parts
+    SET
+        part_id = p_new_part_id,
+        modified_by = p_user,
+        modified_date = NOW()
+    WHERE part_id = p_original_part_id
+      AND p_original_part_id <> p_new_part_id;
+
     -- When the part's home location (the default location used for saved rows)
     -- changes, rewrite only the saved label-data and history rows whose stored
     -- location still equals the OLD home location. Rows whose location was

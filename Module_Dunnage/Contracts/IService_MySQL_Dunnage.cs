@@ -60,7 +60,22 @@ namespace MTM_Receiving_Application.Module_Dunnage.Contracts
 
         // ==================== Load Operations (6 methods) ====================
 
+        /// <summary>
+        /// Saves the receipt. Loads whose part needs a printed label go into the <c>dunnage_label_data</c>
+        /// queue; loads whose part is on the no-label list are written straight to history.
+        /// </summary>
         public Task<Model_Dao_Result> SaveLoadsAsync(List<Model_DunnageLoad> loads);
+
+        /// <summary>The part numbers that need no printed label, read from <c>dunnage_no_label_parts</c>.</summary>
+        public Task<Model_Dao_Result<List<string>>> GetNoLabelPartIdsAsync();
+
+        /// <summary>Sets whether one part needs a printed label, as chosen on the part screens.</summary>
+        public Task<Model_Dao_Result> SetPartNoLabelAsync(
+            string partId,
+            bool needsNoLabel,
+            string user
+        );
+
         public Task<Model_Dao_Result<List<Model_DunnageLoad>>> GetActiveLabelDataAsync();
         public Task<bool> HasActiveLabelDataAsync();
         public Task<Model_Dao_Result<int>> ClearLabelDataAsync(

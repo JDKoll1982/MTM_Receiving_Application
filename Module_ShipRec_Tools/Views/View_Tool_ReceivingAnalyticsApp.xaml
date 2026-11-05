@@ -40,23 +40,107 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Range: the last day named is included  -->
-                <StackPanel
+                <!--  Range: opens a flyout with From/To pickers and quick past presets.
+                      The last day named is included.  -->
+                <Button
+                    x:Name="DateRangeButton"
                     Grid.Column="0"
+                    Height="36"
+                    Padding="12,0"
                     VerticalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="6">
-                    <TextBlock VerticalAlignment="Center" Text="Range:" />
-                    <CalendarDatePicker
-                        Width="130"
-                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
-                        PlaceholderText="From" />
-                    <TextBlock VerticalAlignment="Center" Text="to" />
-                    <CalendarDatePicker
-                        Width="130"
-                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
-                        PlaceholderText="To" />
-                </StackPanel>
+                    ToolTipService.ToolTip="Filter by date range">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon FontSize="14" Glyph="&#xE787;" />
+                        <TextBlock Text="Date Range" />
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout x:Name="DateRangeFlyout" Placement="Bottom">
+                            <StackPanel MinWidth="320" Padding="8" Spacing="12">
+                                <Grid ColumnSpacing="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CalendarDatePicker
+                                        Grid.Column="0"
+                                        Width="112"
+                                        Date="{x:Bind ViewModel.FromDate, Mode=TwoWay}"
+                                        PlaceholderText="From" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Text="to" />
+                                    <CalendarDatePicker
+                                        Grid.Column="2"
+                                        Width="112"
+                                        Date="{x:Bind ViewModel.ToDate, Mode=TwoWay}"
+                                        PlaceholderText="To" />
+                                </Grid>
+
+                                <!--  Quick ranges. The app's own receipts are always in the past,
+                                      so every preset looks backwards.  -->
+                                <DropDownButton
+                                    x:Name="DateTypeButton"
+                                    HorizontalAlignment="Stretch"
+                                    ToolTipService.ToolTip="Choose a quick date range">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontSize="14" Glyph="&#xE787;" />
+                                        <TextBlock VerticalAlignment="Center" Text="Date Type" />
+                                    </StackPanel>
+                                    <DropDownButton.Flyout>
+                                        <MenuFlyout Placement="Bottom">
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="Last7Days"
+                                                Text="Last 7 Days" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="Last30Days"
+                                                Text="Last 30 Days" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="Last90Days"
+                                                Text="Last 90 Days" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="ThisMonth"
+                                                Text="This Month" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="LastMonth"
+                                                Text="Last Month" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="ThisQuarter"
+                                                Text="This Quarter" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="LastQuarter"
+                                                Text="Last Quarter" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="ThisYear"
+                                                Text="This Year" />
+                                            <MenuFlyoutItem
+                                                Click="DateTypeActionButton_Click"
+                                                Tag="Last12Months"
+                                                Text="Last 12 Months" />
+                                        </MenuFlyout>
+                                    </DropDownButton.Flyout>
+                                </DropDownButton>
+
+                                <Button
+                                    HorizontalAlignment="Stretch"
+                                    Click="DateFilterActionButton_Click"
+                                    Content="Apply Date Range"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Tag="{x:Bind ViewModel.LoadCommand}"
+                                    ToolTipService.ToolTip="Load analytics for the selected date range" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
 
                 <!--  Period  -->
                 <StackPanel

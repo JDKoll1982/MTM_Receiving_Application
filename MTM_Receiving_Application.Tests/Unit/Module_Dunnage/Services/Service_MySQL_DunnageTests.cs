@@ -29,7 +29,7 @@ public sealed class Service_MySQL_DunnageTests
             );
         daoType
             .Setup(dao => dao.DeleteAsync(5, "System"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success()));
 
         var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
         daoPart
@@ -178,7 +178,7 @@ public sealed class Service_MySQL_DunnageTests
             );
         daoType
             .Setup(dao => dao.DeleteAsync(5, "System"))
-            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success()));
 
         var daoPart = new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;");
         daoPart
@@ -696,11 +696,137 @@ public sealed class Service_MySQL_DunnageTests
         );
     }
 
+    [Fact]
+    public async Task SaveLoadsAsync_ShouldQueueOnlyLabelledLoads_WhenAPartNeedsNoLabel()
+    {
+        var daoNoLabelPart = new Mock<Dao_DunnageNoLabelPart>("Server=172.16.1.104;Database=test;");
+        daoNoLabelPart
+            .Setup(dao => dao.GetPartIdsAsync())
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success<List<string>>(new List<string> { "TEST-NOLABEL" })));
+
+        List<Model_DunnageLoad>? queued = null;
+        List<Model_DunnageLoad>? archived = null;
+        var daoLabelData = new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;");
+        daoLabelData
+            .Setup(dao =>
+                dao.InsertBatchAsync(
+                    It.IsAny<List<Model_DunnageLoad>?>(),
+                    It.IsAny<List<Model_DunnageLoad>?>(),
+                    It.IsAny<string>()
+                )
+            )
+            .Callback<
+                List<Model_DunnageLoad>?,
+                List<Model_DunnageLoad>?,
+                string
+            >((labelLoads, noLabelLoads, _) =>
+            {
+                queued = labelLoads;
+                archived = noLabelLoads;
+            })
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success<int>(2)));
+
+        var service = CreateService(
+            new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;").Object,
+            daoLabelData: daoLabelData.Object,
+            daoNoLabelPart: daoNoLabelPart.Object
+        );
+
+        var loads = new List<Model_DunnageLoad>
+        {
+            new() { PartId = "TEST-LABEL", Quantity = 1 },
+            new() { PartId = "test-nolabel", Quantity = 2 },
+        };
+
+        var result = await service.SaveLoadsAsync(loads);
+
+        result.IsSuccess.Should().BeTrue();
+        queued.Should().NotBeNull();
+        archived.Should().NotBeNull();
+        queued!.Select(load => load.PartId).Should().Equal("TEST-LABEL");
+        archived!.Select(load => load.PartId).Should().Equal("test-nolabel");
+    }
+
+    [Fact]
+    public async Task SaveLoadsAsync_ShouldQueueEveryLoad_WhenTheNoLabelListCannotBeRead()
+    {
+        var daoNoLabelPart = new Mock<Dao_DunnageNoLabelPart>("Server=172.16.1.104;Database=test;");
+        daoNoLabelPart
+            .Setup(dao => dao.GetPartIdsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<List<string>>("the list could not be read")
+            );
+
+        List<Model_DunnageLoad>? queued = null;
+        List<Model_DunnageLoad>? archived = null;
+        var daoLabelData = new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;");
+        daoLabelData
+            .Setup(dao =>
+                dao.InsertBatchAsync(
+                    It.IsAny<List<Model_DunnageLoad>?>(),
+                    It.IsAny<List<Model_DunnageLoad>?>(),
+                    It.IsAny<string>()
+                )
+            )
+            .Callback<
+                List<Model_DunnageLoad>?,
+                List<Model_DunnageLoad>?,
+                string
+            >((labelLoads, noLabelLoads, _) =>
+            {
+                queued = labelLoads;
+                archived = noLabelLoads;
+            })
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success<int>(2)));
+
+        var service = CreateService(
+            new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;").Object,
+            daoLabelData: daoLabelData.Object,
+            daoNoLabelPart: daoNoLabelPart.Object
+        );
+
+        var loads = new List<Model_DunnageLoad>
+        {
+            new() { PartId = "TEST-A", Quantity = 1 },
+            new() { PartId = "TEST-B", Quantity = 1 },
+        };
+
+        var result = await service.SaveLoadsAsync(loads);
+
+        result.IsSuccess.Should().BeTrue();
+        queued.Should().HaveCount(2);
+        archived.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task SetPartNoLabelAsync_ShouldHandTheFlagToTheDao()
+    {
+        var daoNoLabelPart = new Mock<Dao_DunnageNoLabelPart>("Server=172.16.1.104;Database=test;");
+        daoNoLabelPart
+            .Setup(dao => dao.SetAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>()))
+            .Returns(() => Task.FromResult(Model_Dao_Result_Factory.Success()));
+
+        var service = CreateService(
+            new Mock<Dao_DunnagePart>("Server=172.16.1.104;Database=test;").Object,
+            daoNoLabelPart: daoNoLabelPart.Object
+        );
+
+        var result = await service.SetPartNoLabelAsync("TEST-A", true, "TEST-USER");
+
+        result.IsSuccess.Should().BeTrue();
+        daoNoLabelPart.Verify(
+            dao => dao.SetAsync("TEST-A", true, "TEST-USER"),
+            Times.Once
+        );
+    }
+
     private static Service_MySQL_Dunnage CreateService(
         Dao_DunnagePart daoPart,
         Dao_DunnageType? daoType = null,
         IService_DunnageImageStorage? imageStorage = null,
-        Dao_DunnageCustomField? daoCustomField = null
+        Dao_DunnageCustomField? daoCustomField = null,
+        Dao_DunnageLabelData? daoLabelData = null,
+        Dao_DunnageNoLabelPart? daoNoLabelPart = null
     )
     {
         return new Service_MySQL_Dunnage(
@@ -708,7 +834,7 @@ public sealed class Service_MySQL_DunnageTests
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_UserSessionManager>().Object,
             new Mock<Dao_DunnageLoad>("Server=172.16.1.104;Database=test;").Object,
-            new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;").Object,
+            daoLabelData ?? new Mock<Dao_DunnageLabelData>("Server=172.16.1.104;Database=test;").Object,
             daoType ?? new Mock<Dao_DunnageType>("Server=172.16.1.104;Database=test;").Object,
             daoPart,
             new Mock<Dao_DunnageQuantityType>("Server=172.16.1.104;Database=test;").Object,
@@ -716,6 +842,7 @@ public sealed class Service_MySQL_DunnageTests
             daoCustomField ?? new Mock<Dao_DunnageCustomField>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_DunnageUserPreference>("Server=172.16.1.104;Database=test;").Object,
             new Mock<Dao_DunnageNonPOEntry>("Server=172.16.1.104;Database=test;").Object,
+            daoNoLabelPart ?? new Mock<Dao_DunnageNoLabelPart>("Server=172.16.1.104;Database=test;").Object,
             imageStorage ?? new Mock<IService_DunnageImageStorage>().Object
         );
     }

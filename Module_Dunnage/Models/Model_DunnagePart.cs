@@ -21,6 +21,34 @@ public class Model_DunnagePart : INotifyPropertyChanged
     private DateTime _createdDate = DateTime.Now;
     private string? _modifiedBy;
     private DateTime? _modifiedDate;
+    private bool _requiresLabel = true;
+
+    /// <summary>
+    /// Whether this part still needs a printed label. False for a part on the no-label list: the workflow
+    /// then saves its loads straight to history instead of queueing them for LabelView.
+    /// </summary>
+    /// <remarks>
+    /// Read from <c>dunnage_no_label_parts</c> when the parts are loaded and written back through that
+    /// table on its own, so the part row itself is unchanged by this flag.
+    /// </remarks>
+    public bool RequiresLabel
+    {
+        get => _requiresLabel;
+        set
+        {
+            if (SetField(ref _requiresLabel, value))
+            {
+                OnPropertyChanged(nameof(NeedsNoLabel));
+            }
+        }
+    }
+
+    /// <summary>The same fact the other way round, for a checkbox that reads "needs no printed label".</summary>
+    public bool NeedsNoLabel
+    {
+        get => !_requiresLabel;
+        set => RequiresLabel = !value;
+    }
 
     public int Id
     {

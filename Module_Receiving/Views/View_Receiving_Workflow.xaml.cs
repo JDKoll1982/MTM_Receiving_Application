@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -93,6 +94,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             _focusService = focusService;
             this.InitializeComponent();
             AddHandler(KeyDownEvent, new KeyEventHandler(WorkflowPage_KeyDown), true);
+            ViewModel.RequestOpenLabelOverlay = ShowLabelOverlayAsync;
 
             ModeSelectionHost.Content = modeSelectionView;
             ManualEntryHost.Content = manualEntryView;
@@ -392,6 +394,31 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         /// buttons use, so a shortcut can never reach a step, mode change, or data reset that the
         /// matching button would block.
         /// </summary>
+        /// <summary>
+        /// Opens the label overlay window over the main window, with the labels from the receipt that was
+        /// just saved already ticked. Built here rather than in the ViewModel so the ViewModel stays free of
+        /// UI types.
+        /// </summary>
+        private async Task ShowLabelOverlayAsync(
+            IReadOnlyList<(string PartId, string HeatLotNumber)> lots
+        )
+        {
+            if (App.MainWindow is not { } owner)
+            {
+                return;
+            }
+
+            var overlayViewModel = App.GetService<ViewModel_Receiving_LabelOverlay>();
+            overlayViewModel.RequestPreselection(lots);
+
+            var window = new View_Receiving_LabelOverlayWindow(
+                overlayViewModel,
+                WinRT.Interop.WindowNative.GetWindowHandle(owner)
+            );
+
+            await window.ShowModalAsync();
+        }
+
         private void WorkflowPage_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             _ = sender;

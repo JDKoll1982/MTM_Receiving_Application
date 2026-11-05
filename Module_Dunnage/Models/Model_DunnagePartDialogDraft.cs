@@ -18,6 +18,12 @@ public class Model_DunnagePartDialogDraft
 
     public string SelectedInventoryMethod { get; set; } = "Not Inventoried";
 
+    /// <summary>
+    /// True when the part needs no printed label. Carried on the draft so the wizard, the "choose existing
+    /// specs" round trip and the caller all see the same answer.
+    /// </summary>
+    public bool NoLabelRequired { get; set; }
+
     public string? Udc1 { get; set; }
     public string? Udc2 { get; set; }
     public string? Udc3 { get; set; }
@@ -93,6 +99,7 @@ public class Model_DunnagePartDialogDraft
             SelectedQuantityType = SelectedQuantityType,
             Notes = Notes,
             SelectedInventoryMethod = SelectedInventoryMethod,
+            NoLabelRequired = NoLabelRequired,
             Udc1 = Udc1,
             Udc2 = Udc2,
             Udc3 = Udc3,

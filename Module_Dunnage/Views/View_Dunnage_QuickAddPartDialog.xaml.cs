@@ -37,6 +37,12 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     public bool RequestDelete { get; private set; }
     public bool RequestSaveQuantityTypeForFutureUse { get; private set; }
 
+    /// <summary>
+    /// True when this part needs no printed label, as set on the part screens. The workflow then saves its
+    /// loads straight to history rather than queueing them for LabelView.
+    /// </summary>
+    public bool NoLabelRequired => NoLabelRequiredCheckBox.IsChecked == true;
+
     private readonly List<Model_CustomFieldDefinition> _customFields;
     private readonly List<Model_DunnageQuantityType> _availableQuantityTypes;
     private readonly List<FrameworkElement> _specPanels = new();
@@ -134,6 +140,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
             SelectedQuantityType = GetSelectedQuantityType(),
             Notes = NotesTextBox.Text.Trim(),
             SelectedInventoryMethod = GetSelectedInventoryMethod(),
+            NoLabelRequired = NoLabelRequiredCheckBox.IsChecked == true,
         };
 
         for (var slot = 1; slot <= 10; slot++)
@@ -164,6 +171,7 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         ApplyQuantityTypeDraft(draft.QuantityType, draft.SelectedQuantityType);
         NotesTextBox.Text = draft.Notes;
         SelectInventoryMethod(draft.SelectedInventoryMethod);
+        NoLabelRequiredCheckBox.IsChecked = draft.NoLabelRequired;
         UpdateImagePreview();
 
         foreach (var pair in _fieldsBySlot)

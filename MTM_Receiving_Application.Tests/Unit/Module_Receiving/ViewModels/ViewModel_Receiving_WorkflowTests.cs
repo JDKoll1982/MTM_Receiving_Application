@@ -1,10 +1,12 @@
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
 
@@ -183,6 +185,17 @@ public sealed class ViewModel_Receiving_WorkflowTests
             .Setup(service => service.GetViewModels<ViewModel_Receiving_EditMode>())
             .Returns(Array.Empty<ViewModel_Receiving_EditMode>());
 
+        var lotMarking = new Mock<IService_Tool_LotMarking>();
+        lotMarking
+            .Setup(service => service.GetEnabledPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<
+                        MTM_Receiving_Application.Module_ShipRec_Tools.Models.Model_Tool_LotMarkingScope
+                    >()
+                )
+            );
+
         return new ViewModel_Receiving_Workflow(
             workflow.Object,
             new Mock<IService_ErrorHandler>().Object,
@@ -193,6 +206,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
             new Mock<IService_LabelViewLauncher>().Object,
             receivingSettings.Object,
             registry.Object,
+            lotMarking.Object,
             new Mock<IService_Notification>().Object
         );
     }
