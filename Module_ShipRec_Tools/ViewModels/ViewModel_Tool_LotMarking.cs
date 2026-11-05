@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
@@ -28,6 +34,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     private readonly IService_Tool_LotMarking _service;
     private readonly IService_ShipRecToolsSettings _settings;
     private readonly IService_InforVisual _inforVisual;
+    private readonly IService_Help _helpService;
     private bool _isLoaded;
 
     public ViewModel_Tool_LotMarking(
@@ -36,18 +43,30 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         IService_InforVisual inforVisual,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
-        IService_Notification notificationService
+        IService_Notification notificationService,
+        IService_Help helpService
     )
         : base(errorHandler, logger, notificationService)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _inforVisual = inforVisual ?? throw new ArgumentNullException(nameof(inforVisual));
+        _helpService = helpService ?? throw new ArgumentNullException(nameof(helpService));
 
         ToolTitle = "Heat / Lot Management";
         ToolDescription =
             "Find a lot's shape and color, correct it when it is wrong, and choose which parts are marked.";
+
+        // Every column is shown until the saved choice is read, so the list is never briefly bound to
+        // an empty column set on the way in.
+        ApplyColumnSelection(Model_Tool_LotMarkingColumnCatalog.DefaultVisibleKeys);
     }
+
+    /// <summary>
+    /// The tooltip a button shows, read from the shared help content so every icon button on this
+    /// page is understood from the same place as the rest of the app's buttons.
+    /// </summary>
+    public string GetTooltip(string key) => _helpService.GetTooltip(key);
 
     // ─── Feature switch and palette legend ──────────────────────────────────
 
@@ -80,15 +99,25 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMarkingListEmpty))]
+    [NotifyPropertyChangedFor(nameof(HasMarkings))]
     private ObservableCollection<Model_Tool_LotMarking> _markings = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedMarking))]
     [NotifyPropertyChangedFor(nameof(CanChangeMarking))]
     [NotifyPropertyChangedFor(nameof(SelectedMarkingSummary))]
     private Model_Tool_LotMarking? _selectedMarking;
 
     /// <summary>True when no marking row is shown, whether from no data or no match.</summary>
     public bool IsMarkingListEmpty => Markings.Count == 0;
+
+    /// <summary>True when the list holds rows the report can be printed from.</summary>
+    public bool HasMarkings => Markings.Count > 0;
+
+    /// <summary>
+    /// True when a row is chosen, which is what enables the button that opens the marking window.
+    /// </summary>
+    public bool HasSelectedMarking => SelectedMarking is not null;
 
     /// <summary>
     /// The wording shown in place of the list. An empty list and a search that matched nothing are
@@ -100,7 +129,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         string.IsNullOrWhiteSpace(HeatSearchText)
             ? "No marked lots for the parts on the list. Choose a part to see its lots."
             : "No marked lot in the list matches that heat number. The list covers only the parts "
-                + "listed below, so a lot whose material is not on that list is not shown.";
+                + "on the part list, so a lot whose material is not on that list is not shown.";
 
     /// <summary>
     /// A one-line reading of the selected lot, so a user can confirm they picked the right one
@@ -199,6 +228,22 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     /// </summary>
     public Func<Model_Tool_LotMarkingRealignPreview, Task<bool>>? ConfirmRealignAsync { get; set; }
 
+    /// <summary>
+    /// Set by the view's code-behind so the ViewModel can hand a finished report to the shell for
+    /// printing without taking a dependency on UI types.
+    /// </summary>
+    public Func<Model_FormattedReportDocument, Task<Model_Dao_Result<bool>>>? RequestPrintAsync
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Set by the marking window so the ViewModel can ask to be closed once the change is saved and
+    /// there is nothing left to edit on the lot it was opened for.
+    /// </summary>
+    public Action? RequestCloseChangeMarking { get; set; }
+
     // ─── Property change plumbing ───────────────────────────────────────────
 
     partial void OnSelectedMarkingChanged(Model_Tool_LotMarking? value)
@@ -260,8 +305,20 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     private async Task ReloadAsync()
     {
         await LoadPaletteAsync();
+        await LoadListPreferencesAsync();
         await LoadMarkingsAsync(heatSearch: null);
         await LoadPartsAsync(partSearch: null);
+    }
+
+    /// <summary>
+    /// Reads the lot list again after the enabled-part list was edited in its own window. The parts a
+    /// user can see on the lot list are decided by that list, so the lot list is stale the moment it
+    /// changes and is read again rather than trusted.
+    /// </summary>
+    public async Task ReloadAfterPartScopeChangeAsync()
+    {
+        await LoadPartsAsync(PartSearchText);
+        await LoadMarkingsAsync(HeatSearchText);
     }
 
     // ─── Palette legend ─────────────────────────────────────────────────────
@@ -314,7 +371,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         IsBusy = true;
         try
         {
-            var result = await _service.GetLedgerAsync(heatSearch, partId);
+            var result = await _service.GetLedgerAsync(heatSearch, partId, BuildFilter());
 
             if (!result.IsSuccess)
             {
@@ -389,6 +446,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
             var heat = SelectedMarking.HeatNumber;
             await LoadMarkingsAsync(HeatSearchText);
             ShowStatus($"The marking for {heat} was changed.", InfoBarSeverity.Success);
+            RequestCloseChangeMarking?.Invoke();
         }
         catch (Exception ex)
         {
@@ -444,6 +502,457 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
             IsBusy = false;
         }
     }
+
+    // ─── Report ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sends what the list is showing to the printer. The report covers the rows on screen, so a
+    /// search or a chosen part is reflected in what is printed, and nothing is read or written beyond
+    /// what is already displayed.
+    /// </summary>
+    [RelayCommand]
+    public async Task PrintMarkingsAsync()
+    {
+        if (RequestPrintAsync is null || IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var result = await RequestPrintAsync(BuildReportDocument());
+            if (!result.IsSuccess)
+            {
+                ShowStatus(result.ErrorMessage, InfoBarSeverity.Error);
+                return;
+            }
+
+            ShowStatus(
+                $"{Markings.Count} lot(s) sent to the print dialog.",
+                InfoBarSeverity.Success
+            );
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(PrintMarkingsAsync),
+                nameof(ViewModel_Tool_LotMarking)
+            );
+            ShowStatus("The report could not be printed.", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>
+    /// Builds the printable report from the rows on screen, using the columns the grid shows so the
+    /// printed sheet and the screen cannot disagree. The filter line records what the list was
+    /// narrowed by, so a sheet printed from a filtered list cannot later be mistaken for a full one.
+    /// </summary>
+    private Model_FormattedReportDocument BuildReportDocument()
+    {
+        var visible = VisibleColumnKeys;
+        var html = new StringBuilder();
+
+        html.AppendLine("<h1>Heat / Lot Markings</h1>");
+        html.AppendLine(
+            $"<p><strong>Printed:</strong> {DateTime.Now:yyyy-MM-dd HH:mm}"
+                + $" &nbsp; <strong>By:</strong> {WebUtility.HtmlEncode(Environment.UserName)}</p>"
+        );
+
+        html.AppendLine(
+            $"<p><strong>Dates:</strong> {WebUtility.HtmlEncode(DescribeDateRange())}"
+                + $" &nbsp; <strong>Sorted by:</strong> {WebUtility.HtmlEncode(SelectedSortOption.DisplayName)}"
+                + $" ({WebUtility.HtmlEncode(SortDirectionLabel.ToLowerInvariant())})</p>"
+        );
+
+        if (!string.IsNullOrWhiteSpace(HeatSearchText))
+        {
+            html.AppendLine(
+                $"<p><strong>Heat search:</strong> {WebUtility.HtmlEncode(HeatSearchText.Trim())}</p>"
+            );
+        }
+
+        if (SelectedPart is not null)
+        {
+            html.AppendLine(
+                $"<p><strong>Part:</strong> {WebUtility.HtmlEncode(SelectedPart.PartId)}</p>"
+            );
+        }
+
+        html.AppendLine($"<p><strong>Lots on this sheet:</strong> {Markings.Count}</p>");
+
+        html.AppendLine("<table><thead><tr>");
+
+        foreach (var column in Model_Tool_LotMarkingColumnCatalog.All)
+        {
+            if (!IsColumnVisible(column.Key))
+            {
+                continue;
+            }
+
+            var cssClass = column.Key == Model_Tool_LotMarkingColumnCatalog.Skids
+                ? " class=\"number\""
+                : string.Empty;
+
+            html.AppendLine($"<th{cssClass}>{WebUtility.HtmlEncode(column.DisplayName)}</th>");
+        }
+
+        html.AppendLine("</tr></thead><tbody>");
+
+        foreach (var row in Markings)
+        {
+            html.AppendLine("<tr>");
+
+            foreach (var column in Model_Tool_LotMarkingColumnCatalog.All)
+            {
+                if (!IsColumnVisible(column.Key))
+                {
+                    continue;
+                }
+
+                html.AppendLine(BuildReportCell(row, column.Key));
+            }
+
+            html.AppendLine("</tr>");
+        }
+
+        html.AppendLine("</tbody></table>");
+
+        return new Model_FormattedReportDocument
+        {
+            DocumentTitle = "Heat / Lot Markings",
+            HtmlFragment = html.ToString(),
+            PageCss =
+                "@page { size: Letter portrait; margin: 0.4in; } "
+                + "body { font-family: 'Segoe UI', sans-serif; font-size: 11pt; color: #202124; } "
+                + "h1 { font-size: 16pt; margin: 0 0 8pt 0; } "
+                + "p { margin: 2pt 0; } "
+                + "table { width: 100%; border-collapse: collapse; margin-top: 10pt; } "
+                + "th, td { border: 1px solid #c8c8c8; padding: 4pt 6pt; text-align: left; vertical-align: top; } "
+                + "th { background: #f0f0f0; } "
+                + "th.number { text-align: right; } "
+                // The shade glyph is an emoji codepoint, so a browser would paint its colour layers and the
+                // report would show a red heart where the paper shows a black one. brightness(0) drops every
+                // channel to black and keeps the outline, which is how the overlay and the cards print it.
+                + "td.shape { font-family: 'Segoe UI Emoji', 'Segoe UI', sans-serif; font-size: 13pt; color: #000; filter: brightness(0); } "
+                + "td.number { text-align: right; }",
+        };
+    }
+
+    /// <summary>One table cell, chosen by column key so header and body can never drift apart.</summary>
+    private static string BuildReportCell(Model_Tool_LotMarking row, string columnKey)
+    {
+        var (cssClass, value) = columnKey switch
+        {
+            Model_Tool_LotMarkingColumnCatalog.Shape => ("shape", row.ShapeCode),
+            Model_Tool_LotMarkingColumnCatalog.Color => (string.Empty, row.ColorCode),
+            Model_Tool_LotMarkingColumnCatalog.Heat => (string.Empty, row.HeatNumber),
+            Model_Tool_LotMarkingColumnCatalog.Supplier => (string.Empty, row.SupplierId),
+            Model_Tool_LotMarkingColumnCatalog.Parts => (string.Empty, row.PartsText),
+            Model_Tool_LotMarkingColumnCatalog.Skids => ("number", row.LineCountText),
+            Model_Tool_LotMarkingColumnCatalog.LastLine => (string.Empty, row.LastLineText),
+            _ => (string.Empty, string.Empty),
+        };
+
+        var escaped = WebUtility.HtmlEncode(value);
+        var attribute = string.IsNullOrEmpty(cssClass) ? string.Empty : $" class=\"{cssClass}\"";
+
+        return $"<td{attribute}>{escaped}</td>";
+    }
+
+    /// <summary>The date range in plain words, for the report header.</summary>
+    private string DescribeDateRange()
+    {
+        if (!HasActiveDateRange)
+        {
+            return "All recorded dates";
+        }
+
+        return $"{FormatDay(FromDate)} to {FormatDay(ToDate)}";
+    }
+
+    // ─── List filters, ordering, and visible columns ─────────────────────────
+
+    /// <summary>The sort choices the Filter window offers.</summary>
+    public IReadOnlyList<Model_Tool_LotMarkingSortOption> SortOptions =>
+        Model_Tool_LotMarkingSortOption.All;
+
+    /// <summary>The quick date ranges the Filter window offers.</summary>
+    public IReadOnlyList<Model_DateRangePreset> DateRangePresets => Helper_DateRangePresets.All;
+
+    /// <summary>
+    /// The one column set the grid and the printed report both read, so a column turned off here is
+    /// gone from the screen and the paper rather than from only one of them.
+    /// </summary>
+    public ObservableCollection<Model_Tool_LotMarkingColumnOption> ColumnOptions { get; } = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterSummary))]
+    private DateTimeOffset? _fromDate;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterSummary))]
+    private DateTimeOffset? _toDate;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterSummary))]
+    [NotifyPropertyChangedFor(nameof(SortDirectionLabel))]
+    private Model_Tool_LotMarkingSortOption _selectedSortOption =
+        Model_Tool_LotMarkingSortOption.All[0];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterSummary))]
+    [NotifyPropertyChangedFor(nameof(SortDirectionLabel))]
+    private bool _isSortDescending = true;
+
+    /// <summary>True when the list is limited by date rather than reading every recorded lot.</summary>
+    public bool HasActiveDateRange => FromDate is not null || ToDate is not null;
+
+    /// <summary>What the direction control reads, worded for the chosen column.</summary>
+    public string SortDirectionLabel => IsSortDescending ? "Highest first" : "Lowest first";
+
+    /// <summary>
+    /// A one-line reading of what the list is showing, so the page says plainly when it is narrowed
+    /// rather than leaving a user to wonder why lots are missing.
+    /// </summary>
+    public string FilterSummary
+    {
+        get
+        {
+            var datePart = HasActiveDateRange
+                ? $"{FormatDay(FromDate)} to {FormatDay(ToDate)}"
+                : "All dates";
+
+            return $"{datePart} · {SelectedSortOption.DisplayName} · {SortDirectionLabel}";
+        }
+    }
+
+    /// <summary>True when anything narrows the list, which is what the Filter button reflects.</summary>
+    public bool HasAnyFilter => HasActiveDateRange;
+
+    /// <summary>
+    /// Reads the date range, order and column choice the signed-in user last used. A first run has
+    /// nothing saved, so the defaults come back and the list opens showing every column, newest first.
+    /// </summary>
+    private async Task LoadListPreferencesAsync()
+    {
+        try
+        {
+            var filter = await _settings.GetLotMarkingListFilterAsync();
+            var visibleKeys = await _settings.GetLotMarkingListVisibleColumnKeysAsync();
+
+            FromDate = filter.FromDate is null ? null : new DateTimeOffset(filter.FromDate.Value);
+            ToDate = filter.ToDate is null ? null : new DateTimeOffset(filter.ToDate.Value);
+            SelectedSortOption = Model_Tool_LotMarkingSortOption.FromField(filter.SortField);
+            IsSortDescending = filter.IsDescending;
+
+            ApplyColumnSelection(visibleKeys);
+            RefreshFilterSummary();
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Low,
+                nameof(LoadListPreferencesAsync),
+                nameof(ViewModel_Tool_LotMarking)
+            );
+        }
+    }
+
+    /// <summary>Rebuilds the column list, marking the chosen columns as shown.</summary>
+    private void ApplyColumnSelection(IReadOnlyCollection<string> visibleKeys)
+    {
+        var visible = Model_Tool_LotMarkingColumnCatalog.Normalize(visibleKeys);
+
+        ColumnOptions.Clear();
+
+        foreach (var column in Model_Tool_LotMarkingColumnCatalog.All)
+        {
+            ColumnOptions.Add(
+                new Model_Tool_LotMarkingColumnOption(
+                    column.Key,
+                    column.DisplayName,
+                    visible.Contains(column.Key)
+                )
+            );
+        }
+    }
+
+    /// <summary>The column keys currently chosen to show, in display order.</summary>
+    public IReadOnlyList<string> VisibleColumnKeys =>
+        Model_Tool_LotMarkingColumnCatalog
+            .All.Where(column => IsColumnVisible(column.Key))
+            .Select(column => column.Key)
+            .ToList();
+
+    /// <summary>Whether one column is currently shown. Answers true before the list is built.</summary>
+    public bool IsColumnVisible(string key)
+    {
+        foreach (var option in ColumnOptions)
+        {
+            if (string.Equals(option.Key, key, StringComparison.OrdinalIgnoreCase))
+            {
+                return option.IsVisible;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>Whether the Shape column is shown. Bound by the grid.</summary>
+    public bool ShowShapeColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Shape);
+
+    /// <summary>Whether the Color column is shown. Bound by the grid.</summary>
+    public bool ShowColorColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Color);
+
+    /// <summary>Whether the Heat column is shown. Bound by the grid.</summary>
+    public bool ShowHeatColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Heat);
+
+    /// <summary>Whether the Supplier column is shown. Bound by the grid.</summary>
+    public bool ShowSupplierColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Supplier);
+
+    /// <summary>Whether the Parts column is shown. Bound by the grid.</summary>
+    public bool ShowPartsColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Parts);
+
+    /// <summary>Whether the Skids column is shown. Bound by the grid.</summary>
+    public bool ShowSkidsColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.Skids);
+
+    /// <summary>Whether the Last received column is shown. Bound by the grid.</summary>
+    public bool ShowLastLineColumn => IsColumnVisible(Model_Tool_LotMarkingColumnCatalog.LastLine);
+
+    /// <summary>Tells the grid that the chosen columns moved.</summary>
+    private void RefreshVisibleColumns()
+    {
+        OnPropertyChanged(nameof(ShowShapeColumn));
+        OnPropertyChanged(nameof(ShowColorColumn));
+        OnPropertyChanged(nameof(ShowHeatColumn));
+        OnPropertyChanged(nameof(ShowSupplierColumn));
+        OnPropertyChanged(nameof(ShowPartsColumn));
+        OnPropertyChanged(nameof(ShowSkidsColumn));
+        OnPropertyChanged(nameof(ShowLastLineColumn));
+        OnPropertyChanged(nameof(VisibleColumnKeys));
+    }
+
+    /// <summary>
+    /// Saves the chosen range, order and columns for this user, then reads the list again. Nothing is
+    /// written to the marking ledger by this: the choices are preferences, not records.
+    /// </summary>
+    public async Task ApplyFiltersAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (FromDate is not null && ToDate is not null && FromDate > ToDate)
+        {
+            ShowStatus(
+                "The start date is after the end date, so nothing can match. Swap them or clear one.",
+                InfoBarSeverity.Warning
+            );
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var filter = BuildFilter();
+            var visibleKeys = VisibleColumnKeys;
+
+            var saved = await _settings.SaveLotMarkingListFilterAsync(filter);
+            if (!saved.IsSuccess)
+            {
+                ShowStatus($"The filter could not be saved. {saved.ErrorMessage}", InfoBarSeverity.Warning);
+            }
+
+            var savedColumns = await _settings.SaveLotMarkingListVisibleColumnKeysAsync(visibleKeys);
+            if (!savedColumns.IsSuccess)
+            {
+                ShowStatus(
+                    $"The column choice could not be saved. {savedColumns.ErrorMessage}",
+                    InfoBarSeverity.Warning
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Medium,
+                nameof(ApplyFiltersAsync),
+                nameof(ViewModel_Tool_LotMarking)
+            );
+            ShowStatus("The filter could not be applied.", InfoBarSeverity.Error);
+            return;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
+        RefreshFilterSummary();
+        await LoadMarkingsAsync(HeatSearchText);
+    }
+
+    /// <summary>Puts the list back to every date, newest first, and every column shown.</summary>
+    [RelayCommand]
+    public void ResetFilters()
+    {
+        FromDate = null;
+        ToDate = null;
+        SelectedSortOption = Model_Tool_LotMarkingSortOption.All[0];
+        IsSortDescending = true;
+
+        ApplyColumnSelection(Model_Tool_LotMarkingColumnCatalog.DefaultVisibleKeys);
+        RefreshFilterSummary();
+    }
+
+    /// <summary>Applies a quick date range and leaves it on screen for the user to confirm.</summary>
+    public void ApplyDateRangePreset(string? presetKey)
+    {
+        if (string.IsNullOrWhiteSpace(presetKey))
+        {
+            return;
+        }
+
+        var (from, to) = Helper_DateRangePresets.Resolve(presetKey);
+
+        FromDate = new DateTimeOffset(from);
+        ToDate = new DateTimeOffset(to);
+        RefreshFilterSummary();
+    }
+
+    /// <summary>
+    /// Recomputes the derived reading of the filter. Called after the column list is rebuilt, because
+    /// those properties do not otherwise know that the underlying state moved.
+    /// </summary>
+    public void RefreshFilterSummary()
+    {
+        OnPropertyChanged(nameof(FilterSummary));
+        OnPropertyChanged(nameof(HasActiveDateRange));
+        OnPropertyChanged(nameof(HasAnyFilter));
+        OnPropertyChanged(nameof(SortDirectionLabel));
+        RefreshVisibleColumns();
+    }
+
+    /// <summary>The filter the service is asked to read the list by.</summary>
+    private Model_Tool_LotMarkingFilter BuildFilter() =>
+        new(
+            FromDate?.Date,
+            ToDate?.Date,
+            SelectedSortOption.Field,
+            IsSortDescending
+        );
+
+    private static string FormatDay(DateTimeOffset? value) =>
+        value is null ? "any" : value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
     private bool IsMarkingSelected() => SelectedMarking is not null && !IsBusy;
 

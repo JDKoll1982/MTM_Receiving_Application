@@ -9,7 +9,18 @@ public class Service_Window : IService_Window
 {
     public XamlRoot? GetXamlRoot()
     {
-        return App.MainWindow?.Content?.XamlRoot;
+        try
+        {
+            return App.MainWindow?.Content?.XamlRoot;
+        }
+        catch (Exception)
+        {
+            // Reading a window's content throws a COMException until the window has finished coming up,
+            // which is exactly when startup is asking — during the splash, before the main window has
+            // been activated. Reporting "no root yet" is the honest answer there; letting the exception
+            // out turned every startup error report into a second, unrelated failure.
+            return null;
+        }
     }
 
     public Task<bool> NavigateToSettingsPageAsync(Type pageType)

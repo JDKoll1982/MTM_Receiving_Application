@@ -40,6 +40,9 @@ public static class Model_LotMarkingPalette
     /// dropped because no dependable emoji exists for them, and oval became a circle because the
     /// emoji set has no oval. Changing this list never alters a marking already recorded, because
     /// the stored value is the glyph itself.
+    /// A marking is a black shape, so every rendering of one asks for the monochrome outline rather than
+    /// the colour layers: <c>IsColorFontEnabled="False"</c> in XAML, and GDI+ (which ignores colour font
+    /// tables) when printing.
     /// </remarks>
     public static IReadOnlyList<Model_LotMarkingShape> Shapes { get; } =
     [

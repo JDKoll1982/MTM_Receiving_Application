@@ -72,9 +72,12 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
     /// <inheritdoc />
     public async Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> GetLedgerAsync(
         string? heatSearch,
-        string? partId = null
+        string? partId = null,
+        Model_Tool_LotMarkingFilter? filter = null
     )
     {
+        var applied = filter ?? Model_Tool_LotMarkingFilter.Default;
+
         var markings = await _dao.GetAllMarkingsAsync();
         if (!markings.IsSuccess)
         {
@@ -88,7 +91,14 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
             );
         }
 
-        var rows = await _dao.GetReceivingHeatLotKeysAsync();
+        // A range that runs backwards matches nothing, and the database would be asked to prove it.
+        // Saying so here keeps a typo from looking like "no lots came in".
+        if (applied.IsBackwardsRange)
+        {
+            return Model_Dao_Result_Factory.Success(new List<Model_Tool_LotMarking>());
+        }
+
+        var rows = await _dao.GetReceivingHeatLotKeysAsync(applied.FromDate, applied.ToDate);
         if (!rows.IsSuccess)
         {
             _logger.LogError(
@@ -116,28 +126,152 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
             );
         }
 
+        var scope = ScopeOf(enabled.Data, partId);
+
         var lots = markings.Data ?? new List<Model_Tool_LotMarking>();
-        var lineGroups = rows.Data ?? new List<Model_Tool_ReceivingHeatLotKey>();
+        var scopedRows = (rows.Data ?? new List<Model_Tool_ReceivingHeatLotKey>())
+            .Where(row => IsCarriedByScope(row, scope) && IsInsideRange(row, applied))
+            .ToList();
 
-        ApplyLineUsage(lots, lineGroups);
+        ApplyLineUsage(lots, scopedRows);
 
-        var partIndex = BuildPartIndex(lineGroups);
+        var partIndex = BuildPartIndex(scopedRows);
         ApplyPartUsage(lots, partIndex);
 
-        var scoped = FilterByPart(lots, partIndex, EnabledPartNumbers(enabled.Data), partId);
+        var ordered = Sort(
+            FilterByHeat(FilterByPart(lots, partIndex), heatSearch),
+            applied
+        );
 
-        return Model_Dao_Result_Factory.Success(FilterByHeat(scoped, heatSearch));
+        return Model_Dao_Result_Factory.Success(ordered);
+    }
+
+    /// <summary>Orders the lot list the way the caller asked for, with a stable tie-break.</summary>
+    /// <remarks>
+    /// The heat number settles ties in every case, so two lots that share a value the caller sorted on
+    /// keep one order between reads. Without that, a list re-read after any edit could shuffle rows
+    /// nobody changed.
+    /// </remarks>
+    private static List<Model_Tool_LotMarking> Sort(
+        List<Model_Tool_LotMarking> lots,
+        Model_Tool_LotMarkingFilter filter
+    )
+    {
+        var primary = Order(lots, filter.SortField, filter.IsDescending);
+
+        return primary.ThenBy(lot => lot.HeatNumber, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    private static IOrderedEnumerable<Model_Tool_LotMarking> Order(
+        List<Model_Tool_LotMarking> lots,
+        Enum_LotMarkingSortField sortField,
+        bool isDescending
+    )
+    {
+        switch (sortField)
+        {
+            case Enum_LotMarkingSortField.HeatNumber:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.HeatNumber, StringComparer.OrdinalIgnoreCase)
+                    : lots.OrderBy(lot => lot.HeatNumber, StringComparer.OrdinalIgnoreCase);
+
+            case Enum_LotMarkingSortField.SkidCount:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.LineCount)
+                    : lots.OrderBy(lot => lot.LineCount);
+
+            case Enum_LotMarkingSortField.Supplier:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.SupplierId, StringComparer.OrdinalIgnoreCase)
+                    : lots.OrderBy(lot => lot.SupplierId, StringComparer.OrdinalIgnoreCase);
+
+            case Enum_LotMarkingSortField.PartNumber:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.PartsText, StringComparer.OrdinalIgnoreCase)
+                    : lots.OrderBy(lot => lot.PartsText, StringComparer.OrdinalIgnoreCase);
+
+            case Enum_LotMarkingSortField.ShapeAndColor:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.ShapeCode, StringComparer.Ordinal)
+                        .ThenByDescending(lot => lot.ColorCode, StringComparer.OrdinalIgnoreCase)
+                    : lots.OrderBy(lot => lot.ShapeCode, StringComparer.Ordinal)
+                        .ThenBy(lot => lot.ColorCode, StringComparer.OrdinalIgnoreCase);
+
+            // A lot with no date has nothing to sort by, so it goes last whichever way the list runs.
+            case Enum_LotMarkingSortField.LastReceiptDate:
+            default:
+                return isDescending
+                    ? lots.OrderByDescending(lot => lot.LastLineDate ?? DateTime.MinValue)
+                    : lots.OrderBy(lot => lot.LastLineDate ?? DateTime.MaxValue);
+        }
     }
 
     /// <summary>
-    /// Fills in how many receiving lines carry each lot and when the lot was last seen on one, by
+    /// The part numbers whose material this list covers: the enabled part list, or the one part a
+    /// user chose to read the list by.
+    /// </summary>
+    /// <remarks>
+    /// A chosen part replaces the enabled list rather than adding to it, so choosing a part narrows to
+    /// that part alone. It is honoured whether or not the part is still enabled, because choosing a
+    /// part is a deliberate act and a removed part's recorded markings must stay reachable.
+    /// </remarks>
+    private static HashSet<string> ScopeOf(
+        IReadOnlyList<Model_Tool_LotMarkingScope>? enabledParts,
+        string? partId
+    ) =>
+        string.IsNullOrWhiteSpace(partId)
+            ? EnabledPartNumbers(enabledParts)
+            : new HashSet<string>(StringComparer.OrdinalIgnoreCase) { partId.Trim() };
+
+    /// <summary>Whether a receiving row carries material this list covers.</summary>
+    private static bool IsCarriedByScope(
+        Model_Tool_ReceivingHeatLotKey row,
+        IReadOnlySet<string> scope
+    ) => !string.IsNullOrWhiteSpace(row.PartId) && scope.Contains(row.PartId.Trim());
+
+    /// <summary>
+    /// Whether a receiving row was received inside the chosen range. A row carrying no date cannot be
+    /// shown to be inside one, so it is left out of a ranged read.
+    /// </summary>
+    /// <remarks>
+    /// The stored procedure is the authority here: it applies the same range before grouping, so its
+    /// rows already fall inside it and this check removes nothing. It runs anyway because the list must
+    /// never show a lot received outside the window a user asked for. A database still running the
+    /// earlier version of the procedure ignores the parameters and returns every row, and without this
+    /// check that reads as a filter that does nothing rather than one that is out of date.
+    /// </remarks>
+    private static bool IsInsideRange(
+        Model_Tool_ReceivingHeatLotKey row,
+        Model_Tool_LotMarkingFilter filter
+    )
+    {
+        if (!filter.HasDateRange)
+        {
+            return true;
+        }
+
+        if (row.LastLineDate is null)
+        {
+            return false;
+        }
+
+        var day = row.LastLineDate.Value.Date;
+
+        return (filter.FromDate is null || day >= filter.FromDate.Value.Date)
+            && (filter.ToDate is null || day <= filter.ToDate.Value.Date);
+    }
+
+    /// <summary>
+    /// Fills in how many receiving skids carry each lot and when the lot was last seen on one, by
     /// normalizing the line groups exactly the way the rest of the feature does.
     /// </summary>
     /// <remarks>
     /// The counting happens here rather than in SQL because the matching key is produced here, and a
     /// count that matched raw text would miss every other spelling of a lot that normalization exists
-    /// to unify. A lot whose number appears on no line keeps a count of zero and no date, which is the
-    /// honest answer for a number that has been corrected away.
+    /// to unify.
+    /// Only the rows in <paramref name="rows"/> are counted, and those are already narrowed to the
+    /// parts this list covers, so a lot shared with a part that is not on the list reports the skids
+    /// the covered parts carry rather than the whole lot's total.
     /// </remarks>
     private static void ApplyLineUsage(
         IReadOnlyList<Model_Tool_LotMarking> lots,
@@ -334,8 +468,13 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
     /// <summary>
     /// Records the part numbers that carry each lot, so the list can show whose material a lot is.
-    /// Worked out when the list is read and never stored, like the line count beside it.
+    /// Worked out when the list is read and never stored, like the skid count beside it.
     /// </summary>
+    /// <remarks>
+    /// The index holds scoped rows only, so a lot shared between a listed part and a part that is not
+    /// listed shows just the listed part. A part number this list does not cover is not one a handler
+    /// can act on from this screen, and showing it would read as though that material were covered.
+    /// </remarks>
     private static void ApplyPartUsage(
         IReadOnlyList<Model_Tool_LotMarking> lots,
         IReadOnlyDictionary<string, HashSet<string>> partIndex
@@ -357,38 +496,18 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
     /// <summary>Narrows the lot list to the material that was approved for marking.</summary>
     /// <remarks>
-    /// A lot is carried by a set of parts rather than owned by one, so a lot is kept when any part
-    /// that carries it is on the enabled list. A lot that no receiving row carries is kept too,
-    /// because it cannot be attributed to a part at all and dropping it would hide a lot whose number
-    /// was corrected away, which is a lot a person still needs to see.
-    /// Choosing a part narrows to that part alone, and is honoured whether or not the part is still
-    /// enabled, because choosing a part is a deliberate act and a removed part's recorded markings
-    /// must stay reachable.
+    /// A lot is carried by a set of parts rather than owned by one, so a lot is kept when a part that
+    /// carries it is inside the scope the caller already resolved. The index is built from scoped rows
+    /// alone, so an empty set means no covered part carries the lot, and the lot is left out.
+    /// That includes a lot whose number no receiving row carries at all: nothing one of the listed
+    /// parts receives, so the list has no reason to report it.
+    /// A date range narrows the rows before this runs, so a lot whose only in-range skids belong to a
+    /// part outside the scope is left out of a ranged read as well.
     /// </remarks>
     private static List<Model_Tool_LotMarking> FilterByPart(
         IReadOnlyList<Model_Tool_LotMarking> lots,
-        IReadOnlyDictionary<string, HashSet<string>> partIndex,
-        IReadOnlySet<string> enabledParts,
-        string? partId
-    )
-    {
-        var chosen = partId?.Trim();
-
-        if (!string.IsNullOrEmpty(chosen))
-        {
-            return lots
-                .Where(lot => PartsOf(lot, partIndex).Contains(chosen))
-                .ToList();
-        }
-
-        return lots
-            .Where(lot =>
-            {
-                var parts = PartsOf(lot, partIndex);
-                return parts.Count == 0 || parts.Any(enabledParts.Contains);
-            })
-            .ToList();
-    }
+        IReadOnlyDictionary<string, HashSet<string>> partIndex
+    ) => lots.Where(lot => PartsOf(lot, partIndex).Count > 0).ToList();
 
     /// <inheritdoc />
     public async Task<Model_Dao_Result<Model_Tool_LotMarking?>> ResolveMarkingAsync(

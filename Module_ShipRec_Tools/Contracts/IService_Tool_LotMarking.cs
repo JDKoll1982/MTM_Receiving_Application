@@ -31,9 +31,13 @@ public interface IService_Tool_LotMarking
     /// <param name="partId">
     /// The part number to narrow the list to, or null for the whole of the enabled scope.
     /// </param>
+    /// <param name="filter">
+    /// The date range and order to read the list by, or null for no date limit and newest first.
+    /// </param>
     Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> GetLedgerAsync(
         string? heatSearch,
-        string? partId = null
+        string? partId = null,
+        Model_Tool_LotMarkingFilter? filter = null
     );
 
     /// <summary>Finds markings whose heat number contains the supplied text.</summary>

@@ -7,6 +7,7 @@ using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Settings.Core.Data;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Views;
 
@@ -26,6 +27,34 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
         private readonly Dao_SettingsCoreRoles _rolesDao;
         private readonly Dao_SettingsCoreUserRoles _userRolesDao;
         private View_Shared_SplashScreenWindow? _splashScreen;
+
+        /// <summary>Times the whole startup, so the log says where a slow launch actually went.</summary>
+        private readonly System.Diagnostics.Stopwatch _startupClock =
+            System.Diagnostics.Stopwatch.StartNew();
+
+        private long _lastMarkMilliseconds;
+
+        private IService_LoggingUtility? _startupLogger;
+
+        private IService_LoggingUtility? StartupLogger =>
+            _startupLogger ??= _serviceProvider.GetService<IService_LoggingUtility>();
+
+        /// <summary>
+        /// Records how long the startup section that just finished took, in the log, against the clock the
+        /// whole launch shares. Without this a slow start is only ever described as "a long pause", which
+        /// cannot be fixed.
+        /// </summary>
+        private void MarkStartupSection(string name)
+        {
+            var now = _startupClock.ElapsedMilliseconds;
+            var elapsed = now - _lastMarkMilliseconds;
+            _lastMarkMilliseconds = now;
+
+            StartupLogger?.LogInfo(
+                $"Startup timing: {name} took {elapsed} ms (total {now} ms).",
+                nameof(Service_OnStartup_AppLifecycle)
+            );
+        }
 
         public Service_OnStartup_AppLifecycle(
             IServiceProvider serviceProvider,
@@ -71,8 +100,11 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
                 // 2. Create Main Window (hidden initially)
                 UpdateSplash(15, "Loading main window...");
+                UpdateSplashStep(30, "Building the application shell...");
                 var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
                 App.MainWindow = mainWindow;
+                UpdateSplashStep(100, "Application shell ready.");
+                MarkStartupSection("Main window shell");
 
                 // Give UI thread time to initialize
                 await Task.Delay(100);
@@ -91,10 +123,14 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
                 // 3a. Refresh Dunnage image cache (network -> local)
                 UpdateSplash(24, "Preparing Dunnage image assets...");
+                UpdateSplashStep(10, "Reading the Dunnage image folder...");
                 await _dunnageImageStorage.RefreshConfiguredRootFolderAsync();
                 SetSplashIndeterminate("Syncing Dunnage images from network...");
+                UpdateSplashStep(50, "Copying new Dunnage images to this PC...");
                 await _dunnageImageStorage.SyncLocalCacheAsync();
+                UpdateSplashStep(100, "Dunnage images ready.");
                 UpdateSplash(28, "Dunnage image assets ready.");
+                MarkStartupSection("Dunnage image cache");
                 if (ShouldAbortStartup())
                 {
                     return;
@@ -212,7 +248,10 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
                 // 4. Detect Workstation (50%)
                 UpdateSplash(50, "Detecting workstation configuration...");
+                MarkStartupSection("User account check");
+                UpdateSplashStep(50, "Reading this computer's name and role...");
                 var workstationConfig = await _authService.DetectWorkstationTypeAsync();
+                UpdateSplashStep(100, $"{workstationConfig.WorkstationType} on {workstationConfig.ComputerName}.");
 
                 // Debug logging
                 System.Diagnostics.Debug.WriteLine(
@@ -309,14 +348,30 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                 // 6. Create Session (90%)
                 if (authenticatedUser != null)
                 {
+                    MarkStartupSection("Workstation detection");
                     UpdateSplash(90, "Creating user session...");
+                    UpdateSplashStep(0, "Checking your permissions...");
+
+                    var sessionProgress = new Progress<Model_SettingsSeedProgress>(report =>
+                    {
+                        UpdateSplashStep(
+                            report.PercentComplete,
+                            report.Total <= 0
+                                ? "Preparing your settings..."
+                                : $"Preparing your settings ({report.Completed} of {report.Total})..."
+                        );
+                    });
 
                     var sessionResult =
                         await _userLoginCoordinator.InitializeAuthenticatedSessionAsync(
                             authenticatedUser,
                             workstationConfig,
-                            authMethod
+                            authMethod,
+                            sessionProgress
                         );
+
+                    ClearSplashStep();
+                    MarkStartupSection("User session and settings cache");
 
                     if (!sessionResult.Success)
                     {
@@ -347,6 +402,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     await _softwareVersionMonitor.ValidateOnStartupAsync(
                         (_splashScreen?.Content as Microsoft.UI.Xaml.UIElement)?.XamlRoot
                     );
+                    MarkStartupSection("Version check");
                     if (ShouldAbortStartup())
                     {
                         RequestShutdown(
@@ -385,6 +441,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
                     _splashScreen.Close();
                 }
                 _splashScreen = null;
+                MarkStartupSection("Main window shown");
 
                 // CSV reset dialog removed - only appears when user explicitly clicks Reset CSV button
             }
@@ -428,7 +485,19 @@ namespace MTM_Receiving_Application.Module_Core.Services.Startup
 
         private void UpdateSplash(double percentage, string message)
         {
+            // A new section means the previous section's step bar is finished with.
+            _splashScreen?.ViewModel.ClearStepProgress();
             _splashScreen?.ViewModel.UpdateProgress(percentage, message);
+        }
+
+        private void UpdateSplashStep(double percentage, string message)
+        {
+            _splashScreen?.ViewModel.UpdateStepProgress(percentage, message);
+        }
+
+        private void ClearSplashStep()
+        {
+            _splashScreen?.ViewModel.ClearStepProgress();
         }
 
         private void SetSplashIndeterminate(string message)

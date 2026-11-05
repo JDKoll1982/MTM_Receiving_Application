@@ -47,6 +47,7 @@ Legend: ✅ present / covered · ❌ missing · ➖ not applicable (contextual s
 | `View_Tool_OutsideServiceHistory` | ❌ | ➖ |
 | `View_Tool_POLineSpecSearch` | ❌ | ➖ |
 | `View_Tool_ReceivingAnalytics` | ❌ | ➖ |
+| `View_Tool_LotMarking` | ✅ | ➖ |
 | `View_Tool_WeldedCoils` | ❌ | ➖ |
 | `View_Reporting_PreviewPage` | ❌ | ➖ |
 | `View_Reprint_ModulePage` | ❌ | ➖ |
@@ -87,6 +88,9 @@ Legend: ✅ present / covered · ❌ missing · ➖ not applicable (contextual s
 | `Dialog_MaterialAvailabilityWorkOrderDetails` | ShipRec | ✅ |
 | `Dialog_MaterialAvailabilityIncomingDetails` | ShipRec | ✅ |
 | `Dialog_DunnageBookPreview` | ShipRec | ✅ |
+| `View_Tool_LotMarkingPartsWindow` | ShipRec | ❌ |
+| `View_Tool_LotMarkingChangeWindow` | ShipRec | ❌ |
+| `View_Tool_LotMarkingFilterWindow` | ShipRec | ❌ |
 | `Dialog_Reprint_ColumnChooser` | Reprint | ✅ |
 | `View_Settings_Volvo_PartAddEditDialog` | Settings.Volvo | ✅ |
 | `Dialog_FuzzySearchPicker` | Core | ➖ (search picker) |

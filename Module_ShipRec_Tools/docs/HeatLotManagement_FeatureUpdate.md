@@ -476,7 +476,8 @@ one moment it matters:
 **The list is now scoped to the same rule.** `sp_Receiving_HeatLotKeys_GetAll` carries each group's
 part number, and the tool keeps a lot when at least one enabled part carries it. A lot is carried by a
 set of parts rather than owned by one, so a lot used by both a listed part and an unlisted one is
-still shown, and the list reports every part that carries it.
+still shown. (Since 2026-11-03 the parts the row reports are narrowed to the listed ones — see
+[Tool Layout Rework](#tool-layout-rework-2026-11-03).)
 
 Choosing a part in the part list reads the marking list again and narrows it to that part alone. That
 is honoured whether or not the part is still enabled, because choosing a part is deliberate and a
@@ -485,8 +486,8 @@ removed part's recorded markings must stay reachable.
 Two boundaries are worth stating, because each looks like an omission:
 
 - A lot whose number appears on **no** receiving row is still shown. It cannot be attributed to a
-  part, so hiding it would hide the lot a corrected number used to describe. This keeps story 8's
-  requirement that such a lot stay in the list rather than disappearing.
+  part, so hiding it would hide the lot a corrected number used to describe. (Superseded 2026-11-03:
+  such a lot is no longer shown — see [Tool Layout Rework](#tool-layout-rework-2026-11-03).)
 - A lot's parts are read from the receiving rows that carry its number, not from
   `first_seen_part_number`. The column is right only for lots created after this change, and the
   attribution has to be right for every lot, including the ones recorded before the list was
@@ -533,3 +534,194 @@ therefore matches a row to a lot on either the id or the name, which is delibera
 failing to find a lot that exists would create a second lot for it and give one physical lot two
 markings. Whether the receiving side and these repair actions should key the group the same way is a
 question for the user.
+
+## Tool Layout Rework (2026-11-03)
+
+The page was rearranged around what a handler does while standing at a rack: look up a lot, read its
+shape and color, print the sheet, and only rarely change something. The two editing surfaces moved out
+of the way so the list itself fills the page.
+
+**The page is now search plus the lot list.** The bottom card and the side panel are gone from the main
+page, so the list runs the full width and the rows are easier to scan.
+
+**Editing moved into modal windows.** Both surfaces open over the main window and the main window stops
+taking clicks while one is open:
+
+- **Part numbers that receive markings** — `View_Tool_LotMarkingPartsWindow` hosting
+  `View_Tool_LotMarkingPartsDialog`. Adding, filtering, removing, re-enabling and filling unmarked lots
+  all happen here.
+- **Change this marking** — `View_Tool_LotMarkingChangeWindow` hosting
+  `View_Tool_LotMarkingChangeDialog`. The shape, the color, the reason, and the lock are edited here.
+  The window closes by itself once a change is saved, because the lot it was opened for has been
+  reloaded and there is nothing left to edit.
+
+These are real `Window` hosts, following the same shape as
+`View_Volvo_ShipmentHistoryDetailWindow`, not `ContentDialog`s. A `ContentDialog` cannot hold a list
+this tall without turning into a scrolling box inside a scrolling page.
+
+**"Change this marking" is a button that enables on a selection.** It sits in the top card beside the
+other actions and stays disabled until a row is chosen, so it can never open with no lot to edit.
+
+**Every button on the page is an icon button with a tooltip drawn from the help content.** All labels
+come from `IService_Help.GetTooltip`, so the wording lives with the rest of the app's tooltips instead
+of in the markup. Each button also carries an `AutomationProperties.Name` so it is readable to a screen
+reader.
+
+**The list columns changed.**
+
+- The single "Marked" column became **Shape** (the emoji) and **Color** (a swatch drawn from the palette
+  plus the color code), so the two halves of a marking can be read separately.
+- "Heat as captured" became **Heat**.
+- "Lines" became **Skids**. Each receiving row is one skid, so the count was already a skid count; only
+  the label was wrong.
+- The "State" column was removed. A locked lot is still reported in the marking window, where the lock
+  is changed.
+
+**Only listed parts appear in the results, and only their skids are counted.** This tightens the rule
+from [Only the listed parts are marked](#only-the-listed-parts-are-marked-user-story-10-added-2026-10-15):
+
+- The `Parts` column reports only part numbers that are on the enabled list. When a lot is shared with
+  an unlisted part, the unlisted part number no longer appears, because it is not material this page
+  answers for.
+- The **Skids** count and the **Last line** date cover only the skids the listed parts carry. A lot
+  shared with an unlisted part therefore no longer reports the whole lot's total.
+- A lot that no listed part receives is not shown at all. That includes a lot whose number appears on
+  no receiving row, which was previously kept so a corrected number could still be traced. The
+  superseding decision is that the list answers for listed material only; `Update All Lots` still
+  reports and removes such lots, so the trace is not lost.
+
+Choosing a part still narrows the list to that part alone, and is still honoured whether or not the
+part is enabled.
+
+**Printing (previously promised, now built).** The print button in the top card prints exactly what the
+list is showing, so a heat search or a chosen part is reflected in the sheet. The report uses the same
+columns as the grid — Shape, Color, Heat, Supplier, Parts, Skids, Last line — plus the print date, the
+user, and the search text. It is built as a `Model_FormattedReportDocument` and printed through the
+module's existing HTML path (`Helper_PrintDocumentHtml` + `Helper_HtmlReportExport`), which opens the
+print dialog; that is the same path the Delivery Schedule, Receiving Analytics and Material
+Availability Board use, so there is one printing behaviour in the module rather than two. The button is
+disabled while the list is empty.
+
+**Tests.** `Service_Tool_LotMarkingTests` was updated for the narrowed scope: a lot shared with an
+unlisted part reports only the listed part and only that part's skids, and a lot no receiving row
+carries is no longer listed. `ViewModel_Tool_LotMarkingTests` supplies the new help service dependency.
+
+
+### The modal windows use DevWinUI ModalWindow (2026-11-03)
+
+The two editing windows are `DevWinUI.ModalWindow` subclasses rather than plain `Window` hosts.
+
+**Why it changed.** The first version blocked the main window by turning off hit testing on its content
+root and releasing that in the window's `Closed` handler. Two things were wrong with it. The block was a
+single switch with a single release path, so a close that missed that path left the application painted
+but deaf to every click — a freeze the user could only clear by restarting. And the windows extended
+content into the title bar while drawing no caption buttons of their own, so the minimize, maximize and
+close buttons were drawn faintly over the page and were easy to miss.
+
+**What `ModalWindow` gives.** It creates its window with `OverlappedPresenter.CreateForDialog()` and sets
+`IsModal = true`, having first set the main window as the window's owner. Windows itself then disables the
+main window for as long as the modal is open and re-enables it when the modal closes, and it brings the
+main window back to the foreground. Nothing in this application decides when the main window may be used,
+so no application bug can leave it unable to take a click.
+
+Modal windows use the dialog presenter, so they show a system title bar with a normal close button but no
+minimize or maximize. That is deliberate: a modal window with a minimize button can be sent behind the
+window it is blocking, which leaves the user with a disabled window and nothing to click.
+
+**The title bar is left to Windows.** Neither window calls `ExtendsContentIntoTitleBar`, and neither
+content page declares a title bar element. The system draws the title, the icon and the caption buttons,
+so they are always visible and always match the rest of the desktop.
+
+**Verifying it.** Confirmed against a running build by enumerating the process's windows: while the modal
+is open the modal window reports itself enabled and the main window reports itself disabled, and once the
+modal closes the main window is enabled again and the part list reloads. The window also stayed open for
+39 seconds untouched before being closed, so nothing closes it on its own.
+
+### Platform bump required by DevWinUI (2026-11-03)
+
+`DevWinUI` 10.9.1 depends on `Microsoft.WindowsAppSDK.WinUI` 2.3.6 or later, while this solution pinned the
+`Microsoft.WindowsAppSDK` metapackage at 2.2.0, which resolves WinUI 2.2.1. The metapackage was moved to
+**2.4.0**, the version whose WinUI is 2.3.6. The resolved graph is now: WindowsAppSDK 2.4.0, WinUI 2.3.6,
+Runtime 2.4.0, DevWinUI 10.9.1 and DevWinUI.Base 10.9.1.
+
+A note for anyone building this after the bump: the first build after the change produced a broken output
+folder, because the incremental build removed the old runtime files without laying down the new ones, and
+the app failed at startup with `Class not registered (0x80040154)` from `Application.Start`. A clean rebuild
+(`dotnet build -t:Rebuild`) produced a complete output and the app started normally. If the same error
+appears, clean the output rather than suspecting the code.
+
+The publish scripts under `Database/Publish_and_Installation/` read the target framework and runtime
+identifier from the project file, so they needed no change.
+
+## Filter window: dates, sort order, and columns (2026-11-03)
+
+The list was narrowed and ordered by whatever the code felt like showing. A **Filters** button in the top
+card now opens a window that decides all three of what appears, in what order, and with which columns —
+and the printed sheet follows the same choices, so a sheet can no longer disagree with the screen.
+
+**A dedicated button, not the print button.** Printing deliberately stays a one-click action: it prints
+what is already on screen. Putting the options behind the print button would have meant a dialog between
+a user and a sheet they can already see, and would have left the on-screen list unable to be filtered at
+all. So the Filter button narrows the list, and Print reproduces it.
+
+**The window holds three groups.**
+
+- **Which dates to include.** Two `CalendarDatePicker`s plus a **Quick date range** menu with the same
+  nine presets the rest of the app offers — Last 7/30/90 Days, This/Last Month, This/Last Quarter, This
+  Year, Last 12 Months — built from `Helper_DateRangePresets`, so the wording and the arithmetic cannot
+  drift from Receiving Analytics.
+- **What to sort by.** The six choices a handler actually asks for: most recently received, heat / lot
+  number, most skids, supplier name, part number, and shape and color, each with a Highest-first /
+  Lowest-first switch. Every order falls back to the heat number to break ties, so two lots that share a
+  sorted value keep one order between reads instead of shuffling after an unrelated edit.
+- **Which columns to show.** A checkbox per column. The same keys drive the grid and the report, from
+  `Model_Tool_LotMarkingColumnCatalog`.
+
+**A lot is listed when any of its skids was received inside the range.** That is the reading that answers
+"what came in last week", and it is why the range is applied to the receiving rows rather than to the
+lot's most recent date. Because the rows are narrowed before anything is counted, the **Skids** figure and
+the **Last received** date describe the skids inside the window rather than the lot's whole history.
+
+**The choices are per user and are stored in the database.** Five settings were added under
+`ShipRecTools`: `LotMarking.List.FromDate`, `.ToDate`, `.SortField`, `.SortDescending` and
+`.VisibleColumnKeys`. All five are user-scoped and carry the User permission level, so one person's date
+range never narrows another's list. They read and write through `IService_SettingsCoreFacade` using the
+signed-in employee number, and the store writes its own default the first time a key is read, so no seed
+script is needed. Verified end to end: a range applied in one session came back selected after a restart.
+
+**Two guards worth knowing about.**
+
+- A range that runs backwards is refused before anything is saved or read, with a message naming the
+  problem. It is a typo, not an empty result, and it should not become the saved preference.
+- Turning every column off is refused: the stored set falls back to showing every column, because an
+  empty grid is something a user cannot recover from without opening the Filter window again.
+
+### The stored procedure needed a date range
+
+`sp_Receiving_HeatLotKeys_GetAll` returned each group's newest receipt date only, so a range could not be
+answered server-side. It now takes two optional `IN DATETIME` parameters, `p_from_date` and `p_to_date`,
+and applies them before grouping, which is what makes the counts exact for the window. Both default to
+NULL, and a NULL pair reads every row exactly as before, so any caller that does not pass them is
+unaffected. `p_to_date` is treated as a whole day, so a receipt at 23:59 on the final day is included.
+
+`Dao_Tool_LotMarking.GetReceivingHeatLotKeysAsync` gained the matching optional parameters, and the two
+repair paths — Update All Lots and its preview — keep calling it with none, because they must see the
+whole record rather than one window of it.
+
+**The application also applies the range itself.** `Service_Tool_LotMarking` drops any returned row whose
+date falls outside the chosen window. With the current procedure this removes nothing, since the rows
+arrive already bounded. It runs anyway because of what happened during development: against a database
+still running the earlier procedure, MySQL silently ignored the two new parameters and the list returned
+every lot with the filter appearing to be applied. The client-side check turns that silent wrong answer
+into a correct one, and the procedure remains the authority.
+
+**Deploying it.** `Database/Scripts/Deploy/sp_Receiving_HeatLotKeys_GetAll_Deploy.sql` carries the
+definition with test blocks for the schema, the parameter list, a NULL pair, and a one-day range. Run it
+against `mtm_receiving_application_test` first, then change its one `USE` line to
+`mtm_receiving_application`. It DROPs and re-CREATEs, so it is safe to run twice.
+
+**Tests.** `Service_Tool_LotMarkingTests` covers the range (only in-range lots listed), the ordering
+(newest first by default, most skids first when asked), and a backwards range. `ViewModel_Tool_LotMarkingTests`
+covers applying a filter (the range, the sort field and the hidden column are all saved, and the hidden
+column stops being reported as shown), refusing a backwards range without saving or reading, Reset
+restoring every column, and printing honouring both the hidden column and the date line.

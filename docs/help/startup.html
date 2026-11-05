@@ -252,7 +252,7 @@
                     </tr>
                     <tr>
                         <td>Creating user session…</td>
-                        <td>Building your session profile from your saved preferences.</td>
+                        <td>Building your session profile from your saved preferences. The smaller bar underneath counts the settings being prepared, so you can see it is still working.</td>
                     </tr>
                     <tr>
                         <td>Initializing core settings…</td>
@@ -493,6 +493,11 @@
                         On a healthy network the startup screen should complete in under 10 seconds.
                         If it consistently takes longer, report it to IT so they can check database
                         connection performance.
+                        <br /><br />
+                        The startup log now records how long each step took, for example
+                        <em>Startup timing: User session and settings cache took 1840 ms</em>. If a
+                        launch feels slow, that line tells IT which step to look at instead of
+                        guessing.
                     </div>
                 </details>
 

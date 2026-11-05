@@ -12,6 +12,13 @@ public sealed partial class View_Scanner_Main : Page
 {
     public ViewModel_Scanner_Main ViewModel { get; }
 
+    /// <summary>
+    /// The workbench's own ViewModel, so the module header can offer the search-by switch. It is the same
+    /// instance the workbench page is bound to — resolving another one from the container would give a
+    /// second, disconnected copy of the mode.
+    /// </summary>
+    public ViewModel_Scanner_Workbench WorkbenchViewModel { get; }
+
     public View_Scanner_Main(
         ViewModel_Scanner_Main viewModel,
         View_Scanner_Workbench workbenchView,
@@ -25,6 +32,10 @@ public sealed partial class View_Scanner_Main : Page
         ArgumentNullException.ThrowIfNull(settingsView);
 
         ViewModel = viewModel;
+
+        // Assigned before InitializeComponent so the header's two-way binding has its source in place.
+        WorkbenchViewModel = workbenchView.ViewModel;
+
         InitializeComponent();
         DataContext = ViewModel;
 

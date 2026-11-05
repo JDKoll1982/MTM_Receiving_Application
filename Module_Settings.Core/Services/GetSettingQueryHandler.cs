@@ -24,6 +24,7 @@ public class GetSettingQueryHandler
     private readonly Dao_SettingsCoreAudit _auditDao;
     private readonly ISettingsMetadataRegistry _registry;
     private readonly ISettingsCache _cache;
+    private readonly ISettingsRowSnapshot _snapshot;
     private readonly ISettingsEncryptionService _encryptionService;
     private readonly IService_UserSessionManager _sessionManager;
     private readonly IService_ErrorHandler _errorHandler;
@@ -35,6 +36,7 @@ public class GetSettingQueryHandler
         Dao_SettingsCoreAudit auditDao,
         ISettingsMetadataRegistry registry,
         ISettingsCache cache,
+        ISettingsRowSnapshot snapshot,
         ISettingsEncryptionService encryptionService,
         IService_UserSessionManager sessionManager,
         IService_ErrorHandler errorHandler,
@@ -46,6 +48,7 @@ public class GetSettingQueryHandler
         _auditDao = auditDao;
         _registry = registry;
         _cache = cache;
+        _snapshot = snapshot;
         _encryptionService = encryptionService;
         _sessionManager = sessionManager;
         _errorHandler = errorHandler;
@@ -85,11 +88,21 @@ public class GetSettingQueryHandler
 
         if (scope == Enum_SettingsScope.System)
         {
-            systemResult = await _systemDao.GetByKeyAsync(request.Category, request.Key);
+            // A primed snapshot is authoritative: a row it does not hold means the setting has never been
+            // stored, and the default is written below. The null is the answer, not a failure.
+            systemResult = _snapshot.IsPrimed
+                ? Model_Dao_Result_Factory.Success<Model_CoreSetting>(
+                    _snapshot.FindSystem(request.Category, request.Key)!
+                )
+                : await _systemDao.GetByKeyAsync(request.Category, request.Key);
         }
         else
         {
-            userResult = await _userDao.GetByKeyAsync(userId!.Value, request.Category, request.Key);
+            userResult = _snapshot.IsPrimed
+                ? Model_Dao_Result_Factory.Success<Model_UserSetting>(
+                    _snapshot.FindUser(userId!.Value, request.Category, request.Key)!
+                )
+                : await _userDao.GetByKeyAsync(userId!.Value, request.Category, request.Key);
         }
 
         string resolvedValue;

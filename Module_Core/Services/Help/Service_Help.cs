@@ -2142,6 +2142,128 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tip,
             }
         );
+
+        // Heat / Lot Management
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.Search",
+                Content = "Search the recorded markings for a heat or lot number",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.Print",
+                Content = "Print the lots listed on screen, with their shapes, colors and skids",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.Filters",
+                Content = "Choose the dates, the sort order and the columns the lot list shows; the printed sheet follows the same choices",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.ChangeMarking",
+                Content = "Change the shape and color of the selected lot (select a lot first)",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.ManageParts",
+                Content = "Choose which part numbers receive markings",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.UpdateAllLots",
+                Content = "Puts markings right after a lot number was corrected, and clears out lots that no longer exist",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.Palette",
+                Content = "Show every shape and color a marking can use",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.Help",
+                Content = "Help for heat / lot management",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.SaveChange",
+                Content = "Save the new shape and color, with the reason it changed",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.ToggleLock",
+                Content = "Lock the lot so its marking is never recomputed, or unlock it",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.FilterParts",
+                Content = "Filter the list of parts that receive markings",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.AddPart",
+                Content = "Add the typed part number so its lots receive markings",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.RemovePart",
+                Content = "Remove the selected part from the list; markings already recorded are unchanged",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.ReEnablePart",
+                Content = "Put the selected part back on the list so its lots receive markings again",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
+        AddHelpContent(
+            new Model_HelpContent
+            {
+                Key = "Tooltip.Button.LotMarking.FillUnmarkedLots",
+                Content = "Give a marking to the selected part's lots that were saved before the part was added",
+                HelpType = Enum_HelpType.Tip,
+            }
+        );
     }
 
     private void InitializePlaceholders()

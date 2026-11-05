@@ -54,5 +54,20 @@ public static class ShipRecToolsSettingsKeys
         public const string PaletteEnabledColors = "LotMarking.Palette.EnabledColors";
 
         public const string DisplayShapeFirst = "LotMarking.Display.ShapeFirst";
+
+        /// <summary>The first day the lot list reads, as an ISO date, or empty for no start.</summary>
+        public const string ListFromDate = "LotMarking.List.FromDate";
+
+        /// <summary>The last day the lot list reads, as an ISO date, or empty for no end.</summary>
+        public const string ListToDate = "LotMarking.List.ToDate";
+
+        /// <summary>The <c>Enum_LotMarkingSortField</c> name the lot list is ordered by.</summary>
+        public const string ListSortField = "LotMarking.List.SortField";
+
+        /// <summary>Whether the lot list runs from high to low.</summary>
+        public const string ListSortDescending = "LotMarking.List.SortDescending";
+
+        /// <summary>The lot list column keys a user has chosen to show.</summary>
+        public const string ListVisibleColumnKeys = "LotMarking.List.VisibleColumnKeys";
     }
 }

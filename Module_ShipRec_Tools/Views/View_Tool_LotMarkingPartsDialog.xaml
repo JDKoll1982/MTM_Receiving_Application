@@ -1,0 +1,179 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_ShipRec_Tools.Views.View_Tool_LotMarkingPartsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_ShipRec_Tools.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BoolToVisibility" />
+        <converters:Converter_InverseBooleanToVisibility x:Key="InverseBoolToVisibility" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid
+            Padding="24,8,24,24"
+            RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Spacing="4">
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Part numbers that receive markings" />
+
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="Only the lots these parts carry are shown on the heat / lot list."
+                    TextWrapping="WrapWholeWords" />
+            </StackPanel>
+
+            <StackPanel
+                Grid.Row="1"
+                Orientation="Horizontal"
+                Spacing="8">
+                <TextBox
+                    x:Name="PartSearchBox"
+                    Width="320"
+                    KeyDown="PartSearchBox_KeyDown"
+                    PlaceholderText="Filter the list, or type a part to add..."
+                    Text="{x:Bind ViewModel.PartSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    AutomationProperties.Name="Filter the list"
+                    Command="{x:Bind ViewModel.SearchPartsCommand}"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.FilterParts'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE71C;" />
+                </Button>
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    AutomationProperties.Name="Add part"
+                    Command="{x:Bind ViewModel.AddPartCommand}"
+                    CornerRadius="4"
+                    Style="{StaticResource AccentButtonStyle}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.AddPart'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE710;" />
+                </Button>
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    AutomationProperties.Name="Remove selected part"
+                    Command="{x:Bind ViewModel.RemovePartCommand}"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.RemovePart'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE74D;" />
+                </Button>
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    AutomationProperties.Name="Re-enable selected part"
+                    Command="{x:Bind ViewModel.ReEnablePartCommand}"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.ReEnablePart'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE7A7;" />
+                </Button>
+                <Button
+                    Width="34"
+                    Height="34"
+                    Padding="0"
+                    AutomationProperties.Name="Fill in unmarked lots"
+                    Command="{x:Bind ViewModel.FillUnmarkedLotsCommand}"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.FillUnmarkedLots'), Mode=OneWay}">
+                    <FontIcon FontSize="16" Glyph="&#xE895;" />
+                </Button>
+                <ProgressRing
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+            </StackPanel>
+
+            <Border
+                Grid.Row="2"
+                Padding="8"
+                Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid>
+                    <ListView
+                        ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single"
+                        SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Model_Tool_LotMarkingScope">
+                                <Grid Padding="0,2" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Text="{x:Bind PartId}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontSize="11"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="removed"
+                                        Visibility="{x:Bind IsEnabled, Converter={StaticResource InverseBoolToVisibility}}" />
+                                    <Button
+                                        Grid.Column="2"
+                                        Width="28"
+                                        Height="28"
+                                        Padding="0"
+                                        AutomationProperties.Name="Remove part"
+                                        Click="RemovePartRowButton_Click"
+                                        CornerRadius="4"
+                                        IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
+                                        Tag="{x:Bind}"
+                                        ToolTipService.ToolTip="Remove this part">
+                                        <FontIcon FontSize="12" Glyph="&#xE74D;" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsHitTestVisible="False"
+                        Text="No parts on the list yet."
+                        Visibility="{x:Bind ViewModel.IsPartListEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
+            </Border>
+
+            <TextBlock
+                Grid.Row="3"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="Removing a part stops new markings. Markings already recorded keep their meaning."
+                TextWrapping="WrapWholeWords" />
+        </Grid>
+    </Grid>
+</Page>

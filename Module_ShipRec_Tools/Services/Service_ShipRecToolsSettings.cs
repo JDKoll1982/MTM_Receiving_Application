@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -19,10 +20,15 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 public sealed class Service_ShipRecToolsSettings : IService_ShipRecToolsSettings
 {
     private readonly IService_SettingsCoreFacade _settings;
+    private readonly IService_UserSessionManager _sessionManager;
 
-    public Service_ShipRecToolsSettings(IService_SettingsCoreFacade settings)
+    public Service_ShipRecToolsSettings(
+        IService_SettingsCoreFacade settings,
+        IService_UserSessionManager sessionManager
+    )
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
     }
 
     public async Task<Model_Tool_MaterialAvailabilityFieldSettings> GetMaterialAvailabilityFieldSettingsAsync()
@@ -222,6 +228,179 @@ public sealed class Service_ShipRecToolsSettings : IService_ShipRecToolsSettings
 
     public async Task<bool> GetLotMarkingShapeFirstAsync() =>
         await GetBoolAsync(ShipRecToolsSettingsKeys.LotMarking.DisplayShapeFirst, true);
+
+    public async Task<Model_Tool_LotMarkingFilter> GetLotMarkingListFilterAsync()
+    {
+        var userId = CurrentUserId;
+
+        var from = await GetUserStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.ListFromDate,
+            string.Empty,
+            userId
+        );
+        var to = await GetUserStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.ListToDate,
+            string.Empty,
+            userId
+        );
+        var sortFieldRaw = await GetUserStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.ListSortField,
+            nameof(Enum_LotMarkingSortField.LastReceiptDate),
+            userId
+        );
+        var descendingRaw = await GetUserStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.ListSortDescending,
+            "true",
+            userId
+        );
+
+        var sortField = Enum.TryParse<Enum_LotMarkingSortField>(sortFieldRaw, true, out var field)
+            ? field
+            : Enum_LotMarkingSortField.LastReceiptDate;
+
+        var isDescending =
+            bool.TryParse(descendingRaw, out var parsedDescending) && parsedDescending;
+
+        return new Model_Tool_LotMarkingFilter(
+            ParseStoredDate(from),
+            ParseStoredDate(to),
+            sortField,
+            isDescending
+        );
+    }
+
+    public async Task<Model_Dao_Result> SaveLotMarkingListFilterAsync(
+        Model_Tool_LotMarkingFilter filter
+    )
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        var userId = CurrentUserId;
+
+        var writes = new[]
+        {
+            (
+                ShipRecToolsSettingsKeys.LotMarking.ListFromDate,
+                FormatStoredDate(filter.FromDate)
+            ),
+            (ShipRecToolsSettingsKeys.LotMarking.ListToDate, FormatStoredDate(filter.ToDate)),
+            (
+                ShipRecToolsSettingsKeys.LotMarking.ListSortField,
+                filter.SortField.ToString()
+            ),
+            (
+                ShipRecToolsSettingsKeys.LotMarking.ListSortDescending,
+                filter.IsDescending.ToString()
+            ),
+        };
+
+        // Saved one key at a time because that is the shape the settings store offers. The first
+        // failure is returned and the rest are skipped, so a user is told once rather than four times.
+        foreach (var (key, value) in writes)
+        {
+            var result = await _settings.SetSettingAsync(
+                ShipRecToolsSettingsKeys.Category,
+                key,
+                value,
+                userId
+            );
+
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+        }
+
+        return Model_Dao_Result_Factory.Success();
+    }
+
+    public async Task<HashSet<string>> GetLotMarkingListVisibleColumnKeysAsync()
+    {
+        var raw = await GetUserStringAsync(
+            ShipRecToolsSettingsKeys.LotMarking.ListVisibleColumnKeys,
+            string.Empty,
+            CurrentUserId
+        );
+
+        var keys = ParseStringList(raw);
+        var normalized = Model_Tool_LotMarkingColumnCatalog.Normalize(keys);
+
+        // Turning every column off leaves nothing to read, so the default comes back rather than an
+        // empty grid a user cannot recover from without opening the Filter window.
+        return normalized.Count > 0
+            ? normalized
+            : Model_Tool_LotMarkingColumnCatalog
+                .Normalize(Model_Tool_LotMarkingColumnCatalog.DefaultVisibleKeys);
+    }
+
+    public Task<Model_Dao_Result> SaveLotMarkingListVisibleColumnKeysAsync(
+        IReadOnlyCollection<string> columnKeys
+    )
+    {
+        var serialized = JsonSerializer.Serialize(
+            Model_Tool_LotMarkingColumnCatalog.Normalize(columnKeys)
+        );
+
+        return _settings.SetSettingAsync(
+            ShipRecToolsSettingsKeys.Category,
+            ShipRecToolsSettingsKeys.LotMarking.ListVisibleColumnKeys,
+            serialized,
+            CurrentUserId
+        );
+    }
+
+    /// <summary>
+    /// The signed-in employee number, which is what the settings store keys a user-scoped value by.
+    /// Null before anyone signs in, which those settings reject rather than store against the wrong
+    /// person.
+    /// </summary>
+    private int? CurrentUserId => _sessionManager.CurrentSession?.User?.EmployeeNumber;
+
+    private async Task<string> GetUserStringAsync(string key, string fallback, int? userId)
+    {
+        var result = await _settings.GetSettingAsync(
+            ShipRecToolsSettingsKeys.Category,
+            key,
+            userId
+        );
+
+        return result.IsSuccess
+            && result.Data is not null
+            && string.IsNullOrWhiteSpace(result.Data.Value) is false
+            ? result.Data.Value
+            : fallback;
+    }
+
+    private static DateTime? ParseStoredDate(string value) =>
+        DateTime.TryParseExact(
+            value,
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsed
+        )
+            ? parsed
+            : null;
+
+    private static string FormatStoredDate(DateTime? value) =>
+        value is null ? string.Empty : value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    private static List<string> ParseStringList(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(raw) ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
 
     public async Task<decimal?> GetReceivingAnalyticsOnTimeTargetAsync()
     {

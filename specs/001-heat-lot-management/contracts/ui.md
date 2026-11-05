@@ -179,6 +179,10 @@ settings page.
 - Shapes (10), stored as the emoji itself: `⚡`, `💗`, `🌙`, `⭐`, `💎`, `⬛`, `🔺`, `⭕`, `❌`, `➡️`
 - Shapes are limited to emoji that Segoe UI Emoji draws, so none can render as a missing-glyph box.
   Cylinder, hexagon and pentagon are not offered because no dependable emoji exists for them.
+- A shape is always drawn as a flat black silhouette rather than in the emoji's own colours. Every control
+  that shows one sets `IsColorFontEnabled="False"`, which makes WinUI use the monochrome outline; GDI+
+  ignores colour font tables, so the printed overlay and cards draw black ink. The exception is a `BLACK`
+  circle, which takes a white glyph because black ink on a near-black fill would hide the shape.
 - Colors (12): `BLUE`, `RED`, `GREEN`, `WHITE`, `YELLOW`, `BLACK`, `PURPLE`, `ORANGE`, `PINK`, `GRAY`,
   `BROWN`, `TEAL`
 - 10 shapes x 12 colors = 120 combinations, so two simultaneous lots can collide by chance. The later

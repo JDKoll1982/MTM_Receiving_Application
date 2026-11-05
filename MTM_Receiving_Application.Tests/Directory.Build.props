@@ -1,4 +1,13 @@
 <Project>
+  <!--
+    MSBuild stops at the first Directory.Build.props it finds, so this file shadows the one at the repo
+    root. Importing it keeps the shared settings — and the NuGet audit suppressions declared there — in one
+    place instead of copying them into every project folder.
+  -->
+  <Import
+    Project="$(MSBuildThisFileDirectory)..\Directory.Build.props"
+    Condition="Exists('$(MSBuildThisFileDirectory)..\Directory.Build.props')" />
+
   <PropertyGroup>
     <!-- Ensure tests always build with x64 platform (required for WinUI 3) -->
     <Platform Condition="'$(Platform)' == '' OR '$(Platform)' == 'AnyCPU'">x64</Platform>

@@ -1,22 +1,24 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using MTM_Receiving_Application.Module_Core.Dialogs;
-using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Helpers;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.ViewModels;
 using Windows.System;
+using WinRT.Interop;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Views;
 
 /// <summary>
 /// Heat / Lot Management tool view. Business logic stays in the ViewModel; this file only supplies
-/// the fuzzy-picker and confirmation dialogs, the help call, and the Enter key on the two
-/// search boxes.
+/// the palette and confirmation dialogs, the two modal windows, the print hand-off, the help call,
+/// and the Enter key on the search box.
 /// </summary>
 public sealed partial class View_Tool_LotMarking : Page
 {
@@ -29,14 +31,13 @@ public sealed partial class View_Tool_LotMarking : Page
         DataContext = ViewModel;
         InitializeComponent();
 
-        ViewModel.ShowFuzzyPickerAsync = ShowFuzzyPickerDialogAsync;
-        ViewModel.ConfirmBackfillAsync = ConfirmBackfillDialogAsync;
         ViewModel.ConfirmRealignAsync = ConfirmRealignDialogAsync;
+        ViewModel.RequestPrintAsync = PrintMarkingsDocumentAsync;
     }
 
     private async void OnHelpClick(object sender, RoutedEventArgs e)
     {
-        var helpService = App.GetService<MTM_Receiving_Application.Module_Core.Contracts.Services.IService_Help>();
+        var helpService = App.GetService<IService_Help>();
         await helpService.ShowHelpAsync("ShipRecTools.LotMarking", XamlRoot);
     }
 
@@ -54,35 +55,68 @@ public sealed partial class View_Tool_LotMarking : Page
         await dialog.ShowAsync();
     }
 
-    private async Task<Model_FuzzySearchResult?> ShowFuzzyPickerDialogAsync(
-        IReadOnlyList<Model_FuzzySearchResult> candidates,
-        string title
-    )
+    /// <summary>
+    /// Opens the marking editor for the lot the user picked. The button that reaches this is only
+    /// enabled while a row is chosen, so there is always a lot to edit.
+    /// </summary>
+    private async void OnChangeMarkingClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new Dialog_FuzzySearchPicker(
-            candidates,
-            title,
-            subtitle: $"{candidates.Count} possible matches — select the correct one."
-        )
+        if (!ViewModel.HasSelectedMarking || App.MainWindow is not { } owner)
         {
-            XamlRoot = XamlRoot,
-        };
+            return;
+        }
 
-        var result = await dialog.ShowAsync();
-        return result == ContentDialogResult.Primary ? dialog.SelectedResult : null;
+        var window = new View_Tool_LotMarkingChangeWindow(
+            ViewModel,
+            WindowNative.GetWindowHandle(owner)
+        );
+
+        await window.ShowModalAsync();
     }
 
-    private async Task<bool> ConfirmBackfillDialogAsync(
-        string partId,
-        Model_Tool_LotMarkingBackfillPreview preview
-    )
+    /// <summary>
+    /// Opens the list of part numbers that receive markings. Editing that list changes which lots the
+    /// page answers for, so the list is read again on the way out.
+    /// </summary>
+    private async void OnManagePartsClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new Dialog_LotMarkingBackfillConfirm(partId, preview)
+        if (App.MainWindow is not { } owner)
         {
-            XamlRoot = XamlRoot,
-        };
+            return;
+        }
 
-        return await dialog.ShowAsync() == ContentDialogResult.Primary;
+        var window = new View_Tool_LotMarkingPartsWindow(
+            ViewModel,
+            WindowNative.GetWindowHandle(owner)
+        );
+
+        await window.ShowModalAsync();
+        await ViewModel.ReloadAfterPartScopeChangeAsync();
+    }
+
+    private async void OnPrintClick(object sender, RoutedEventArgs e) =>
+        await ViewModel.PrintMarkingsAsync();
+
+    /// <summary>
+    /// Opens the Filter window. The window reports whether Apply was pressed, and the choices are only
+    /// saved and the list only re-read when it was, so cancelling changes nothing and costs no read.
+    /// </summary>
+    private async void OnFiltersClick(object sender, RoutedEventArgs e)
+    {
+        if (App.MainWindow is not { } owner)
+        {
+            return;
+        }
+
+        var window = new View_Tool_LotMarkingFilterWindow(
+            ViewModel,
+            WindowNative.GetWindowHandle(owner)
+        );
+
+        if (await window.ShowModalAsync())
+        {
+            await ViewModel.ApplyFiltersAsync();
+        }
     }
 
     private async Task<bool> ConfirmRealignDialogAsync(Model_Tool_LotMarkingRealignPreview preview)
@@ -92,31 +126,19 @@ public sealed partial class View_Tool_LotMarking : Page
         return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
+    private static Task<Model_Dao_Result<bool>> PrintMarkingsDocumentAsync(
+        Model_FormattedReportDocument document
+    )
+    {
+        var html = Helper_PrintDocumentHtml.BuildPage(document, autoPrint: true);
+        return Helper_HtmlReportExport.WriteAndOpenAsync("heat-lot-markings", html);
+    }
+
     private void HeatSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Enter && ViewModel.SearchMarkingsCommand.CanExecute(null))
         {
             ViewModel.SearchMarkingsCommand.Execute(null);
-        }
-    }
-
-    private void PartSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
-    {
-        if (e.Key == VirtualKey.Enter && ViewModel.SearchPartsCommand.CanExecute(null))
-        {
-            ViewModel.SearchPartsCommand.Execute(null);
-        }
-    }
-
-    /// <summary>
-    /// Sends a row's own Remove button to the ViewModel. The row travels on the button's Tag, so
-    /// nothing here decides what removing a part means — it only forwards the row it was given.
-    /// </summary>
-    private async void RemovePartRowButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.Tag is Model_Tool_LotMarkingScope row)
-        {
-            await ViewModel.RemovePartRowAsync(row);
         }
     }
 }

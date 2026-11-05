@@ -246,6 +246,61 @@
     },
     {
       "category": "ShipRecTools",
+      "key": "LotMarking.List.FromDate",
+      "displayName": "Heat / Lot Management - List Start Date",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Empty, or an ISO 8601 date (yyyy-MM-dd)"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.List.ToDate",
+      "displayName": "Heat / Lot Management - List End Date",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Empty, or an ISO 8601 date (yyyy-MM-dd)"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.List.SortField",
+      "displayName": "Heat / Lot Management - List Sort Column",
+      "defaultValue": "LastReceiptDate",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "One of the Enum_LotMarkingSortField names"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.List.SortDescending",
+      "displayName": "Heat / Lot Management - List Sort Direction",
+      "defaultValue": "true",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Boolean"
+    },
+    {
+      "category": "ShipRecTools",
+      "key": "LotMarking.List.VisibleColumnKeys",
+      "displayName": "Heat / Lot Management - Visible Columns",
+      "defaultValue": "[\"Shape\",\"Color\",\"Heat\",\"Supplier\",\"Parts\",\"Skids\",\"LastLine\"]",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON string array of lot list column keys"
+    },
+    {
+      "category": "ShipRecTools",
       "key": "ReceivingAnalytics.OnTimeTarget",
       "displayName": "Receiving Analytics - On-Time Target (%)",
       "defaultValue": "95",
@@ -2773,6 +2828,61 @@
       "permissionLevel": "User",
       "isSensitive": false,
       "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.LabelOverlay.Overlay.PrintProfile",
+      "displayName": "Label Overlay - Tag Overlay Printer Setup",
+      "defaultValue": "{}",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON printer setup: printer, paper, orientation, driver settings"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.LabelOverlay.CardSheet.PrintProfile",
+      "displayName": "Label Overlay - Cut-Out Card Printer Setup",
+      "defaultValue": "{}",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON printer setup: printer, paper, orientation, margin, pages, driver settings"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.LabelOverlay.Overlay.ListFilter",
+      "displayName": "Label Overlay - Tag List Filter",
+      "defaultValue": "{}",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON list filter: date range, sort field, sort direction, visible columns"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.LabelOverlay.CardSheet.ListFilter",
+      "displayName": "Label Overlay - Cut-Out Lot List Filter",
+      "defaultValue": "{}",
+      "dataType": "Json",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "JSON list filter: date range, sort field, sort direction, visible columns"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.LabelOverlay.CardSheet.PartId",
+      "displayName": "Label Overlay - Cut-Out Part Being Worked",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String part number"
     },
     {
       "category": "Dunnage",

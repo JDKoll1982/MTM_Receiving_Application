@@ -238,6 +238,7 @@
                                             <TextBlock
                                                 x:Phase="1"
                                                 FontFamily="Segoe UI Emoji"
+                                                IsColorFontEnabled="False"
                                                 Text="{x:Bind Row.HeatShapeCode, Mode=OneTime}" />
                                             <TextBlock x:Phase="1" Text="{x:Bind Row.HeatColorCode, Mode=OneTime}" />
                                         </StackPanel>

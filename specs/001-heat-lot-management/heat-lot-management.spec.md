@@ -458,13 +458,15 @@ and confirm no marking is created for it.
 - **FR-051**: The lot list MUST present every column it holds, and when the available width is too
   small for all of them, the list MUST scroll so that every column can be reached rather than being
   clipped.
-- **FR-052**: Each lot in the list MUST report how many receiving lines carry it, counting both the
-  receiving queue and receiving history.
+- **FR-052**: Each lot in the list MUST report how many receiving skids carry it, counting both the
+  receiving queue and receiving history, and counting only the skids carried by parts on the enabled
+  list. (Changed 2026-11-03: was "how many receiving lines", counted across every part.)
 - **FR-053**: Each lot in the list MUST report the date of its most recent receiving line, and MUST
   show no date rather than a misleading one when it has no lines.
 - **FR-054**: The counts and dates MUST be read in the same pass that reads the list, and reading them
   MUST NOT change any marking.
-- **FR-055**: A lot with no receiving lines MUST still appear in the list, with a count of zero.
+- **FR-055**: A lot with no receiving lines MUST NOT appear in the list. (Superseded 2026-11-03; see
+  FR-075.)
 - **FR-056**: Queueing a history row for reprint MUST carry every value the history row holds onto the
   queued row, including the weight, the part type, the skid sequence and the skid total.
 - **FR-057**: A column that the history row carries a value for MUST NOT be filled from a different
@@ -490,9 +492,12 @@ and confirm no marking is created for it.
 - **FR-068**: Choosing a part number in the tool MUST narrow the lot list to the lots that part carries.
 - **FR-069**: Removing a part from the list MUST NOT on its own withhold the markings already recorded
   for its lots from a user who chooses that part.
-- **FR-070**: A lot whose number appears on no receiving row MUST remain in the list, because it cannot
-  be attributed to a part. This is what keeps a corrected-away lot visible.
-- **FR-071**: Each lot in the list MUST report the part numbers that carry it.
+- **FR-070**: A lot whose number appears on no receiving row MUST NOT appear in the list, because no
+  enabled part receives it. It is still reported and removed by Update All Lots. (Changed 2026-11-03;
+  superseded the earlier rule that it stayed visible.)
+- **FR-071**: Each lot in the list MUST report the part numbers that carry it, limited to the part
+  numbers on the enabled list. A part that carries the lot but is not on the list MUST NOT be shown.
+  (Changed 2026-11-03.)
 - **FR-072**: The part numbers a lot is attributed to MUST be read from the receiving rows that carry
   its number rather than from a value stored on the marking, so attribution is right for lots recorded
   before this rule existed.
@@ -500,6 +505,31 @@ and confirm no marking is created for it.
   parts on the enabled list, so an empty result is not mistaken for a lot that has no marking.
 - **FR-074**: When the enabled part list cannot be read, the system MUST NOT create a marking, so an
   unreadable list can never mark material that was not approved.
+- **FR-075**: The marking list MUST show a lot only when a part on the enabled list carries at least one
+  of its receiving skids. (Added 2026-11-03.)
+- **FR-076**: The enabled-part list and the marking editor MUST each open in their own modal window that
+  blocks the main window until it is closed. (Added 2026-11-03.)
+- **FR-077**: The control that opens the marking editor MUST be disabled until a lot row is selected.
+  (Added 2026-11-03.)
+- **FR-078**: The marking list MUST present the shape and the color in separate columns, the color with
+  a swatch drawn from the palette. (Added 2026-11-03.)
+- **FR-079**: The system MUST print the lots currently shown in the marking list, using the same columns
+  the list shows, and MUST NOT print lots that the current search or chosen part excludes. (Added
+  2026-11-03.)
+- **FR-080**: A lot MUST be listed only when at least one of its receiving skids was received inside the
+  chosen date range, and the skid count and last-received date MUST describe the skids inside that range.
+  (Added 2026-11-03.)
+- **FR-081**: The list MUST be orderable by most recent receipt, heat number, skid count, supplier, part
+  number, or shape and color, in either direction, with a stable tie-break. (Added 2026-11-03.)
+- **FR-082**: The user MUST be able to choose which of the list's columns are shown, and the printed
+  report MUST show exactly the chosen columns. A choice that would show no columns MUST fall back to
+  showing every column. (Added 2026-11-03.)
+- **FR-083**: The date range, order and column choices MUST be stored per user and restored the next time
+  the list is opened. (Added 2026-11-03.)
+- **FR-084**: A date range whose start is after its end MUST be refused before anything is saved or read,
+  and MUST NOT replace the stored preference. (Added 2026-11-03.)
+- **FR-085**: The quick date ranges offered MUST be the same preset list the rest of the application
+  offers, so the same wording resolves to the same dates everywhere. (Added 2026-11-03.)
 
 ### Key Entities
 
@@ -588,10 +618,10 @@ and confirm no marking is created for it.
   number gets no marking.
 - Update All Lots covers every part, not only enabled ones, because the record of markings is not
   scoped to a part.
-- The lot list's count is the number of receiving lines that carry the lot, not a skid count. The
-  receiving tables carry a skid sequence and a skid total per line, and neither is a count of skids for
-  a lot, so a line count is the honest measure of how much of that lot came in. A skid figure is
-  reported instead if the count asked for was about skids.
+- The lot list's count is the number of receiving skids that carry the lot, counting only skids carried
+  by parts on the enabled list. Each receiving row is one skid, so the row count is the skid count;
+  the label says "Skids" for that reason. (Changed 2026-11-03: the count used to include skids carried
+  by any part, and the label said "Lines".)
 - The lot list's date is the most recent receipt date among the lot's lines, falling back to the time
   the line was written when a line has no receipt date. The receipt date is the business fact; the
   write time is the fallback because it is always present.
@@ -627,6 +657,10 @@ The following values were pinned by the request and MUST be used exactly as writ
   `GRAY`, `BROWN`, `TEAL`
 - Shapes are limited to emoji that Segoe UI Emoji draws, so a marking can never render as a
   missing-glyph box. Cylinder, hexagon and pentagon have no dependable emoji and are not offered.
+- A marking is drawn as a flat black silhouette, never in the emoji's own colours: the screens ask for
+  the monochrome outline (`IsColorFontEnabled="False"`) and the printed overlay, cards and report draw it
+  in black ink. The one exception is a `BLACK` circle, where the glyph is drawn white because black ink
+  on a near-black fill would make the shape disappear.
 - The Update All Lots action name: `Update All Lots`
 - The Update All Lots request, as given: "the lot number can be accidently written in worng, causing an
   improper shape/color assignment, if i later edit the row in question i want to then be able to come

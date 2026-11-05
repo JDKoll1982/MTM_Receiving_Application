@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T14:02:01.2650444-05:00",
+  "generatedAt": "2026-11-05T09:02:23.6467540-06:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -3156,6 +3156,27 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Schemas/52_Table_dunnage_no_label_parts.sql",
+      "category": "schema_file",
+      "objectType": "table",
+      "objectName": "dunnage_no_label_parts",
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/SeedData/01_seed_volvo_data.sql",
       "category": "seed_file",
       "objectType": "seed",
@@ -5164,6 +5185,224 @@
       ]
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_History_Insert.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_History_Insert",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_load_uuid",
+          "sqlType": "CHAR(36)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_id",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_name",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_dunnage_type_icon",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity",
+          "sqlType": "DECIMAL(10"
+        },
+        {
+          "direction": "IN",
+          "name": "p_quantity_type",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_po_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_received_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user_id",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_employee_number",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_location",
+          "sqlType": "VARCHAR(100)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_label_number",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_skid_sequence",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_part_skid_total",
+          "sqlType": "INT"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc1",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc2",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc3",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc4",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc5",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc6",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc7",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc8",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc9",
+          "sqlType": "VARCHAR(255)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_udc10",
+          "sqlType": "VARCHAR(255)"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_old_foreign_key_checks",
+          "sqlType": "INT DEFAULT"
+        }
+      ],
+      "referencedObjects": [],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "dunnage_history",
+          "columns": [
+            "load_uuid",
+            "part_id",
+            "quantity",
+            "quantity_type",
+            "received_date",
+            "created_at",
+            "created_by",
+            "user_id",
+            "employee_number",
+            "created_date",
+            "po_number",
+            "type_id",
+            "type_name",
+            "type_icon",
+            "dunnage_type_id",
+            "dunnage_type_name",
+            "dunnage_type_icon",
+            "location",
+            "label_number",
+            "part_skid_sequence",
+            "part_skid_total",
+            "udc1",
+            "udc2",
+            "udc3",
+            "udc4",
+            "udc5",
+            "udc6",
+            "udc7",
+            "udc8",
+            "udc9",
+            "udc10"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_load_uuid",
+        "p_part_id",
+        "p_dunnage_type_id",
+        "p_dunnage_type_name",
+        "p_dunnage_type_icon",
+        "p_quantity",
+        "p_quantity_type",
+        "p_po_number",
+        "p_received_date",
+        "p_user_id",
+        "p_employee_number",
+        "p_location",
+        "p_label_number",
+        "p_part_skid_sequence",
+        "p_part_skid_total",
+        "p_udc1",
+        "p_udc2",
+        "p_udc3",
+        "p_udc4",
+        "p_udc5",
+        "p_udc6",
+        "p_udc7",
+        "p_udc8",
+        "p_udc9",
+        "p_udc10"
+      ],
+      "variableTokensUsed": [
+        "v_old_foreign_key_checks"
+      ],
+      "temporaryTables": [],
+      "aliasMap": []
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_Inventory_Check.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -6015,17 +6254,9 @@
       "objectType": "stored_procedure",
       "objectName": "sp_Dunnage_LabelData_Insert",
       "procedureCount": 1,
-      "codebaseReferenceCount": 1,
-      "codebaseReferenceFileCount": 1,
-      "codebaseReferences": [
-        {
-          "relativePath": "Module_Dunnage/Data/Dao_DunnageLabelData.cs",
-          "count": 1,
-          "patterns": [
-            "MySqlCommand_Constructor"
-          ]
-        }
-      ],
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
       "parameters": [
         {
           "direction": "IN",
@@ -7737,6 +7968,105 @@
       "aliasMap": []
     },
     {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NoLabelParts_GetAll.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_NoLabelParts_GetAll",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_no_label_parts"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_no_label_parts",
+          "object": "dunnage_no_label_parts"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NoLabelParts_Set.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Dunnage_NoLabelParts_Set",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 1,
+      "codebaseReferenceFileCount": 1,
+      "codebaseReferences": [
+        {
+          "relativePath": "Module_Dunnage/Data/Dao_DunnageNoLabelPart.cs",
+          "count": 1,
+          "patterns": [
+            "Helper_Database_StoredProcedure"
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_part_id",
+          "sqlType": "VARCHAR(50)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_needs_no_label",
+          "sqlType": "TINYINT(1)"
+        },
+        {
+          "direction": "IN",
+          "name": "p_user",
+          "sqlType": "VARCHAR(50)"
+        }
+      ],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "dunnage_no_label_parts"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [
+        {
+          "table": "dunnage_no_label_parts",
+          "columns": [
+            "part_id",
+            "created_by",
+            "created_date"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [
+        {
+          "table": "dunnage_no_label_parts"
+        }
+      ],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_part_id",
+        "p_needs_no_label",
+        "p_user"
+      ],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "dunnage_no_label_parts",
+          "object": "dunnage_no_label_parts"
+        }
+      ]
+    },
+    {
       "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Dunnage/sp_Dunnage_NonPO_Delete.sql",
       "category": "stored_procedure_file",
       "objectType": "stored_procedure",
@@ -8231,7 +8561,8 @@
         "dunnage_label_data",
         "dunnage_history",
         "dunnage_requires_inventory",
-        "dunnage_non_po_part_defaults"
+        "dunnage_non_po_part_defaults",
+        "dunnage_no_label_parts"
       ],
       "qualifiedColumns": [],
       "insertTargets": [],
@@ -8248,6 +8579,9 @@
         },
         {
           "table": "dunnage_non_po_part_defaults"
+        },
+        {
+          "table": "dunnage_no_label_parts"
         },
         {
           "table": "dunnage_parts"
@@ -8282,6 +8616,10 @@
         {
           "alias": "dunnage_non_po_part_defaults",
           "object": "dunnage_non_po_part_defaults"
+        },
+        {
+          "alias": "dunnage_no_label_parts",
+          "object": "dunnage_no_label_parts"
         }
       ]
     },
@@ -9693,6 +10031,12 @@
           ]
         },
         {
+          "table": "dunnage_no_label_parts",
+          "columns": [
+            "part_id"
+          ]
+        },
+        {
           "table": "dunnage_history",
           "columns": [
             "location"
@@ -10590,7 +10934,18 @@
       "codebaseReferenceCount": 0,
       "codebaseReferenceFileCount": 0,
       "codebaseReferences": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_from_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_to_date",
+          "sqlType": "DATETIME"
+        }
+      ],
       "declaredVariables": [],
       "referencedObjects": [
         "receiving_label_data",
@@ -10601,7 +10956,10 @@
       "updateTargets": [],
       "deleteTargets": [],
       "calledRoutines": [],
-      "parameterTokensUsed": [],
+      "parameterTokensUsed": [
+        "p_from_date",
+        "p_to_date"
+      ],
       "variableTokensUsed": [],
       "temporaryTables": [],
       "aliasMap": [

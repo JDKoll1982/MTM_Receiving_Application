@@ -363,25 +363,12 @@
                         </Button>
                     </StackPanel>
 
-                    <!--  Right: search-by toggle, remove selected (red), help  -->
+                    <!--  Right: remove selected (red), help  -->
                     <StackPanel
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
                         Spacing="10">
-                        <Rectangle
-                            Width="1"
-                            Height="24"
-                            VerticalAlignment="Center"
-                            Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
-                        <TextBlock VerticalAlignment="Center" Text="Search By:" />
-                        <ToggleSwitch
-                            MinWidth="0"
-                            VerticalAlignment="Center"
-                            AutomationProperties.AutomationId="ScannerSearchByToggle"
-                            OffContent="Part"
-                            OnContent="Location"
-                            IsOn="{x:Bind ViewModel.IsLocationModeEnabled, Mode=TwoWay}" />
                         <Button
                             Height="34"
                             Padding="14,0"

@@ -703,7 +703,7 @@ public sealed class Service_Tool_LotMarkingTests
     }
 
     [Fact]
-    public async Task GetLedgerAsync_ShouldReportEveryPart_WhenAnOffListPartCarriesTheSameLot()
+    public async Task GetLedgerAsync_ShouldReportOnlyListedParts_WhenAnOffListPartCarriesTheSameLot()
     {
         var ledger = new FakeLotMarkingLedger();
         ledger.SeedPart("TEST-PART-OFF-LIST", isEnabled: false);
@@ -733,8 +733,13 @@ public sealed class Service_Tool_LotMarkingTests
         result.Data.Should().ContainSingle("one of the parts carrying the lot is on the list");
         result.Data![0]
             .PartsText.Should()
-            .Be($"{FakeLotMarkingLedger.EnabledPartId}, TEST-PART-OFF-LIST");
-        result.Data[0].LineCount.Should().Be(5, "the lines behind both parts are still the lot's lines");
+            .Be(
+                FakeLotMarkingLedger.EnabledPartId,
+                "a part the list does not cover is not one a handler can act on from this screen"
+            );
+        result.Data[0]
+            .LineCount.Should()
+            .Be(2, "only the skids the listed part carries are reported");
     }
 
     [Fact]
@@ -761,7 +766,7 @@ public sealed class Service_Tool_LotMarkingTests
     }
 
     [Fact]
-    public async Task GetLedgerAsync_ShouldKeepALotThatNoReceivingRowCarries_WhenNothingCanAttributeIt()
+    public async Task GetLedgerAsync_ShouldLeaveOutALotThatNoReceivingRowCarries_WhenNothingCanAttributeIt()
     {
         var ledger = new FakeLotMarkingLedger();
         var service = CreateService(ledger);
@@ -769,12 +774,10 @@ public sealed class Service_Tool_LotMarkingTests
 
         var result = await service.GetLedgerAsync(null);
 
-        result.Data.Should().ContainSingle(
-            "a lot no row carries cannot be blamed on a part, and hiding it would hide the lot a "
-                + "corrected number used to describe"
+        result.Data.Should().BeEmpty(
+            "a lot no listed part receives is not material this list covers, so the list does not "
+                + "report it"
         );
-        result.Data![0].PartsText.Should().Be("-");
-        result.Data[0].LineCount.Should().Be(0);
     }
 
     [Fact]
@@ -863,6 +866,152 @@ public sealed class Service_Tool_LotMarkingTests
 
         searched.Data.Should().ContainSingle();
         searched.Data![0].HeatNumber.Should().Be("TEST-HEAT-9202");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldListOnlyLotsReceivedInsideTheRange_WhenADateRangeIsGiven()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9301", "TESTHEAT9301", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedMarking(2, "TEST-HEAT-9302", "TESTHEAT9302", "TEST-SUP-A", "TEST-SUP-A", "⭐", "RED");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9301",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            lastLineDate: new DateTime(2026, 3, 1),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9302",
+            "TEST-SUP-A",
+            "⭐",
+            "RED",
+            1,
+            lastLineDate: new DateTime(2026, 9, 1),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var filter = new Model_Tool_LotMarkingFilter(
+            new DateTime(2026, 8, 1),
+            new DateTime(2026, 9, 30),
+            Enum_LotMarkingSortField.LastReceiptDate,
+            IsDescending: true
+        );
+
+        var result = await service.GetLedgerAsync(null, null, filter);
+
+        result.Data.Should().ContainSingle("only one lot was received inside the range");
+        result.Data![0].HeatNumber.Should().Be("TEST-HEAT-9302");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldOrderNewestFirst_WhenTheDefaultFilterIsUsed()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9401", "TESTHEAT9401", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedMarking(2, "TEST-HEAT-9402", "TESTHEAT9402", "TEST-SUP-A", "TEST-SUP-A", "⭐", "RED");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9401",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            lastLineDate: new DateTime(2026, 1, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9402",
+            "TEST-SUP-A",
+            "⭐",
+            "RED",
+            1,
+            lastLineDate: new DateTime(2026, 6, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data![0].HeatNumber.Should().Be("TEST-HEAT-9402", "the newest receipt comes first");
+        result.Data[1].HeatNumber.Should().Be("TEST-HEAT-9401");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldOrderBySkidCount_WhenTheFilterSortsBySkids()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9501", "TESTHEAT9501", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedMarking(2, "TEST-HEAT-9502", "TESTHEAT9502", "TEST-SUP-A", "TEST-SUP-A", "⭐", "RED");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9501",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            lastLineDate: new DateTime(2026, 6, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9502",
+            "TEST-SUP-A",
+            "⭐",
+            "RED",
+            7,
+            lastLineDate: new DateTime(2026, 1, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var filter = new Model_Tool_LotMarkingFilter(
+            null,
+            null,
+            Enum_LotMarkingSortField.SkidCount,
+            IsDescending: true
+        );
+
+        var result = await service.GetLedgerAsync(null, null, filter);
+
+        result.Data![0].HeatNumber.Should().Be("TEST-HEAT-9502", "the lot on the most skids comes first");
+        result.Data[0].LineCount.Should().Be(7);
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldReturnNothing_WhenTheRangeRunsBackwards()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9601", "TESTHEAT9601", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "queue",
+            "TEST-HEAT-9601",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            1,
+            lastLineDate: new DateTime(2026, 6, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var filter = new Model_Tool_LotMarkingFilter(
+            new DateTime(2026, 9, 30),
+            new DateTime(2026, 8, 1),
+            Enum_LotMarkingSortField.LastReceiptDate,
+            IsDescending: true
+        );
+
+        var result = await service.GetLedgerAsync(null, null, filter);
+
+        result.IsSuccess.Should().BeTrue("a backwards range is a typo, not a failure");
+        result.Data.Should().BeEmpty();
     }
 
     /// <summary>
@@ -1168,8 +1317,34 @@ public sealed class Service_Tool_LotMarkingTests
             );
 
         public override Task<Model_Dao_Result<List<Model_Tool_ReceivingHeatLotKey>>>
-            GetReceivingHeatLotKeysAsync() =>
-            Task.FromResult(Model_Dao_Result_Factory.Success(_heatLotKeys.ToList()));
+            GetReceivingHeatLotKeysAsync(DateTime? fromDate = null, DateTime? toDate = null) =>
+            Task.FromResult(
+                Model_Dao_Result_Factory.Success(
+                    _heatLotKeys.Where(key => IsInsideRange(key.LastLineDate, fromDate, toDate)).ToList()
+                )
+            );
+
+        /// <summary>
+        /// Mirrors the procedure's date filter: a group is kept when its own receipt date falls inside
+        /// the range, and a group carrying no date cannot be shown to be inside one.
+        /// </summary>
+        private static bool IsInsideRange(DateTime? lineDate, DateTime? fromDate, DateTime? toDate)
+        {
+            if (fromDate is null && toDate is null)
+            {
+                return true;
+            }
+
+            if (lineDate is null)
+            {
+                return false;
+            }
+
+            var day = lineDate.Value.Date;
+
+            return (fromDate is null || day >= fromDate.Value.Date)
+                && (toDate is null || day <= toDate.Value.Date);
+        }
 
         public override Task<Model_Dao_Result<int>> RealignLotMarkingRowsAsync(
             string heat,

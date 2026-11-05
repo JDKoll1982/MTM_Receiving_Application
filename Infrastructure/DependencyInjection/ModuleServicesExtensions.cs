@@ -434,6 +434,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<ISettingsManifestProvider, Service_SettingsManifestProvider>();
         services.AddSingleton<ISettingsMetadataRegistry, Service_SettingsMetadataRegistry>();
         services.AddSingleton<ISettingsCache, Service_SettingsCache>();
+        services.AddSingleton<ISettingsRowSnapshot, Service_SettingsRowSnapshot>();
         services.AddSingleton<ISettingsEncryptionService, Service_SettingsEncryptionService>();
         services.AddSingleton<IService_SettingsCoreFacade, Service_SettingsCoreFacade>();
         services.AddSingleton<IService_ViewModelRegistry, Service_ViewModelRegistry>();

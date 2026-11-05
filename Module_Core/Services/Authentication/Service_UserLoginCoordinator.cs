@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Settings.Core.Settings;
@@ -53,7 +54,8 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
     public async Task<Model_Dao_Result<Model_UserSession>> InitializeAuthenticatedSessionAsync(
         Model_User user,
         Model_WorkstationConfig workstationConfig,
-        string authenticationMethod
+        string authenticationMethod,
+        IProgress<Model_SettingsSeedProgress>? sessionProgress = null
     )
     {
         if (user == null)
@@ -75,7 +77,7 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
             ApplySafeUserDefaults(user);
 
             await InitializePrivilegesAsync(user.EmployeeNumber);
-            await InitializeSettingsDefaultsAsync(user.EmployeeNumber);
+            await InitializeSettingsDefaultsAsync(user.EmployeeNumber, sessionProgress);
 
             var sessionTimeout = await ResolveSessionTimeoutAsync(workstationConfig);
 
@@ -196,11 +198,14 @@ public class Service_UserLoginCoordinator : IService_UserLoginCoordinator
         }
     }
 
-    private async Task InitializeSettingsDefaultsAsync(int employeeNumber)
+    private async Task InitializeSettingsDefaultsAsync(
+        int employeeNumber,
+        IProgress<Model_SettingsSeedProgress>? progress = null
+    )
     {
         try
         {
-            await _settingsCoreFacade.InitializeDefaultsAsync(employeeNumber);
+            await _settingsCoreFacade.InitializeDefaultsAsync(employeeNumber, progress);
         }
         catch (Exception ex)
         {

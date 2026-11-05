@@ -47,6 +47,27 @@
                 Command="{x:Bind ViewModel.ShowSettingsCommand}"
                 Content="Settings"
                 IsChecked="{x:Bind ViewModel.IsSettingsVisible, Mode=OneWay}" />
+
+            <!--  Search-by mode, kept beside the tabs and only while the workbench is the page on show.  -->
+            <Rectangle
+                Width="1"
+                Height="24"
+                Margin="4,0"
+                VerticalAlignment="Center"
+                Fill="{ThemeResource DividerStrokeColorDefaultBrush}"
+                Visibility="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBlock
+                VerticalAlignment="Center"
+                Text="Search By:"
+                Visibility="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ToggleSwitch
+                MinWidth="0"
+                VerticalAlignment="Center"
+                AutomationProperties.AutomationId="ScannerSearchByToggle"
+                IsOn="{x:Bind WorkbenchViewModel.IsLocationModeEnabled, Mode=TwoWay}"
+                OffContent="Part"
+                OnContent="Location"
+                Visibility="{x:Bind ViewModel.IsWorkbenchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </StackPanel>
 
         <Grid Grid.Row="1">

@@ -340,13 +340,27 @@ public class Dao_Tool_LotMarking
     /// Lists every distinct heat and supplier pair any receiving row carries, with the marking those
     /// rows hold and how many there are, across both the queue and history. Read only.
     /// </summary>
+    /// <remarks>
+    /// The date range is optional and narrows to rows received inside it, compared on the same date
+    /// the procedure reports as the line's date. A null pair reads every row, which is what the repair
+    /// actions need because they must see the whole record rather than one window of it.
+    /// </remarks>
     public virtual async Task<Model_Dao_Result<List<Model_Tool_ReceivingHeatLotKey>>>
-        GetReceivingHeatLotKeysAsync() =>
-        await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Tool_ReceivingHeatLotKey>(
+        GetReceivingHeatLotKeysAsync(DateTime? fromDate = null, DateTime? toDate = null)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "p_from_date", fromDate is null ? DBNull.Value : fromDate.Value.Date },
+            { "p_to_date", toDate is null ? DBNull.Value : toDate.Value.Date },
+        };
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<Model_Tool_ReceivingHeatLotKey>(
             _connectionString,
             "sp_Receiving_HeatLotKeys_GetAll",
-            MapHeatLotKey
+            MapHeatLotKey,
+            parameters
         );
+    }
 
     /// <summary>
     /// Puts one shape and color onto every marked row matching one raw heat and supplier, in both
