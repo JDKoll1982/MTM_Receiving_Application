@@ -91,11 +91,15 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     /// <summary>How many shape and color combinations the palette can hand out.</summary>
     public string PaletteSummary => $"{LegendShapes.Count} shape(s) × {LegendColors.Count} color(s)";
 
-    // ─── Heat search and the marking ledger ─────────────────────────────────
+    // ─── Search and the marking ledger ──────────────────────────────────────
 
+    /// <summary>
+    /// What the list is narrowed to: a lot number, a part number, or part of either. One box answers
+    /// both questions because a handler standing at a pile knows one of the two, not always the same one.
+    /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(MarkingListEmptyText))]
-    private string _heatSearchText = string.Empty;
+    private string _searchText = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMarkingListEmpty))]
@@ -104,6 +108,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedMarking))]
+    [NotifyPropertyChangedFor(nameof(CanChangeSelectedMarking))]
     [NotifyPropertyChangedFor(nameof(CanChangeMarking))]
     [NotifyPropertyChangedFor(nameof(SelectedMarkingSummary))]
     private Model_Tool_LotMarking? _selectedMarking;
@@ -120,16 +125,27 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     public bool HasSelectedMarking => SelectedMarking is not null;
 
     /// <summary>
+    /// True when the chosen lot has a recorded marking, so there is something to change.
+    /// </summary>
+    /// <remarks>
+    /// A lot read straight off its receipt lines has no ledger row behind it, because its marking was
+    /// never recorded. Nothing can be edited or protected on it until Update all lots records one, so
+    /// the button that opens the editor stays off rather than opening a window whose save would fail.
+    /// </remarks>
+    public bool CanChangeSelectedMarking => SelectedMarking is { Id: > 0 };
+
+    /// <summary>
     /// The wording shown in place of the list. An empty list and a search that matched nothing are
     /// both normal, but they are not the same thing, so they do not read the same. A search that
     /// matches nothing often means the lot is for material that is not on the part list, so the
     /// wording says what the list covers instead of implying the lot carries no marking.
     /// </summary>
     public string MarkingListEmptyText =>
-        string.IsNullOrWhiteSpace(HeatSearchText)
-            ? "No marked lots for the parts on the list. Choose a part to see its lots."
-            : "No marked lot in the list matches that heat number. The list covers only the parts "
-                + "on the part list, so a lot whose material is not on that list is not shown.";
+        string.IsNullOrWhiteSpace(SearchText)
+            ? "No lots came in for the parts on the list in these dates. Choose a part to see its lots."
+            : "No lot in the list matches that heat, lot or part number. The list covers only material "
+                + "received for the parts on the part list, so a lot whose material is not on that list "
+                + "is not shown.";
 
     /// <summary>
     /// A one-line reading of the selected lot, so a user can confirm they picked the right one
@@ -270,7 +286,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         // short, and setting IsBusy while it runs keeps a second selection from overlapping it.
         if (!IsBusy)
         {
-            _ = LoadMarkingsAsync(HeatSearchText);
+            _ = LoadMarkingsAsync(SearchText);
         }
     }
 
@@ -279,7 +295,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         AddPartCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnHeatSearchTextChanged(string value)
+    partial void OnSearchTextChanged(string value)
     {
         SearchMarkingsCommand.NotifyCanExecuteChanged();
     }
@@ -306,7 +322,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     {
         await LoadPaletteAsync();
         await LoadListPreferencesAsync();
-        await LoadMarkingsAsync(heatSearch: null);
+        await LoadMarkingsAsync(search: null);
         await LoadPartsAsync(partSearch: null);
     }
 
@@ -318,7 +334,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     public async Task ReloadAfterPartScopeChangeAsync()
     {
         await LoadPartsAsync(PartSearchText);
-        await LoadMarkingsAsync(HeatSearchText);
+        await LoadMarkingsAsync(SearchText);
     }
 
     // ─── Palette legend ─────────────────────────────────────────────────────
@@ -361,17 +377,17 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
     [RelayCommand]
     private async Task SearchMarkingsAsync()
     {
-        await LoadMarkingsAsync(HeatSearchText);
+        await LoadMarkingsAsync(SearchText);
     }
 
-    private async Task LoadMarkingsAsync(string? heatSearch)
+    private async Task LoadMarkingsAsync(string? search)
     {
         var partId = SelectedPart?.PartId;
 
         IsBusy = true;
         try
         {
-            var result = await _service.GetLedgerAsync(heatSearch, partId, BuildFilter());
+            var result = await _service.GetLedgerAsync(search, partId, BuildFilter());
 
             if (!result.IsSuccess)
             {
@@ -379,7 +395,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
 
                 // A failed search leaves the rows already on screen, so a query that could not run
                 // never looks like "this lot has no marking". Only the unfiltered load clears.
-                if (string.IsNullOrWhiteSpace(heatSearch))
+                if (string.IsNullOrWhiteSpace(search))
                 {
                     Markings = [];
                 }
@@ -426,6 +442,18 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
             return;
         }
 
+        // A lot read straight off its receipt lines has no ledger row behind it, so there is nothing
+        // to change yet. Saying so beats letting the write fail and reporting the row as not found.
+        if (SelectedMarking.Id <= 0)
+        {
+            ShowStatus(
+                "This lot was received but its marking was never recorded. Use Update all lots to "
+                    + "record one, then change it.",
+                InfoBarSeverity.Informational
+            );
+            return;
+        }
+
         IsBusy = true;
         try
         {
@@ -444,7 +472,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
             }
 
             var heat = SelectedMarking.HeatNumber;
-            await LoadMarkingsAsync(HeatSearchText);
+            await LoadMarkingsAsync(SearchText);
             ShowStatus($"The marking for {heat} was changed.", InfoBarSeverity.Success);
             RequestCloseChangeMarking?.Invoke();
         }
@@ -571,10 +599,10 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
                 + $" ({WebUtility.HtmlEncode(SortDirectionLabel.ToLowerInvariant())})</p>"
         );
 
-        if (!string.IsNullOrWhiteSpace(HeatSearchText))
+        if (!string.IsNullOrWhiteSpace(SearchText))
         {
             html.AppendLine(
-                $"<p><strong>Heat search:</strong> {WebUtility.HtmlEncode(HeatSearchText.Trim())}</p>"
+                $"<p><strong>Search:</strong> {WebUtility.HtmlEncode(SearchText.Trim())}</p>"
             );
         }
 
@@ -898,7 +926,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         }
 
         RefreshFilterSummary();
-        await LoadMarkingsAsync(HeatSearchText);
+        await LoadMarkingsAsync(SearchText);
     }
 
     /// <summary>Puts the list back to every date, newest first, and every column shown.</summary>
@@ -1130,7 +1158,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
                 return;
             }
 
-            await LoadMarkingsAsync(HeatSearchText);
+            await LoadMarkingsAsync(SearchText);
             await LoadPartsAsync(PartSearchText);
 
             ShowStatus(
@@ -1203,7 +1231,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
                 return;
             }
 
-            await LoadMarkingsAsync(HeatSearchText);
+            await LoadMarkingsAsync(SearchText);
             await LoadPartsAsync(PartSearchText);
 
             var result = applied.Data;

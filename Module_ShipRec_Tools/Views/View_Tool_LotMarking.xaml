@@ -21,7 +21,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  Utility card: heat search and the page actions  -->
+        <!--  Utility card: the search box and the page actions  -->
         <Border
             Grid.Row="0"
             Padding="16,12"
@@ -42,11 +42,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox
-                        x:Name="HeatSearchBox"
+                        x:Name="SearchBox"
                         Grid.Column="0"
-                        KeyDown="HeatSearchBox_KeyDown"
-                        PlaceholderText="Search a heat or lot number..."
-                        Text="{x:Bind ViewModel.HeatSearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        KeyDown="SearchBox_KeyDown"
+                        PlaceholderText="Search a heat / lot or part number..."
+                        Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Button
                         Grid.Column="1"
                         Width="34"
@@ -100,7 +100,7 @@
                         AutomationProperties.Name="Change this marking"
                         Click="OnChangeMarkingClick"
                         CornerRadius="4"
-                        IsEnabled="{x:Bind ViewModel.HasSelectedMarking, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.CanChangeSelectedMarking, Mode=OneWay}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.LotMarking.ChangeMarking'), Mode=OneWay}">
                         <FontIcon FontSize="16" Glyph="&#xE70F;" />
                     </Button>

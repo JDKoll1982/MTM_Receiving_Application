@@ -117,6 +117,33 @@ public sealed class Service_Tool_LotMarkingTests
     }
 
     [Fact]
+    public async Task ResolveMarkingAsync_ShouldReuseTheRecordedMarking_WhenTheReceiptResolvesTheSupplierToItsId()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-2003", "TESTHEAT2003", "TEST-SUP-A", "TEST-SUP-A", "🔺", "TEAL");
+
+        // The first receipt keyed the lot by the supplier name. This one resolved the same vendor to
+        // its official id, which is what the Infor Visual lookup does when it matches exactly one.
+        var resolved = await service.ResolveMarkingAsync(
+            "TEST-HEAT-2003",
+            FakeLotMarkingLedger.EnabledPartId,
+            "VID-000123",
+            Enum_LotMarkingCollisionPolicy.Probe,
+            "TEST-SUP-A"
+        );
+
+        resolved.IsSuccess.Should().BeTrue();
+        resolved.Data.Should().NotBeNull();
+        resolved.Data!.Id.Should().Be(1, "the lot is already recorded under the name on the receipt");
+        resolved.Data.ColorCode.Should().Be("TEAL");
+        resolved.Data.ShapeCode.Should().Be("🔺");
+        ledger
+            .InsertCallCount.Should()
+            .Be(0, "a second marking would show one pile of material in two colors");
+    }
+
+    [Fact]
     public async Task ResolveMarkingAsync_ShouldKeepTheWholeSupplierName_WhenTwoVendorsShareAnIdLengthPrefix()
     {
         var ledger = new FakeLotMarkingLedger();
@@ -468,6 +495,28 @@ public sealed class Service_Tool_LotMarkingTests
         result.Data!.RowsChanged.Should().Be(3);
         ledger.RecordedMarkings.Should().ContainSingle();
         ledger.Realigned.Should().HaveCount(2, "every spelling of the lot has to be written");
+    }
+
+    [Fact]
+    public async Task UpdateAllLotsAsync_ShouldRewriteEveryRow_WhenOneLotsRowsCarryTwoMarkings()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedMarking(1, "TEST-HEAT-7014", "TESTHEAT7014", "TEST-SUP-A", "TEST-SUP-A", "🔺", "TEAL");
+        ledger.SeedHeatLotKey("history", "TEST-HEAT-7014", "TEST-SUP-A", "🔺", "TEAL", 2);
+        ledger.SeedHeatLotKey("history", "TEST-HEAT-7014", "TEST-SUP-A", "⬛", "RED", 2);
+        var service = CreateService(ledger);
+
+        var result = await service.UpdateAllLotsAsync("TEST-USER-1");
+
+        result.IsSuccess.Should().BeTrue();
+        ledger
+            .Realigned.Should()
+            .ContainSingle(
+                "a lot whose rows carry two markings still has rows to correct, whichever row is read first"
+            );
+        ledger.Realigned.Should().OnlyContain(write => write.ColorCode == "TEAL");
+        result.Data!.RowsChanged.Should().Be(4, "every row of the lot is written, once");
+        result.Data.LotsRemoved.Should().Be(0, "the number those rows carry is still in use");
     }
 
     [Fact]
@@ -869,6 +918,43 @@ public sealed class Service_Tool_LotMarkingTests
     }
 
     [Fact]
+    public async Task GetLedgerAsync_ShouldNarrowToOnePartsLots_WhenThePartNumberIsSearched()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        ledger.SeedPart("TEST-PART-2");
+        var service = CreateService(ledger);
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9801",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            2,
+            lastLineDate: new DateTime(2026, 11, 3),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9802",
+            "TEST-SUP-A",
+            "⭐",
+            "RED",
+            3,
+            lastLineDate: new DateTime(2026, 11, 3),
+            partId: "TEST-PART-2"
+        );
+
+        var searched = await service.GetLedgerAsync("part-2");
+
+        searched.Data.Should().ContainSingle(
+            "a handler standing at a pile knows the part number as readily as the lot number"
+        );
+        searched.Data![0].HeatNumber.Should().Be("TEST-HEAT-9802");
+        searched.Data[0].PartsText.Should().Be("TEST-PART-2");
+        searched.Data[0].LineCount.Should().Be(3);
+    }
+
+    [Fact]
     public async Task GetLedgerAsync_ShouldListOnlyLotsReceivedInsideTheRange_WhenADateRangeIsGiven()
     {
         var ledger = new FakeLotMarkingLedger();
@@ -1012,6 +1098,133 @@ public sealed class Service_Tool_LotMarkingTests
 
         result.IsSuccess.Should().BeTrue("a backwards range is a typo, not a failure");
         result.Data.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldListALot_WhenItsMarkingWasNeverRecorded()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9701",
+            "TEST-SUP-A",
+            "⚡",
+            "PINK",
+            1,
+            lastLineDate: new DateTime(2026, 11, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().ContainSingle(
+            "material that came in is listed whether or not a marking was ever recorded for it"
+        );
+        result.Data![0].HeatNumber.Should().Be("TEST-HEAT-9701");
+        result.Data[0].LineCount.Should().Be(1);
+        result.Data[0].Id.Should().Be(0, "a lot with no ledger row has nothing to record against");
+        result.Data[0]
+            .ShapeCode.Should()
+            .Be("⚡", "the codes the receipt lines carry are what a handler saw on the receipt");
+        result.Data[0].ColorCode.Should().Be("PINK");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldUseTheRecordedMarking_WhenTheLedgerKeyedTheLotBySupplierId()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(
+            1,
+            "TEST-HEAT-9702",
+            "TESTHEAT9702",
+            "VID-000123",
+            "VID-000123",
+            "⭐",
+            "GREEN"
+        );
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9702",
+            "TEST-SUP-A",
+            "⚡",
+            "PINK",
+            6,
+            lastLineDate: new DateTime(2026, 11, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().ContainSingle();
+        result.Data![0]
+            .ColorCode.Should()
+            .Be(
+                "GREEN",
+                "a lot the ledger keyed by official supplier id is still the same lot its lines carry"
+            );
+        result.Data[0].ShapeCode.Should().Be("⭐");
+        result.Data[0].LineCount.Should().Be(6);
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldUseTheLinesOwnCodes_WhenTheLedgerHoldsTheNumberSpelledDifferently()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "T46733", "T46733", "TEST-SUP-A", "TEST-SUP-A", "⚡", "PINK");
+        ledger.SeedHeatLotKey(
+            "history",
+            "346733",
+            "TEST-SUP-A",
+            "🔺",
+            "PINK",
+            1,
+            lastLineDate: new DateTime(2026, 11, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().ContainSingle("the receipt still carried material, whatever the ledger holds");
+        result.Data![0].HeatNumber.Should().Be("346733");
+        result.Data[0].Id.Should().Be(0);
+        result.Data[0].ShapeCode.Should().Be("🔺");
+    }
+
+    [Fact]
+    public async Task GetLedgerAsync_ShouldNotPutTwoLotsUnderOneMarking_WhenOnlyOneLotHasOneRecorded()
+    {
+        var ledger = new FakeLotMarkingLedger();
+        var service = CreateService(ledger);
+        ledger.SeedMarking(1, "TEST-HEAT-9704", "TESTHEAT9704", "TEST-SUP-A", "TEST-SUP-A", "⚡", "TEAL");
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9704",
+            "TEST-SUP-A",
+            "⚡",
+            "TEAL",
+            2,
+            lastLineDate: new DateTime(2026, 11, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+        ledger.SeedHeatLotKey(
+            "history",
+            "TEST-HEAT-9704",
+            "TEST-SUP-B",
+            "⭐",
+            "RED",
+            1,
+            lastLineDate: new DateTime(2026, 11, 5),
+            partId: FakeLotMarkingLedger.EnabledPartId
+        );
+
+        var result = await service.GetLedgerAsync(null);
+
+        result.Data.Should().HaveCount(2, "a second supplier using the same number is its own lot");
+        result.Data!.Count(lot => lot.Id == 1).Should().Be(1, "one marking is never shared by two lots");
+        result.Data.Single(lot => lot.Id == 0).SupplierId.Should().Be("TEST-SUP-B");
     }
 
     /// <summary>

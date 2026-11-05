@@ -2148,7 +2148,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.LotMarking.Search",
-                Content = "Search the recorded markings for a heat or lot number",
+                Content = "Search the listed lots by heat / lot number or by part number",
                 HelpType = Enum_HelpType.Tip,
             }
         );

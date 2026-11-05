@@ -71,7 +71,7 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
     /// <inheritdoc />
     public async Task<Model_Dao_Result<List<Model_Tool_LotMarking>>> GetLedgerAsync(
-        string? heatSearch,
+        string? searchText,
         string? partId = null,
         Model_Tool_LotMarkingFilter? filter = null
     )
@@ -128,22 +128,13 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
         var scope = ScopeOf(enabled.Data, partId);
 
-        var lots = markings.Data ?? new List<Model_Tool_LotMarking>();
         var scopedRows = (rows.Data ?? new List<Model_Tool_ReceivingHeatLotKey>())
             .Where(row => IsCarriedByScope(row, scope) && IsInsideRange(row, applied))
             .ToList();
 
-        ApplyLineUsage(lots, scopedRows);
+        var lots = BuildLots(scopedRows, markings.Data);
 
-        var partIndex = BuildPartIndex(scopedRows);
-        ApplyPartUsage(lots, partIndex);
-
-        var ordered = Sort(
-            FilterByHeat(FilterByPart(lots, partIndex), heatSearch),
-            applied
-        );
-
-        return Model_Dao_Result_Factory.Success(ordered);
+        return Model_Dao_Result_Factory.Success(Sort(FilterBySearch(lots, searchText), applied));
     }
 
     /// <summary>Orders the lot list the way the caller asked for, with a stable tie-break.</summary>
@@ -262,86 +253,207 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
     }
 
     /// <summary>
-    /// Fills in how many receiving skids carry each lot and when the lot was last seen on one, by
-    /// normalizing the line groups exactly the way the rest of the feature does.
+    /// Builds the list from the receiving lines inside the range, so a lot is shown because material
+    /// carrying it came in rather than because a marking for it was recorded.
     /// </summary>
     /// <remarks>
-    /// The counting happens here rather than in SQL because the matching key is produced here, and a
-    /// count that matched raw text would miss every other spelling of a lot that normalization exists
-    /// to unify.
-    /// Only the rows in <paramref name="rows"/> are counted, and those are already narrowed to the
-    /// parts this list covers, so a lot shared with a part that is not on the list reports the skids
-    /// the covered parts carry rather than the whole lot's total.
+    /// A lot's marking is copied onto each line when the line is saved, and the ledger is only read
+    /// again when the list is read. Reading the ledger as the source of the list hid a lot whenever
+    /// the two disagreed: a marking recorded against a supplier id while the lines carry the supplier
+    /// name, or recorded under a lot number spelled differently, matched no line and the material it
+    /// marks was never listed. Reading the lines instead means the worst case is a lot shown with the
+    /// codes its own lines carry, which is what a handler saw on the receipt, rather than material
+    /// that is silently missing from the list.
     /// </remarks>
-    private static void ApplyLineUsage(
-        IReadOnlyList<Model_Tool_LotMarking> lots,
-        IReadOnlyList<Model_Tool_ReceivingHeatLotKey> rows
+    private static List<Model_Tool_LotMarking> BuildLots(
+        IReadOnlyList<Model_Tool_ReceivingHeatLotKey> rows,
+        IReadOnlyList<Model_Tool_LotMarking>? markings
     )
     {
-        var usage = new Dictionary<string, (int Lines, DateTime? LastLine)>(StringComparer.Ordinal);
+        var groups = rows
+            .Where(row => !Helper_LotNumberNormalizer.IsBlank(row.Heat))
+            .GroupBy(RowKey, StringComparer.Ordinal)
+            .Select(group => LotGroup.Of(group.ToList()))
+            .OrderBy(group => group.HeatText, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(group => group.SupplierGroup, StringComparer.Ordinal)
+            .ToList();
 
-        foreach (var row in rows)
-        {
-            if (Helper_LotNumberNormalizer.IsBlank(row.Heat))
-            {
-                continue;
-            }
+        var recorded = RecordedMarkings(groups, markings ?? new List<Model_Tool_LotMarking>());
 
-            var key = RowKey(row);
-
-            if (!usage.TryGetValue(key, out var running))
-            {
-                usage[key] = (row.RowCount, row.LastLineDate);
-                continue;
-            }
-
-            var lastLine =
-                row.LastLineDate is not null
-                && (running.LastLine is null || row.LastLineDate > running.LastLine)
-                    ? row.LastLineDate
-                    : running.LastLine;
-
-            usage[key] = (running.Lines + row.RowCount, lastLine);
-        }
-
-        foreach (var lot in lots)
-        {
-            var heat = Helper_LotNumberNormalizer.Normalize(lot.HeatNumberNormalized);
-
-            // A lot is recorded under either the supplier's official id or the supplier's name, and a
-            // receiving line only ever carries the name, so both are tried. The first that has lines
-            // behind it answers; trying both would count the same lines twice.
-            foreach (var supplier in new[] { lot.SupplierId, lot.SupplierName })
-            {
-                if (
-                    !usage.TryGetValue(
-                        CombineKey(heat, Helper_LotMarkingResolver.NormalizeSupplier(supplier)),
-                        out var found
-                    )
-                )
-                {
-                    continue;
-                }
-
-                lot.LineCount = found.Lines;
-                lot.LastLineDate = found.LastLine;
-                break;
-            }
-        }
+        return groups.ConvertAll(group => ToLot(group, recorded));
     }
 
-    /// <summary>Applies the list's lot-number filter, if one was given.</summary>
-    private static List<Model_Tool_LotMarking> FilterByHeat(
-        IReadOnlyList<Model_Tool_LotMarking> lots,
-        string? heatSearch
+    /// <summary>
+    /// Finds the marking the ledger holds for each lot on the list, if it holds one at all.
+    /// </summary>
+    /// <remarks>
+    /// The first pass takes the entry recorded against the same supplier, which is the lot as the
+    /// ledger defines it. The second pass takes an entry for the same lot number recorded against
+    /// another supplier spelling, because a supplier that resolves to its official id on one receipt
+    /// and to its name on another is the same supplier and the same lot. An entry is used once, so
+    /// two lots can never be shown under one marking.
+    /// </remarks>
+    private static Dictionary<string, Model_Tool_LotMarking> RecordedMarkings(
+        IReadOnlyList<LotGroup> groups,
+        IReadOnlyList<Model_Tool_LotMarking> markings
     )
     {
-        if (string.IsNullOrWhiteSpace(heatSearch))
+        var available = markings.OrderBy(marking => marking.Id).ToList();
+        var used = new HashSet<int>();
+        var found = new Dictionary<string, Model_Tool_LotMarking>(StringComparer.Ordinal);
+
+        foreach (var group in groups)
+        {
+            var exact = available.FirstOrDefault(marking =>
+                !used.Contains(marking.Id) && IsRecordedAgainst(marking, group, sameSupplier: true)
+            );
+
+            if (exact is not null)
+            {
+                used.Add(exact.Id);
+                found[group.Key] = exact;
+            }
+        }
+
+        foreach (var group in groups.Where(group => !found.ContainsKey(group.Key)))
+        {
+            var relaxed = available.FirstOrDefault(marking =>
+                !used.Contains(marking.Id) && IsRecordedAgainst(marking, group, sameSupplier: false)
+            );
+
+            if (relaxed is not null)
+            {
+                used.Add(relaxed.Id);
+                found[group.Key] = relaxed;
+            }
+        }
+
+        return found;
+    }
+
+    /// <summary>Whether a recorded marking is for the lot a group of receiving lines carries.</summary>
+    private static bool IsRecordedAgainst(
+        Model_Tool_LotMarking marking,
+        LotGroup group,
+        bool sameSupplier
+    )
+    {
+        var heat = Helper_LotNumberNormalizer.Normalize(marking.HeatNumberNormalized);
+
+        if (!string.Equals(heat, group.NormalizedHeat, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return !sameSupplier
+            || Same(marking.SupplierId, group.SupplierGroup)
+            || Same(
+                Helper_LotMarkingResolver.NormalizeSupplier(marking.SupplierName),
+                group.SupplierGroup
+            );
+    }
+
+    /// <summary>
+    /// The row the list shows for one lot: the recorded marking when the ledger holds one, and the
+    /// codes the lot's own receipt lines carry when it does not.
+    /// </summary>
+    private static Model_Tool_LotMarking ToLot(
+        LotGroup group,
+        IReadOnlyDictionary<string, Model_Tool_LotMarking> recorded
+    )
+    {
+        var lot = recorded.TryGetValue(group.Key, out var marking)
+            ? marking
+            : new Model_Tool_LotMarking
+            {
+                HeatNumber = group.HeatText,
+                HeatNumberNormalized = group.NormalizedHeat,
+                SupplierId = group.SupplierText,
+                SupplierName = group.SupplierText,
+                ShapeCode = group.ShapeCode,
+                ColorCode = group.ColorCode,
+            };
+
+        lot.LineCount = group.LineCount;
+        lot.LastLineDate = group.LastLineDate;
+        lot.PartsText = group.PartNumbers.Count == 0 ? "-" : string.Join(", ", group.PartNumbers);
+
+        return lot;
+    }
+
+    /// <summary>
+    /// One lot's receiving lines inside the range, gathered under the key the ledger and the lines are
+    /// matched by, with what the list reports about them.
+    /// </summary>
+    private sealed record LotGroup(
+        string Key,
+        string HeatText,
+        string NormalizedHeat,
+        string SupplierText,
+        string SupplierGroup,
+        int LineCount,
+        DateTime? LastLineDate,
+        string ShapeCode,
+        string ColorCode,
+        IReadOnlyList<string> PartNumbers
+    )
+    {
+        /// <summary>Reads one group of lines into the values the list reports for that lot.</summary>
+        /// <remarks>
+        /// The newest line names the lot, so the number and supplier shown are the ones a handler saw
+        /// most recently even when the same lot was typed slightly differently over time.
+        /// </remarks>
+        public static LotGroup Of(IReadOnlyList<Model_Tool_ReceivingHeatLotKey> rows)
+        {
+            var naming = rows
+                .OrderByDescending(row => row.LastLineDate ?? DateTime.MinValue)
+                .ThenBy(row => row.Heat, StringComparer.Ordinal)
+                .First();
+
+            return new LotGroup(
+                RowKey(naming),
+                naming.Heat,
+                Helper_LotNumberNormalizer.Normalize(naming.Heat),
+                naming.SupplierName,
+                Helper_LotMarkingResolver.NormalizeSupplier(naming.SupplierName),
+                rows.Sum(row => row.RowCount),
+                rows.Max(row => row.LastLineDate),
+                FirstCode(rows.Select(row => row.ShapeCode)),
+                FirstCode(rows.Select(row => row.ColorCode)),
+                rows.Select(row => row.PartId.Trim())
+                    .Where(part => part.Length > 0)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(part => part, StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+            );
+        }
+
+        private static string FirstCode(IEnumerable<string> codes) =>
+            codes.FirstOrDefault(code => !string.IsNullOrWhiteSpace(code)) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Applies the list's search, if one was given, to the lot number and to the part numbers the lot
+    /// is carried by.
+    /// </summary>
+    /// <remarks>
+    /// A handler looking at a pile of material knows either the lot number or the part number, so one
+    /// box answers both questions rather than making them choose which one to narrow by. The match is
+    /// the same shape on both sides: the value contains what was typed, ignoring case, so a part
+    /// number can be typed whole or by its tail. The normalized comparison is what lets a lot be found
+    /// by a number typed without the separators the receipt carries.
+    /// </remarks>
+    private static List<Model_Tool_LotMarking> FilterBySearch(
+        IReadOnlyList<Model_Tool_LotMarking> lots,
+        string? searchText
+    )
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
         {
             return lots.ToList();
         }
 
-        var needle = heatSearch.Trim();
+        var needle = searchText.Trim();
         var normalizedNeedle = Helper_LotNumberNormalizer.Normalize(needle);
 
         return lots
@@ -354,6 +466,7 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
                         StringComparison.OrdinalIgnoreCase
                     )
                 )
+                || lot.PartsText.Contains(needle, StringComparison.OrdinalIgnoreCase)
             )
             .ToList();
     }
@@ -399,122 +512,13 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
         );
     }
 
-    /// <summary>
-    /// Indexes the part numbers that carry each receiving group, so a lot can be attributed to the
-    /// parts that carry its number.
-    /// </summary>
-    private static Dictionary<string, HashSet<string>> BuildPartIndex(
-        IReadOnlyList<Model_Tool_ReceivingHeatLotKey> rows
-    )
-    {
-        var index = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
-
-        foreach (var row in rows)
-        {
-            if (
-                string.IsNullOrWhiteSpace(row.PartId)
-                || Helper_LotNumberNormalizer.IsBlank(row.Heat)
-            )
-            {
-                continue;
-            }
-
-            var key = RowKey(row);
-
-            if (!index.TryGetValue(key, out var parts))
-            {
-                parts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                index[key] = parts;
-            }
-
-            parts.Add(row.PartId.Trim());
-        }
-
-        return index;
-    }
-
-    /// <summary>
-    /// The part numbers that carry a lot.
-    /// </summary>
-    /// <remarks>
-    /// Both supplier spellings are tried and their parts unioned, unlike the line count which stops
-    /// at the first spelling that has lines. The difference is deliberate: counting twice would
-    /// overstate the lines, whereas a part found under either spelling really does carry the lot, so
-    /// dropping it would hide the material a handler is looking for.
-    /// </remarks>
-    private static HashSet<string> PartsOf(
-        Model_Tool_LotMarking lot,
-        IReadOnlyDictionary<string, HashSet<string>> partIndex
-    )
-    {
-        var heat = Helper_LotNumberNormalizer.Normalize(lot.HeatNumberNormalized);
-        var parts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var supplier in new[] { lot.SupplierId, lot.SupplierName })
-        {
-            if (
-                partIndex.TryGetValue(
-                    CombineKey(heat, Helper_LotMarkingResolver.NormalizeSupplier(supplier)),
-                    out var found
-                )
-            )
-            {
-                parts.UnionWith(found);
-            }
-        }
-
-        return parts;
-    }
-
-    /// <summary>
-    /// Records the part numbers that carry each lot, so the list can show whose material a lot is.
-    /// Worked out when the list is read and never stored, like the skid count beside it.
-    /// </summary>
-    /// <remarks>
-    /// The index holds scoped rows only, so a lot shared between a listed part and a part that is not
-    /// listed shows just the listed part. A part number this list does not cover is not one a handler
-    /// can act on from this screen, and showing it would read as though that material were covered.
-    /// </remarks>
-    private static void ApplyPartUsage(
-        IReadOnlyList<Model_Tool_LotMarking> lots,
-        IReadOnlyDictionary<string, HashSet<string>> partIndex
-    )
-    {
-        foreach (var lot in lots)
-        {
-            var parts = PartsOf(lot, partIndex);
-
-            lot.PartsText =
-                parts.Count == 0
-                    ? "-"
-                    : string.Join(
-                        ", ",
-                        parts.OrderBy(part => part, StringComparer.OrdinalIgnoreCase)
-                    );
-        }
-    }
-
-    /// <summary>Narrows the lot list to the material that was approved for marking.</summary>
-    /// <remarks>
-    /// A lot is carried by a set of parts rather than owned by one, so a lot is kept when a part that
-    /// carries it is inside the scope the caller already resolved. The index is built from scoped rows
-    /// alone, so an empty set means no covered part carries the lot, and the lot is left out.
-    /// That includes a lot whose number no receiving row carries at all: nothing one of the listed
-    /// parts receives, so the list has no reason to report it.
-    /// A date range narrows the rows before this runs, so a lot whose only in-range skids belong to a
-    /// part outside the scope is left out of a ranged read as well.
-    /// </remarks>
-    private static List<Model_Tool_LotMarking> FilterByPart(
-        IReadOnlyList<Model_Tool_LotMarking> lots,
-        IReadOnlyDictionary<string, HashSet<string>> partIndex
-    ) => lots.Where(lot => PartsOf(lot, partIndex).Count > 0).ToList();
-
     /// <inheritdoc />
     public async Task<Model_Dao_Result<Model_Tool_LotMarking?>> ResolveMarkingAsync(
         string? heatNumber,
         string? partId,
         string? supplierKey,
-        Enum_LotMarkingCollisionPolicy policy
+        Enum_LotMarkingCollisionPolicy policy,
+        string? receiptSupplierName = null
     )
     {
         // A line with no heat number gets no marking. This is the normal case, not a failure,
@@ -552,6 +556,36 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
             return Model_Dao_Result_Factory.Success<Model_Tool_LotMarking?>(stored.Data[0]);
         }
 
+        // The same vendor can be keyed by its official id on one receipt and by its name on the next,
+        // so the lot may already be recorded under the spelling this receipt carries. Looking there
+        // before creating anything is what stops one physical lot holding two markings, which a
+        // handler reads as the same material being two colors. A different supplier really is a
+        // different lot, and its name is a different key, so it is still given a marking of its own.
+        var receiptName = Helper_LotMarkingResolver.NormalizeSupplier(receiptSupplierName);
+        if (!string.Equals(receiptName, supplier, StringComparison.OrdinalIgnoreCase))
+        {
+            var byReceiptName = await _dao.ResolveAsync(normalizedHeat, receiptName);
+            if (!byReceiptName.IsSuccess)
+            {
+                _logger.LogError(
+                    $"LotMarking: failed to read the marking for '{normalizedHeat}' under supplier "
+                        + $"'{receiptName}'. {byReceiptName.ErrorMessage}",
+                    byReceiptName.Exception
+                );
+                return Model_Dao_Result_Factory.Failure<Model_Tool_LotMarking?>(
+                    byReceiptName.ErrorMessage,
+                    byReceiptName.Exception
+                );
+            }
+
+            if (byReceiptName.Data is { Count: > 0 })
+            {
+                return Model_Dao_Result_Factory.Success<Model_Tool_LotMarking?>(
+                    byReceiptName.Data[0]
+                );
+            }
+        }
+
         // The lot has no marking yet, so continuing would create one, and a marking is only ever
         // created for a part on the enabled list. Checking it after the read above rather than
         // before it is deliberate: a lot that already has a marking keeps it whatever part arrives
@@ -582,7 +616,7 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
             heatNumber!.Trim(),
             normalizedHeat,
             supplier,
-            supplierKey,
+            ReceiptSupplierName(receiptSupplierName, supplierKey),
             shapeGlyph,
             colorCode,
             nameof(Enum_LotMarkingSource.Auto),
@@ -620,6 +654,15 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
             "The marking was saved but could not be read back."
         );
     }
+
+    /// <summary>
+    /// The supplier name a new marking records: the spelling on the receipt when there is one, so the
+    /// group and the name stay related, and the group itself when the receipt named no supplier.
+    /// </summary>
+    private static string ReceiptSupplierName(string? receiptSupplierName, string? supplierKey) =>
+        string.IsNullOrWhiteSpace(receiptSupplierName)
+            ? Helper_LotMarkingResolver.NormalizeSupplier(supplierKey)
+            : receiptSupplierName.Trim();
 
     /// <inheritdoc />
     /// <remarks>
@@ -1241,7 +1284,7 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
                     Enum_LotMarkingRealignAction.ClearMarking,
                     string.Empty,
                     group.Key,
-                    group.Select(SpellingOf).ToList(),
+                    SpellingsOf(group),
                     string.Empty,
                     string.Empty,
                     first.ShapeCode,
@@ -1261,14 +1304,21 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
         )
         {
             var first = group.First();
-            var spellings = group.Select(SpellingOf).ToList();
+            var spellings = SpellingsOf(group);
 
             if (ledger.TryGetValue(group.Key, out var recorded))
             {
-                if (
-                    Same(recorded.ShapeCode, first.ShapeCode)
-                    && Same(recorded.ColorCode, first.ColorCode)
-                )
+                // Every row of the lot is compared, not just the one that happens to come first,
+                // because a lot whose rows disagree with each other is exactly what this run is for.
+                // Comparing one row let a lot keep two colors for as long as the first row matched.
+                var wrong = group
+                    .Where(row =>
+                        !Same(recorded.ShapeCode, row.ShapeCode)
+                        || !Same(recorded.ColorCode, row.ColorCode)
+                    )
+                    .ToList();
+
+                if (wrong.Count == 0)
                 {
                     alreadyCorrect++;
                     continue;
@@ -1282,8 +1332,8 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
                         spellings,
                         recorded.ShapeCode,
                         recorded.ColorCode,
-                        first.ShapeCode,
-                        first.ColorCode
+                        wrong[0].ShapeCode,
+                        wrong[0].ColorCode
                     )
                 );
                 continue;
@@ -1363,9 +1413,27 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
         return new Model_Tool_LotMarkingRealignPreview(targets, removals, skips, alreadyCorrect);
     }
 
-    private static Model_Tool_LotMarkingRealignSpelling SpellingOf(
-        Model_Tool_ReceivingHeatLotKey row
-    ) => new(row.Heat, row.SupplierName, row.RowCount);
+    /// <summary>
+    /// The raw spellings one lot has to be written under, with their line counts added up.
+    /// </summary>
+    /// <remarks>
+    /// A lot arrives as several row groups whenever its rows disagree, because the read groups by the
+    /// marking as well as by the number and supplier. Writing each of those groups separately would
+    /// match the same rows more than once and report more rows changed than the lot actually holds,
+    /// so the spellings are gathered by the pair the write matches on.
+    /// </remarks>
+    private static List<Model_Tool_LotMarkingRealignSpelling> SpellingsOf(
+        IEnumerable<Model_Tool_ReceivingHeatLotKey> rows
+    ) =>
+        rows.GroupBy(row => (row.Heat, row.SupplierName))
+            .Select(sameSpelling =>
+                new Model_Tool_LotMarkingRealignSpelling(
+                    sameSpelling.Key.Heat,
+                    sameSpelling.Key.SupplierName,
+                    sameSpelling.Sum(row => row.RowCount)
+                )
+            )
+            .ToList();
 
     /// <summary>
     /// The matching key for a receiving row: its normalized heat number and supplier group.

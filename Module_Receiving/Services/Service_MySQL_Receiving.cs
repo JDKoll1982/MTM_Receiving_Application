@@ -515,7 +515,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         load.HeatLotNumber,
                         load.PartID,
                         supplierKey,
-                        policy
+                        policy,
+                        load.PoVendor
                     );
 
                     if (!resolved.IsSuccess)

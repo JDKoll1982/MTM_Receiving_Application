@@ -57,11 +57,11 @@ public sealed partial class View_Tool_LotMarking : Page
 
     /// <summary>
     /// Opens the marking editor for the lot the user picked. The button that reaches this is only
-    /// enabled while a row is chosen, so there is always a lot to edit.
+    /// enabled while a chosen lot has a recorded marking, so there is always something to edit.
     /// </summary>
     private async void OnChangeMarkingClick(object sender, RoutedEventArgs e)
     {
-        if (!ViewModel.HasSelectedMarking || App.MainWindow is not { } owner)
+        if (!ViewModel.CanChangeSelectedMarking || App.MainWindow is not { } owner)
         {
             return;
         }
@@ -134,7 +134,7 @@ public sealed partial class View_Tool_LotMarking : Page
         return Helper_HtmlReportExport.WriteAndOpenAsync("heat-lot-markings", html);
     }
 
-    private void HeatSearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Enter && ViewModel.SearchMarkingsCommand.CanExecute(null))
         {

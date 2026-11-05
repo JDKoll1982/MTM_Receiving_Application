@@ -1,6 +1,6 @@
 # HeatLotManagement_FeatureUpdate
 
-- **Last Updated:** 2026-10-14
+- **Last Updated:** 2026-11-05
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
 - **Status:** Shipped 2026-10-15. Build green, 819 of 819 tests pass, 80 of 80 tasks. Lot marking backfill (user story 6) and the supplier group width fix landed 2026-10-14; Update All Lots (user story 7) landed 2026-10-15.
 - **New tables:** `lot_markings`, `lot_marking_part_scope` (MySQL, `mtm_receiving_application` schema)
@@ -725,3 +725,104 @@ against `mtm_receiving_application_test` first, then change its one `USE` line t
 covers applying a filter (the range, the sort field and the hidden column are all saved, and the hidden
 column stops being reported as shown), refusing a backwards range without saving or reading, Reset
 restoring every column, and printing honouring both the hidden column and the date line.
+
+## The list reads the receiving lines, not just the ledger (2026-11-05)
+
+A handler reported that the date filter was not showing the material that actually came in. For part
+`MMC0000848` between 2026-10-06 and 2026-11-06 the Receiving Edit grid held five lots — `344934` BLACK
+on 6 skids, `345121` ORANGE on 4, `346732` TEAL and RED on 4, `346733` PINK on 1, and `842T30290` GREEN
+on 6 — and the lot list showed three.
+
+**Why two lots went missing.** The list was built from the ledger and the receiving lines only made its
+rows heavier: a ledger row was narrowed to the lines whose `(normalized heat, supplier group)` matched it
+exactly, and a ledger row that matched nothing was dropped. Three receipts saved on 2026-11-05 supplied
+the two ways that could fail:
+
+- The `842T30290` marking was recorded against supplier group `VID-001080-01`, because the Infor Visual
+  vendor lookup resolved the vendor to its official id on that save and to its name on every earlier
+  one. The lines carry `MST Steel Corporation`, so nothing matched and 6 skids of green material were
+  invisible. The same split gave `346732` a second marking, because the lot already held one.
+- The `346733` marking was recorded under `T46733`, one character off the number the lines carry, so it
+  could not match either — and because the list was ledger-driven, a lot with no matching ledger row
+  had no way onto it at all.
+
+**What reads the list now.** `Service_Tool_LotMarking.GetLedgerAsync` reads the receiving lines for the
+range, groups them into lots by normalized number and supplier, and reports one row per lot. Nothing else
+decides whether material appears. The ledger is still what supplies the marking, in two passes: the entry
+recorded against the same supplier first, then an entry for the same number recorded against another
+supplier spelling, because a vendor keyed as an id on one receipt and as a name on another is one vendor.
+An entry is used once, so one marking can never appear against two lots.
+
+A lot the ledger does not know shows the **shape and color its own lines carry**, which is what a handler
+saw on the receipt, and carries no ledger id. That is the intended worst case: an unreachable marking
+costs a recorded marking, not a missing lot.
+
+**What that changed on screen.**
+
+- The **Change this marking** button stays off for a lot with no recorded marking, and the save path says
+  why if it is somehow reached. Nothing can be edited on a marking that does not exist yet; Update all
+  lots is what records one.
+- The empty-list wording now says no lots came in for the listed parts in those dates, rather than no
+  marks were found, because the list no longer only holds lots that carry a marking.
+
+**Repairing the three ledger rows.** `Database/Database_Deployment/Sql_Files/Migrations/18_Migration_lot_markings_reachable_marks.sql`
+re-keys the two markings that no line can reach and corrects the misspelled number, keeping the shapes and
+colors a handler has already seen. It leads with read-only diagnostics, runs the two updates inside a
+transaction behind their own guards, then verifies, and it commits nothing on its own. Row 118, the second
+marking for `346732`, is deliberately left alone and reported as a duplicate: which of the two markings the
+lot should keep is a decision for a person, and the file's optional section holds the guarded delete plus
+the instruction to run Update all lots afterwards. Verified on a disposable copy of the schema: the
+diagnostic goes from three rows to one, and a second run changes no row.
+
+The underlying split was fixed the same day, in the next subsection: the resolver now looks under both supplier
+spellings before it creates anything, so a lot no longer gains a second marking when one receipt keys it by
+the official id and the next by the name. The supplier key is still two-sided; what changed is that a second
+marking is no longer created because of it.
+
+**Tests.** `Service_Tool_LotMarkingTests` gained four cases: a lot with no recorded marking is listed with
+its own codes, a marking keyed by supplier id is still found from lines that carry the name, a marking
+under a differently spelled number does not hide the lot, and one marking is never put against two lots.
+
+### The one search box covers part numbers too (2026-11-05)
+
+The list holds every enabled part's lots, and the only way to narrow it to one material was the part list
+dialog — which is a maintenance screen, not something a handler opens to read the list. The search box now
+matches **part numbers as well as lot numbers**, so typing `MMC0000848`, or just `848`, leaves only that
+part's lots and typing `3467` still narrows by lot number.
+
+The match is the same on both sides: the row must contain what was typed, ignoring case, so a part number
+can be typed whole or by its tail, and the lot number is also compared with its separators removed. The two
+kinds of search are not combined into an AND — one box answers "which material is this" whichever way the
+handler happens to know it. The box, its watermark, the tooltip, the empty-list wording and the printed
+sheet's search line all say search rather than heat search, because a sheet that records "heat search:
+MMC0000848" would misdescribe what was narrowed.
+
+### A lot that already has a marking keeps it (2026-11-05)
+
+Saving a receipt for `346732` produced two rows with a black square and RED next to two rows with a triangle
+and TEAL, for one lot. The lot already had a marking; the save gave it a second one anyway.
+
+**Why.** `ResolveMarkingAsync` looked the lot up under one key: the normalized heat number and the resolved
+supplier group. The group is the official vendor id when the Infor Visual lookup resolves to exactly one
+vendor, and the vendor name otherwise. `346732` was first recorded against `MST STEEL CORPORATION` and the
+next save resolved the same vendor to `VID-001080-01`, so the lookup found nothing, the probe handed out the
+next free pair, and a second marking was written for a lot that already had one. Nothing in the resolver
+knew the two keys meant one vendor.
+
+**What it does now.** Before creating anything, the resolver makes a second read under the supplier name the
+receipt itself carries, so a lot recorded under the name is found by a save keyed on the id and the other way
+round. The probe only runs when both reads come back empty, which is the case for a genuinely different
+supplier, so two suppliers sharing a heat number still get two markings — the confirmed decision that a
+marking is scoped to a supplier is unchanged. A marking created from now on records the receipt's supplier
+name rather than the key in `supplier_name`, which is what keeps the two spellings related for the next read.
+
+**Update All Lots was leaving the damage behind.** It gathered a lot's rows, compared the recorded marking
+with the *first* row only, and called the lot correct when that one row matched. A lot whose rows carried two
+markings therefore stayed in two markings for as long as the first row happened to be the right one. Every row
+of the lot is compared now, and the raw spellings are gathered by the pair the write matches on, so a lot is
+written once and the reported row count is the number of rows that actually changed rather than a multiple of
+it.
+
+**Tests.** `Service_Tool_LotMarkingTests` gained a case for the reported bug — a lot recorded under the
+vendor name is returned unchanged when the same receipt resolves the vendor to its id, and nothing is
+inserted — and a case for a lot whose rows carry two markings being rewritten in full by Update all lots.

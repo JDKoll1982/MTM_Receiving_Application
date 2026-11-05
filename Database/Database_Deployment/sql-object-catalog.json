@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-05T09:02:23.6467540-06:00",
+  "generatedAt": "2026-11-05T14:29:25.6200824-06:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1687,6 +1687,72 @@
         {
           "alias": "p",
           "object": "__system__:PARAMETERS"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/Migrations/18_Migration_lot_markings_reachable_marks.sql",
+      "category": "migration_file",
+      "objectType": "sql_script",
+      "objectName": null,
+      "procedureCount": 0,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [],
+      "declaredVariables": [],
+      "referencedObjects": [
+        "lot_markings",
+        "receiving_label_data",
+        "receiving_history"
+      ],
+      "qualifiedColumns": [],
+      "insertTargets": [],
+      "updateTargets": [
+        {
+          "table": "lot_markings",
+          "columns": [
+            "heat_number"
+          ]
+        }
+      ],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [],
+      "variableTokensUsed": [],
+      "temporaryTables": [],
+      "aliasMap": [
+        {
+          "alias": "lot_markings",
+          "object": "lot_markings"
+        },
+        {
+          "alias": "lm",
+          "object": "lot_markings"
+        },
+        {
+          "alias": "receiving_label_data",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rld",
+          "object": "receiving_label_data"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "other",
+          "object": "__derived__:other"
+        },
+        {
+          "alias": "r",
+          "object": "__derived__:r"
         }
       ]
     },
