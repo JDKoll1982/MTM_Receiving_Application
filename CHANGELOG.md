@@ -7,6 +7,57 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Fixed
 
+#### The Print button wakes up when the receipt's labels are ticked for you (2026-11-05)
+
+- **What changed:** opening the Label Overlay from a receipt now leaves **Print the marking** usable as soon
+  as the window has loaded, instead of staying greyed out until a checkbox is touched.
+- **Cause:** the labels from the receipt are ticked while the queue is still loading, and `CanPrint` reads
+  `IsBusy`. The counts were last read before the load ended, so the button's `CanClickPrint` never heard
+  the final answer. The load now re-reads the counts once it has finished.
+- **Also:** clearing the printer or moving the marking off the page now reaches the button, because the
+  printer and geometry properties raise `CanClickPrint` as well as `CanPrint`.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlay.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlayPreselectionTests.cs`
+
+### Changed
+
+#### The colored symbol card wears a DevWinUI glowing border (2026-11-05)
+
+- **What changed:** the card on the Review and finish pages is now wrapped in DevWinUI's `GlowingBorder`
+  in **Beam** mode — a faint amber ring with a bright segment travelling around it, drawn with Win2D — so
+  the reminder reads as live rather than as a static yellow banner.
+- **Its padding was wrong at the edge:** the InfoBar template leaves no right padding on `Content`, so the
+  caption ran to the card's edge with only a sliver below the button. The content now carries
+  `Margin="0,4,16,10"` for a right and bottom inset that matches the rest of the card.
+- **Hidden with the card:** the border takes the same `HasLotMarkingNeeds` visibility, so an empty glowing
+  ring is never left behind on a receipt that needs no overlay.
+- **Files:** `Module_Receiving/Views/View_Receiving_Review.xaml`, `Module_Receiving/Views/View_Receiving_Workflow.xaml`
+
+#### The overlay screen is tidier, and its advanced setup moved behind a button (2026-11-05)
+
+- **Advanced is now a window of its own.** The "where the marking lands" panel was an expander at the bottom
+  of the tag list; it is now a modal window opened by an **Advanced** button on the footer, which sits left
+  of Copies, Close and Print. Nothing is reloaded when it closes — the fields bind to the same view model.
+- **The footer reads left to right:** Advanced, the busy ring, `Copies:` with the number, Close, then Print.
+  The number box lost its header and its spin buttons (`SpinButtonPlacementMode="Hidden"`), so no arrows
+  appear on hover or focus.
+- **Print says Print.** The button used to say "Print the marking" or "Print the card sheet"; it now says
+  **Print**, and it carries the accent fill because it is the primary action on the screen.
+- **The tag list got its toolbar back:** Select All, Clear and Reload sit directly above the table with the
+  new names, and the running "N tag(s) selected" total moved below the table on both tabs.
+- **"Direction" is gone** from both sort toggle switches — the on and off captions already say it.
+- **The printer settings page no longer overlaps itself.** Its grid declared four rows but the card-sheet
+  note sat in a fifth, which WinUI folds into the last row: the note drew over the Paper tray picker and
+  swallowed its clicks. The note is removed as asked, so the tray combo is clear and usable again.
+- **Room to breathe:** the tab content and footer keep 40px at each side instead of 24, and the window is
+  1060 wide instead of 900. The "eight cards to a page, 4 across and 2 down" line is gone from the bottom
+  of the settings tab.
+- **Files:** `Module_Receiving/Views/View_Receiving_LabelOverlayDialog.xaml(.cs)`,
+  `Module_Receiving/Views/View_Receiving_LabelOverlayAdvancedDialog.xaml(.cs)` (new),
+  `Module_Receiving/Views/View_Receiving_LabelOverlayAdvancedWindow.cs` (new),
+  `Module_Receiving/Views/View_Receiving_LabelOverlayWindow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlay.cs`
+
 #### Retrieving your settings no longer walks the database two hundred and eighty times (2026-11-04)
 
 - **What changed:** the startup settings pass now reads the settings tables **once per category** and

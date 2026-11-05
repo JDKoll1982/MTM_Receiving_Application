@@ -36,6 +36,9 @@ public sealed class View_Receiving_LabelOverlayWindow : ModalWindow
         // The printer's own dialog is owned by this window; the ViewModel does not hold window handles.
         viewModel.PrinterSetupOwnerHandle = WindowNative.GetWindowHandle(this);
 
+        // The advanced setup opens over this window rather than over the main one.
+        _contentPage.AdvancedOwnerHandle = WindowNative.GetWindowHandle(this);
+
         Content = _contentPage;
 
         if (App.MainWindow?.Content is FrameworkElement mainContent)
@@ -45,7 +48,7 @@ public sealed class View_Receiving_LabelOverlayWindow : ModalWindow
 
         this.ApplySharedIcon();
         Title = "Label Overlay";
-        WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 900, 920);
+        WindowHelper_WindowSizeAndStartupLocation.SetWindowSize(this, 1060, 920);
 
         Closed += OnWindowClosed;
     }

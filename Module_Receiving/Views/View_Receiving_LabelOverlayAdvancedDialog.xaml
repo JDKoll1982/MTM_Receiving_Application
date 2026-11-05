@@ -1,0 +1,98 @@
+<Page
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_LabelOverlayAdvancedDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid
+        Padding="24"
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+        RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Spacing="6">
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Where the marking lands" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="Measured in inches from the tag's top-left corner. Print one tag, lay it against a rule, and nudge these only if it sits wrong."
+                TextWrapping="WrapWholeWords" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="{x:Bind ViewModel.GeometrySummary, Mode=OneWay}"
+                TextWrapping="WrapWholeWords" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Spacing="12">
+            <Grid ColumnSpacing="12" RowSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <NumberBox
+                    Grid.Column="0"
+                    AutomationProperties.Name="From the left"
+                    Header="From the left (in)"
+                    Maximum="11"
+                    Minimum="0"
+                    SmallChange="0.05"
+                    SpinButtonPlacementMode="Compact"
+                    Value="{x:Bind ViewModel.CenterXInches, Mode=TwoWay}" />
+                <NumberBox
+                    Grid.Column="1"
+                    AutomationProperties.Name="From the top"
+                    Header="From the top (in)"
+                    Maximum="8.5"
+                    Minimum="0"
+                    SmallChange="0.05"
+                    SpinButtonPlacementMode="Compact"
+                    Value="{x:Bind ViewModel.CenterYInches, Mode=TwoWay}" />
+                <NumberBox
+                    Grid.Column="2"
+                    AutomationProperties.Name="Circle size"
+                    Header="Circle size (in)"
+                    Maximum="6"
+                    Minimum="0.25"
+                    SmallChange="0.05"
+                    SpinButtonPlacementMode="Compact"
+                    Value="{x:Bind ViewModel.DiameterInches, Mode=TwoWay}" />
+            </Grid>
+
+            <TextBox
+                AutomationProperties.Name="Heading above the circle"
+                Header="Heading above the circle"
+                Text="{x:Bind ViewModel.HeadingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <Grid
+            Grid.Row="2"
+            ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="1"
+                Command="{x:Bind ViewModel.ResetGeometryCommand}"
+                Content="Reset to tag default"
+                ToolTipService.ToolTip="Put the measured position and size back" />
+
+            <Button
+                Grid.Column="2"
+                Click="OnCloseClick"
+                Content="Close"
+                Style="{StaticResource AccentButtonStyle}" />
+        </Grid>
+    </Grid>
+</Page>

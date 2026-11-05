@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Enums;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Xunit;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
@@ -36,7 +37,8 @@ public sealed class ViewModel_Receiving_LabelOverlayPreselectionTests
         };
 
     private static ViewModel_Receiving_LabelOverlay CreateViewModel(
-        IReadOnlyList<Model_ReceivingLabelOverlayItem> queue
+        IReadOnlyList<Model_ReceivingLabelOverlayItem> queue,
+        string? printerName = null
     )
     {
         var overlay = new Mock<IService_ReceivingLabelOverlay>();
@@ -45,7 +47,11 @@ public sealed class ViewModel_Receiving_LabelOverlayPreselectionTests
         );
         overlay
             .Setup(service => service.GetPrinterNamesAsync())
-            .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<string>()));
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    printerName is null ? new List<string>() : [printerName]
+                )
+            );
         overlay
             .Setup(service => service.GetPaperSizesAsync(It.IsAny<string?>()))
             .ReturnsAsync(
@@ -150,5 +156,50 @@ public sealed class ViewModel_Receiving_LabelOverlayPreselectionTests
         await viewModel.ActivateAsync();
 
         item.IsSelected.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ActivateAsync_ShouldLetThePrintButtonKnow_WhenItTickedTheReceiptsLabels()
+    {
+        var item = Item("MMC0000848", "344934", 1);
+
+        var viewModel = CreateViewModel([item], printerName: "TEST-PRINTER");
+        viewModel.RequestPreselection([("MMC0000848", "344934")]);
+
+        var raised = new List<string?>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+
+        await viewModel.ActivateAsync();
+
+        item.IsSelected.Should().BeTrue();
+
+        // CanPrint reads IsBusy, so the tick made while loading only reaches the button if the counts are
+        // read again after the load has ended. A button left disabled on a receipt that was just saved is
+        // the whole point of this screen.
+        raised.Should().Contain(nameof(ViewModel_Receiving_LabelOverlay.CanClickPrint));
+        raised
+            .LastIndexOf(nameof(ViewModel_Receiving_LabelOverlay.CanClickPrint))
+            .Should()
+            .BeGreaterThan(raised.LastIndexOf(nameof(ViewModel_Shared_Base.IsBusy)));
+        viewModel.CanClickPrint.Should().BeTrue();
+        viewModel.SelectionSummary.Should().StartWith("1");
+    }
+
+    [Fact]
+    public async Task MovingTheMarking_ShouldTellThePrintButton_SoItCannotPrintOffThePage()
+    {
+        var item = Item("MMC0000848", "344934", 1);
+
+        var viewModel = CreateViewModel([item], printerName: "TEST-PRINTER");
+        viewModel.RequestPreselection([("MMC0000848", "344934")]);
+        await viewModel.ActivateAsync();
+
+        var raised = new List<string?>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+
+        viewModel.CenterXInches = 99;
+
+        raised.Should().Contain(nameof(ViewModel_Receiving_LabelOverlay.CanClickPrint));
+        viewModel.CanPrint.Should().BeFalse("the marking would land outside the page");
     }
 }

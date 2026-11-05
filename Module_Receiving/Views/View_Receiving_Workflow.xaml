@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dev="using:DevWinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
     mc:Ignorable="d">
@@ -223,40 +224,51 @@
                 </StackPanel>
 
                 <!--  Labels that still need their colored symbol, which is what the overlay is for.  -->
-                <InfoBar
-                    IsClosable="False"
-                    IsOpen="{x:Bind ViewModel.HasLotMarkingNeeds, Mode=OneWay}"
-                    Severity="Warning"
-                    Title="Colored symbol needed">
-                    <InfoBar.Content>
-                        <StackPanel
-                            Margin="0,2,0,0"
-                            Spacing="6">
-                            <TextBlock
-                                Text="{x:Bind ViewModel.LotMarkingNeedsText, Mode=OneWay}"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="The labels are saved. Print them in LabelView first, then print the symbol over them."
-                                TextWrapping="WrapWholeWords" />
-                            <Button
-                                Margin="0,6,0,0"
-                                HorizontalAlignment="Left"
-                                AutomationProperties.Name="Print the colored symbol over these labels"
-                                Command="{x:Bind ViewModel.OpenLotMarkingOverlayCommand}"
-                                Style="{StaticResource AccentButtonStyle}">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon FontSize="16" Glyph="&#xE7B3;" />
-                                    <TextBlock>
-                                        <Run Text="Print the symbol over" />
-                                        <Run Text="{x:Bind ViewModel.LotMarkingNeedsCountText, Mode=OneWay}" />
-                                    </TextBlock>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </InfoBar.Content>
-                </InfoBar>
+                <dev:GlowingBorder
+                    Duration="6"
+                    Glow="0.8"
+                    GlowBrush1="#FFE0A03A"
+                    GlowBrush2="#FFF2C45C"
+                    GlowBrush3="#FFB4760F"
+                    GlowSize="8"
+                    Kind="Beam"
+                    Radius="4"
+                    Visibility="{x:Bind ViewModel.HasLotMarkingNeeds, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <InfoBar
+                        IsClosable="False"
+                        IsOpen="{x:Bind ViewModel.HasLotMarkingNeeds, Mode=OneWay}"
+                        Severity="Warning"
+                        Title="Colored symbol needed">
+                        <InfoBar.Content>
+                            <StackPanel
+                                Margin="0,4,16,10"
+                                Spacing="6">
+                                <TextBlock
+                                    Text="{x:Bind ViewModel.LotMarkingNeedsText, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="The labels are saved. Print them in LabelView first, then print the symbol over them."
+                                    TextWrapping="WrapWholeWords" />
+                                <Button
+                                    Margin="0,6,0,0"
+                                    HorizontalAlignment="Left"
+                                    AutomationProperties.Name="Print the colored symbol over these labels"
+                                    Command="{x:Bind ViewModel.OpenLotMarkingOverlayCommand}"
+                                    Style="{StaticResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontSize="16" Glyph="&#xE7B3;" />
+                                        <TextBlock>
+                                            <Run Text="Print the symbol over" />
+                                            <Run Text="{x:Bind ViewModel.LotMarkingNeedsCountText, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </InfoBar.Content>
+                    </InfoBar>
+                </dev:GlowingBorder>
 
                 <!--  Failure Reason Display  -->
                 <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.LastSaveResult.Success, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">

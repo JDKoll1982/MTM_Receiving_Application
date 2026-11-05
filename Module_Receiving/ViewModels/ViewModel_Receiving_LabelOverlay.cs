@@ -247,6 +247,7 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPrint))]
+    [NotifyPropertyChangedFor(nameof(CanClickPrint))]
     private string _selectedPrinter = string.Empty;
 
     public ObservableCollection<string> Printers { get; } = [];
@@ -285,18 +286,8 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
     /// <summary>True when the tag geometry is what decides where the marking lands.</summary>
     public bool IsTagOverlay => !IsCardSheet;
 
-    /// <summary>The footer button's words, so it says what it is about to produce.</summary>
-    public string PrintButtonText => IsCardSheet ? "Print the card sheet" : "Print the marking";
-
-    /// <summary>What the chosen format does, in the operator's terms rather than the printer's.</summary>
-    public string FormatDescription =>
-        IsCardSheet
-            ? $"Eight cards to a page, {Helper_LabelOverlayPrinter.CardColumns} across and "
-                + $"{Helper_LabelOverlayPrinter.CardRows} down, with scissor lines between them. Each card "
-                + "carries the part number across the top, the marking in the middle and the lot along "
-                + "the bottom."
-            : "Adds only the marking to each tag you feed through, in the blank space at the left of the "
-                + "tag, so a tag that was already printed comes back out with its shape and color.";
+    /// <summary>The footer button's words: one short verb, because the window title already says what prints.</summary>
+    public string PrintButtonText => "Print";
 
     // ─── Printer setup ──────────────────────────────────────────────────────
 
@@ -380,14 +371,17 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPrint))]
+    [NotifyPropertyChangedFor(nameof(CanClickPrint))]
     private double _centerXInches = Model_LabelOverlayGeometry.Default.CenterX;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPrint))]
+    [NotifyPropertyChangedFor(nameof(CanClickPrint))]
     private double _centerYInches = Model_LabelOverlayGeometry.Default.CenterY;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPrint))]
+    [NotifyPropertyChangedFor(nameof(CanClickPrint))]
     private double _diameterInches = Model_LabelOverlayGeometry.Default.Diameter;
 
     [ObservableProperty]
@@ -774,6 +768,10 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
         finally
         {
             IsBusy = false;
+
+            // CanPrint reads IsBusy, so the tick the preselection made during the load only reaches the
+            // Print button if the counts are read again once loading has ended.
+            UpdateSelectionCounts();
         }
     }
 
@@ -1329,7 +1327,6 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
         OnPropertyChanged(nameof(PrintButtonText));
         OnPropertyChanged(nameof(PrintCopies));
         OnPropertyChanged(nameof(PrintCopiesSummary));
-        OnPropertyChanged(nameof(FormatDescription));
         OnPropertyChanged(nameof(PrintSetupSummary));
         OnPropertyChanged(nameof(GeometrySummary));
         OnPropertyChanged(nameof(CanPrint));
