@@ -48,10 +48,10 @@
     Overwrite a destination that already holds a different version without asking.
 
 .EXAMPLE
-    ./Publish-App-To-Loader.ps1 -Version 4.6.0 -WhatIf
+    ./Publish-App-To-Loader.ps1 -Version 4.7.0 -WhatIf
 
 .EXAMPLE
-    ./Publish-App-To-Loader.ps1 -Version 4.6.0 -FullVerify
+    ./Publish-App-To-Loader.ps1 -Version 4.7.0 -FullVerify
 #>
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
 param(

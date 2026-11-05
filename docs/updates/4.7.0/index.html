@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 4.7.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 4.7.0</h1>
+                    <p class="hero-copy">This release finishes the Label Overlay so a whole run of tags can be printed and colored without leaving the app, warns you on the results page when a printed tag still needs its colored symbol, and lets Dunnage skip the label for parts that never need one.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 4.7.0</span>
+                <span class="meta-text">Released November 5, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="4.7.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 4.7.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">The colored symbol gets its own page</p>
+                            <p class="highlight-text">The results page now carries a card naming the labels whose part takes a lot shape and color. One button saves the receipt and opens the <strong>Label Overlay</strong> with exactly those lots already ticked, so the right tags come out colored.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Overlay tags in bulk, or as cut-out cards</p>
+                            <p class="highlight-text">The overlay prints to any printer you choose and remembers that printer's paper and tray for each output. It can also print <strong>cut-out cards</strong>: eight identical cards on one sheet, one sheet per lot, as many sheets as you ask for. A built-in preview shows the page before anything is sent.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Dunnage parts that need no label</p>
+                            <p class="highlight-text">A Dunnage part can be marked <strong>needs no printed label</strong> on the New Part and Edit Part screens. Its loads are saved straight to history instead of being queued for LabelView, so nothing waits in the label queue for a tag nobody prints.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="tools">Tools</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Results pages warn when a tag still needs its colored symbol</summary>
+                        <p>When a receipt's part number is on the list of parts that take a lot shape and color, the <strong>Review</strong> page and the <strong>finish</strong> page now show a card listing the parts and lots involved. Manual entry saves straight from the entry grid, so its reminder appears on the finish page.</p>
+                        <p>The card says the tag has to be printed in <strong>LabelView first</strong> and then printed over with the symbol. On Review the button reads <strong>Save &amp; print symbol</strong> and saves the receipt before the overlay opens; on the finish page the receipt is already saved, so the button goes straight to the overlay. Nothing opens if the save fails.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Label Overlay prints tags and cut-out cards with your own printer settings</summary>
+                        <p>The overlay window now carries a footer with <strong>Advanced</strong>, <strong>Copies</strong>, <strong>Close</strong> and <strong>Print</strong>. Print opens the Windows print dialog with the printer, paper, tray and copy count you saved for that output, so a one-off change can be made without touching the saved setup.</p>
+                        <ul>
+                            <li><strong>Cut-out cards</strong> print eight identical cards per sheet, one full sheet per lot, repeated as many times as the duplicate count asks for. Lots are never mixed on one sheet.</li>
+                            <li><strong>Print preview</strong> shows the tag or the card sheet before it is sent.</li>
+                            <li>The <strong>paper tray</strong> you pick is remembered the next time you open the window.</li>
+                            <li><strong>Advanced</strong> opens a small window for where the marking lands on the tag — from the left, from the top, circle size and the heading above it — which is only worth changing when a printed tag sits wrong.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage parts can be marked as needing no printed label</summary>
+                        <p>The New Part and Edit Part screens have a <strong>Needs no printed label</strong> checkbox. A part marked this way saves its loads straight to history, and the part's details panel says so.</p>
+                        <p>The rule is per part, not per receipt, and it is matched without regard to capitals or spacing. If the list cannot be read, every label is queued as before: a label that was queued need not have been, but one that was skipped cannot be recovered.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>The Lot Marking tool gained date, order and column controls</summary>
+                        <p>The <strong>Heat / Lot Management</strong> tool now filters the ledger by the date it was received, sorts by any column in either direction, and lets you choose which columns are shown. The change, filter and parts screens each open in their own small window instead of crowding the list.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Receiving Analytics App Data has a date range you can pick from a list</summary>
+                        <p>The <strong>App Data</strong> tab keeps its two date boxes but they now sit behind a <strong>Date Range</strong> button with ready-made choices: the last 7, 30 or 90 days, this month, last month, this quarter, last quarter, this year, and the last 12 months. Because App Data only reads completed receipts, every choice looks backwards.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Start-up is quicker</summary>
+                        <p>Preparing your settings used to ask the database for one setting at a time, about 280 reads on this manifest, and it is now read once per category. The splash screen also shows what the current step is doing, so a step that takes a few seconds no longer looks like a freeze.</p>
+                        <p>A setting whose saved value could not be read was being reset on every single launch, with a warning each time. That is fixed, and the build now refuses a default that cannot be read back.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Print and window fixes around the overlay</summary>
+                        <p><strong>Print</strong> is usable as soon as the overlay finishes loading, so a receipt's labels can be printed without touching a checkbox first. The paper tray you choose stays chosen. The Printer Settings page no longer overlaps its own text, the paper tray list opens, and the "eight cards to a page" line is gone from the bottom of that page.</p>
+                        <p>Dialog sizing was also corrected across Scanner, Reprint and the shared dialogs, so buttons and boxes are no longer cut off on smaller screens.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>A colored symbol is no longer forgotten</h3>
+                            <p>The reminder appears on the page you are already on, names the lots, and opens the overlay with those lots ticked. There is no list to retype and no tag to hunt for later.</p>
+                        </article>
+                        <article>
+                            <h3>Overlay work can be batched</h3>
+                            <p>One setup prints every tag or every card sheet for a run, at the copy count you choose and to the tray you saved, with a preview to check first.</p>
+                        </article>
+                        <article>
+                            <h3>Dunnage stops queueing labels nobody prints</h3>
+                            <p>Parts that never get a tag save straight to history, so the label queue only holds work that will actually go to LabelView.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Nothing to install or set up yourself</h2>
+                    </div>
+                    <p class="action-state success">No action is required from operators after this update.</p>
+                    <ul class="action-list">
+                        <li>Every existing screen behaves as it did, so nothing has to be relearned. The Label Overlay keeps its saved setups.</li>
+                        <li>The <strong>needs no printed label</strong> checkbox starts empty on every part. Tick it only when a part truly never needs a tag.</li>
+                        <li>This release adds a database table and updates the label procedures that go with it. The MTM IT support team deploys those scripts with the release; there is nothing for you to run.</li>
+                        <li>If your area prints cut-out cards to a particular tray, set it once on the <strong>Printer Settings</strong> tab and it will be reused.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If the colored symbol reminder names the wrong lots, the overlay opens with nothing ticked, a card sheet comes out with more or fewer cards than expected, the paper tray jumps back to a different tray, a Dunnage part that needs no label still queues one, or the application will not start from the MTM Loader, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
