@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -79,6 +80,21 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     [ObservableProperty]
     private string _selectedLookAheadOption = "30";
 
+    /// <summary>
+    /// First day of the receipt window used for the skids / packages count printed on the
+    /// transaction sheet. Unset means "today" (see <see cref="ResolveReceiptDateRange"/>).
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasReceiptDateRange))]
+    [NotifyPropertyChangedFor(nameof(ReceiptDateRangeButtonLabel))]
+    private DateTimeOffset? _receiptsFromDate;
+
+    /// <summary>Last day of the receipt window; also defaults to today when unset.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasReceiptDateRange))]
+    [NotifyPropertyChangedFor(nameof(ReceiptDateRangeButtonLabel))]
+    private DateTimeOffset? _receiptsToDate;
+
     public Func<
         IReadOnlyList<Model_FuzzySearchResult>,
         string,
@@ -126,6 +142,39 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     /// label says "Highlight" so it does not promise a filter.
     /// </summary>
     public string LookAheadLabel => "Highlight window:";
+
+    /// <summary>True when the operator picked a receipt window for the skid / package counts.</summary>
+    public bool HasReceiptDateRange => ReceiptsFromDate.HasValue || ReceiptsToDate.HasValue;
+
+    /// <summary>
+    /// Date range flyout button caption. Shows the active receipt window so the operator can see
+    /// which window the printed skid / package counts will use.
+    /// </summary>
+    public string ReceiptDateRangeButtonLabel
+    {
+        get
+        {
+            if (HasReceiptDateRange is false)
+            {
+                return "Date Range";
+            }
+
+            var (start, end) = ResolveReceiptDateRange();
+            return start == end
+                ? $"Receipts {FormatReceiptDateShort(start)}"
+                : $"Receipts {FormatReceiptDateShort(start)}-{FormatReceiptDateShort(end)}";
+        }
+    }
+
+    private static string FormatReceiptDate(DateTime date)
+    {
+        return date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+    }
+
+    private static string FormatReceiptDateShort(DateTime date)
+    {
+        return date.ToString("MM/dd", CultureInfo.InvariantCulture);
+    }
 
     public bool HasCards => Cards.Count > 0;
 
@@ -415,6 +464,43 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         }
     }
 
+    /// <summary>
+    /// Resolves the receipt window used for the skid / package counts on the transaction sheet.
+    /// Both pickers empty means "today"; a single bound means that single day.
+    /// </summary>
+    public (DateTime Start, DateTime End) ResolveReceiptDateRange()
+    {
+        var today = DateTime.Today;
+        var start = ReceiptsFromDate?.Date ?? ReceiptsToDate?.Date ?? today;
+        var end = ReceiptsToDate?.Date ?? ReceiptsFromDate?.Date ?? today;
+
+        return start <= end ? (start, end) : (end, start);
+    }
+
+    [RelayCommand]
+    private void ApplyReceiptDateRange()
+    {
+        var (start, end) = ResolveReceiptDateRange();
+        ReceiptsFromDate = new DateTimeOffset(start);
+        ReceiptsToDate = new DateTimeOffset(end);
+
+        SetLocalStatus(
+            start == end
+                ? $"Skid / package counts on the transaction sheet will use receipts from {FormatReceiptDate(start)}."
+                : $"Skid / package counts on the transaction sheet will use receipts from {FormatReceiptDate(start)} to {FormatReceiptDate(end)}."
+        );
+    }
+
+    [RelayCommand]
+    private void ClearReceiptDateRange()
+    {
+        ReceiptsFromDate = null;
+        ReceiptsToDate = null;
+        SetLocalStatus(
+            "Skid / package counts on the transaction sheet will use today's receipts."
+        );
+    }
+
     [RelayCommand]
     private async Task PrintAsync()
     {
@@ -455,13 +541,17 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
                     : "Preparing printable Material Availability Board…"
             );
 
+            var (receiptStart, receiptEnd) = ResolveReceiptDateRange();
+
             var documentResult = await _service.FormatBoardForPrintAsync(
                 Cards,
                 SearchLabel.TrimEnd(':'),
                 SearchTerm,
                 DefaultWarehouseCode,
                 SelectedLookAheadOption,
-                useTransactionSheet
+                useTransactionSheet,
+                receiptStart,
+                receiptEnd
             );
 
             if (!documentResult.IsSuccess || documentResult.Data is null)
@@ -705,6 +795,8 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     /// Replaces the board contents with location-range results: the same cards are exposed flat
     /// for printing and grouped into collapsible per-location sections for display.
     /// </summary>
+    /// <param name="cards"></param>
+    /// <param name="groups"></param>
     private void ReplaceCards(
         IEnumerable<Model_Tool_MaterialAvailabilityCard> cards,
         IEnumerable<Model_Tool_MaterialAvailabilityLocationGroup> groups

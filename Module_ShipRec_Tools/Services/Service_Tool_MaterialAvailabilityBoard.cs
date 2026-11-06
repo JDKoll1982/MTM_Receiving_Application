@@ -9,6 +9,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Data;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 
 namespace MTM_Receiving_Application.Module_ShipRec_Tools.Services;
@@ -56,16 +57,20 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private readonly IService_InforVisual _inforVisual;
     private readonly IService_LoggingUtility _logger;
+    private readonly Dao_Tool_MaterialAvailabilityReceipts _receiptsDao;
 
     public Service_Tool_MaterialAvailabilityBoard(
         IService_InforVisual inforVisual,
-        IService_LoggingUtility logger
+        IService_LoggingUtility logger,
+        Dao_Tool_MaterialAvailabilityReceipts receiptsDao
     )
     {
         ArgumentNullException.ThrowIfNull(inforVisual);
         ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(receiptsDao);
         _inforVisual = inforVisual;
         _logger = logger;
+        _receiptsDao = receiptsDao;
     }
 
     public async Task<
@@ -128,13 +133,15 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         return Model_Dao_Result_Factory.Success(cards);
     }
 
-    public Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatBoardForPrintAsync(
+    public async Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatBoardForPrintAsync(
         IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards,
         string searchLabel,
         string searchTerm,
         string warehouseCode,
         string lookAheadOption,
-        bool useTransactionSheet
+        bool useTransactionSheet,
+        DateTime? receiptStartDate = null,
+        DateTime? receiptEndDate = null
     )
     {
         try
@@ -157,24 +164,32 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             if (cards.Count == 0)
             {
-                return Task.FromResult(
-                    Model_Dao_Result_Factory.Success(
-                        new Model_FormattedReportDocument
-                        {
-                            DocumentTitle = "Material Availability Board",
-                            HtmlFragment = "<p>No material cards to print.</p>",
-                            PlainText = "No material cards to print.",
-                            PageCss = GetSummaryPrintCss(),
-                        }
-                    )
+                return Model_Dao_Result_Factory.Success(
+                    new Model_FormattedReportDocument
+                    {
+                        DocumentTitle = "Material Availability Board",
+                        HtmlFragment = "<p>No material cards to print.</p>",
+                        PlainText = "No material cards to print.",
+                        PageCss = GetSummaryPrintCss(),
+                    }
                 );
             }
 
             if (useTransactionSheet)
             {
-                var transactionSheetDocument = BuildTransactionSheetDocument(cards, safeSearchTerm);
+                var (receiptStart, receiptEnd) = NormalizeReceiptDateRange(
+                    receiptStartDate,
+                    receiptEndDate
+                );
+                var receivedLabelCounts = await GetReceivedLabelCountsAsync(receiptStart, receiptEnd);
+                var transactionSheetDocument = BuildTransactionSheetDocument(
+                    cards,
+                    safeSearchTerm,
+                    receivedLabelCounts,
+                    FormatReceiptDateRange(receiptStart, receiptEnd)
+                );
 
-                return Task.FromResult(Model_Dao_Result_Factory.Success(transactionSheetDocument));
+                return Model_Dao_Result_Factory.Success(transactionSheetDocument);
             }
 
             var html = new StringBuilder();
@@ -221,16 +236,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
             html.AppendLine("</div>");
 
-            return Task.FromResult(
-                Model_Dao_Result_Factory.Success(
-                    new Model_FormattedReportDocument
-                    {
-                        DocumentTitle = "Material Availability Board",
-                        HtmlFragment = html.ToString(),
-                        PlainText = plainText.ToString(),
-                        PageCss = GetSummaryPrintCss(),
-                    }
-                )
+            return Model_Dao_Result_Factory.Success(
+                new Model_FormattedReportDocument
+                {
+                    DocumentTitle = "Material Availability Board",
+                    HtmlFragment = html.ToString(),
+                    PlainText = plainText.ToString(),
+                    PageCss = GetSummaryPrintCss(),
+                }
             );
         }
         catch (Exception ex)
@@ -239,11 +252,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 $"Error formatting material availability print output: {ex.Message}",
                 ex
             );
-            return Task.FromResult(
-                Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
-                    $"Failed to prepare printable material availability output: {ex.Message}",
-                    ex
-                )
+            return Model_Dao_Result_Factory.Failure<Model_FormattedReportDocument>(
+                $"Failed to prepare printable material availability output: {ex.Message}",
+                ex
             );
         }
     }
@@ -1682,9 +1693,54 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             .ToString("0", CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Resolves the receipt window used for the skid / package counts. A missing bound falls back
+    /// to today, and reversed bounds are swapped so the range is always start-first.
+    /// </summary>
+    private static (DateTime Start, DateTime End) NormalizeReceiptDateRange(
+        DateTime? startDate,
+        DateTime? endDate
+    )
+    {
+        var start = (startDate ?? endDate ?? DateTime.Today).Date;
+        var end = (endDate ?? startDate ?? DateTime.Today).Date;
+
+        return start <= end ? (start, end) : (end, start);
+    }
+
+    private static string FormatReceiptDateRange(DateTime start, DateTime end)
+    {
+        return start == end
+            ? start.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)
+            : $"{start.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)} - {end.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}";
+    }
+
+    /// <summary>
+    /// Receiving label counts (skids / packages) per part for the receipt window. A failed lookup
+    /// returns <c>null</c> so the sheet still prints and every row reports <c>n/a</c>.
+    /// </summary>
+    private async Task<Dictionary<string, int>?> GetReceivedLabelCountsAsync(
+        DateTime start,
+        DateTime end
+    )
+    {
+        var result = await _receiptsDao.GetReceivedLabelCountsAsync(start, end);
+        if (!result.IsSuccess || result.Data is null)
+        {
+            _logger.LogWarning(
+                $"Could not read received skid / package counts for {FormatReceiptDateRange(start, end)}: {result.ErrorMessage}"
+            );
+            return null;
+        }
+
+        return result.Data;
+    }
+
     private static Model_FormattedReportDocument BuildTransactionSheetDocument(
         IReadOnlyList<Model_Tool_MaterialAvailabilityCard> cards,
-        string locationId
+        string locationId,
+        IReadOnlyDictionary<string, int>? receivedLabelCounts,
+        string receiptDateRangeLabel
     )
     {
         var html = new StringBuilder();
@@ -1715,6 +1771,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
         plainText.AppendLine("Material Availability Transaction Sheet");
         plainText.AppendLine($"Warehouse Location: {locationId}");
+        plainText.AppendLine($"Receipt date range: {receiptDateRangeLabel}");
         plainText.AppendLine();
 
         foreach (var locationGroup in locationPages)
@@ -1728,7 +1785,7 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     "<div class='transaction-sheet-title'>Material Availability Transaction Sheet</div>"
                 );
                 html.AppendLine(
-                    $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationGroup.Location)}</div>"
+                    $"<div class='transaction-sheet-subtitle'><strong>Warehouse Location:</strong> {HtmlEncode(locationGroup.Location)} &nbsp;|&nbsp; <strong>Receipt Date Range:</strong> {HtmlEncode(receiptDateRangeLabel)}</div>"
                 );
                 html.AppendLine("<table class='transaction-sheet'>");
                 html.AppendLine(
@@ -1762,7 +1819,10 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     html.AppendLine("</div>");
                     html.AppendLine("</td>");
                     html.AppendLine("<td class='entries-cell'>");
-                    AppendTransactionLocationRow(html, locationGroup.Location);
+                    AppendTransactionReceivedPackagesRow(
+                        html,
+                        ResolveReceivedLabelCount(receivedLabelCounts, card.PartId)
+                    );
                     AppendTransactionEntryGrid(html);
                     html.AppendLine("</td>");
                     html.AppendLine("</tr>");
@@ -1771,6 +1831,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                     plainText.AppendLine($"Part Number: {card.PartId}");
                     plainText.AppendLine($"Description: {description}");
                     plainText.AppendLine($"Quantity: {card.QuantitySummaryDisplay}");
+                    plainText.AppendLine(
+                        $"Skids / pkgs received: {ResolveReceivedLabelCount(receivedLabelCounts, card.PartId)}"
+                    );
                     plainText.AppendLine(
                         $"Transfer entries: {TransactionEntryRowCount} rows of {TransactionQuantityColumnCount} quantity columns, with a total row underneath."
                     );
@@ -1812,15 +1875,34 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     }
 
     /// <summary>
-    /// Prints the destination location on its own compact row above the entry table, so the
-    /// operator never has to write it and the table is free to use all of its columns for
-    /// quantities.
+    /// Prints how many skids / packages of the part were received inside the print date range on
+    /// its own compact row above the entry table, so the operator knows the expected move count
+    /// before writing quantities.
     /// </summary>
-    private static void AppendTransactionLocationRow(StringBuilder html, string location)
+    private static void AppendTransactionReceivedPackagesRow(StringBuilder html, string count)
     {
         html.AppendLine(
-            $"<div class='entry-location-row'><span class='entry-location-label'>Location</span><span class='entry-location-value'>{HtmlEncode(location)}</span></div>"
+            $"<div class='entry-received-row'><span class='entry-received-label'>Skids / Pkgs</span><span class='entry-received-value'>{HtmlEncode(count)}</span></div>"
         );
+    }
+
+    /// <summary>
+    /// Received-label count for a part. A missing lookup reports <c>n/a</c>; a successful lookup
+    /// that has no receipts for the part reports zero.
+    /// </summary>
+    private static string ResolveReceivedLabelCount(
+        IReadOnlyDictionary<string, int>? receivedLabelCounts,
+        string partId
+    )
+    {
+        if (receivedLabelCounts is null)
+        {
+            return "n/a";
+        }
+
+        return receivedLabelCounts.TryGetValue(partId, out var count)
+            ? count.ToString(CultureInfo.InvariantCulture)
+            : "0";
     }
 
     /// <summary>
@@ -2060,8 +2142,8 @@ body { margin: 0; background: #ffffff; }
     background: rgba(107, 33, 168, 0.22);
 }
 .entries-cell { width: auto; padding: 2px; }
-.entry-location-row { margin: 0 0 2px 0; }
-.entry-location-label {
+.entry-received-row { margin: 0 0 2px 0; }
+.entry-received-label {
     font-size: 7.5pt;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -2069,7 +2151,7 @@ body { margin: 0; background: #ffffff; }
     color: #6b21a8;
     margin-right: 4px;
 }
-.entry-location-value { font-size: 9.5pt; font-weight: 700; color: #111827; }
+.entry-received-value { font-size: 9.5pt; font-weight: 700; color: #111827; }
 .entry-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .entry-grid th, .entry-grid td { border: 1px solid #9ca3af; padding: 2px 3px; }
 .entry-grid th { background: #ffffff; font-size: 8pt; font-weight: 600; text-align: left; }

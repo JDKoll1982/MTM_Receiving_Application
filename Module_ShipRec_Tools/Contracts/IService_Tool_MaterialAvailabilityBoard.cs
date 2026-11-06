@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -30,7 +31,9 @@ public interface IService_Tool_MaterialAvailabilityBoard
         string searchTerm,
         string warehouseCode,
         string lookAheadOption,
-        bool useTransactionSheet
+        bool useTransactionSheet,
+        DateTime? receiptStartDate = null,
+        DateTime? receiptEndDate = null
     );
 
     Task<Model_Dao_Result<Model_FormattedReportDocument>> FormatIncomingMaterialForPrintAsync(

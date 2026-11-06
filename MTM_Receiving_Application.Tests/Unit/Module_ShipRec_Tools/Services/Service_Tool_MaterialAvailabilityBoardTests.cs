@@ -1,9 +1,11 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_ShipRec_Tools.Data;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Settings;
@@ -96,7 +98,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByLocationAsync("RECV", "002", 30);
@@ -152,7 +155,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-ZERO", "002", 30);
@@ -224,7 +228,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-BLANKET", "002", 30);
@@ -307,7 +312,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-BLANKET-NORECEIPT", "002", 30);
@@ -383,7 +389,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-NODATE", "002", 30);
@@ -472,7 +479,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-DUALDATE", "002", 30);
@@ -558,7 +566,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-LATEDELIVERY", "002", 30);
@@ -634,7 +643,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-LASTSHIP", "002", 30);
@@ -706,7 +716,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-SHIPDATE", "002", 30);
@@ -801,7 +812,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("MMC000744", "002", 30);
@@ -916,7 +928,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-COMP", "002", 30);
@@ -1002,7 +1015,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-RUNNING", "002", 30);
@@ -1087,7 +1101,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-NOSCHEDULE", "002", 30);
@@ -1162,7 +1177,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-WOFORMAT", "002", null);
@@ -1244,7 +1260,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-MIXEDPREFIX", "002", null);
@@ -1340,7 +1357,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("MMC0001146", "002", null);
@@ -1446,7 +1464,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-OPENDEMAND", "002", 30);
@@ -1545,7 +1564,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-OVERDUE", "002", 30);
@@ -1566,7 +1586,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1684,7 +1705,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1723,7 +1745,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1753,7 +1776,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>();
 
@@ -1802,7 +1826,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1842,11 +1867,12 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
-    public async Task FormatBoardForPrintAsync_ShouldUseOneEntryTablePerPart_WithLocationRowAndEightQuantityColumns()
+    public async Task FormatBoardForPrintAsync_ShouldUseOneEntryTablePerPart_WithReceivedPackageRowAndEightQuantityColumns()
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao(new Dictionary<string, int> { ["T68048"] = 4 })
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1869,11 +1895,11 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         result.IsSuccess.Should().BeTrue();
 
-        // The location is auto-filled on its own compact row above the table, so it no longer
-        // takes a column and all eight columns carry quantities.
-        result.Data!.HtmlFragment.Should().Contain("class='entry-location-row'");
-        result.Data.HtmlFragment.Should().Contain("entry-location-value'>RECV<");
-        result.Data.HtmlFragment.Should().NotContain("entry-location-header");
+        // The received skid / package count sits on its own compact row above the table, so it
+        // does not take a column and all eight columns carry quantities.
+        result.Data!.HtmlFragment.Should().Contain("class='entry-received-row'");
+        result.Data.HtmlFragment.Should().Contain("entry-received-value'>4<");
+        result.Data.HtmlFragment.Should().NotContain("class='entry-location-row'");
         result.Data.HtmlFragment.Should().Contain(">Qty 1<");
         result.Data.HtmlFragment.Should().Contain(">Qty 8<");
         result.Data.HtmlFragment.Should().NotContain(">Qty 9<");
@@ -1894,11 +1920,160 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldCountTodaysReceipts_WhenNoReceiptRangeIsSupplied()
+    {
+        var receiptsDao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>(
+            "Server=localhost;Database=test;"
+        );
+        receiptsDao
+            .Setup(dao => dao.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["T68048"] = 3 }
+                )
+            );
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            receiptsDao.Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "T68048", SearchLocationId = "RECV" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        receiptsDao.Verify(
+            dao =>
+                dao.GetReceivedLabelCountsAsync(
+                    It.Is<DateTime>(date => date == DateTime.Today),
+                    It.Is<DateTime>(date => date == DateTime.Today)
+                ),
+            Times.Once
+        );
+        result.Data!.HtmlFragment.Should().Contain(
+            $"<strong>Receipt Date Range:</strong> {DateTime.Today.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}"
+        );
+        result.Data.HtmlFragment.Should().Contain("entry-received-value'>3<");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldCountReceiptsInsideTheSuppliedRange()
+    {
+        var receiptsDao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>(
+            "Server=localhost;Database=test;"
+        );
+        receiptsDao
+            .Setup(dao => dao.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["T68048"] = 11 }
+                )
+            );
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            receiptsDao.Object
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "T68048", SearchLocationId = "RECV" },
+        };
+        var start = new DateTime(2026, 11, 1);
+        var end = new DateTime(2026, 11, 6);
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true,
+            start,
+            end
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        receiptsDao.Verify(
+            dao => dao.GetReceivedLabelCountsAsync(start, end),
+            Times.Once
+        );
+        result.Data!.HtmlFragment.Should().Contain(
+            "<strong>Receipt Date Range:</strong> 11/01/2026 - 11/06/2026"
+        );
+        result.Data.HtmlFragment.Should().Contain("entry-received-value'>11<");
+        result.Data.PlainText.Should().Contain("Skids / pkgs received: 11");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldShowNotAvailable_WhenReceiptLookupFails()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao(shouldFail: true)
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "T68048", SearchLocationId = "RECV" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        // A failed receipt lookup must not block the sheet; the count row reports n/a.
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.HtmlFragment.Should().Contain("entry-received-value'>n/a<");
+    }
+
+    [Fact]
+    public async Task FormatBoardForPrintAsync_ShouldShowZero_WhenPartWasNotReceivedInTheRange()
+    {
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            new Mock<IService_InforVisual>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
+        );
+        var cards = new List<Model_Tool_MaterialAvailabilityCard>
+        {
+            new() { PartId = "T68048", SearchLocationId = "RECV" },
+        };
+
+        var result = await service.FormatBoardForPrintAsync(
+            cards,
+            "Warehouse Location",
+            "RECV",
+            "002",
+            "30",
+            true
+        );
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data!.HtmlFragment.Should().Contain("entry-received-value'>0<");
+    }
+
+    [Fact]
     public async Task FormatBoardForPrintAsync_ShouldStartANewPageForEachLocation()
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -1940,7 +2115,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = Enumerable
             .Range(1, 7)
@@ -1977,7 +2153,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var cards = new List<Model_Tool_MaterialAvailabilityCard>
         {
@@ -2076,7 +2253,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("MMC0001146", "002", 30);
@@ -2155,7 +2333,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
 
         var service = new Service_Tool_MaterialAvailabilityBoard(
             inforVisualMock.Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
 
         var result = await service.GetBoardByPartAsync("PART-DETAIL", "002", 30);
@@ -2174,7 +2353,8 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     {
         var service = new Service_Tool_MaterialAvailabilityBoard(
             new Mock<IService_InforVisual>().Object,
-            new Mock<IService_LoggingUtility>().Object
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
         );
         var associatedRun = new Model_Tool_MaterialAvailabilityAssociatedPartRun
         {
@@ -2214,5 +2394,31 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         result.Data.HtmlFragment.Should().Contain("Operation Context");
         result.Data.PlainText.Should().Contain("Required Parts: 4,500");
         result.Data.PlainText.Should().Contain("Estimated Coil Use: 63,608 Pounds");
+    }
+
+    /// <summary>
+    /// Receipt-count DAO stub. Tests that never print a transaction sheet get an empty lookup.
+    /// </summary>
+    private static Dao_Tool_MaterialAvailabilityReceipts CreateReceiptsDao(
+        IReadOnlyDictionary<string, int>? counts = null,
+        bool shouldFail = false
+    )
+    {
+        var dao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>("Server=localhost;Database=test;");
+        dao.Setup(receipts =>
+                receipts.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>())
+            )
+            .ReturnsAsync(() =>
+                shouldFail
+                    ? Model_Dao_Result_Factory.Failure<Dictionary<string, int>>("lookup failed")
+                    : Model_Dao_Result_Factory.Success(
+                        new Dictionary<string, int>(
+                            counts ?? new Dictionary<string, int>(),
+                            StringComparer.OrdinalIgnoreCase
+                        )
+                    )
+            );
+
+        return dao.Object;
     }
 }

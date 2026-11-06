@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -201,5 +202,120 @@ public sealed class ViewModel_Tool_MaterialAvailabilityBoardTests
         viewModel.Cards.Should().BeEmpty();
         viewModel.IsStatusOpen.Should().BeTrue();
         viewModel.StatusMessage.Should().Contain("Infor Visual is unavailable.");
+    }
+
+    [Fact]
+    public void ResolveReceiptDateRange_ShouldUseToday_WhenNoRangeWasEntered()
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock("V-A0-01").Object
+        );
+
+        var (start, end) = viewModel.ResolveReceiptDateRange();
+
+        start.Should().Be(DateTime.Today);
+        end.Should().Be(DateTime.Today);
+        viewModel.HasReceiptDateRange.Should().BeFalse();
+        viewModel.ReceiptDateRangeButtonLabel.Should().Be("Date Range");
+    }
+
+    [Fact]
+    public void ApplyReceiptDateRange_ShouldSwapBounds_WhenTheRangeWasEnteredBackwards()
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock("V-A0-01").Object
+        );
+        viewModel.ReceiptsFromDate = new DateTimeOffset(new DateTime(2026, 11, 6));
+        viewModel.ReceiptsToDate = new DateTimeOffset(new DateTime(2026, 11, 1));
+
+        viewModel.ApplyReceiptDateRangeCommand.Execute(null);
+        var (start, end) = viewModel.ResolveReceiptDateRange();
+
+        start.Should().Be(new DateTime(2026, 11, 1));
+        end.Should().Be(new DateTime(2026, 11, 6));
+        viewModel.HasReceiptDateRange.Should().BeTrue();
+        viewModel.ReceiptDateRangeButtonLabel.Should().Be("Receipts 11/01-11/06");
+    }
+
+    [Fact]
+    public void ClearReceiptDateRange_ShouldFallBackToToday()
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock("V-A0-01").Object
+        );
+        viewModel.ReceiptsFromDate = new DateTimeOffset(new DateTime(2026, 11, 1));
+        viewModel.ReceiptsToDate = new DateTimeOffset(new DateTime(2026, 11, 6));
+
+        viewModel.ClearReceiptDateRangeCommand.Execute(null);
+        var (start, end) = viewModel.ResolveReceiptDateRange();
+
+        start.Should().Be(DateTime.Today);
+        end.Should().Be(DateTime.Today);
+        viewModel.HasReceiptDateRange.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task PrintAsync_ShouldPassTheReceiptRangeToThePrintableSheet()
+    {
+        var service = new Mock<IService_Tool_MaterialAvailabilityBoard>();
+        service
+            .Setup(boards => boards.LocationExistsAsync("RECV", WarehouseCode))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+        service
+            .Setup(boards => boards.GetBoardByLocationAsync("RECV", WarehouseCode, 30))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_Tool_MaterialAvailabilityCard> { CreateCard("T68048") }
+                )
+            );
+        service
+            .Setup(boards =>
+                boards.FormatBoardForPrintAsync(
+                    It.IsAny<IReadOnlyList<Model_Tool_MaterialAvailabilityCard>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    true,
+                    It.IsAny<DateTime?>(),
+                    It.IsAny<DateTime?>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_FormattedReportDocument
+                    {
+                        DocumentTitle = "Material Availability Transaction Sheet",
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(service.Object, CreateLocationRangeMock().Object);
+        viewModel.RequestPrintAsync = _ => Task.FromResult(Model_Dao_Result_Factory.Success(true));
+        viewModel.SelectLocationPrintModeAsync = () => Task.FromResult<bool?>(true);
+        viewModel.SearchTerm = "RECV";
+        await viewModel.SearchCommand.ExecuteAsync(null);
+        viewModel.ReceiptsFromDate = new DateTimeOffset(new DateTime(2026, 11, 1));
+        viewModel.ReceiptsToDate = new DateTimeOffset(new DateTime(2026, 11, 6));
+
+        await viewModel.PrintCommand.ExecuteAsync(null);
+
+        service.Verify(
+            boards =>
+                boards.FormatBoardForPrintAsync(
+                    It.IsAny<IReadOnlyList<Model_Tool_MaterialAvailabilityCard>>(),
+                    It.IsAny<string>(),
+                    "RECV",
+                    WarehouseCode,
+                    "30",
+                    true,
+                    new DateTime(2026, 11, 1),
+                    new DateTime(2026, 11, 6)
+                ),
+            Times.Once
+        );
     }
 }

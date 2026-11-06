@@ -108,6 +108,26 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         SearchBox.DispatcherQueue?.TryEnqueue(() => SearchBox.Focus(FocusState.Programmatic));
     }
 
+    private void ApplyReceiptDateRangeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.ApplyReceiptDateRangeCommand.CanExecute(null))
+        {
+            ViewModel.ApplyReceiptDateRangeCommand.Execute(null);
+        }
+
+        ReceiptDateRangeFlyout?.Hide();
+    }
+
+    private void ClearReceiptDateRangeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.ClearReceiptDateRangeCommand.CanExecute(null))
+        {
+            ViewModel.ClearReceiptDateRangeCommand.Execute(null);
+        }
+
+        ReceiptDateRangeFlyout?.Hide();
+    }
+
     /// <summary>Formats a Start/Stop range box with the shared warehouse-location rule.</summary>
     private void RangeBox_LostFocus(object sender, RoutedEventArgs e)
     {

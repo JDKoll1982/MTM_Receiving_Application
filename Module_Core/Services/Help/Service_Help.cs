@@ -1019,7 +1019,8 @@ public class Service_Help : IService_Help
                     "Read-only card view of material availability by location.\n\n"
                     + "• Search by location or part\n"
                     + "• Cards show on-hand availability and details\n"
-                    + "• Open work-order or incoming detail dialogs from a card",
+                    + "• Open work-order or incoming detail dialogs from a card\n"
+                    + "• Date Range picks the receipt window for the skids / packages count on the printed transaction sheet; leave it empty to use today",
                 Category = "ShipRec Tools",
                 HelpType = Enum_HelpType.Info,
                 Icon = "ViewDashboard",

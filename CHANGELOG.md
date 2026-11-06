@@ -21,6 +21,28 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### The transaction sheet shows how many skids or packages of the part came in (2026-11-06)
+
+- **What changed:** on the printed **Material Availability Transaction Sheet**, the small `LOCATION` row
+  above the quantity table is now a **Skids / Pkgs** count for that part, so the operator knows how many
+  skids or packages to expect before writing any quantities. The page subtitle still names the warehouse
+  location, so nothing about the move destination is lost.
+- **Where the number comes from:** MySQL `receiving_history` through `sp_Receiving_History_Get`, counting
+  the receiving labels (one per skid or package) whose `transaction_date` falls inside the chosen window.
+  Infor Visual still supplies the part card itself.
+- **Picking the window:** a new **Date Range** flyout on the board takes **From** and **To** dates. Leaving
+  both empty counts the current date only; entering one date counts that day; entering them backwards swaps
+  them. The button caption shows the active window, and **Use Today** clears it.
+- **If the lookup fails** the row prints `n/a` and the sheet still prints; a part with no receipts in the
+  window prints `0`.
+- **Files:** `Module_ShipRec_Tools/Data/Dao_Tool_MaterialAvailabilityReceipts.cs` (new),
+  `Module_ShipRec_Tools/Services/Service_Tool_MaterialAvailabilityBoard.cs`,
+  `Module_ShipRec_Tools/Contracts/IService_Tool_MaterialAvailabilityBoard.cs`,
+  `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_MaterialAvailabilityBoard.cs`,
+  `Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml(.cs)`,
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
+  `Module_ShipRec_Tools/docs/MaterialAvailabilityTransactionSheet.md`
+
 #### The colored symbol card wears a DevWinUI glowing border (2026-11-05)
 
 - **What changed:** the card on the Review and finish pages is now wrapped in DevWinUI's `GlowingBorder`

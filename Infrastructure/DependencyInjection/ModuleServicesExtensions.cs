@@ -641,11 +641,14 @@ public static class ModuleServicesExtensions
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
             return new Service_Tool_OutsideServiceHistory(inforVisual, logger);
         });
+        // Material Availability Board: read-only Infor Visual data plus MySQL receipt counts.
+        services.AddSingleton(_ => new Dao_Tool_MaterialAvailabilityReceipts(mySqlConnectionString));
         services.AddSingleton<IService_Tool_MaterialAvailabilityBoard>(sp =>
         {
             var inforVisual = sp.GetRequiredService<IService_InforVisual>();
             var logger = sp.GetRequiredService<IService_LoggingUtility>();
-            return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger);
+            var receiptsDao = sp.GetRequiredService<Dao_Tool_MaterialAvailabilityReceipts>();
+            return new Service_Tool_MaterialAvailabilityBoard(inforVisual, logger, receiptsDao);
         });
         services.AddSingleton<IService_Tool_POLineSpecSearch>(sp =>
         {

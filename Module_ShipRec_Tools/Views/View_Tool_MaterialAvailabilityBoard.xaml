@@ -458,6 +458,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             Grid.Column="0"
@@ -521,22 +522,78 @@
                             IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
                         <Button
                             Grid.Column="4"
+                            ToolTipService.ToolTip="Receipt window for the skids / packages count printed on the transaction sheet">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon FontSize="14" Glyph="&#xE787;" />
+                                <TextBlock Text="{x:Bind ViewModel.ReceiptDateRangeButtonLabel, Mode=OneWay}" />
+                            </StackPanel>
+                            <Button.Flyout>
+                                <Flyout x:Name="ReceiptDateRangeFlyout" Placement="Bottom">
+                                    <StackPanel
+                                        MinWidth="320"
+                                        Padding="8"
+                                        Spacing="12">
+                                        <TextBlock
+                                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                                            Text="Skids / packages received"
+                                            TextWrapping="Wrap" />
+                                        <Grid ColumnSpacing="6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <CalendarDatePicker
+                                                Grid.Column="0"
+                                                Width="128"
+                                                Date="{x:Bind ViewModel.ReceiptsFromDate, Mode=TwoWay}"
+                                                PlaceholderText="From" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Text="to" />
+                                            <CalendarDatePicker
+                                                Grid.Column="2"
+                                                Width="128"
+                                                Date="{x:Bind ViewModel.ReceiptsToDate, Mode=TwoWay}"
+                                                PlaceholderText="To" />
+                                        </Grid>
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="Leave both dates empty to count today's receipts."
+                                            TextWrapping="Wrap" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button
+                                                Click="ApplyReceiptDateRangeButton_Click"
+                                                Content="Apply"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                            <Button
+                                                Click="ClearReceiptDateRangeButton_Click"
+                                                Content="Use Today" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button
+                            Grid.Column="5"
                             Command="{x:Bind ViewModel.PrintCommand}"
                             Content="Print"
                             IsEnabled="{x:Bind ViewModel.HasCards, Mode=OneWay}" />
                         <TextBlock
-                            Grid.Column="5"
+                            Grid.Column="6"
                             VerticalAlignment="Center"
                             Style="{StaticResource BodyStrongTextBlockStyle}"
                             Text="{x:Bind ViewModel.LookAheadLabel, Mode=OneWay}" />
                         <ComboBox
-                            Grid.Column="6"
+                            Grid.Column="7"
                             Width="110"
                             IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                             ItemsSource="{x:Bind ViewModel.LookAheadOptions, Mode=OneWay}"
                             SelectedItem="{x:Bind ViewModel.SelectedLookAheadOption, Mode=TwoWay}" />
                         <ProgressRing
-                            Grid.Column="7"
+                            Grid.Column="8"
                             Width="28"
                             Height="28"
                             VerticalAlignment="Center"
