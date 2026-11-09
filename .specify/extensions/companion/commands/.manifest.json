@@ -1,17 +1,5 @@
 {
   "commands": {
-    "append": [
-      {
-        "artifact": "<short-name>.spec.md",
-        "node": "append-spec",
-        "conditional": false
-      },
-      {
-        "artifact": "tasks.md",
-        "node": "append-tasks",
-        "conditional": false
-      }
-    ],
     "auto": [],
     "implement": [
       {
@@ -44,7 +32,7 @@
     ],
     "specify": [
       {
-        "artifact": "<short-name>.spec.md",
+        "artifact": "spec.md",
         "node": "draft-spec",
         "conditional": false
       },
@@ -62,5 +50,5 @@
       }
     ]
   },
-  "artifactCount": 10
+  "artifactCount": 8
 }
