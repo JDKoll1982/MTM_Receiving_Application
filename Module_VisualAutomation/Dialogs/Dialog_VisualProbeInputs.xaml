@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_VisualAutomation.Dialogs.Dialog_VisualProbeInputs"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Field values sent to Infor VISUAL"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    MinWidth="480"
+    PrimaryButtonText="Use these values"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="12">
+        <TextBlock
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="These are the only values the app types into Purchase Receipt Entry. Each one is written to its field, read back, then replaced with the original value, so nothing is left changed and nothing is saved. All three are required before a run can start."
+            TextWrapping="Wrap" />
+
+        <TextBox
+            x:Name="BolIdBox"
+            AutomationProperties.Name="Bill of Lading ID value"
+            Header="BOL_ID - Bill of Lading ID"
+            PlaceholderText="Enter a value for Bill of Lading ID"
+            TextChanged="OnValueChanged" />
+
+        <TextBox
+            x:Name="VendPackIdBox"
+            AutomationProperties.Name="Vendor Packlist ID value"
+            Header="VEND_PACK_ID - Vendor Packlist ID"
+            PlaceholderText="Enter a value for Vendor Packlist ID"
+            TextChanged="OnValueChanged" />
+
+        <TextBox
+            x:Name="VendFreightIdBox"
+            AutomationProperties.Name="Vendor Freight Bill ID value"
+            Header="VEND_FREIGHT_ID - Vendor Freight Bill ID"
+            PlaceholderText="Enter a value for Vendor Freight Bill ID"
+            TextChanged="OnValueChanged" />
+
+        <InfoBar
+            x:Name="ValidationBar"
+            IsClosable="False"
+            IsOpen="False"
+            Severity="Warning" />
+    </StackPanel>
+</ContentDialog>

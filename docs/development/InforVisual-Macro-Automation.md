@@ -1,128 +1,144 @@
-# Infor VISUAL Macro Automation
+# Infor VISUAL Automation from the MTM Receiving Application
 
-Last Updated: 2026-11-10
+Last Updated: 2026-11-11
 
-How Infor VISUAL exposes its Purchase Receipt Entry window (`VMRCVENT.EXE`) to VBScript macros, what
-was verified on this installation, and how the app's **Visual Macro Tester** page
-(`Module_VisualAutomation`) uses that behaviour to self-test.
+How the app reads and drives the Infor VISUAL **Purchase Receipt Entry** window (`VMRCVENT.EXE`) directly,
+without deploying or executing a macro. Field meanings, backing columns, and the evidence for them live in
+[InforVisual-Macro-Variable-Reference.md](./InforVisual-Macro-Variable-Reference.md).
 
-## What VISUAL macros are
+## Why the app does not use macros
 
-A VISUAL macro is a VBScript file that lives beside the module executable and is named
-`<MODULENAME>_<MACRONAME>.VMS`. When the module window opens it enumerates those files and lists each
-one under its **Macros** menu. Inside the script every screen field is available as a read/write
-variable, so a macro drives the same controls a user drives - business logic still applies.
+VISUAL macros are VBScript files named `<PROGRAM_ID>_<NAME>.VMS` beside the module executable. Recovered from
+the running module, the engine's own SQL decides where macros live:
 
-Verified on this installation (2026-11-10):
-
-| Item | Value |
-| ---- | ----- |
-| Module executable | `\\visual\visual908$\VMFG\VMRCVENT.EXE` |
-| Window title | `Purchase Receipt Entry - Infor VISUAL - MTMFG` |
-| VISUAL version | 9.0.8 |
-| Macro folder | `\\visual\visual908$\VMFG` (same folder as the executable) |
-| Menu bar | File, Edit, View, Info, Options, Notes, **Macros**, Help |
-| Macros menu contents with no `.VMS` files present | `Edit...` only |
-
-## Event macros run without the Macros menu
-
-Special macro names make VISUAL run the script by itself:
-
-| Macro name | Fires when |
-| ---------- | ---------- |
-| `OnLoad` | a record is loaded into the window |
-| `OnNew` | the New button is pressed |
-| `OnSave` | before a save is committed - *not deployed by this app* |
-| `OnAfterSave` | after a save is committed - *not deployed by this app* |
-
-Because a file named `VMRCVENT_OnLoad.VMS` is executed by VISUAL on every record load, nothing has to
-drive the menu bar. That is why the harness offers an **OnLoad probe** as its non-menu route. The
-trade-off is reach: an event macro is live for every user of the shared VISUAL share until it is
-removed, so the harness backs up any file it displaces and removes its own file when the deployment is
-cleared.
-
-## Fields a macro can see
-
-The macro editor's **Available Fields** list is the authoritative surface. On the Purchase Receipt
-Entry window it contains header fields, user defined fields, and status fields:
-
-```text
-BOL_ID  BUYER  CARRIER_ID  CONTACT_*  DATABASE  DESIRED_RECV_DATE  DISPATCH_ID  FREE_ON_BOARD
-LINES  LONG_DESCRIPTION  MACRO_MESSAGE  MACRO_SUCCESS  ORDER_ID  PO_USER_1..10
-POSTING_CANDIDATE  PROMISE_DATE  PROMISE_SHIP_DATE  RECEIVED_DATE  RECEIVER_ID
-RECVR_LONG_DESC  SHIP_VIA  SITE_ID  STATUS  USER  VEND_FREIGHT_ID  VEND_PACK_DATE  VEND_PACK_ID
-VENDOR_ID  udfBoolean1..5  udfDate1..5  udfNumber1..10  udfStrCombo1..10  udfString1..10  udfURL1..5
+```sql
+select STORE_MACROS_IN_DB from APPLICATION_GLOBAL
 ```
 
-Notes that matter when writing a probe:
+On this install `STORE_MACROS_IN_DB = 'N'`, so macros are files on the shared VISUAL folder and the `MACRO`
+table stays empty. Either way a deployed macro is **live for every user of the share** until someone removes
+it, and the Macros menu is only re-read when the module window opens.
 
-- `MACRO_MESSAGE` and `MACRO_SUCCESS` exist so a macro can report its own outcome back to whatever
-  started it.
-- The `udf*` slots are not shown on the General tab, which makes them safe scratch space for a
-  read/write round-trip.
-- `LINES` reports a line count. The per-line access shape is **not** documented in the Available
-  Fields list; the `T04_LineGridRead` probe tries the plausible shapes (`LINES(1)`,
-  `LINES(1).PART_ID`, `LINE_COUNT`, `ITEM_COUNT`) and reports which one answers.
-- The grid columns shown in the window (`colLINE_NO`, `colPART_ID`, ...) come from `VMRCVENT.INI`
-  under `[tblReturnLineItem]`, not from the macro field list. They configure the grid, they are not
-  macro variables.
+The app therefore performs the same work itself: it reads the window with UI Automation and writes fields
+with real mouse and keyboard input. Nothing is added to the VISUAL share, and nobody else is affected.
 
-## Getting results back out
+## What a macro and this app do the same way
 
-A macro has no return value the caller can read, so the harness uses a file as the result channel:
+A macro gets every screen field as a read/write VBScript variable. This app gets the same values by reading
+the Gupta window's automation tree, and changes them by clicking the field and typing - which is what a
+person does, and effectively what a macro does.
 
-1. The app writes `VMRCVENT_MTMProbeAll.VMS` with an absolute result path embedded in it.
-2. The macro creates the file with `Scripting.FileSystemObject` and writes `KEY=value` lines inside
-   `#TEST=<probe>` / `#END` sections, finishing with a `#TRAILER` marker.
-3. The app polls the file until the trailer appears, then parses each section and decides pass/fail
-   per probe card.
+| Concern | Macro | This app |
+| ------- | ----- | -------- |
+| Read a header field | `ORDER_ID` variable | Automation element beside the "Order ID" label |
+| Write a header field | assign the variable | click, select-all, type, Tab, read back |
+| Known required inputs | `ORDER_ID` + `SITE_ID` | same two, per the toolkit documentation |
+| Report a result | `MACRO_SUCCESS` / `MACRO_MESSAGE` | the probe verdict on the card |
+| Side effects on other users | file lives on the shared VISUAL folder | none |
+| Save the receipt | macro can call save | **never** - no save path exists |
 
-The generated script was executed against the real VBScript engine (VBScript 10.8) and produced all
-sections cleanly, including `CreateObject` success for `Scripting.FileSystemObject`,
-`WScript.Shell`, and `ADODB.Connection`, plus working `Now`, `DateAdd`, and `DateSerial` calls.
+## How a field is located and read
 
-## Constraints this app respects
+The window publishes 101 automation elements with `PO-072040` loaded (61 on an empty form). Field *value*
+boxes are Gupta panes: they expose no UI Automation patterns, are not keyboard focusable, and carry no
+automation id, so they cannot be written through Automation APIs. They are matched positionally instead:
 
-- **No saves.** The harness never deploys `OnSave` or `OnAfterSave`, and the generated script contains
-  no save call. The `T09_NoSaveGuard` card fails the run if either becomes true. Saving stays a human
-  action on the VISUAL Save button.
-- **Restore what you touch.** Every write probe captures the original value first and writes it back
-  before the section ends.
-- **Macro list is read at module start.** A newly deployed `.VMS` shows up under Macros only after the
-  Purchase Receipt Entry window is closed and reopened once.
-- **Shared share.** The macro folder is a network share used by every VISUAL workstation, so probe
-  files are removed when the deployment is cleared.
+1. Find the static label whose text matches a known caption (`Order ID`, `Bill of Lading ID`, ...).
+2. Take the widest control on the same row, to the right of that label (within +/-8 px of the label's
+   vertical centre), taller than 18 px and wider than 40 px. This skips the small lookup buttons that sit
+   between label and box.
+3. Read its `Name`, which is the value currently shown.
+
+Every mapped variable resolves this way - 16 of 16 on a loaded receipt.
+
+## How a field is written
+
+1. Activate the VISUAL window and confirm it actually holds focus.
+2. Click the value box, `Ctrl+A`, type, press `Tab` to commit.
+3. Re-read the field and compare with what was typed.
+4. If the probe asked for a restore, type the original value back and re-read that too.
+
+Only three fields are ever typed into - `BOL_ID`, `VEND_PACK_ID`, `VEND_FREIGHT_ID`. They are receipt-only
+free text: writing one cannot change a purchase order, a quantity, or a posting state. The variable safety
+classes are recorded in the reference document, and a test enforces that the writable set never widens past
+that safe class.
+
+## The write path is gated on focus
+
+Keystrokes go to whatever window is in front, so the driver refuses to type unless VISUAL is the foreground
+window, re-checks focus after activating, and returns an explanatory failure instead of typing blind. A run
+that loses focus mid-probe reports that rather than corrupting a field.
+
+## Table automation
+
+The line grid is the part that matters for receiving work, and it is the part UI Automation cannot see: the
+grid exposes no grid, table, or scroll patterns. The practical split is therefore:
+
+- **Read the lines from the database.** `PURC_ORDER_LINE` joined to `RECEIVER_LINE` gives part, ordered
+  quantity, previously received quantity, and the receipt's current values, exactly as the grid shows them.
+  The grid's "Total Qty Recv" is the stored rollup `PURC_ORDER_LINE.TOTAL_USR_RECD_QTY`, verified to equal
+  the sum of `RECEIVER_LINE.USER_RECEIVED_QTY` on all five lines of `PO-072040`.
+- **Write through the grid.** Cells are reached by click plus keyboard navigation. The editable columns are
+  `USER_RECEIVED_QTY`, `LOCATION_ID`, `WAREHOUSE_ID`, the Recv-to-Inspect checkbox, and the three date
+  columns; the rest are display-only.
+
+`LINES` is not a usable entry point: it is a count, and `LINES(1)` raises *Type mismatch* outside VISUAL.
+The column-to-column mapping for every grid column is in the reference document.
 
 ## The Visual Macro Tester page
 
-`Module_VisualAutomation` adds one navigation entry below *Volvo Dunnage Requisition* in the shell's
-left pane, separated by a divider. Each probe is its own card that states what it proves, what it does
-to the VISUAL window, and what a pass looks like.
+`Module_VisualAutomation` adds one navigation entry below **Volvo Dunnage Requisition**, separated by a
+divider. Each probe is its own collapsible card, collapsed by default, stating what it proves, what it does
+on the VISUAL window, and what a pass looks like. A card's status is only the word **Pass** or **Fail** -
+the reason and the captured values are never printed on the page.
 
-| Card | Route |
-| ---- | ----- |
-| `T01_TargetDiscovery` | Resolve the running process, window title, and macro folder |
-| `T02_MacroDeployment` | Write `VMRCVENT_MTMProbeAll.VMS` and check the naming contract |
-| `T03_HeaderFieldRead` | Read Order ID, Site ID, Buyer, FOB, Status, Posting Candidate |
-| `T04_LineGridRead` | Discover the receipt line collection shape |
-| `T05_ScratchUdfRoundTrip` | Write, read back, and restore `udfString1` / `udfNumber1` / `udfDate1` |
-| `T06_HeaderFieldWriteRestore` | Write and restore Bill of Lading ID |
-| `T07_MacroStatusChannel` | Drive `MACRO_MESSAGE` and `MACRO_SUCCESS` |
-| `T08_RuntimeEnvironment` | Script engine version, COM objects, date arithmetic |
-| `T09_NoSaveGuard` | Prove the run cannot commit anything |
-| `T10_EventAutoRun` | Run `VMRCVENT_OnLoad.VMS` with no menu interaction |
+Two icon buttons beside **Reset** open the modals:
 
-Typical run:
+| Icon | Modal | Contents |
+| ---- | ----- | -------- |
+| Info | **Probe details** | Every probe from the last run: status, the reason for the verdict, and the values it captured from the live window |
+| Edit | **Field values sent to Infor VISUAL** | The three values the app types into the receipt |
 
-1. Open the page. `T01` settles immediately from the live process.
-2. Press **Deploy selected probes**, then run `MTMProbeAll` from **Macros** in Purchase Receipt Entry.
-   First time only: close and reopen the Purchase Receipt Entry window so the menu re-reads the folder.
-3. Cards flip to **Passed** or **Failed** as the result file is parsed. The activity log keeps the full
-   trail and the result file path is shown so it can be opened directly.
+### Field values
+
+The app sends exactly three values, and they start **blank**:
+
+| Macro variable | Screen field |
+| -------------- | ------------ |
+| `BOL_ID` | Bill of Lading ID |
+| `VEND_PACK_ID` | Vendor Packlist ID |
+| `VEND_FREIGHT_ID` | Vendor Freight Bill ID |
+
+All three are required. **A run will not start while any of them is blank** - the app shows what is missing
+and opens the values dialog instead. The dialog keeps its primary button disabled until every value is
+filled in, and cancelling leaves the live set untouched.
+
+| Probe | What it establishes | Needs values |
+| ----- | ------------------- | ------------ |
+| `P01_Attach` | The live window is found and readable | no |
+| `P02_ControlSurface` | The automation tree is stable across reads | no |
+| `P03_IdentityFields` | `ORDER_ID`, `SITE_ID`, `RECEIVER_ID` read correctly | no |
+| `P04_DateAndPartyFields` | Dates, buyer, FOB, ship via, carrier read correctly | no |
+| `P05_ReferenceFields` | The reference fields resolve | no |
+| `P06_VariableCoverage` | Which of the 87 macro variables exist on the visible surface | no |
+| `P07_FieldWriteRestore` | Types `BOL_ID`, verifies, restores | yes |
+| `P08_RoundTripFidelity` | Types `VEND_PACK_ID` and `VEND_FREIGHT_ID`, verifies character fidelity, restores | yes |
+| `P09_NoSaveGuard` | No save action is ever performed | no |
+| `P10_RestoreIntegrity` | Every field matches the pre-run snapshot | no |
+
+Typical run: load a purchase order in Purchase Receipt Entry, open the page, enter the field values, then
+**Run selected probes**. `P01` and `P02` answer immediately; `P07` and `P08` briefly take focus of the
+VISUAL window.
+
+## Safety rules the code enforces
+
+- No save action exists anywhere in the module - no Save button is clicked and no save key sequence is sent.
+- Only receipt-only free-text fields are typed into.
+- Every write is read back, and every write probe restores the original value.
+- Typing requires a confirmed foreground VISUAL window.
+- Database access is read-only; `ApplicationIntent=ReadOnly` is set on the connection.
 
 ## See Also
 
-- [Infor VISUAL macro overview](https://www.gingerhelp.com/infor-visual-blog/developing-and-using-macros-to-automate-common-tasks)
-- [Running VISUAL macros from outside VISUAL](https://community.infor.com/discussion/3127/running-visual-macros-from-outside-visual)
-- The macro folder also ships the VISUAL API Toolkit DLLs and PDFs under `VMFG\API Toolkit Documents`.
-  That toolkit is .NET Framework x86 only, so it cannot be loaded by this .NET 10 x64 app directly.
+- [Infor VISUAL Macro Variable Reference](./InforVisual-Macro-Variable-Reference.md)
+- [Infor Visual database reference files](../../.github/instructions/architecture/infor-visual-database-reference.instructions.md)

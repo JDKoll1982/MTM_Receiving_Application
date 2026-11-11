@@ -15,11 +15,13 @@ public interface IService_VisualAutomation_ProbeRunner
     /// Runs every probe in the supplied order and reports each result as soon as it is known.
     /// </summary>
     /// <param name="probes">Probes to run.</param>
+    /// <param name="inputs">The values the probes must send to VISUAL.</param>
     /// <param name="onResult">Invoked for each completed probe.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A task that completes when every probe has run.</returns>
     Task RunAllAsync(
         IReadOnlyList<Model_VisualProbeDefinition> probes,
+        Model_VisualProbeInputs inputs,
         Action<Model_VisualProbeResult> onResult,
         CancellationToken cancellationToken = default
     );
@@ -28,10 +30,12 @@ public interface IService_VisualAutomation_ProbeRunner
     /// Runs a single probe.
     /// </summary>
     /// <param name="probe">Probe to run.</param>
+    /// <param name="inputs">The values the probe must send to VISUAL.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The probe result.</returns>
     Task<Model_VisualProbeResult> RunAsync(
         Model_VisualProbeDefinition probe,
+        Model_VisualProbeInputs inputs,
         CancellationToken cancellationToken = default
     );
 }

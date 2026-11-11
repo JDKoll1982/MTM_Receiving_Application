@@ -4,7 +4,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:MTM_Receiving_Application.Module_VisualAutomation.Converters"
-    xmlns:coreConverters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_VisualAutomation.Models"
@@ -13,7 +12,6 @@
 
     <Page.Resources>
         <converters:Converter_VisualMacroStatusToBrush x:Key="StatusToBrushConverter" />
-        <coreConverters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
     <Grid Padding="24" RowSpacing="14">
@@ -21,7 +19,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!--  Target + commands  -->
@@ -59,7 +56,31 @@
                         Style="{StaticResource AccentButtonStyle}" />
                     <Button Command="{x:Bind ViewModel.CancelRunCommand}" Content="Stop" />
                     <Button Command="{x:Bind ViewModel.ResetCommand}" Content="Reset" />
+                    <Button
+                        Width="40"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Probe details"
+                        Click="OnDetailsClick"
+                        ToolTipService.ToolTip="Probe details">
+                        <FontIcon FontSize="16" Glyph="&#xE946;" />
+                    </Button>
+                    <Button
+                        Width="40"
+                        Height="34"
+                        Padding="0"
+                        AutomationProperties.Name="Field values sent to VISUAL"
+                        Click="OnInputsClick"
+                        ToolTipService.ToolTip="Field values sent to VISUAL">
+                        <FontIcon FontSize="16" Glyph="&#xE70F;" />
+                    </Button>
                 </StackPanel>
+
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.InputsSummary, Mode=OneWay}"
+                    TextWrapping="Wrap" />
             </StackPanel>
         </Border>
 
@@ -183,35 +204,6 @@
                                         TextWrapping="Wrap" />
                                 </StackPanel>
 
-                                <TextBlock
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                    Text="{x:Bind DetailText, Mode=OneWay}"
-                                    TextWrapping="Wrap" />
-
-                                <StackPanel
-                                    Spacing="2"
-                                    Visibility="{x:Bind HasCapturedValues, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <TextBlock
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Captured values" />
-                                    <Border
-                                        Padding="10,8"
-                                        Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="4">
-                                        <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
-                                            <TextBlock
-                                                FontFamily="Consolas"
-                                                IsTextSelectionEnabled="True"
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Text="{x:Bind CapturedValues, Mode=OneWay}"
-                                                TextWrapping="Wrap" />
-                                        </ScrollViewer>
-                                    </Border>
-                                </StackPanel>
-
                                 <Button
                                     HorizontalAlignment="Right"
                                     Command="{x:Bind RunCommand, Mode=OneWay}"
@@ -223,44 +215,5 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
-        <!--  Activity log  -->
-        <Expander
-            Grid.Row="3"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Stretch"
-            IsExpanded="False">
-            <Expander.Header>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Activity log" />
-                    <TextBlock
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="probe results and errors" />
-                </StackPanel>
-            </Expander.Header>
-            <ListView
-                Height="170"
-                ItemsSource="{x:Bind ViewModel.LogEntries}"
-                SelectionMode="None">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="MinHeight" Value="0" />
-                        <Setter Property="Padding" Value="4,1" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Model_VisualLogEntry">
-                        <TextBlock
-                            FontFamily="Consolas"
-                            IsTextSelectionEnabled="True"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="{x:Bind Display}"
-                            TextWrapping="Wrap" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Expander>
     </Grid>
 </Page>

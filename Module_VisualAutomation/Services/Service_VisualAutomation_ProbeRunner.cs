@@ -33,11 +33,13 @@ public sealed class Service_VisualAutomation_ProbeRunner : IService_VisualAutoma
     /// <inheritdoc />
     public async Task RunAllAsync(
         IReadOnlyList<Model_VisualProbeDefinition> probes,
+        Model_VisualProbeInputs inputs,
         Action<Model_VisualProbeResult> onResult,
         CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(probes);
+        ArgumentNullException.ThrowIfNull(inputs);
         ArgumentNullException.ThrowIfNull(onResult);
 
         _baseline = _driver.CaptureSnapshot();
@@ -46,7 +48,7 @@ public sealed class Service_VisualAutomation_ProbeRunner : IService_VisualAutoma
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await RunAsync(probe, cancellationToken).ConfigureAwait(true);
+            var result = await RunAsync(probe, inputs, cancellationToken).ConfigureAwait(true);
             onResult(result);
         }
     }
@@ -54,10 +56,12 @@ public sealed class Service_VisualAutomation_ProbeRunner : IService_VisualAutoma
     /// <inheritdoc />
     public async Task<Model_VisualProbeResult> RunAsync(
         Model_VisualProbeDefinition probe,
+        Model_VisualProbeInputs inputs,
         CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(probe);
+        ArgumentNullException.ThrowIfNull(inputs);
 
         try
         {
@@ -77,17 +81,17 @@ public sealed class Service_VisualAutomation_ProbeRunner : IService_VisualAutoma
                 ),
                 VisualProbeCatalog.ReferenceFields => RunReferenceProbe(probe),
                 VisualProbeCatalog.VariableCoverage => RunVariableCoverage(probe),
-                VisualProbeCatalog.FieldWriteRestore => await RunWriteProbeAsync(
+                VisualProbeCatalog.FieldWriteRestore => await RunFieldWriteAsync(
                         probe,
-                        "BOL_ID",
-                        $"MTM-PROBE-{DateTime.Now:HHmmss}",
+                        [("BOL_ID", inputs.BolId)],
+                        verifyExactText: false,
                         cancellationToken
                     )
                     .ConfigureAwait(true),
-                VisualProbeCatalog.RoundTripFidelity => await RunWriteProbeAsync(
+                VisualProbeCatalog.RoundTripFidelity => await RunFieldWriteAsync(
                         probe,
-                        "VEND_PACK_ID",
-                        "MTM-PROBE-a1B2/3-4",
+                        [("VEND_PACK_ID", inputs.VendPackId), ("VEND_FREIGHT_ID", inputs.VendFreightId)],
+                        verifyExactText: true,
                         cancellationToken
                     )
                     .ConfigureAwait(true),
@@ -297,55 +301,65 @@ public sealed class Service_VisualAutomation_ProbeRunner : IService_VisualAutoma
             );
     }
 
-    private async Task<Model_VisualProbeResult> RunWriteProbeAsync(
+    private async Task<Model_VisualProbeResult> RunFieldWriteAsync(
         Model_VisualProbeDefinition probe,
-        string key,
-        string valueToType,
+        IReadOnlyList<(string Key, string Value)> fields,
+        bool verifyExactText,
         CancellationToken cancellationToken
     )
     {
-        var writeResult = await _driver
-            .WriteValueAsync(key, valueToType, restoreOriginal: true, cancellationToken)
-            .ConfigureAwait(true);
+        var values = new Dictionary<string, string>(StringComparer.Ordinal);
+        var problems = new List<string>();
 
-        if (!writeResult.Success || writeResult.Data is null)
+        foreach (var (key, value) in fields)
         {
-            return Model_VisualProbeResult.Fail(
-                probe.Id,
-                writeResult.ErrorMessage ?? "The write could not be performed."
-            );
+            var writeResult = await _driver
+                .WriteValueAsync(key, value, restoreOriginal: true, cancellationToken)
+                .ConfigureAwait(true);
+
+            if (!writeResult.Success || writeResult.Data is null)
+            {
+                problems.Add($"{key}: {writeResult.ErrorMessage ?? "the write could not be performed"}");
+                continue;
+            }
+
+            var outcome = writeResult.Data;
+            values[$"{key}_ORIGINAL"] = outcome.OriginalValue.Length == 0 ? "(empty)" : outcome.OriginalValue;
+            values[$"{key}_TYPED"] = outcome.RequestedValue;
+            values[$"{key}_READ_BACK"] = outcome.ObservedValue.Length == 0 ? "(empty)" : outcome.ObservedValue;
+            values[$"{key}_RESTORED_TO"] = outcome.ValueAfterRestore.Length == 0 ? "(empty)" : outcome.ValueAfterRestore;
+
+            var accepted = verifyExactText
+                ? string.Equals(outcome.ObservedValue, outcome.RequestedValue, StringComparison.Ordinal)
+                : string.Equals(
+                    outcome.ObservedValue.Trim(),
+                    outcome.RequestedValue.Trim(),
+                    StringComparison.Ordinal
+                );
+
+            if (!accepted)
+            {
+                problems.Add(
+                    $"{key}: VISUAL did not keep the typed value (typed '{outcome.RequestedValue}', read back '{outcome.ObservedValue}')"
+                );
+            }
+            else if (!outcome.RestoreVerified)
+            {
+                problems.Add($"{key}: the write worked but the original value was not restored (left as '{outcome.ValueAfterRestore}')");
+            }
         }
 
-        var outcome = writeResult.Data;
-        var values = new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["FIELD"] = key,
-            ["ORIGINAL"] = outcome.OriginalValue.Length == 0 ? "(empty)" : outcome.OriginalValue,
-            ["TYPED"] = outcome.RequestedValue,
-            ["READ_BACK"] = outcome.ObservedValue.Length == 0 ? "(empty)" : outcome.ObservedValue,
-            ["RESTORED_TO"] = outcome.ValueAfterRestore.Length == 0 ? "(empty)" : outcome.ValueAfterRestore,
-            ["WRITE_VERIFIED"] = outcome.WriteVerified ? "yes" : "no",
-            ["RESTORE_VERIFIED"] = outcome.RestoreVerified ? "yes" : "no",
-        };
+        var fieldList = string.Join(", ", fields.Select(field => field.Key));
 
-        if (!outcome.WriteVerified)
-        {
-            return Model_VisualProbeResult.Fail(
-                probe.Id,
-                $"VISUAL did not keep the typed value. Typed '{outcome.RequestedValue}', read back '{outcome.ObservedValue}'.",
-                values
-            );
-        }
-
-        return outcome.RestoreVerified
+        return problems.Count == 0
             ? Model_VisualProbeResult.Pass(
                 probe.Id,
-                $"Typed '{outcome.RequestedValue}' into {key}, read it back, and restored '{outcome.OriginalValue}'.",
+                $"Typed the entered values into {fieldList}, read them back, and restored the originals.",
                 values
             )
             : Model_VisualProbeResult.Fail(
                 probe.Id,
-                $"The write worked but the original value was not restored. Left as '{outcome.ValueAfterRestore}'.",
+                string.Join("; ", problems),
                 values
             );
     }

@@ -5,27 +5,78 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Changed
+
+#### The macro tester page now shows only Pass or Fail, with the detail behind two icon buttons (2026-11-11)
+
+- **What changed:** probe cards no longer print the verdict sentence or the captured values under every
+  heading. A card's status is only **Pass** or **Fail**, so the page reads as a short list of results.
+- **Where the detail went:** a new **Probe details** modal, opened from an icon button beside **Reset**,
+  lists every probe from the last run with its status, the reason for the verdict, and the values it captured
+  from the live window. The separate activity-log panel at the bottom of the page is gone.
+- **New field-values modal:** an icon button beside the details button opens **Field values sent to Infor
+  VISUAL**. It holds the three values the app types into the receipt - `BOL_ID`, `VEND_PACK_ID`,
+  `VEND_FREIGHT_ID` - and they start **blank**.
+- **Runs are now gated on those values:** if any is blank the run does not start, the page says which ones are
+  missing, and the values dialog opens. The dialog's primary button stays disabled until all three are filled
+  in, and cancelling leaves the current values untouched.
+- **Probes that write** now use the entered values instead of hard-coded sample text, and `P08_RoundTripFidelity`
+  covers both `VEND_PACK_ID` and `VEND_FREIGHT_ID`.
+- **Files:** `Module_VisualAutomation/Views/View_VisualAutomation_MacroTester.xaml(.cs)`,
+  `Module_VisualAutomation/ViewModels/ViewModel_VisualAutomation_MacroTester.cs`,
+  `Module_VisualAutomation/Dialogs/Dialog_VisualProbeDetails.xaml(.cs)`,
+  `Module_VisualAutomation/Dialogs/Dialog_VisualProbeInputs.xaml(.cs)`,
+  `Module_VisualAutomation/Models/Model_VisualProbeInputs.cs`,
+  `Module_VisualAutomation/Models/Model_VisualProbeDetail.cs`,
+  `Module_VisualAutomation/Services/Service_VisualAutomation_ProbeRunner.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_VisualAutomation/Models/Model_VisualProbeInputsTests.cs`,
+  `docs/development/InforVisual-Macro-Automation.md`
+
 ### Added
 
-#### The app can now self-test Infor VISUAL macros against a live Purchase Receipt Entry window (2026-11-10)
+#### Every Purchase Receipt Entry macro variable is now documented and proven (2026-11-11)
 
-- **What changed:** a new **Visual Macro Tester** page under the left navigation, below **Volvo Dunnage
-  Requisition** with a divider between them. It writes VBScript probes as `VMRCVENT_*.VMS` into the VISUAL
-  module folder, lets Purchase Receipt Entry run them, and reports one result card per probe with the
-  values the macro captured.
-- **Why:** VISUAL exposes every screen field to a macro as a read/write variable, so a macro is the only
-  way to read or drive the Purchase Receipt Entry window without touching the database. Ten cards cover
-  the route: target discovery, macro deployment, header field reads, receipt line discovery, `udf*`
-  round-trip, a real header field write-and-restore, the `MACRO_MESSAGE` / `MACRO_SUCCESS` channel,
-  script host capabilities, a no-save guard, and an `OnLoad` event probe that runs with no menu at all.
-- **Nothing is saved.** The harness never deploys `OnSave` or `OnAfterSave` and the generated script
-  contains no save call; the `T09_NoSaveGuard` card fails the run if either becomes true. Saving stays a
-  human action on the VISUAL Save button, and every write probe restores the original field value.
-- **First run needs one restart:** VISUAL reads the `.VMS` files when the Purchase Receipt Entry window
-  opens, so a freshly deployed macro appears under **Macros** only after that window is reopened once.
-- **Files:** `Module_VisualAutomation/` (new module), `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
-  `MainWindow.xaml(.cs)`, `docs/development/InforVisual-Macro-Automation.md`,
-  `MTM_Receiving_Application.Tests/Unit/Module_VisualAutomation/`
+- **What changed:** new reference at `docs/development/InforVisual-Macro-Variable-Reference.md` covering all
+  **87** variables in the VISUAL macro Available Fields list - what each one really is, the `MTMFG` table and
+  column behind it, its data type, and how safe it is to write.
+- **How it was proved:** the module's strings are compressed on disk (a scan of the 29 MB `VMRCVENT.EXE` found
+  **0 of 18** strings that are plainly visible in the running window), so the evidence came from the live
+  process instead. Reading the running module's memory recovered the macro engine's own SQL - including the
+  query that fills the Macros menu - and the screen's field-metadata block. Read-only `MTMFG` queries then tied
+  each variable to a real column, verified against PO `PO-072040`, part `MMC0000667`, receiver `159401`.
+- **Findings that change how the dropdown should be read:** only 35 variables are header columns and 2 are
+  line-scoped. `DATABASE`, `USER`, `LINES`, `MACRO_SUCCESS` and `MACRO_MESSAGE` are runtime-only. The 45
+  `udf*` slots are **not persisted by this module** - `USER_DEF_FIELDS` holds only `VMMFGWIN_OP` and
+  `VMMFGWIN_WO` rows and `UDF_LAYOUT` stores labels only - so they are safe scratch space.
+- **Required inputs:** the toolkit documentation marks only `ORDER_ID` (`PURC_ORDER_ID`) and `SITE_ID` as
+  required; `RECEIVER_ID` auto-numbers, `RECEIVED_DATE` and `USER` default, and `FREE_ON_BOARD` / `SHIP_VIA`
+  are optional and unvalidated.
+- **Naming traps recorded:** the FOB box is the variable `FREE_ON_BOARD`, and `PO_USER_n` maps to
+  `PURCHASE_ORDER.USER_n`.
+- **Also:** `STORE_MACROS_IN_DB = 'N'` on this install, so macros are files on the shared VISUAL folder.
+- **Files:** `docs/development/InforVisual-Macro-Variable-Reference.md`,
+  `Module_VisualAutomation/Helpers/Helper_VisualAutomation_FieldMap.cs`,
+  `Module_VisualAutomation/Models/Model_VisualMacroVariableBinding.cs`,
+  `Module_VisualAutomation/Enums/Enum_VisualVariableSafety.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_VisualAutomation/Helpers/Helper_VisualAutomation_VariableBindingTests.cs`,
+  `tools/mtmfg-query.ps1` (read-only query helper, credentials from prompt or environment)
+
+#### The app now performs the macro actions itself instead of deploying macro files (2026-11-10)
+
+- **What changed:** the **Visual Macro Tester** page no longer writes `.VMS` files into the shared VISUAL
+  folder. It reads the live Purchase Receipt Entry window with UI Automation and types into fields with real
+  mouse and keyboard input - the same effect a macro has, with no artefact left on the VISUAL share and no
+  impact on other users.
+- **Why:** `STORE_MACROS_IN_DB = 'N'` means a deployed macro file is live for every user of the share until
+  removed, and the Macros menu is only re-read when the module window opens.
+- **Ten probe cards**, each its own collapsible panel (collapsed by default): attach, control surface, identity
+  fields, date/party fields, reference fields, variable coverage, a write-and-restore probe, a round-trip
+  fidelity probe, a no-save guard, and a restore-integrity comparison.
+- **Nothing is saved.** There is no save path in the module at all, and only `BOL_ID`, `VEND_PACK_ID` and
+  `VEND_FREIGHT_ID` are ever typed into - receipt-only free text with no database consequence.
+- **Files:** `Module_VisualAutomation/` (window driver, probe runner, catalogue, page),
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`, `MainWindow.xaml(.cs)`,
+  `docs/development/InforVisual-Macro-Automation.md`
 
 ### Fixed
 

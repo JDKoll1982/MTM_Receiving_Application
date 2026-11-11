@@ -59,7 +59,8 @@ public sealed partial class Model_VisualProbeCard : ObservableObject
     private CommunityToolkit.Mvvm.Input.IAsyncRelayCommand<Model_VisualProbeCard>? _runCommand;
 
     /// <summary>
-    /// Applies a probe result to the card.
+    /// Applies a probe result to the card. The card shows only the short status word; the verdict and the
+    /// captured values are read in the details modal.
     /// </summary>
     /// <param name="result">The probe result.</param>
     public void ApplyResult(Model_VisualProbeResult result)
@@ -67,7 +68,7 @@ public sealed partial class Model_VisualProbeCard : ObservableObject
         ArgumentNullException.ThrowIfNull(result);
 
         Status = result.IsSuccess ? Enum_VisualProbeStatus.Passed : Enum_VisualProbeStatus.Failed;
-        StatusText = result.IsSuccess ? "Passed" : "Failed";
+        StatusText = result.IsSuccess ? "Pass" : "Fail";
         DetailText = result.Verdict;
         CapturedValues = result.Values.Count == 0
             ? string.Empty

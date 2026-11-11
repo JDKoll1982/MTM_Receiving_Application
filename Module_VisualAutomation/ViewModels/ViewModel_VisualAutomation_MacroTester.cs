@@ -30,6 +30,12 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
 
     private CancellationTokenSource? _runCancellation;
 
+    /// <summary>
+    /// Raised when a run is blocked because the field values are incomplete, so the view can open the
+    /// field-values dialog.
+    /// </summary>
+    public event EventHandler? ProbeInputsRequested;
+
     public ViewModel_VisualAutomation_MacroTester(
         IService_VisualAutomation_WindowDriver driver,
         IService_VisualAutomation_ProbeRunner runner,
@@ -60,6 +66,9 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
     /// <summary>Gets the activity log shown under the cards.</summary>
     public ObservableCollection<Model_VisualLogEntry> LogEntries { get; } = [];
 
+    /// <summary>Gets or sets the values the probes send to Infor VISUAL. Blank until the user enters them.</summary>
+    public Model_VisualProbeInputs Inputs { get; set; } = new();
+
     [ObservableProperty]
     private string _targetSummary = "Not checked yet.";
 
@@ -71,16 +80,47 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
 
     [ObservableProperty]
     private string _instructionText =
-        "Open Inventory > Purchase Receipt Entry in Infor VISUAL, load a PO, then run the probes.";
+        "Open Inventory > Purchase Receipt Entry in Infor VISUAL, load a PO, enter the field values, then run.";
 
     [ObservableProperty]
     private string _snapshotSummary = string.Empty;
+
+    [ObservableProperty]
+    private string _inputsSummary = "No field values entered yet.";
 
     /// <summary>Gets the number of probes that passed in the last run.</summary>
     public int PassedCount => Probes.Count(card => card.Status == Enum_VisualProbeStatus.Passed);
 
     /// <summary>Gets the number of probes that failed in the last run.</summary>
     public int FailedCount => Probes.Count(card => card.Status == Enum_VisualProbeStatus.Failed);
+
+    /// <summary>
+    /// Reflects the value count in the header line.
+    /// </summary>
+    public void RefreshInputsSummary()
+    {
+        var missing = Inputs.MissingFields();
+
+        InputsSummary = missing.Count == 0
+            ? $"3 field values entered  |  BOL {Inputs.BolId}  |  Packlist {Inputs.VendPackId}  |  Freight {Inputs.VendFreightId}"
+            : $"Field values incomplete - still blank: {string.Join(", ", missing)}";
+    }
+
+    /// <summary>
+    /// Builds the rows shown in the probe details modal.
+    /// </summary>
+    /// <returns>One row per probe, in card order.</returns>
+    public IReadOnlyList<Model_VisualProbeDetail> BuildDetails() =>
+        [
+            .. Probes.Select(card => new Model_VisualProbeDetail
+            {
+                ProbeId = card.Id,
+                Title = card.Title,
+                Status = card.StatusText,
+                Verdict = card.DetailText,
+                CapturedValues = card.CapturedValues,
+            }),
+        ];
 
     /// <summary>
     /// Refreshes the target window snapshot and the summary line.
@@ -103,6 +143,8 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
             {
                 RefreshSnapshotSummary();
             }
+
+            RefreshInputsSummary();
         }
         catch (Exception ex)
         {
@@ -155,11 +197,17 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
 
         LogEntries.Clear();
         RaiseRunCounts();
+        RefreshInputsSummary();
     }
 
     private async Task RunProbesAsync(IReadOnlyList<Model_VisualProbeCard> cards)
     {
         if (IsRunning)
+        {
+            return;
+        }
+
+        if (RequiresInputs())
         {
             return;
         }
@@ -194,6 +242,7 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
             await _runner
                 .RunAllAsync(
                     definitions,
+                    Inputs,
                     result =>
                     {
                         ApplyResult(result);
@@ -230,6 +279,25 @@ public partial class ViewModel_VisualAutomation_MacroTester : ViewModel_Shared_B
         {
             IsRunning = false;
         }
+    }
+
+    /// <summary>
+    /// Blocks a run when no field values have been entered, and asks the view to open the values dialog.
+    /// </summary>
+    /// <returns>True when the run must not start.</returns>
+    private bool RequiresInputs()
+    {
+        if (Inputs.IsComplete)
+        {
+            return false;
+        }
+
+        var message = Inputs.DescribeMissing();
+        ShowStatus(message, InfoBarSeverity.Warning);
+        AddLog("WARN", message);
+        ProbeInputsRequested?.Invoke(this, EventArgs.Empty);
+
+        return true;
     }
 
     private void ApplyWindow(Model_VisualWindowInfo window)

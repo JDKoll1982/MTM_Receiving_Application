@@ -141,8 +141,8 @@ public static class VisualProbeCatalog
                 "The core macro-equivalent action: change a field value, confirm the window accepted it, "
                 + "then put the original value back.",
             UiSteps =
-                "Watch the Bill of Lading ID box. It briefly shows MTM-PROBE-&lt;time&gt;, is read back, then "
-                + "is restored to its original text. Nothing is saved.",
+                "Watch the Bill of Lading ID box. It briefly shows the value entered in the field values "
+                + "dialog, is read back, then is restored to its original text. Nothing is saved.",
             Expected = "The typed value is observed on screen and the original value is restored exactly.",
             WritesToWindow = true,
             ReportedKeys = ["BOL_ID"],
@@ -154,13 +154,14 @@ public static class VisualProbeCatalog
             Category = "Write access",
             Purpose =
                 "Proves the app can type arbitrary text - mixed case, digits, hyphens and slashes - and "
-                + "that VISUAL keeps it exactly, which is what a macro needs when it writes a value.",
+                + "that VISUAL keeps it character for character, which is what a macro needs when it writes "
+                + "a value.",
             UiSteps =
-                "Watch the Vendor Packlist ID box. It receives MTM-PROBE-a1B2/3-4, is read back, and is "
-                + "restored to its original text.",
-            Expected = "The read-back text is character-for-character identical to what was typed.",
+                "Watch the Vendor Packlist ID and Vendor Freight Bill ID boxes. Each receives its entered "
+                + "value, is read back, and is restored to its original text.",
+            Expected = "Each read-back text is character-for-character identical to what was typed.",
             WritesToWindow = true,
-            ReportedKeys = ["VEND_PACK_ID"],
+            ReportedKeys = ["VEND_PACK_ID", "VEND_FREIGHT_ID"],
         },
         new Model_VisualProbeDefinition
         {

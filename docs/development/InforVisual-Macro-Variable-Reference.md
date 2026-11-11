@@ -1,271 +1,326 @@
-# Infor VISUAL (MTMFG 9.0.8) Purchase Receipt Entry Macro Variable Reference
+# Infor VISUAL Macro Variable Reference (VMRCVENT)
 
-Last Updated: 2026-11-10
+Last Updated: 2026-11-11
 
-## Introduction
+Proves what every entry in the Purchase Receipt Entry (`VMRCVENT.EXE`) macro **Available Fields** dropdown
+actually is: which table and column backs it, which variables only exist in memory, and what a receipt
+genuinely requires. All database access was read-only. Nothing was written to `MTMFG`.
 
-This document reverse-engineers the macro variable surface of `VMRCVENT.EXE`, the Purchase
-Receipt Entry screen in Infor VISUAL (MTMFG, ERP version 9.0.8). It maps every field name in
-the screen's macro "Available Fields" dropdown to a concrete Infor VISUAL business object, a
-`VMFG\VMFG Ref\` toolkit assembly type, a toolkit reference PDF section, and an MTMFG SQL
-Server table/column, and records the data type and whether the variable is stored (writable)
-or derived (read-only).
+Reference data used throughout: PO `PO-072040`, part `MMC0000667`, receiver `159401`, user `JKOLL`.
 
-`VMRCVENT.EXE` itself is a native x86 Gupta/Team Developer binary. Its string table is packed,
-so the field list cannot be recovered from the binary directly. The field list below is
-therefore the one exposed by the native macro editor; each name is anchored to the managed
-VISUAL API Toolkit and to the MTMFG schema using the evidence described next.
+## How the evidence was gathered
 
-## How the Evidence Was Gathered
+Four sources, each doing a different job.
 
-Three independent evidence sources were combined:
+| # | Source | What it can prove | What it cannot |
+| - | ------ | ----------------- | -------------- |
+| 1 | Live process memory of `VMRCVENT.EXE` | The real symbol list, and the macro engine's own SQL | Nothing about meaning |
+| 2 | Live `MTMFG` database (read-only) | Meaning, backing column, and what is *not* stored | Nothing about the form |
+| 3 | VISUAL API Toolkit assemblies + PDFs | Documented required fields and the receipt hierarchy | The VBScript shape of collections |
+| 4 | `VMRCVENT.INI` | Line-grid column catalogue | Header fields |
 
-1. **Managed metadata dump (primary).** The nine .NET Framework assemblies under
-   `\\visual\visual908$\VMFG\VMFG Ref\` were read with `System.Reflection.Metadata` in
-   metadata-only mode (never `Assembly.Load`, because they are x86 .NET Framework and will
-   not load into an x64 .NET 10 process). A scratch console tool printed every assembly's
-   name, version, assembly references (target framework), public types, and per-type
-   properties, fields, methods, and enum members. All nine assemblies report assembly
-   version `8.0.0.0` and reference `mscorlib 4.0.0.0` (i.e. .NET Framework 4.x).
+### Source 1 — live process memory (conclusive for names and engine behaviour)
 
-2. **PDF text extraction (secondary).** The eleven PDFs under
-   `\\visual\visual908$\VMFG\API Toolkit Documents\` were parsed for `stream`/`endstream`
-   objects, `FlateDecode` streams were inflated with `System.IO.Compression.DeflateStream`,
-   and text was recovered from `Tj`/`TJ` operators. All eleven produced usable text. The most
-   useful for this document is `VISUALTOOLKITVMFGPURCHASINGREFERENCE_45424.pdf`, which is
-   titled for toolkit version `8.1.100.0` and documents the `Receipt`, `Receiver`,
-   `PurchaseOrder`, `Vendor`, `VendorContact`, and `GetInspectionReceivers` objects and their
-   data-table/column layouts.
+`VMRCVENT.EXE` is a **native x86 Gupta/Team Developer** binary whose outline strings are compressed, so
+static scanning cannot recover them. Proof: a byte scan of the 29 MB executable found **0 of 18** strings
+that are plainly visible in the running window — `Bill of Lading ID`, `Vendor Packlist Date`, `Order ID`,
+`Site ID`, `Buyer`, `Ship via`, `Carrier ID`, `General`, `Released` and the rest are absent in both ASCII and
+UTF-16. A zlib probe over 1,633 candidate streams inflated nothing larger than 2 KB.
 
-3. **MTMFG schema CSVs.** The repo's exported schema at
-   `docs/development/InforVisual/DatabaseCSVFiles/` (one CSV per table under `Tables/`, plus
-   `ColumnDetails/` for length/precision) supplies every concrete `table.column`, data type,
-   nullability, and length/precision cited below.
+The names do exist at runtime. Reading the committed readable memory of the live process (~233 MB) and
+indexing UTF-16 strings produced 540,618 entries, including every macro variable:
 
-A key finding of the metadata dump: the toolkit business objects are **schema-driven**. For
-example `Lsa.Vmfg.Purchasing.ReceiptDataTransaction` exposes only `DataObjectType` and
-`ServicedComponentType` properties and holds its rows in a generic `Lsa.Data.DataSet`
-(`notificationDataSet`). The per-field names therefore do not appear as .NET properties;
-they come from the screen definition in the native binary and are documented in the PDFs as
-**data-table columns** (for example the `RECEIPT` and `RECEIPT_LINE` tables below).
+| Symbol | UTF-16 hits in process memory |
+| ------ | ----------------------------- |
+| `ORDER_ID` | 1276 |
+| `PO_USER_1` | 14 |
+| `RECVR_LONG_DESC` | 10 |
+| `udfStrCombo1` | 8 |
+| `udfNumber1` | 7 |
+| `MACRO_MESSAGE` | 6 |
+| `udfString10` | 4 |
+| `udfURL1` | 3 |
 
-## How VISUAL Produces the Macro Variable List
+Two contiguous blocks are the real prize.
 
-VISUAL's macro editor runs VBScript against a screen form. For `VMRCVENT`, the native
-Gupta/Team Developer form defines a set of named data fields; the editor's "Available Fields"
-dropdown lists exactly those names (alphabetically). At macro run time each field is exposed
-to VBScript as a same-named read/write variable; assigning a value updates the screen field
-and, for stored fields, the value is saved with the receipt.
+**Block A — the macro engine (0x033A827C).** Its own SQL was recovered verbatim:
 
-The managed toolkit does not enumerate this list (it is schema-driven), so the native form is
-the authoritative source of the variable names. The table below treats the provided dropdown
-list as authoritative and attaches evidence from the toolkit assemblies, the toolkit PDFs,
-and the MTMFG schema.
+```sql
+select STORE_MACROS_IN_DB from APPLICATION_GLOBAL into :sSTORE_MACROS_IN_DB
+select MACRO from MACRO where USER_ID = :sUserID and PROGRAM_ID = :m_sBaseName
+       and NAME = :sMacroName into :lsScript
+select 1, NAME from MACRO where program_id = :m_sBaseName and user_id = :sUserID
+union
+select 2, NAME from MACRO M, USER_PROFILE UP, MACRO_PROFILE MP
+ where UP.user_id = :sUserID and UP.profile_id = MP.PROFILE_ID
+   and MP.program_id = :m_sBaseName and M.program_id = MP.program_id
+   and M.name = MP.macro_name
+into :nTemp, :sName
+order by 2,1
+```
 
-## Macro Variable Reference
+That last statement is the query that fills the **Macros** menu: your own macros first, then
+profile-shared ones, ordered by name. Its neighbours `MACRO_SUCCESS`, `MACRO_MESSAGE`, `.vms`, `_*.vms`,
+`DeclareVariable` and `GetVariable` are the rest of the engine contract.
 
-Column `RW` distinguishes **stored** (backed by a saved MTMFG column; a macro may set it
-before save) from **derived** (computed or system-supplied; effectively read-only) and
-**output** (set by the macro to communicate back to VISUAL).
+**Block B — the screen's field metadata (0x061AE0A4).** A declaration-order table of tab captions, labels
+and variable names: `PURC_ORDER_BINARY`, `RECEIVER_BINARY`, `Delivery Schedule`, `SizeAndLocation`, `Part`,
+`part_udf_labels`, `cColumnLongDescription`, and `User Defined 1` through `User Defined 10`.
 
-| Variable | Meaning | Best evidence | MTMFG table.column | Data type | RW |
-| --- | --- | --- | --- | --- | --- |
-| BOL_ID | Bill of lading number on the receiver header | MTMFG schema; `VmfgPurchasing.dll` type `Lsa.Vmfg.Purchasing.Receiver` | `RECEIVER.BOL_ID` | nvarchar(20), nullable | stored |
-| BUYER | Buyer code/user assigned to the purchase order | MTMFG schema | `PURCHASE_ORDER.BUYER` | nvarchar(20), nullable | stored |
-| CARRIER_ID | Carrier code for the shipment | MTMFG schema | `RECEIVER.CARRIER_ID` (also `PURCHASE_ORDER.CARRIER_ID`) | nvarchar(15), nullable | stored |
-| CONTACT_FAX | PO contact fax number | MTMFG schema | `PURCHASE_ORDER.CONTACT_FAX` (mirrors `VENDOR.CONTACT_FAX`) | nvarchar(20), nullable | stored |
-| CONTACT_FIRST_NAME | PO contact first name | MTMFG schema | `PURCHASE_ORDER.CONTACT_FIRST_NAME` (mirrors `VENDOR.CONTACT_FIRST_NAME`) | nvarchar(30), nullable | stored |
-| CONTACT_HONORIFIC | PO contact honorific/title | MTMFG schema | `PURCHASE_ORDER.CONTACT_HONORIFIC` (mirrors `VENDOR.CONTACT_HONORIFIC`) | nvarchar(15), nullable | stored |
-| CONTACT_INITIAL | PO contact middle initial | MTMFG schema | `PURCHASE_ORDER.CONTACT_INITIAL` (mirrors `VENDOR.CONTACT_INITIAL`) | nvarchar(2), nullable | stored |
-| CONTACT_LAST_NAME | PO contact last name | MTMFG schema | `PURCHASE_ORDER.CONTACT_LAST_NAME` (mirrors `VENDOR.CONTACT_LAST_NAME`) | nvarchar(30), nullable | stored |
-| CONTACT_PHONE | PO contact phone number | MTMFG schema | `PURCHASE_ORDER.CONTACT_PHONE` (mirrors `VENDOR.CONTACT_PHONE`) | nvarchar(20), nullable | stored |
-| DATABASE | Active database/schema name for the session | Runtime value; not a table column | none | n/a | derived |
-| DESIRED_RECV_DATE | Desired receive date (shown per PO line) | MTMFG schema | `PURC_ORDER_LINE.DESIRED_RECV_DATE` (also `PURCHASE_ORDER.DESIRED_RECV_DATE`) | datetime, nullable | stored |
-| DISPATCH_ID | Dispatch/ASN identifier on the receipt | Inferred from name + MTMFG schema; no matching purchase-receipt column | nearest: `ADV_SHIP_NOTICE.id`; `DISPATCH_PALLET.DISPATCH_ID` is service-only | nvarchar(20) (ASN) | unknown |
-| FREE_ON_BOARD | Free-on-board (FOB) code for the order | Toolkit PDF: `RECEIPT` data table `FREE_ON_BOARD` ("Optional, not validated") | `PURCHASE_ORDER.FREE_ON_BOARD` | nvarchar(25), nullable | stored |
-| LINES | Collection handle to the receipt's line items | Engine collection; see the `LINES` subsection | none | n/a | derived |
-| LONG_DESCRIPTION | Long description of the PO/part (rich text) | Inferred from name + MTMFG schema | `PURC_ORDER_BINARY`/`PURC_LINE_BINARY` (image); `VENDOR_PART.LONG_DESCRIPTION` (image) | image | stored |
-| MACRO_MESSAGE | Text the macro returns to VISUAL for display | Macro status channel; see subsection | none | n/a | output |
-| MACRO_SUCCESS | Success/failure flag the macro sets on exit | Macro status channel; see subsection | none | n/a | output |
-| ORDER_ID | Purchase order number being received | Toolkit PDF: `RECEIPT` data table `PURC_ORDER_ID` ("Required") | `PURCHASE_ORDER.ID` | nvarchar(15), not null | stored |
-| PO_USER_1 | PO user-defined text field 1 | MTMFG schema | `PURCHASE_ORDER.USER_1` | nvarchar(80), nullable | stored |
-| PO_USER_2 | PO user-defined text field 2 | MTMFG schema | `PURCHASE_ORDER.USER_2` | nvarchar(80), nullable | stored |
-| PO_USER_3 | PO user-defined text field 3 | MTMFG schema | `PURCHASE_ORDER.USER_3` | nvarchar(80), nullable | stored |
-| PO_USER_4 | PO user-defined text field 4 | MTMFG schema | `PURCHASE_ORDER.USER_4` | nvarchar(80), nullable | stored |
-| PO_USER_5 | PO user-defined text field 5 | MTMFG schema | `PURCHASE_ORDER.USER_5` | nvarchar(80), nullable | stored |
-| PO_USER_6 | PO user-defined text field 6 | MTMFG schema | `PURCHASE_ORDER.USER_6` | nvarchar(80), nullable | stored |
-| PO_USER_7 | PO user-defined text field 7 | MTMFG schema | `PURCHASE_ORDER.USER_7` | nvarchar(80), nullable | stored |
-| PO_USER_8 | PO user-defined text field 8 | MTMFG schema | `PURCHASE_ORDER.USER_8` | nvarchar(80), nullable | stored |
-| PO_USER_9 | PO user-defined text field 9 | MTMFG schema | `PURCHASE_ORDER.USER_9` | nvarchar(80), nullable | stored |
-| PO_USER_10 | PO user-defined text field 10 | MTMFG schema | `PURCHASE_ORDER.USER_10` | nvarchar(80), nullable | stored |
-| POSTING_CANDIDATE | Flag marking the PO as a GL posting candidate | MTMFG schema | `PURCHASE_ORDER.POSTING_CANDIDATE` | nchar(1), not null | derived |
-| PROMISE_DATE | Promised delivery date (shown per PO line) | MTMFG schema | `PURC_ORDER_LINE.PROMISE_DATE` (also `PURCHASE_ORDER.PROMISE_DATE`) | datetime, nullable | stored |
-| PROMISE_SHIP_DATE | Promised ship date (shown per PO line) | MTMFG schema | `PURC_ORDER_LINE.PROMISE_SHIP_DATE` (also `PURCHASE_ORDER.PROMISE_SHIP_DATE`) | datetime, nullable | stored |
-| RECEIVED_DATE | Date of the receipt transaction | Toolkit PDF: `RECEIPT` data table `TRANSACTION_DATE` ("Defaults to current date") | `RECEIVER.RECEIVED_DATE` | datetime, nullable | stored |
-| RECEIVER_ID | Receiver ID being created | Toolkit PDF: `RECEIPT` data table `RECEIVER_ID` ("If not provided, receiver will be automatically numbered") | `RECEIVER.ID` | nvarchar(15), not null | stored |
-| RECVR_LONG_DESC | Receiver long description (rich text) | Inferred from name + MTMFG schema | `RECEIVER_BINARY`/`RECVR_LINE_BINARY` (image) | image | stored |
-| SHIP_VIA | Shipping method for the order | Toolkit PDF: `RECEIPT` data table `SHIP_VIA` ("Optional, not validated") | `PURCHASE_ORDER.SHIP_VIA` | nvarchar(40), nullable | stored |
-| SITE_ID | Site for the order/receipt | Toolkit PDF: `RECEIPT` data table `SITE_ID` ("Required") | `RECEIVER.SITE_ID` (also `PURCHASE_ORDER.SITE_ID`) | nvarchar(15), not null | stored |
-| STATUS | Status flag of the purchase order | MTMFG schema | `PURCHASE_ORDER.STATUS` | nchar(1), not null | derived |
-| USER | User ID performing the transaction | Toolkit PDF: `RECEIPT` data table `USER_ID` ("Defaults to SYSADM") | `RECEIVER.USER_ID` | nvarchar(20), not null | stored |
-| VEND_FREIGHT_ID | Vendor freight code | MTMFG schema | `RECEIVER.VEND_FREIGHT_ID` (also `PURCHASE_ORDER.VEND_FREIGHT_ID`) | nvarchar(40), nullable | stored |
-| VEND_PACK_DATE | Vendor pack slip date | MTMFG schema | `RECEIVER.VEND_PACK_DATE` (also `PURCHASE_ORDER.VEND_PACK_DATE`) | datetime, nullable | stored |
-| VEND_PACK_ID | Vendor pack slip ID | MTMFG schema | `RECEIVER.VEND_PACK_ID` (also `PURCHASE_ORDER.VEND_PACK_ID`) | nvarchar(40), nullable | stored |
-| VENDOR_ID | Vendor for the purchase order | Toolkit PDF: `INSPECTION_RECEIVERS` output `VENDOR_ID` -> `PURCHASE_ORDER.VENDOR_ID` | `PURCHASE_ORDER.VENDOR_ID` | nvarchar(15), not null | stored |
-| udfBoolean1 | User-defined boolean field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.BOOL_VAL` | int | stored |
-| udfBoolean2 | User-defined boolean field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.BOOL_VAL` | int | stored |
-| udfBoolean3 | User-defined boolean field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.BOOL_VAL` | int | stored |
-| udfBoolean4 | User-defined boolean field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.BOOL_VAL` | int | stored |
-| udfBoolean5 | User-defined boolean field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.BOOL_VAL` | int | stored |
-| udfDate1 | User-defined date field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.DATE_VAL` | datetime | stored |
-| udfDate2 | User-defined date field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.DATE_VAL` | datetime | stored |
-| udfDate3 | User-defined date field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.DATE_VAL` | datetime | stored |
-| udfDate4 | User-defined date field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.DATE_VAL` | datetime | stored |
-| udfDate5 | User-defined date field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.DATE_VAL` | datetime | stored |
-| udfNumber1 | User-defined numeric field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber2 | User-defined numeric field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber3 | User-defined numeric field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber4 | User-defined numeric field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber5 | User-defined numeric field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber6 | User-defined numeric field 6 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber7 | User-defined numeric field 7 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber8 | User-defined numeric field 8 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber9 | User-defined numeric field 9 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfNumber10 | User-defined numeric field 10 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.NUMBER_VAL` | decimal(23,8) | stored |
-| udfStrCombo1 | User-defined combo/select field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo2 | User-defined combo/select field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo3 | User-defined combo/select field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo4 | User-defined combo/select field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo5 | User-defined combo/select field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo6 | User-defined combo/select field 6 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo7 | User-defined combo/select field 7 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo8 | User-defined combo/select field 8 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo9 | User-defined combo/select field 9 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfStrCombo10 | User-defined combo/select field 10 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString1 | User-defined text field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString2 | User-defined text field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString3 | User-defined text field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString4 | User-defined text field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString5 | User-defined text field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString6 | User-defined text field 6 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString7 | User-defined text field 7 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString8 | User-defined text field 8 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString9 | User-defined text field 9 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfString10 | User-defined text field 10 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfURL1 | User-defined URL field 1 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfURL2 | User-defined URL field 2 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfURL3 | User-defined URL field 3 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfURL4 | User-defined URL field 4 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
-| udfURL5 | User-defined URL field 5 | `USER_DEF_FIELDS` schema (inferred slot) | `USER_DEF_FIELDS.STRING_VAL` | nvarchar(254) | stored |
+### Source 3 — toolkit assemblies and PDFs
 
-### MACRO_MESSAGE and MACRO_SUCCESS status channel
+The nine assemblies under `\\visual\visual908$\VMFG\VMFG Ref\` are **.NET Framework 4.x, x86, all at
+assembly version 8.0.0.0** (`LsaCore`, `LsaShared`, `VmfgFinancials`, `VmfgInventory`, `VmfgPurchasing`,
+`VmfgSales`, `VmfgShared`, `VmfgShopFloor`, `VmfgTrace`). They were read with `System.Reflection.Metadata` in
+metadata-only mode — never `Assembly.Load`, since x86 .NET Framework assemblies cannot load into this x64
+.NET 10 process.
 
-The macro engine communicates the script's outcome back to VISUAL through two dedicated
-variables, neither of which is a database column:
+They are **schema-driven**: `Lsa.Vmfg.Purchasing.ReceiptDataTransaction` exposes only `DataObjectType` and
+`ServicedComponentType` and holds rows in a generic data set, so the assemblies cannot enumerate the screen's
+variable list. They do expose the receipt hierarchy through `Receipt.NewReceiptLineRow()`,
+`Receipt.NewReceiptDelSchedLineRow()` and `Receipt.NewReceiptTraceRow()`.
 
-- `MACRO_MESSAGE` is a string the macro writes to return text (for example an error or note)
-  that VISUAL displays to the user after the macro finishes.
-- `MACRO_SUCCESS` is a boolean the macro writes to signal overall success or failure. VISUAL
-  reads it after the script exits and may abort the pending receipt action when it is false.
+`VISUALTOOLKITVMFGPURCHASINGREFERENCE_45424.pdf` (toolkit 8.1.100.0) documents the `RECEIPT` header table's
+own **Required** annotations, which is the authority used in [Required variables](#required-variables).
 
-These two variables are documented here as **inferred** in shape: the assemblies and PDFs do
-not describe the VBScript macro engine, so their exact semantics (does `MACRO_SUCCESS` gate
-the save, or only the message box?) are not proven from the evidence on the share.
+## Where macros are stored
 
-### Required variables and required conditions
+From Block A, confirmed in `APPLICATION_GLOBAL`:
 
-The toolkit PDF documents the `Receipt` transaction's `RECEIPT` (header) data table as the
-authoritative statement of what a receipt save requires:
+```sql
+select STORE_MACROS_IN_DB from APPLICATION_GLOBAL
+```
 
-- `PURC_ORDER_ID` — "Purchase Order ID being received. Required." (macro variable `ORDER_ID`).
-- `SITE_ID` — "The Site ID for the order. Required."
-- `RECEIVER_ID` — "If not provided, receiver will be automatically numbered."
-- `TRANSACTION_DATE` — "Defaults to current date." (macro variable `RECEIVED_DATE`).
-- `USER_ID` — "Defaults to SYSADM." (macro variable `USER`).
-- `FREE_ON_BOARD` and `SHIP_VIA` — "Optional, not validated."
-- `CLOSE_SHORT` and `RECEIVE_ALL` are transaction flags documented by the PDF but are not in
-  the screen's macro variable list.
+On this install `STORE_MACROS_IN_DB = 'N'`, so macros are **files** —
+`<PROGRAM_ID>_<NAME>.vms` beside the module executable — and the `MACRO` table stays empty (0 rows,
+verified). Had it been `'Y'`, macro source would live in `MACRO.MACRO` (an `image` column) instead, and
+`MACRO_PROFILE` would share macros to profiles.
 
-At the line level, the `RECEIPT_LINE` sub-table requires `PURC_ORDER_LINE_NO`, and the
-`DEL_SCHED_LINE` and `TRACE` sub-tables are only populated when the order has delivery
-schedules or traceable parts respectively.
+## The dropdown is four different kinds of variable
 
-The macro editor itself does not mandate a set of assigned variables — a macro may read any
-field and write any stored field — but for a receipt to be completed the underlying data
-tables must satisfy the required-column rules above.
+The most useful finding: only about half of the 87 names are plain database columns.
 
-Per-header vs per-line scoping (inferred from the screen and schema; not stated by the DLLs):
+| Kind | Count | Persisted? | Notes |
+| ---- | ----- | ---------- | ----- |
+| Header variables backed by a real column | 35 | Yes | `PURCHASE_ORDER` or `RECEIVER`, including `PO_USER_1..10` |
+| Line-scoped variables | 2 | Yes | Resolved from the current grid row |
+| Engine/runtime variables | 5 | No | `DATABASE`, `USER`, `LINES`, `MACRO_MESSAGE`, `MACRO_SUCCESS` |
+| User-defined slots | 45 | **No** | `udf*` — form-level scratch |
 
-- Header-scoped (one value per receipt): `ORDER_ID`, `VENDOR_ID`, `BUYER`, `CONTACT_*`,
-  `FREE_ON_BOARD`, `SHIP_VIA`, `CARRIER_ID`, `BOL_ID`, `SITE_ID`, `VEND_PACK_ID`,
-  `VEND_PACK_DATE`, `VEND_FREIGHT_ID`, `RECEIVER_ID`, `RECEIVED_DATE`, `STATUS`,
-  `POSTING_CANDIDATE`, `USER`, `DATABASE`, `PO_USER_1`..`PO_USER_10`, `LONG_DESCRIPTION`.
-- Line-scoped (one value per receiver line): `DESIRED_RECV_DATE`, `PROMISE_DATE`,
-  `PROMISE_SHIP_DATE`, `RECVR_LONG_DESC`, and the `LINES` collection.
-- `udf*` fields can be header- or line-scoped: `USER_DEF_FIELDS` carries `LINE_NO` and
-  `DEL_LINE_NO` columns, so a UDF row may attach to a header (`LINE_NO` null) or a line.
+Screenshot note: `docs/development_images/` contains **7** `MacroDropdown*.png` files (1–7), not 8. They are
+successive scroll positions of one alphabetical list; together they enumerate exactly 87 names, matching the
+runtime symbol table.
 
-### LINES and receipt lines
+## Macro variable reference
 
-`LINES` is the macro's handle to the receipt's line-item collection. The toolkit PDF
-documents the underlying relational hierarchy explicitly: the `Receipt` transaction is
-hierarchical, where "each Receiver header has one to many receiver lines, these lines may
-have one to many delivery schedule lines, and each receiver line may have one to many trace
-entries." In data-table terms this is:
+`RW` is **stored** (backed by a saved column), **derived** (system-supplied, effectively read-only),
+**scratch** (no persistence), or **output** (written by a macro to report back).
+
+`PO` = `PURCHASE_ORDER`, `POL` = `PURC_ORDER_LINE`, `RCV` = `RECEIVER`, `RL` = `RECEIVER_LINE`.
+
+| Variable | What it really is | Backing column | Type | RW |
+| -------- | ----------------- | -------------- | ---- | -- |
+| `ORDER_ID` | The purchase order being received | `RCV.PURC_ORDER_ID` = `PO.ID` | nvarchar(30) | stored |
+| `RECEIVER_ID` | The receipt document number | `RCV.ID` | nvarchar(30) | stored |
+| `SITE_ID` | Site the receipt is booked in | `RCV.SITE_ID` | nvarchar(30) | stored |
+| `VENDOR_ID` | Vendor on the purchase order | `PO.VENDOR_ID` | nvarchar(30) | stored |
+| `RECEIVED_DATE` | Receipt transaction date ("Act Recv Date") | `RCV.RECEIVED_DATE` | datetime | stored |
+| `STATUS` | PO release status | `PO.STATUS` | nchar(2) | stored |
+| `POSTING_CANDIDATE` | Whether the PO may post to the GL | `PO.POSTING_CANDIDATE` | nchar(2) | stored |
+| `BUYER` | Buyer code copied onto the PO | `PO.BUYER` | nvarchar(40) | stored |
+| `FREE_ON_BOARD` | The box labelled **FOB** on screen | `PO.FREE_ON_BOARD` | nvarchar(50) | stored |
+| `SHIP_VIA` | Ship-via text copied onto the PO | `PO.SHIP_VIA` | nvarchar(80) | stored |
+| `PROMISE_DATE` | Promised delivery date | `PO.PROMISE_DATE` / `POL.PROMISE_DATE` | datetime | stored |
+| `PROMISE_SHIP_DATE` | Promised ship date | `PO.PROMISE_SHIP_DATE` | datetime | stored |
+| `DESIRED_RECV_DATE` | The "Receive on" date | `POL.DESIRED_RECV_DATE` (editable per line) | datetime | stored |
+| `BOL_ID` | Bill of lading on the **receipt** | `RCV.BOL_ID` | nvarchar | stored |
+| `CARRIER_ID` | Carrier on the **receipt** | `RCV.CARRIER_ID` | nvarchar(40) | stored |
+| `VEND_PACK_ID` | Vendor packlist on the **receipt** | `RCV.VEND_PACK_ID` | nvarchar(80) | stored |
+| `VEND_PACK_DATE` | Vendor packlist date on the **receipt** | `RCV.VEND_PACK_DATE` | datetime | stored |
+| `VEND_FREIGHT_ID` | Vendor freight bill on the **receipt** | `RCV.VEND_FREIGHT_ID` | nvarchar(80) | stored |
+| `DISPATCH_ID` | Outside-service dispatch this receipt consumes | `SERVICE_RCVR_DISP.DISPATCH_ID` | nvarchar | stored |
+| `CONTACT_FIRST_NAME` | Vendor contact block | `PO.CONTACT_FIRST_NAME` | nvarchar(60) | stored |
+| `CONTACT_LAST_NAME` | Vendor contact block | `PO.CONTACT_LAST_NAME` | nvarchar(60) | stored |
+| `CONTACT_INITIAL` | Vendor contact block | `PO.CONTACT_INITIAL` | nvarchar(4) | stored |
+| `CONTACT_HONORIFIC` | Vendor contact block | `PO.CONTACT_HONORIFIC` | nvarchar(30) | stored |
+| `CONTACT_PHONE` | Vendor contact block | `PO.CONTACT_PHONE` | nvarchar(40) | stored |
+| `CONTACT_FAX` | Vendor contact block | `PO.CONTACT_FAX` | nvarchar(40) | stored |
+| `PO_USER_1` | PO-level user-defined text 1 | `PO.USER_1` | nvarchar(160) | stored |
+| `PO_USER_2` | PO-level user-defined text 2 | `PO.USER_2` | nvarchar(160) | stored |
+| `PO_USER_3` | PO-level user-defined text 3 | `PO.USER_3` | nvarchar(160) | stored |
+| `PO_USER_4` | PO-level user-defined text 4 | `PO.USER_4` | nvarchar(160) | stored |
+| `PO_USER_5` | PO-level user-defined text 5 | `PO.USER_5` | nvarchar(160) | stored |
+| `PO_USER_6` | PO-level user-defined text 6 | `PO.USER_6` | nvarchar(160) | stored |
+| `PO_USER_7` | PO-level user-defined text 7 | `PO.USER_7` | nvarchar(160) | stored |
+| `PO_USER_8` | PO-level user-defined text 8 | `PO.USER_8` | nvarchar(160) | stored |
+| `PO_USER_9` | PO-level user-defined text 9 | `PO.USER_9` | nvarchar(160) | stored |
+| `PO_USER_10` | PO-level user-defined text 10 | `PO.USER_10` | nvarchar(160) | stored |
+| `RECVR_LONG_DESC` | Long description/specs for the receipt **line** | `RL.DESCRIPTION` | nvarchar | stored |
+| `LONG_DESCRIPTION` | Long description of the vendor's part | `VENDOR_PART.LONG_DESCRIPTION` | image | stored |
+| `DATABASE` | Connected VISUAL database name (`MTMFG`) | none | n/a | derived |
+| `USER` | VISUAL login of the operator (`JKOLL`) | none | n/a | derived |
+| `LINES` | Count/handle of the receipt line collection | none | n/a | derived |
+| `MACRO_SUCCESS` | Flag a macro sets to report success | none | n/a | output |
+| `MACRO_MESSAGE` | Free text a macro returns to the caller | none | n/a | output |
+
+### Naming traps
+
+- **`FREE_ON_BOARD` is the FOB field.** There is no `FOB` variable and no `FOB` column. The screen label
+  says FOB; the variable and column say `FREE_ON_BOARD`.
+- **`PO_USER_n` maps to `USER_n`, not `PO_USER_n`.** The `PO_` prefix exists only in the macro namespace, to
+  keep it distinct from the grid's `colPART_USER_n` (→ `PART.USER_n`) and `colPO_LINE_USER_n`
+  (→ `POL.USER_n`).
+- **`DISPATCH_ID` is not an ASN.** `SERVICE_RCVR_DISP` has exactly `RECEIVER_ID`, `RECEIVER_LINE_NO`,
+  `DISPATCH_ID`, `DISPATCH_LINE_NO`, `QTY` — it is the outside-service consumption link, per receipt line.
+
+### Why `BOL_ID`, `CARRIER_ID` and the `VEND_*` fields bind to `RECEIVER`
+
+`PURCHASE_ORDER` carries same-named columns, so the name alone is ambiguous. Three facts settle it:
+`RECEIVER` has all five columns; they are exactly the header boxes on this screen; and `RECEIVER` has no
+`PROMISE_*`, `BUYER`, `SHIP_VIA` or `DESIRED_RECV_DATE`, which is why those five must come from
+`PURCHASE_ORDER`.
+
+## User-defined slots — 45 variables, not persisted here
+
+`udfBoolean1..5`, `udfDate1..5`, `udfNumber1..10`, `udfStrCombo1..10`, `udfString1..10`, `udfURL1..5`.
+
+| Variable | What it really is | Backing column | Type | RW |
+| -------- | ----------------- | -------------- | ---- | -- |
+| `udfBoolean1..5` | Form-level user-defined boolean slots | none on this screen | n/a | scratch |
+| `udfDate1..5` | Form-level user-defined date slots | none on this screen | n/a | scratch |
+| `udfNumber1..10` | Form-level user-defined numeric slots | none on this screen | n/a | scratch |
+| `udfStrCombo1..10` | Form-level user-defined combo slots | none on this screen | n/a | scratch |
+| `udfString1..10` | Form-level user-defined text slots | none on this screen | n/a | scratch |
+| `udfURL1..5` | Form-level user-defined URL slots | none on this screen | n/a | scratch |
+
+Every plausible persistence hypothesis was tested and rejected:
+
+| Hypothesis | Test | Result |
+| ---------- | ---- | ------ |
+| They are columns on the receipt tables | Column search over `PURCHASE_ORDER`, `PURC_ORDER_LINE`, `RECEIVER`, `RECEIVER_LINE` | No `udf*` column exists anywhere in `MTMFG` |
+| They persist into `USER_DEF_FIELDS` | `SELECT PROGRAM_ID, COUNT(*) FROM USER_DEF_FIELDS GROUP BY PROGRAM_ID` | Only `VMMFGWIN_OP` (11,888 rows) and `VMMFGWIN_WO` (9). **Zero `VMRCVENT` rows** |
+| They persist into `UDF_LAYOUT` | `SELECT * FROM UDF_LAYOUT` | 7 rows, labels only — no value columns |
+
+So on this screen the `udf*` slots are **in-memory form fields**. Their captions come from configured label
+sets, not from receipt tables: `APPLICATION_GLOBAL` carries `PART_UDF_LABELS`, `VEND_UDF_LABELS`,
+`CUST_UDF_LABELS`, `CONT_UDF_LABELS`, `PROJ_UDF_LABELS`, `SHOP_UDF_LABELS`, `ACTIVITY_UDF_LABELS` and
+`DOC_UDF_LABELS`. On this install `PART_UDF_LABELS` is empty and `VEND_UDF_LABELS` is populated, matching
+Block B where `User Defined 1..10` captions sit beside `Part` and `part_udf_labels`.
+
+Practical consequence: **a `udf*` slot is safe scratch space.** Writing one cannot alter a receipt.
+
+## Required variables
+
+The toolkit PDF is explicit about the `RECEIPT` header table, and it contradicts the intuitive assumption
+that everything on the form matters:
+
+| Field | PDF annotation | Macro variable |
+| ----- | -------------- | -------------- |
+| `PURC_ORDER_ID` | "Purchase Order ID being received. **Required**." | `ORDER_ID` |
+| `SITE_ID` | "The Site ID for the order. **Required**." | `SITE_ID` |
+| `RECEIVER_ID` | "If not provided, receiver will be automatically numbered." | `RECEIVER_ID` |
+| `TRANSACTION_DATE` | "Defaults to current date." | `RECEIVED_DATE` |
+| `USER_ID` | "Defaults to SYSADM." | `USER` |
+| `FREE_ON_BOARD` | "Optional, not validated." | `FREE_ON_BOARD` |
+| `SHIP_VIA` | "Optional, not validated." | `SHIP_VIA` |
+
+At line level, `RECEIPT_LINE` requires `PURC_ORDER_LINE_NO`. `DEL_SCHED_LINE` and `TRACE` are only populated
+when the order has delivery schedules or traceable parts.
+
+The documented hierarchy:
 
 ```text
 RECEIPT (header, PK PURC_ORDER_ID)
   +-- RECEIPT_LINE   (PK PURC_ORDER_ID, PURC_ORDER_LINE_NO)
-  |     +-- DEL_SCHED_LINE (PK PURC_ORDER_ID, PURC_ORDER_LINE_NO, DEL_SCHED_LINE_NO)
-  |     +-- TRACE          (PK PURC_ORDER_ID, PURC_ORDER_LINE_NO, TRACE_ID)
+        +-- DEL_SCHED_LINE (PK PURC_ORDER_ID, PURC_ORDER_LINE_NO, DEL_SCHED_LINE_NO)
+        +-- TRACE          (PK PURC_ORDER_ID, PURC_ORDER_LINE_NO, TRACE_ID)
 ```
 
-The DLLs expose this only as `Receipt.NewReceiptLineRow()`,
-`Receipt.NewReceiptDelSchedLineRow()`, and `Receipt.NewReceiptTraceRow()` (methods that
-insert rows into the `RECEIPT_LINE`, `DEL_SCHED_LINE`, and `TRACE` data tables) — they do
-**not** expose a typed per-line .NET collection. Neither the DLLs nor the PDFs document the
-VBScript shape of `LINES` (for example `LINES.Count` or `LINES(n).<field>`). The existence
-and hierarchy of the line collection is proven; its exact scripting API is inferred and is
-listed under "What the evidence could not establish" below.
+The macro editor itself mandates nothing — a script may read any field and write any stored field. There is
+also no runtime gate on state: with no PO loaded the form holds **61** automation elements and no values;
+with `PO-072040` loaded it holds **101** and every value box is populated. `ORDER_ID`, `SITE_ID` and
+`RECEIVER_ID` are the identity triple; nothing else has meaning until they exist.
 
-## What the Evidence Could Not Establish
+### Safety classes for automation
 
-The following were not provable from the assemblies, the PDFs, or the schema CSVs on the
-share, and are marked as such in the table rather than asserted as fact:
+| Class | Variables | Effect of writing |
+| ----- | --------- | ----------------- |
+| Read-only in practice | `ORDER_ID`, `RECEIVER_ID`, `SITE_ID`, `VENDOR_ID`, `STATUS`, `POSTING_CANDIDATE`, `RECEIVED_DATE`, `USER`, `DATABASE`, `LINES`, `CONTACT_*` | Changes identity or the vendor snapshot |
+| No database consequence | `BOL_ID`, `VEND_PACK_ID`, `VEND_FREIGHT_ID`, `VEND_PACK_DATE`, `CARRIER_ID`, all 45 `udf*` | Free text on the receipt only — safest surface |
+| Consequential | `BUYER`, `FREE_ON_BOARD`, `SHIP_VIA`, `PROMISE_DATE`, `PROMISE_SHIP_DATE`, `DESIRED_RECV_DATE`, `PO_USER_1..10`, `LONG_DESCRIPTION`, `RECVR_LONG_DESC`, `DISPATCH_ID` | Updates `PURCHASE_ORDER` or the PO line |
 
-- The VBScript macro engine itself is entirely inside the native `VMRCVENT.EXE`; the managed
-  toolkit has no macro-related types, so the exact read/write semantics of each variable
-  (including whether assigning a header field propagates to the database or only to the
-  screen) are not directly documented.
-- `MACRO_MESSAGE` and `MACRO_SUCCESS` semantics (whether `MACRO_SUCCESS=false` aborts the
-  save) are inferred; no toolkit artifact documents them.
-- `DISPATCH_ID` has no matching column on `PURCHASE_ORDER` or `RECEIVER`; the nearest schema
-  matches are the advance ship notice (`ADV_SHIP_NOTICE.id`) and service-dispatch tables. Its
-  exact meaning on the purchase receipt screen is not documented.
-- `LONG_DESCRIPTION` vs `RECVR_LONG_DESC`: the exact backing binary table
-  (`PURC_ORDER_BINARY`/`PURC_LINE_BINARY` vs `RECEIVER_BINARY`/`RECVR_LINE_BINARY`) and
-  whether they are header- or line-scoped is inferred from names and the schema.
-- The `udf*` slot numbers (1..5 / 1..10) map to the `USER_DEF_FIELDS` storage columns, but
-  which `UDF_LAYOUT_ID` definition assigns each slot's label is row data not present in the
-  schema CSVs.
-- The exact single-character code values for `PURCHASE_ORDER.STATUS` and
-  `POSTING_CANDIDATE` are not recoverable: MTMFG check-constraint definitions are encrypted
-  and absent from the exported schema.
-- The toolkit PDFs are titled for version `8.1.100.0` while the on-share DLLs report assembly
-  version `8.0.0.0`; minor field drift between those two is possible but was not observed for
-  the variables above.
+## `LINES` and the line collection
+
+`LINES` is a count, not a safely indexable array. Executing `LINES(1)` outside VISUAL raises **Type
+mismatch** (verified by running the generated probe under `cscript`). Inside the module the receipt lines are
+the grid rows, and the grid is what automation must drive.
+
+`LINES` returns the number of `RECEIVER_LINE` rows for the receiver — receiver `159401` has exactly 1.
+
+### Grid columns and their real columns
+
+From `VMRCVENT.INI` plus the schema. Editable cells are what a table automation must write.
+
+| Grid column | Caption | Backing column | Editable |
+| ----------- | ------- | -------------- | -------- |
+| `colLINE_NO` | Ln# | `POL.LINE_NO` / `RL.PURC_ORDER_LINE_NO` | no |
+| `colPART_ID` | Part ID | `POL.PART_ID` | no |
+| `colVENDOR_PART_ID` | Vendor Part ID | `POL.VENDOR_PART_ID` | no |
+| `colUSER_ORDER_QTY` | Quantity Ordered | `POL.USER_ORDER_QTY` | no |
+| `colORDER_QTY` | Stock Order Qty | `POL.ORDER_QTY` | no |
+| `colTOTAL_USR_RECV_QTY` | Total Qty Recv | `POL.TOTAL_USR_RECD_QTY` | no |
+| `colUSER_RECEIVED_QTY` | Quantity Received | `RL.USER_RECEIVED_QTY` | **yes** |
+| `colRECEIVED_QTY` | Stock Qty Received | `RL.RECEIVED_QTY` | no |
+| `colRECEIVE_TO_INSPECTION` | Recv to Inspect | drives `RL.INSPECT_QTY` | **yes** |
+| `colLOCATION_ID` | Location ID | `RL.LOCATION_ID` | **yes** |
+| `colWAREHOUSE_ID` | Warehouse ID | `RL.WAREHOUSE_ID` | **yes** |
+| `colSHIPTO_ID` | Shipto ID | `POL.SHIPTO_ID` | no |
+| `colSHIPFROM_ID` | Ship from ID | `POL.SHIPFROM_ID` | no |
+| `colDESIRED_RECV_DATE` | Receive On | `POL.DESIRED_RECV_DATE` | **yes** |
+| `colPROMISE_DATE` | Promise Del Date | `POL.PROMISE_DATE` | **yes** |
+| `colPROMISE_SHIP_DATE` | Promise Ship Date | `POL.PROMISE_SHIP_DATE` | **yes** |
+| `colRECEIVED_DATE` | Last Recv Date | `POL.LAST_RECEIVED_DATE` | no |
+| `colPART_USER_1..10` | Part User Defined n | `PART.USER_1..10` | no |
+| `colPO_LINE_USER_1..10` | P.O. User Defined n | `POL.USER_1..10` | no |
+| `colRR_LONG_DESCRIPTION` | Recvr Specs (hidden) | `RL.DESCRIPTION` | **yes** |
+
+### Verified totals for `PO-072040`
+
+`POL.TOTAL_USR_RECD_QTY` equals the live sum of `RL.USER_RECEIVED_QTY` on every line, so "Total Qty Recv" is
+a **stored rollup** VISUAL maintains at post time, not something the grid recomputes from screen state:
+
+| Line | Part | Qty Ordered | `POL.TOTAL_USR_RECD_QTY` | `SUM(RL.USER_RECEIVED_QTY)` | Receipts |
+| ---- | ---- | ----------- | ------------------------ | --------------------------- | -------- |
+| 1 | `MMC0000667` | 72,000 | 34,680 | 34,680 | 1 |
+| 2 | `MMC0000743` | 33,000 | 36,110 | 36,110 | 1 |
+| 3 | `MMC0000761` | 80,000 | 83,920 | 83,920 | 4 |
+| 4 | `MMC0000761` | 60,000 | 46,760 | 46,760 | 2 |
+| 5 | `MMC0000848` | 55,000 | 55,620 | 55,620 | 5 |
+
+Line 1 is 34,680 against 72,000 ordered — a partial receipt, the case automation must handle. `PO-072040`
+also demonstrates multi-receiver accumulation: 13 receivers across its 5 lines, including one negative
+receipt (`159169`, −18,570) that nets out another.
+
+## What the evidence could not establish
+
+- **Which of `PO`/`POL` a single ambiguous variable targets.** `PROMISE_DATE` and `DESIRED_RECV_DATE` exist on
+  both the order and the order line, and the screen shows both a header box and a grid column. The bindings
+  above are the reading most consistent with the column sets, but confirming which one a header-level write
+  touches needs a live write test.
+- **Whether `colRECEIVE_TO_INSPECTION` writes `INSPECT_QTY` or a separate flag.** `RECEIVER_LINE` has no
+  boolean inspection column, so the quantity is the only candidate — but every posted receiver on
+  `PO-072040` has `INSPECT_QTY = 0` with the box unticked, so the positive case is unobserved.
+- **The per-slot `udf*` caption source.** Labels exist in `APPLICATION_GLOBAL`, `UDF_LAYOUT` and `SITE`, and
+  `PART_UDF_LABELS` is empty here, so no single source can be confirmed.
+- **The VBScript shape of `LINES`.** The hierarchy is proven and `LINES(1)` fails outside VISUAL, but no
+  document states the in-module accessor. This is why table automation in this app reads the grid through
+  automation and the database, not through `LINES`.
+- **The compressed outline on disk.** Names exist only at runtime, so static decompression would require the
+  Gupta TD string-table format, which was not attempted beyond the zlib probe.
 
 ## See Also
 
-- `docs/development/InforVisual/DatabaseCSVFiles/` — MTMFG SQL Server schema exports
-  (`Tables/RECEIVER.csv`, `Tables/PURCHASE_ORDER.csv`, `Tables/USER_DEF_FIELDS.csv`,
-  `ColumnDetails/PURCHASE_ORDER.csv`, and related files).
-- `docs/development/InforVisual-Macro-Automation.md` — existing macro automation notes in
-  this repo.
-- `\\visual\visual908$\VMFG\VMFG Ref\` — the nine VISUAL API Toolkit assemblies
-  (`VmfgPurchasing.dll`, `VmfgShared.dll`, `LsaCore.dll`, `LsaShared.dll`, and others).
-- `\\visual\visual908$\VMFG\API Toolkit Documents\VISUALTOOLKITVMFGPURCHASINGREFERENCE_45424.pdf`
-  — the `Receipt`, `Receiver`, `PurchaseOrder`, `Vendor`, and `GetInspectionReceivers`
-  reference (toolkit version 8.1.100.0).
-- Infor VISUAL API Toolkit class reference (all eleven PDFs) under
-  `\\visual\visual908$\VMFG\API Toolkit Documents\`.
+- [Infor VISUAL Macro Automation](./InforVisual-Macro-Automation.md)
+- [Infor Visual database reference files](../../.github/instructions/architecture/infor-visual-database-reference.instructions.md)
+- [Running VISUAL macros from outside VISUAL](https://community.infor.com/discussion/3127/running-visual-macros-from-outside-visual)
+- [Developing Infor VISUAL macros](https://www.gingerhelp.com/infor-visual-blog/developing-and-using-macros-to-automate-common-tasks)
