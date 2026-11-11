@@ -45,27 +45,26 @@ public sealed class Service_ReceivingLabelOverlay : IService_ReceivingLabelOverl
             );
         }
 
-        var items = (result.Data ?? new List<Model_ReceivingLoad>())
-            .Select(load =>
-            {
-                var marking = Helper_LabelOverlayPrinter.DescribeMarking(
-                    load.HeatColorCode,
-                    load.HeatShapeCode
-                );
+        var loads = result.Data ?? new List<Model_ReceivingLoad>();
+        var items = loads.ConvertAll(load =>
+        {
+            var marking = Helper_LabelOverlayPrinter.DescribeMarking(
+                load.HeatColorCode,
+                load.HeatShapeCode
+            );
 
-                return new Model_ReceivingLabelOverlayItem
-                {
-                    PartId = load.PartID,
-                    Description = load.PartDescription,
-                    HeatLotNumber = load.HeatLotNumber,
-                    LabelNumber = load.LoadNumber,
-                    ReceivedDate = load.ReceivedDate,
-                    ShapeCode = load.HeatShapeCode,
-                    ColorCode = load.HeatColorCode,
-                    MarkingText = marking.Length > 0 ? marking : "no marking recorded",
-                };
-            })
-            .ToList();
+            return new Model_ReceivingLabelOverlayItem
+            {
+                PartId = load.PartID,
+                Description = load.PartDescription,
+                HeatLotNumber = load.HeatLotNumber,
+                LabelNumber = load.LoadNumber,
+                ReceivedDate = load.ReceivedDate,
+                ShapeCode = load.HeatShapeCode,
+                ColorCode = load.HeatColorCode,
+                MarkingText = marking.Length > 0 ? marking : "no marking recorded",
+            };
+        });
 
         return Model_Dao_Result_Factory.Success(items);
     }
