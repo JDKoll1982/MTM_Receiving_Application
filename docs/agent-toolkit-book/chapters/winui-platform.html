@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WinUI 3 and the Windows platform — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 04</p>
+      <h1>WinUI 3 and the Windows platform</h1>
+      <div class="scope">
+        <p>How this application runs on Windows: the WinUI 3 / Windows App SDK 2.4.0 stack
+        behind the repo, the skills and agents that review, build, package, and test it, and
+        the two repo-local skills that keep the agent setup and the MainWindow footer in shape.</p>
+        <p>Everything here assumes the repo's platform facts:
+        <code>net10.0-windows10.0.22621.0</code>, <code>UseWinUI=true</code>,
+        <code>WindowsPackageType=None</code>, XAML with <code>x:Bind</code> only, and the MVVM
+        View&rarr;ViewModel&rarr;Service&rarr;DAO layering with no business logic in
+        <code>.xaml.cs</code>.</p>
+      </div>
+
+      <article class="entry"
+               id="winui-platform--winui-code-review"
+               data-entry-name="winui-code-review"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-code-review</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Reviews WinUI 3 XAML and bindings against this repo's rules:
+        <code>x:Bind</code> only, no runtime <code>{Binding}</code>, MVVM layering, and no
+        business logic in code-behind.</p>
+        <ul class="entry-uses">
+          <li>Reviewing a changed view in <code>Module_Receiving/Views/</code> for a stray
+          runtime <code>{Binding}</code> before merging.</li>
+          <li>Verifying a new <code>Module_Dunnage/</code> view keeps its code-behind empty and
+          its <code>x:Bind</code> modes correct.</li>
+          <li>Confirming an edit did not push business logic into
+          <code>MainWindow.xaml.cs</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The XAML and ViewModel to review, plus the MVVM rules in
+          <code>.github/copilot-instructions.md</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reviews XAML, binding, and layering only. It is not a general C# logic reviewer
+          and will not flag service or DAO bugs.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-code-review skill on
+Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml and its ViewModel. Confirm x:Bind only
+(no runtime {Binding}), no business logic in the .xaml.cs, and that the view calls only the
+ViewModel. List each violation with file and line.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winui-design"
+               data-entry-name="winui-design"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-design</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Gives WinUI 3 design and layout guidance — control choice,
+        spacing, and Fluent styling — for views in this Windows App SDK 2.4.0 app.</p>
+        <ul class="entry-uses">
+          <li>Choosing the right WinUI control for a new data-entry field in
+          <code>Module_Receiving/Views/</code>.</li>
+          <li>Re-laying out a <code>Module_Dunnage/</code> form to follow Fluent spacing and
+          typography.</li>
+          <li>Designing a dialog that stays consistent with the existing
+          Material.Icons.WinUI3 icons and module accent theming.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A concrete screen or control decision to make; the existing XAML helps ground
+          it.</dd>
+          <dt>Boundaries</dt>
+          <dd>Advises on visual design and layout. It does not write business logic or enforce
+          MVVM layering on its own.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-design skill to review
+Module_Receiving/Views/View_Receiving_POEntry.xaml for layout and control choice. Suggest a
+Fluent-consistent layout, spacing, and control selection that keeps every input bound with
+x:Bind to the ViewModel.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winui-dev-workflow"
+               data-entry-name="winui-dev-workflow"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-dev-workflow</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Covers the everyday WinUI 3 build/run/debug loop and analyzer
+        setup for a <code>net10.0-windows10.0.22621.0</code> Windows App SDK 2.4.0 project.</p>
+        <ul class="entry-uses">
+          <li>Setting up a fast inner loop for <code>MTM_Receiving_Application.slnx</code> with
+          XAML hot reload and debug breakpoints.</li>
+          <li>Configuring Roslynator.Analyzers and XAML compiler diagnostics in the Debug
+          configuration of <code>MTM_Receiving_Application.csproj</code>.</li>
+          <li>Diagnosing why an <code>x:Bind</code> change is not reflected at runtime
+          (Debug XamlDebuggingInformation versus Release XAML optimization).</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The csproj (<code>UseWinUI=true</code>, <code>WindowsPackageType=None</code>) and
+          a working <code>dotnet build</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Explains workflow and analyzer setup. It does not fix the C# or XAML it
+          surfaces.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-dev-workflow skill to document the Debug build/run loop for
+MTM_Receiving_Application.slnx. Cover how to run the unpackaged app
+(WindowsPackageType=None), enable XAML hot reload, and which Roslynator and XAML compiler
+settings apply in the Debug configuration.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winui-wpf-migration"
+               data-entry-name="winui-wpf-migration"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-wpf-migration</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Guides conversion of WPF apps and habits to WinUI 3, explaining
+        where <code>x:Bind</code>, the Window type, and the App model differ.</p>
+        <ul class="entry-uses">
+          <li>Replacing a WPF-era mental model (<code>DataContext</code>, runtime
+          <code>{Binding}</code>) with <code>x:Bind</code> in an existing view.</li>
+          <li>Converting WPF-style Window and Application patterns when porting an old tool
+          into this WinUI 3 repo.</li>
+          <li>Explaining why <code>MainWindow.xaml</code> is a WinUI Window, not a WPF Window,
+          when onboarding a new developer.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A WPF source (or WPF habits) to convert and a target WinUI 3 project.</dd>
+          <dt>Boundaries</dt>
+          <dd>This repo is already WinUI 3 on Windows App SDK 2.4.0. Use it to fix inherited
+          patterns or port external WPF code, not to migrate this app off WinUI.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-wpf-migration skill to convert this WPF-style XAML snippet to
+WinUI 3: replace DataContext and {Binding} with x:Bind to a generated property, replace the
+WPF Window close pattern with the WinUI Window equivalent, and flag any API that has no
+WinUI 3 replacement.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-find-api"
+               data-entry-name="winapp-find-api"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-find-api</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Looks up the correct Windows API — Windows App SDK, Win32, or
+        UWP — for a task in this app's <code>net10.0-windows10.0.22621.0</code> target.</p>
+        <ul class="entry-uses">
+          <li>Finding the Windows App SDK 2.4.0 API for a task instead of guessing a UWP-only
+          API.</li>
+          <li>Resolving the right API for windowing, packaging, or a Win32 interop call in
+          <code>MainWindow.xaml.cs</code>.</li>
+          <li>Checking whether a desired API exists on the minimum version 10.0.17763.0 before
+          using it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A specific task to accomplish; the csproj target platform is useful context.</dd>
+          <dt>Boundaries</dt>
+          <dd>Returns API facts and references. It does not implement the feature or verify it
+          compiles.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-find-api skill to find the Windows App SDK 2.4.0 API for
+enumerating the current Window's DispatcherQueue and posting work to the UI thread in
+MainWindow.xaml.cs, verifying availability on min version 10.0.17763.0.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-find-ui"
+               data-entry-name="winapp-find-ui"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-find-ui</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Produces working WinUI 3 XAML for a control, ready to drop into
+        this app's <code>x:Bind</code>-only views.</p>
+        <ul class="entry-uses">
+          <li>Getting copy-ready XAML for a NumberBox or InfoBadge to use in
+          <code>Module_Receiving/Views/</code>.</li>
+          <li>Building a ListView with <code>x:Bind</code> for a
+          <code>Module_Dunnage/</code> form.</li>
+          <li>Producing a ContentDialog snippet with AutomationProperties set for UI
+          automation.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The control name and its data context; the snippet must be adapted to
+          <code>x:Bind</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Generates XAML samples. It does not wire ViewModels, services, or navigation, and
+          you must convert any <code>{Binding}</code> samples to <code>x:Bind</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-find-ui skill to generate WinUI 3 XAML for a ComboBox bound
+with x:Bind to an ObservableCollection in a ViewModel, including an empty-selection
+placeholder and AutomationProperties.Name, for use in
+Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-frameworks"
+               data-entry-name="winapp-frameworks"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-frameworks</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Advises on Windows app framework and target selection — WinUI 3
+        versus WPF, UWP, or Win32, and packaged versus unpackaged.</p>
+        <ul class="entry-uses">
+          <li>Confirming WinUI 3 on Windows App SDK 2.4.0 is the right base for this
+          manufacturing-floor x64 app.</li>
+          <li>Explaining <code>WindowsPackageType=None</code> and the unpackaged click-to-run
+          deployment this repo uses.</li>
+          <li>Evaluating a proposed target change (for example ARM64) against the repo's
+          x64-only constraint.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The deployment and target requirements; the csproj properties already decide most
+          of it.</dd>
+          <dt>Boundaries</dt>
+          <dd>Gives selection guidance. It does not change the csproj or the deployment
+          pipeline.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-frameworks skill to explain the framework and packaging
+choices already made in MTM_Receiving_Application.csproj: WinUI 3 (UseWinUI=true), Windows
+App SDK 2.4.0, WindowsPackageType=None, x64-only, and whether those are the right choices
+for a manufacturing-floor receiving app.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-sandbox"
+               data-entry-name="winapp-sandbox"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-sandbox</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Uses Windows Sandbox to run and test this app in an isolated
+        environment without touching the host machine.</p>
+        <ul class="entry-uses">
+          <li>Smoke-testing a fresh build of the app in an isolated Windows Sandbox before
+          deploying to the floor.</li>
+          <li>Reproducing a launch or runtime issue without polluting the dev machine's
+          state.</li>
+          <li>Verifying a clean-machine install path for the unpackaged build.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Windows Sandbox enabled on the host and the build output to test.</dd>
+          <dt>Boundaries</dt>
+          <dd>Isolates execution only. It does not package, sign, or fix the app, and some
+          machines cannot run nested virtualization features.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-sandbox skill to run the latest x64 build of
+MTM_Receiving_Application in Windows Sandbox, capture whether MainWindow.xaml loads without
+a missing-runtime error, and report the first failure if any.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-troubleshoot"
+               data-entry-name="winapp-troubleshoot"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-troubleshoot</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Diagnoses Windows app runtime and launch problems — missing
+        Windows App SDK runtime, XAML load failures, and packaging issues.</p>
+        <ul class="entry-uses">
+          <li>Debugging a startup crash when the Windows App SDK runtime is missing on a floor
+          PC, which <code>WindowsAppSDKSelfContained=true</code> should prevent.</li>
+          <li>Tracing an XAML parse or resource load failure in a
+          <code>Module_Receiving</code> view.</li>
+          <li>Diagnosing an unpackaged app that fails to launch because a dependency did not
+          copy to output.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The failure repro, event log entries, or build output.</dd>
+          <dt>Boundaries</dt>
+          <dd>Diagnoses and explains. It does not rebuild, resign, or edit the app on its
+          own.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-troubleshoot skill to diagnose why the unpackaged x64 build
+(WindowsPackageType=None, WindowsAppSDKSelfContained=true) crashes on launch on a clean
+Windows 11 machine. Walk the event log and XAML diagnostics, and list the most likely cause
+first.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-maui"
+               data-entry-name="winapp-maui"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-maui</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Guidance for .NET MAUI on Windows — which does not apply to
+        this repo's WinUI 3 app.</p>
+        <ul class="entry-uses">
+          <li>Explaining why MAUI is the wrong base for this existing WinUI 3 app if someone
+          proposes it.</li>
+          <li>Evaluating a one-off MAUI Windows tool as a separate project without touching
+          this repo.</li>
+          <li>Comparing MAUI's Windows target behavior to WinUI 3 for a decision record.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A real MAUI question or a proposed new project.</dd>
+          <dt>Boundaries</dt>
+          <dd>This repo is WinUI 3 on Windows App SDK 2.4.0, not MAUI. The skill does not
+          convert this app and should not be used to migrate it.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-maui skill to explain the difference between .NET MAUI on
+Windows and this repo's WinUI 3 setup (Windows App SDK 2.4.0,
+net10.0-windows10.0.22621.0), and confirm whether any part of the receiving workflow would
+benefit from MAUI. Do not propose converting the app.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winui-devtools"
+               data-entry-name="winui-devtools"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-devtools</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Inspects WinUI XAML internals at runtime — the live visual
+        tree, bindings, and property values.</p>
+        <ul class="entry-uses">
+          <li>Inspecting the live visual tree of <code>MainWindow.xaml</code> to see why a
+          footer button is not rendering.</li>
+          <li>Checking an <code>x:Bind</code> value and data context at runtime in a
+          <code>Module_Dunnage/</code> view.</li>
+          <li>Confirming a control's actual rendered properties during a UI automation
+          run.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A running app instance and WinUI 3 debugging enabled.</dd>
+          <dt>Boundaries</dt>
+          <dd>Read-only runtime inspection. It does not edit XAML or fix the issue, and it
+          overlaps <code>winapp-ui-automation</code>, which lives in the packaging chapter.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-devtools skill to inspect the live visual tree of
+Module_Receiving/Views/View_Receiving_Workflow.xaml while the app runs, read the bound
+values on the workflow grid, and report any x:Bind that resolved to null.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winui-dev"
+               data-entry-name="winui-dev"
+               data-entry-kind="agent"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-dev</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">The WinUI 3 development agent — builds, modifies, or fixes
+        WinUI 3 and Windows App SDK features in this repo.</p>
+        <ul class="entry-uses">
+          <li>Implementing a new WinUI 3 view and ViewModel for a receiving sub-flow, following
+          the MVVM and <code>x:Bind</code> rules.</li>
+          <li>Fixing a XAML compile error or binding bug in a
+          <code>Module_Receiving</code> or <code>Module_Dunnage</code> view.</li>
+          <li>Converting a code-behind method into a ViewModel command to restore the
+          no-business-logic rule.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A scoped task and the repo's MVVM/DAO rules from
+          <code>.github/copilot-instructions.md</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Operates on the code you point it at. It will not make schema, DI-wiring, or
+          NuGet decisions without approval, per repo rules.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-dev agent to add a View_Receiving_HoldReason dialog in
+Module_Receiving/Views/ with a matching ViewModel, bound with x:Bind only, calling a service
+(not a DAO) for save, with no business logic in the .xaml.cs. Build the module slice when
+done.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp"
+               data-entry-name="winapp"
+               data-entry-kind="agent"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">The WinApp CLI agent for Windows app packaging, identity,
+        signing, and UI automation.</p>
+        <ul class="entry-uses">
+          <li>Inspecting or updating <code>Package.appxmanifest</code> and
+          <code>appxmanifest.xml</code> identity and capabilities for this app.</li>
+          <li>Driving the running app through UI automation to verify a receiving or dunnage
+          flow end to end.</li>
+          <li>Preparing MSIX packaging or signature changes while preserving
+          <code>WindowsPackageType=None</code> for the dev loop.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A packaging, identity, or UI-automation task and the app's manifest files.</dd>
+          <dt>Boundaries</dt>
+          <dd>Packaging and UI automation only. It does not implement MVVM feature code, and
+          UI automation overlaps <code>winui-devtools</code> for runtime inspection.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp agent to read Package.appxmanifest and appxmanifest.xml and
+report the current package identity, capabilities, and whether the manifest is consistent
+with WindowsPackageType=None in MTM_Receiving_Application.csproj. Make no edits without
+listing them first.</code></pre>
+        </div>
+      </article>
+<article class="entry"
+               id="winui-platform--winui-ui-testing"
+               data-entry-name="winui-ui-testing"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-ui-testing</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">The <code>winapp ui</code> harness for automated UI tests of
+        this WinUI 3 app.</p>
+        <ul class="entry-uses">
+          <li>Writing an automated UI test that launches the app and completes a receiving
+          flow.</li>
+          <li>Verifying the <code>MainWindow.xaml</code> footer button behavior after the
+          button revamp.</li>
+          <li>Adding a smoke test that opens a <code>Module_Dunnage</code> view and asserts key
+          controls are present.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A runnable build and the winapp CLI; AutomationIds on controls make targeting
+          reliable.</dd>
+          <dt>Boundaries</dt>
+          <dd>Automates the UI through the <code>winapp ui</code> harness. It overlaps
+          <code>winapp-ui-automation</code>, which lives in the packaging chapter, and it does
+          not replace unit or integration tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winui-ui-testing skill to write a winapp ui test that launches the
+app, navigates to Module_Receiving/Views/View_Receiving_ModeSelection.xaml, selects a mode,
+and asserts the next view appears. Use AutomationId selectors and wait for each step.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-ui-automation"
+               data-entry-name="winapp-ui-automation"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-ui-automation</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Drives a running Windows app through UI Automation with
+        <code>winapp ui</code>: find elements, click, type, read values, wait for state, and take
+        screenshots across WinUI, WPF, WinForms, Win32, and Electron.</p>
+        <ul class="entry-uses">
+          <li>Verifying a receiving workflow end to end against the real compiled app instead of
+          a mock.</li>
+          <li>Reading the live AutomationId tree to confirm a control is reachable by an automated
+          test at all.</li>
+          <li>Capturing a screenshot at a specific step so a reviewer can see what the operator
+          sees.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>WinApp CLI on PATH; the target app must expose a usable UI Automation tree.</dd>
+          <dt>Boundaries</dt>
+          <dd>Automates the UI, not the code. It overlaps <code>winui-ui-testing</code>, which is the
+          WinUI-specific harness; prefer that one when the target is WinUI 3.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-ui-automation skill to launch the built app, open the Receiving
+workflow, enter a test load, and confirm the saved row appears. Use AutomationIds, not
+coordinates, and screenshot the saved state.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="winui-platform--winapp-performance"
+               data-entry-name="winapp-performance"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-performance</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Measures and diagnoses Windows app startup and runtime performance,
+        including launch time, working set, and first-frame behavior.</p>
+        <ul class="entry-uses">
+          <li>Checking startup cost after adding a new module to the shell.</li>
+          <li>Comparing working set before and after a WinUI control change.</li>
+          <li>Confirming that a chart-heavy page does not stall the UI thread on open.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>WinApp CLI on PATH and a build of the app to measure.</dd>
+          <dt>Boundaries</dt>
+          <dd>Measures the running app; it does not read your code to suggest optimisations.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the winapp-performance skill to measure startup and working set for
+MTM_Receiving_Application, then compare against the previous build. Report the numbers
+rather than a verdict.</code></pre>
+        </div>
+      </article>
+
+      <h2>Repo-local skills</h2>
+      <p>Two repo-owned skills are relevant here but live in the
+      <a href="repo-assets.html">repo assets chapter</a> so they are documented once:
+      <code>plan-mainwindowbuttonrevamp</code>, which plans the MainWindow button revamp, and
+      <code>agent-performance-audit</code>, which audits this agent setup for accuracy, speed, and
+      token cost.</p>
+
+      <hr class="rule">
+      <p class="callout"><strong>Reading order.</strong> Run <code>winui-code-review</code> on
+      every XAML change, <code>winui-dev</code> for feature work, and <code>winapp</code> for
+      packaging and UI automation. Reach for <code>winui-ui-testing</code> when a flow needs
+      automated UI proof, and keep the two repo skills — <code>plan-mainwindowbuttonrevamp</code>
+      and <code>agent-performance-audit</code> — for planning and agent hygiene, not
+      implementation.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

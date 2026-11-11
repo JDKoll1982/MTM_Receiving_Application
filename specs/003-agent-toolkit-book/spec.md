@@ -13,7 +13,7 @@ the whole thing as a physical book.
 
 ## User Scenarios & Testing
 
-This book exists because the workspace now carries 282 distinct agent-tooling entries across
+This book exists because the workspace now carries 269 distinct agent-tooling entries across
 thirteen plugins, four canvas extensions, and the repo's own `.github` assets. Nothing currently
 describes them in one place, so the only way to discover a tool is to already know it exists.
 
@@ -26,11 +26,11 @@ Coverage inventory this specification is measured against:
 | Plugin agents | 21 |
 | Plugin canvas extensions | 4 |
 | Repo skills (`.github/Skills`) | 37 |
-| Repo agents (`.github/agents`) | 50 |
+| Repo agents (`.github/agents`, excluding README) | 49 |
 | Repo prompts (`.github/prompts`, incl. subfolders) | 82 |
 | Repo hooks (`.github/hooks`) | 1 |
 | MCP servers | 3 |
-| **Total entries** | **282** |
+| **Total entries** | **269** |
 
 ### User Story 1 - Find the right tool for a job by browsing categories (Priority: P1)
 
@@ -214,9 +214,12 @@ and confirm the report names it as missing from the book without any file being 
 
 **Discovery and organization**
 
-- **FR-001**: The book MUST document all 282 inventoried entries: 13 plugins, 71 unique plugin
-  skills, 21 plugin agents, 4 plugin canvas extensions, 37 repo skills, 50 repo agents, 82 repo
-  prompts, 1 repo hook, and 3 MCP servers.
+- **FR-001**: The book MUST document all 269 unique inventoried entries: 13 plugins, 71 unique
+  plugin skills, 21 plugin agents, 4 plugin canvas extensions, 3 MCP servers, 1 plugin language
+  server, 1 repo hook, 37 repo skills, 49 repo agents, and 82 repo prompts. The total is 269
+  rather than the 282 estimated during specification because repo agents are counted once each
+  (the count of 50 included a README), and because `csharp-nunit`, shipped by both
+  `csharp-dotnet-development` and `testing-automation`, is documented once under both sources.
 - **FR-002**: The book MUST be organized primarily by job-to-be-done category chapters, and MUST
   additionally provide a complete index organized by source.
 - **FR-003**: Each category chapter MUST state its scope and MUST list every entry that belongs to
@@ -323,7 +326,7 @@ and confirm the report names it as missing from the book without any file being 
 
 ### Measurable Outcomes
 
-- **SC-001**: All 282 inventoried entries appear in the book, verified by an automated count that
+- **SC-001**: All 269 inventoried entries appear in the book, verified by an automated count that
   reports zero missing.
 - **SC-002**: A reader can reach any entry from the root page in two interactions or fewer.
 - **SC-003**: A task-oriented reader can identify the correct tool for a described job without

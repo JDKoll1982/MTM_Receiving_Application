@@ -1,0 +1,26 @@
+{
+  "module": {
+    "count": 15,
+    "digest": "d0baae31fea9f3ed"
+  },
+  "dao": {
+    "count": 233,
+    "digest": "2548548dd32984fb"
+  },
+  "storedProcedure": {
+    "count": 275,
+    "digest": "2dcfc842f10bd8e9"
+  },
+  "targetFile": {
+    "count": 1187,
+    "digest": "607f4bc006480278"
+  },
+  "test": {
+    "count": 126,
+    "digest": "dfeb3e9d99f21e23"
+  },
+  "specFolder": {
+    "count": 3,
+    "digest": "a993b23bf89082bc"
+  }
+}

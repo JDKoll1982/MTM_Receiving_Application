@@ -2,7 +2,9 @@
 
 **Date:** 2026-03-08  
 **Machine:** JKOLL-PC (`jkoll`)  
-**Conducted by:** GitHub Copilot agent — automated discovery session
+**Conducted by:** GitHub Copilot agent — automated discovery session  
+**Re-verified:** 2026-11-11 — the line-grid findings were re-measured against a live window; see
+"Grid, re-measured 2026-11-11" under Grid Area Controls.
 
 ---
 
@@ -121,7 +123,30 @@ Y-coordinate from the UIA bounding rect is used to infer approximate tab order (
 | 4149 | `Edit` | `ControlType.Pane` | `Closed` (Close Short flag) — outside the grid, in right panel |
 | 4161 | `Edit` | `ControlType.Pane` | `US Dollar` — currency field, right panel |
 
-> ⚠️ **Critical finding:** `Gupta:ChildTable` exposes **only 2 UIA descendants** — the ListClip clip region and the active edit cell. Column headers are GDI-painted and **not accessible via UIA at all**. Grid navigation must be done by Tab/Enter keystrokes, tracking column position by count. Column order is authoritative from `VMRCVENT.INI`.
+> ⚠️ **Critical finding:** `Gupta:ChildTable` exposes **only 2 UIA descendants** — the ListClip clip region and the active edit cell. Column headers are **not accessible via UIA**. Column order is authoritative from `VMRCVENT.INI`.
+
+#### Grid, re-measured 2026-11-11 (supersedes the "keystrokes only" note)
+
+The original entry said headers were inaccessible and that grid navigation *must* use Tab/Enter. Both halves
+are now known to be partly wrong. The measurements below were taken against a live window with `PO-072947`
+loaded (receiver `159462`, two lines).
+
+| Question | Measured answer |
+| -------- | --------------- |
+| Are column headers reachable at all? | **Yes, but not through UIA.** Each column is its own child HWND with class `Gupta:ChildTable:Column` and control ID `32768 + columnIndex`. `GetWindowText` and `WM_GETTEXT` both return the header text, for example `Ln#`, `Part ID`, `Vendor Part ID`, `Quantity Ordered`, `Quantity Received` |
+| How many column HWNDs exist? | 171, of which 70 have non-empty header text; the rest are hidden columns |
+| Does raw MSAA help? | **No.** `AccessibleObjectFromWindow(OBJID_CLIENT)` on `Gupta:ChildTable` reports `accChildCount = 172`, but every child returns an empty padded name, an empty role and a `0x0` rectangle. `accSelect` throws and `accHitTest` returns `null`. The MSAA layer is a stub; do not build on it |
+| Can a cell value be read without keystrokes? | **Yes, for editable columns.** The active cell is a real `Edit` HWND. `WM_GETTEXT`, and UIA `TextPattern`, both return its text. Verified: clicking row 1 of `Quantity Received` read `0` and row 2 read `1`, matching the on-screen grid |
+| Can a *read-only* cell be read this way? | **No.** Clicking `Ln#`, `Part ID`, `Vendor Part ID`, `Quantity Ordered` or `Total Qty Recv` produces **no automation element at all** — the active-cell `Edit` only materialises for editable columns. Those values are not recoverable from the grid |
+| Do clicks work instead of Tab/Enter? | **Yes.** A click moves the active cell and therefore selects a specific row and column. No keystroke is required to select a cell |
+
+Measured geometry for a 1936 px wide window: the grid sits at screen `(10, 365)` and is `1900 x 634`; the
+first data row starts 32 px below the grid top, rows are on a **24 px** pitch, and the active cell inside a row
+is `59 x 14` at the column's own x. Column x positions shift with window width, so derive them at run time
+rather than hard-coding them.
+
+Consequence for automation: editable cells can be written and read back, which is what the write probes need.
+**Read-only line data must come from `MTMFG` over SQL**, not from the grid.
 
 #### Status Bar / Other
 

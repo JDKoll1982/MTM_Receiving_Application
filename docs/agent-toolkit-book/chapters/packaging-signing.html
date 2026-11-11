@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packaging, signing, and distribution — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 05</p>
+      <h1>Packaging, signing, and distribution</h1>
+      <div class="scope">
+        <p>Turning the built application into something another machine can install: MSIX
+        packages, certificates and signatures, package identity, and the manifest that ties them
+        together.</p>
+        <p>The receiving app targets <code>net10.0-windows10.0.22621.0</code> with
+        <code>Microsoft.WindowsAppSDK</code> 2.4.0 and is currently unpackaged
+        (<code>WindowsPackageType=None</code>), so packaging is a deliberate step here, not a
+        default. Both <code>Package.appxmanifest</code> and <code>appxmanifest.xml</code> sit at
+        the repo root, with <code>MTMIcon.ico</code> as the application icon and
+        <code>app.manifest</code> alongside the project file.</p>
+      </div>
+
+      <article class="entry"
+               id="packaging-signing--winapp-package"
+               data-entry-name="winapp-package"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-package</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Builds an MSIX installer from an existing build output or a
+        project file, optionally signing it as part of the pack.</p>
+        <ul class="entry-uses">
+          <li>Turning the unpackaged <code>MTM_Receiving_Application</code> build into an MSIX for
+          a pilot install on warehouse PCs.</li>
+          <li>Choosing MSIX deliberately after <code>WindowsPackageType=None</code>, rather than
+          inheriting a packaged default.</li>
+          <li>Re-packaging from <code>bin</code> output without re-running a full
+          <code>dotnet build</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A successful build of <code>MTM_Receiving_Application.csproj</code>, or the project
+          file to pack; a certificate or PFX if the package must be signed.</dd>
+          <dt>Boundaries</dt>
+          <dd>Packs what you point it at. It does not author the appxmanifest content or decide
+          package identity.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winapp-package to build an MSIX for MTM_Receiving_Application.csproj.
+The app is currently unpackaged (WindowsPackageType=None), so this is an explicit
+packaging step, not a re-default. Pack the built output, sign it if a certificate
+is configured, and write the installer under build/msix/.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winapp-signing"
+               data-entry-name="winapp-signing"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-signing</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Signs an existing MSIX or executable and manages the certificates
+        and PFX files used for signing.</p>
+        <ul class="entry-uses">
+          <li>Signing a freshly built MSIX so it installs without the unknown-publisher
+          SmartScreen warning.</li>
+          <li>Creating or importing a test PFX used only inside this repo and never committed.</li>
+          <li>Re-signing an executable after a patch release without rebuilding the package.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An existing <code>.msix</code> or <code>.exe</code>, plus a certificate or PFX.</dd>
+          <dt>Boundaries</dt>
+          <dd>Signs and manages keys. It does not build packages or change package identity.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winapp-signing to sign the MSIX I just built for MTM_Receiving_Application.
+Generate a test PFX if none exists, store it outside the repo so it never gets
+committed, then sign the package and verify the signature.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winapp-identity"
+               data-entry-name="winapp-identity"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-identity</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Configures the package identity that Windows APIs need for push
+        notifications, background tasks, share target, and startup task.</p>
+        <ul class="entry-uses">
+          <li>Wiring an identity to support a future background task that polls receiving
+          queues.</li>
+          <li>Registering as a share target if the app starts accepting shared part numbers.</li>
+          <li>Setting a startup task so the receiving app auto-launches at sign-in on dock PCs.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A packaged app with an appxmanifest in place.</dd>
+          <dt>Boundaries</dt>
+          <dd>Manages identity fields. It does not implement the background task or notification
+          logic that consumes them.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winapp-identity to add a startup task to the package identity for
+MTM_Receiving_Application, using Package.appxmanifest at the repo root, so the app
+can auto-launch at sign-in on receiving dock PCs.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winapp-manifest"
+               data-entry-name="winapp-manifest"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-manifest</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Authors and edits <code>appxmanifest.xml</code>: capabilities,
+        declarations, visual assets, and dependencies.</p>
+        <ul class="entry-uses">
+          <li>Adding a capability or declaration the app needs without hand-editing XML.</li>
+          <li>Pointing the manifest at <code>MTMIcon.ico</code> so the tile and taskbar show the
+          right icon.</li>
+          <li>Keeping both <code>Package.appxmanifest</code> and <code>appxmanifest.xml</code> at
+          the repo root in sync.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A Windows app project. Both <code>Package.appxmanifest</code> and
+          <code>appxmanifest.xml</code> exist at the repo root for this app.</dd>
+          <dt>Boundaries</dt>
+          <dd>Edits manifest content. It does not build or sign the package.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winapp-manifest to edit appxmanifest.xml for MTM_Receiving_Application.
+Keep Package.appxmanifest at the repo root in sync, set the application icon to
+MTMIcon.ico, and add any capability the MSIX needs. Do not delete either file.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winapp-setup"
+               data-entry-name="winapp-setup"
+               data-entry-kind="skill"
+               data-entry-source="winappcli@0.8.0">
+        <header>
+          <h3 class="entry-name">winapp-setup</h3>
+          <span class="entry-source">winappcli@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Runs <code>winapp init</code> or <code>winapp restore</code> to
+        add Windows SDK and Windows App SDK support, or to restore SDKs pinned in the project.</p>
+        <ul class="entry-uses">
+          <li>Restoring the pinned <code>Microsoft.WindowsAppSDK</code> 2.4.0 after a clean
+          clone.</li>
+          <li>Initializing SDK support in a new project that does not yet reference the Windows App
+          SDK.</li>
+          <li>Verifying the toolchain before a packaging run.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A project or directory to operate on, and network access for restore.</dd>
+          <dt>Boundaries</dt>
+          <dd>Sets up SDKs. It does not package, sign, or edit manifests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winapp-setup to run winapp restore against MTM_Receiving_Application so the
+pinned Microsoft.WindowsAppSDK 2.4.0 runtime is restored before I build the MSIX.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winui-packaging"
+               data-entry-name="winui-packaging"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-packaging</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Packages, signs, and prepares a WinUI 3 app for Store publishing,
+        including Native AOT and self-contained deployment.</p>
+        <ul class="entry-uses">
+          <li>Packaging the WinUI 3 receiving app as MSIX with WinUI-specific template
+          knowledge.</li>
+          <li>Deciding between APPX and MSIX and applying
+          <code>WindowsAppSDKSelfContained</code> for a self-contained install.</li>
+          <li>Planning Native AOT where it fits without breaking the WinUI XAML runtime.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A WinUI 3 project targeting <code>net10.0-windows10.0.22621.0</code> with
+          <code>Microsoft.WindowsAppSDK</code> 2.4.0.</dd>
+          <dt>Boundaries</dt>
+          <dd>WinUI-specific. Use <code>winapp-package</code> for a non-WinUI Windows app.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winui-packaging to package MTM_Receiving_Application as MSIX. It targets
+net10.0-windows10.0.22621.0 with Microsoft.WindowsAppSDK 2.4.0 and currently runs
+unpackaged (WindowsPackageType=None), so explain the APPX vs MSIX choice and whether
+WindowsAppSDKSelfContained should stay true.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="packaging-signing--winui-setup"
+               data-entry-name="winui-setup"
+               data-entry-kind="skill"
+               data-entry-source="winui@0.8.0">
+        <header>
+          <h3 class="entry-name">winui-setup</h3>
+          <span class="entry-source">winui@0.8.0</span>
+        </header>
+        <p class="entry-purpose">Installs and verifies WinUI 3 prerequisites: .NET SDK, WinApp CLI
+        0.7+, and Developer Mode.</p>
+        <ul class="entry-uses">
+          <li>Confirming the toolchain before building the receiving app.</li>
+          <li>Enabling Developer Mode for unpackaged F5 runs.</li>
+          <li>Verifying the WinApp CLI meets the 0.7+ floor.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A Windows 11 machine and local admin rights to enable Developer Mode.</dd>
+          <dt>Boundaries</dt>
+          <dd>Verifies prerequisites only; it does not package or sign. Note the
+          <code>winapp</code> CLI 0.8.0 is already installed on this machine, and
+          <code>winapp --version</code> prints nothing, so use <code>winapp --help</code> to
+          confirm the version.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use winui-setup to verify the WinUI 3 prerequisites for MTM_Receiving_Application.
+Confirm the .NET SDK, Developer Mode, and the winapp CLI. winapp 0.8.0 is already
+installed on this machine, and winapp --version prints nothing, so use
+winapp --help to confirm the version.</code></pre>
+        </div>
+      </article>
+
+      <h2>Where winui and winappcli overlap</h2>
+      <table class="decision-table">
+        <thead>
+          <tr><th>Task</th><th>Prefer</th><th>Why</th><th>Use the other when</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Packaging a WinUI 3 app</td>
+            <td><code>winui-packaging</code></td>
+            <td>It knows the WinUI template, Native AOT, and the APPX vs MSIX distinctions.</td>
+            <td>You are packaging a non-WinUI Windows app, so use <code>winapp-package</code>.</td>
+          </tr>
+          <tr>
+            <td>Setting up prerequisites</td>
+            <td><code>winui-setup</code></td>
+            <td>It owns the WinUI-specific prerequisite chain including Developer Mode.</td>
+            <td>You only need SDK restore or init on a non-WinUI project, so use
+            <code>winapp-setup</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> This repo is WinUI 3, so default
+      to <code>winui-packaging</code> and <code>winui-setup</code> for packaging and prerequisites.
+      Fall back to <code>winapp-package</code> and <code>winapp-setup</code> only for non-WinUI
+      Windows work. Reach for <code>winapp-manifest</code> and <code>winapp-identity</code> for the
+      manifest and identity details the packaging skills do not author, and
+      <code>winapp-signing</code> whenever a package or executable needs a signature.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

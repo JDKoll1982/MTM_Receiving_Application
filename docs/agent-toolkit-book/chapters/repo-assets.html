@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repo skills, agents, and prompts — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 12</p>
+      <h1>Repo skills, agents, and prompts</h1>
+      <div class="scope">
+        <p>Indexing the automation assets that ship inside the repository itself: the 37 skills
+        under <code>.github/Skills</code>, the three non-speckit agents under
+        <code>.github/agents</code>, and the 82-entry prompt library under
+        <code>.github/prompts</code>.</p>
+        <p>The <code>speckit.*</code> agents and their workflows are documented in the spec-driven
+        chapter; here only the thin wrappers and stubs that make those commands discoverable from
+        the skill and prompt palettes are listed.</p>
+      </div>
+
+      <h2>Repo skills</h2>
+
+      <article class="entry"
+               id="repo-assets--agent-performance-audit"
+               data-entry-name="agent-performance-audit"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/agent-performance-audit">
+        <header>
+          <h3 class="entry-name">agent-performance-audit</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Audits your own agent setup for accuracy, speed, token, and
+        consistency gains, gets per-item approval, then exports one repo-agnostic
+        <code>repo-performance-optimizer.md</code> prompt.</p>
+        <ul class="entry-uses">
+          <li>Finding verified ways to improve your own accuracy, speed, token use, and
+          consistency in this environment.</li>
+          <li>Turning only the improvements you approve into one reusable prompt you can paste into
+          any repository.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/agent-performance-audit</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--plan-mainwindowbuttonrevamp"
+               data-entry-name="plan-mainwindowbuttonrevamp"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/plan-mainwindowbuttonrevamp">
+        <header>
+          <h3 class="entry-name">plan-mainwindowbuttonrevamp</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Plans the replacement of the fixed four-footer label buttons with a
+        user-managed, data-driven button list stored per user in settings_personal, with an expanded
+        LabelView settings page and MainWindow overflow flyout behavior.</p>
+        <ul class="entry-uses">
+          <li>Producing an implementation plan for dynamic label buttons before touching any
+          XAML.</li>
+          <li>Keeping the per-user button list, expanded settings page, and overflow flyout changes
+          scoped to one documented design.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/plan-mainwindowbuttonrevamp</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-analyze"
+               data-entry-name="speckit-analyze"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-analyze">
+        <header>
+          <h3 class="entry-name">speckit-analyze</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.analyze</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.analyze</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.analyze</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-checklist"
+               data-entry-name="speckit-checklist"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-checklist">
+        <header>
+          <h3 class="entry-name">speckit-checklist</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.checklist</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.checklist</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.checklist</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-clarify"
+               data-entry-name="speckit-clarify"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-clarify">
+        <header>
+          <h3 class="entry-name">speckit-clarify</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.clarify</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.clarify</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.clarify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-after-converge"
+               data-entry-name="speckit-companion-after-converge"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-after-converge">
+        <header>
+          <h3 class="entry-name">speckit-companion-after-converge</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.after-converge</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.after-converge</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-converge</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-after-implement"
+               data-entry-name="speckit-companion-after-implement"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-after-implement">
+        <header>
+          <h3 class="entry-name">speckit-companion-after-implement</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.after-implement</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.after-implement</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-after-plan"
+               data-entry-name="speckit-companion-after-plan"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-after-plan">
+        <header>
+          <h3 class="entry-name">speckit-companion-after-plan</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.after-plan</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.after-plan</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-after-specify"
+               data-entry-name="speckit-companion-after-specify"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-after-specify">
+        <header>
+          <h3 class="entry-name">speckit-companion-after-specify</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.after-specify</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.after-specify</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-after-tasks"
+               data-entry-name="speckit-companion-after-tasks"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-after-tasks">
+        <header>
+          <h3 class="entry-name">speckit-companion-after-tasks</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.after-tasks</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.after-tasks</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-tasks</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-append"
+               data-entry-name="speckit-companion-append"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-append">
+        <header>
+          <h3 class="entry-name">speckit-companion-append</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.append</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.append</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.append</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-auto"
+               data-entry-name="speckit-companion-auto"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-auto">
+        <header>
+          <h3 class="entry-name">speckit-companion-auto</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.auto</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.auto</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.auto</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-before-converge"
+               data-entry-name="speckit-companion-before-converge"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-before-converge">
+        <header>
+          <h3 class="entry-name">speckit-companion-before-converge</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.before-converge</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.before-converge</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.before-converge</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-before-step"
+               data-entry-name="speckit-companion-before-step"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-before-step">
+        <header>
+          <h3 class="entry-name">speckit-companion-before-step</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.before-step</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.before-step</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.before-step</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-classify"
+               data-entry-name="speckit-companion-classify"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-classify">
+        <header>
+          <h3 class="entry-name">speckit-companion-classify</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.classify</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.classify</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.classify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-doctor"
+               data-entry-name="speckit-companion-doctor"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-doctor">
+        <header>
+          <h3 class="entry-name">speckit-companion-doctor</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.doctor</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.doctor</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.doctor</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-implement"
+               data-entry-name="speckit-companion-implement"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-implement">
+        <header>
+          <h3 class="entry-name">speckit-companion-implement</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.implement</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.implement</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-adopt"
+               data-entry-name="speckit-companion-living-adopt"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-adopt">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-adopt</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-adopt</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-adopt</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-adopt</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-coverage"
+               data-entry-name="speckit-companion-living-coverage"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-coverage">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-coverage</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-coverage</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-coverage</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-coverage</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-drift"
+               data-entry-name="speckit-companion-living-drift"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-drift">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-drift</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-drift</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-drift</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-drift</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-move"
+               data-entry-name="speckit-companion-living-move"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-move">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-move</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-move</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-move</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-move</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-show"
+               data-entry-name="speckit-companion-living-show"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-show">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-show</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-show</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-show</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-show</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-sync"
+               data-entry-name="speckit-companion-living-sync"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-sync">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-sync</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-sync</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-sync</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-sync</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-living-validate"
+               data-entry-name="speckit-companion-living-validate"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-living-validate">
+        <header>
+          <h3 class="entry-name">speckit-companion-living-validate</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.living-validate</code> command; the matching workflow is documented
+        in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.living-validate</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-validate</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-mark-complete"
+               data-entry-name="speckit-companion-mark-complete"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-mark-complete">
+        <header>
+          <h3 class="entry-name">speckit-companion-mark-complete</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.mark-complete</code> command; the matching workflow is documented in
+        the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.mark-complete</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.mark-complete</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-plan"
+               data-entry-name="speckit-companion-plan"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-plan">
+        <header>
+          <h3 class="entry-name">speckit-companion-plan</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.plan</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.plan</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-resume"
+               data-entry-name="speckit-companion-resume"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-resume">
+        <header>
+          <h3 class="entry-name">speckit-companion-resume</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.resume</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.resume</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.resume</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-specify"
+               data-entry-name="speckit-companion-specify"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-specify">
+        <header>
+          <h3 class="entry-name">speckit-companion-specify</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.specify</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.specify</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-status"
+               data-entry-name="speckit-companion-status"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-status">
+        <header>
+          <h3 class="entry-name">speckit-companion-status</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.status</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.status</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.status</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-tasks"
+               data-entry-name="speckit-companion-tasks"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-companion-tasks">
+        <header>
+          <h3 class="entry-name">speckit-companion-tasks</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.companion.tasks</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.companion.tasks</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.tasks</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-constitution"
+               data-entry-name="speckit-constitution"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-constitution">
+        <header>
+          <h3 class="entry-name">speckit-constitution</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.constitution</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.constitution</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.constitution</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-converge"
+               data-entry-name="speckit-converge"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-converge">
+        <header>
+          <h3 class="entry-name">speckit-converge</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.converge</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.converge</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.converge</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-implement"
+               data-entry-name="speckit-implement"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-implement">
+        <header>
+          <h3 class="entry-name">speckit-implement</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.implement</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.implement</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-plan"
+               data-entry-name="speckit-plan"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-plan">
+        <header>
+          <h3 class="entry-name">speckit-plan</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.plan</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.plan</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-specify"
+               data-entry-name="speckit-specify"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-specify">
+        <header>
+          <h3 class="entry-name">speckit-specify</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.specify</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.specify</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-tasks"
+               data-entry-name="speckit-tasks"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-tasks">
+        <header>
+          <h3 class="entry-name">speckit-tasks</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the <code>/speckit.tasks</code>
+        command; the matching workflow is documented in the spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.tasks</code> workflow from the skill palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.tasks</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-taskstoissues"
+               data-entry-name="speckit-taskstoissues"
+               data-entry-kind="skill"
+               data-entry-source=".github/Skills/speckit-taskstoissues">
+        <header>
+          <h3 class="entry-name">speckit-taskstoissues</h3>
+          <span class="entry-source">.github/Skills/</span>
+        </header>
+        <p class="entry-purpose">Thin skill wrapper exposing the
+        <code>/speckit.taskstoissues</code> command; the matching workflow is documented in the
+        spec-driven chapter.</p>
+        <ul class="entry-uses">
+          <li>Selecting the <code>/speckit.taskstoissues</code> workflow from the skill
+          palette.</li>
+          <li>Routing a spec-driven step to the right command without typing its dotted
+          spelling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.taskstoissues</code></dd>
+        </dl>
+      </article>
+
+      <h2>Repo agents</h2>
+
+      <article class="entry"
+               id="repo-assets--mtm-module-improvement-auditor"
+               data-entry-name="mtm-module-improvement-auditor"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/mtm-module-improvement-auditor.agent.md">
+        <header>
+          <h3 class="entry-name">MTM Module Improvement Auditor</h3>
+          <span class="entry-source">.github/agents/</span>
+        </header>
+        <p class="entry-purpose">Audits a selected MTM module for performance, database
+        interaction, end-user workflow friction, and UI design improvements without making code
+        changes by default.</p>
+        <ul class="entry-uses">
+          <li>Running a no-code audit of a module before a refactor to surface the changes actually
+          worth making.</li>
+          <li>Reviewing how a module touches MySQL or the read-only SQL Server ERP without writing
+          to either.</li>
+          <li>Finding end-user workflow friction and UI rough edges in an existing screen.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None beyond the plugin. The agent reads the module in place rather than accepting a
+          description of it.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reports findings by default; it does not edit code unless you explicitly ask it
+          to.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the MTM Module Improvement Auditor on Module_Dunnage. Review performance,
+database interaction, end-user workflow friction, and UI design, and list improvements
+ranked by impact without editing any files.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--prompt-builder"
+               data-entry-name="prompt-builder"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/prompt-builder.agent.md">
+        <header>
+          <h3 class="entry-name">Prompt Builder</h3>
+          <span class="entry-source">.github/agents/</span>
+        </header>
+        <p class="entry-purpose">Expert prompt engineering and validation system for creating
+        high-quality prompts, from microsoft/edge-ai.</p>
+        <ul class="entry-uses">
+          <li>Turning a rough task description into a complete prompt with role, context, and
+          output format.</li>
+          <li>Validating an existing prompt for ambiguity before it drives a coding session.</li>
+          <li>Refining a reusable prompt so another agent can execute it without rediscovering the
+          repository.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None. It is a reasoning and authoring workflow rather than a code generator.</dd>
+          <dt>Boundaries</dt>
+          <dd>Produces and validates prompt text; it does not apply repository changes or run
+          code.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the Prompt Builder agent to turn my rough note about adding a receiving
+analytics tab into a complete, repo-grounded prompt with role, constraints, output
+format, and an ordered task list.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--winui3-expert"
+               data-entry-name="winui3-expert"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/winui3-expert.agent.md">
+        <header>
+          <h3 class="entry-name">WinUI 3 Expert</h3>
+          <span class="entry-source">.github/agents/</span>
+        </header>
+        <p class="entry-purpose">Expert agent for WinUI 3 and Windows App SDK development that
+        prevents common UWP-to-WinUI 3 API mistakes and guides XAML controls, MVVM patterns,
+        windowing, threading, app lifecycle, dialogs, and deployment for desktop Windows apps.</p>
+        <ul class="entry-uses">
+          <li>Catching UWP APIs that no longer apply when adding a WinUI 3 view to a module.</li>
+          <li>Choosing the correct WinUI 3 control or dialog pattern for a new screen.</li>
+          <li>Guiding windowing, threading, and app-lifecycle decisions for desktop
+          deployment.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None. It leans on Microsoft Learn search for authoritative API details.</dd>
+          <dt>Boundaries</dt>
+          <dd>Advises and writes WinUI 3 code; it does not touch the MySQL or SQL Server data
+          layers.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the WinUI 3 Expert agent to review my new receiving workflow page XAML and
+code-behind for UWP-isms, and fix any x:Bind or dialog pattern that does not follow
+WinUI 3 conventions.</code></pre>
+        </div>
+      </article>
+
+      <h2>Repo prompts</h2>
+
+      <h3>Root prompts</h3>
+
+      <article class="entry"
+               id="repo-assets--readme"
+               data-entry-name="README"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/README.md">
+        <header>
+          <h3 class="entry-name">README</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Index readme for the <code>.github/prompts</code> catalog; it
+        describes the prompt library rather than registering a slash command.</p>
+        <ul class="entry-uses">
+          <li>Explaining how the prompt folders are organized before browsing them.</li>
+          <li>Checking the intended purpose of the prompt library as a whole.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd>Index readme — not a slash command.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-assess-decide"
+               data-entry-name="speckit.assess.decide"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.assess.decide.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.decide</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.assess.decide</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.assess.decide agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.assess.decide</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-assess-define"
+               data-entry-name="speckit.assess.define"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.assess.define.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.define</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.assess.define</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.assess.define agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.assess.define</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-assess-intake"
+               data-entry-name="speckit.assess.intake"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.assess.intake.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.intake</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.assess.intake</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.assess.intake agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.assess.intake</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-assess-research"
+               data-entry-name="speckit.assess.research"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.assess.research.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.research</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.assess.research</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.assess.research agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.assess.research</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-assess-shape"
+               data-entry-name="speckit.assess.shape"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.assess.shape.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.shape</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.assess.shape</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.assess.shape agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.assess.shape</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-bug-assess"
+               data-entry-name="speckit.bug.assess"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.bug.assess.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.assess</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.bug.assess</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.bug.assess agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.bug.assess</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-bug-fix"
+               data-entry-name="speckit.bug.fix"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.bug.fix.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.fix</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.bug.fix</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.bug.fix agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.bug.fix</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-bug-test"
+               data-entry-name="speckit.bug.test"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.bug.test.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.test</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.bug.test</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.bug.test agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.bug.test</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-after-converge"
+               data-entry-name="speckit.companion.after-converge"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.after-converge.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-converge</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.after-converge</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.after-converge agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-converge</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-after-implement"
+               data-entry-name="speckit.companion.after-implement"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.after-implement.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-implement</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.after-implement</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.after-implement agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-after-plan"
+               data-entry-name="speckit.companion.after-plan"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.after-plan.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-plan</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.after-plan</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.after-plan agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-after-specify"
+               data-entry-name="speckit.companion.after-specify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.after-specify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-specify</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.after-specify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.after-specify agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-after-tasks"
+               data-entry-name="speckit.companion.after-tasks"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.after-tasks.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-tasks</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.after-tasks</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.after-tasks agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.after-tasks</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-auto"
+               data-entry-name="speckit.companion.auto"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.auto.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.auto</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.auto</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.auto agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.auto</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-before-converge"
+               data-entry-name="speckit.companion.before-converge"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.before-converge.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.before-converge</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.before-converge</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.before-converge agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.before-converge</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-before-step"
+               data-entry-name="speckit.companion.before-step"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.before-step.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.before-step</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.before-step</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.before-step agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.before-step</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-classify"
+               data-entry-name="speckit.companion.classify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.classify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.classify</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.classify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.classify agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.classify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-doctor"
+               data-entry-name="speckit.companion.doctor"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.doctor.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.doctor</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.doctor</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.doctor agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.doctor</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-implement"
+               data-entry-name="speckit.companion.implement"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.implement.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.implement</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.implement</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.implement agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-adopt"
+               data-entry-name="speckit.companion.living-adopt"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-adopt.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-adopt</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-adopt</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-adopt agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-adopt</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-coverage"
+               data-entry-name="speckit.companion.living-coverage"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-coverage.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-coverage</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-coverage</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-coverage agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-coverage</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-drift"
+               data-entry-name="speckit.companion.living-drift"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-drift.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-drift</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-drift</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-drift agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-drift</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-move"
+               data-entry-name="speckit.companion.living-move"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-move.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-move</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-move</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-move agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-move</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-show"
+               data-entry-name="speckit.companion.living-show"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-show.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-show</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-show</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-show agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-show</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-sync"
+               data-entry-name="speckit.companion.living-sync"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-sync.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-sync</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-sync</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-sync agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-sync</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-living-validate"
+               data-entry-name="speckit.companion.living-validate"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.living-validate.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-validate</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.living-validate</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.living-validate agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.living-validate</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-mark-complete"
+               data-entry-name="speckit.companion.mark-complete"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.mark-complete.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.mark-complete</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.mark-complete</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.mark-complete agent by name from the prompt
+          picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.mark-complete</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-on-prompt"
+               data-entry-name="speckit.companion.on-prompt"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.on-prompt.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.on-prompt</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.on-prompt</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.on-prompt agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.on-prompt</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-companion-on-stop"
+               data-entry-name="speckit.companion.on-stop"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.on-stop.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.on-stop</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.on-stop</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.on-stop agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.on-stop</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-plan"
+               data-entry-name="speckit.companion.plan"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.plan.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.plan</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.plan</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.plan agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-resume"
+               data-entry-name="speckit.companion.resume"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.resume.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.resume</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.resume</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.resume agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.resume</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-specify"
+               data-entry-name="speckit.companion.specify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.specify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.specify</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.specify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.specify agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-status"
+               data-entry-name="speckit.companion.status"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.status.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.status</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.status</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.status agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.status</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--root-speckit-companion-tasks"
+               data-entry-name="speckit.companion.tasks"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit.companion.tasks.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.tasks</h3>
+          <span class="entry-source">.github/prompts/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.companion.tasks</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.companion.tasks agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit.companion.tasks</code></dd>
+        </dl>
+      </article>
+
+      <h3>copilotforms</h3>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-code-review"
+               data-entry-name="copilotforms-code-review"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-code-review.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-code-review</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms code review export and performs a
+        focused review.</p>
+        <ul class="entry-uses">
+          <li>Running a scoped review from a saved CopilotForms export.</li>
+          <li>Keeping the review limited to the form fields rather than the whole module.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-code-review</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-configuration-environment-issue"
+               data-entry-name="copilotforms-configuration-environment-issue"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-configuration-environment-issue.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-configuration-environment-issue</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms configuration or environment export and
+        diagnoses the reported setup issue.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a setup issue captured in a CopilotForms export.</li>
+          <li>Distinguishing configuration drift from a code defect.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-configuration-environment-issue</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-database-issue"
+               data-entry-name="copilotforms-database-issue"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-database-issue.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-database-issue</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms database issue export and diagnoses or
+        fixes the database-related problem.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a database problem captured in a CopilotForms export.</li>
+          <li>Keeping MySQL writes on stored procedures and the SQL Server ERP read-only while
+          fixing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-database-issue</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-debugging-logging"
+               data-entry-name="copilotforms-debugging-logging"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-debugging-logging.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-debugging-logging</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms debugging plus logging export and
+        diagnoses the issue while improving observability.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a bug and improving observability in one pass.</li>
+          <li>Adding structured logging that supports the diagnosis rather than guessing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-debugging-logging</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-debugging"
+               data-entry-name="copilotforms-debugging"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-debugging.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-debugging</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms debugging export and diagnoses or fixes
+        the reported issue.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a reported issue captured in a CopilotForms export.</li>
+          <li>Keeping the investigation scoped to the evidence in the form.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-debugging</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-documentation-change"
+               data-entry-name="copilotforms-documentation-change"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-documentation-change.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-documentation-change</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms documentation change export and creates
+        or updates the requested documentation.</p>
+        <ul class="entry-uses">
+          <li>Creating or updating documentation from a CopilotForms export.</li>
+          <li>Keeping documentation changes scoped to the requested surface.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-documentation-change</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-feature-removal-request"
+               data-entry-name="copilotforms-feature-removal-request"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-feature-removal-request.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-feature-removal-request</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms feature removal export and removes or
+        retires the requested capability safely.</p>
+        <ul class="entry-uses">
+          <li>Retiring a capability captured in a CopilotForms export.</li>
+          <li>Removing the feature without leaving dead references behind.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-feature-removal-request</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-improvement-refactor"
+               data-entry-name="copilotforms-improvement-refactor"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-improvement-refactor.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-improvement-refactor</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms improvement refactor export and performs
+        the requested maintainability refactor.</p>
+        <ul class="entry-uses">
+          <li>Performing a maintainability refactor requested in a CopilotForms export.</li>
+          <li>Keeping the refactor behavior-preserving and minimal.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-improvement-refactor</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-logging-refactor"
+               data-entry-name="copilotforms-logging-refactor"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-logging-refactor.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-logging-refactor</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms logging refactor export and adjusts
+        logging behavior accordingly.</p>
+        <ul class="entry-uses">
+          <li>Adjusting logging behavior from a CopilotForms export.</li>
+          <li>Applying the requested observability change without touching business logic.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-logging-refactor</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-logic-change-test-generation"
+               data-entry-name="copilotforms-logic-change-test-generation"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-logic-change-test-generation.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-logic-change-test-generation</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms logic-plus-tests export and implements
+        the logic change together with focused test coverage.</p>
+        <ul class="entry-uses">
+          <li>Implementing a logic change with matching tests in one pass.</li>
+          <li>Keeping the new tests focused on the changed behavior.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-logic-change-test-generation</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-logic-correction"
+               data-entry-name="copilotforms-logic-correction"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-logic-correction.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-logic-correction</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms logic correction export and aligns
+        feature behavior with the intended rules.</p>
+        <ul class="entry-uses">
+          <li>Aligning behavior with the intended rules captured in the form.</li>
+          <li>Correcting logic without expanding scope beyond the reported mismatch.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-logic-correction</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-naming-consistency-cleanup"
+               data-entry-name="copilotforms-naming-consistency-cleanup"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-naming-consistency-cleanup.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-naming-consistency-cleanup</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms naming cleanup export and aligns names
+        without changing intended behavior.</p>
+        <ul class="entry-uses">
+          <li>Aligning names across a codebase from a CopilotForms export.</li>
+          <li>Normalizing identifiers without altering behavior.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-naming-consistency-cleanup</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-new-feature-request"
+               data-entry-name="copilotforms-new-feature-request"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-new-feature-request.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-new-feature-request</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms new feature request export and
+        implements the requested capability.</p>
+        <ul class="entry-uses">
+          <li>Implementing a capability requested in a CopilotForms export.</li>
+          <li>Following the MVVM and data-access rules while building the feature.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-new-feature-request</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-performance-issue-optimization"
+               data-entry-name="copilotforms-performance-issue-optimization"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-performance-issue-optimization.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-performance-issue-optimization</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms performance export and diagnoses or
+        improves the reported performance issue.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a performance issue captured in a CopilotForms export.</li>
+          <li>Improving the slow path without premature optimization elsewhere.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-performance-issue-optimization</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-test-generation"
+               data-entry-name="copilotforms-test-generation"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-test-generation.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-test-generation</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms test generation export and adds the
+        requested tests.</p>
+        <ul class="entry-uses">
+          <li>Adding the tests requested in a CopilotForms export.</li>
+          <li>Keeping the new tests focused on the changed surface.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-test-generation</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-ui-change-logic-change"
+               data-entry-name="copilotforms-ui-change-logic-change"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-ui-change-logic-change.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-ui-change-logic-change</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms combined UI and logic export and
+        implements both layers together.</p>
+        <ul class="entry-uses">
+          <li>Implementing a UI change and its backing logic in one pass.</li>
+          <li>Keeping the view and viewmodel consistent with the MVVM flow.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-ui-change-logic-change</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-ui-change"
+               data-entry-name="copilotforms-ui-change"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-ui-change.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-ui-change</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms UI change export and implements the
+        requested UI changes.</p>
+        <ul class="entry-uses">
+          <li>Implementing UI changes requested in a CopilotForms export.</li>
+          <li>Keeping changes in XAML with x:Bind rather than runtime binding.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-ui-change</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--copilotforms-ui-mockup"
+               data-entry-name="copilotforms-ui-mockup"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/copilotforms/copilotforms-ui-mockup.prompt.md">
+        <header>
+          <h3 class="entry-name">copilotforms-ui-mockup</h3>
+          <span class="entry-source">.github/prompts/copilotforms/</span>
+        </header>
+        <p class="entry-purpose">Reads a saved CopilotForms UI mockup export and generates a mockup
+        artifact from it.</p>
+        <ul class="entry-uses">
+          <li>Generating a mockup artifact from a CopilotForms export.</li>
+          <li>Producing a visual reference before any production XAML is written.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/copilotforms-ui-mockup</code></dd>
+        </dl>
+      </article>
+
+      <h3>design</h3>
+
+      <article class="entry"
+               id="repo-assets--mtm-mermaid-architecture-diagram-continue"
+               data-entry-name="mtm-mermaid-architecture-diagram-continue"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/design/mtm-mermaid-architecture-diagram-continue.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-mermaid-architecture-diagram-continue</h3>
+          <span class="entry-source">.github/prompts/design/</span>
+        </header>
+        <p class="entry-purpose">Continues the Mermaid architecture diagram for the MTM Receiving
+        Application with the next deterministic installment.</p>
+        <ul class="entry-uses">
+          <li>Emitting the next installment of an in-progress architecture diagram.</li>
+          <li>Resuming a diagram from the last completed installment rather than starting over.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-mermaid-architecture-diagram-continue</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-mermaid-architecture-diagram"
+               data-entry-name="mtm-mermaid-architecture-diagram"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/design/mtm-mermaid-architecture-diagram.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-mermaid-architecture-diagram</h3>
+          <span class="entry-source">.github/prompts/design/</span>
+        </header>
+        <p class="entry-purpose">Generates a Mermaid class diagram for the MTM Receiving
+        Application from the real workspace structure, emitting only relationships evidenced in
+        code.</p>
+        <ul class="entry-uses">
+          <li>Producing a code-supported architecture diagram of the modules.</li>
+          <li>Avoiding invented relationships by requiring code evidence for every edge.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-mermaid-architecture-diagram</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-ui-mockups-comfyui"
+               data-entry-name="mtm-ui-mockups-comfyui"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/design/mtm-ui-mockups-comfyui.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-ui-mockups-comfyui</h3>
+          <span class="entry-source">.github/prompts/design/</span>
+        </header>
+        <p class="entry-purpose">Generates ComfyUI text prompts (positive and negative) for
+        AI-image-based UI mockups of the MTM Receiving Application, including accurate Volvo 2021
+        brand identity.</p>
+        <ul class="entry-uses">
+          <li>Producing positive and negative ComfyUI prompts for image-based mockups.</li>
+          <li>Keeping the Volvo 2021 brand identity accurate in generated images.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-ui-mockups-comfyui</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-ui-mockups"
+               data-entry-name="mtm-ui-mockups"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/design/mtm-ui-mockups.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-ui-mockups</h3>
+          <span class="entry-source">.github/prompts/design/</span>
+        </header>
+        <p class="entry-purpose">Generates accurate SVG UI mockups for WinUI 3 desktop application
+        views following the MTM Receiving Application design system.</p>
+        <ul class="entry-uses">
+          <li>Producing SVG mockups for a WinUI 3 view before writing XAML.</li>
+          <li>Keeping the mockup consistent with the MTM design system.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-ui-mockups</code></dd>
+        </dl>
+      </article>
+
+      <h3>maintenance</h3>
+
+      <article class="entry"
+               id="repo-assets--commit-message"
+               data-entry-name="commit-message"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/maintenance/commit-message.prompt.md">
+        <header>
+          <h3 class="entry-name">commit-message</h3>
+          <span class="entry-source">.github/prompts/maintenance/</span>
+        </header>
+        <p class="entry-purpose">Examines all uncommitted changes in the workspace and generates a
+        well-structured Git commit message using Conventional Commits.</p>
+        <ul class="entry-uses">
+          <li>Producing a Conventional Commits message from staged and unstaged changes.</li>
+          <li>Keeping the subject line imperative and under 72 characters.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/commit-message</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-documentation-prepare"
+               data-entry-name="mtm-documentation.prepare"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/maintenance/mtm-documentation.prepare.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-documentation.prepare</h3>
+          <span class="entry-source">.github/prompts/maintenance/</span>
+        </header>
+        <p class="entry-purpose">Prepares repository-aware context before creating or rewriting MTM
+        documentation.</p>
+        <ul class="entry-uses">
+          <li>Gathering the module context needed before writing documentation.</li>
+          <li>Avoiding documentation that ignores the actual code structure.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-documentation-prepare</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-github-reset-documents"
+               data-entry-name="mtm-github-reset-documents"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/maintenance/mtm-github-reset-documents.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-github-reset-documents</h3>
+          <span class="entry-source">.github/prompts/maintenance/</span>
+        </header>
+        <p class="entry-purpose">Resets or modernizes the repository AI-documentation surfaces using
+        the active taxonomy and archive-first workflow.</p>
+        <ul class="entry-uses">
+          <li>Modernizing the <code>.github</code> documentation surfaces to the current
+          taxonomy.</li>
+          <li>Archiving stale content instead of deleting it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-github-reset-documents</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-update-application-version"
+               data-entry-name="mtm-update-application-version"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/maintenance/mtm-update-application-version.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-update-application-version</h3>
+          <span class="entry-source">.github/prompts/maintenance/</span>
+        </header>
+        <p class="entry-purpose">Analyzes a change set, chooses the best semantic version bump,
+        updates every application version source plus software_version SQL artifacts, publishes an
+        end-user update page, validates with a build, and commits the version-only files.</p>
+        <ul class="entry-uses">
+          <li>Bumping the application version across all sources in one pass.</li>
+          <li>Committing only the version files after a build validation.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-update-application-version</code></dd>
+        </dl>
+      </article>
+
+      <h3>quality</h3>
+
+      <article class="entry"
+               id="repo-assets--mtm-module-code-review"
+               data-entry-name="mtm-module-code-review"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/quality/mtm-module-code-review.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-module-code-review</h3>
+          <span class="entry-source">.github/prompts/quality/</span>
+        </header>
+        <p class="entry-purpose">Comprehensive code review and automated fix application for WinUI 3
+        modules in the MTM Receiving Application.</p>
+        <ul class="entry-uses">
+          <li>Reviewing a WinUI 3 module against the MVVM and data-access rules.</li>
+          <li>Applying fixes automatically where the review finds a violation.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-module-code-review</code></dd>
+        </dl>
+      </article>
+
+      <h3>speckit</h3>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-analyze"
+               data-entry-name="speckit.analyze"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.analyze.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.analyze</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the <code>speckit.analyze</code>
+        agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.analyze agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-analyze</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-checklist"
+               data-entry-name="speckit.checklist"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.checklist.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.checklist</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.checklist</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.checklist agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-checklist</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-clarify"
+               data-entry-name="speckit.clarify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.clarify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.clarify</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.clarify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.clarify agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-clarify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-constitution"
+               data-entry-name="speckit.constitution"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.constitution.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.constitution</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.constitution</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.constitution agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-constitution</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-implement"
+               data-entry-name="speckit.implement"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.implement.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.implement</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.implement</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.implement agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-module-specify"
+               data-entry-name="speckit.module-specify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.module-specify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.module-specify</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.module-specify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.module-specify agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-module-specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-plan"
+               data-entry-name="speckit.plan"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.plan.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.plan</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the <code>speckit.plan</code>
+        agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.plan agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-plan</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-specify"
+               data-entry-name="speckit.specify"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.specify.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.specify</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the
+        <code>speckit.specify</code> agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.specify agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-specify</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--speckit-speckit-tasks"
+               data-entry-name="speckit.tasks"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/speckit/speckit.tasks.prompt.md">
+        <header>
+          <h3 class="entry-name">speckit.tasks</h3>
+          <span class="entry-source">.github/prompts/speckit/</span>
+        </header>
+        <p class="entry-purpose">Frontmatter-only stub that selects the <code>speckit.tasks</code>
+        agent.</p>
+        <ul class="entry-uses">
+          <li>Invoking the speckit.tasks agent by name from the prompt picker.</li>
+          <li>Pointing a spec-driven step at the correct agent without remembering its full
+          path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/speckit-tasks</code></dd>
+        </dl>
+      </article>
+
+      <h3>testing</h3>
+
+      <article class="entry"
+               id="repo-assets--mtm-converter-unit-tests"
+               data-entry-name="mtm-converter-unit-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-converter-unit-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-converter-unit-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for C# Converter classes.</p>
+        <ul class="entry-uses">
+          <li>Generating xUnit coverage for a value converter class.</li>
+          <li>Following the MTM FluentAssertions and naming conventions.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-converter-unit-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-dao-unit-tests"
+               data-entry-name="mtm-dao-unit-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-dao-unit-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-dao-unit-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for C# DAO classes with MySQL
+        stored procedures.</p>
+        <ul class="entry-uses">
+          <li>Generating xUnit coverage for a DAO class.</li>
+          <li>Modeling stored-procedure behavior without writing raw MySQL SQL.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-dao-unit-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-generate-all-tests"
+               data-entry-name="mtm-generate-all-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-generate-all-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-generate-all-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for a single file or entire
+        module with Serena memory tracking.</p>
+        <ul class="entry-uses">
+          <li>Generating tests for one file or a whole module in a single pass.</li>
+          <li>Recording the work in Serena memories for later sessions.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-generate-all-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-helper-unit-tests"
+               data-entry-name="mtm-helper-unit-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-helper-unit-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-helper-unit-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for C# helper/utility classes
+        with edge cases and performance validation.</p>
+        <ul class="entry-uses">
+          <li>Generating xUnit coverage for a helper or utility class.</li>
+          <li>Covering edge cases and a light performance check in one pass.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-helper-unit-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-model-unit-tests"
+               data-entry-name="mtm-model-unit-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-model-unit-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-model-unit-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for C# model classes following
+        MTM Receiving Application standards.</p>
+        <ul class="entry-uses">
+          <li>Generating xUnit coverage for a data model class.</li>
+          <li>Following the MTM model-testing standards and naming.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-model-unit-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-module-models-optimize-and-test"
+               data-entry-name="mtm-module-models-optimize-and-test"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-module-models-optimize-and-test.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-module-models-optimize-and-test</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Optimizes module models incrementally and adds or updates xUnit
+        tests one model file at a time, verifying tests pass after each iteration.</p>
+        <ul class="entry-uses">
+          <li>Optimizing models one file at a time instead of rewriting a whole module.</li>
+          <li>Keeping each change backward-compatible and test-verified before moving on.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-module-models-optimize-and-test</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-viewmodel-unit-tests"
+               data-entry-name="mtm-viewmodel-unit-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/mtm-viewmodel-unit-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-viewmodel-unit-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Creates comprehensive xUnit tests for MVVM ViewModels using
+        CommunityToolkit.Mvvm.</p>
+        <ul class="entry-uses">
+          <li>Generating xUnit coverage for a ViewModel class.</li>
+          <li>Exercising commands, computed properties, and validation paths.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mtm-viewmodel-unit-tests</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--outside-service-setup-vm-tests"
+               data-entry-name="outside-service-setup-vm-tests"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/testing/outside-service-setup-vm-tests.prompt.md">
+        <header>
+          <h3 class="entry-name">outside-service-setup-vm-tests</h3>
+          <span class="entry-source">.github/prompts/testing/</span>
+        </header>
+        <p class="entry-purpose">Generates comprehensive xUnit tests for
+        ViewModel_OutsideService_Setup covering all commands, computed properties, validation
+        paths, and service interactions.</p>
+        <ul class="entry-uses">
+          <li>Covering every command and computed property on the outside-service setup
+          viewmodel.</li>
+          <li>Exercising validation paths and service interactions in one test pass.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/outside-service-setup-vm-tests</code></dd>
+        </dl>
+      </article>
+
+      <h3>workflow</h3>
+
+      <article class="entry"
+               id="repo-assets--mtm-mcp-implement"
+               data-entry-name="mtm-mcp-implement"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/workflow/mtm-mcp-implement.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-mcp-implement</h3>
+          <span class="entry-source">.github/prompts/workflow/</span>
+        </header>
+        <p class="entry-purpose">Implements changes using MCP-first workflows (Serena plus
+        filesystem plus optional GitHub and Playwright).</p>
+        <ul class="entry-uses">
+          <li>Implementing a change through the Serena symbol tools and filesystem.</li>
+          <li>Adding GitHub or Playwright steps only when the task needs them.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mcp-implement</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--mtm-mcp-triage"
+               data-entry-name="mtm-mcp-triage"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/workflow/mtm-mcp-triage.prompt.md">
+        <header>
+          <h3 class="entry-name">mtm-mcp-triage</h3>
+          <span class="entry-source">.github/prompts/workflow/</span>
+        </header>
+        <p class="entry-purpose">Triages a task using MCP-first context gathering (Serena plus
+        filesystem).</p>
+        <ul class="entry-uses">
+          <li>Gathering context for a task before committing to an implementation approach.</li>
+          <li>Using Serena symbol tools and filesystem reads instead of broad grep.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/mcp-triage</code></dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="repo-assets--noob-mode"
+               data-entry-name="noob-mode"
+               data-entry-kind="prompt"
+               data-entry-source=".github/prompts/workflow/noob-mode.prompt.md">
+        <header>
+          <h3 class="entry-name">noob-mode</h3>
+          <span class="entry-source">.github/prompts/workflow/</span>
+        </header>
+        <p class="entry-purpose">Activates plain-English translation mode — every action, error,
+        and result is explained in jargon-free language with color-coded risk indicators, designed
+        for non-technical Copilot users.</p>
+        <ul class="entry-uses">
+          <li>Explaining actions and errors in plain English for a non-technical user.</li>
+          <li>Flagging risk levels with color-coded indicators as work proceeds.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Invoke</dt>
+          <dd><code>/noob-mode</code></dd>
+        </dl>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>How they differ.</strong> Skills are slash-command wrappers,
+      agents are reusable roles with their own context, and prompts are self-contained task
+      templates. The speckit family appears three times — as skills, as agents (documented in the
+      spec-driven chapter), and as prompt stubs — because each surface registers the same workflow
+      in a different way. The prompt stub whose name collides with a speckit skill is disambiguated
+      by prefixing its group (<code>root-</code> or <code>speckit-</code>) in the entry id.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

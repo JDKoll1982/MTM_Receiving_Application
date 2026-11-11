@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Database and SQL — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 06</p>
+      <h1>Database and SQL</h1>
+      <div class="scope">
+        <p>Review, optimisation, and DBA tooling for the two database systems this application
+        touches: MySQL 5.7 (read/write) and the Infor Visual <code>MTMFG</code> SQL Server
+        (strictly read-only). Every prompt below assumes this repo's database discipline: MySQL
+        writes go through stored procedures only, and nothing ever writes to Infor Visual.</p>
+        <p>The rules those tools must enforce live in
+        <code>.github/instructions/database/</code>; the schema reference CSVs live in
+        <code>docs/development/InforVisual/DatabaseCSVFiles/</code>, and the SQL source of truth
+        lives under <code>Database/</code>.</p>
+      </div>
+
+      <article class="entry"
+               id="database-sql--sql-code-review"
+               data-entry-name="sql-code-review"
+               data-entry-kind="skill"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">sql-code-review</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Universal SQL code review covering SQL injection, access control,
+        naming standards, and anti-patterns across MySQL, SQL Server, and other dialects.</p>
+        <ul class="entry-uses">
+          <li>Reviewing a new stored procedure under
+          <code>Database/Database_Deployment/Sql_Files/StoredProcedures/</code> before it ships to
+          MySQL 5.7.</li>
+          <li>Checking that an Infor Visual query in
+          <code>Database/InforVisualScripts/Queries/</code> stays read-only and parameterized.</li>
+          <li>Auditing a DAO change in <code>Module_Receiving/Data/</code> for injection-safe calls
+          and correct <code>Model_Dao_Result</code> handling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The SQL text or the diff to review. It reads files and flags problems rather than
+          guessing at the schema.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reviews only. It does not write schema or stored procedures, and it cannot reproduce
+          MySQL-version behaviour that only <code>mtm_receiving_application_test</code> reveals.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Review every file under Database/Database_Deployment/Sql_Files/StoredProcedures/Receiving/
+for SQL injection, missing parameterization, and naming that deviates from the
+sp_Receiving_* convention. Flag anything that writes to the Infor Visual MTMFG
+database, and anything that performs a MySQL write outside a stored procedure.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="database-sql--sql-optimization"
+               data-entry-name="sql-optimization"
+               data-entry-kind="skill"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">sql-optimization</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Query tuning, indexing strategy, execution-plan reading, and
+        pagination guidance for slow or large SQL.</p>
+        <ul class="entry-uses">
+          <li>Tuning a slow MySQL stored procedure against
+          <code>mtm_receiving_application_test</code> before touching production.</li>
+          <li>Reading the plan of a reporting query under
+          <code>Database/Database_Deployment/Sql_Files/CustomPrompts/</code> to find missing
+          indexes.</li>
+          <li>Adding pagination to an unbounded result set instead of loading it whole into an
+          <code>ObservableCollection</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The query or stored procedure text, ideally with an <code>EXPLAIN</code> output or
+          execution plan to ground the advice.</dd>
+          <dt>Boundaries</dt>
+          <dd>Advises on SQL; it does not edit schema or create indexes itself. Any schema or
+          stored-procedure change still needs approval under this repo's rules.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Optimize the stored procedures in
+Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/. For each one,
+identify missing indexes, suggest an EXPLAIN-based check against
+mtm_receiving_application_test, and add pagination where the result set is unbounded.
+Do not propose schema or stored-procedure changes without flagging them for approval.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="database-sql--postgresql-code-review"
+               data-entry-name="postgresql-code-review"
+               data-entry-kind="skill"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">postgresql-code-review</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">PostgreSQL-specific code review covering JSONB, arrays, custom
+        types, row-level security, and PostgreSQL-only anti-patterns.</p>
+        <ul class="entry-uses">
+          <li>Reviewing PostgreSQL DDL if a PostgreSQL target is ever added alongside MySQL 5.7
+          and Infor Visual SQL Server.</li>
+          <li>Evaluating <code>jsonb</code> and array usage in a PostgreSQL migration script for
+          type and indexing mistakes.</li>
+          <li>Checking that row-level security is enabled on a multi-tenant PostgreSQL schema.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>PostgreSQL SQL to review. There is none in this repo today, so this only becomes
+          relevant if a PostgreSQL target appears.</dd>
+          <dt>Boundaries</dt>
+          <dd>PostgreSQL only. This repo uses MySQL 5.7 (read/write) and Infor Visual SQL Server
+          (read-only), so it does not understand MySQL or T-SQL conventions and should not be
+          applied to them.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Only if a PostgreSQL target is added to this repository, review its DDL and
+queries for jsonb misuse, array pitfalls, and missing row-level security. Today this
+repo is MySQL 5.7 plus read-only Infor Visual SQL Server, so confirm a PostgreSQL
+target actually exists before applying this review.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="database-sql--postgresql-optimization"
+               data-entry-name="postgresql-optimization"
+               data-entry-kind="skill"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">postgresql-optimization</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">PostgreSQL-specific performance work: indexing, query planning,
+        partitioning, and PostgreSQL-only tuning features.</p>
+        <ul class="entry-uses">
+          <li>Tuning a slow PostgreSQL query with <code>EXPLAIN ANALYZE</code> if PostgreSQL is
+          introduced as a target database.</li>
+          <li>Advising on partial, expression, or GIN indexes for a PostgreSQL schema.</li>
+          <li>Recommending partitioning or connection-pooling settings for a PostgreSQL workload.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>PostgreSQL SQL and, where possible, an <code>EXPLAIN ANALYZE</code> plan to optimise
+          against.</dd>
+          <dt>Boundaries</dt>
+          <dd>PostgreSQL only. This repo uses MySQL 5.7 and Infor Visual SQL Server, so apply it
+          only when a PostgreSQL target actually appears.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Only if a PostgreSQL target is added to this repository, optimize its queries:
+read EXPLAIN ANALYZE plans, propose indexes, and recommend partitioning where tables
+are large. Today this repo is MySQL 5.7 plus read-only Infor Visual SQL Server, so
+confirm a PostgreSQL target exists before applying PostgreSQL-only tuning.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="database-sql--ms-sql-dba"
+               data-entry-name="ms-sql-dba"
+               data-entry-kind="agent"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">ms-sql-dba</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Microsoft SQL Server DBA agent for T-SQL queries, administration,
+        and investigation against the Infor Visual <code>MTMFG</code> database.</p>
+        <ul class="entry-uses">
+          <li>Authoring a new read-only SELECT against <code>MTMFG</code>, verifying column names
+          against <code>docs/development/InforVisual/DatabaseCSVFiles/</code> first.</li>
+          <li>Running and refining a query saved under
+          <code>Database/InforVisualScripts/Queries/</code> against the read-only connection.</li>
+          <li>Diagnosing a slow query on large tables such as <code>RECEIVER_LINE</code> or
+          <code>INVENTORY_TRANS</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A SQL Server connection whose string carries <code>ApplicationIntent=ReadOnly</code>,
+          plus the CSV schema reference for column verification.</dd>
+          <dt>Boundaries</dt>
+          <dd>SQL Server only. It must never INSERT, UPDATE, or DELETE against Infor Visual, which
+          is strictly read-only in this repo, and it does not manage MySQL.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the ms-sql-dba agent to write a new SELECT against MTMFG (Infor Visual).
+Verify column names against docs/development/InforVisual/DatabaseCSVFiles/ before
+writing the query, keep ApplicationIntent=ReadOnly in the connection string, and save
+the finished query under Database/InforVisualScripts/Queries/. No INSERT, UPDATE, or
+DELETE.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="database-sql--postgresql-dba"
+               data-entry-name="postgresql-dba"
+               data-entry-kind="agent"
+               data-entry-source="database-data-management@1.0.0">
+        <header>
+          <h3 class="entry-name">postgresql-dba</h3>
+          <span class="entry-source">database-data-management@1.0.0</span>
+        </header>
+        <p class="entry-purpose">PostgreSQL DBA agent for administration, schema design, and query
+        work against a PostgreSQL database.</p>
+        <ul class="entry-uses">
+          <li>Standing up and administering PostgreSQL only if it is added as a target database
+          for this application.</li>
+          <li>Designing a PostgreSQL schema, roles, and grants for a future data store.</li>
+          <li>Investigating PostgreSQL locks, vacuum, or replication issues in that future target.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A PostgreSQL target to administer. None exists in this repo today, so this agent is
+          dormant until one appears.</dd>
+          <dt>Boundaries</dt>
+          <dd>PostgreSQL only. It does not apply to MySQL 5.7 or Infor Visual SQL Server, which are
+          the two databases this repo actually uses.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Only if a PostgreSQL target is added to this repository, use the postgresql-dba
+agent to design its schema, roles, and grants and to administer it. Today this repo is
+MySQL 5.7 plus read-only Infor Visual SQL Server, so confirm a PostgreSQL target
+exists before using this agent.</code></pre>
+        </div>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>The database discipline comes first.</strong> MySQL 5.7 is
+      read/write, but every write must go through a stored procedure under
+      <code>Database/Database_Deployment/Sql_Files/StoredProcedures/</code>; raw MySQL SQL in C#
+      is forbidden, and DAOs in <code>Module_*/Data/</code> return
+      <code>Model_Dao_Result</code> / <code>Model_Dao_Result&lt;T&gt;</code> instead of throwing.
+      Infor Visual (<code>MTMFG</code>) is strictly read-only: no INSERT, UPDATE, or DELETE, and
+      the connection string must carry <code>ApplicationIntent=ReadOnly</code>. Reach for
+      <code>sql-code-review</code> before merging any SQL, <code>sql-optimization</code> when a
+      query is slow, and <code>ms-sql-dba</code> for new Infor Visual SELECTs. The PostgreSQL
+      tools are dormant here; use them only if a PostgreSQL target ever appears.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

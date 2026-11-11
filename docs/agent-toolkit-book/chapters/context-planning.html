@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context, planning, and testability — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 10</p>
+      <h1>Context, planning, and testability</h1>
+      <div class="scope">
+        <p>Planning a change before touching code, and making that code testable once you do.
+        The context-engineering plugin maps files and sequences refactors; the dotnet-test plugin
+        finds what has no tests and adds the seams — <code>TimeProvider</code>, file wrappers,
+        deterministic clocks — that let the 300+ C# files across fifteen <code>Module_*</code>
+        projects be tested without wall clocks and real I/O.</p>
+        <p>This chapter covers planning and seams, not the act of writing or running tests. Test
+        generation, execution, coverage collection, and quality analysis live in their own
+        chapter.</p>
+      </div>
+
+      <article class="entry"
+               id="context-planning--context-map"
+               data-entry-name="context-map"
+               data-entry-kind="skill"
+               data-entry-source="context-engineering@1.0.0">
+        <header>
+          <h3 class="entry-name">context-map</h3>
+          <span class="entry-source">context-engineering@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Generates a map of every file relevant to a task — files to
+        modify, dependencies, tests, and reference patterns — before any code is changed.</p>
+        <ul class="entry-uses">
+          <li>Mapping a <code>Module_Receiving</code> change so the View, ViewModel, Service, DAO,
+          and their tests appear in one table before you touch anything.</li>
+          <li>Confirming a cross-module change does not break the View → ViewModel → Service → DAO
+          layering or leak a <code>Dao_*</code> reference into a ViewModel.</li>
+          <li>Surfacing the MySQL stored-procedure file under <code>Database/</code> that a DAO
+          change will depend on, before you edit the C#.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A concrete task description. The skill maps; it does not implement.</dd>
+          <dt>Boundaries</dt>
+          <dd>Produces a reviewable map and stops. It does not edit files and does not use
+          Serena's symbol index — pair it with Serena for symbol-level precision on the 300+
+          C# files.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the context-map skill for: add a GetByLoadAsync method to the
+Module_Receiving receiving-line DAO. Map the files to modify, their
+dependencies, the tests under MTM_Receiving_Application.Tests/, and a
+reference pattern from an existing DAO in the module. Include risk items for
+the MVVM layering and the MySQL stored-procedure boundary.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--refactor-plan"
+               data-entry-name="refactor-plan"
+               data-entry-kind="skill"
+               data-entry-source="context-engineering@1.0.0">
+        <header>
+          <h3 class="entry-name">refactor-plan</h3>
+          <span class="entry-source">context-engineering@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Produces a phased, sequenced plan — types first, then
+        implementations, callers, tests, cleanup, with verification and rollback steps — and
+        waits for confirmation before editing.</p>
+        <ul class="entry-uses">
+          <li>Sequencing a rename across <code>Module_Receiving</code> so interfaces change before
+          implementations before callers before tests.</li>
+          <li>Planning a move of shared code into <code>Module_Shared</code> without breaking the
+          View → ViewModel → Service → DAO rule.</li>
+          <li>Gating any refactor of DAO methods that must keep returning
+          <code>Model_Dao_Result</code> rather than throwing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Enough codebase knowledge to identify affected files; the skill investigates
+          first.</dd>
+          <dt>Boundaries</dt>
+          <dd>Plans and stops for confirmation — it makes no edits. Serena is the symbol-level
+          tool for finding every caller of a signature you plan to change.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the refactor-plan skill to plan renaming CurrentLineID to CurrentLoadID
+in Module_Receiving. Investigate callers with Serena's find_referencing_symbols
+first, then output the plan with phases, verification (dotnet build
+MTM_Receiving_Application.slnx), and rollback. Wait for my confirmation before
+editing.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--what-context-needed"
+               data-entry-name="what-context-needed"
+               data-entry-kind="skill"
+               data-entry-source="context-engineering@1.0.0">
+        <header>
+          <h3 class="entry-name">what-context-needed</h3>
+          <span class="entry-source">context-engineering@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Before answering a question, asks Copilot to list exactly which
+        files it must see, which would help, and what it already has, so context is never fetched
+        blindly.</p>
+        <ul class="entry-uses">
+          <li>Answering whether a ViewModel calls a DAO without reading all fifteen
+          <code>Module_*</code> projects.</li>
+          <li>Deciding which <code>Database/</code> SQL files and which DAO are needed to answer a
+          stored-procedure question.</li>
+          <li>Declaring it already has the test project layout, so it asks only for the missing
+          source files.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A question whose accurate answer depends on repository files.</dd>
+          <dt>Boundaries</dt>
+          <dd>Inventories needed context; it does not answer the question or read the files
+          itself.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the what-context-needed skill for: which Module_* ViewModels still
+reference a Dao_* class directly? List the files you must see to answer
+accurately, note what you already have from this conversation, and state what
+you are uncertain about.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--context-architect"
+               data-entry-name="context-architect"
+               data-entry-kind="agent"
+               data-entry-source="context-engineering@1.0.0">
+        <header>
+          <h3 class="entry-name">context-architect</h3>
+          <span class="entry-source">context-engineering@1.0.0</span>
+        </header>
+        <p class="entry-purpose">An agent that maps a multi-file change's context, traces its
+        dependencies, finds conventions, and proposes a sequence before it edits anything.</p>
+        <ul class="entry-uses">
+          <li>Producing a context map for a change that touches the View, ViewModel, Service, and
+          DAO of one receiving screen.</li>
+          <li>Tracing which tests under <code>MTM_Receiving_Application.Tests/</code> cover a
+          method before it is moved.</li>
+          <li>Detecting when a small edit ripples across the MVVM layering and proposing it be
+          split into smaller PRs.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A task that spans more than one file and benefits from a mapped plan.</dd>
+          <dt>Boundaries</dt>
+          <dd>Maps and plans; it executes only after you approve the map, and it prefers existing
+          patterns over inventing new ones.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the context-architect agent on adding a reprint action to Module_Reprint.
+Map the primary and secondary files, the tests that cover them, the patterns to
+follow from an existing module, and a suggested sequence. Show the context map
+and wait for my go-ahead before editing.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--find-untested-sources"
+               data-entry-name="find-untested-sources"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">find-untested-sources</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Pairs source files to their tests and lists source files or
+        modules that have no corresponding test, using Roslyn for C#.</p>
+        <ul class="entry-uses">
+          <li>Listing which services and DAOs across the fifteen <code>Module_*</code> projects
+          have no test in <code>MTM_Receiving_Application.Tests/</code>.</li>
+          <li>Finding a home for a new test by matching <code>Module_Receiving</code>'s folder
+          structure to the test project.</li>
+          <li>Auditing whether every DAO returning <code>Model_Dao_Result</code> has at least one
+          integration test.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The repository and its tests on disk. The skill reads structure, not runtime.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reports missing tests; it does not write them — hand that to the code-testing
+          family.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the find-untested-sources skill on Module_Dunnage. List every service
+and DAO without a corresponding test under MTM_Receiving_Application.Tests/,
+and suggest where each new test file should live. Do not write any tests.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--detect-static-dependencies"
+               data-entry-name="detect-static-dependencies"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">detect-static-dependencies</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Locates hard-to-test ambient C# calls — <code>DateTime.Now</code>,
+        <code>File</code>, <code>Directory</code>, <code>Environment</code>,
+        <code>HttpClient</code>, <code>Console</code>, <code>Process</code> — across the
+        codebase.</p>
+        <ul class="entry-uses">
+          <li>Finding every <code>DateTime.Now</code> in <code>Module_Receiving</code> services
+          that would make a test time-dependent.</li>
+          <li>Checking whether a DAO's file access or a service's <code>Environment</code> call
+          blocks deterministic tests.</li>
+          <li>Verifying a class is already abstracted behind <code>TimeProvider</code> before you
+          add a wrapper.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The target must explicitly be C#/.NET work, or the skill stays dormant.</dd>
+          <dt>Boundaries</dt>
+          <dd>Only locates the statics; it does not add seams — use
+          <code>generate-testability-wrappers</code> next.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the detect-static-dependencies skill on Module_Reporting. Find every
+System.DateTime.Now/UtcNow, File, Directory, and Environment call in the
+module's services and DAOs, and report which are already behind an injected
+abstraction.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--generate-testability-wrappers"
+               data-entry-name="generate-testability-wrappers"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">generate-testability-wrappers</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Adds the smallest injectable seam — a <code>TimeProvider</code>,
+        <code>IFileSystem</code>, or <code>Environment</code>/<code>Console</code>/<code>Process</code>
+        wrapper — when C# code calls an ambient static and no seam exists.</p>
+        <ul class="entry-uses">
+          <li>Introducing <code>TimeProvider</code> into a receiving service that stamps received
+          timestamps so tests can freeze time.</li>
+          <li>Wrapping <code>File</code> reads in <code>Module_Settings.Core</code> so a settings
+          load can be tested without touching disk.</li>
+          <li>Registering the new seam in <code>Infrastructure/DependencyInjection</code> so the
+          app still resolves it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A static call with no existing injected interface or built-in abstraction.</dd>
+          <dt>Boundaries</dt>
+          <dd>Does not migrate callers that already consume an abstraction — that is
+          <code>migrate-static-to-wrapper</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the generate-testability-wrappers skill to introduce TimeProvider into
+the receiving-line service that stamps receive timestamps. Keep the MVVM
+boundary intact, register the seam in Infrastructure/DependencyInjection, and
+confirm the DAO still returns Model_Dao_Result.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--migrate-static-to-wrapper"
+               data-entry-name="migrate-static-to-wrapper"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">migrate-static-to-wrapper</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Replaces existing C# static calls with a named wrapper or built-in
+        abstraction across scoped files, including constructor injection and DI wiring.</p>
+        <ul class="entry-uses">
+          <li>Migrating <code>DateTime.UtcNow</code> to <code>TimeProvider</code> across
+          <code>Module_Receiving</code> services while preserving <code>DateTimeKind</code>.</li>
+          <li>Swapping <code>File.*</code> calls to <code>IFileSystem</code> in
+          <code>Module_Settings.Core</code>'s settings loader.</li>
+          <li>Wiring the migration through <code>Infrastructure/DependencyInjection</code> without
+          touching <code>App.xaml.cs</code> directly.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A chosen seam or built-in abstraction, and the scoped files to migrate.</dd>
+          <dt>Boundaries</dt>
+          <dd>Migrates to an existing abstraction; it does not design a new wrapper — use
+          <code>generate-testability-wrappers</code> for that.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the migrate-static-to-wrapper skill to migrate DateTime.UtcNow to
+TimeProvider in Module_Receiving/Data/Dao_ReceivingLine.cs, preserving
+DateTimeKind and call counts, and update the DI registration under
+Infrastructure/DependencyInjection.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--testability-obstacle"
+               data-entry-name="testability-obstacle"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">testability-obstacle</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Adds the smallest production seam for one bounded behavior that
+        needs deterministic tests — <code>DateTime</code>, <code>Task.Delay</code>,
+        <code>File</code>, <code>Environment</code>, <code>Guid</code>, or <code>Random</code> —
+        with no real I/O.</p>
+        <ul class="entry-uses">
+          <li>Making a <code>Task.Delay</code> in a receiving retry path controllable so the test
+          does not actually sleep.</li>
+          <li>Deterministically testing a DAO timeout path that currently depends on wall-clock
+          time.</li>
+          <li>Adding a seam that preserves the existing static API so no callers change.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>One bounded behavior plus a deterministic test, in a C#/.NET workspace.</dd>
+          <dt>Boundaries</dt>
+          <dd>For the single seam one behavior needs, not a broad wrapper migration.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the testability-obstacle skill for the retry loop in Module_Receiving
+that calls Task.Delay. Add the smallest seam that lets a test override the
+delay without real waiting, preserve the current public API, and point to the
+test file in MTM_Receiving_Application.Tests/.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--test-value-evidence"
+               data-entry-name="test-value-evidence"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-value-evidence</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Assesses tests for an identified change, feature, PR, or commit to
+        prove whether pre-fix and missing behavior is actually detected.</p>
+        <ul class="entry-uses">
+          <li>Proving a DAO bug fix in <code>Module_Receiving</code> has a test that fails before
+          the fix and passes after.</li>
+          <li>Checking that a new validator has a test covering the rejection path, not just the
+          happy path.</li>
+          <li>Evaluating a PR's test diff to confirm each test asserts something meaningful.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An identified code or test change, feature, PR, or commit.</dd>
+          <dt>Boundaries</dt>
+          <dd>Assesses evidence; it does not write the tests itself.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-value-evidence skill on the latest Module_Receiving DAO fix
+commit. Verify each changed test would fail without the fix and pass with it,
+and flag any test that asserts nothing meaningful.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--test-gap-analysis"
+               data-entry-name="test-gap-analysis"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-gap-analysis</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Applies pseudo-mutation to find caller-visible production changes
+        that existing tests would not catch, without running a mutation tool.</p>
+        <ul class="entry-uses">
+          <li>Checking whether the receiving quantity validation would still pass its tests if the
+          <code>&gt; 0</code> rule were removed.</li>
+          <li>Finding a blind spot in a DAO method whose tests only cover the success path.</li>
+          <li>Verifying a test actually guards the no-ViewModel-to-DAO rule rather than just
+          compiling.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Existing tests plus the production code they claim to cover.</dd>
+          <dt>Boundaries</dt>
+          <dd>Finds gaps; closing them is a separate code-testing step.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-gap-analysis skill on Module_Receiving's insert-line validator
+and its tests. Report which caller-visible behavior changes the current tests
+would miss, especially around the Quantity &gt; 0 rule.</code></pre>
+        </div>
+      </article>
+<article class="entry"
+               id="context-planning--code-testing-researcher"
+               data-entry-name="code-testing-researcher"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-researcher</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Analyzes a codebase to understand structure, testing patterns, and
+        testability before any tests are written.</p>
+        <ul class="entry-uses">
+          <li>Researching <code>Module_Receiving</code>'s DAO and service structure to identify
+          source files to test.</li>
+          <li>Discovering the MSTest and FluentAssertions conventions in
+          <code>MTM_Receiving_Application.Tests</code> to match.</li>
+          <li>Producing the research that feeds the planner for a test-generation pipeline.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The module to research.</dd>
+          <dt>Boundaries</dt>
+          <dd>Only researches; it writes no tests and runs nothing.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-researcher agent on Module_Receiving. Report the
+testable source files, the test conventions in MTM_Receiving_Application.Tests,
+and which DAOs return Model_Dao_Result and need integration tests.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-planner"
+               data-entry-name="code-testing-planner"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-planner</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Turns research findings into a phased, prioritized test
+        implementation plan.</p>
+        <ul class="entry-uses">
+          <li>Organizing <code>Module_Receiving</code> tests into phases from the researcher's
+          findings.</li>
+          <li>Prioritizing the riskiest DAOs and validators before happy-path ViewModel tests.</li>
+          <li>Producing the plan the implementer then executes phase by phase.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Research findings from the researcher.</dd>
+          <dt>Boundaries</dt>
+          <dd>Plans; it does not write or run tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-planner agent to turn the Module_Receiving research
+into a phased plan, prioritizing the insert-line validator and DAO integration
+tests, then the ViewModel unit tests. Do not write tests yet.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-implementer"
+               data-entry-name="code-testing-implementer"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-implementer</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Implements a single phase of the test plan, writing test files and
+        verifying they compile and pass.</p>
+        <ul class="entry-uses">
+          <li>Writing the validator unit tests for one phase of the receiving plan.</li>
+          <li>Adding DAO integration tests that use <code>IAsyncLifetime</code> and prefix data
+          with <code>TEST-</code>.</li>
+          <li>Building and running just the tests it wrote to confirm they are green.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A phase from the planner's plan.</dd>
+          <dt>Boundaries</dt>
+          <dd>Implements one phase; it does not plan or research.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-implementer agent on phase 1 of the Module_Receiving
+plan: the insert-line validator unit tests in MTM_Receiving_Application.Tests,
+using FluentAssertions and MethodName_ShouldResult_WhenCondition naming. Verify
+they compile and pass.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-builder"
+               data-entry-name="code-testing-builder"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-builder</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Runs build or compile commands for any language and reports
+        results.</p>
+        <ul class="entry-uses">
+          <li>Building <code>MTM_Receiving_Application.slnx</code> after a test change.</li>
+          <li>Compiling just the test project to check for CS errors before running.</li>
+          <li>Reporting whether a generated test file blocks the build.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A project or solution to build.</dd>
+          <dt>Boundaries</dt>
+          <dd>Compiles and reports; it does not fix errors — that is
+          <code>code-testing-fixer</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-builder agent to run dotnet build
+MTM_Receiving_Application.slnx and report any compilation errors from the new
+receiving tests.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-tester"
+               data-entry-name="code-testing-tester"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-tester</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Runs test commands for any language and reports pass or fail.</p>
+        <ul class="entry-uses">
+          <li>Running the full MTM suite and reporting which tests failed.</li>
+          <li>Executing the receiving test project alone for a faster signal.</li>
+          <li>Producing a pass/fail summary with the failing test names for the fixer.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A build, or already-compiled tests to run.</dd>
+          <dt>Boundaries</dt>
+          <dd>Runs and reports; it does not fix failures or author tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-tester agent to run dotnet test
+MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj and
+report the pass/fail summary with failing test names.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-fixer"
+               data-entry-name="code-testing-fixer"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-fixer</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Fixes compilation errors in source or test files.</p>
+        <ul class="entry-uses">
+          <li>Resolving CS error codes in a generated receiving test.</li>
+          <li>Adding a missing <code>using</code> or correcting a type mismatch in a DAO test.</li>
+          <li>Getting the test project back to compiling after a botched edit.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Build or compiler errors to fix.</dd>
+          <dt>Boundaries</dt>
+          <dd>Fixes compile errors; it does not write new tests or change passing behavior.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-fixer agent to fix the CS errors in the new receiving
+DAO test under MTM_Receiving_Application.Tests, adding missing usings and
+correcting the Model_Dao_Result&lt;T&gt; type arguments without altering the
+production code.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--code-testing-linter"
+               data-entry-name="code-testing-linter"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-linter</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Runs code formatting and linting for any language.</p>
+        <ul class="entry-uses">
+          <li>Running <code>dotnet format</code> on the test project after a batch of test
+          edits.</li>
+          <li>Applying style fixes so new tests match the repo's C# conventions.</li>
+          <li>Reporting style issues without changing behavior.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Files to format or lint.</dd>
+          <dt>Boundaries</dt>
+          <dd>Formats and lints; it does not change logic or fix compiler errors.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-linter agent to run dotnet format on
+MTM_Receiving_Application.Tests and apply style fixes to the new receiving
+tests. Report what changed.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="context-planning--testability-migration"
+               data-entry-name="testability-migration"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">testability-migration</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">An internal specialist for the test-engineer that inventories
+        static dependencies and migrates named seams through selection, call-site migration,
+        wiring, and deterministic tests.</p>
+        <ul class="entry-uses">
+          <li>Running a full static-dependency inventory for a module before a broad migration.</li>
+          <li>Selecting the right seam for a <code>DateTime</code> or <code>File</code> dependency
+          across many call sites.</li>
+          <li>Wiring production and tests together so migrated code stays deterministic.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A broad .NET testability migration, usually invoked by the test-engineer.</dd>
+          <dt>Boundaries</dt>
+          <dd>For named, scoped migrations — a single bounded seam is
+          <code>testability-obstacle</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the testability-migration agent to inventory static dependencies
+across Module_Settings.Core and migrate DateTime.UtcNow call sites to
+TimeProvider, including DI wiring and deterministic tests in
+MTM_Receiving_Application.Tests.</code></pre>
+        </div>
+      </article>
+
+      <h2>Using the testability family in order</h2>
+      <ol>
+        <li>Find what is untested with <code>find-untested-sources</code>.</li>
+        <li>Check whether a static dependency blocks testing with <code>detect-static-dependencies</code>.</li>
+        <li>If it does, add a seam with <code>generate-testability-wrappers</code> or migrate an existing call with <code>migrate-static-to-wrapper</code>.</li>
+        <li>Write the tests that were previously impossible.</li>
+        <li>Ask <code>test-gap-analysis</code> whether the new tests would actually catch a regression.</li>
+      </ol>
+
+      <h2>Documented in testing</h2>
+      <p>Test <em>execution</em> and coverage tools live in the
+      <a href="testing.html">testing chapter</a> because that is where a reader looks for them:
+      <code>run-tests</code>, <code>filter-syntax</code>, <code>platform-detection</code>,
+      <code>mtp-hot-reload</code>, <code>scaffold-dotnet-test-project</code>,
+      <code>coverage-analysis</code>, <code>crap-score</code>, <code>code-testing-agent</code>,
+      <code>code-testing-extensions</code>, and <code>test-analysis-extensions</code>.</p>
+
+      <hr class="rule">
+      <p class="callout"><strong>Order matters.</strong> Plan with <code>context-map</code> or
+      <code>refactor-plan</code> before editing, then work the testability family left to right:
+      find what is untested, remove the static obstacles, write the tests, and finally ask
+      <code>test-gap-analysis</code> whether they would actually catch a regression.
+      <code>context-architect</code> is the agent that does the mapping hands-off, and
+      <code>run-tests</code> is the only entry here that executes the suite.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

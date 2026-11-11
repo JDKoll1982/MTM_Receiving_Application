@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code quality and review — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 07</p>
+      <h1>Code quality and review</h1>
+      <div class="scope">
+        <p>Keeping the test suite honest. Everything here operates on
+        <code>MTM_Receiving_Application.Tests/</code>, which is xUnit with FluentAssertions,
+        method names of the form <code>MethodName_ShouldResult_WhenCondition</code>, integration
+        tests built on <code>IAsyncLifetime</code>, and test data prefixed
+        <code>TEST-</code>.</p>
+        <p>Run the suite with
+        <code>dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj</code>.
+        The audit skills below report; the authoring skills and agents fix what they find.</p>
+      </div>
+
+      <p class="callout">WinUI XAML and binding review is documented in the WinUI chapter, not
+      here, so it is not double-counted: see
+      <a href="winui-platform.html#winui-platform--winui-code-review">winui-code-review</a>.</p>
+
+      <article class="entry"
+               id="code-quality--assertion-quality"
+               data-entry-name="assertion-quality"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">assertion-quality</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Audits assertion depth, variety, and false confidence in existing
+        tests, flagging always-true, self-referential, and presence-only checks.</p>
+        <ul class="entry-uses">
+          <li>Checking whether a ViewModel test asserts behavior, or only that a method returned
+          something non-null.</li>
+          <li>Finding FluentAssertions chains that restate the implementation instead of verifying
+          the observable outcome.</li>
+          <li>Reviewing DAO tests for truthiness-only assertions that would still pass if the
+          wrong row came back.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Existing test files to analyze. It reports findings; it does not rewrite anything.</dd>
+          <dt>Boundaries</dt>
+          <dd>Identifies weak assertions only. Writing the replacement assertions is owned by
+          <code>code-testing</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the assertion-quality skill on MTM_Receiving_Application.Tests/Unit for the
+Module_Receiving viewmodels. Flag every test whose FluentAssertions only checks
+truthiness or restates the implementation, and list what each assertion should verify
+instead.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--grade-tests"
+               data-entry-name="grade-tests"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">grade-tests</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Grades curated individual tests A through F for readiness and
+        quality against this repo's naming, fixture, and assertion conventions.</p>
+        <ul class="entry-uses">
+          <li>Scoring one named test method to decide whether it survives a refactor.</li>
+          <li>Grading the integration tests in
+          <code>MTM_Receiving_Application.Tests/Integration/</code> for correct
+          <code>IAsyncLifetime</code> setup and cleanup.</li>
+          <li>Producing a per-test quality band for a bounded diff before a code review.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A named test method, class, or bounded file span to grade; it does not choose scope
+          for you.</dd>
+          <dt>Boundaries</dt>
+          <dd>Grades quality only. It never edits the tests it scores.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the grade-tests skill on the Dao_ReceivingLine integration tests in
+MTM_Receiving_Application.Tests/Integration. Grade each test A through F on naming
+(MethodName_ShouldResult_WhenCondition), IAsyncLifetime cleanup, and assertion
+quality, and report which ones need a rewrite.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--test-anti-patterns"
+               data-entry-name="test-anti-patterns"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-anti-patterns</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Severity-ranked audit of tests that verify nothing, tautological
+        assertions, swallowed or broad exceptions, and flaky or order-dependent behavior.</p>
+        <ul class="entry-uses">
+          <li>Scanning the receiving module's tests for exceptions caught and ignored instead of
+          asserted.</li>
+          <li>Detecting FluentAssertions checks that compare a value against itself.</li>
+          <li>Surfacing xUnit tests that pass in sequence but fail when run alone.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>One or more test files to scan. The report is read-only.</dd>
+          <dt>Boundaries</dt>
+          <dd>Produces a diagnostic report; direct fixes belong to <code>code-testing</code> or
+          <code>test-engineer</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-anti-patterns skill on MTM_Receiving_Application.Tests. Report
+severity-ranked anti-patterns with file and line, focusing on swallowed exceptions,
+tautological assertions, and flaky order dependence across the xUnit tests.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--test-smell-detection"
+               data-entry-name="test-smell-detection"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-smell-detection</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Audits tests using the formal testsmells.org 19-smell academic
+        taxonomy, with named categories and severity ranking.</p>
+        <ul class="entry-uses">
+          <li>Mapping an existing suite onto the 19 formal smells for a citable review.</li>
+          <li>Distinguishing Eager Test and Assertion Roulette smells inside long integration
+          tests.</li>
+          <li>Producing an academic-style taxonomy report for one module's test folder.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Test files to analyze. Returns named smell categories, never fixes.</dd>
+          <dt>Boundaries</dt>
+          <dd>Uses the academic 19-smell catalog only; for a quick pragmatic review use
+          <code>test-anti-patterns</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-smell-detection skill on MTM_Receiving_Application.Tests/Integration.
+Name each finding by its testsmells.org category (for example Assertion Roulette or
+Eager Test) and rank by severity, with file and line for each.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--test-tagging"
+               data-entry-name="test-tagging"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-tagging</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Classifies existing tests by standard traits and reports the
+        distribution of happy-path versus error-path coverage.</p>
+        <ul class="entry-uses">
+          <li>Tagging the receiving tests with category attributes so CI can filter a subset.</li>
+          <li>Auditing the test mix to confirm error paths are actually covered, not only happy
+          paths.</li>
+          <li>Reporting which test categories are entirely missing from a module.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Existing tests. Applies canonical category attributes when tagging is requested,
+          otherwise reports only.</dd>
+          <dt>Boundaries</dt>
+          <dd>Classifies and tags; it does not write new cases or repair failing tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-tagging skill on MTM_Receiving_Application.Tests for Module_Dunnage.
+Tag each test by trait and report the happy-path versus error-path distribution, then
+tell me which categories have no coverage.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--code-testing"
+               data-entry-name="code-testing"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Writes, repairs, or strengthens tests for existing code in xUnit
+        with FluentAssertions, following this repo's naming, fixture, and test-data rules.</p>
+        <ul class="entry-uses">
+          <li>Adding focused regression tests for a DAO method that currently has none.</li>
+          <li>Repairing a failing integration test so its <code>IAsyncLifetime</code> cleanup and
+          <code>TEST-</code> prefix are correct.</li>
+          <li>Strengthening a FluentValidation validator test after a new rule is added.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The production code to test, inside this repo's xUnit project.</dd>
+          <dt>Boundaries</dt>
+          <dd>Tests against existing seams only; it does not create production seams or migrate
+          test frameworks.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing skill to add integration tests for Dao_ReceivingLine in
+MTM_Receiving_Application.Tests/Integration. Use IAsyncLifetime for setup and cleanup,
+prefix all test data with TEST-, name methods MethodName_ShouldResult_WhenCondition,
+and assert with FluentAssertions.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="code-quality--test-quality-auditor"
+               data-entry-name="test-quality-auditor"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-quality-auditor</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">The internal audit agent behind the assertion-quality,
+        test-anti-patterns, and test-smell-detection skills, running combined multi-dimensional
+        health checks.</p>
+        <ul class="entry-uses">
+          <li>Running one combined quality audit across a module's tests instead of three separate
+          skill passes.</li>
+          <li>Producing a severity-ranked health report that spans assertion depth, anti-patterns,
+          and named smells.</li>
+          <li>Auditing the whole test project before a release to list what must be fixed
+          first.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A scope of test files to audit. It reports findings and leaves code untouched.</dd>
+          <dt>Boundaries</dt>
+          <dd>Audits only; it does not apply fixes. Route fixes to <code>code-testing</code> or
+          <code>test-engineer</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-quality-auditor agent to run a combined audit of
+MTM_Receiving_Application.Tests. Merge assertion-quality, anti-pattern, and
+testsmells.org findings into one severity-ranked report with file and line, and list
+the top ten fixes.</code></pre>
+        </div>
+      </article>
+<hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Start with the audits
+      (<code>test-quality-auditor</code>, <code>test-anti-patterns</code>,
+      <code>test-smell-detection</code>, <code>assertion-quality</code>) to find what is weak,
+      use <code>grade-tests</code> to prioritize, <code>test-tagging</code> to see the coverage
+      shape, then hand the fix work to <code>code-testing</code> for one-off repairs or
+      <code>test-engineer</code> for a full pass.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

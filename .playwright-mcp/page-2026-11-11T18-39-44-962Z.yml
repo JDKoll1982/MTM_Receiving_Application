@@ -1,0 +1,251 @@
+- generic [ref=f1e2]:
+  - complementary [ref=f1e3]:
+    - link "MTM Agent Toolkit" [ref=f1e4] [cursor=pointer]:
+      - /url: index.html
+    - paragraph [ref=f1e5]: Workspace tool reference
+    - searchbox "Search the book" [ref=f1e7]
+    - navigation "Chapters" [ref=f1e8]:
+      - paragraph [ref=f1e9]: Chapters
+      - list [ref=f1e10]:
+        - listitem [ref=f1e11]:
+          - link "Spec-driven development 47" [ref=f1e12] [cursor=pointer]:
+            - /url: chapters/spec-driven-development.html
+            - generic [ref=f1e13]: Spec-driven development
+            - generic [ref=f1e14]: "47"
+        - listitem [ref=f1e15]:
+          - link "C# and .NET development 14" [ref=f1e16] [cursor=pointer]:
+            - /url: chapters/dotnet-development.html
+            - generic [ref=f1e17]: C# and .NET development
+            - generic [ref=f1e18]: "14"
+        - listitem [ref=f1e19]:
+          - link "Testing 19" [ref=f1e20] [cursor=pointer]:
+            - /url: chapters/testing.html
+            - generic [ref=f1e21]: Testing
+            - generic [ref=f1e22]: "19"
+        - listitem [ref=f1e23]:
+          - link "WinUI 3 and the Windows platform 16" [ref=f1e24] [cursor=pointer]:
+            - /url: chapters/winui-platform.html
+            - generic [ref=f1e25]: WinUI 3 and the Windows platform
+            - generic [ref=f1e26]: "16"
+        - listitem [ref=f1e27]:
+          - link "Packaging, signing, and distribution 7" [ref=f1e28] [cursor=pointer]:
+            - /url: chapters/packaging-signing.html
+            - generic [ref=f1e29]: Packaging, signing, and distribution
+            - generic [ref=f1e30]: "7"
+        - listitem [ref=f1e31]:
+          - link "Database and SQL 6" [ref=f1e32] [cursor=pointer]:
+            - /url: chapters/database-sql.html
+            - generic [ref=f1e33]: Database and SQL
+            - generic [ref=f1e34]: "6"
+        - listitem [ref=f1e35]:
+          - link "Code quality and review 7" [ref=f1e36] [cursor=pointer]:
+            - /url: chapters/code-quality.html
+            - generic [ref=f1e37]: Code quality and review
+            - generic [ref=f1e38]: "7"
+        - listitem [ref=f1e39]:
+          - link "Security and supply chain 3" [ref=f1e40] [cursor=pointer]:
+            - /url: chapters/security-supply-chain.html
+            - generic [ref=f1e41]: Security and supply chain
+            - generic [ref=f1e42]: "3"
+        - listitem [ref=f1e43]:
+          - link "Documentation and diagrams 4" [ref=f1e44] [cursor=pointer]:
+            - /url: chapters/documentation-diagrams.html
+            - generic [ref=f1e45]: Documentation and diagrams
+            - generic [ref=f1e46]: "4"
+        - listitem [ref=f1e47]:
+          - link "Context, planning, and testability 19" [ref=f1e48] [cursor=pointer]:
+            - /url: chapters/context-planning.html
+            - generic [ref=f1e49]: Context, planning, and testability
+            - generic [ref=f1e50]: "19"
+        - listitem [ref=f1e51]:
+          - link "MCP servers and environment 5" [ref=f1e52] [cursor=pointer]:
+            - /url: chapters/mcp-and-environment.html
+            - generic [ref=f1e53]: MCP servers and environment
+            - generic [ref=f1e54]: "5"
+        - listitem [ref=f1e55]:
+          - link "Repo skills, agents, and prompts 122" [ref=f1e56] [cursor=pointer]:
+            - /url: chapters/repo-assets.html
+            - generic [ref=f1e57]: Repo skills, agents, and prompts
+            - generic [ref=f1e58]: "122"
+    - navigation "Tools" [ref=f1e59]:
+      - paragraph [ref=f1e60]: Tools
+      - list [ref=f1e61]:
+        - listitem [ref=f1e62]:
+          - link "Prompt builder 63" [ref=f1e63] [cursor=pointer]:
+            - /url: prompt-builder.html
+            - generic [ref=f1e64]: Prompt builder
+            - generic [ref=f1e65]: "63"
+        - listitem [ref=f1e66]:
+          - link "Index by source 269" [ref=f1e67] [cursor=pointer]:
+            - /url: index-by-source.html
+            - generic [ref=f1e68]: Index by source
+            - generic [ref=f1e69]: "269"
+        - listitem [ref=f1e70]:
+          - link "Which tool when" [ref=f1e71] [cursor=pointer]:
+            - /url: decision-guide.html
+        - listitem [ref=f1e73]:
+          - link "Print the book" [ref=f1e74] [cursor=pointer]:
+            - /url: print.html
+    - paragraph [ref=f1e76]:
+      - text: Generated 2026-11-11. Renders offline. Run
+      - code [ref=f1e77]: check-drift.py
+      - text: after a plugin update.
+  - main [ref=f1e78]:
+    - generic [ref=f1e79]:
+      - generic [ref=f1e80]:
+        - paragraph [ref=f1e81]: Tool
+        - heading "Prompt builder" [level=1] [ref=f1e82]
+        - paragraph [ref=f1e83]: Pick the jobs you need done, fill in the few facts only you know, and take away a prompt written against the tools that are actually installed in this workspace.
+        - paragraph [ref=f1e84]:
+          - text: Every prompt here is written for
+          - code [ref=f1e85]: Module_Receiving
+          - text: as the worked example. Change the module field and the text follows.
+      - generic [ref=f1e86]:
+        - region "Prompt chooser" [ref=f1e87]:
+          - generic [ref=f1e88]:
+            - heading "1. Choose the jobs" [level=2] [ref=f1e89]
+            - generic [ref=f1e90]: 0 selected
+          - generic [ref=f1e91]:
+            - paragraph [ref=f1e92]: Start from a preset
+            - generic [ref=f1e93]:
+              - button "Ship a new feature" [ref=f1e94] [cursor=pointer]
+              - button "Cover a module with tests" [ref=f1e95] [cursor=pointer]
+              - button "Fix a defect" [ref=f1e96] [cursor=pointer]
+              - button "Release to testers" [ref=f1e97] [cursor=pointer]
+              - button "Onboard someone" [ref=f1e98] [cursor=pointer]
+              - button "Review before merging" [ref=f1e99] [cursor=pointer]
+          - tablist [ref=f1e100]:
+            - tab "Spec and planning5" [selected] [ref=f1e101] [cursor=pointer]
+            - tab "Testing7" [ref=f1e102] [cursor=pointer]
+            - tab "Database and SQL5" [ref=f1e103] [cursor=pointer]
+            - tab "UI and WinUI5" [ref=f1e104] [cursor=pointer]
+            - tab "Packaging and release4" [ref=f1e105] [cursor=pointer]
+            - tab "Code quality and review5" [ref=f1e106] [cursor=pointer]
+            - tab "Security and dependencies4" [ref=f1e107] [cursor=pointer]
+            - tab "Documentation and diagrams4" [ref=f1e108] [cursor=pointer]
+            - tab "Context and refactoring4" [ref=f1e109] [cursor=pointer]
+            - tab "Environment and tooling4" [ref=f1e110] [cursor=pointer]
+            - tab "Debugging and troubleshooting4" [ref=f1e111] [cursor=pointer]
+            - tab "Performance and diagnostics4" [ref=f1e112] [cursor=pointer]
+            - tab "Logging and observability4" [ref=f1e113] [cursor=pointer]
+            - tab "Onboarding and handover4" [ref=f1e114] [cursor=pointer]
+          - paragraph [ref=f1e115]: Turn an idea, a bug report, or a vague request into a reviewed specification before anyone writes code.
+          - generic [ref=f1e116]:
+            - generic [ref=f1e117]:
+              - checkbox "Plan a new feature end to end" [ref=f1e118] [cursor=pointer]
+              - generic [ref=f1e119]:
+                - generic [ref=f1e120] [cursor=pointer]: Plan a new feature end to end
+                - generic [ref=f1e121]: Take a feature idea from a plain description to a reviewed specification, an implementation plan, and a dependency-ordered task list, with no code written until you approve.
+                - generic [ref=f1e122]:
+                  - generic "agent from .github/agents/speckit.specify.agent.md" [ref=f1e123]: speckit.specify
+                  - generic "agent from .github/agents/speckit.clarify.agent.md" [ref=f1e124]: speckit.clarify
+                  - generic "agent from .github/agents/speckit.plan.agent.md" [ref=f1e125]: speckit.plan
+                  - generic "agent from .github/agents/speckit.tasks.agent.md" [ref=f1e126]: speckit.tasks
+            - generic [ref=f1e127]:
+              - checkbox "Decide whether an idea is worth building" [ref=f1e128] [cursor=pointer]
+              - generic [ref=f1e129]:
+                - generic [ref=f1e130] [cursor=pointer]: Decide whether an idea is worth building
+                - generic [ref=f1e131]: Assess a raw idea against the existing application and return a go or kill verdict with the evidence behind it, before anyone commits to building it.
+                - generic [ref=f1e132]:
+                  - generic "agent from .github/agents/speckit.assess.intake.agent.md" [ref=f1e133]: speckit.assess.intake
+                  - generic "agent from .github/agents/speckit.assess.research.agent.md" [ref=f1e134]: speckit.assess.research
+                  - generic "agent from .github/agents/speckit.assess.define.agent.md" [ref=f1e135]: speckit.assess.define
+                  - generic "agent from .github/agents/speckit.assess.shape.agent.md" [ref=f1e136]: speckit.assess.shape
+                  - generic "agent from .github/agents/speckit.assess.decide.agent.md" [ref=f1e137]: speckit.assess.decide
+            - generic [ref=f1e138]:
+              - checkbox "Clarify a spec that is too vague to build" [ref=f1e139] [cursor=pointer]
+              - generic [ref=f1e140]:
+                - generic [ref=f1e141] [cursor=pointer]: Clarify a spec that is too vague to build
+                - generic [ref=f1e142]: Take an existing specification for a Module_Receiving feature and find the gaps that would force a developer to guess, then close them.
+                - generic [ref=f1e143]:
+                  - generic "agent from .github/agents/speckit.clarify.agent.md" [ref=f1e144]: speckit.clarify
+                  - generic "agent from .github/agents/speckit.checklist.agent.md" [ref=f1e145]: speckit.checklist
+                  - generic "agent from .github/agents/speckit.analyze.agent.md" [ref=f1e146]: speckit.analyze
+            - generic [ref=f1e147]:
+              - checkbox "Take a defect from report to verified fix" [ref=f1e148] [cursor=pointer]
+              - generic [ref=f1e149]:
+                - generic [ref=f1e150] [cursor=pointer]: Take a defect from report to verified fix
+                - generic [ref=f1e151]: A tester reports something wrong in Module_Receiving. Assess it against the real code, apply a fix, and prove the fix resolves the report.
+                - generic [ref=f1e152]:
+                  - generic "agent from .github/agents/speckit.bug.assess.agent.md" [ref=f1e153]: speckit.bug.assess
+                  - generic "agent from .github/agents/speckit.bug.fix.agent.md" [ref=f1e154]: speckit.bug.fix
+                  - generic "agent from .github/agents/speckit.bug.test.agent.md" [ref=f1e155]: speckit.bug.test
+            - generic [ref=f1e156]:
+              - checkbox "Run the whole spec pipeline unattended" [ref=f1e157] [cursor=pointer]
+              - generic [ref=f1e158]:
+                - generic [ref=f1e159] [cursor=pointer]: Run the whole spec pipeline unattended
+                - generic [ref=f1e160]: For a well-understood feature, run specify, plan, tasks, implement, and converge without stopping for approval at each gate.
+                - generic [ref=f1e161]:
+                  - generic "agent from .github/agents/speckit.companion.auto.agent.md" [ref=f1e162]: speckit.companion.auto
+                  - generic "agent from .github/agents/speckit.implement.agent.md" [ref=f1e163]: speckit.implement
+                  - generic "agent from .github/agents/speckit.converge.agent.md" [ref=f1e164]: speckit.converge
+        - region "Selected sequence" [ref=f1e165]:
+          - generic [ref=f1e166]:
+            - heading "2. Order them" [level=2] [ref=f1e167]
+            - button "Clear all" [ref=f1e168] [cursor=pointer]
+          - list [ref=f1e169]:
+            - listitem [ref=f1e170]: Nothing chosen yet. Pick jobs on the left; they are added here in the order you select them, and you can reorder them.
+        - region "Context" [ref=f1e171]:
+          - heading "3. Fill in the facts" [level=2] [ref=f1e172]
+          - generic [ref=f1e173]:
+            - generic [ref=f1e174]:
+              - text: Module
+              - combobox "Module" [active] [ref=f1e175] [cursor=pointer]:
+                - option "Module_Core"
+                - option "Module_Dunnage"
+                - option "Module_Receiving" [selected]
+                - option "Module_Reporting"
+                - option "Module_Reprint"
+                - option "Module_Scanner"
+                - option "Module_Settings.Core"
+                - option "Module_Settings.Dunnage"
+                - option "Module_Settings.Receiving"
+                - option "Module_Settings.Reporting"
+                - option "Module_Settings.Volvo"
+                - option "Module_Shared"
+                - option "Module_ShipRec_Tools"
+                - option "Module_VisualAutomation"
+                - option "Module_Volvo"
+            - generic [ref=f1e176]:
+              - text: DAO or service class
+              - combobox "DAO or service class" [ref=f1e177]
+            - generic [ref=f1e178]:
+              - text: Stored procedure
+              - combobox "Stored procedure" [ref=f1e179]
+            - generic [ref=f1e180]:
+              - text: Target file path
+              - combobox "Target file path" [ref=f1e181]
+            - generic [ref=f1e182]:
+              - text: Test file or project
+              - combobox "Test file or project" [ref=f1e183]
+            - generic [ref=f1e184]:
+              - text: Spec folder
+              - combobox "Spec folder" [ref=f1e185]
+            - generic [ref=f1e186]:
+              - text: Acceptance criteria
+              - textbox "Acceptance criteria" [ref=f1e187]:
+                - /placeholder: The load saves and the grid refreshes without a manual reload.
+            - generic [ref=f1e188]:
+              - text: Anything else the agent must know
+              - textbox "Anything else the agent must know" [ref=f1e189]:
+                - /placeholder: This module is used on the dock tablet, so keep the layout usable at 1280 wide.
+          - paragraph [ref=f1e190]:
+            - strong [ref=f1e191]: 1839 suggestions
+            - text: parsed from the repository. Module is a fixed list of the projects in this solution. The other five fields suggest real values parsed from the repository by
+            - code [ref=f1e192]: build-facts.py
+            - text: ", and you can type freely when the thing you need does not exist yet. Empty fields are left out of the prompt rather than filled with a placeholder you have to delete."
+        - region "Generated prompt" [ref=f1e193]:
+          - generic [ref=f1e194]:
+            - heading "4. Take it away" [level=2] [ref=f1e195]
+            - button "Copy prompt" [ref=f1e197] [cursor=pointer]
+            - generic [ref=f1e198]:
+              - generic [ref=f1e199] [cursor=pointer]:
+                - checkbox "Done when" [checked] [ref=f1e200]
+                - text: Done when
+              - generic [ref=f1e201] [cursor=pointer]:
+                - checkbox "Do not" [checked] [ref=f1e202]
+                - text: Do not
+          - paragraph [ref=f1e204]: Paste it straight into a Copilot session. It names the tools, so the agent does not have to rediscover them.
+          - paragraph [ref=f1e206]:
+            - strong [ref=f1e207]: Nothing selected yet.
+            - text: Choose a preset, or pick a job from the list on the left. The prompt appears here as soon as you do.

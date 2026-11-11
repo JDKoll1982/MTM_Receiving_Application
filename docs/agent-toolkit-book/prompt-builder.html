@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt builder — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/book.css?v=20261111f">
+<link rel="stylesheet" href="assets/prompt-builder.css?v=20261111f">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="pb-wrap">
+
+      <header class="pb-head">
+        <p class="eyebrow">Tool</p>
+        <h1>Prompt builder</h1>
+        <p class="lede">Pick the jobs you need done, fill in the few facts only you know, and take
+        away a prompt written against the tools that are actually installed in this workspace.</p>
+        <p class="pb-hint">Every prompt here is written for <code>Module_Receiving</code> as the
+        worked example. Change the module field and the text follows.</p>
+      </header>
+
+      <div class="pb-grid">
+
+        <!-- ------------------------------------------------ left: chooser -->
+        <section class="pb-panel pb-chooser" aria-label="Prompt chooser">
+          <div class="pb-panel-head">
+            <h2>1. Choose the jobs</h2>
+            <span class="pb-count" data-pb-selected-count>0 selected</span>
+          </div>
+
+          <div class="pb-presets">
+            <p class="pb-label">Start from a preset</p>
+            <div class="pb-preset-row" data-pb-presets></div>
+          </div>
+
+          <div class="pb-cat-tabs" data-pb-categories role="tablist"></div>
+
+          <p class="pb-cat-summary" data-pb-category-summary></p>
+
+          <div class="pb-prompt-list" data-pb-prompts></div>
+        </section>
+
+        <!-- --------------------------------------------- right: sequence -->
+        <section class="pb-panel pb-sequence" aria-label="Selected sequence">
+          <div class="pb-panel-head">
+            <h2>2. Order them</h2>
+            <button type="button" class="pb-link" data-pb-clear>Clear all</button>
+          </div>
+          <ol class="pb-seq-list" data-pb-sequence></ol>
+          <div class="pb-warn" data-pb-warnings hidden></div>
+        </section>
+
+        <!-- ----------------------------------------------- left: context -->
+        <section class="pb-panel pb-context" aria-label="Context">
+          <h2>3. Fill in the facts</h2>
+          <div class="pb-fields">
+            <label>Module
+              <select data-pb-field="module" data-pb-select="module">
+                <option value="Module_Receiving">Module_Receiving</option>
+              </select>
+            </label>
+            <label>DAO or service class
+              <input type="text" data-pb-field="dao" list="pb-list-dao"
+                     placeholder="Dao_ReceivingLine" spellcheck="false" autocomplete="off">
+            </label>
+            <label>Stored procedure
+              <input type="text" data-pb-field="sp" list="pb-list-sp"
+                     placeholder="sp_ReceivingLine_GetByLoad" spellcheck="false" autocomplete="off">
+            </label>
+            <label>Target file path
+              <input type="text" data-pb-field="file" list="pb-list-file"
+                     placeholder="Module_Receiving/Data/Dao_ReceivingLine.cs" spellcheck="false" autocomplete="off">
+            </label>
+            <label>Test file or project
+              <input type="text" data-pb-field="test" list="pb-list-test"
+                     placeholder="MTM_Receiving_Application.Tests" spellcheck="false" autocomplete="off">
+            </label>
+            <label>Spec folder
+              <input type="text" data-pb-field="spec" list="pb-list-spec"
+                     placeholder="specs/003-agent-toolkit-book" spellcheck="false" autocomplete="off">
+            </label>
+            <label class="pb-wide">Acceptance criteria
+              <textarea rows="2" data-pb-field="acceptance" placeholder="The load saves and the grid refreshes without a manual reload."></textarea>
+            </label>
+            <label class="pb-wide">Anything else the agent must know
+              <textarea rows="2" data-pb-field="extra" placeholder="This module is used on the dock tablet, so keep the layout usable at 1280 wide."></textarea>
+            </label>
+          </div>
+
+          <datalist id="pb-list-dao" data-pb-list="dao"></datalist>
+          <datalist id="pb-list-sp" data-pb-list="storedProcedure"></datalist>
+          <datalist id="pb-list-file" data-pb-list="targetFile"></datalist>
+          <datalist id="pb-list-test" data-pb-list="test"></datalist>
+          <datalist id="pb-list-spec" data-pb-list="specFolder"></datalist>
+
+          <p class="pb-hint">Module is a fixed list of the projects in this solution. The other five
+          fields suggest real values parsed from the repository by <code>build-facts.py</code>, and
+          you can type freely when the thing you need does not exist yet. Empty fields are left out
+          of the prompt rather than filled with a placeholder you have to delete.</p>
+        </section>
+
+        <!-- ------------------------------------------------ right: output -->
+        <section class="pb-panel pb-output" aria-label="Generated prompt">
+          <div class="pb-panel-head">
+            <h2>4. Take it away</h2>
+            <div class="pb-output-actions">
+              <span class="pb-count" data-pb-size></span>
+              <button type="button" class="print-action pb-copy" data-pb-copy>Copy prompt</button>
+            </div>
+          </div>
+          <pre class="pb-preview" data-pb-output tabindex="0"></pre>
+          <p class="pb-hint">Paste it straight into a Copilot session. It names the tools, so the
+          agent does not have to rediscover them.</p>
+          <div class="pb-empty" data-pb-empty>
+            <p><strong>Nothing selected yet.</strong> Choose a preset, or pick a job from the list
+            on the left. The prompt appears here as soon as you do.</p>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="assets/nav.js?v=20261111f"></script>
+<script src="assets/prompt-catalog.js?v=20261111f"></script>
+<script src="assets/facts.js?v=20261111f"></script>
+<script src="assets/search-index.js?v=20261111f"></script>
+<script src="assets/prompt-builder.js?v=20261111f"></script>
+</body>
+</html>

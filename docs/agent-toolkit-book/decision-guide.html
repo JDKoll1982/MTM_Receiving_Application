@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which tool when — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Reference</p>
+      <h1>Which tool when</h1>
+      <p class="lede">Overlapping tooling is the most common failure mode in a set this size. Each row
+      states a default, the reason, and the condition under which the other option wins. Every tool
+      named here links to its entry.</p>
+
+      <h2>Code intelligence</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Find, read, or rewrite a symbol</td>
+            <td><a href="chapters/mcp-and-environment.html#mcp-and-environment--serena">Serena</a></td>
+            <td>Symbol-level tools return one definition instead of a whole file, which matters
+            across 300+ C# files.</td>
+            <td>You need diagnostics or go-to-definition, so use the
+            <a href="chapters/mcp-and-environment.html#mcp-and-environment--dotnet-plugin-lsp">dotnet
+            plugin language server</a>.</td>
+          </tr>
+          <tr>
+            <td>See warnings, errors, or inferred types</td>
+            <td><a href="chapters/mcp-and-environment.html#mcp-and-environment--dotnet-plugin-lsp">dotnet
+            plugin LSP</a></td>
+            <td>It owns the diagnostics stream; Serena exposes editing, not a problem list.</td>
+            <td>LSP memory is tight. Drop the dotnet plugin server first and keep Serena, because
+            Serena carries the daily editing workflow.</td>
+          </tr>
+          <tr>
+            <td>A refactor that crosses many files</td>
+            <td><a href="chapters/context-planning.html#context-planning--refactor-plan">refactor-plan</a></td>
+            <td>It produces a plan and waits for confirmation before any file changes.</td>
+            <td>The change is a pure rename in one project, so just run a language-server rename.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Windows packaging and setup</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Packaging a WinUI 3 app</td>
+            <td><a href="chapters/packaging-signing.html#packaging-signing--winui-packaging">winui-packaging</a></td>
+            <td>It knows the WinUI template, Native AOT, and self-contained deployment.</td>
+            <td>The target is not WinUI, so use
+            <a href="chapters/packaging-signing.html#packaging-signing--winapp-package">winapp-package</a>.</td>
+          </tr>
+          <tr>
+            <td>Setting up WinUI prerequisites</td>
+            <td><a href="chapters/packaging-signing.html#packaging-signing--winui-setup">winui-setup</a></td>
+            <td>It owns the WinUI-specific chain including Developer Mode.</td>
+            <td>You only need SDK init or restore on a non-WinUI project, so use
+            <a href="chapters/packaging-signing.html#packaging-signing--winapp-setup">winapp-setup</a>.</td>
+          </tr>
+          <tr>
+            <td>Automated UI testing</td>
+            <td><a href="chapters/winui-platform.html#winui-platform--winui-ui-testing">winui-ui-testing</a></td>
+            <td>This app is WinUI 3, and that harness is written for it.</td>
+            <td>You are automating a WPF, WinForms, or Electron target, so use
+            <a href="chapters/winui-platform.html#winui-platform--winapp-ui-automation">winapp-ui-automation</a>.</td>
+          </tr>
+          <tr>
+            <td>Finding the right Windows API or XAML</td>
+            <td><a href="chapters/winui-platform.html#winui-platform--winapp-find-api">winapp-find-api</a>
+            and <a href="chapters/winui-platform.html#winui-platform--winapp-find-ui">winapp-find-ui</a></td>
+            <td>They answer a single lookup rather than requiring you to describe a whole app.</td>
+            <td>You need design or layout guidance instead, so use
+            <a href="chapters/winui-platform.html#winui-platform--winui-design">winui-design</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Testing</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Running tests</td>
+            <td><code>dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj</code></td>
+            <td>It is the documented command for this repo and needs no skill to be loaded.</td>
+            <td>You need the correct filter syntax, TRX output, or crash diagnostics, so use
+            <a href="chapters/testing.html#testing--run-tests">run-tests</a>.</td>
+          </tr>
+          <tr>
+            <td>Writing new tests</td>
+            <td>This repo's own rules: xUnit, FluentAssertions, <code>MethodName_ShouldResult_WhenCondition</code>,
+            <code>IAsyncLifetime</code>, <code>TEST-</code> prefixed data</td>
+            <td>House conventions beat generic advice; the plugin skills do not know this repo's
+            naming or fixture rules.</td>
+            <td>You want a broad audit or repair pipeline, so use
+            <a href="chapters/code-quality.html#code-quality--code-testing">code-testing</a> and let it apply
+            the house rules you supply.</td>
+          </tr>
+          <tr>
+            <td>Deciding whether tests are good</td>
+            <td><a href="chapters/code-quality.html#code-quality--assertion-quality">assertion-quality</a></td>
+            <td>Weak assertions are the most common real defect in an existing suite.</td>
+            <td>You want a full severity-ranked audit, so use
+            <a href="chapters/code-quality.html#code-quality--test-anti-patterns">test-anti-patterns</a>.</td>
+          </tr>
+          <tr>
+            <td>Knowing what is untested</td>
+            <td><a href="chapters/context-planning.html#context-planning--find-untested-sources">find-untested-sources</a></td>
+            <td>It pairs sources to tests structurally rather than guessing from coverage.</td>
+            <td>You have a real coverage report to interpret, so use
+            <a href="chapters/testing.html#testing--coverage-analysis">coverage-analysis</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Spec work</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Building one feature</td>
+            <td><a href="chapters/spec-driven-development.html#spec-driven-development--speckit-specify">speckit.specify</a>
+            then plan, tasks, implement</td>
+            <td>Each step produces an artifact you can review before the next one starts.</td>
+            <td>You want the whole pipeline hands-off, so use
+            <a href="chapters/spec-driven-development.html#spec-driven-development--speckit-companion-auto">speckit.companion.auto</a>.</td>
+          </tr>
+          <tr>
+            <td>Deciding whether an idea is worth building</td>
+            <td><a href="chapters/spec-driven-development.html#spec-driven-development--speckit-assess-intake">speckit.assess.intake</a>
+            then research, define, shape, decide</td>
+            <td>It produces a go or kill verdict before any spec exists.</td>
+            <td>The decision is already made, so start at
+            <a href="chapters/spec-driven-development.html#spec-driven-development--speckit-specify">speckit.specify</a>.</td>
+          </tr>
+          <tr>
+            <td>Checking a run actually completed</td>
+            <td><a href="chapters/spec-driven-development.html#spec-driven-development--speckit-companion-doctor">speckit.companion.doctor</a></td>
+            <td>It reads the run journal rather than the prose, so it catches steps that closed
+            having verified nothing.</td>
+            <td>You only want the current position, so use
+            <a href="chapters/spec-driven-development.html#spec-driven-development--speckit-companion-status">speckit.companion.status</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Documents and diagrams</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Producing a documentation package</td>
+            <td><a href="chapters/documentation-diagrams.html#documentation-diagrams--project-documenter">project-documenter</a></td>
+            <td>It discovers the stack first, so the diagrams and prose match the code.</td>
+            <td>You only need one picture, so use
+            <a href="chapters/documentation-diagrams.html#documentation-diagrams--drawio">drawio</a>.</td>
+          </tr>
+          <tr>
+            <td>Handing a document to someone in Word</td>
+            <td><a href="chapters/documentation-diagrams.html#documentation-diagrams--md-to-docx">md-to-docx</a></td>
+            <td>It converts faithfully and needs no Office install.</td>
+            <td>The Markdown itself is wrong, so fix the Markdown first; conversion only copies
+            whatever it is given.</td>
+          </tr>
+          <tr>
+            <td>Exploring an architecture interactively</td>
+            <td><a href="chapters/documentation-diagrams.html#documentation-diagrams--diagram-viewer">diagram-viewer</a></td>
+            <td>Clicking a node and asking about it beats reading a static image.</td>
+            <td>You need a file to commit, so use
+            <a href="chapters/documentation-diagrams.html#documentation-diagrams--drawio">drawio</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Security and dependencies</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Question</th>
+            <th style="width:22%">Default</th>
+            <th style="width:30%">Why</th>
+            <th>Use the other when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reviewing your own change for vulnerabilities</td>
+            <td><a href="chapters/security-supply-chain.html#security-supply-chain--github-security">github-security</a></td>
+            <td>It scopes findings to the session's diff, which is where new risk actually lands.</td>
+            <td>You want to work the standing GitHub alerts instead, which the same canvas loads
+            through <code>fetchGhasFindings</code>.</td>
+          </tr>
+          <tr>
+            <td>Dependency version drift</td>
+            <td><a href="chapters/security-supply-chain.html#security-supply-chain--dependabot-triage">dependabot-triage</a></td>
+            <td>It reports checks, mergeability, and overlap before recommending a merge.</td>
+            <td>The alert set is empty but you still want an upgrade, so use
+            <a href="chapters/dotnet-development.html#dotnet-development--dotnet-upgrade">dotnet-upgrade</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr class="rule">
+      <p class="callout"><strong>The meta-rule.</strong> When two tools overlap and neither row covers
+      it, prefer the one whose chapter matches the job you are doing, then prefer the narrower tool.
+      A single-purpose skill gives a sharper answer than a general agent, and you can always escalate.</p>
+    </div>
+  </main>
+</div>
+<script src="assets/nav.js?v=20261111b"></script>
+<script src="assets/search-index.js?v=20261111b"></script>
+<script src="assets/book.js?v=20261111b"></script>
+</body>
+</html>

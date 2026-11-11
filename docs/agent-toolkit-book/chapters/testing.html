@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 03</p>
+      <h1>Testing</h1>
+      <div class="scope">
+        <p>Writing and running the test suite. Everything here operates on
+        <code>MTM_Receiving_Application.Tests/</code>, which is xUnit with FluentAssertions,
+        method names of the form <code>MethodName_ShouldResult_WhenCondition</code>, integration
+        tests built on <code>IAsyncLifetime</code>, and test data prefixed
+        <code>TEST-</code>.</p>
+        <p>Unit tests cover FluentValidation validators and view models that depend only on
+        <code>IMediator</code>; integration tests cover view models with concrete services,
+        handlers with concrete DAOs, and the DAOs themselves. Run the suite with
+        <code>dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj</code>;
+        the solution file is <code>MTM_Receiving_Application.slnx</code>.</p>
+      </div>
+
+      <article class="entry"
+               id="testing--writing-mstest-tests"
+               data-entry-name="writing-mstest-tests"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">writing-mstest-tests</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Corrects MSTest assertion, attribute, and lifecycle usage in
+        supplied test code rather than authoring new cases.</p>
+        <ul class="entry-uses">
+          <li>Fixing an <code>[TestMethod]</code>, <code>[DataTestMethod]</code>, or
+          <code>Assert</code> API mistake in a file that must stay MSTest.</li>
+          <li>Converting a legacy MSTest fixture so its setup and cleanup run in the right
+          order.</li>
+          <li>Correcting MSTest configuration in a project that intentionally does not use
+          xUnit.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Existing MSTest code to correct. It edits supplied MSTest, not xUnit.</dd>
+          <dt>Boundaries</dt>
+          <dd>This repo is xUnit with FluentAssertions, so for new cases reach for
+          <code>code-testing</code>; use this skill only when a genuine MSTest target appears.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the writing-mstest-tests skill on the supplied MSTest file. Fix the
+attribute, assertion, and lifecycle mistakes so the tests compile and run, but do not
+convert the file to xUnit.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--run-tests"
+               data-entry-name="run-tests"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">run-tests</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Runs, filters, or troubleshoots <code>dotnet test</code> for
+        this repo, detecting the test platform and framework first.</p>
+        <ul class="entry-uses">
+          <li>Running the full suite with
+          <code>dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj</code>
+          using the correct flags.</li>
+          <li>Running one xUnit test class or category without guessing the filter flag.</li>
+          <li>Diagnosing why a <code>dotnet test</code> invocation fails or ignores the
+          requested filter.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test project already wired into the solution. It runs tests; it does not
+          author them.</dd>
+          <dt>Boundaries</dt>
+          <dd>Does not write or debug test code, and does not interpret an existing coverage
+          report.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the run-tests skill to run the Module_Receiving unit tests only, in
+MTM_Receiving_Application.Tests/Unit/Module_Receiving. Detect the platform first, then
+give me the exact dotnet test command and run it.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--filter-syntax"
+               data-entry-name="filter-syntax"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">filter-syntax</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Selects the correct filter flag and syntax for the detected
+        test platform, from <code>--filter</code> to
+        <code>--filter-class</code>, <code>--filter-trait</code>, and
+        <code>--treenode-filter</code>.</p>
+        <ul class="entry-uses">
+          <li>Building a filter that runs one xUnit class by name without trial and error.</li>
+          <li>Combining a class filter with a trait filter in a single
+          <code>dotnet test</code> command.</li>
+          <li>Resolving a filter error by picking the flag that matches the runner.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The test project and the filter intent. It returns syntax, not test
+          results.</dd>
+          <dt>Boundaries</dt>
+          <dd>Only answers the flag question; running the filtered command belongs to
+          <code>run-tests</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the filter-syntax skill for MTM_Receiving_Application.Tests. Give the
+exact filter flag and syntax to run all Dao_ReceivingLine integration tests in
+MTM_Receiving_Application.Tests/Integration/Database, and note which flag matches
+this xUnit platform.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--platform-detection"
+               data-entry-name="platform-detection"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">platform-detection</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Identifies a .NET project's test platform, framework, command
+        mode, and SDK-style versus classic project system.</p>
+        <ul class="entry-uses">
+          <li>Confirming whether
+          <code>MTM_Receiving_Application.Tests</code> runs under VSTest or the Microsoft
+          Testing Platform.</li>
+          <li>Checking whether the xUnit project uses classic or SDK-style layout before a
+          test change.</li>
+          <li>Resolving conflicting VSTest and MTP settings in the csproj.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The test project file. It identifies; it does not run anything.</dd>
+          <dt>Boundaries</dt>
+          <dd>Answers platform questions only; for commands and flags use
+          <code>run-tests</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the platform-detection skill on
+MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj. Report the
+test platform, framework, command mode, and whether the project is SDK-style or
+classic.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--mtp-hot-reload"
+               data-entry-name="mtp-hot-reload"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">mtp-hot-reload</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Sets up or recovers a long-lived Microsoft Testing Platform
+        console host for an edit-and-rerun loop.</p>
+        <ul class="entry-uses">
+          <li>Starting a watch loop that reruns tests on each edit during a long refactor.</li>
+          <li>Recovering an MTP console session that lost its hot-reload state.</li>
+          <li>Choosing the VSTest fallback when MTP hot reload cannot mutate this project.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An MTP console host; for one-time runs use <code>run-tests</code> instead.</dd>
+          <dt>Boundaries</dt>
+          <dd>Does not write or debug tests, and excludes editor integration and CI
+          configuration.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the mtp-hot-reload skill to start a hot-reload console loop for
+MTM_Receiving_Application.Tests, filtered to Module_Dunnage, so the xUnit tests
+rerun on each edit.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--scaffold-dotnet-test-project"
+               data-entry-name="scaffold-dotnet-test-project"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">scaffold-dotnet-test-project</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Creates, registers, or repairs an xUnit test project so it is
+        discovered by the solution and CI.</p>
+        <ul class="entry-uses">
+          <li>Re-wiring
+          <code>MTM_Receiving_Application.Tests</code> into
+          <code>MTM_Receiving_Application.slnx</code> after a solution-filter change.</li>
+          <li>Restoring a missing <code>ProjectReference</code> from the test project to the
+          module under test.</li>
+          <li>Diagnosing why tests pass locally but CI discovers zero.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A solution and the project files involved. It fixes wiring, not test
+          bodies.</dd>
+          <dt>Boundaries</dt>
+          <dd>Does not author tests in an already-wired project; use
+          <code>code-testing</code> for that.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the scaffold-dotnet-test-project skill to verify that
+MTM_Receiving_Application.Tests is included in MTM_Receiving_Application.slnx and
+holds a ProjectReference to each module it tests. Repair any missing wiring.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--coverage-analysis"
+               data-entry-name="coverage-analysis"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">coverage-analysis</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Interprets supplied .NET coverage reports, including Cobertura
+        data, partial conditions, plateaus, and coverage-backed refactoring risk.</p>
+        <ul class="entry-uses">
+          <li>Reading a Cobertura report to find which DAO methods have no line coverage.</li>
+          <li>Explaining why coverage has plateaued across the receiving module.</li>
+          <li>Assessing whether a covered class is safe to refactor before touching it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An existing coverage report or an explicit request to collect coverage. It
+          analyzes supplied evidence.</dd>
+          <dt>Boundaries</dt>
+          <dd>Does not collect coverage on its own; for a named method's risk use
+          <code>crap-score</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the coverage-analysis skill on the Cobertura output for
+MTM_Receiving_Application.Tests. Report which Module_Receiving classes have zero
+line coverage, which branches are only partially covered, and where coverage has
+plateaued.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--crap-score"
+               data-entry-name="crap-score"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">crap-score</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Calculates CRAP risk for a named .NET method, class, or file
+        using coverage and complexity together.</p>
+        <ul class="entry-uses">
+          <li>Scoring one <code>Dao_ReceivingLine</code> method to decide which test to write
+          first.</li>
+          <li>Ranking the riskiest service methods in Module_Receiving for a targeted test
+          pass.</li>
+          <li>Justifying a refactor by showing the CRAP score drops after adding tests.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A named method, class, or file to score. It needs a coverage figure to be
+          meaningful.</dd>
+          <dt>Boundaries</dt>
+          <dd>Scores a single named target; project-wide coverage and CRAP belong to
+          <code>coverage-analysis</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the crap-score skill on the Service_ReceivingLine class in
+Module_Receiving/Services. Rank each public method by CRAP risk and tell me which
+method needs a test first.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--code-testing-agent"
+               data-entry-name="code-testing-agent"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-agent</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Dispatches test authoring, repair, and strengthening work to the
+        right specialist for this repo's xUnit and FluentAssertions conventions.</p>
+        <ul class="entry-uses">
+          <li>Routing a broad test-generation request to the specialist workers without doing
+          the work inline.</li>
+          <li>Coordinating researcher, planner, and implementer for a new module's test
+          coverage.</li>
+          <li>Ensuring every generated test follows
+          <code>MethodName_ShouldResult_WhenCondition</code> and
+          <code>TEST-</code> data rules.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test objective and the xUnit project. It orchestrates rather than writes
+          directly.</dd>
+          <dt>Boundaries</dt>
+          <dd>For one focused test change, use <code>code-testing</code> instead of the full
+          pipeline.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-agent skill to add unit tests for the
+Module_Receiving validators in MTM_Receiving_Application.Tests/Unit/Module_Receiving.
+Coordinate research, planning, and implementation, and finish with a green
+dotnet test run on the test project.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--code-testing-extensions"
+               data-entry-name="code-testing-extensions"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">code-testing-extensions</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Applies code-testing conventions to extension points such as
+        analyzers, source generators, or custom xUnit fixtures.</p>
+        <ul class="entry-uses">
+          <li>Testing a source generator or analyzer that ships with a module.</li>
+          <li>Adding a shared xUnit fixture that multiple test classes can reuse.</li>
+          <li>Wiring a custom attribute or trait convention into the test project.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An extension surface in or near the test project to cover.</dd>
+          <dt>Boundaries</dt>
+          <dd>Targets extension seams only; ordinary class tests belong to
+          <code>code-testing</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the code-testing-extensions skill to add tests for the custom xUnit
+fixture in MTM_Receiving_Application.Tests. Verify the fixture's IAsyncLifetime
+cleanup and the TEST- data prefix with FluentAssertions.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--test-analysis-extensions"
+               data-entry-name="test-analysis-extensions"
+               data-entry-kind="skill"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-analysis-extensions</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Extends the analysis skills to custom rules and project-specific
+        conventions in the test suite.</p>
+        <ul class="entry-uses">
+          <li>Adding a project-specific audit rule, such as every integration test using
+          <code>IAsyncLifetime</code>.</li>
+          <li>Checking that every test class lives under <code>Unit/</code> or
+          <code>Integration/</code> as the repo requires.</li>
+          <li>Encoding the <code>TEST-</code> data prefix as a lintable convention.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A convention to enforce and the test files it applies to. It reports, not
+          fixes.</dd>
+          <dt>Boundaries</dt>
+          <dd>Extends analysis only; the standard audits stay with the analysis skills in the
+          code quality chapter.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-analysis-extensions skill to audit
+MTM_Receiving_Application.Tests for these repo rules: every integration test uses
+IAsyncLifetime, every test class sits in Unit/ or Integration/, and all fixture data
+carries the TEST- prefix. Report violations with file and line.</code></pre>
+        </div>
+      </article>
+<h2>Documented in code quality</h2>
+      <p>These analysis skills are covered in the
+      <a href="code-quality.html">code quality chapter</a> because they audit tests rather than
+      produce them: <code>assertion-quality</code>, <code>grade-tests</code>, <code>test-anti-patterns</code>,
+      <code>test-smell-detection</code>, <code>test-tagging</code>, and <code>code-testing</code>.
+      The <code>test-quality-auditor</code> agent is also covered there, alongside the
+      <code>test-engineer</code> entry it supports.</p>
+
+      <article class="entry"
+               id="testing--test-engineer"
+               data-entry-name="test-engineer"
+               data-entry-kind="agent"
+               data-entry-source="dotnet-test@1.0.0">
+        <header>
+          <h3 class="entry-name">test-engineer</h3>
+          <span class="entry-source">dotnet-test@1.0.0</span>
+        </header>
+        <p class="entry-purpose">The primary test engineering agent that generates, repairs, runs,
+        and audits tests end-to-end, coordinating the specialist workers.</p>
+        <ul class="entry-uses">
+          <li>Running the full build-test-fix cycle for a module's xUnit tests without
+          hand-holding each step.</li>
+          <li>Coordinating researcher, planner, and implementer for a broad audit-and-fix pass
+          over the test project.</li>
+          <li>Driving a refactor of tests after a production DAO signature changes.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A concrete testing objective and the xUnit project wired into the solution.</dd>
+          <dt>Boundaries</dt>
+          <dd>Orchestrates end-to-end; for one focused fix prefer <code>code-testing</code>
+          directly.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the test-engineer agent to strengthen tests for Module_Receiving. Run
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj
+first to get the baseline, then add and repair tests, and finish with a green run.</code></pre>
+        </div>
+      </article>
+<article class="entry"
+               id="testing--java-junit"
+               data-entry-name="java-junit"
+               data-entry-kind="skill"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">java-junit</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Writes, reviews, and fixes Java unit tests with JUnit 5 and 6,
+        including AssertJ, Mockito, parameterized tests, and Maven or Gradle.</p>
+        <ul class="entry-uses">
+          <li>Adding JUnit 5 tests to a Java helper that appears inside the repo's tooling.</li>
+          <li>Reviewing an existing Maven or Gradle test module for mocking and assertion
+          rules.</li>
+          <li>Fixing a parameterized JUnit test that fails under Surefire or Failsafe.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A Java target in Maven or Gradle. It does not apply to C# code.</dd>
+          <dt>Boundaries</dt>
+          <dd>This repo is C#/.NET with xUnit and FluentAssertions, so the skill only applies
+          if a Java target appears; never route .NET test work through it.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the java-junit skill on the Java helper under the repo's tooling. Write
+JUnit 5 tests with AssertJ, fix any Surefire failures, and keep the change scoped to
+the Java module only.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--playwright-explore-website"
+               data-entry-name="playwright-explore-website"
+               data-entry-kind="skill"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">playwright-explore-website</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Explores a website using Playwright MCP to understand its pages,
+        flows, and controls before writing automated tests.</p>
+        <ul class="entry-uses">
+          <li>Walking the help or portal pages shipped with the app to map their navigation.</li>
+          <li>Capturing the accessibility snapshot of a web surface to plan a test.</li>
+          <li>Discovering the selectors and flows a Playwright test will target.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A reachable website and the Playwright MCP tools. It explores; it writes no
+          tests.</dd>
+          <dt>Boundaries</dt>
+          <dd>Exploration only; generating the test belongs to
+          <code>playwright-generate-test</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the playwright-explore-website skill on the reporting portal served from
+the app's docs. Map the main pages and their navigation, and capture the selectors
+needed for a test.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--playwright-generate-test"
+               data-entry-name="playwright-generate-test"
+               data-entry-kind="skill"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">playwright-generate-test</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Generates a Playwright test from a described scenario using
+        Playwright MCP.</p>
+        <ul class="entry-uses">
+          <li>Turning a manual QA scenario into a repeatable Playwright test script.</li>
+          <li>Generating a smoke test for a web flow the app's tooling depends on.</li>
+          <li>Producing a test that replays a recorded navigation path.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A scenario and the Playwright MCP tools. It generates test code.</dd>
+          <dt>Boundaries</dt>
+          <dd>Generates the test; running it belongs to <code>playwright-tester</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the playwright-generate-test skill to generate a Playwright test for
+the reporting portal's login and first report-open flow, using the selectors from
+the exploration pass.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--playwright-tester"
+               data-entry-name="playwright-tester"
+               data-entry-kind="agent"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">playwright-tester</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Runs Playwright tests in a dedicated testing mode and reports the
+        results.</p>
+        <ul class="entry-uses">
+          <li>Executing a generated Playwright smoke test against the web surface.</li>
+          <li>Running a Playwright suite and reporting pass or fail with screenshots.</li>
+          <li>Replaying a scenario to confirm a web-flow fix.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Generated Playwright tests and the Playwright MCP tools.</dd>
+          <dt>Boundaries</dt>
+          <dd>Runs tests only; it does not explore pages or generate new tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the playwright-tester agent to run the generated Playwright tests for
+the reporting portal and report each result, with a screenshot on any failure.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--tdd-red"
+               data-entry-name="tdd-red"
+               data-entry-kind="agent"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">tdd-red</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Writes failing tests first, describing the desired behavior from
+        issue or spec context before any implementation exists.</p>
+        <ul class="entry-uses">
+          <li>Capturing the acceptance criteria from a spec as failing xUnit tests before
+          coding.</li>
+          <li>Writing the validator tests that fail until the new FluentValidation rules are
+          added.</li>
+          <li>Driving a DAO method's contract into a failing test before the method exists.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An issue, spec, or requirement describing the behavior. It produces failing
+          tests.</dd>
+          <dt>Boundaries</dt>
+          <dd>Red phase only; making the tests pass belongs to <code>tdd-green</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the tdd-red agent to write failing xUnit tests for the new
+Module_Receiving validator described in the spec. Name methods
+MethodName_ShouldResult_WhenCondition, assert with FluentAssertions, and leave them
+red for the implementation pass.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--tdd-green"
+               data-entry-name="tdd-green"
+               data-entry-kind="agent"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">tdd-green</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Implements the minimal code that satisfies failing tests and
+        makes them pass without over-engineering.</p>
+        <ul class="entry-uses">
+          <li>Implementing a FluentValidation validator to turn the red tests green.</li>
+          <li>Adding the smallest DAO method body that satisfies its failing contract test.</li>
+          <li>Making an <code>IMediator</code>-only view model command pass without extra
+          features.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Failing tests from the red phase. It implements, minimally.</dd>
+          <dt>Boundaries</dt>
+          <dd>Green phase only; cleanup and design belong to <code>tdd-refactor</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the tdd-green agent to implement the minimal Module_Receiving validator
+that makes the red xUnit tests pass. Do not add rules beyond what the failing tests
+require, then run the test project to green.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="testing--tdd-refactor"
+               data-entry-name="tdd-refactor"
+               data-entry-kind="agent"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">tdd-refactor</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Improves code quality, security, and design while keeping the
+        tests green.</p>
+        <ul class="entry-uses">
+          <li>Extracting duplicated validator rules into a shared helper after the green
+          phase.</li>
+          <li>Removing a now-unused service method while its tests stay green.</li>
+          <li>Simplifying a DAO method's control flow without changing its tested behavior.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Green tests and working code to refine. It refactors, behavior is held by
+          tests.</dd>
+          <dt>Boundaries</dt>
+          <dd>Refactor only; adding new behavior returns the cycle to
+          <code>tdd-red</code>.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the tdd-refactor agent to simplify the Module_Receiving validator added
+in the green phase. Extract shared rules, keep all xUnit tests green, and run the
+test project to confirm nothing regressed.</code></pre>
+        </div>
+      </article>
+
+      <h2>Documented elsewhere</h2>
+      <p>Test <em>analysis</em> tools live in two other chapters so each tool has exactly one home.
+      Audits of existing tests are in the <a href="code-quality.html">code quality chapter</a>:
+      <code>assertion-quality</code>, <code>grade-tests</code>, <code>test-anti-patterns</code>,
+      <code>test-smell-detection</code>, <code>test-tagging</code>, <code>code-testing</code>, and
+      <code>test-quality-auditor</code>.</p>
+      <p>Gap analysis and testability seams are in the
+      <a href="context-planning.html">context, planning, and testability chapter</a>:
+      <code>find-untested-sources</code>, <code>detect-static-dependencies</code>,
+      <code>generate-testability-wrappers</code>, <code>migrate-static-to-wrapper</code>,
+      <code>testability-obstacle</code>, <code>test-value-evidence</code>,
+      <code>test-gap-analysis</code>, and the <code>code-testing-*</code> worker agents.</p>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Author one-off tests with
+      <code>code-testing</code>; run a full pipeline with <code>test-engineer</code>. Wrap
+      statics with <code>generate-testability-wrappers</code> or migrate them with
+      <code>testability-migration</code>. Drive new behavior test-first with
+      <code>tdd-red</code>, <code>tdd-green</code>, and <code>tdd-refactor</code>. For the
+      audit skills that grade and inspect existing tests, see the code quality chapter.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

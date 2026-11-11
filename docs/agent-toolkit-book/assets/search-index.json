@@ -1,0 +1,2692 @@
+[
+  {
+    "name": "speckit-companion",
+    "kind": "canvas",
+    "source": "speckit-companion@0.2.1",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion",
+    "description": "Renders a live board of every spec in flight: the specify→plan→tasks→implement pipeline, task progress, run history, and a next-step button that advances the active feature.",
+    "keywords": "speckit companion ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.specify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.specify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-specify",
+    "description": "Creates or updates a feature specification from a natural-language description, writing spec.md into a numbered specs/NNN-slug/ directory and validating it against a quality checklist.",
+    "keywords": "speckit specify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": true
+  },
+  {
+    "name": "speckit.plan",
+    "kind": "agent",
+    "source": ".github/agents/speckit.plan.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-plan",
+    "description": "Executes the planning workflow from the spec, producing an implementation plan with research and design artifacts.",
+    "keywords": "speckit plan ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": true
+  },
+  {
+    "name": "speckit.tasks",
+    "kind": "agent",
+    "source": ".github/agents/speckit.tasks.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-tasks",
+    "description": "Generates an actionable, dependency-ordered tasks.md for the feature from the spec and plan artifacts.",
+    "keywords": "speckit tasks ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": true
+  },
+  {
+    "name": "speckit.implement",
+    "kind": "agent",
+    "source": ".github/agents/speckit.implement.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-implement",
+    "description": "Executes the implementation plan by processing every task in tasks.md in dependency order until the feature is built.",
+    "keywords": "speckit implement ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": true
+  },
+  {
+    "name": "speckit.converge",
+    "kind": "agent",
+    "source": ".github/agents/speckit.converge.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-converge",
+    "description": "Assesses the codebase against the spec, plan, and tasks, then appends any remaining unbuilt work as a new Convergence phase in tasks.md.",
+    "keywords": "speckit converge ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.analyze",
+    "kind": "agent",
+    "source": ".github/agents/speckit.analyze.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-analyze",
+    "description": "Performs a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.",
+    "keywords": "speckit analyze ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.checklist",
+    "kind": "agent",
+    "source": ".github/agents/speckit.checklist.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-checklist",
+    "description": "Generates a custom checklist for the current feature that acts as unit tests for the requirements writing, not for the finished software.",
+    "keywords": "speckit checklist ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.clarify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.clarify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-clarify",
+    "description": "Identifies underspecified areas in the current spec by asking up to five targeted questions and encoding the answers back into spec.md.",
+    "keywords": "speckit clarify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.constitution",
+    "kind": "agent",
+    "source": ".github/agents/speckit.constitution.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-constitution",
+    "description": "Creates or updates the project constitution from interactive or provided principle inputs, storing the rules every later pipeline step must obey.",
+    "keywords": "speckit constitution ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.taskstoissues",
+    "kind": "agent",
+    "source": ".github/agents/speckit.taskstoissues.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-taskstoissues",
+    "description": "Converts the tasks in tasks.md into actionable, dependency-ordered GitHub issues for the feature.",
+    "keywords": "speckit taskstoissues ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.module-specify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.module-specify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-module-specify",
+    "description": "Generates a feature specification for modernizing or creating a module based on module-agent workflow analysis.",
+    "keywords": "speckit module specify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.intake",
+    "kind": "agent",
+    "source": ".github/agents/speckit.assess.intake.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-assess-intake",
+    "description": "Captures and normalizes a raw idea, text, URL, ticket, or codebase pointer into a single intake note at .specify/assessments/<slug>/intake.md.",
+    "keywords": "speckit assess intake ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.research",
+    "kind": "agent",
+    "source": ".github/agents/speckit.assess.research.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-assess-research",
+    "description": "Gathers evidence, users, market, prior art, and data to support or challenge an idea, recording it at .specify/assessments/<slug>/research.md.",
+    "keywords": "speckit assess research ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.define",
+    "kind": "agent",
+    "source": ".github/agents/speckit.assess.define.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-assess-define",
+    "description": "Turns intake and research into a crisp problem definition at .specify/assessments/<slug>/problem.md: who is affected, what hurts, goals, non-goals, and success metrics.",
+    "keywords": "speckit assess define ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.shape",
+    "kind": "agent",
+    "source": ".github/agents/speckit.assess.shape.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-assess-shape",
+    "description": "Shapes a concept from the defined problem at .specify/assessments/<slug>/concept.md: solution options, scope, appetite, and trade-offs, without implementation design.",
+    "keywords": "speckit assess shape ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.decide",
+    "kind": "agent",
+    "source": ".github/agents/speckit.assess.decide.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-assess-decide",
+    "description": "Applies a go, needs-clarification, or kill gate to an assessed idea and hands survivors into spec-driven development.",
+    "keywords": "speckit assess decide ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.assess",
+    "kind": "agent",
+    "source": ".github/agents/speckit.bug.assess.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-bug-assess",
+    "description": "Assesses a bug report, pasted text or URL, against the codebase and produces an assessment with possible remediation at .specify/bugs/<slug>/assessment.md.",
+    "keywords": "speckit bug assess ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.fix",
+    "kind": "agent",
+    "source": ".github/agents/speckit.bug.fix.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-bug-fix",
+    "description": "Applies the remediation from a bug assessment and records what changed in a fix report at .specify/bugs/<slug>/fix.md.",
+    "keywords": "speckit bug fix ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.test",
+    "kind": "agent",
+    "source": ".github/agents/speckit.bug.test.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-bug-test",
+    "description": "Validates that a previously fixed bug is resolved and records a verification report at .specify/bugs/<slug>/test.md.",
+    "keywords": "speckit bug test ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-converge",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.after-converge.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-after-converge",
+    "description": "Records the converge finish in .spec-context.json so the companion board shows the step as complete.",
+    "keywords": "speckit companion after converge ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-implement",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.after-implement.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-after-implement",
+    "description": "Records implement progress from tasks.md into .spec-context.json for the companion board.",
+    "keywords": "speckit companion after implement ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-plan",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.after-plan.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-after-plan",
+    "description": "Records the plan finish in .spec-context.json for the companion board.",
+    "keywords": "speckit companion after plan ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-specify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.after-specify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-after-specify",
+    "description": "Captures the current spec-kit step into .spec-context.json after specify finishes.",
+    "keywords": "speckit companion after specify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-tasks",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.after-tasks.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-after-tasks",
+    "description": "Records the tasks finish in .spec-context.json for the companion board.",
+    "keywords": "speckit companion after tasks ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.before-converge",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.before-converge.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-before-converge",
+    "description": "Records the converge start in .spec-context.json for the companion board.",
+    "keywords": "speckit companion before converge ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.before-step",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.before-step.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-before-step",
+    "description": "Captures a spec-kit step's start into .spec-context.json for the companion board.",
+    "keywords": "speckit companion before step ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.on-prompt",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.on-prompt.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-on-prompt",
+    "description": "Records a step's start from spec-kit's prompt-submitted event into .spec-context.json.",
+    "keywords": "speckit companion on prompt ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.on-stop",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.on-stop.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-on-stop",
+    "description": "Records a step's finish from spec-kit's turn-ended event into .spec-context.json.",
+    "keywords": "speckit companion on stop ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.mark-complete",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.mark-complete.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-mark-complete",
+    "description": "Marks the active spec completed by hand, writing status: completed into its state.",
+    "keywords": "speckit companion mark complete ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.auto",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.auto.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-auto",
+    "description": "Runs the whole pipeline hands-off, specify, plan, tasks, implement, converge, with no pauses for approval.",
+    "keywords": "speckit companion auto ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": true
+  },
+  {
+    "name": "speckit.companion.specify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.specify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-specify",
+    "description": "Companion specify: creates a feature spec with prioritized user stories, writing state to .spec-context.json as it goes.",
+    "keywords": "speckit companion specify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.plan",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.plan.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-plan",
+    "description": "Companion plan: produces an implementation plan with research and design artifacts, tracking the step in companion state.",
+    "keywords": "speckit companion plan ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.tasks",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.tasks.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-tasks",
+    "description": "Companion tasks: generates a user-story phased task list from the plan, tracking the step in companion state.",
+    "keywords": "speckit companion tasks ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.implement",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.implement.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-implement",
+    "description": "Companion implement: executes tasks.md in dependency order, then runs converge, tracking both in companion state.",
+    "keywords": "speckit companion implement ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.resume",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.resume.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-resume",
+    "description": "Continues the spec-driven pipeline from the last completed step, carrying recorded decisions into scope and dispatching the next command.",
+    "keywords": "speckit companion resume ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.status",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.status.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-status",
+    "description": "Reports where the active spec stands, current step, status, recorded decisions, and the next action, read from .spec-context.json.",
+    "keywords": "speckit companion status ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.classify",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.classify.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-classify",
+    "description": "Classifies the change size as simple, normal, or oversized so the companion workflow can right-size the pipeline.",
+    "keywords": "speckit companion classify ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.doctor",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.doctor.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-doctor",
+    "description": "Reports on a spec's run health: unfinished steps, unjournaled tasks, step bleed, drift, a step that closed without verifying or without its promised file, and why completion did not land.",
+    "keywords": "speckit companion doctor ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.append",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.append.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-append",
+    "description": "Appends a new capability to the active spec without regenerating its task list, preserving every completed task id and result.",
+    "keywords": "speckit companion append ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-adopt",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-adopt.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-adopt",
+    "description": "Brownfield adoption wizard: drafts living specs, central or colocated, for the code areas you name and registers them as draft, opt-in.",
+    "keywords": "speckit companion living adopt ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-coverage",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-coverage.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-coverage",
+    "description": "Reports living-spec requirement to test coverage: per requirement, whether its coverage tier maps an xUnit test, read-only.",
+    "keywords": "speckit companion living coverage ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-drift",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-drift.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-drift",
+    "description": "Reports living-spec drift: per capability, the source files changed since the spec was last committed, read-only.",
+    "keywords": "speckit companion living drift ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-move",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-move.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-move",
+    "description": "Moves a living spec between central and colocated storage, file, tiers, and registry together, reversible.",
+    "keywords": "speckit companion living move ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-show",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-show.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-show",
+    "description": "Prints one slice of a living spec: a capability's requirement headings, one requirement in full, or the requirements that describe one file.",
+    "keywords": "speckit companion living show ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-sync",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-sync.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-sync",
+    "description": "Syncs living specs from your current changes: groups working-tree changes, uncommitted included, by capability and updates every affected spec in one pass.",
+    "keywords": "speckit companion living sync ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-validate",
+    "kind": "agent",
+    "source": ".github/agents/speckit.companion.living-validate.agent.md",
+    "chapter": "spec-driven-development",
+    "anchor": "spec-driven-development--speckit-companion-living-validate",
+    "description": "Checks the shape of living specs and a feature spec's deltas: a requirement with no scenario, a scenario missing WHEN or THEN, a duplicate heading, or a delta pointing at nothing.",
+    "keywords": "speckit companion living validate ; spec ; specs ; specify ; plan ; tasks ; implement ; pipeline ; workflow ; companion ; drift ; living spec ; assess ; bug ; constitution ; checklist ; clarify ; analyze",
+    "primary": false
+  },
+  {
+    "name": "csharp-expert",
+    "kind": "skill",
+    "source": "dotnet@0.2.5",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-expert",
+    "description": "Routes a C#/.NET request to the narrowest installed specialist skill, or answers C# semantics directly when no narrower specialist exists.",
+    "keywords": "csharp expert ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": true
+  },
+  {
+    "name": "csharp-refactoring",
+    "kind": "skill",
+    "source": "dotnet@0.2.5",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-refactoring",
+    "description": "Performs behavior-preserving refactors — renames, method extraction, inlining, and nullability changes — while keeping any behavior-changing part separate.",
+    "keywords": "csharp refactoring ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": true
+  },
+  {
+    "name": "msbuild",
+    "kind": "skill",
+    "source": "dotnet@0.2.5",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--msbuild",
+    "description": "Diagnoses MSBuild and .csproj issues — failing restore or build, slow evaluation, custom targets, and .binlog replay.",
+    "keywords": "msbuild ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": true
+  },
+  {
+    "name": "setup-local-sdk",
+    "kind": "skill",
+    "source": "dotnet@0.2.5",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--setup-local-sdk",
+    "description": "Installs a .NET SDK locally for preview or pinned-version testing without changing the machine-wide installation.",
+    "keywords": "setup local sdk ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "csharp-async",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-async",
+    "description": "Gives async/await best practices for .NET code, including fire-and-forget risks, ConfigureAwait, and cancellation.",
+    "keywords": "csharp async ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "dotnet-best-practices",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--dotnet-best-practices",
+    "description": "Checks that .NET/C# code meets best practices for the solution or project.",
+    "keywords": "dotnet best practices ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": true
+  },
+  {
+    "name": "dotnet-upgrade",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--dotnet-upgrade",
+    "description": "Provides a structured workflow for upgrading the .NET framework version across a solution.",
+    "keywords": "dotnet upgrade ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "resx-source-generator-migration",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--resx-source-generator-migration",
+    "description": "Migrates .resx resources to source generators so string lookups become strongly typed.",
+    "keywords": "resx source generator migration ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "aspnet-minimal-api-openapi",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--aspnet-minimal-api-openapi",
+    "description": "Creates ASP.NET Core minimal API endpoints with correct OpenAPI metadata.",
+    "keywords": "aspnet minimal api openapi ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "csharp-mstest",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-mstest",
+    "description": "Gives MSTest 3.x/4.x patterns and modern assertion APIs.",
+    "keywords": "csharp mstest ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "csharp-nunit",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0 + testing-automation@1.0.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-nunit",
+    "description": "Gives NUnit patterns and data-driven tests.",
+    "keywords": "csharp nunit ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "csharp-tunit",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-tunit",
+    "description": "Gives TUnit patterns and data-driven tests.",
+    "keywords": "csharp tunit ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "csharp-xunit",
+    "kind": "skill",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--csharp-xunit",
+    "description": "Gives xUnit patterns and data-driven tests.",
+    "keywords": "csharp xunit ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "expert-dotnet-software-engineer",
+    "kind": "agent",
+    "source": "csharp-dotnet-development@1.2.0",
+    "chapter": "dotnet-development",
+    "anchor": "dotnet-development--expert-dotnet-software-engineer",
+    "description": "Provides expert .NET software engineering guidance using modern design patterns.",
+    "keywords": "expert dotnet software engineer ; csharp ; c# ; dotnet ; .net ; refactor ; msbuild ; build ; sdk ; async ; upgrade ; resx ; language server ; lsp ; diagnostics",
+    "primary": false
+  },
+  {
+    "name": "writing-mstest-tests",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--writing-mstest-tests",
+    "description": "Corrects MSTest assertion, attribute, and lifecycle usage in supplied test code rather than authoring new cases.",
+    "keywords": "writing mstest tests ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": true
+  },
+  {
+    "name": "run-tests",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--run-tests",
+    "description": "Runs, filters, or troubleshoots dotnet test for this repo, detecting the test platform and framework first.",
+    "keywords": "run tests ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": true
+  },
+  {
+    "name": "filter-syntax",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--filter-syntax",
+    "description": "Selects the correct filter flag and syntax for the detected test platform, from --filter to --filter-class, --filter-trait, and --treenode-filter.",
+    "keywords": "filter syntax ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "platform-detection",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--platform-detection",
+    "description": "Identifies a .NET project's test platform, framework, command mode, and SDK-style versus classic project system.",
+    "keywords": "platform detection ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "mtp-hot-reload",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--mtp-hot-reload",
+    "description": "Sets up or recovers a long-lived Microsoft Testing Platform console host for an edit-and-rerun loop.",
+    "keywords": "mtp hot reload ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "scaffold-dotnet-test-project",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--scaffold-dotnet-test-project",
+    "description": "Creates, registers, or repairs an xUnit test project so it is discovered by the solution and CI.",
+    "keywords": "scaffold dotnet test project ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "coverage-analysis",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--coverage-analysis",
+    "description": "Interprets supplied .NET coverage reports, including Cobertura data, partial conditions, plateaus, and coverage-backed refactoring risk.",
+    "keywords": "coverage analysis ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "crap-score",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--crap-score",
+    "description": "Calculates CRAP risk for a named .NET method, class, or file using coverage and complexity together.",
+    "keywords": "crap score ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "code-testing-agent",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--code-testing-agent",
+    "description": "Dispatches test authoring, repair, and strengthening work to the right specialist for this repo's xUnit and FluentAssertions conventions.",
+    "keywords": "code testing agent ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "code-testing-extensions",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--code-testing-extensions",
+    "description": "Applies code-testing conventions to extension points such as analyzers, source generators, or custom xUnit fixtures.",
+    "keywords": "code testing extensions ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "test-analysis-extensions",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--test-analysis-extensions",
+    "description": "Extends the analysis skills to custom rules and project-specific conventions in the test suite.",
+    "keywords": "test analysis extensions ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "test-engineer",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--test-engineer",
+    "description": "The primary test engineering agent that generates, repairs, runs, and audits tests end-to-end, coordinating the specialist workers.",
+    "keywords": "test engineer ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": true
+  },
+  {
+    "name": "java-junit",
+    "kind": "skill",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--java-junit",
+    "description": "Writes, reviews, and fixes Java unit tests with JUnit 5 and 6, including AssertJ, Mockito, parameterized tests, and Maven or Gradle.",
+    "keywords": "java junit ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "playwright-explore-website",
+    "kind": "skill",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--playwright-explore-website",
+    "description": "Explores a website using Playwright MCP to understand its pages, flows, and controls before writing automated tests.",
+    "keywords": "playwright explore website ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "playwright-generate-test",
+    "kind": "skill",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--playwright-generate-test",
+    "description": "Generates a Playwright test from a described scenario using Playwright MCP.",
+    "keywords": "playwright generate test ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "playwright-tester",
+    "kind": "agent",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--playwright-tester",
+    "description": "Runs Playwright tests in a dedicated testing mode and reports the results.",
+    "keywords": "playwright tester ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "tdd-red",
+    "kind": "agent",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--tdd-red",
+    "description": "Writes failing tests first, describing the desired behavior from issue or spec context before any implementation exists.",
+    "keywords": "tdd red ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "tdd-green",
+    "kind": "agent",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--tdd-green",
+    "description": "Implements the minimal code that satisfies failing tests and makes them pass without over-engineering.",
+    "keywords": "tdd green ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "tdd-refactor",
+    "kind": "agent",
+    "source": "testing-automation@1.0.0",
+    "chapter": "testing",
+    "anchor": "testing--tdd-refactor",
+    "description": "Improves code quality, security, and design while keeping the tests green.",
+    "keywords": "tdd refactor ; testing ; test ; tests ; unit ; integration ; xunit ; assert ; assertion ; coverage ; runner ; filter ; trx ; tdd ; playwright ; mstest ; nunit ; tunit ; fixture",
+    "primary": false
+  },
+  {
+    "name": "winui-code-review",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-code-review",
+    "description": "Reviews WinUI 3 XAML and bindings against this repo's rules: x:Bind only, no runtime {Binding}, MVVM layering, and no business logic in code-behind.",
+    "keywords": "winui code review ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": true
+  },
+  {
+    "name": "winui-design",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-design",
+    "description": "Gives WinUI 3 design and layout guidance — control choice, spacing, and Fluent styling — for views in this Windows App SDK 2.4.0 app.",
+    "keywords": "winui design ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": true
+  },
+  {
+    "name": "winui-dev-workflow",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-dev-workflow",
+    "description": "Covers the everyday WinUI 3 build/run/debug loop and analyzer setup for a net10.0-windows10.0.22621.0 Windows App SDK 2.4.0 project.",
+    "keywords": "winui dev workflow ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": true
+  },
+  {
+    "name": "winui-wpf-migration",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-wpf-migration",
+    "description": "Guides conversion of WPF apps and habits to WinUI 3, explaining where x:Bind, the Window type, and the App model differ.",
+    "keywords": "winui wpf migration ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-find-api",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-find-api",
+    "description": "Looks up the correct Windows API — Windows App SDK, Win32, or UWP — for a task in this app's net10.0-windows10.0.22621.0 target.",
+    "keywords": "winapp find api ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-find-ui",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-find-ui",
+    "description": "Produces working WinUI 3 XAML for a control, ready to drop into this app's x:Bind-only views.",
+    "keywords": "winapp find ui ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": true
+  },
+  {
+    "name": "winapp-frameworks",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-frameworks",
+    "description": "Advises on Windows app framework and target selection — WinUI 3 versus WPF, UWP, or Win32, and packaged versus unpackaged.",
+    "keywords": "winapp frameworks ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-sandbox",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-sandbox",
+    "description": "Uses Windows Sandbox to run and test this app in an isolated environment without touching the host machine.",
+    "keywords": "winapp sandbox ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-troubleshoot",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-troubleshoot",
+    "description": "Diagnoses Windows app runtime and launch problems — missing Windows App SDK runtime, XAML load failures, and packaging issues.",
+    "keywords": "winapp troubleshoot ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-maui",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-maui",
+    "description": "Guidance for .NET MAUI on Windows — which does not apply to this repo's WinUI 3 app.",
+    "keywords": "winapp maui ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winui-devtools",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-devtools",
+    "description": "Inspects WinUI XAML internals at runtime — the live visual tree, bindings, and property values.",
+    "keywords": "winui devtools ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winui-dev",
+    "kind": "agent",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-dev",
+    "description": "The WinUI 3 development agent — builds, modifies, or fixes WinUI 3 and Windows App SDK features in this repo.",
+    "keywords": "winui dev ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp",
+    "kind": "agent",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp",
+    "description": "The WinApp CLI agent for Windows app packaging, identity, signing, and UI automation.",
+    "keywords": "winapp ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winui-ui-testing",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winui-ui-testing",
+    "description": "The winapp ui harness for automated UI tests of this WinUI 3 app.",
+    "keywords": "winui ui testing ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-ui-automation",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-ui-automation",
+    "description": "Drives a running Windows app through UI Automation with winapp ui: find elements, click, type, read values, wait for state, and take screenshots across WinUI, WPF, WinForms, Win32, and Electron.",
+    "keywords": "winapp ui automation ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-performance",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "winui-platform",
+    "anchor": "winui-platform--winapp-performance",
+    "description": "Measures and diagnoses Windows app startup and runtime performance, including launch time, working set, and first-frame behavior.",
+    "keywords": "winapp performance ; winui ; xaml ; binding ; xbind ; windows ; desktop ; app ; control ; design ; layout ; ui ; automation ; ui automation ; sandbox ; api ; devtools ; maui ; performance ; lookup",
+    "primary": false
+  },
+  {
+    "name": "winapp-package",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winapp-package",
+    "description": "Builds an MSIX installer from an existing build output or a project file, optionally signing it as part of the pack.",
+    "keywords": "winapp package ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": true
+  },
+  {
+    "name": "winapp-signing",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winapp-signing",
+    "description": "Signs an existing MSIX or executable and manages the certificates and PFX files used for signing.",
+    "keywords": "winapp signing ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": true
+  },
+  {
+    "name": "winapp-identity",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winapp-identity",
+    "description": "Configures the package identity that Windows APIs need for push notifications, background tasks, share target, and startup task.",
+    "keywords": "winapp identity ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": false
+  },
+  {
+    "name": "winapp-manifest",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winapp-manifest",
+    "description": "Authors and edits appxmanifest.xml: capabilities, declarations, visual assets, and dependencies.",
+    "keywords": "winapp manifest ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": false
+  },
+  {
+    "name": "winapp-setup",
+    "kind": "skill",
+    "source": "winappcli@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winapp-setup",
+    "description": "Runs winapp init or winapp restore to add Windows SDK and Windows App SDK support, or to restore SDKs pinned in the project.",
+    "keywords": "winapp setup ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": false
+  },
+  {
+    "name": "winui-packaging",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winui-packaging",
+    "description": "Packages, signs, and prepares a WinUI 3 app for Store publishing, including Native AOT and self-contained deployment.",
+    "keywords": "winui packaging ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": true
+  },
+  {
+    "name": "winui-setup",
+    "kind": "skill",
+    "source": "winui@0.8.0",
+    "chapter": "packaging-signing",
+    "anchor": "packaging-signing--winui-setup",
+    "description": "Installs and verifies WinUI 3 prerequisites: .NET SDK, WinApp CLI 0.7+, and Developer Mode.",
+    "keywords": "winui setup ; packaging ; package ; msix ; installer ; signing ; sign ; certificate ; pfx ; manifest ; appxmanifest ; identity ; store ; distribution ; setup ; prerequisite ; developer mode",
+    "primary": true
+  },
+  {
+    "name": "sql-code-review",
+    "kind": "skill",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--sql-code-review",
+    "description": "Universal SQL code review covering SQL injection, access control, naming standards, and anti-patterns across MySQL, SQL Server, and other dialects.",
+    "keywords": "sql code review ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": true
+  },
+  {
+    "name": "sql-optimization",
+    "kind": "skill",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--sql-optimization",
+    "description": "Query tuning, indexing strategy, execution-plan reading, and pagination guidance for slow or large SQL.",
+    "keywords": "sql optimization ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": true
+  },
+  {
+    "name": "postgresql-code-review",
+    "kind": "skill",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--postgresql-code-review",
+    "description": "PostgreSQL-specific code review covering JSONB, arrays, custom types, row-level security, and PostgreSQL-only anti-patterns.",
+    "keywords": "postgresql code review ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": false
+  },
+  {
+    "name": "postgresql-optimization",
+    "kind": "skill",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--postgresql-optimization",
+    "description": "PostgreSQL-specific performance work: indexing, query planning, partitioning, and PostgreSQL-only tuning features.",
+    "keywords": "postgresql optimization ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": false
+  },
+  {
+    "name": "ms-sql-dba",
+    "kind": "agent",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--ms-sql-dba",
+    "description": "Microsoft SQL Server DBA agent for T-SQL queries, administration, and investigation against the Infor Visual MTMFG database.",
+    "keywords": "ms sql dba ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": true
+  },
+  {
+    "name": "postgresql-dba",
+    "kind": "agent",
+    "source": "database-data-management@1.0.0",
+    "chapter": "database-sql",
+    "anchor": "database-sql--postgresql-dba",
+    "description": "PostgreSQL DBA agent for administration, schema design, and query work against a PostgreSQL database.",
+    "keywords": "postgresql dba ; database ; sql ; query ; stored procedure ; procedure ; mysql ; sql server ; index ; optimization ; dba ; schema ; erp ; infor ; transaction",
+    "primary": false
+  },
+  {
+    "name": "assertion-quality",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--assertion-quality",
+    "description": "Audits assertion depth, variety, and false confidence in existing tests, flagging always-true, self-referential, and presence-only checks.",
+    "keywords": "assertion quality ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": true
+  },
+  {
+    "name": "grade-tests",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--grade-tests",
+    "description": "Grades curated individual tests A through F for readiness and quality against this repo's naming, fixture, and assertion conventions.",
+    "keywords": "grade tests ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": false
+  },
+  {
+    "name": "test-anti-patterns",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--test-anti-patterns",
+    "description": "Severity-ranked audit of tests that verify nothing, tautological assertions, swallowed or broad exceptions, and flaky or order-dependent behavior.",
+    "keywords": "test anti patterns ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": true
+  },
+  {
+    "name": "test-smell-detection",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--test-smell-detection",
+    "description": "Audits tests using the formal testsmells.org 19-smell academic taxonomy, with named categories and severity ranking.",
+    "keywords": "test smell detection ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": false
+  },
+  {
+    "name": "test-tagging",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--test-tagging",
+    "description": "Classifies existing tests by standard traits and reports the distribution of happy-path versus error-path coverage.",
+    "keywords": "test tagging ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": false
+  },
+  {
+    "name": "code-testing",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--code-testing",
+    "description": "Writes, repairs, or strengthens tests for existing code in xUnit with FluentAssertions, following this repo's naming, fixture, and test-data rules.",
+    "keywords": "code testing ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": true
+  },
+  {
+    "name": "test-quality-auditor",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "code-quality",
+    "anchor": "code-quality--test-quality-auditor",
+    "description": "The internal audit agent behind the assertion-quality, test-anti-patterns, and test-smell-detection skills, running combined multi-dimensional health checks.",
+    "keywords": "test quality auditor ; quality ; review ; assertion ; antipattern ; anti-pattern ; smell ; tagging ; grade ; audit ; refactor ; lint",
+    "primary": false
+  },
+  {
+    "name": "github-security",
+    "kind": "canvas",
+    "source": "github-security@0.2.2",
+    "chapter": "security-supply-chain",
+    "anchor": "security-supply-chain--github-security",
+    "description": "Reviews the session's own changes for vulnerabilities and can load or fix GitHub code-scanning (GHAS) alerts, exposing five tools: getExtensionState, loadLocalFindings, fetchGhasFindings, runFindingWorkflow, and reportFindingStatus.",
+    "keywords": "github security ; security ; vulnerability ; secret ; scanning ; finding ; ghas ; dependabot ; dependency ; supply chain ; prompt safety",
+    "primary": true
+  },
+  {
+    "name": "dependabot-triage",
+    "kind": "canvas",
+    "source": "dependabot-triage@1.0.0",
+    "chapter": "security-supply-chain",
+    "anchor": "security-supply-chain--dependabot-triage",
+    "description": "Triages open Dependabot pull requests: checks, mergeability, related security alerts, and overlap detection, with sign-off, merge, and Dependabot commands.",
+    "keywords": "dependabot triage ; security ; vulnerability ; secret ; scanning ; finding ; ghas ; dependabot ; dependency ; supply chain ; prompt safety",
+    "primary": true
+  },
+  {
+    "name": "ai-prompt-engineering-safety-review",
+    "kind": "skill",
+    "source": "testing-automation@1.0.0",
+    "chapter": "security-supply-chain",
+    "anchor": "security-supply-chain--ai-prompt-engineering-safety-review",
+    "description": "Analyses a prompt for safety, bias, security vulnerability, and effectiveness, returning improvement recommendations.",
+    "keywords": "ai prompt engineering safety review ; security ; vulnerability ; secret ; scanning ; finding ; ghas ; dependabot ; dependency ; supply chain ; prompt safety",
+    "primary": false
+  },
+  {
+    "name": "project-documenter",
+    "kind": "agent",
+    "source": "project-documenter@1.0.0",
+    "chapter": "documentation-diagrams",
+    "anchor": "documentation-diagrams--project-documenter",
+    "description": "Generates professional project documentation as Markdown, draw.io diagrams, exported PNGs, and a formatted Word document, after first discovering the project's actual technology stack and code structure.",
+    "keywords": "project documenter ; documentation ; docs ; diagram ; drawio ; word ; docx ; markdown ; architecture ; png ; export ; documenter",
+    "primary": true
+  },
+  {
+    "name": "drawio",
+    "kind": "skill",
+    "source": "project-documenter@1.0.0",
+    "chapter": "documentation-diagrams",
+    "anchor": "documentation-diagrams--drawio",
+    "description": "Creates .drawio diagram files and exports them to PNG, SVG, or PDF with the diagram XML embedded in the output so the file stays editable.",
+    "keywords": "drawio ; documentation ; docs ; diagram ; drawio ; word ; docx ; markdown ; architecture ; png ; export ; documenter",
+    "primary": true
+  },
+  {
+    "name": "md-to-docx",
+    "kind": "skill",
+    "source": "project-documenter@1.0.0",
+    "chapter": "documentation-diagrams",
+    "anchor": "documentation-diagrams--md-to-docx",
+    "description": "Converts Markdown files into a professionally formatted Word document with embedded PNG images, using pure JavaScript and no external tools.",
+    "keywords": "md to docx ; documentation ; docs ; diagram ; drawio ; word ; docx ; markdown ; architecture ; png ; export ; documenter",
+    "primary": true
+  },
+  {
+    "name": "diagram-viewer",
+    "kind": "canvas",
+    "source": "diagram-viewer@1.0.2",
+    "chapter": "documentation-diagrams",
+    "anchor": "documentation-diagrams--diagram-viewer",
+    "description": "Renders an interactive diagram beside the chat where nodes can be clicked to drill down, and the agent explains the selected node.",
+    "keywords": "diagram viewer ; documentation ; docs ; diagram ; drawio ; word ; docx ; markdown ; architecture ; png ; export ; documenter",
+    "primary": false
+  },
+  {
+    "name": "context-map",
+    "kind": "skill",
+    "source": "context-engineering@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--context-map",
+    "description": "Generates a map of every file relevant to a task — files to modify, dependencies, tests, and reference patterns — before any code is changed.",
+    "keywords": "context map ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": true
+  },
+  {
+    "name": "refactor-plan",
+    "kind": "skill",
+    "source": "context-engineering@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--refactor-plan",
+    "description": "Produces a phased, sequenced plan — types first, then implementations, callers, tests, cleanup, with verification and rollback steps — and waits for confirmation before editing.",
+    "keywords": "refactor plan ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": true
+  },
+  {
+    "name": "what-context-needed",
+    "kind": "skill",
+    "source": "context-engineering@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--what-context-needed",
+    "description": "Before answering a question, asks Copilot to list exactly which files it must see, which would help, and what it already has, so context is never fetched blindly.",
+    "keywords": "what context needed ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "context-architect",
+    "kind": "agent",
+    "source": "context-engineering@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--context-architect",
+    "description": "An agent that maps a multi-file change's context, traces its dependencies, finds conventions, and proposes a sequence before it edits anything.",
+    "keywords": "context architect ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "find-untested-sources",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--find-untested-sources",
+    "description": "Pairs source files to their tests and lists source files or modules that have no corresponding test, using Roslyn for C#.",
+    "keywords": "find untested sources ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": true
+  },
+  {
+    "name": "detect-static-dependencies",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--detect-static-dependencies",
+    "description": "Locates hard-to-test ambient C# calls — DateTime.Now, File, Directory, Environment, HttpClient, Console, Process — across the codebase.",
+    "keywords": "detect static dependencies ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "generate-testability-wrappers",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--generate-testability-wrappers",
+    "description": "Adds the smallest injectable seam — a TimeProvider, IFileSystem, or Environment/Console/Process wrapper — when C# code calls an ambient static and no seam exists.",
+    "keywords": "generate testability wrappers ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "migrate-static-to-wrapper",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--migrate-static-to-wrapper",
+    "description": "Replaces existing C# static calls with a named wrapper or built-in abstraction across scoped files, including constructor injection and DI wiring.",
+    "keywords": "migrate static to wrapper ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "testability-obstacle",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--testability-obstacle",
+    "description": "Adds the smallest production seam for one bounded behavior that needs deterministic tests — DateTime, Task.Delay, File, Environment, Guid, or Random — with no real I/O.",
+    "keywords": "testability obstacle ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "test-value-evidence",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--test-value-evidence",
+    "description": "Assesses tests for an identified change, feature, PR, or commit to prove whether pre-fix and missing behavior is actually detected.",
+    "keywords": "test value evidence ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "test-gap-analysis",
+    "kind": "skill",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--test-gap-analysis",
+    "description": "Applies pseudo-mutation to find caller-visible production changes that existing tests would not catch, without running a mutation tool.",
+    "keywords": "test gap analysis ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": true
+  },
+  {
+    "name": "code-testing-researcher",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-researcher",
+    "description": "Analyzes a codebase to understand structure, testing patterns, and testability before any tests are written.",
+    "keywords": "code testing researcher ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-planner",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-planner",
+    "description": "Turns research findings into a phased, prioritized test implementation plan.",
+    "keywords": "code testing planner ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-implementer",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-implementer",
+    "description": "Implements a single phase of the test plan, writing test files and verifying they compile and pass.",
+    "keywords": "code testing implementer ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-builder",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-builder",
+    "description": "Runs build or compile commands for any language and reports results.",
+    "keywords": "code testing builder ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-tester",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-tester",
+    "description": "Runs test commands for any language and reports pass or fail.",
+    "keywords": "code testing tester ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-fixer",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-fixer",
+    "description": "Fixes compilation errors in source or test files.",
+    "keywords": "code testing fixer ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "code-testing-linter",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--code-testing-linter",
+    "description": "Runs code formatting and linting for any language.",
+    "keywords": "code testing linter ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "testability-migration",
+    "kind": "agent",
+    "source": "dotnet-test@1.0.0",
+    "chapter": "context-planning",
+    "anchor": "context-planning--testability-migration",
+    "description": "An internal specialist for the test-engineer that inventories static dependencies and migrates named seams through selection, call-site migration, wiring, and deterministic tests.",
+    "keywords": "testability migration ; context ; planning ; map ; refactor ; testability ; seam ; wrapper ; static dependency ; gap ; mutation ; crap ; coverage ; platform ; hot reload ; scaffold ; migration ; migrate ; untested ; blind spot",
+    "primary": false
+  },
+  {
+    "name": "serena",
+    "kind": "mcp",
+    "source": ".vscode/mcp.json (project scope)",
+    "chapter": "mcp-and-environment",
+    "anchor": "mcp-and-environment--serena",
+    "description": "Provides symbol-level navigation and editing backed by a Roslyn language server, returning one definition instead of a whole file.",
+    "keywords": "serena ; mcp ; server ; serena ; playwright ; learn ; hook ; environment ; language server ; tooling ; setup",
+    "primary": true
+  },
+  {
+    "name": "playwright",
+    "kind": "mcp",
+    "source": "~/.copilot/mcp-config.json (user scope)",
+    "chapter": "mcp-and-environment",
+    "anchor": "mcp-and-environment--playwright",
+    "description": "Drives a web browser through Playwright for web-page inspection, interaction, and testing.",
+    "keywords": "playwright ; mcp ; server ; serena ; playwright ; learn ; hook ; environment ; language server ; tooling ; setup",
+    "primary": false
+  },
+  {
+    "name": "microsoft-learn",
+    "kind": "mcp",
+    "source": "~/.copilot/mcp-config.json (user scope)",
+    "chapter": "mcp-and-environment",
+    "anchor": "mcp-and-environment--microsoft-learn",
+    "description": "Serves official Microsoft documentation search, full page fetch, and code samples through a streamable HTTP endpoint.",
+    "keywords": "microsoft learn ; mcp ; server ; serena ; playwright ; learn ; hook ; environment ; language server ; tooling ; setup",
+    "primary": true
+  },
+  {
+    "name": "speckit-hook",
+    "kind": "hook",
+    "source": ".github/hooks/speckit.json",
+    "chapter": "mcp-and-environment",
+    "anchor": "mcp-and-environment--speckit-hook",
+    "description": "Journals two agent lifecycle events to the Spec-Kit companion so the workflow tracks prompt submission and stop events.",
+    "keywords": "speckit hook ; mcp ; server ; serena ; playwright ; learn ; hook ; environment ; language server ; tooling ; setup",
+    "primary": false
+  },
+  {
+    "name": "dotnet-plugin-lsp",
+    "kind": "mcp",
+    "source": "dotnet@0.2.5",
+    "chapter": "mcp-and-environment",
+    "anchor": "mcp-and-environment--dotnet-plugin-lsp",
+    "description": "The C# language server the dotnet plugin registers, owning diagnostics, hover types, and go-to-definition for the editor.",
+    "keywords": "dotnet plugin lsp ; mcp ; server ; serena ; playwright ; learn ; hook ; environment ; language server ; tooling ; setup",
+    "primary": true
+  },
+  {
+    "name": "agent-performance-audit",
+    "kind": "skill",
+    "source": ".github/Skills/agent-performance-audit",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--agent-performance-audit",
+    "description": "Audits your own agent setup for accuracy, speed, token, and consistency gains, gets per-item approval, then exports one repo-agnostic repo-performance-optimizer.md prompt.",
+    "keywords": "agent performance audit ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": true
+  },
+  {
+    "name": "plan-mainwindowbuttonrevamp",
+    "kind": "skill",
+    "source": ".github/Skills/plan-mainwindowbuttonrevamp",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--plan-mainwindowbuttonrevamp",
+    "description": "Plans the replacement of the fixed four-footer label buttons with a user-managed, data-driven button list stored per user in settings_personal, with an expanded LabelView settings page and MainWindow overflow flyout behavior.",
+    "keywords": "plan mainwindowbuttonrevamp ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-analyze",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-analyze",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-analyze",
+    "description": "Thin skill wrapper exposing the /speckit.analyze command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit analyze ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-checklist",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-checklist",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-checklist",
+    "description": "Thin skill wrapper exposing the /speckit.checklist command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit checklist ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-clarify",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-clarify",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-clarify",
+    "description": "Thin skill wrapper exposing the /speckit.clarify command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit clarify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-after-converge",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-after-converge",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-after-converge",
+    "description": "Thin skill wrapper exposing the /speckit.companion.after-converge command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion after converge ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-after-implement",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-after-implement",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-after-implement",
+    "description": "Thin skill wrapper exposing the /speckit.companion.after-implement command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion after implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-after-plan",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-after-plan",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-after-plan",
+    "description": "Thin skill wrapper exposing the /speckit.companion.after-plan command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion after plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-after-specify",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-after-specify",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-after-specify",
+    "description": "Thin skill wrapper exposing the /speckit.companion.after-specify command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion after specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-after-tasks",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-after-tasks",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-after-tasks",
+    "description": "Thin skill wrapper exposing the /speckit.companion.after-tasks command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion after tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-append",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-append",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-append",
+    "description": "Thin skill wrapper exposing the /speckit.companion.append command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion append ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-auto",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-auto",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-auto",
+    "description": "Thin skill wrapper exposing the /speckit.companion.auto command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion auto ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-before-converge",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-before-converge",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-before-converge",
+    "description": "Thin skill wrapper exposing the /speckit.companion.before-converge command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion before converge ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-before-step",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-before-step",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-before-step",
+    "description": "Thin skill wrapper exposing the /speckit.companion.before-step command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion before step ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-classify",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-classify",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-classify",
+    "description": "Thin skill wrapper exposing the /speckit.companion.classify command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion classify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-doctor",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-doctor",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-doctor",
+    "description": "Thin skill wrapper exposing the /speckit.companion.doctor command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion doctor ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-implement",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-implement",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-implement",
+    "description": "Thin skill wrapper exposing the /speckit.companion.implement command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-adopt",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-adopt",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-adopt",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-adopt command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living adopt ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-coverage",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-coverage",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-coverage",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-coverage command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living coverage ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-drift",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-drift",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-drift",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-drift command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living drift ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-move",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-move",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-move",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-move command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living move ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-show",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-show",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-show",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-show command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living show ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-sync",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-sync",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-sync",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-sync command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living sync ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-living-validate",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-living-validate",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-living-validate",
+    "description": "Thin skill wrapper exposing the /speckit.companion.living-validate command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion living validate ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-mark-complete",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-mark-complete",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-mark-complete",
+    "description": "Thin skill wrapper exposing the /speckit.companion.mark-complete command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion mark complete ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-plan",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-plan",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-plan",
+    "description": "Thin skill wrapper exposing the /speckit.companion.plan command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-resume",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-resume",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-resume",
+    "description": "Thin skill wrapper exposing the /speckit.companion.resume command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion resume ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-specify",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-specify",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-specify",
+    "description": "Thin skill wrapper exposing the /speckit.companion.specify command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-status",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-status",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-status",
+    "description": "Thin skill wrapper exposing the /speckit.companion.status command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion status ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-companion-tasks",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-companion-tasks",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-tasks",
+    "description": "Thin skill wrapper exposing the /speckit.companion.tasks command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit companion tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-constitution",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-constitution",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-constitution",
+    "description": "Thin skill wrapper exposing the /speckit.constitution command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit constitution ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-converge",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-converge",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-converge",
+    "description": "Thin skill wrapper exposing the /speckit.converge command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit converge ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-implement",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-implement",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-implement",
+    "description": "Thin skill wrapper exposing the /speckit.implement command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-plan",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-plan",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-plan",
+    "description": "Thin skill wrapper exposing the /speckit.plan command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-specify",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-specify",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-specify",
+    "description": "Thin skill wrapper exposing the /speckit.specify command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-tasks",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-tasks",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-tasks",
+    "description": "Thin skill wrapper exposing the /speckit.tasks command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit-taskstoissues",
+    "kind": "skill",
+    "source": ".github/Skills/speckit-taskstoissues",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-taskstoissues",
+    "description": "Thin skill wrapper exposing the /speckit.taskstoissues command; the matching workflow is documented in the spec-driven chapter.",
+    "keywords": "speckit taskstoissues ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-module-improvement-auditor",
+    "kind": "agent",
+    "source": ".github/agents/mtm-module-improvement-auditor.agent.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-module-improvement-auditor",
+    "description": "Audits a selected MTM module for performance, database interaction, end-user workflow friction, and UI design improvements without making code changes by default.",
+    "keywords": "mtm module improvement auditor ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "prompt-builder",
+    "kind": "agent",
+    "source": ".github/agents/prompt-builder.agent.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--prompt-builder",
+    "description": "Expert prompt engineering and validation system for creating high-quality prompts, from microsoft/edge-ai.",
+    "keywords": "prompt builder ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": true
+  },
+  {
+    "name": "winui3-expert",
+    "kind": "agent",
+    "source": ".github/agents/winui3-expert.agent.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--winui3-expert",
+    "description": "Expert agent for WinUI 3 and Windows App SDK development that prevents common UWP-to-WinUI 3 API mistakes and guides XAML controls, MVVM patterns, windowing, threading, app lifecycle, dialogs, and deployment for desktop Windows apps.",
+    "keywords": "winui3 expert ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": true
+  },
+  {
+    "name": "README",
+    "kind": "prompt",
+    "source": ".github/prompts/README.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--readme",
+    "description": "Index readme for the .github/prompts catalog; it describes the prompt library rather than registering a slash command.",
+    "keywords": "README ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.decide",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.assess.decide.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-assess-decide",
+    "description": "Frontmatter-only stub that selects the speckit.assess.decide agent.",
+    "keywords": "speckit assess decide ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.define",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.assess.define.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-assess-define",
+    "description": "Frontmatter-only stub that selects the speckit.assess.define agent.",
+    "keywords": "speckit assess define ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.intake",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.assess.intake.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-assess-intake",
+    "description": "Frontmatter-only stub that selects the speckit.assess.intake agent.",
+    "keywords": "speckit assess intake ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.research",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.assess.research.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-assess-research",
+    "description": "Frontmatter-only stub that selects the speckit.assess.research agent.",
+    "keywords": "speckit assess research ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.assess.shape",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.assess.shape.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-assess-shape",
+    "description": "Frontmatter-only stub that selects the speckit.assess.shape agent.",
+    "keywords": "speckit assess shape ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.assess",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.bug.assess.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-bug-assess",
+    "description": "Frontmatter-only stub that selects the speckit.bug.assess agent.",
+    "keywords": "speckit bug assess ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.fix",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.bug.fix.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-bug-fix",
+    "description": "Frontmatter-only stub that selects the speckit.bug.fix agent.",
+    "keywords": "speckit bug fix ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.bug.test",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.bug.test.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-bug-test",
+    "description": "Frontmatter-only stub that selects the speckit.bug.test agent.",
+    "keywords": "speckit bug test ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-converge",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.after-converge.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-after-converge",
+    "description": "Frontmatter-only stub that selects the speckit.companion.after-converge agent.",
+    "keywords": "speckit companion after converge ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-implement",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.after-implement.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-after-implement",
+    "description": "Frontmatter-only stub that selects the speckit.companion.after-implement agent.",
+    "keywords": "speckit companion after implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-plan",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.after-plan.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-after-plan",
+    "description": "Frontmatter-only stub that selects the speckit.companion.after-plan agent.",
+    "keywords": "speckit companion after plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-specify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.after-specify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-after-specify",
+    "description": "Frontmatter-only stub that selects the speckit.companion.after-specify agent.",
+    "keywords": "speckit companion after specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.after-tasks",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.after-tasks.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-after-tasks",
+    "description": "Frontmatter-only stub that selects the speckit.companion.after-tasks agent.",
+    "keywords": "speckit companion after tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.auto",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.auto.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-auto",
+    "description": "Frontmatter-only stub that selects the speckit.companion.auto agent.",
+    "keywords": "speckit companion auto ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.before-converge",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.before-converge.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-before-converge",
+    "description": "Frontmatter-only stub that selects the speckit.companion.before-converge agent.",
+    "keywords": "speckit companion before converge ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.before-step",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.before-step.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-before-step",
+    "description": "Frontmatter-only stub that selects the speckit.companion.before-step agent.",
+    "keywords": "speckit companion before step ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.classify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.classify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-classify",
+    "description": "Frontmatter-only stub that selects the speckit.companion.classify agent.",
+    "keywords": "speckit companion classify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.doctor",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.doctor.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-doctor",
+    "description": "Frontmatter-only stub that selects the speckit.companion.doctor agent.",
+    "keywords": "speckit companion doctor ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.implement",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.implement.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-implement",
+    "description": "Frontmatter-only stub that selects the speckit.companion.implement agent.",
+    "keywords": "speckit companion implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-adopt",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-adopt.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-adopt",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-adopt agent.",
+    "keywords": "speckit companion living adopt ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-coverage",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-coverage.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-coverage",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-coverage agent.",
+    "keywords": "speckit companion living coverage ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-drift",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-drift.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-drift",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-drift agent.",
+    "keywords": "speckit companion living drift ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-move",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-move.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-move",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-move agent.",
+    "keywords": "speckit companion living move ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-show",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-show.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-show",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-show agent.",
+    "keywords": "speckit companion living show ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-sync",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-sync.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-sync",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-sync agent.",
+    "keywords": "speckit companion living sync ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.living-validate",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.living-validate.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-living-validate",
+    "description": "Frontmatter-only stub that selects the speckit.companion.living-validate agent.",
+    "keywords": "speckit companion living validate ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.mark-complete",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.mark-complete.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-mark-complete",
+    "description": "Frontmatter-only stub that selects the speckit.companion.mark-complete agent.",
+    "keywords": "speckit companion mark complete ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.on-prompt",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.on-prompt.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-on-prompt",
+    "description": "Frontmatter-only stub that selects the speckit.companion.on-prompt agent.",
+    "keywords": "speckit companion on prompt ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.on-stop",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.on-stop.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-companion-on-stop",
+    "description": "Frontmatter-only stub that selects the speckit.companion.on-stop agent.",
+    "keywords": "speckit companion on stop ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.plan",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.plan.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-plan",
+    "description": "Frontmatter-only stub that selects the speckit.companion.plan agent.",
+    "keywords": "speckit companion plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.resume",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.resume.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-resume",
+    "description": "Frontmatter-only stub that selects the speckit.companion.resume agent.",
+    "keywords": "speckit companion resume ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.specify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.specify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-specify",
+    "description": "Frontmatter-only stub that selects the speckit.companion.specify agent.",
+    "keywords": "speckit companion specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.status",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.status.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-status",
+    "description": "Frontmatter-only stub that selects the speckit.companion.status agent.",
+    "keywords": "speckit companion status ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.companion.tasks",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit.companion.tasks.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--root-speckit-companion-tasks",
+    "description": "Frontmatter-only stub that selects the speckit.companion.tasks agent.",
+    "keywords": "speckit companion tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-code-review",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-code-review.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-code-review",
+    "description": "Reads a saved CopilotForms code review export and performs a focused review.",
+    "keywords": "copilotforms code review ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-configuration-environment-issue",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-configuration-environment-issue.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-configuration-environment-issue",
+    "description": "Reads a saved CopilotForms configuration or environment export and diagnoses the reported setup issue.",
+    "keywords": "copilotforms configuration environment issue ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-database-issue",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-database-issue.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-database-issue",
+    "description": "Reads a saved CopilotForms database issue export and diagnoses or fixes the database-related problem.",
+    "keywords": "copilotforms database issue ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-debugging-logging",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-debugging-logging.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-debugging-logging",
+    "description": "Reads a saved CopilotForms debugging plus logging export and diagnoses the issue while improving observability.",
+    "keywords": "copilotforms debugging logging ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-debugging",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-debugging.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-debugging",
+    "description": "Reads a saved CopilotForms debugging export and diagnoses or fixes the reported issue.",
+    "keywords": "copilotforms debugging ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-documentation-change",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-documentation-change.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-documentation-change",
+    "description": "Reads a saved CopilotForms documentation change export and creates or updates the requested documentation.",
+    "keywords": "copilotforms documentation change ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-feature-removal-request",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-feature-removal-request.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-feature-removal-request",
+    "description": "Reads a saved CopilotForms feature removal export and removes or retires the requested capability safely.",
+    "keywords": "copilotforms feature removal request ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-improvement-refactor",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-improvement-refactor.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-improvement-refactor",
+    "description": "Reads a saved CopilotForms improvement refactor export and performs the requested maintainability refactor.",
+    "keywords": "copilotforms improvement refactor ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-logging-refactor",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-logging-refactor.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-logging-refactor",
+    "description": "Reads a saved CopilotForms logging refactor export and adjusts logging behavior accordingly.",
+    "keywords": "copilotforms logging refactor ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-logic-change-test-generation",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-logic-change-test-generation.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-logic-change-test-generation",
+    "description": "Reads a saved CopilotForms logic-plus-tests export and implements the logic change together with focused test coverage.",
+    "keywords": "copilotforms logic change test generation ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-logic-correction",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-logic-correction.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-logic-correction",
+    "description": "Reads a saved CopilotForms logic correction export and aligns feature behavior with the intended rules.",
+    "keywords": "copilotforms logic correction ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-naming-consistency-cleanup",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-naming-consistency-cleanup.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-naming-consistency-cleanup",
+    "description": "Reads a saved CopilotForms naming cleanup export and aligns names without changing intended behavior.",
+    "keywords": "copilotforms naming consistency cleanup ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-new-feature-request",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-new-feature-request.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-new-feature-request",
+    "description": "Reads a saved CopilotForms new feature request export and implements the requested capability.",
+    "keywords": "copilotforms new feature request ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-performance-issue-optimization",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-performance-issue-optimization.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-performance-issue-optimization",
+    "description": "Reads a saved CopilotForms performance export and diagnoses or improves the reported performance issue.",
+    "keywords": "copilotforms performance issue optimization ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-test-generation",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-test-generation.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-test-generation",
+    "description": "Reads a saved CopilotForms test generation export and adds the requested tests.",
+    "keywords": "copilotforms test generation ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-ui-change-logic-change",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-ui-change-logic-change.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-ui-change-logic-change",
+    "description": "Reads a saved CopilotForms combined UI and logic export and implements both layers together.",
+    "keywords": "copilotforms ui change logic change ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-ui-change",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-ui-change.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-ui-change",
+    "description": "Reads a saved CopilotForms UI change export and implements the requested UI changes.",
+    "keywords": "copilotforms ui change ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "copilotforms-ui-mockup",
+    "kind": "prompt",
+    "source": ".github/prompts/copilotforms/copilotforms-ui-mockup.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--copilotforms-ui-mockup",
+    "description": "Reads a saved CopilotForms UI mockup export and generates a mockup artifact from it.",
+    "keywords": "copilotforms ui mockup ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-mermaid-architecture-diagram-continue",
+    "kind": "prompt",
+    "source": ".github/prompts/design/mtm-mermaid-architecture-diagram-continue.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-mermaid-architecture-diagram-continue",
+    "description": "Continues the Mermaid architecture diagram for the MTM Receiving Application with the next deterministic installment.",
+    "keywords": "mtm mermaid architecture diagram continue ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-mermaid-architecture-diagram",
+    "kind": "prompt",
+    "source": ".github/prompts/design/mtm-mermaid-architecture-diagram.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-mermaid-architecture-diagram",
+    "description": "Generates a Mermaid class diagram for the MTM Receiving Application from the real workspace structure, emitting only relationships evidenced in code.",
+    "keywords": "mtm mermaid architecture diagram ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-ui-mockups-comfyui",
+    "kind": "prompt",
+    "source": ".github/prompts/design/mtm-ui-mockups-comfyui.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-ui-mockups-comfyui",
+    "description": "Generates ComfyUI text prompts (positive and negative) for AI-image-based UI mockups of the MTM Receiving Application, including accurate Volvo 2021 brand identity.",
+    "keywords": "mtm ui mockups comfyui ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-ui-mockups",
+    "kind": "prompt",
+    "source": ".github/prompts/design/mtm-ui-mockups.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-ui-mockups",
+    "description": "Generates accurate SVG UI mockups for WinUI 3 desktop application views following the MTM Receiving Application design system.",
+    "keywords": "mtm ui mockups ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "commit-message",
+    "kind": "prompt",
+    "source": ".github/prompts/maintenance/commit-message.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--commit-message",
+    "description": "Examines all uncommitted changes in the workspace and generates a well-structured Git commit message using Conventional Commits.",
+    "keywords": "commit message ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-documentation.prepare",
+    "kind": "prompt",
+    "source": ".github/prompts/maintenance/mtm-documentation.prepare.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-documentation-prepare",
+    "description": "Prepares repository-aware context before creating or rewriting MTM documentation.",
+    "keywords": "mtm documentation prepare ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-github-reset-documents",
+    "kind": "prompt",
+    "source": ".github/prompts/maintenance/mtm-github-reset-documents.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-github-reset-documents",
+    "description": "Resets or modernizes the repository AI-documentation surfaces using the active taxonomy and archive-first workflow.",
+    "keywords": "mtm github reset documents ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-update-application-version",
+    "kind": "prompt",
+    "source": ".github/prompts/maintenance/mtm-update-application-version.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-update-application-version",
+    "description": "Analyzes a change set, chooses the best semantic version bump, updates every application version source plus software_version SQL artifacts, publishes an end-user update page, validates with a build, and commits the version-only files.",
+    "keywords": "mtm update application version ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-module-code-review",
+    "kind": "prompt",
+    "source": ".github/prompts/quality/mtm-module-code-review.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-module-code-review",
+    "description": "Comprehensive code review and automated fix application for WinUI 3 modules in the MTM Receiving Application.",
+    "keywords": "mtm module code review ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.analyze",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.analyze.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-analyze",
+    "description": "Frontmatter-only stub that selects the speckit.analyze agent.",
+    "keywords": "speckit analyze ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.checklist",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.checklist.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-checklist",
+    "description": "Frontmatter-only stub that selects the speckit.checklist agent.",
+    "keywords": "speckit checklist ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.clarify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.clarify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-clarify",
+    "description": "Frontmatter-only stub that selects the speckit.clarify agent.",
+    "keywords": "speckit clarify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.constitution",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.constitution.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-constitution",
+    "description": "Frontmatter-only stub that selects the speckit.constitution agent.",
+    "keywords": "speckit constitution ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.implement",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.implement.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-implement",
+    "description": "Frontmatter-only stub that selects the speckit.implement agent.",
+    "keywords": "speckit implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.module-specify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.module-specify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-module-specify",
+    "description": "Frontmatter-only stub that selects the speckit.module-specify agent.",
+    "keywords": "speckit module specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.plan",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.plan.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-plan",
+    "description": "Frontmatter-only stub that selects the speckit.plan agent.",
+    "keywords": "speckit plan ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.specify",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.specify.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-specify",
+    "description": "Frontmatter-only stub that selects the speckit.specify agent.",
+    "keywords": "speckit specify ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "speckit.tasks",
+    "kind": "prompt",
+    "source": ".github/prompts/speckit/speckit.tasks.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--speckit-speckit-tasks",
+    "description": "Frontmatter-only stub that selects the speckit.tasks agent.",
+    "keywords": "speckit tasks ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-converter-unit-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-converter-unit-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-converter-unit-tests",
+    "description": "Creates comprehensive xUnit tests for C# Converter classes.",
+    "keywords": "mtm converter unit tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-dao-unit-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-dao-unit-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-dao-unit-tests",
+    "description": "Creates comprehensive xUnit tests for C# DAO classes with MySQL stored procedures.",
+    "keywords": "mtm dao unit tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-generate-all-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-generate-all-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-generate-all-tests",
+    "description": "Creates comprehensive xUnit tests for a single file or entire module with Serena memory tracking.",
+    "keywords": "mtm generate all tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-helper-unit-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-helper-unit-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-helper-unit-tests",
+    "description": "Creates comprehensive xUnit tests for C# helper/utility classes with edge cases and performance validation.",
+    "keywords": "mtm helper unit tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-model-unit-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-model-unit-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-model-unit-tests",
+    "description": "Creates comprehensive xUnit tests for C# model classes following MTM Receiving Application standards.",
+    "keywords": "mtm model unit tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-module-models-optimize-and-test",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-module-models-optimize-and-test.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-module-models-optimize-and-test",
+    "description": "Optimizes module models incrementally and adds or updates xUnit tests one model file at a time, verifying tests pass after each iteration.",
+    "keywords": "mtm module models optimize and test ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-viewmodel-unit-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/mtm-viewmodel-unit-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-viewmodel-unit-tests",
+    "description": "Creates comprehensive xUnit tests for MVVM ViewModels using CommunityToolkit.Mvvm.",
+    "keywords": "mtm viewmodel unit tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "outside-service-setup-vm-tests",
+    "kind": "prompt",
+    "source": ".github/prompts/testing/outside-service-setup-vm-tests.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--outside-service-setup-vm-tests",
+    "description": "Generates comprehensive xUnit tests for ViewModel_OutsideService_Setup covering all commands, computed properties, validation paths, and service interactions.",
+    "keywords": "outside service setup vm tests ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-mcp-implement",
+    "kind": "prompt",
+    "source": ".github/prompts/workflow/mtm-mcp-implement.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-mcp-implement",
+    "description": "Implements changes using MCP-first workflows (Serena plus filesystem plus optional GitHub and Playwright).",
+    "keywords": "mtm mcp implement ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "mtm-mcp-triage",
+    "kind": "prompt",
+    "source": ".github/prompts/workflow/mtm-mcp-triage.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--mtm-mcp-triage",
+    "description": "Triages a task using MCP-first context gathering (Serena plus filesystem).",
+    "keywords": "mtm mcp triage ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  },
+  {
+    "name": "noob-mode",
+    "kind": "prompt",
+    "source": ".github/prompts/workflow/noob-mode.prompt.md",
+    "chapter": "repo-assets",
+    "anchor": "repo-assets--noob-mode",
+    "description": "Activates plain-English translation mode — every action, error, and result is explained in jargon-free language with color-coded risk indicators, designed for non-technical Copilot users.",
+    "keywords": "noob mode ; repo ; skill ; skills ; agent ; agents ; prompt ; prompts ; speckit ; command ; hook ; instructions",
+    "primary": false
+  }
+]

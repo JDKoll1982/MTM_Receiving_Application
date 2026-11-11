@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation and diagrams — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 09</p>
+      <h1>Documentation and diagrams</h1>
+      <div class="scope">
+        <p>Turning what exists into something another person can read: Word deliverables, draw.io
+        architecture pictures, and agents that discover a stack before describing it.</p>
+        <p>This chapter covers authoring output, not the Markdown house style. For the rules that
+        govern <code>.md</code> files in this repo, see the instructions listed in
+        <a href="repo-assets.html">repo assets</a>.</p>
+      </div>
+
+      <article class="entry"
+               id="documentation-diagrams--project-documenter"
+               data-entry-name="project-documenter"
+               data-entry-kind="agent"
+               data-entry-source="project-documenter@1.0.0">
+        <header>
+          <h3 class="entry-name">project-documenter</h3>
+          <span class="entry-source">project-documenter@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Generates professional project documentation as Markdown, draw.io
+        diagrams, exported PNGs, and a formatted Word document, after first discovering the
+        project's actual technology stack and code structure.</p>
+        <ul class="entry-uses">
+          <li>Producing a shareable <code>.docx</code> overview of a module for someone who will
+          never open the repository.</li>
+          <li>Generating an architecture diagram of the twelve-module layout without hand-drawing
+          boxes for an hour.</li>
+          <li>Refreshing existing documentation after a refactor so the diagrams match the code
+          rather than the intent.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None beyond the plugin. The agent discovers the stack itself rather than accepting a
+          description.</dd>
+          <dt>Boundaries</dt>
+          <dd>Produces deliverables; it does not enforce this repo's Markdown style rules or the
+          module <code>Documentation/</code> folder contract.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the project-documenter agent on Module_ShipRec_Tools. Discover the actual
+stack from the project file and the code, then produce an overview document, a draw.io
+diagram of the module's service and DAO layers, and a Word version I can circulate. Do
+not invent components that are not in the source.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="documentation-diagrams--drawio"
+               data-entry-name="drawio"
+               data-entry-kind="skill"
+               data-entry-source="project-documenter@1.0.0">
+        <header>
+          <h3 class="entry-name">drawio</h3>
+          <span class="entry-source">project-documenter@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Creates <code>.drawio</code> diagram files and exports them to PNG,
+        SVG, or PDF with the diagram XML embedded in the output so the file stays editable.</p>
+        <ul class="entry-uses">
+          <li>Drawing the View to ViewModel to Service to DAO flow for a module and exporting it as
+          PNG for a spec.</li>
+          <li>Keeping an exported diagram editable by preserving the XML inside the image.</li>
+          <li>Producing an SVG for print without shipping a heavyweight toolchain.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Draws what you describe. It does not read the codebase to decide the boxes for you;
+          pair it with <code>project-documenter</code> when the diagram must reflect real types.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the drawio skill to diagram the MVVM flow for Module_Dunnage: View, ViewModel,
+Service, DAO, MySQL. Export a PNG with editable XML embedded, and put it in
+docs/dunnage/architecture.png.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="documentation-diagrams--md-to-docx"
+               data-entry-name="md-to-docx"
+               data-entry-kind="skill"
+               data-entry-source="project-documenter@1.0.0">
+        <header>
+          <h3 class="entry-name">md-to-docx</h3>
+          <span class="entry-source">project-documenter@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Converts Markdown files into a professionally formatted Word
+        document with embedded PNG images, using pure JavaScript and no external tools.</p>
+        <ul class="entry-uses">
+          <li>Handing a spec to a reviewer who works in Word rather than a Markdown viewer.</li>
+          <li>Converting the module <code>Documentation/</code> set into one bound document for a
+          release review.</li>
+          <li>Shipping a document with diagrams embedded, from a repository that has no Office
+          automation installed.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Converts; it does not restructure prose. Headings and lists survive, but content that
+          only exists as HTML inside a Markdown file is out of scope.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the md-to-docx skill to convert specs/003-agent-toolkit-book/spec.md plus its
+plan.md into one Word document, with the four preview images from
+docs/agent-toolkit-book/assets/previews embedded in place.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="documentation-diagrams--diagram-viewer"
+               data-entry-name="diagram-viewer"
+               data-entry-kind="canvas"
+               data-entry-source="diagram-viewer@1.0.2">
+        <header>
+          <h3 class="entry-name">diagram-viewer</h3>
+          <span class="entry-source">diagram-viewer@1.0.2</span>
+        </header>
+        <p class="entry-purpose">Renders an interactive diagram beside the chat where nodes can be
+        clicked to drill down, and the agent explains the selected node.</p>
+        <ul class="entry-uses">
+          <li>Exploring the twelve-module dependency map by clicking a module instead of reading a
+          static picture.</li>
+          <li>Walking a reviewer through the receiving workflow step by step in a canvas.</li>
+          <li>Checking whether a proposed change crosses a module boundary, by seeing the edges.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How to open</dt>
+          <dd>Ask for the diagram in chat; the canvas opens beside the conversation. It is a view,
+          not a generator, so the graph comes from what the agent supplies.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reads nothing on its own and writes no files.</dd>
+        </dl>
+        <figure class="entry-preview">
+          <img src="../assets/previews/diagram-viewer.png"
+               alt="Preview of the diagram viewer canvas">
+          <figcaption>The canvas surface as installed.</figcaption>
+        </figure>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Reach for
+      <code>project-documenter</code> when you need the whole package and
+      <code>drawio</code> when you need one picture. Use <code>md-to-docx</code> only at the end,
+      once the Markdown is already correct, because the conversion is faithful to whatever it is
+      given, errors included.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

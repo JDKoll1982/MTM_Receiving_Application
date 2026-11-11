@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spec-driven development — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 01</p>
+      <h1>Spec-driven development</h1>
+      <div class="scope">
+        <p>Planning work before code exists. Spec Kit and its extensions take a feature from an
+        idea through assessment, specification, planning, task breakdown, implementation, and
+        convergence, with a live companion canvas and per-step bookkeeping state.</p>
+        <p>Everything here writes under <code>specs/</code> and <code>.specify/</code>. The code
+        they plan and build is the same WinUI 3, .NET 10, MVVM
+        View&rarr;ViewModel&rarr;Service&rarr;DAO stack that the rest of this book documents, so a
+        spec's implementation tasks still obey the house rules: MySQL 5.7 writes go through stored
+        procedures, Infor Visual SQL Server stays read-only, and tests are xUnit with
+        FluentAssertions.</p>
+      </div>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion"
+               data-entry-name="speckit-companion"
+               data-entry-kind="canvas"
+               data-entry-source="speckit-companion@0.2.1">
+        <header>
+          <h3 class="entry-name">speckit-companion</h3>
+          <span class="entry-source">speckit-companion@0.2.1</span>
+        </header>
+        <p class="entry-purpose">Renders a live board of every spec in flight: the
+        specify&rarr;plan&rarr;tasks&rarr;implement pipeline, task progress, run history, and a
+        next-step button that advances the active feature.</p>
+        <ul class="entry-uses">
+          <li>Watching the active <code>specs/</code> feature move through plan, tasks, and
+          implement without re-reading the <code>.md</code> files by hand.</li>
+          <li>Seeing at a glance which tasks in <code>tasks.md</code> are done, in progress, or
+          still pending while implementing a Module_Receiving change.</li>
+          <li>Resuming a half-finished feature by clicking the next-step button instead of
+          remembering which command comes next.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How to open</dt>
+          <dd>Ask for the companion board in chat; the canvas opens beside the conversation and
+          reads its state from the <code>.spec-context.json</code> that the companion agents
+          write.</dd>
+          <dt>Boundaries</dt>
+          <dd>It displays and steps through specs; it does not author them. The pipeline agents
+          below do the actual work.</dd>
+        </dl>
+        <figure class="entry-preview">
+          <img src="../assets/previews/speckit-companion.png" alt="Preview of the SpecKit Companion canvas">
+          <figcaption>The spec board as installed.</figcaption>
+        </figure>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-specify"
+               data-entry-name="speckit.specify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.specify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.specify</h3>
+          <span class="entry-source">.github/agents/speckit.specify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Creates or updates a feature specification from a natural-language
+        description, writing <code>spec.md</code> into a numbered <code>specs/NNN-slug/</code>
+        directory and validating it against a quality checklist.</p>
+        <ul class="entry-uses">
+          <li>Starting a new feature by describing it in one sentence and getting a
+          <code>spec.md</code> with user scenarios, functional requirements, and success
+          criteria.</li>
+          <li>Fixing an existing spec in place when requirements drift, rather than rewriting the
+          feature from scratch.</li>
+          <li>Recording the feature directory in <code>.specify/feature.json</code> so
+          <code>speckit.plan</code> and <code>speckit.tasks</code> can find it without guessing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature description in the message. Everything else is created by the agent.</dd>
+          <dt>Boundaries</dt>
+          <dd>Writes the spec and checklist only. It never touches application code or the
+          MVVM layers.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.specify Add a two-tab analytics screen to Module_Reporting: one tab for
+receipt counts by vendor, one for line discrepancies against Infor Visual. Keep it read-only.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-plan"
+               data-entry-name="speckit.plan"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.plan.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.plan</h3>
+          <span class="entry-source">.github/agents/speckit.plan.agent.md</span>
+        </header>
+        <p class="entry-purpose">Executes the planning workflow from the spec, producing an
+        implementation plan with research and design artifacts.</p>
+        <ul class="entry-uses">
+          <li>Turning an approved <code>spec.md</code> into a <code>plan.md</code> that names the
+          ViewModel, Service, and DAO files a feature will touch.</li>
+          <li>Deciding up front whether a feature needs a new MySQL stored procedure or only a
+          read-only Infor Visual query, before any code is written.</li>
+          <li>Recording architecture and data-model choices so <code>speckit.tasks</code> can
+          break the plan into ordered, buildable tasks.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A completed <code>spec.md</code> in the feature directory.</dd>
+          <dt>Boundaries</dt>
+          <dd>Designs; it does not write production code or break the plan into tasks.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.plan Plan the two-tab Module_Reporting analytics feature. Keep every MySQL
+write behind a stored procedure and treat the Infor Visual connection as read-only, following
+the DAO pattern in Module_Reporting/Data/.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-tasks"
+               data-entry-name="speckit.tasks"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.tasks.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.tasks</h3>
+          <span class="entry-source">.github/agents/speckit.tasks.agent.md</span>
+        </header>
+        <p class="entry-purpose">Generates an actionable, dependency-ordered <code>tasks.md</code>
+        for the feature from the spec and plan artifacts.</p>
+        <ul class="entry-uses">
+          <li>Producing a phase-by-phase task list that orders the DAO before the Service and the
+          Service before the ViewModel, matching the MVVM dependency direction.</li>
+          <li>Tagging tasks that touch MySQL stored procedures so they are implemented and tested
+          as a group.</li>
+          <li>Handing a complete task list to <code>speckit.implement</code> so it can execute
+          the feature in dependency order.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A <code>spec.md</code> and a <code>plan.md</code> in the same feature
+          directory.</dd>
+          <dt>Boundaries</dt>
+          <dd>Breaks work down; it does not perform any of the tasks itself.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.tasks Generate tasks for the analytics feature. Order the DAO work before the
+Service work, keep FluentAssertions tests on the plan, and name any test data with a TEST-
+prefix.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-implement"
+               data-entry-name="speckit.implement"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.implement.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.implement</h3>
+          <span class="entry-source">.github/agents/speckit.implement.agent.md</span>
+        </header>
+        <p class="entry-purpose">Executes the implementation plan by processing every task in
+        <code>tasks.md</code> in dependency order until the feature is built.</p>
+        <ul class="entry-uses">
+          <li>Building a feature end to end, task by task, so each ViewModel, Service, and DAO
+          lands in the right layer.</li>
+          <li>Running the narrowest build or test slice after each task instead of waiting for a
+          full solution run.</li>
+          <li>Stopping at the first failing task and reporting it, rather than silently
+          continuing past a broken build.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A complete, ordered <code>tasks.md</code> produced by <code>speckit.tasks</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Implements what the tasks say; it does not redesign the plan or add scope of its
+          own.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.implement Implement the tasks for specs/003-agent-toolkit-book/tasks.md. After each
+task, run the narrowest dotnet build or dotnet test slice that can fail the change, and stop on
+the first failure.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-converge"
+               data-entry-name="speckit.converge"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.converge.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.converge</h3>
+          <span class="entry-source">.github/agents/speckit.converge.agent.md</span>
+        </header>
+        <p class="entry-purpose">Assesses the codebase against the spec, plan, and tasks, then
+        appends any remaining unbuilt work as a new Convergence phase in <code>tasks.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Catching requirements in <code>spec.md</code> that <code>speckit.implement</code>
+          missed or only partially built, and re-queuing them as tasks.</li>
+          <li>Verifying that each task's promised files actually exist and satisfy the
+          acceptance criteria, rather than trusting a green checkmark.</li>
+          <li>Leaving <code>tasks.md</code> byte-for-byte unchanged when the code already meets
+          every requirement, so the feature can be declared done.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd><code>spec.md</code>, <code>plan.md</code>, and a <code>tasks.md</code> that
+          <code>speckit.implement</code> has already run.</dd>
+          <dt>Boundaries</dt>
+          <dd>Append-only: it writes new tasks but never edits existing ones, the spec, the plan,
+          or any application code.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.converge Converge the analytics feature. Treat the constitution in
+.specify/memory/constitution.md as non-negotiable, and append any missing or partial work as a
+new phase without rewriting existing tasks.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-analyze"
+               data-entry-name="speckit.analyze"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.analyze.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.analyze</h3>
+          <span class="entry-source">.github/agents/speckit.analyze.agent.md</span>
+        </header>
+        <p class="entry-purpose">Performs a non-destructive cross-artifact consistency and quality
+        analysis across <code>spec.md</code>, <code>plan.md</code>, and <code>tasks.md</code>
+        after task generation.</p>
+        <ul class="entry-uses">
+          <li>Finding a task in <code>tasks.md</code> that has no matching requirement in
+          <code>spec.md</code>, or a requirement with no task at all.</li>
+          <li>Confirming the plan's file references match the real MVVM layout, so a task cannot
+          point at a ViewModel that does not exist.</li>
+          <li>Running a read-only consistency pass before implementation so gaps are caught while
+          they are cheap to fix.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>All three artifacts present in one feature directory.</dd>
+          <dt>Boundaries</dt>
+          <dd>Read-only. It reports inconsistencies but changes no files.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.analyze Analyze specs/003-agent-toolkit-book/ for consistency between spec.md,
+plan.md, and tasks.md. Report gaps and contradictions only; do not modify the files.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-checklist"
+               data-entry-name="speckit.checklist"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.checklist.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.checklist</h3>
+          <span class="entry-source">.github/agents/speckit.checklist.agent.md</span>
+        </header>
+        <p class="entry-purpose">Generates a custom checklist for the current feature that acts as
+        unit tests for the requirements writing, not for the finished software.</p>
+        <ul class="entry-uses">
+          <li>Checking that a spec's functional requirements are testable and unambiguous before
+          anyone starts planning.</li>
+          <li>Producing a domain-specific checklist for a Module_Dunnage feature so edge cases
+          like over-receipt are not forgotten in the spec.</li>
+          <li>Giving a reviewer a yes/no list to run against the spec, separate from code tests.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature spec or a domain to check against.</dd>
+          <dt>Boundaries</dt>
+          <dd>Validates requirements quality; it does not verify application behavior or write
+          code tests.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.checklist Create a requirements checklist for the receiving workflow. Cover
+quantity mismatch, label reprint, and the boundary where MySQL writes go through stored
+procedures and Infor Visual stays read-only.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-clarify"
+               data-entry-name="speckit.clarify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.clarify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.clarify</h3>
+          <span class="entry-source">.github/agents/speckit.clarify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Identifies underspecified areas in the current spec by asking up
+        to five targeted questions and encoding the answers back into <code>spec.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Resolving an ambiguous requirement such as what happens when a received quantity
+          exceeds the PO line before planning begins.</li>
+          <li>Asking which MySQL table owns a piece of state, so the spec says it explicitly
+          instead of leaving the choice to implementation.</li>
+          <li>Turning [NEEDS CLARIFICATION] markers into concrete, testable requirements.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An existing spec with underspecified areas.</dd>
+          <dt>Boundaries</dt>
+          <dd>Asks up to five questions and edits the spec; it does not plan or implement.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.clarify Clarify the receiving workflow spec. Focus on over-receipt handling,
+which DAO owns the line insert, and how discrepancies are surfaced to the user.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-constitution"
+               data-entry-name="speckit.constitution"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.constitution.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.constitution</h3>
+          <span class="entry-source">.github/agents/speckit.constitution.agent.md</span>
+        </header>
+        <p class="entry-purpose">Creates or updates the project constitution from interactive or
+        provided principle inputs, storing the rules every later pipeline step must obey.</p>
+        <ul class="entry-uses">
+          <li>Encoding the repo's non-negotiables, such as no raw MySQL SQL in C#, into
+          <code>.specify/memory/constitution.md</code> so converge can enforce them.</li>
+          <li>Recording the View&rarr;ViewModel&rarr;Service&rarr;DAO layering as a MUST
+          principle that every spec's tasks inherit.</li>
+          <li>Updating the constitution when a rule changes, rather than pasting the rule into
+          each agent file.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None; it can bootstrap the constitution from prompts or an existing file.</dd>
+          <dt>Boundaries</dt>
+          <dd>Writes governance, not feature code.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.constitution Update the constitution to add: Infor Visual is read-only, MySQL
+writes must use stored procedures, and ViewModels never call DAOs directly.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-taskstoissues"
+               data-entry-name="speckit.taskstoissues"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.taskstoissues.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.taskstoissues</h3>
+          <span class="entry-source">.github/agents/speckit.taskstoissues.agent.md</span>
+        </header>
+        <p class="entry-purpose">Converts the tasks in <code>tasks.md</code> into actionable,
+        dependency-ordered GitHub issues for the feature.</p>
+        <ul class="entry-uses">
+          <li>Turning a planned feature into a set of GitHub issues so a team member can pick up
+          one task at a time.</li>
+          <li>Preserving task dependency order in the issue list, so the DAO issue is filed
+          before the Service issue.</li>
+          <li>Linking each issue back to the spec and plan so reviewers can trace work to its
+          requirement.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A completed <code>tasks.md</code> and a GitHub remote for the repository.</dd>
+          <dt>Boundaries</dt>
+          <dd>Files issues; it does not implement anything or modify local code.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.taskstoissues Create GitHub issues from specs/003-agent-toolkit-book/tasks.md,
+keeping dependency order and linking each issue back to its spec requirement.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-module-specify"
+               data-entry-name="speckit.module-specify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.module-specify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.module-specify</h3>
+          <span class="entry-source">.github/agents/speckit.module-specify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Generates a feature specification for modernizing or creating a
+        module based on module-agent workflow analysis.</p>
+        <ul class="entry-uses">
+          <li>Writing a spec to rebuild an existing module, such as Module_Volvo, onto the
+          current CQRS and MVVM patterns.</li>
+          <li>Producing a spec for a brand-new module so its ViewModels, Services, and DAOs are
+          planned before any code exists.</li>
+          <li>Capturing the module's database contract, MySQL stored procedures and read-only
+          Infor Visual queries, as requirements in one place.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A module to modernize or a description of the module to create.</dd>
+          <dt>Boundaries</dt>
+          <dd>Specifies the module; it does not implement or restructure it.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.module-specify Spec a modernization of Module_Volvo. Keep the MVVM flow View to
+ViewModel to Service to DAO, list every MySQL stored procedure it needs, and mark the Infor
+Visual access read-only.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-assess-intake"
+               data-entry-name="speckit.assess.intake"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.assess.intake.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.intake</h3>
+          <span class="entry-source">.github/agents/speckit.assess.intake.agent.md</span>
+        </header>
+        <p class="entry-purpose">Captures and normalizes a raw idea, text, URL, ticket, or
+        codebase pointer into a single intake note at
+        <code>.specify/assessments/&lt;slug&gt;/intake.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Writing down a rough idea such as a dunnage label redesign before any judgment is
+          applied.</li>
+          <li>Normalizing a pasted bug ticket into the assessment folder so later stages have a
+          stable file to build on.</li>
+          <li>Recording where an idea came from, the problem it claims to solve, without yet
+          proposing a solution.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Only the idea itself, however rough.</dd>
+          <dt>Boundaries</dt>
+          <dd>Front door of the assessment pipeline; it records, it does not judge.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.assess.intake Operators want a dunnage label that prints directly from the
+receiving screen. Intake this idea with its source and do not evaluate it yet.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-assess-research"
+               data-entry-name="speckit.assess.research"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.assess.research.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.research</h3>
+          <span class="entry-source">.github/agents/speckit.assess.research.agent.md</span>
+        </header>
+        <p class="entry-purpose">Gathers evidence, users, market, prior art, and data to support
+        or challenge an idea, recording it at
+        <code>.specify/assessments/&lt;slug&gt;/research.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Checking whether other modules already print labels so a new feature is not
+          duplicating existing work.</li>
+          <li>Collecting how many receiving lines per day a proposed change would affect, from
+          the MySQL tables that record them.</li>
+          <li>Surfacing prior art that kills a bad idea early, before it reaches planning.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An intake note for the idea.</dd>
+          <dt>Boundaries</dt>
+          <dd>Gathers evidence only; it does not define the problem or shape a solution.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.assess.research Research the dunnage label idea from intake. Check existing
+Module_Receiving label code, prior art in the repo, and the volume of dunnage lines in MySQL.
+Record findings, do not recommend yet.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-assess-define"
+               data-entry-name="speckit.assess.define"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.assess.define.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.define</h3>
+          <span class="entry-source">.github/agents/speckit.assess.define.agent.md</span>
+        </header>
+        <p class="entry-purpose">Turns intake and research into a crisp problem definition at
+        <code>.specify/assessments/&lt;slug&gt;/problem.md</code>: who is affected, what hurts,
+        goals, non-goals, and success metrics.</p>
+        <ul class="entry-uses">
+          <li>Stating the dunnage label problem as who is slowed down and what a good outcome
+          looks like, before any solution talk.</li>
+          <li>Listing non-goals so a later spec does not quietly absorb unrelated work.</li>
+          <li>Defining measurable success, such as time per label, that later stages can test
+          against.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Intake and research notes for the idea.</dd>
+          <dt>Boundaries</dt>
+          <dd>Defines the problem only; it explicitly avoids proposing a solution.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.assess.define Define the problem for the dunnage label idea: who is affected,
+what hurts today, and what measurable success looks like. Do not propose a solution.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-assess-shape"
+               data-entry-name="speckit.assess.shape"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.assess.shape.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.shape</h3>
+          <span class="entry-source">.github/agents/speckit.assess.shape.agent.md</span>
+        </header>
+        <p class="entry-purpose">Shapes a concept from the defined problem at
+        <code>.specify/assessments/&lt;slug&gt;/concept.md</code>: solution options, scope,
+        appetite, and trade-offs, without implementation design.</p>
+        <ul class="entry-uses">
+          <li>Comparing two or three ways to solve the dunnage label problem, with the cost and
+          appetite of each.</li>
+          <li>Bounding the scope so a later spec does not balloon into a full label designer.</li>
+          <li>Documenting trade-offs, such as print-from-screen versus a separate label module,
+          for the decide step.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A defined problem.</dd>
+          <dt>Boundaries</dt>
+          <dd>Stays at concept level; architecture, data models, and tasks belong to specify and
+          beyond.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.assess.shape Shape two options for the dunnage label problem with scope, appetite,
+and trade-offs. No implementation design; leave that to speckit.specify.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-assess-decide"
+               data-entry-name="speckit.assess.decide"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.assess.decide.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.assess.decide</h3>
+          <span class="entry-source">.github/agents/speckit.assess.decide.agent.md</span>
+        </header>
+        <p class="entry-purpose">Applies a go, needs-clarification, or kill gate to an assessed
+        idea and hands survivors into spec-driven development.</p>
+        <ul class="entry-uses">
+          <li>Recording a kill decision with its reason, so a bad idea stops before it consumes
+          spec and plan effort.</li>
+          <li>Sending a go idea to <code>speckit.specify</code> with the assessment context it
+          needs.</li>
+          <li>Sending an under-researched idea back to research or define instead of guessing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Intake, research, a problem definition, and a shaped concept.</dd>
+          <dt>Boundaries</dt>
+          <dd>Renders a verdict; it does not start the spec itself.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.assess.decide Decide on the dunnage label idea. It is a success either way:
+record a go, needs-clarification, or kill with a reason, and hand a go off to speckit.specify.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-bug-assess"
+               data-entry-name="speckit.bug.assess"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.bug.assess.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.assess</h3>
+          <span class="entry-source">.github/agents/speckit.bug.assess.agent.md</span>
+        </header>
+        <p class="entry-purpose">Assesses a bug report, pasted text or URL, against the codebase
+        and produces an assessment with possible remediation at
+        <code>.specify/bugs/&lt;slug&gt;/assessment.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Triaging a reported receiving-line discrepancy by locating the suspected root cause
+          in a ViewModel, Service, or DAO.</li>
+          <li>Judging severity so a data-loss bug in a MySQL write path is ranked above a label
+          formatting nit.</li>
+          <li>Producing the assessment file that <code>speckit.bug.fix</code> and
+          <code>speckit.bug.test</code> consume.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A bug report and access to the codebase.</dd>
+          <dt>Boundaries</dt>
+          <dd>Assesses and proposes; it does not fix the bug.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.bug.assess Assess this bug: saving a receiving line in Module_Receiving fails
+when the PO has no open line. Locate the root cause, judge severity, and propose a
+remediation, but change nothing.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-bug-fix"
+               data-entry-name="speckit.bug.fix"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.bug.fix.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.fix</h3>
+          <span class="entry-source">.github/agents/speckit.bug.fix.agent.md</span>
+        </header>
+        <p class="entry-purpose">Applies the remediation from a bug assessment and records what
+        changed in a fix report at <code>.specify/bugs/&lt;slug&gt;/fix.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Applying the assessed fix to the DAO or stored-procedure call path, keeping the
+          change inside the MVVM layer that owns it.</li>
+          <li>Recording exactly which files changed so <code>speckit.bug.test</code> knows what
+          to verify.</li>
+          <li>Keeping bug fixes traceable to their assessment instead of losing the rationale in
+          chat.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An existing assessment for the same slug.</dd>
+          <dt>Boundaries</dt>
+          <dd>Fixes only what the assessment proposed; it does not verify the fix.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.bug.fix Apply the remediation from the open-line bug assessment. Make the smallest
+change in the owning Service or DAO, record the changed files, and do not verify the fix.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-bug-test"
+               data-entry-name="speckit.bug.test"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.bug.test.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.bug.test</h3>
+          <span class="entry-source">.github/agents/speckit.bug.test.agent.md</span>
+        </header>
+        <p class="entry-purpose">Validates that a previously fixed bug is resolved and records a
+        verification report at <code>.specify/bugs/&lt;slug&gt;/test.md</code>.</p>
+        <ul class="entry-uses">
+          <li>Re-running the failing scenario against the fixed code to prove the bug is gone
+          before closing it.</li>
+          <li>Adding a focused xUnit regression test with FluentAssertions that fails on the old
+          code and passes on the fix.</li>
+          <li>Recording the verification evidence, build result and test result, in the bug
+          folder.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A fix report from <code>speckit.bug.fix</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Verifies; it does not re-fix or change production code.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.bug.test Verify the open-line bug fix. Re-run the failing scenario, add a
+regression test with a TEST- prefix and FluentAssertions, and record the build and test
+results.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-after-converge"
+               data-entry-name="speckit.companion.after-converge"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.after-converge.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-converge</h3>
+          <span class="entry-source">.github/agents/speckit.companion.after-converge.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records the converge finish in <code>.spec-context.json</code> so
+        the companion board shows the step as complete.</p>
+        <ul class="entry-uses">
+          <li>Updating the active feature's state when converge finishes, so the board advances.</li>
+          <li>Keeping run history accurate without anyone editing the state file by hand.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically at the converge step boundary and only
+          writes bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-after-implement"
+               data-entry-name="speckit.companion.after-implement"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.after-implement.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-implement</h3>
+          <span class="entry-source">.github/agents/speckit.companion.after-implement.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records implement progress from <code>tasks.md</code> into
+        <code>.spec-context.json</code> for the companion board.</p>
+        <ul class="entry-uses">
+          <li>Persisting how many tasks are done after implement runs, so progress survives a
+          session end.</li>
+          <li>Feeding the board's task-progress display with fresh numbers.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically after implement and writes only
+          bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-after-plan"
+               data-entry-name="speckit.companion.after-plan"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.after-plan.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-plan</h3>
+          <span class="entry-source">.github/agents/speckit.companion.after-plan.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records the plan finish in <code>.spec-context.json</code> for
+        the companion board.</p>
+        <ul class="entry-uses">
+          <li>Marking the plan step complete so the board can offer tasks as the next action.</li>
+          <li>Stamping a plan timestamp into the feature's run history.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically after plan and writes only bookkeeping
+          state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-after-specify"
+               data-entry-name="speckit.companion.after-specify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.after-specify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-specify</h3>
+          <span class="entry-source">.github/agents/speckit.companion.after-specify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Captures the current spec-kit step into
+        <code>.spec-context.json</code> after specify finishes.</p>
+        <ul class="entry-uses">
+          <li>Recording that the spec exists so the board shows the feature in the specify
+          column.</li>
+          <li>Storing the feature directory path for the next step to find.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically after specify and writes only
+          bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-after-tasks"
+               data-entry-name="speckit.companion.after-tasks"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.after-tasks.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.after-tasks</h3>
+          <span class="entry-source">.github/agents/speckit.companion.after-tasks.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records the tasks finish in <code>.spec-context.json</code> for
+        the companion board.</p>
+        <ul class="entry-uses">
+          <li>Marking task generation complete so implement becomes the next step.</li>
+          <li>Recording how many tasks were generated for the feature.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically after tasks and writes only bookkeeping
+          state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-before-converge"
+               data-entry-name="speckit.companion.before-converge"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.before-converge.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.before-converge</h3>
+          <span class="entry-source">.github/agents/speckit.companion.before-converge.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records the converge start in <code>.spec-context.json</code> for
+        the companion board.</p>
+        <ul class="entry-uses">
+          <li>Marking the feature as converging before converge runs.</li>
+          <li>Stamping a converge start time into run history.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically before converge and writes only
+          bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-before-step"
+               data-entry-name="speckit.companion.before-step"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.before-step.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.before-step</h3>
+          <span class="entry-source">.github/agents/speckit.companion.before-step.agent.md</span>
+        </header>
+        <p class="entry-purpose">Captures a spec-kit step's start into
+        <code>.spec-context.json</code> for the companion board.</p>
+        <ul class="entry-uses">
+          <li>Recording which step is about to run before it starts.</li>
+          <li>Giving the board a current-step indicator during a run.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically at each step start and writes only
+          bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-on-prompt"
+               data-entry-name="speckit.companion.on-prompt"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.on-prompt.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.on-prompt</h3>
+          <span class="entry-source">.github/agents/speckit.companion.on-prompt.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records a step's start from spec-kit's prompt-submitted event
+        into <code>.spec-context.json</code>.</p>
+        <ul class="entry-uses">
+          <li>Capturing the step start triggered by the prompt-submitted event.</li>
+          <li>Keeping state in sync with the spec-kit event stream.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically on the prompt-submitted event and writes
+          only bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-on-stop"
+               data-entry-name="speckit.companion.on-stop"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.on-stop.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.on-stop</h3>
+          <span class="entry-source">.github/agents/speckit.companion.on-stop.agent.md</span>
+        </header>
+        <p class="entry-purpose">Records a step's finish from spec-kit's turn-ended event into
+        <code>.spec-context.json</code>.</p>
+        <ul class="entry-uses">
+          <li>Capturing the step finish triggered by the turn-ended event.</li>
+          <li>Recording elapsed run time for the step into run history.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand; it runs automatically on the turn-ended event and writes only
+          bookkeeping state.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-mark-complete"
+               data-entry-name="speckit.companion.mark-complete"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.mark-complete.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.mark-complete</h3>
+          <span class="entry-source">.github/agents/speckit.companion.mark-complete.agent.md</span>
+        </header>
+        <p class="entry-purpose">Marks the active spec completed by hand, writing
+        <code>status: completed</code> into its state.</p>
+        <ul class="entry-uses">
+          <li>Closing out a spec whose work is done but that the pipeline did not auto-close.</li>
+          <li>Correcting a spec left in a running state after a session was interrupted.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked by hand as a pipeline step; it is a manual state correction that writes
+          only the completed status.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-auto"
+               data-entry-name="speckit.companion.auto"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.auto.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.auto</h3>
+          <span class="entry-source">.github/agents/speckit.companion.auto.agent.md</span>
+        </header>
+        <p class="entry-purpose">Runs the whole pipeline hands-off, specify, plan, tasks,
+        implement, converge, with no pauses for approval.</p>
+        <ul class="entry-uses">
+          <li>Taking a one-line feature idea all the way to converged code in a single
+          uninterrupted run.</li>
+          <li>Regenerating a small module change end to end when every step is already
+          well-understood.</li>
+          <li>Producing the complete artifact chain under <code>specs/</code> for a feature
+          without babysitting each stage.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature description and confidence that the constitution covers the work.</dd>
+          <dt>Boundaries</dt>
+          <dd>Runs everything without asking; do not use it where a major assumption needs a
+          human decision first.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.auto Auto-run the full pipeline for a small Module_Settings feature:
+add a save-and-apply button. It must respect the constitution, keep MySQL writes in stored
+procedures, and stop only on build or test failure.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-specify"
+               data-entry-name="speckit.companion.specify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.specify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.specify</h3>
+          <span class="entry-source">.github/agents/speckit.companion.specify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Companion specify: creates a feature spec with prioritized user
+        stories, writing state to <code>.spec-context.json</code> as it goes.</p>
+        <ul class="entry-uses">
+          <li>Producing a spec for a new receiving feature with user stories ordered by
+          priority.</li>
+          <li>Starting the companion-tracked pipeline so the board follows every later step.</li>
+          <li>Recording the new feature directory in state so plan and tasks can find it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature description.</dd>
+          <dt>Boundaries</dt>
+          <dd>Specifies and records state; it does not plan or implement.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.specify Spec a receiving-history search: operators can search past
+receipts by PO, part, and date. Prioritize the user stories, keep it read-only, and record the
+spec in the companion state.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-plan"
+               data-entry-name="speckit.companion.plan"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.plan.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.plan</h3>
+          <span class="entry-source">.github/agents/speckit.companion.plan.agent.md</span>
+        </header>
+        <p class="entry-purpose">Companion plan: produces an implementation plan with research
+        and design artifacts, tracking the step in companion state.</p>
+        <ul class="entry-uses">
+          <li>Planning which ViewModel, Service, and DAO files a feature will add or change.</li>
+          <li>Recording the MySQL stored procedures and read-only Infor Visual queries a feature
+          depends on.</li>
+          <li>Advancing the companion board from spec to plan.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A spec created through the companion pipeline.</dd>
+          <dt>Boundaries</dt>
+          <dd>Designs; it does not break the plan into tasks.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.plan Plan the receiving-history search. Name the concrete files under
+Module_Receiving, the MySQL stored procedure for the history query, and the Infor Visual joins
+that stay read-only.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-tasks"
+               data-entry-name="speckit.companion.tasks"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.tasks.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.tasks</h3>
+          <span class="entry-source">.github/agents/speckit.companion.tasks.agent.md</span>
+        </header>
+        <p class="entry-purpose">Companion tasks: generates a user-story phased task list from the
+        plan, tracking the step in companion state.</p>
+        <ul class="entry-uses">
+          <li>Breaking a plan into phases ordered so the DAO is built before the Service before
+          the ViewModel.</li>
+          <li>Grouping tasks by user story so a story can be implemented and verified as a unit.</li>
+          <li>Advancing the companion board from plan to tasks.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A plan from the companion pipeline.</dd>
+          <dt>Boundaries</dt>
+          <dd>Breaks work down; it does not implement anything.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.tasks Generate the task list for the receiving-history search, phased by
+user story and dependency order. Include xUnit tests with FluentAssertions and TEST- prefixed
+data.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-implement"
+               data-entry-name="speckit.companion.implement"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.implement.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.implement</h3>
+          <span class="entry-source">.github/agents/speckit.companion.implement.agent.md</span>
+        </header>
+        <p class="entry-purpose">Companion implement: executes <code>tasks.md</code> in
+        dependency order, then runs converge, tracking both in companion state.</p>
+        <ul class="entry-uses">
+          <li>Building every task in order and then converging so nothing planned is left
+          unbuilt.</li>
+          <li>Running narrow build and test slices after each task, stopping on the first
+          failure.</li>
+          <li>Advancing the board through implement and into converge.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A complete <code>tasks.md</code> from the companion pipeline.</dd>
+          <dt>Boundaries</dt>
+          <dd>Implements the tasks as written; it does not add scope.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.implement Implement the receiving-history search tasks in dependency
+order, then converge. Run the narrowest dotnet build or test slice per task and stop on the
+first failure.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-resume"
+               data-entry-name="speckit.companion.resume"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.resume.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.resume</h3>
+          <span class="entry-source">.github/agents/speckit.companion.resume.agent.md</span>
+        </header>
+        <p class="entry-purpose">Continues the spec-driven pipeline from the last completed step,
+        carrying recorded decisions into scope and dispatching the next command.</p>
+        <ul class="entry-uses">
+          <li>Picking up a half-finished feature the next day without re-reading every artifact
+          by hand.</li>
+          <li>Carrying the decisions already recorded in <code>.spec-context.json</code> into the
+          resumed run.</li>
+          <li>Dispatching the correct next step, plan, tasks, implement, or converge, based on
+          where the feature stopped.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature with recorded companion state from a prior run.</dd>
+          <dt>Boundaries</dt>
+          <dd>Resumes; it does not restart completed steps or redo finished work.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.resume Resume the receiving-history search feature. Read its
+.spec-context.json, carry the recorded decisions, and dispatch the next step after the last
+completed one.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-status"
+               data-entry-name="speckit.companion.status"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.status.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.status</h3>
+          <span class="entry-source">.github/agents/speckit.companion.status.agent.md</span>
+        </header>
+        <p class="entry-purpose">Reports where the active spec stands, current step, status,
+        recorded decisions, and the next action, read from <code>.spec-context.json</code>.</p>
+        <ul class="entry-uses">
+          <li>Answering where a feature is in the pipeline without opening the board.</li>
+          <li>Listing the decisions recorded so far, so a handoff to another developer is quick.</li>
+          <li>Naming the next action so the right command is run next.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature with companion state.</dd>
+          <dt>Boundaries</dt>
+          <dd>Read-only; it reports state and changes nothing.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.status Show the status of the active spec: current step, recorded
+decisions, and the exact next action to run.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-classify"
+               data-entry-name="speckit.companion.classify"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.classify.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.classify</h3>
+          <span class="entry-source">.github/agents/speckit.companion.classify.agent.md</span>
+        </header>
+        <p class="entry-purpose">Classifies the change size as simple, normal, or oversized so
+        the companion workflow can right-size the pipeline.</p>
+        <ul class="entry-uses">
+          <li>Deciding whether a one-file DAO tweak is simple enough to skip heavy ceremony.</li>
+          <li>Flagging a change that touches many modules as oversized so it is split before
+          planning.</li>
+          <li>Right-sizing the pipeline so a small fix is not run through the full spec chain.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A description of the change or its spec.</dd>
+          <dt>Boundaries</dt>
+          <dd>Classifies only; it does not run any pipeline step.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.classify Classify the change: rename one method in
+Dao_ReceivingLine. Is it simple, normal, or oversized, and what pipeline does it need?</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-doctor"
+               data-entry-name="speckit.companion.doctor"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.doctor.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.doctor</h3>
+          <span class="entry-source">.github/agents/speckit.companion.doctor.agent.md</span>
+        </header>
+        <p class="entry-purpose">Reports on a spec's run health: unfinished steps, unjournaled
+        tasks, step bleed, drift, a step that closed without verifying or without its promised
+        file, and why completion did not land.</p>
+        <ul class="entry-uses">
+          <li>Diagnosing a feature stuck between steps, such as a tasks file that exists but was
+          never marked complete.</li>
+          <li>Finding a step that closed without the spec file it promised, so the gap can be
+          fixed before resuming.</li>
+          <li>Checking why completion did not land after a pipeline run that looked finished.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A feature with companion state.</dd>
+          <dt>Boundaries</dt>
+          <dd>Read-only and retroactive; it reports health and never halts a run.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.doctor Diagnose the receiving-history search spec: unfinished steps,
+unjournaled tasks, drift, and why completion has not landed. Report only, change nothing.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-append"
+               data-entry-name="speckit.companion.append"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.append.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.append</h3>
+          <span class="entry-source">.github/agents/speckit.companion.append.agent.md</span>
+        </header>
+        <p class="entry-purpose">Appends a new capability to the active spec without regenerating
+        its task list, preserving every completed task id and result.</p>
+        <ul class="entry-uses">
+          <li>Adding a second screen to a feature already in flight without losing the tasks that
+          are done.</li>
+          <li>Extending a spec's requirements and appending matching tasks, so the new work has
+          ids that do not collide with existing ones.</li>
+          <li>Keeping completed work intact while scope grows, instead of regenerating the whole
+          plan.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An active spec with a task list that may already be partly done.</dd>
+          <dt>Boundaries</dt>
+          <dd>Appends; it does not rewrite or renumber existing tasks.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>/speckit.companion.append Add an export-to-CSV capability to the receiving-history search
+spec. Append the new requirements and tasks without changing any completed task id.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-adopt"
+               data-entry-name="speckit.companion.living-adopt"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-adopt.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-adopt</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-adopt.agent.md</span>
+        </header>
+        <p class="entry-purpose">Brownfield adoption wizard: drafts living specs, central or
+        colocated, for the code areas you name and registers them as draft, opt-in.</p>
+        <ul class="entry-uses">
+          <li>Drafting a living spec for the Module_Receiving DAO layer so its behavior is
+          described next to the code.</li>
+          <li>Registering a colocated spec for one module without forcing living specs onto the
+          whole repo.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it drafts and registers draft specs, never edits code.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-coverage"
+               data-entry-name="speckit.companion.living-coverage"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-coverage.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-coverage</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-coverage.agent.md</span>
+        </header>
+        <p class="entry-purpose">Reports living-spec requirement to test coverage: per
+        requirement, whether its coverage tier maps an xUnit test, read-only.</p>
+        <ul class="entry-uses">
+          <li>Checking which living-spec requirements have a matching xUnit test and which do
+          not.</li>
+          <li>Spotting a DAO behavior that is specified but untested before a refactor.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it reports coverage and never halts or writes files.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-drift"
+               data-entry-name="speckit.companion.living-drift"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-drift.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-drift</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-drift.agent.md</span>
+        </header>
+        <p class="entry-purpose">Reports living-spec drift: per capability, the source files
+        changed since the spec was last committed, read-only.</p>
+        <ul class="entry-uses">
+          <li>Finding a ViewModel or Service file that changed after its living spec was last
+          committed.</li>
+          <li>Deciding whether a spec needs a sync pass before a code review.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it reports drift and never halts or writes files.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-move"
+               data-entry-name="speckit.companion.living-move"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-move.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-move</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-move.agent.md</span>
+        </header>
+        <p class="entry-purpose">Moves a living spec between central and colocated storage, file,
+        tiers, and registry together, reversible.</p>
+        <ul class="entry-uses">
+          <li>Relocating a colocated Module_Dunnage spec to the central specs folder when it
+          grows beyond one module.</li>
+          <li>Moving a central spec beside its owning module for a tighter edit loop.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it moves specs and their registry entries, not code.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-show"
+               data-entry-name="speckit.companion.living-show"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-show.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-show</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-show.agent.md</span>
+        </header>
+        <p class="entry-purpose">Prints one slice of a living spec: a capability's requirement
+        headings, one requirement in full, or the requirements that describe one file.</p>
+        <ul class="entry-uses">
+          <li>Reading just the requirements that describe <code>Dao_ReceivingLine</code> without
+          opening the whole spec.</li>
+          <li>Showing one capability's headings to check scope before editing.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it prints slices, read-only, never halts or writes.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-sync"
+               data-entry-name="speckit.companion.living-sync"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-sync.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-sync</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-sync.agent.md</span>
+        </header>
+        <p class="entry-purpose">Syncs living specs from your current changes: groups
+        working-tree changes, uncommitted included, by capability and updates every affected
+        spec in one pass.</p>
+        <ul class="entry-uses">
+          <li>Updating the Module_Receiving living spec after editing its DAO and Service so the
+          spec matches the working tree.</li>
+          <li>Folding uncommitted changes into the spec in one pass before a commit.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it updates specs in place and never regenerates them.</dd>
+        </dl>
+      </article>
+
+      <article class="entry"
+               id="spec-driven-development--speckit-companion-living-validate"
+               data-entry-name="speckit.companion.living-validate"
+               data-entry-kind="agent"
+               data-entry-source=".github/agents/speckit.companion.living-validate.agent.md">
+        <header>
+          <h3 class="entry-name">speckit.companion.living-validate</h3>
+          <span class="entry-source">.github/agents/speckit.companion.living-validate.agent.md</span>
+        </header>
+        <p class="entry-purpose">Checks the shape of living specs and a feature spec's deltas: a
+        requirement with no scenario, a scenario missing WHEN or THEN, a duplicate heading, or a
+        delta pointing at nothing.</p>
+        <ul class="entry-uses">
+          <li>Validating that every living-spec requirement has a scenario with WHEN and THEN
+          before relying on the spec.</li>
+          <li>Catching a duplicate heading or a delta that references a deleted file.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Not invoked as a verb; it validates shape, read-only, never halts or writes.</dd>
+        </dl>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Run the pipeline agents in
+      order, <code>specify</code>, <code>plan</code>, <code>tasks</code>, <code>implement</code>,
+      <code>converge</code>, and reach for the companion verbs when you want the board to track
+      the same steps. Use the assessment and bug extensions before the pipeline, for ideas and
+      defects that are not yet ready to become specs. The companion bookkeeping and living-spec
+      agents are not run by hand; they keep state and living specs in sync around the verbs.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

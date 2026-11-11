@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTM Agent Toolkit — every plugin, skill, agent, and canvas</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+
+      <header class="cover">
+        <p class="eyebrow">Internal reference &middot; MTM Receiving Application</p>
+        <h1 class="cover-title">MTM Agent Toolkit</h1>
+        <p class="cover-sub">Every plugin, skill, agent, canvas, and MCP server available to this
+        workspace, organised by the job you are trying to do.</p>
+        <div class="cover-rule"></div>
+        <dl class="cover-meta" data-cover-meta></dl>
+      </header>
+
+      <h2>Why this book exists</h2>
+      <p>This workspace carries thirteen plugins worth of tooling, seventy-one skills, fifty
+      plugin and repo agents, four canvas surfaces, and a hundred-plus repo prompts. Nothing
+      described them in one place, so the only way to discover a tool was to already know it
+      existed.</p>
+      <p>This book fixes that. It is organised by <strong>what you are trying to do</strong>, not by
+      which plugin happens to own the tool, because plugin boundaries are invisible to someone who
+      does not already know the plugins.</p>
+
+      <div class="callout">
+        <p><strong>One rule about counts.</strong> A skill bundled by two plugins is documented
+        once, naming both sources, and counted once. That is why the book claims 71 unique skills
+        while the disk holds 72 skill directories.</p>
+      </div>
+
+      <h2>How to read this book</h2>
+      <ol>
+        <li><strong>Arriving with a task.</strong> Open the chapter whose title matches the job,
+        scan the entry purposes, and read the one that fits. Every entry states what it does, when
+        to reach for it, what it needs, and what it will not do.</li>
+        <li><strong>Arriving with a name.</strong> Use the search box in the sidebar, or open the
+        <a href="index-by-source.html">index by source</a> and filter by plugin name. Nothing in
+        this workspace is missing from that index.</li>
+        <li><strong>Choosing between two tools.</strong> Open the
+        <a href="decision-guide.html">which tool when</a> page. Overlapping tools are the most
+        common failure mode in a set this size, so each overlap has a stated default, a reason, and
+        the condition where the other option wins.</li>
+        <li><strong>Needing the exact invocation.</strong> Every skill and agent entry carries a
+        copy-ready prompt. Copy it, adjust the module name, run it.</li>
+        <li><strong>Wanting paper.</strong> Open the <a href="print.html">print edition</a>. One
+        Print action produces a cover page, a contents page, and every chapter starting on a fresh
+        page at US Letter.</li>
+      </ol>
+
+      <h2>Contents</h2>
+      <ul class="contents" data-contents></ul>
+
+      <h2>Reference pages</h2>
+      <table>
+        <caption>The three pages that cut across chapters.</caption>
+        <thead>
+          <tr><th style="width:30%">Page</th><th>Use it when</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="index-by-source.html">Index by source</a></td>
+            <td>You know the plugin or repo folder and want everything it provides. This is the
+            completeness guarantee.</td>
+          </tr>
+          <tr>
+            <td><a href="decision-guide.html">Which tool when</a></td>
+            <td>Two tools overlap and you want the default, the reason, and the escape
+            condition.</td>
+          </tr>
+          <tr>
+            <td><a href="print.html">Print edition</a></td>
+            <td>You want the whole series in one document with continuous pagination.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What is in scope</h2>
+      <table>
+        <caption>Inventory as captured on 2026-11-11.</caption>
+        <thead>
+          <tr><th style="width:34%">Source</th><th style="width:16%">Count</th><th>Where it lives</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Installed plugins</td><td>13</td>
+              <td><code>~/.copilot/installed-plugins/awesome-copilot/</code></td></tr>
+          <tr><td>Plugin skills</td><td>71 unique</td>
+              <td>72 skill directories; <code>csharp-nunit</code> ships in two plugins</td></tr>
+          <tr><td>Plugin agents</td><td>21</td>
+              <td>Provided by nine of the thirteen plugins</td></tr>
+          <tr><td>Canvas extensions</td><td>4</td>
+              <td><code>speckit-spec-board</code>, <code>dependabot-triage</code>,
+              <code>github-security</code>, <code>diagram</code></td></tr>
+          <tr><td>MCP servers</td><td>3</td>
+              <td>Serena (project scope); Playwright and Microsoft Learn (user scope)</td></tr>
+          <tr><td>Repo skills</td><td>37</td><td><code>.github/Skills/</code></td></tr>
+          <tr><td>Repo agents</td><td>50</td><td><code>.github/agents/</code></td></tr>
+          <tr><td>Repo prompts</td><td>82</td><td><code>.github/prompts/</code> including subfolders</td></tr>
+          <tr><td>Repo hooks</td><td>1</td><td><code>.github/hooks/speckit.json</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warn">
+        <p><strong>This book goes stale.</strong> Plugins update and skills appear. Run
+        <code>python check-drift.py</code> from the book folder after any plugin change. It is
+        read-only, reports missing, stale, version-changed, and newer-available tools, and exits
+        non-zero when the book no longer matches the machine.</p>
+        <p><strong>One maintenance note.</strong> The twelve chapter files are the source of truth
+        and are edited directly. <code>index-by-source.html</code>, <code>print.html</code>, and
+        <code>assets/search-index.json</code> are derived from them. After editing a chapter run
+        <code>python build-pages.py</code> to rebuild those three, and
+        <code>python build-pages.py --check</code> to confirm they are current. The drift check
+        catches broken anchors, missing assets, and missing search records, but only the builder
+        keeps the print edition in step with the chapters.</p>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="assets/nav.js?v=20261111b"></script>
+<script src="assets/search-index.js?v=20261111b"></script>
+<script src="assets/book.js?v=20261111b"></script>
+</body>
+</html>

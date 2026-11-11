@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP servers and environment — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 11</p>
+      <h1>MCP servers and environment</h1>
+      <div class="scope">
+        <p>The servers, hooks, and language services that give the agent its eyes and hands:
+        the MCP servers wired into the project and the user profile, the Speckit hook that journals
+        every prompt, and the two C# language servers that divide symbol work from diagnostics.</p>
+        <p>Configuration lives in three places: <code>.vscode/mcp.json</code> for project scope,
+        <code>~/.copilot/mcp-config.json</code> for user scope, and
+        <code>.github/hooks/speckit.json</code> for event hooks.</p>
+      </div>
+
+      <article class="entry"
+               id="mcp-and-environment--serena"
+               data-entry-name="serena"
+               data-entry-kind="mcp"
+               data-entry-source=".vscode/mcp.json (project scope)">
+        <header>
+          <h3 class="entry-name">serena</h3>
+          <span class="entry-source">.vscode/mcp.json (project scope)</span>
+        </header>
+        <p class="entry-purpose">Provides symbol-level navigation and editing backed by a Roslyn
+        language server, returning one definition instead of a whole file.</p>
+        <ul class="entry-uses">
+          <li>Finding every caller of a DAO method with <code>find_referencing_symbols</code>
+          before changing its signature.</li>
+          <li>Reading one method out of a 400-line class with <code>find_symbol</code> instead of
+          loading the entire file.</li>
+          <li>Renaming a ViewModel property safely across C# and XAML with
+          <code>rename_symbol</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How it is configured</dt>
+          <dd><code>uvx --from git+https://github.com/oraios/serena serena start-mcp-server
+          --context ide --project ${workspaceFolder}</code>. The <code>ide</code> context keeps
+          only symbol and memory tools, leaving file and shell work to the editor.</dd>
+          <dt>Boundaries</dt>
+          <dd>Exposes symbol editing, not a full diagnostics stream. Project settings live in
+          <code>.serena/project.yml</code>; memories live in <code>.serena/memories/</code>. It
+          will not edit non-code files such as JSON or YAML.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use Serena to find every caller of Dao_ReceivingLine/GetLinesByLoadAsync, then
+rename the method to GetLinesByReceiptAsync with rename_symbol and verify no
+ViewModel now touches the old name.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="mcp-and-environment--playwright"
+               data-entry-name="playwright"
+               data-entry-kind="mcp"
+               data-entry-source="~/.copilot/mcp-config.json (user scope)">
+        <header>
+          <h3 class="entry-name">playwright</h3>
+          <span class="entry-source">~/.copilot/mcp-config.json (user scope)</span>
+        </header>
+        <p class="entry-purpose">Drives a web browser through Playwright for web-page inspection,
+        interaction, and testing.</p>
+        <ul class="entry-uses">
+          <li>Exploring a web target that a reporting export or an internal dashboard opens in a
+          browser rather than a desktop window.</li>
+          <li>Generating a Playwright test for a documented web flow so the scenario is captured
+          as code.</li>
+          <li>Capturing a screenshot or the accessibility snapshot of a page during a web
+          investigation.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How it is configured</dt>
+          <dd><code>npx @playwright/mcp@latest</code>, registered in the user profile with all
+          tools enabled.</dd>
+          <dt>Boundaries</dt>
+          <dd>Web targets only. This repository is a WinUI 3 desktop application, so Playwright
+          cannot drive it; the WinUI UI-automation skills are the desktop equivalent.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use Playwright to open the export preview page, capture the accessibility
+snapshot, and confirm the grid columns match the report spec before writing any
+UI-automation code.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="mcp-and-environment--microsoft-learn"
+               data-entry-name="microsoft-learn"
+               data-entry-kind="mcp"
+               data-entry-source="~/.copilot/mcp-config.json (user scope)">
+        <header>
+          <h3 class="entry-name">microsoft-learn</h3>
+          <span class="entry-source">~/.copilot/mcp-config.json (user scope)</span>
+        </header>
+        <p class="entry-purpose">Serves official Microsoft documentation search, full page fetch,
+        and code samples through a streamable HTTP endpoint.</p>
+        <ul class="entry-uses">
+          <li>Pulling the current WinUI 3 <code>x:Bind</code> guidance before changing a XAML
+          binding.</li>
+          <li>Fetching a complete Microsoft Learn page when a search result is truncated.</li>
+          <li>Retrieving an official code sample when the work touches Windows App SDK or
+          FluentValidation APIs.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How it is configured</dt>
+          <dd>An HTTP server registered in the user profile at
+          <code>https://learn.microsoft.com/api/mcp</code>, with all tools enabled.</dd>
+          <dt>Boundaries</dt>
+          <dd>Documentation only. It does not inspect the local codebase or resolve repository
+          symbols; pair it with Serena for repo-grounded answers.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Search Microsoft Learn for WinUI 3 x:Bind UpdateSourceTrigger best practices,
+then fetch the top page in full before I update the settings XAML.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="mcp-and-environment--speckit-hook"
+               data-entry-name="speckit-hook"
+               data-entry-kind="hook"
+               data-entry-source=".github/hooks/speckit.json">
+        <header>
+          <h3 class="entry-name">speckit-hook</h3>
+          <span class="entry-source">.github/hooks/speckit.json</span>
+        </header>
+        <p class="entry-purpose">Journals two agent lifecycle events to the Spec-Kit companion so
+        the workflow tracks prompt submission and stop events.</p>
+        <ul class="entry-uses">
+          <li>Recording each submitted prompt with <code>speckit.companion.on-prompt</code> so the
+          companion can attach context.</li>
+          <li>Recording the end of a turn with <code>speckit.companion.on-stop</code>.</li>
+          <li>Keeping the companion's event log in step with the chat without manual bookkeeping.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>What it contains</dt>
+          <dd>Version 1 with two hooks. <code>userPromptSubmitted</code> runs
+          <code>python .specify/events.py speckit.companion.on-prompt user_prompt_submit 10
+          additionalContext</code>, and <code>agentStop</code> runs
+          <code>python .specify/events.py speckit.companion.on-stop stop 10</code>. Each entry
+          carries a 15-second timeout and a <code>__speckit_event__</code> flag.</dd>
+          <dt>Boundaries</dt>
+          <dd>Fires event journaling only. It does not run tests, write specs, or alter the
+          repository itself.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Before submitting, check .github/hooks/speckit.json to confirm both event
+hooks point at .specify/events.py and that the on-prompt and on-stop event names
+match the companion commands.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="mcp-and-environment--dotnet-plugin-lsp"
+               data-entry-name="dotnet-plugin-lsp"
+               data-entry-kind="mcp"
+               data-entry-source="dotnet@0.2.5">
+        <header>
+          <h3 class="entry-name">dotnet-plugin-lsp</h3>
+          <span class="entry-source">dotnet@0.2.5</span>
+        </header>
+        <p class="entry-purpose">The C# language server the <code>dotnet</code> plugin registers,
+        owning diagnostics, hover types, and go-to-definition for the editor.</p>
+        <ul class="entry-uses">
+          <li>Seeing compiler diagnostics in a file before running a full build.</li>
+          <li>Reading the inferred type at a position with hover when a variable's type is
+          unclear.</li>
+          <li>Jumping to the definition of a type or method from its call site.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How it is configured</dt>
+          <dd>Registered by the <code>dotnet</code> plugin via
+          <code>dnx roslyn-language-server --prerelease --stdio --daemon-mode
+          --autoLoadProjects</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reads and reports; it does not rewrite symbols across the codebase. Use Serena for
+          symbol-level edits and this server for the diagnostic view.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Run diagnostics for Module_Receiving/Data/Dao_ReceivingLine.cs with the dotnet
+language server and list every error with its line before I start editing.</code></pre>
+        </div>
+      </article>
+
+      <h2>Two C# language servers, one job each</h2>
+      <table class="decision-table">
+        <thead>
+          <tr><th>Question</th><th>Use</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Find, read, or rewrite a symbol</td>
+            <td>Serena</td>
+            <td>Symbol-level tools return one definition instead of a whole file.</td>
+          </tr>
+          <tr>
+            <td>See diagnostics, hover types, or go to definition</td>
+            <td>The <code>dotnet</code> plugin language server</td>
+            <td>Serena exposes symbol editing, not a full diagnostics stream.</td>
+          </tr>
+          <tr>
+            <td>Memory is tight</td>
+            <td>Drop the <code>dotnet</code> plugin language server first</td>
+            <td>Serena carries the daily editing workflow, so it stays.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Reach for Serena when you need to
+      read or change a symbol, and the <code>dotnet</code> language server when you need the
+      diagnostic truth of the current buffer. Playwright and Microsoft Learn are web and
+      documentation reach, not this desktop app's runtime, so leave them aside unless a web
+      target or an official reference is actually in play.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

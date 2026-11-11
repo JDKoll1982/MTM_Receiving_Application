@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security and supply chain — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 08</p>
+      <h1>Security and supply chain</h1>
+      <div class="scope">
+        <p>Keeping the repository safe to build and safe to change: reviewing a diff for
+        vulnerabilities, triaging the dependency drift that Dependabot surfaces, and checking an
+        agent prompt before it ships.</p>
+        <p>This chapter assumes the repo's hard security rules hold everywhere else: no secrets or
+        connection strings are committed, credentials come from configuration or environment
+        variables, Infor Visual is read-only, and MySQL writes go through stored procedures.</p>
+      </div>
+
+      <article class="entry"
+               id="security-supply-chain--github-security"
+               data-entry-name="github-security"
+               data-entry-kind="canvas"
+               data-entry-source="github-security@0.2.2">
+        <header>
+          <h3 class="entry-name">github-security</h3>
+          <span class="entry-source">github-security@0.2.2</span>
+        </header>
+        <p class="entry-purpose">Reviews the session's own changes for vulnerabilities and can load
+        or fix GitHub code-scanning (GHAS) alerts, exposing five tools:
+        <code>getExtensionState</code>, <code>loadLocalFindings</code>,
+        <code>fetchGhasFindings</code>, <code>runFindingWorkflow</code>, and
+        <code>reportFindingStatus</code>.</p>
+        <ul class="entry-uses">
+          <li>Checking an uncommitted receiving-module change for injection or secret leaks before
+          it becomes a pull request.</li>
+          <li>Loading this repo's open GHAS code-scanning alerts into the canvas so the findings
+          match what CI reported.</li>
+          <li>Walking a fix workflow for a selected finding and marking the result verified or
+          still present.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How to open</dt>
+          <dd>Ask for a security review in chat; the findings render in the Security canvas beside
+          the conversation.</dd>
+          <dt>Boundaries</dt>
+          <dd>Surfaces and fixes what it is given. It does not invent findings, and a local finding
+          may only be marked resolved after verification.</dd>
+        </dl>
+        <figure class="entry-preview">
+          <img src="../assets/previews/github-security.png" alt="Preview of the GitHub Security canvas">
+          <figcaption>The security findings canvas as installed.</figcaption>
+        </figure>
+      </article>
+
+      <article class="entry"
+               id="security-supply-chain--dependabot-triage"
+               data-entry-name="dependabot-triage"
+               data-entry-kind="canvas"
+               data-entry-source="dependabot-triage@1.0.0">
+        <header>
+          <h3 class="entry-name">dependabot-triage</h3>
+          <span class="entry-source">dependabot-triage@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Triages open Dependabot pull requests: checks, mergeability,
+        related security alerts, and overlap detection, with sign-off, merge, and Dependabot
+        commands.</p>
+        <ul class="entry-uses">
+          <li>Deciding which of a burst of Dependabot PRs can merge now and which need a closer
+          look first.</li>
+          <li>Spotting overlapping bumps, such as two PRs pulling the same Windows App SDK
+          dependency in different directions.</li>
+          <li>Relating a version bump to the security alert that motivated it before signing off.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>How to open</dt>
+          <dd>Ask to triage Dependabot PRs in chat; the queue renders in the canvas for review and
+          action.</dd>
+          <dt>Context</dt>
+          <dd>This repo pins roughly thirty NuGet packages, including previews such as
+          <code>Microsoft.Windows.SDK.NET</code> 10.0.18362.6-preview and
+          <code>Microsoft.WindowsAppSDK</code> 2.4.0, so version bumps need evidence rather than a
+          rubber stamp.</dd>
+          <dt>Boundaries</dt>
+          <dd>Organizes and executes triage; it does not prove a bump is safe on its own.</dd>
+        </dl>
+        <figure class="entry-preview">
+          <img src="../assets/previews/dependabot-triage.png" alt="Preview of the Dependabot triage canvas">
+          <figcaption>The Dependabot triage canvas as installed.</figcaption>
+        </figure>
+      </article>
+
+      <article class="entry"
+               id="security-supply-chain--ai-prompt-engineering-safety-review"
+               data-entry-name="ai-prompt-engineering-safety-review"
+               data-entry-kind="skill"
+               data-entry-source="testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">ai-prompt-engineering-safety-review</h3>
+          <span class="entry-source">testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Analyses a prompt for safety, bias, security vulnerability, and
+        effectiveness, returning improvement recommendations.</p>
+        <ul class="entry-uses">
+          <li>Reviewing a module-agent prompt before it is committed under <code>.github/</code> so
+          it does not instruct an agent to commit secrets.</li>
+          <li>Checking an end-user guidance prompt for bias or an unsafe instruction before it
+          reaches a live tool.</li>
+          <li>Hardening an instruction file against prompt-injection style wording before shipping
+          it.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Boundaries</dt>
+          <dd>Reviews prompts, not code. It flags wording and guidance problems and leaves the code
+          fixes to the security canvas.</dd>
+        </dl>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>Suggested order.</strong> Run <code>github-security</code> on your
+      own diff first, then <code>dependabot-triage</code> when dependency drift piles up, and the
+      prompt-safety skill before shipping any agent prompt.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>

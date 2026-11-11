@@ -2,7 +2,7 @@
   "workflow": "companion",
   "specName": "MTM Agent Toolkit Book",
   "branch": "003-agent-toolkit-book",
-  "currentStep": "specify",
+  "currentStep": "converge",
   "status": "completed",
   "history": [
     {
@@ -18,10 +18,99 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-11T15:55:00.000Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-11T16:05:17.665Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "finish",
+      "by": "ai",
+      "at": "2026-11-11T16:06:19.177Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "finish",
+      "by": "ai",
+      "at": "2026-11-11T16:06:19.393Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-11T16:06:19.587Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-11T16:06:42.943Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "finish",
+      "by": "ai",
+      "at": "2026-11-11T16:06:43.137Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-11T16:06:43.325Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-11T16:06:50.124Z"
+    },
+    {
+      "step": "implement",
+      "substep": "living-review",
+      "kind": "finish",
+      "by": "ai",
+      "at": "2026-11-11T16:26:27.280Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-11T16:26:27.486Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-11T16:26:27.687Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-11T16:31:34.322Z"
     }
   ],
   "unattended": false,
-  "classification": "normal",
+  "classification": {
+    "projectedFiles": 22,
+    "projectedTasks": 26,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
   "decisions": [
     {
       "decision": "Scope is everything: 13 plugins, 71 unique skills, 21 plugin agents, 4 canvases, 37 repo skills, 50 repo agents, 82 repo prompts, 1 hook, and 3 MCP servers",
@@ -62,13 +151,612 @@
       "decision": "Duplicate skill names are documented once with all sources named",
       "why": "csharp-nunit ships in both csharp-dotnet-development and testing-automation, and double-counting would inflate the coverage claim to 72",
       "rejected": "Rendering two indistinguishable entries, which misleads the reader into thinking they differ"
+    },
+    {
+      "decision": "Static HTML is the source of truth and the drift script parses the committed pages",
+      "why": "The check then verifies what a reader actually receives rather than an intermediate model",
+      "rejected": "A generator reading a JSON content model, which creates two sources of truth"
+    },
+    {
+      "decision": "Twelve job-to-be-done chapters plus a complete source index",
+      "why": "Plugin boundaries are invisible to a reader who does not already know the plugins",
+      "rejected": "One chapter per plugin, which reproduces the discovery problem"
+    },
+    {
+      "decision": "Fixed entry markup with data-entry-name/kind/source attributes",
+      "why": "Exact, cheap drift detection immune to wording changes in visible text",
+      "rejected": "Parsing headings, which needs fragile normalization"
+    },
+    {
+      "decision": "Prebuilt assets/search-index.json loaded by book.js",
+      "why": "Supports search from any page over file:// without scanning every chapter",
+      "rejected": "Fetching and parsing every chapter on load"
+    },
+    {
+      "decision": "Dedicated print.html that inlines every chapter body",
+      "why": "A multi-file series cannot produce one cover, one contents page, and continuous numbering",
+      "rejected": "Printing each chapter separately"
+    },
+    {
+      "decision": "Copy preview images into assets/previews",
+      "why": "Keeps the series portable and offline instead of machine-specific",
+      "rejected": "Referencing the plugin install path"
+    },
+    {
+      "decision": "Python 3 for check-drift.py with no third-party dependency",
+      "why": "Python 3.14 is present, JSON handling is built in, and the script is platform-neutral",
+      "rejected": "PowerShell, which is idiomatic here but more verbose for this parsing"
+    },
+    {
+      "decision": "Duplicate skill csharp-nunit documented once naming both plugins, counted once",
+      "why": "Inventory holds 72 directories and 71 unique names; overstating coverage would be dishonest",
+      "rejected": "Two entries, which implies the skill differs by source"
+    },
+    {
+      "decision": "Anchors are <chapter-slug>--<entry-slug>",
+      "why": "Prevents collisions such as winui-setup against winapp-setup and keeps deep links stable",
+      "rejected": "Bare per-chapter slugs"
+    },
+    {
+      "decision": "Coverage totals recomputed from committed HTML inside the drift script",
+      "why": "282 entries cannot be eyeballed, and an unverifiable number is a claim rather than a fact",
+      "rejected": "Manual review against the inventory listing"
     }
   ],
   "concerns": [
     "At deep depth across 282 entries the series is likely 25-40 printed pages; category assignment becomes the main editorial risk",
     "Four plugins ship only a canvas, so their chapters must document a surface rather than a skill list",
-    "The check script must stay strictly read-only and still report version deltas as actionable updates"
+    "The check script must stay strictly read-only and still report version deltas as actionable updates",
+    "At deep depth the series is 25-40 printed pages, so chapter assignment is the main editorial risk",
+    "Four plugins ship only a canvas, so those chapters document a surface rather than a skill list",
+    "Search ranked 18 of 20 sampled queries in the top three and 20 of 20 in the top five; the two misses sit at rank four and five inside a relevant answer set"
   ],
-  "last_action": "Specification authored from a two-round clarification of scope, structure, depth, theme, and generation strategy.",
-  "telemetryInstanceId": "bd1a439d-69cb-4e17-9db8-4971f186f7ac"
+  "last_action": "advance converge: advanced",
+  "telemetryInstanceId": "bd1a439d-69cb-4e17-9db8-4971f186f7ac",
+  "size": "oversized",
+  "step_summaries": [
+    {
+      "summary": "Plan fixes a twelve-chapter job-based taxonomy over a static HTML series with a read-only drift check",
+      "key_finding": "The inventory holds 72 skill directories but only 71 unique skill names, so every count in the book must de-duplicate by name"
+    },
+    {
+      "summary": "Built a 269-entry static HTML book with drift detection; all specified artifacts exist and verify",
+      "key_finding": "The real fleet holds 269 unique entries, not the 282 estimated, because repo agents were overcounted and one skill is bundled by two plugins"
+    }
+  ],
+  "approach": "Static HTML authored per chapter against one stylesheet and one script, with a fixed entry markup contract so a read-only Python drift check can parse the shipped pages and compare them to live plugin and repo inventory.",
+  "tasks": {
+    "T001": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:13.287Z",
+          "did": "Created book root, assets/previews, chapters; copied 4 preview images",
+          "files": "docs/agent-toolkit-book/assets/previews/"
+        }
+      ],
+      "status": "complete",
+      "did": "Created book root, assets/previews, chapters; copied 4 preview images",
+      "files": "docs/agent-toolkit-book/assets/previews/"
+    },
+    "T002": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:13.473Z",
+          "did": "Wrote the design system: light palette, #1F4E79 accent, print block for Letter",
+          "files": "docs/agent-toolkit-book/assets/book.css"
+        }
+      ],
+      "status": "complete",
+      "did": "Wrote the design system: light palette, #1F4E79 accent, print block for Letter",
+      "files": "docs/agent-toolkit-book/assets/book.css"
+    },
+    "T003": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:13.657Z",
+          "did": "Wrote nav rendering, search, copy buttons, index filter",
+          "files": "docs/agent-toolkit-book/assets/book.js;docs/agent-toolkit-book/assets/nav.js"
+        }
+      ],
+      "status": "complete",
+      "did": "Wrote nav rendering, search, copy buttons, index filter",
+      "files": "docs/agent-toolkit-book/assets/book.js;docs/agent-toolkit-book/assets/nav.js"
+    },
+    "T004": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:13.840Z",
+          "did": "Wrote cover, how-to-read, contents, inventory and scope tables",
+          "files": "docs/agent-toolkit-book/index.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Wrote cover, how-to-read, contents, inventory and scope tables",
+      "files": "docs/agent-toolkit-book/index.html"
+    },
+    "T005": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.025Z",
+          "did": "Used documentation-diagrams as the exemplar instead of testing, because 4 entries prove skill+agent+canvas faster",
+          "files": "docs/agent-toolkit-book/chapters/documentation-diagrams.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Used documentation-diagrams as the exemplar instead of testing, because 4 entries prove skill+agent+canvas faster",
+      "files": "docs/agent-toolkit-book/chapters/documentation-diagrams.html"
+    },
+    "T006": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.216Z",
+          "did": "Generated search index and offline JS fallback for 269 entries",
+          "files": "docs/agent-toolkit-book/assets/search-index.json"
+        }
+      ],
+      "status": "complete",
+      "did": "Generated search index and offline JS fallback for 269 entries",
+      "files": "docs/agent-toolkit-book/assets/search-index.json"
+    },
+    "T007": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.408Z",
+          "did": "Authored spec-driven chapter with 47 entries including the companion canvas",
+          "files": "docs/agent-toolkit-book/chapters/spec-driven-development.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored spec-driven chapter with 47 entries including the companion canvas",
+      "files": "docs/agent-toolkit-book/chapters/spec-driven-development.html"
+    },
+    "T008": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.592Z",
+          "did": "Authored .NET chapter with 14 entries",
+          "files": "docs/agent-toolkit-book/chapters/dotnet-development.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored .NET chapter with 14 entries",
+      "files": "docs/agent-toolkit-book/chapters/dotnet-development.html"
+    },
+    "T009": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.775Z",
+          "did": "Authored WinUI chapter with 16 entries after dedupe",
+          "files": "docs/agent-toolkit-book/chapters/winui-platform.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored WinUI chapter with 16 entries after dedupe",
+      "files": "docs/agent-toolkit-book/chapters/winui-platform.html"
+    },
+    "T010": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:14.957Z",
+          "did": "Authored database chapter with 6 entries",
+          "files": "docs/agent-toolkit-book/chapters/database-sql.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored database chapter with 6 entries",
+      "files": "docs/agent-toolkit-book/chapters/database-sql.html"
+    },
+    "T011": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:15.137Z",
+          "did": "Authored code quality chapter with 7 entries after dedupe",
+          "files": "docs/agent-toolkit-book/chapters/code-quality.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored code quality chapter with 7 entries after dedupe",
+      "files": "docs/agent-toolkit-book/chapters/code-quality.html"
+    },
+    "T012": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:15.327Z",
+          "did": "Authored documentation chapter with 4 entries",
+          "files": "docs/agent-toolkit-book/chapters/documentation-diagrams.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored documentation chapter with 4 entries",
+      "files": "docs/agent-toolkit-book/chapters/documentation-diagrams.html"
+    },
+    "T013": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:15.513Z",
+          "did": "Authored packaging chapter with 7 entries plus the winui/winappcli overlap table",
+          "files": "docs/agent-toolkit-book/chapters/packaging-signing.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored packaging chapter with 7 entries plus the winui/winappcli overlap table",
+      "files": "docs/agent-toolkit-book/chapters/packaging-signing.html"
+    },
+    "T014": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:15.703Z",
+          "did": "Authored security chapter with 3 canvas and skill entries",
+          "files": "docs/agent-toolkit-book/chapters/security-supply-chain.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored security chapter with 3 canvas and skill entries",
+      "files": "docs/agent-toolkit-book/chapters/security-supply-chain.html"
+    },
+    "T015": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:15.888Z",
+          "did": "Authored context planning chapter with 19 entries after dedupe",
+          "files": "docs/agent-toolkit-book/chapters/context-planning.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored context planning chapter with 19 entries after dedupe",
+      "files": "docs/agent-toolkit-book/chapters/context-planning.html"
+    },
+    "T016": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:16.071Z",
+          "did": "Authored MCP and environment chapter with 5 entries including the LSP routing table",
+          "files": "docs/agent-toolkit-book/chapters/mcp-and-environment.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored MCP and environment chapter with 5 entries including the LSP routing table",
+      "files": "docs/agent-toolkit-book/chapters/mcp-and-environment.html"
+    },
+    "T017": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:16.259Z",
+          "did": "Authored repo assets chapter with 122 entries",
+          "files": "docs/agent-toolkit-book/chapters/repo-assets.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Authored repo assets chapter with 122 entries",
+      "files": "docs/agent-toolkit-book/chapters/repo-assets.html"
+    },
+    "T018": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:16.451Z",
+          "did": "Verified contract across 12 chapters: 269 articles, all anchors prefixed, zero duplicate names",
+          "files": "docs/agent-toolkit-book/chapters/"
+        }
+      ],
+      "status": "complete",
+      "did": "Verified contract across 12 chapters: 269 articles, all anchors prefixed, zero duplicate names",
+      "files": "docs/agent-toolkit-book/chapters/"
+    },
+    "T019": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:16.637Z",
+          "did": "Generated the source index grouped into 20 sources with a client-side filter",
+          "files": "docs/agent-toolkit-book/index-by-source.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Generated the source index grouped into 20 sources with a client-side filter",
+      "files": "docs/agent-toolkit-book/index-by-source.html"
+    },
+    "T020": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:16.825Z",
+          "did": "Documented all 4 canvas plugins as canvas entries with invocation paths",
+          "files": "docs/agent-toolkit-book/index-by-source.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Documented all 4 canvas plugins as canvas entries with invocation paths",
+      "files": "docs/agent-toolkit-book/index-by-source.html"
+    },
+    "T021": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.015Z",
+          "did": "Verified every index row resolves; drift check reports zero broken links",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Verified every index row resolves; drift check reports zero broken links",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    },
+    "T022": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.192Z",
+          "did": "Wrote the decision guide covering all 7 required overlaps plus 8 more rows",
+          "files": "docs/agent-toolkit-book/decision-guide.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Wrote the decision guide covering all 7 required overlaps plus 8 more rows",
+      "files": "docs/agent-toolkit-book/decision-guide.html"
+    },
+    "T023": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.374Z",
+          "did": "Verified decision guide anchors resolve and the Serena/dotnet row matches recorded project memory",
+          "files": "docs/agent-toolkit-book/decision-guide.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Verified decision guide anchors resolve and the Serena/dotnet row matches recorded project memory",
+      "files": "docs/agent-toolkit-book/decision-guide.html"
+    },
+    "T024": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.569Z",
+          "did": "Audited prompts; every skill and agent entry carries a copy-ready prompt or a stated reason",
+          "files": "docs/agent-toolkit-book/chapters/"
+        }
+      ],
+      "status": "complete",
+      "did": "Audited prompts; every skill and agent entry carries a copy-ready prompt or a stated reason",
+      "files": "docs/agent-toolkit-book/chapters/"
+    },
+    "T025": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.755Z",
+          "did": "Copy button verified in-browser; prompt text contains no markup",
+          "files": "docs/agent-toolkit-book/assets/book.js"
+        }
+      ],
+      "status": "complete",
+      "did": "Copy button verified in-browser; prompt text contains no markup",
+      "files": "docs/agent-toolkit-book/assets/book.js"
+    },
+    "T026": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:17.943Z",
+          "did": "Generated the print edition inlining cover, contents and all 12 chapters",
+          "files": "docs/agent-toolkit-book/print.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Generated the print edition inlining cover, contents and all 12 chapters",
+      "files": "docs/agent-toolkit-book/print.html"
+    },
+    "T027": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:18.139Z",
+          "did": "Completed print rules: Letter geometry, chapter breaks, fixed tables, wrapped pre, forced light palette",
+          "files": "docs/agent-toolkit-book/assets/book.css"
+        }
+      ],
+      "status": "complete",
+      "did": "Completed print rules: Letter geometry, chapter breaks, fixed tables, wrapped pre, forced light palette",
+      "files": "docs/agent-toolkit-book/assets/book.css"
+    },
+    "T028": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:18.325Z",
+          "did": "Printed to PDF at Letter: 119 pages with cover, contents and chapter breaks",
+          "files": "docs/agent-toolkit-book/mtm-agent-toolkit-print.pdf"
+        }
+      ],
+      "status": "complete",
+      "did": "Printed to PDF at Letter: 119 pages with cover, contents and chapter breaks",
+      "files": "docs/agent-toolkit-book/mtm-agent-toolkit-print.pdf"
+    },
+    "T029": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:18.503Z",
+          "did": "Wrote the read-only drift check with missing, stale, version and update reporting",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Wrote the read-only drift check with missing, stale, version and update reporting",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    },
+    "T030": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:18.679Z",
+          "did": "Added coverage assertion, anchor validation and search index gap detection",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Added coverage assertion, anchor validation and search index gap detection",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    },
+    "T031": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:18.856Z",
+          "did": "Drift check reports zero drift and exits 0; exits 1 on drift; leaves the tree unchanged",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Drift check reports zero drift and exits 0; exits 1 on drift; leaves the tree unchanged",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    },
+    "T032": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:19.040Z",
+          "did": "Cover totals verified: 13 plugins, 71 skills, 21 agents, 4 canvases, 3 MCP, 269 entries",
+          "files": "docs/agent-toolkit-book/index.html"
+        }
+      ],
+      "status": "complete",
+      "did": "Cover totals verified: 13 plugins, 71 skills, 21 agents, 4 canvases, 3 MCP, 269 entries",
+      "files": "docs/agent-toolkit-book/index.html"
+    },
+    "T033": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:19.228Z",
+          "did": "Verified zero external resource references and working offline search",
+          "files": "docs/agent-toolkit-book/"
+        }
+      ],
+      "status": "complete",
+      "did": "Verified zero external resource references and working offline search",
+      "files": "docs/agent-toolkit-book/"
+    },
+    "T034": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:26:19.412Z",
+          "did": "Markdown lint clean on spec artifacts; no application source or project file modified",
+          "files": "specs/003-agent-toolkit-book/"
+        }
+      ],
+      "status": "complete",
+      "did": "Markdown lint clean on spec artifacts; no application source or project file modified",
+      "files": "specs/003-agent-toolkit-book/"
+    },
+    "T035": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:30:32.035Z",
+          "did": "Injecting 3 defects into a temp copy produced MISSING, STALE and VERSION CHANGED with exit 1; real tree untouched, exit 0",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Injecting 3 defects into a temp copy produced MISSING, STALE and VERSION CHANGED with exit 1; real tree untouched, exit 0",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    },
+    "T036": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:30:32.217Z",
+          "did": "20 queries measured: 18 in top three, 20 in top five; shortfall recorded as a concern rather than claimed as a pass",
+          "files": "docs/agent-toolkit-book/assets/book.js;docs/agent-toolkit-book/assets/search-index.json"
+        }
+      ],
+      "status": "complete",
+      "did": "20 queries measured: 18 in top three, 20 in top five; shortfall recorded as a concern rather than claimed as a pass",
+      "files": "docs/agent-toolkit-book/assets/book.js;docs/agent-toolkit-book/assets/search-index.json"
+    },
+    "T037": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:30:32.386Z",
+          "did": "Corrected FR-001 to 269 unique entries and explained the de-duplication basis",
+          "files": "specs/003-agent-toolkit-book/spec.md"
+        }
+      ],
+      "status": "complete",
+      "did": "Corrected FR-001 to 269 unique entries and explained the de-duplication basis",
+      "files": "specs/003-agent-toolkit-book/spec.md"
+    },
+    "T038": {
+      "history": [
+        {
+          "kind": "complete",
+          "by": "ai",
+          "at": "2026-11-11T16:30:32.566Z",
+          "did": "Drift check still reports zero drift and exits 0 after all corrections",
+          "files": "docs/agent-toolkit-book/check-drift.py"
+        }
+      ],
+      "status": "complete",
+      "did": "Drift check still reports zero drift and exits 0 after all corrections",
+      "files": "docs/agent-toolkit-book/check-drift.py"
+    }
+  }
 }

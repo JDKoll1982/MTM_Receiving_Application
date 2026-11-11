@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C# and .NET development — MTM Agent Toolkit</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/book.css?v=20261111b">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" data-nav></aside>
+  <main class="main">
+    <div class="page">
+      <p class="eyebrow">Chapter 02</p>
+      <h1>C# and .NET development</h1>
+      <div class="scope">
+        <p>Building and fixing the application itself: routing to the narrowest C# specialist,
+        behavior-preserving refactors, MSBuild diagnosis, local SDKs, async and best-practice
+        guidance, and the test-framework skills. The stack is WinUI 3 on
+        <code>net10.0-windows10.0.22621.0</code> with the Windows App SDK, MediatR 14,
+        FluentValidation 12, Serilog, OpenTelemetry, Mapster, and CommunityToolkit.Mvvm, plus
+        Roslynator analyzers and CSharpier formatting.</p>
+        <p>The MVVM flow here is always View &rarr; ViewModel &rarr; Service &rarr; DAO. For the
+        database end of that chain — MySQL 5.7 stored procedures and the read-only Infor Visual
+        SQL Server — see the database chapter.</p>
+      </div>
+
+      <article class="entry"
+               id="dotnet-development--csharp-expert"
+               data-entry-name="csharp-expert"
+               data-entry-kind="skill"
+               data-entry-source="dotnet@0.2.5">
+        <header>
+          <h3 class="entry-name">csharp-expert</h3>
+          <span class="entry-source">dotnet@0.2.5</span>
+        </header>
+        <p class="entry-purpose">Routes a C#/.NET request to the narrowest installed specialist
+        skill, or answers C# semantics directly when no narrower specialist exists.</p>
+        <ul class="entry-uses">
+          <li>Picking the right specialist when a request mixes WinUI 3, a test framework, and a
+          DAO change across <code>Module_Receiving/</code> and <code>Module_Core/</code>.</li>
+          <li>Answering a C# 13 language question — records, required members, collection
+          expressions — without launching a full refactor.</li>
+          <li>Deciding whether <code>csharp-refactoring</code> or <code>msbuild</code> should own
+          the next step of a multi-part change.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An installed specialist to route to; otherwise it answers the question itself.</dd>
+          <dt>Boundaries</dt>
+          <dd>Routes and answers questions. It does not perform the refactor or build fix it hands
+          off.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Route this request to the narrowest installed C# specialist: refactor
+ViewModel_Receiving_Workflow in Module_Receiving to replace a Clear() plus Add() loop
+with a new ObservableCollection instance. If no specialist fits, answer the C#
+question directly.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-refactoring"
+               data-entry-name="csharp-refactoring"
+               data-entry-kind="skill"
+               data-entry-source="dotnet@0.2.5">
+        <header>
+          <h3 class="entry-name">csharp-refactoring</h3>
+          <span class="entry-source">dotnet@0.2.5</span>
+        </header>
+        <p class="entry-purpose">Performs behavior-preserving refactors — renames, method
+        extraction, inlining, and nullability changes — while keeping any behavior-changing part
+        separate.</p>
+        <ul class="entry-uses">
+          <li>Renaming a DAO method across <code>Module_Receiving/</code> and its tests without
+          breaking the <code>Model_Dao_Result</code> callers.</li>
+          <li>Splitting a nullable-annotation sweep from the behavior fix it was accidentally
+          bundled with.</li>
+          <li>Extracting duplicated load-and-logic code in a Service into a private helper with no
+          change to output.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A compiling baseline — <code>dotnet build MTM_Receiving_Application.slnx</code> — so
+          the refactor can be verified green.</dd>
+          <dt>Boundaries</dt>
+          <dd>Refactors only. It declines the behavior-changing part of a mixed request rather than
+          folding it in.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-refactoring skill to rename Dao_ReceivingLine.GetByLoadAsync
+to GetLinesByLoadAsync everywhere, including MTM_Receiving_Application.Tests. Keep
+behavior identical and report any call site you cannot safely update.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--msbuild"
+               data-entry-name="msbuild"
+               data-entry-kind="skill"
+               data-entry-source="dotnet@0.2.5">
+        <header>
+          <h3 class="entry-name">msbuild</h3>
+          <span class="entry-source">dotnet@0.2.5</span>
+        </header>
+        <p class="entry-purpose">Diagnoses MSBuild and <code>.csproj</code> issues — failing
+        restore or build, slow evaluation, custom targets, and <code>.binlog</code> replay.</p>
+        <ul class="entry-uses">
+          <li>Explaining why <code>MTM_Receiving_Application.csproj</code> fails to restore after
+          a <code>PackageReference</code> change.</li>
+          <li>Replaying a <code>.binlog</code> to find why the x64-only <code>Platforms</code>
+          property slowed a no-change build.</li>
+          <li>Auditing the <code>BuildSyncToolExe</code> custom target that runs before
+          <code>BeforeBuild</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The failing <code>.binlog</code> or the <code>.csproj</code>/<code>.props</code>/
+          <code>.targets</code> files in question.</dd>
+          <dt>Boundaries</dt>
+          <dd>Investigates and explains build files. It does not refactor C# or decide project-system
+          migrations on its own.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the msbuild skill to investigate a failing dotnet build of
+MTM_Receiving_Application.slnx. Capture a .binlog, replay it, and explain which
+target or PackageReference caused the restore failure before any edit.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--setup-local-sdk"
+               data-entry-name="setup-local-sdk"
+               data-entry-kind="skill"
+               data-entry-source="dotnet@0.2.5">
+        <header>
+          <h3 class="entry-name">setup-local-sdk</h3>
+          <span class="entry-source">dotnet@0.2.5</span>
+        </header>
+        <p class="entry-purpose">Installs a .NET SDK locally for preview or pinned-version testing
+        without changing the machine-wide installation.</p>
+        <ul class="entry-uses">
+          <li>Trying a .NET preview against the <code>net10.0-windows10.0.22621.0</code> target
+          before the team adopts it.</li>
+          <li>Pinning a specific SDK version for reproducible builds of
+          <code>MTM_Receiving_Application.slnx</code>.</li>
+          <li>Testing a <code>global.json</code> pin without touching the Visual Studio-installed
+          SDK.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>None beyond the local install directory. The project stays on its existing SDK until a
+          <code>global.json</code> opts in.</dd>
+          <dt>Boundaries</dt>
+          <dd>Installs and configures a local SDK. It does not migrate the project to a new target
+          framework.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the setup-local-sdk skill to install .NET SDK 10.0.100 locally, add a
+global.json pinning that version, and run dotnet build
+MTM_Receiving_Application.slnx with it. Leave the machine-wide SDK untouched.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-async"
+               data-entry-name="csharp-async"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">csharp-async</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Gives async/await best practices for .NET code, including
+        fire-and-forget risks, <code>ConfigureAwait</code>, and cancellation.</p>
+        <ul class="entry-uses">
+          <li>Reviewing an async ViewModel command that swallows exceptions from a Service call in
+          <code>Module_Receiving/</code>.</li>
+          <li>Ensuring every <code>Async</code>-suffixed method in <code>Module_Core/</code>
+          actually awaits and passes <code>CancellationToken</code>.</li>
+          <li>Avoiding deadlocks when a ViewModel awaits a DAO call on the UI thread in WinUI 3.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>Existing async C# to review; this repo's <code>Async</code> suffix naming applies.</dd>
+          <dt>Boundaries</dt>
+          <dd>Advises on async patterns. It does not rewrite synchronous code unless asked.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-async skill to review SaveLineAsync in
+ViewModel_Receiving_POEntry. Confirm it awaits the mediator call, propagates
+CancellationToken, and handles faults without fire-and-forget, then list the minimal
+fixes.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--dotnet-best-practices"
+               data-entry-name="dotnet-best-practices"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">dotnet-best-practices</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Checks that .NET/C# code meets best practices for the solution or
+        project.</p>
+        <ul class="entry-uses">
+          <li>Auditing a new DAO in <code>Module_Receiving/</code> for disposal, naming, and
+          <code>Model_Dao_Result</code> usage.</li>
+          <li>Reviewing a Service for dependency-injection, nullability, and async best practices.</li>
+          <li>Confirming DI registration lives in <code>Infrastructure/DependencyInjection/</code>
+          rather than <code>App.xaml.cs</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A scoped set of files or one project to review.</dd>
+          <dt>Boundaries</dt>
+          <dd>Reports guidance. It does not apply the fixes or rewrite architecture.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the dotnet-best-practices skill on Module_Dunnage. Check that services
+hold business logic, DAOs return Model_Dao_Result, DI registrations live under
+Infrastructure/DependencyInjection, and async methods end with Async. Report
+violations with file paths.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--dotnet-upgrade"
+               data-entry-name="dotnet-upgrade"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">dotnet-upgrade</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Provides a structured workflow for upgrading the .NET framework
+        version across a solution.</p>
+        <ul class="entry-uses">
+          <li>Planning a future move off <code>net10.0-windows10.0.22621.0</code> when the next LTS
+          ships.</li>
+          <li>Sequencing a package and target-framework bump across the main project and
+          <code>MTM_Receiving_Application.Tests</code>.</li>
+          <li>Deciding whether the Windows App SDK and <code>MySql.Data</code> versions block a
+          target-framework upgrade.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A committed baseline so each project upgrade can be rolled back independently.</dd>
+          <dt>Boundaries</dt>
+          <dd>Provides the upgrade workflow. It will not change DB schema, stored procedures, or DI
+          wiring without approval.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the dotnet-upgrade skill to plan an upgrade of
+MTM_Receiving_Application.csproj and MTM_Receiving_Application.Tests. Report the
+upgrade order, Windows App SDK and MySql.Data compatibility checks, and the CI/CD
+files that must follow.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--resx-source-generator-migration"
+               data-entry-name="resx-source-generator-migration"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">resx-source-generator-migration</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Migrates <code>.resx</code> resources to source generators so string
+        lookups become strongly typed.</p>
+        <ul class="entry-uses">
+          <li>Replacing runtime <code>.resx</code> lookups in <code>Module_Settings/</code> with
+          generated accessors.</li>
+          <li>Eliminating magic string keys for label text used across
+          <code>Module_Receiving/</code> views.</li>
+          <li>Verifying existing resources map one-to-one before the switch.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>The <code>.resx</code> files to migrate and their consuming call sites.</dd>
+          <dt>Boundaries</dt>
+          <dd>Migrates resources. It does not retranslate strings or alter user-facing copy.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the resx-source-generator-migration skill to migrate the .resx files
+under Module_Settings to source-generated accessors. Keep every string key and
+value identical and update call sites to the generated members.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--aspnet-minimal-api-openapi"
+               data-entry-name="aspnet-minimal-api-openapi"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">aspnet-minimal-api-openapi</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Creates ASP.NET Core minimal API endpoints with correct OpenAPI
+        metadata.</p>
+        <ul class="entry-uses">
+          <li>Prototyping a small read-only HTTP endpoint to expose receiving status outside the
+          desktop app.</li>
+          <li>Adding OpenAPI annotations to a scratch API for a future companion service.</li>
+          <li>Generating a <code>.http</code> test file for a new endpoint.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>An ASP.NET Core host, which this repository does not have.</dd>
+          <dt>Boundaries</dt>
+          <dd>This repo is a WinUI 3 desktop app, not ASP.NET. The skill is useful only for side
+          experiments, never for the shipping app.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the aspnet-minimal-api-openapi skill to scaffold a throwaway minimal API
+project in a scratch folder that exposes receiving-line counts. Do not modify the
+WinUI 3 solution; this is a standalone experiment.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-mstest"
+               data-entry-name="csharp-mstest"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">csharp-mstest</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Gives MSTest 3.x/4.x patterns and modern assertion APIs.</p>
+        <ul class="entry-uses">
+          <li>Writing or reviewing MSTest tests with modern <code>Assert.That</code>-style
+          assertions when MSTest is chosen.</li>
+          <li>Deciding MSTest lifecycle and data-driven attributes for a new test class.</li>
+          <li>Converting legacy <code>Assert.AreEqual</code> style to modern assertions.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test project that already targets MSTest.</dd>
+          <dt>Boundaries</dt>
+          <dd>MSTest-specific only. This repo's own tests use xUnit, so it applies to new or external
+          MSTest work.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-mstest skill to show the MSTest 3.x assertion and data-driven
+test patterns, applied to a sample test class named Dao_ReceivingLineTests. Do not
+change the existing xUnit test project.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-nunit"
+               data-entry-name="csharp-nunit"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0 + testing-automation@1.0.0">
+        <header>
+          <h3 class="entry-name">csharp-nunit</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0 + testing-automation@1.0.0</span>
+        </header>
+        <p class="entry-purpose">Gives NUnit patterns and data-driven tests.</p>
+        <ul class="entry-uses">
+          <li>Writing NUnit <code>TestCase</code>/<code>TestCaseSource</code> tests when NUnit is the
+          chosen framework.</li>
+          <li>Migrating an existing test suite into NUnit conventions.</li>
+          <li>Comparing NUnit lifecycle against xUnit before choosing a framework for new tests.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test project that targets NUnit.</dd>
+          <dt>Boundaries</dt>
+          <dd>One skill bundled by two plugins —
+          <code>csharp-dotnet-development@1.2.0</code> and <code>testing-automation@1.0.0</code> —
+          so it is counted once, not twice.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-nunit skill to show NUnit data-driven test patterns with
+TestCase, applied to a sample DAO validation test. This repo's own suite is xUnit,
+so leave MTM_Receiving_Application.Tests unchanged.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-tunit"
+               data-entry-name="csharp-tunit"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">csharp-tunit</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Gives TUnit patterns and data-driven tests.</p>
+        <ul class="entry-uses">
+          <li>Writing TUnit tests with source-generated attributes when TUnit is chosen.</li>
+          <li>Comparing TUnit's attribute model to xUnit for a potential new test project.</li>
+          <li>Prototyping a TUnit test class to evaluate the framework.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test project that targets TUnit.</dd>
+          <dt>Boundaries</dt>
+          <dd>TUnit-specific only. This repo's tests are xUnit + FluentAssertions, so it applies to
+          new or external TUnit work.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-tunit skill to show a TUnit data-driven test class for a
+hypothetical DAO. Do not alter MTM_Receiving_Application.Tests, which stays on
+xUnit.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--csharp-xunit"
+               data-entry-name="csharp-xunit"
+               data-entry-kind="skill"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">csharp-xunit</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Gives xUnit patterns and data-driven tests.</p>
+        <ul class="entry-uses">
+          <li>Writing xUnit <code>Theory</code>/<code>InlineData</code> tests for validators, matching
+          the existing <code>MTM_Receiving_Application.Tests</code> conventions.</li>
+          <li>Applying <code>IAsyncLifetime</code> to an integration test that touches MySQL stored
+          procedures.</li>
+          <li>Keeping assertions in FluentAssertions style for DAO tests that return
+          <code>Model_Dao_Result</code>.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A test project targeting xUnit, such as <code>MTM_Receiving_Application.Tests</code>.</dd>
+          <dt>Boundaries</dt>
+          <dd>xUnit patterns only. It assumes the repo's FluentAssertions and <code>TEST-</code>
+          data-prefix rules are followed.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the csharp-xunit skill to add an IAsyncLifetime integration test for
+Dao_ReceivingLine in MTM_Receiving_Application.Tests. Use FluentAssertions, prefix
+test data with TEST-, and name it MethodName_ShouldResult_WhenCondition.</code></pre>
+        </div>
+      </article>
+
+      <article class="entry"
+               id="dotnet-development--expert-dotnet-software-engineer"
+               data-entry-name="expert-dotnet-software-engineer"
+               data-entry-kind="agent"
+               data-entry-source="csharp-dotnet-development@1.2.0">
+        <header>
+          <h3 class="entry-name">expert-dotnet-software-engineer</h3>
+          <span class="entry-source">csharp-dotnet-development@1.2.0</span>
+        </header>
+        <p class="entry-purpose">Provides expert .NET software engineering guidance using modern
+        design patterns.</p>
+        <ul class="entry-uses">
+          <li>Reviewing a proposed cross-module change for correct MVVM layering before code is
+          written.</li>
+          <li>Recommending a design pattern for a new receiving workflow service.</li>
+          <li>Explaining the trade-offs of MediatR 14 handlers versus direct service calls in this
+          app.</li>
+        </ul>
+        <dl class="entry-facts">
+          <dt>Prerequisites</dt>
+          <dd>A concrete design question or a diff to review.</dd>
+          <dt>Boundaries</dt>
+          <dd>Advises on design. It does not make edits unless you explicitly ask it to implement.</dd>
+        </dl>
+        <div class="entry-prompt"><button class="copy-btn" type="button" data-copy>Copy</button><pre><code>Use the expert-dotnet-software-engineer agent to review how Module_Receiving
+should add a new workflow step. Keep the View to ViewModel to Service to DAO
+layering, MySQL writes behind stored procedures, and explain where the new handler
+and validator belong.</code></pre>
+        </div>
+      </article>
+
+      <hr class="rule">
+      <p class="callout"><strong>Choosing between them.</strong> Start with
+      <code>csharp-expert</code> to route, <code>msbuild</code> when the build breaks, and
+      <code>csharp-xunit</code> for this repo's tests. The <code>aspnet-minimal-api-openapi</code>
+      skill is for scratch experiments only — this is a WinUI 3 app, not ASP.NET.</p>
+    </div>
+  </main>
+</div>
+<script src="../assets/nav.js?v=20261111b"></script>
+<script src="../assets/search-index.js?v=20261111b"></script>
+<script src="../assets/book.js?v=20261111b"></script>
+</body>
+</html>
