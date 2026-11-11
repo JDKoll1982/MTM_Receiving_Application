@@ -66,6 +66,28 @@ public static class ModuleServicesExtensions
         services.AddSharedModule(configuration);
         services.AddShipRecToolsModule(configuration);
         services.AddReprintModule();
+        services.AddVisualAutomationModule();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Infor VISUAL automation harness: the window driver that reads and writes the live
+    /// Purchase Receipt Entry window, the probe runner, and the page's view model and view.
+    /// </summary>
+    private static IServiceCollection AddVisualAutomationModule(this IServiceCollection services)
+    {
+        services.AddSingleton<
+            MTM_Receiving_Application.Module_VisualAutomation.Contracts.IService_VisualAutomation_WindowDriver,
+            MTM_Receiving_Application.Module_VisualAutomation.Services.Service_VisualAutomation_WindowDriver
+        >();
+        services.AddSingleton<
+            MTM_Receiving_Application.Module_VisualAutomation.Contracts.IService_VisualAutomation_ProbeRunner,
+            MTM_Receiving_Application.Module_VisualAutomation.Services.Service_VisualAutomation_ProbeRunner
+        >();
+
+        services.AddTransient<MTM_Receiving_Application.Module_VisualAutomation.ViewModels.ViewModel_VisualAutomation_MacroTester>();
+        services.AddTransient<MTM_Receiving_Application.Module_VisualAutomation.Views.View_VisualAutomation_MacroTester>();
 
         return services;
     }

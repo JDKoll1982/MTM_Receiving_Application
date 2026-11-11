@@ -5,6 +5,28 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Added
+
+#### The app can now self-test Infor VISUAL macros against a live Purchase Receipt Entry window (2026-11-10)
+
+- **What changed:** a new **Visual Macro Tester** page under the left navigation, below **Volvo Dunnage
+  Requisition** with a divider between them. It writes VBScript probes as `VMRCVENT_*.VMS` into the VISUAL
+  module folder, lets Purchase Receipt Entry run them, and reports one result card per probe with the
+  values the macro captured.
+- **Why:** VISUAL exposes every screen field to a macro as a read/write variable, so a macro is the only
+  way to read or drive the Purchase Receipt Entry window without touching the database. Ten cards cover
+  the route: target discovery, macro deployment, header field reads, receipt line discovery, `udf*`
+  round-trip, a real header field write-and-restore, the `MACRO_MESSAGE` / `MACRO_SUCCESS` channel,
+  script host capabilities, a no-save guard, and an `OnLoad` event probe that runs with no menu at all.
+- **Nothing is saved.** The harness never deploys `OnSave` or `OnAfterSave` and the generated script
+  contains no save call; the `T09_NoSaveGuard` card fails the run if either becomes true. Saving stays a
+  human action on the VISUAL Save button, and every write probe restores the original field value.
+- **First run needs one restart:** VISUAL reads the `.VMS` files when the Purchase Receipt Entry window
+  opens, so a freshly deployed macro appears under **Macros** only after that window is reopened once.
+- **Files:** `Module_VisualAutomation/` (new module), `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
+  `MainWindow.xaml(.cs)`, `docs/development/InforVisual-Macro-Automation.md`,
+  `MTM_Receiving_Application.Tests/Unit/Module_VisualAutomation/`
+
 ### Fixed
 
 #### The Print button wakes up when the receipt's labels are ticked for you (2026-11-05)
