@@ -1,0 +1,74 @@
+{
+  "workflow": "companion",
+  "specName": "MTM Agent Toolkit Book",
+  "branch": "003-agent-toolkit-book",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-11T15:32:41.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-11T15:55:00.000Z"
+    }
+  ],
+  "unattended": false,
+  "classification": "normal",
+  "decisions": [
+    {
+      "decision": "Scope is everything: 13 plugins, 71 unique skills, 21 plugin agents, 4 canvases, 37 repo skills, 50 repo agents, 82 repo prompts, 1 hook, and 3 MCP servers",
+      "why": "The reader should never have to leave the book to discover a tool, including the repo's own Spec Kit and WinUI assets",
+      "rejected": "Plugins-only scope, which would hide the 37 repo skills and 50 repo agents that do most of the daily work"
+    },
+    {
+      "decision": "Organization is dual: job-to-be-done category chapters plus a complete alphabetical index by source",
+      "why": "Categorization is an editorial judgment that will not match every reader's mental model, so the source index guarantees nothing is unreachable",
+      "rejected": "Category-only, which hides any entry whose category guess is wrong; source-only, which reproduces the original discovery problem"
+    },
+    {
+      "decision": "Depth is deep for every entry: purpose, use cases, prerequisites, boundaries, and prompt examples",
+      "why": "The audience is team onboarding, and a one-line listing leaves the reader exactly where they started",
+      "rejected": "Quick-reference tables, which are cheaper to maintain but do not teach invocation"
+    },
+    {
+      "decision": "Static HTML with a read-only drift-check script rather than a full generator",
+      "why": "Editorial prose cannot be generated, but staleness can be detected, so the script reports missing, stale, and version-changed entries plus available updates without touching files",
+      "rejected": "A full generator, which would produce accurate inventory and lifeless prose; no script at all, which lets the book rot silently"
+    },
+    {
+      "decision": "Light editorial theme only, accent steel blue #1F4E79, with no dark mode",
+      "why": "A single palette keeps print output correct by construction and removes an entire class of contrast bugs",
+      "rejected": "A theme toggle, which would require print-specific overrides to remain correct"
+    },
+    {
+      "decision": "All assets embedded locally with zero external network requests",
+      "why": "The book must render offline and print reliably on a machine with no internet access",
+      "rejected": "CDN-hosted fonts or stylesheets, which break offline and print unpredictably"
+    },
+    {
+      "decision": "Print output is US Letter with a cover page, contents page, and one chapter per page break",
+      "why": "The requirement is a physical book, so pagination is a first-class feature rather than a stylesheet afterthought",
+      "rejected": "Screen-first layout with minimal print rules, which clips wide tables"
+    },
+    {
+      "decision": "Duplicate skill names are documented once with all sources named",
+      "why": "csharp-nunit ships in both csharp-dotnet-development and testing-automation, and double-counting would inflate the coverage claim to 72",
+      "rejected": "Rendering two indistinguishable entries, which misleads the reader into thinking they differ"
+    }
+  ],
+  "concerns": [
+    "At deep depth across 282 entries the series is likely 25-40 printed pages; category assignment becomes the main editorial risk",
+    "Four plugins ship only a canvas, so their chapters must document a surface rather than a skill list",
+    "The check script must stay strictly read-only and still report version deltas as actionable updates"
+  ],
+  "last_action": "Specification authored from a two-round clarification of scope, structure, depth, theme, and generation strategy.",
+  "telemetryInstanceId": "bd1a439d-69cb-4e17-9db8-4971f186f7ac"
+}
