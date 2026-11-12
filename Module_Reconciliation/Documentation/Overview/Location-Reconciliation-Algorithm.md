@@ -10,7 +10,7 @@ This document replaced the Receiving reconciliation process note when the algori
 - It groups candidate rows by purchase order, part and receipt day. Two receipts of one purchase order and part on one day are one group; the same pair on two days is two groups; two different purchase orders of one part on one day are two groups.
 - Rows without a purchase order are grouped by part, receipt day and vendor instead, and are never skipped for lacking a purchase order.
 - It asks Infor Visual for the transfer movements of the group's part around the receipt day.
-- It follows chained moves forward from the saved source locations and from the purchase order evidence tied to the group's rows.
+- It follows chained moves from either end of a saved location and from the purchase order evidence tied to the group's rows. Because a row's saved location is often the destination the material already reached, and Infor Visual transfer rows usually carry no purchase order, the walk traces backwards as well as forwards; otherwise the movement that delivered the material would be rejected and the part reported as not found.
 - It collapses the movement graph into net destination buckets.
 - It allocates saved skids or tags by deterministic exact-fit then best-fit allocation: rows are sorted by quantity descending, then load number, then load id. For each row, an exact fit wins; otherwise the allocator chooses the smallest destination bucket that can still fully cover the row. Ties break by latest transfer time, then location id.
 - It only proposes an update that the two-part quantity proof supports.
@@ -31,7 +31,7 @@ This document replaced the Receiving reconciliation process note when the algori
 
 ## Direction rule
 
-- Direction comes from the transaction type: the outbound leg is the source and the inbound leg is the destination.
+- Direction comes from the paired legs: the outbound leg is the source and the inbound leg is the destination. In this database the outbound leg is always the lower transaction id, and both legs point at each other, so the pair is resolved by transaction id rather than by a sign.
 - Quantity is always positive. The sign is never inferred from the stored quantity, and never from transaction id ordering.
 
 ## Saved-location rule

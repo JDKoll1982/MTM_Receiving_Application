@@ -2,6 +2,12 @@
 
 Last Updated: 2026-11-12
 
+## D-04 — Reversed: the legs are paired by transaction id, and reachability walks in both directions
+
+The plan originally recorded that a transfer's direction comes from the `TYPE` flag rather than transaction id ordering. Live validation of `MTMFG` showed the two statements agree: every transfer pair is an `O` row at the lower transaction id and an `I` row at the higher, both positive, both pointing at the other leg through `TRANSFER_TRANS_ID`. The direction is therefore read from the paired legs, not inferred from a sign, and the id ordering is confirmed rather than assumed. The query pairs on `TRANSFER_TRANS_ID`, so it holds whichever leg carries the pointer.
+
+The same validation exposed a separate defect in how movements are admitted. A row's saved location is frequently the destination the material already reached, and Visual transfer rows usually carry no purchase order. A reachability test that only matched a movement's source could therefore admit nothing and report the part as not found while six transfers existed. The walk now matches either end and expands with both, so following the evidence backwards from a saved destination reaches the origin. Intermediate locations that forward everything net to zero and drop out of the buckets, so the widening does not create spurious destinations.
+
 ## D-01 — The module boundary is a namespace rule, not a project reference
 
 The repository compiles every module into one assembly, so there is no project reference to remove. The boundary is enforced by the module folder and namespace: no `using` of Receiving, no shared model, enum, constant, data access class, procedure name or settings key. It is verified by building with each module's folder excluded.

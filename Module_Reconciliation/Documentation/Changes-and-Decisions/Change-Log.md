@@ -2,6 +2,34 @@
 
 Last Updated: 2026-11-12
 
+## 2026-11-12 — Live Visual validation: reachability walk made bidirectional
+
+**What changed**
+
+- `Service_ReconciliationMovementSelector` now admits a movement when **either** its source or its destination location has already been reached. Previously only the source counted.
+- Three selector tests added: the saved location is the destination, the chain is traced backwards from a saved destination to the origin, and a movement touching no known location is still rejected.
+
+**Why**
+
+A live run against Infor Visual reported part `23-12161-005` on 2026-11-12 as `NotFound` with the message "No Infor Visual transfer was found", while the part had in fact been transferred to six locations. Verified against `MTMFG` directly:
+
+- `INVENTORY_TRANS` holds six reciprocal transfer pairs for the part on that day — `RECV` out to `V-B1-14` 12,000, `V-B3-22` 24,000, `V-B3-23` 24,000, `V-B3-25` 24,000, `V-B3-18` 23,754 and `RECV DESK` 246. They total 108,000, exactly the receipt `3871295`.
+- Those transfer rows carry **no** purchase order, so the purchase-order branch of the reachability test could never admit them.
+- The rows' saved locations were already the **destinations** the material reached, not the origin. Seeding the walk with destinations while only matching on the source rejected the very movements that delivered the material, so the group resolved zero movements and reported `NotFound`.
+
+Tracing in either direction fixes this without loosening the filter: `RECV` enters the graph as the source, the bucket builder nets it to `-108,000` and drops it, and the six destinations remain — an exact fit for the group's six rows.
+
+Two earlier hypotheses were investigated and disproved with live data, and no query was changed as a result:
+
+- The pairing query's `src.TYPE = 'O' AND dst.TYPE = 'I'` filter is correct. On this database every transfer pair is recorded as an `O` row at the lower transaction id and an `I` row at the higher, both with positive quantity and both carrying `TRANSFER_TRANS_ID` back to the other leg. The filter returns all eight pairs for the part.
+- `18a_GetTransferCandidatePairs.sql` was deleted during the investigation on the mistaken belief that the type filter was at fault. It was restored unchanged from `HEAD` once the live data disproved that.
+
+**Verification**
+
+- Live `SELECT`-only checks against `MTMFG` (read-only): transfer rows, purchase-order presence, pair count under the query's own filter, and `PART_LOCATION` balances. `PART_LOCATION` for the part reads `RECV DESK` 246, `V-B1-14` 12,000, `V-B3-18` 23,754, `V-B3-22` 24,000, `V-B3-23` 24,000, `V-B3-24` 24,000, `V-B3-25` 24,000, `V-N3-09` 14,500 and `WC` 25,737, matching the reported screen.
+- `dotnet build MTM_Receiving_Application.slnx` succeeded with 0 warnings and 0 errors.
+- Reconciliation unit tests: 84 passing, up from 81. With the destination branch reverted, the two new adjudicating tests both fail; the third passes either way, because it guards against over-inclusion rather than the defect.
+
 ## 2026-11-12 — Convergence close-out: failed-day reset, mixed-unit warning, header provider
 
 **What changed**

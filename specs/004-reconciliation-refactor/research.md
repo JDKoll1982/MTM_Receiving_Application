@@ -200,9 +200,13 @@ Follows from R-4. See that entry.
 
 **Why.** This is a real behaviour change, and the spec asks for it explicitly in `FR-029` and `FR-036`, which `R-SCOPE-01` requires. It also stops the module rewriting a location to the place it is already at, which is the outcome the operator would find least believable.
 
-### D-04: Movement Direction Comes From `TYPE`, Not From Id Ordering
+### D-04: Movement Direction Comes From The Paired Legs, And Reachability Walks Both Ways
 
-Follows from R-6. See that entry.
+Reversed during live validation. The original entry read that direction comes from `TYPE` and not from id ordering, and that reachability follows moves forward from saved sources.
+
+Validated against `MTMFG`: a transfer is recorded as an `O` row at the lower transaction id and an `I` row at the higher, both positive, each carrying `TRANSFER_TRANS_ID` back to the other. The two readings agree, so direction is taken from the paired legs and the id ordering is confirmed rather than assumed. The query resolves the pair by transaction id, which holds whichever leg carries the pointer.
+
+The reachability rule was also wrong and was the cause of a live `NotFound` on part `23-12161-005` for 2026-11-12 while six transfers existed. Transfer rows carry no purchase order, and a row's saved location is often the destination the material already reached, so matching only a movement's source admitted nothing. The walk now matches either end and expands with both, which recovers the origin from a saved destination; intermediate locations net to zero and drop out of the buckets.
 
 ### D-05: The Proof Uses The Integer Quantity, Which Is A Field Swap
 

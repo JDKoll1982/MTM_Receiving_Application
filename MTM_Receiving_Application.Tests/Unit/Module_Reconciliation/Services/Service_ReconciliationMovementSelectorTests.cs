@@ -122,6 +122,82 @@ public sealed class Service_ReconciliationMovementSelectorTests
         selected.Should().ContainInOrder(earlier, later);
     }
 
+    [Fact]
+    public void SelectShouldAdmitMovementWhoseDestinationIsTheSavedLocation()
+    {
+        Model_ReconciliationGroup group = Group(["V-B3-22"], Row("V-B3-22", 24000));
+        Model_ReconciliationMovement arrived = Movement(
+            "RECV",
+            "V-B3-22",
+            24000m,
+            3871709,
+            3871710,
+            purchaseOrderNumber: string.Empty,
+            purchaseOrderLineNumber: string.Empty
+        );
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [arrived]
+        );
+
+        selected.Should().ContainSingle().Which.Should().BeSameAs(arrived);
+    }
+
+    [Fact]
+    public void SelectShouldTraceBackwardsFromASavedDestinationToTheOrigin()
+    {
+        Model_ReconciliationGroup group = Group(["V-B3-22"], Row("V-B3-22", 24000));
+        Model_ReconciliationMovement firstLeg = Movement(
+            "RECV",
+            "V-B1-14",
+            12000m,
+            3871707,
+            3871708,
+            purchaseOrderNumber: string.Empty,
+            purchaseOrderLineNumber: string.Empty
+        );
+        Model_ReconciliationMovement secondLeg = Movement(
+            "V-B1-14",
+            "V-B3-22",
+            12000m,
+            3871709,
+            3871710,
+            purchaseOrderNumber: string.Empty,
+            purchaseOrderLineNumber: string.Empty
+        );
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [secondLeg, firstLeg]
+        );
+
+        selected.Should().HaveCount(2);
+        selected.Should().ContainInOrder(firstLeg, secondLeg);
+    }
+
+    [Fact]
+    public void SelectShouldRejectMovementTouchingNoKnownLocation()
+    {
+        Model_ReconciliationGroup group = Group(["V-B3-22"], Row("V-B3-22", 24000));
+        Model_ReconciliationMovement unrelated = Movement(
+            "OTHER",
+            "SOMEWHERE",
+            60m,
+            1,
+            2,
+            purchaseOrderNumber: string.Empty,
+            purchaseOrderLineNumber: string.Empty
+        );
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [unrelated]
+        );
+
+        selected.Should().BeEmpty();
+    }
+
     private static Model_ReconciliationGroup Group(string[] locations, params Model_ReconciliationRow[] rows) =>
         new()
         {

@@ -8,11 +8,18 @@ namespace MTM_Receiving_Application.Module_Reconciliation.Services;
 
 /// <summary>
 /// Narrows a part's movements down to the ones reachable from one group's own
-/// evidence. A movement is reachable when its source location has already been
+/// evidence. A movement is reachable when either of its locations has already been
 /// reached or its purchase order key is one of the group's seeds, and the pass
 /// repeats until nothing more is admitted so a chained transfer is followed to its
 /// end (FR-017, FR-030).
 /// </summary>
+/// <remarks>
+/// The walk is bidirectional on purpose. A row's saved location is frequently the
+/// destination the material already reached, so matching on the source alone would
+/// reject the very movement that delivered it and report the part as not found.
+/// Transfer rows in Infor Visual usually carry no purchase order, so the purchase
+/// order branch cannot rescue those groups.
+/// </remarks>
 public sealed class Service_ReconciliationMovementSelector
     : IService_ReconciliationMovementSelector
 {
@@ -90,6 +97,9 @@ public sealed class Service_ReconciliationMovementSelector
         if (
             reachedLocations.Contains(
                 Helper_ReconciliationCanonical.Normalize(movement.SourceLocationId)
+            )
+            || reachedLocations.Contains(
+                Helper_ReconciliationCanonical.Normalize(movement.DestinationLocationId)
             )
         )
         {

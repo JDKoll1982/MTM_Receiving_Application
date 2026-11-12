@@ -4,8 +4,11 @@ namespace MTM_Receiving_Application.Module_Reconciliation.Models;
 
 /// <summary>
 /// One resolved Infor Visual location transfer. Quantity is always positive and
-/// the direction is carried by which leg is the source, never by the value's
-/// sign and never by transaction id ordering (FR-030, decision D-04).
+/// the direction is carried by which leg is the source, never by the value's sign.
+/// The source leg is the row Infor Visual marks as the issue and, in this database,
+/// it is always the lower of the two transaction ids; the query pairs the legs by
+/// transaction id so the ordering is read from the data rather than assumed
+/// (FR-030, decision D-04, reversed).
 /// </summary>
 public sealed class Model_ReconciliationMovement
 {
