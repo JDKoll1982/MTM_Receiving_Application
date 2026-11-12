@@ -165,16 +165,16 @@ public sealed class ViewModel_ReconciliationMainTests
         );
 
         await viewModel.LoadSelectedDateAsync();
-        viewModel.VisibleFindings.Should().HaveCount(3);
+        viewModel.VisibleFindings.Should().HaveCount(2);
 
-        viewModel.OutcomeFilter = Enum_ReconciliationOutcome.Unchanged;
+        viewModel.OutcomeFilter = Enum_ReconciliationOutcome.NotEnough;
         viewModel.VisibleFindings.Should().ContainSingle()
-            .Which.Row.PartId.Should().Be("MMC0002000");
+            .Which.Row.PartId.Should().Be("MMC0003000");
 
         viewModel.OutcomeFilter = null;
-        viewModel.TextFilter = "066914";
+        viewModel.TextFilter = "066868";
         viewModel.VisibleFindings.Should().ContainSingle()
-            .Which.Row.PurchaseOrderNumber.Should().Be("PO-066914");
+            .Which.Row.PurchaseOrderNumber.Should().Be("PO-066868");
 
         viewModel.TextFilter = "mmc0003";
         viewModel.VisibleFindings.Should().ContainSingle()
@@ -182,15 +182,18 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
-    public void OutcomeChoicesShouldNameEveryOutcomeFromThePinnedText()
+    public void OutcomeChoicesShouldNameEveryReviewableOutcomeFromThePinnedText()
     {
         ViewModel_ReconciliationMain viewModel = Build();
 
         viewModel.OutcomeFilterChoices.Should().HaveCount(
-            Enum.GetValues<Enum_ReconciliationOutcome>().Length + 1
+            Enum.GetValues<Enum_ReconciliationOutcome>().Length
         );
         viewModel.OutcomeFilterChoices[0].Outcome.Should().BeNull();
         viewModel.OutcomeFilterChoices[0].DisplayText.Should().Be("All outcomes");
+        viewModel
+            .OutcomeFilterChoices.Should()
+            .NotContain(choice => choice.Outcome == Enum_ReconciliationOutcome.Unchanged);
         viewModel
             .OutcomeFilterChoices.Skip(1)
             .Should()
@@ -201,7 +204,7 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
-    public async Task OutcomeSelectorShouldDriveTheFilterAndClearBackToEveryOutcome()
+    public async Task AGridShouldHideTheLinesWhoseSavedLocationAlreadyMatches()
     {
         ViewModel_ReconciliationMain viewModel = Build();
         StubDay(
@@ -213,13 +216,34 @@ public sealed class ViewModel_ReconciliationMainTests
         );
 
         await viewModel.LoadSelectedDateAsync();
-        viewModel.OutcomeFilterChoice!.Outcome.Should().BeNull();
 
-        viewModel.OutcomeFilterChoice = viewModel.OutcomeFilterChoices.Single(choice =>
-            choice.Outcome == Enum_ReconciliationOutcome.Unchanged
+        viewModel.Findings.Should().HaveCount(2);
+        viewModel.VisibleFindings.Should().ContainSingle()
+            .Which.Row.PartId.Should().Be("MMC0001000");
+    }
+
+    [Fact]
+    public async Task OutcomeSelectorShouldDriveTheFilterAndClearBackToEveryVisibleOutcome()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        StubDay(
+            viewModel,
+            Day(
+                Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated),
+                Finding("MMC0002000", "PO-066914", Enum_ReconciliationOutcome.NotEnough),
+                Finding("MMC0003000", "PO-066999", Enum_ReconciliationOutcome.Unchanged)
+            )
         );
 
-        viewModel.OutcomeFilter.Should().Be(Enum_ReconciliationOutcome.Unchanged);
+        await viewModel.LoadSelectedDateAsync();
+        viewModel.OutcomeFilterChoice!.Outcome.Should().BeNull();
+        viewModel.VisibleFindings.Should().HaveCount(2);
+
+        viewModel.OutcomeFilterChoice = viewModel.OutcomeFilterChoices.Single(choice =>
+            choice.Outcome == Enum_ReconciliationOutcome.NotEnough
+        );
+
+        viewModel.OutcomeFilter.Should().Be(Enum_ReconciliationOutcome.NotEnough);
         viewModel.VisibleFindings.Should().ContainSingle()
             .Which.Row.PartId.Should().Be("MMC0002000");
 
@@ -280,7 +304,7 @@ public sealed class ViewModel_ReconciliationMainTests
         await viewModel.LoadSelectedDateAsync();
         viewModel.VisualUserText.Should().Be("vuser");
         viewModel.RunIdentifier.Should().NotBeEmpty();
-        viewModel.GroupedFindings.Should().HaveCount(3);
+        viewModel.GroupedFindings.Should().HaveCount(2);
         viewModel.SelectedFinding.Should().BeSameAs(moved);
         viewModel.DestinationField.Should().Be("SHIP");
         viewModel.UnresolvedCount.Should().Be(1);

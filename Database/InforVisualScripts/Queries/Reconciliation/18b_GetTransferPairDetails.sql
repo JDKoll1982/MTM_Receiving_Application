@@ -2,8 +2,10 @@
 -- Step 2 of the two-step transfer retrieval workflow.
 -- Hydrates the full movement detail for the transfer pairs 18a discovered.
 --
--- Each leg's role is labelled from TYPE, not from transaction id ordering:
--- src is the TYPE = 'O' leg and dst is the TYPE = 'I' leg (FR-030, decision D-04).
+-- Each leg's role is labelled from TYPE: src is the TYPE = 'O' leg and dst is the
+-- TYPE = 'I' leg (FR-030, decision D-04). On this database the out leg is always the
+-- lower of the two transaction ids, and both legs point at each other, so pairing on
+-- TRANSFER_TRANS_ID holds whichever leg carries the pointer.
 --
 -- The candidate set is re-derived from the same TYPE-based join and the same
 -- window parameters rather than passed in as an IN (...) list. Building that list

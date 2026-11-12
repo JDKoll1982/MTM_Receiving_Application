@@ -104,13 +104,13 @@
   ],
   "currentStep": "converge",
   "status": "implemented",
-  "last_action": "event: stop",
+  "last_action": "event: prompt submitted",
   "telemetryInstanceId": "323619d8-584a-4fbf-a252-c2eb7bc21930",
   "request": "as 004-reconciliation-refactor",
   "unattended": true,
   "last_event": {
-    "name": "stop",
-    "at": "2026-11-12T21:28:14.118Z"
+    "name": "user_prompt_submit",
+    "at": "2026-11-12T21:38:19.450Z"
   },
   "size": "oversized",
   "classification": {

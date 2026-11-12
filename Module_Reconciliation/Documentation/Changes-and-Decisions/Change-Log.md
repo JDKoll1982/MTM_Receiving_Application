@@ -2,6 +2,27 @@
 
 Last Updated: 2026-11-12
 
+## 2026-11-12 — Grid hides matching lines; direct receipts adjudicate groups with no transfer
+
+**What changed**
+
+- The grid no longer shows a row whose saved location already matches where Infor Visual put the material. `ApplyFilters` drops `Unchanged` findings from the visible source, and `Model_ReconciliationOutcomeFilterChoice.All` no longer offers `Unchanged` as a filter, so the dropdown cannot select a line class the grid never renders.
+- New query `18d_GetReceivingReceipts.sql` and `Dao_ReconciliationInforVisual.GetReceivingReceiptsAsync` read the receipts for a part that landed straight in a warehouse location. `ResolveDirectReceiptAsync` runs only when a group resolves no transfer, and replaces the flat `NotFound` with a receipt-based verdict.
+- Four tests added: the receipt-matches-saved case, the receipt-elsewhere case, the no-evidence case, and the grid hiding a matching line.
+
+**Why**
+
+Reported against 2026-11-12. Part `MMF0008050`, PO 072689, saved `S-00`, was reported as `NotFound` with "No Infor Visual transfer was found", while Infor Visual held 3,499 in `S-00`. Verified against `MTMFG`: the part has **no transfer pair at all** on that day — it was received straight into `S-00` (`TRANSACTION_ID` 3,870,899, `TYPE='I'`, `CLASS='R'`, unpaired, PO-072689, 3,063 at 07:24:40). The pair queries can only speak for material that moved, so a direct receipt looked like no evidence. The receipt names the location the material reached, which is exactly what the group needs.
+
+Hiding the matching lines is the same requirement seen from the other side: once a direct receipt resolves to `Unchanged`, the row still carried a verdict the reviewer did not need to read. The day summary still counts unchanged lines, so the check stays visible even though the row does not.
+
+**Verification**
+
+- Live `SELECT`-only checks against `MTMFG`: `18d` returns the `S-00` receipt for `MMF0008050`; the same day's receipts for `MMC0000659`, `MMC0000850` and `MMC0000871` all landed in `RECV`, and those parts do have transfer pairs, so the fallback does not fire for them.
+- `dotnet build MTM_Receiving_Application.slnx` succeeded with 0 warnings and 0 errors.
+- Reconciliation unit tests: 88 passing, up from 84. Full suite: 1,157 passing with the same 8 pre-existing `Module_ShipRec_Tools` failures that fail at a clean checkout of the commit before this work.
+- Four existing view-model assertions were updated rather than dropped, because the hidden-line rule changes what they legitimately expect: the visible count, the filtered count, the group count, and the outcome-choice count.
+
 ## 2026-11-12 — Live Visual validation: reachability walk made bidirectional
 
 **What changed**

@@ -12,6 +12,8 @@ This document replaced the Receiving reconciliation process note when the algori
 - It asks Infor Visual for the transfer movements of the group's part around the receipt day.
 - It follows chained moves from either end of a saved location and from the purchase order evidence tied to the group's rows. Because a row's saved location is often the destination the material already reached, and Infor Visual transfer rows usually carry no purchase order, the walk traces backwards as well as forwards; otherwise the movement that delivered the material would be rejected and the part reported as not found.
 - It collapses the movement graph into net destination buckets.
+- When a group resolves no transfer at all, it falls back to the day's receipts for that part: material received straight into its stock location never produces a transfer, and the receipt names the location the material reached. A row already saved against a receipt location is unchanged; any other row reports the receipt location instead of claiming Infor Visual holds no evidence.
+- It hides a line whose saved location already matches from the grid, and does not offer that outcome in the filter, because such a line needs no review. The day summary still counts it.
 - It allocates saved skids or tags by deterministic exact-fit then best-fit allocation: rows are sorted by quantity descending, then load number, then load id. For each row, an exact fit wins; otherwise the allocator chooses the smallest destination bucket that can still fully cover the row. Ties break by latest transfer time, then location id.
 - It only proposes an update that the two-part quantity proof supports.
 - It shows the transfer user from Infor Visual, never the current application session user.

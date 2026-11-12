@@ -22,6 +22,8 @@ public class Dao_ReconciliationInforVisual
     private const string PairDetailsQuery = "Reconciliation/18b_GetTransferPairDetails.sql";
     private const string LocationBalancesQuery =
         "Reconciliation/18c_GetLocationMovementAfterWindow.sql";
+    private const string ReceivingReceiptsQuery =
+        "Reconciliation/18d_GetReceivingReceipts.sql";
 
     private readonly string _connectionString;
     private readonly IService_LoggingUtility? _logger;
@@ -97,6 +99,65 @@ public class Dao_ReconciliationInforVisual
             );
             return Model_Dao_Result_Factory.Failure<List<Model_ReconciliationMovement>>(
                 $"Error reading Infor Visual transfer movements: {ex.Message}",
+                ex
+            );
+        }
+    }
+
+    /// <summary>
+    /// Reads the receipts for one part around a receipt date that landed straight in
+    /// a warehouse location, with no transfer pair. These are the groups the pair
+    /// queries cannot speak for.
+    /// </summary>
+    /// <param name="partId">The exact part id.</param>
+    /// <param name="receivedDate">The receipt-date anchor.</param>
+    /// <param name="windowDays">Days either side of the anchor to search.</param>
+    public virtual async Task<Model_Dao_Result<List<Model_ReconciliationReceipt>>>
+        GetReceivingReceiptsAsync(string partId, DateOnly receivedDate, int windowDays)
+    {
+        try
+        {
+            string query = Helper_SqlQueryLoader.LoadAndPrepareQuery(ReceivingReceiptsQuery);
+
+            await using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@PartId", partId);
+            command.Parameters.AddWithValue("@ReceivedDate", ToDatabaseDate(receivedDate));
+            command.Parameters.AddWithValue("@WindowDays", windowDays);
+
+            var receipts = new List<Model_ReconciliationReceipt>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                receipts.Add(
+                    new Model_ReconciliationReceipt
+                    {
+                        PartId = ReadString(reader, "PartId"),
+                        WarehouseId = ReadString(reader, "WarehouseId"),
+                        LocationId = ReadString(reader, "LocationId"),
+                        Quantity = ReadDecimal(reader, "ReceiptQuantity"),
+                        PurchaseOrderNumber = ReadString(reader, "PONumber"),
+                        PurchaseOrderLineNumber = ReadString(reader, "POLineNumber"),
+                        ReceiptDateTime = ReadDateTime(reader, "ReceiptDateTime"),
+                        ReceiptUserId = ReadString(reader, "ReceiptUserId"),
+                        TransactionId = ReadInt32(reader, "TransactionId"),
+                    }
+                );
+            }
+
+            return Model_Dao_Result_Factory.Success(receipts);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(
+                $"Error reading reconciliation receipts for part {partId}: {ex.Message}",
+                ex
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_ReconciliationReceipt>>(
+                $"Error reading Infor Visual receipts: {ex.Message}",
                 ex
             );
         }

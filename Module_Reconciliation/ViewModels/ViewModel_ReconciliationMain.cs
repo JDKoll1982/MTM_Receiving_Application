@@ -309,7 +309,9 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     /// <summary>Rebuilds the visible grid from the current filters.</summary>
     protected void ApplyFilters()
     {
-        IEnumerable<Model_ReconciliationFinding> filtered = Findings;
+        IEnumerable<Model_ReconciliationFinding> filtered = Findings.Where(finding =>
+            finding.Outcome is not Enum_ReconciliationOutcome.Unchanged
+        );
 
         if (OutcomeFilter.HasValue)
         {

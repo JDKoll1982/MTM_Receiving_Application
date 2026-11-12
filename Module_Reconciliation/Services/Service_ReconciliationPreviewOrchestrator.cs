@@ -169,6 +169,14 @@ public sealed class Service_ReconciliationPreviewOrchestrator : IService_Reconci
 
         if (selected.Count == 0)
         {
+            IReadOnlyList<Model_ReconciliationFinding>? byReceipt =
+                await ResolveDirectReceiptAsync(group, date, discoveryWindowDays, runId);
+
+            if (byReceipt is not null)
+            {
+                return byReceipt;
+            }
+
             _logger?.LogWarning(
                 $"Reconciliation run {runId}: no qualifying movement for part {group.Key.PartId} "
                     + $"on {date:yyyy-MM-dd}, group {group.Key.DisplayText}."
@@ -406,6 +414,102 @@ public sealed class Service_ReconciliationPreviewOrchestrator : IService_Reconci
         finding.MovementUserId = bucket.TransactionUserId;
 
         return finding;
+    }
+
+    /// <summary>
+    /// Adjudicates a group that has no transfer pair from the day's receipts instead.
+    /// A part received straight into its stock location never produces a transfer, so
+    /// the pair queries cannot speak for it; the receipt names the location the
+    /// material actually reached (FR-015, LG-15).
+    /// </summary>
+    /// <returns>
+    /// One finding per row when the day holds a receipt for the part, otherwise
+    /// <see langword="null"/> so the caller keeps its own verdict. A row whose saved
+    /// location is a receipt location is unchanged; every other row reports the
+    /// receipt location instead of claiming Infor Visual holds no evidence.
+    /// </returns>
+    private async Task<IReadOnlyList<Model_ReconciliationFinding>?> ResolveDirectReceiptAsync(
+        Model_ReconciliationGroup group,
+        DateOnly date,
+        int discoveryWindowDays,
+        Guid runId
+    )
+    {
+        Model_Dao_Result<List<Model_ReconciliationReceipt>> receipts =
+            await _inforVisual.GetReceivingReceiptsAsync(
+                group.Key.PartId,
+                date,
+                discoveryWindowDays
+            );
+
+        if (receipts.IsSuccess is false)
+        {
+            _logger?.LogWarning(
+                $"Reconciliation run {runId}: Infor Visual receipt read failed for group "
+                    + $"{group.Key.DisplayText}. {receipts.ErrorMessage}"
+            );
+            return null;
+        }
+
+        IReadOnlyList<Model_ReconciliationReceipt> found = receipts.Data ?? [];
+
+        if (found.Count == 0)
+        {
+            return null;
+        }
+
+        var receiptLocations = new HashSet<string>(
+            found.Select(receipt => Helper_ReconciliationCanonical.Normalize(receipt.LocationId)),
+            StringComparer.Ordinal
+        );
+        receiptLocations.Remove(string.Empty);
+
+        string receivedInto = string.Join(
+            ", ",
+            found.Select(receipt => receipt.LocationId)
+                .Where(location => location.Length != 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+        );
+
+        var findings = new List<Model_ReconciliationFinding>();
+
+        foreach (Model_ReconciliationRow row in group.Rows)
+        {
+            bool landedHere = receiptLocations.Contains(
+                Helper_ReconciliationCanonical.Normalize(row.SavedLocation)
+            );
+
+            findings.Add(
+                landedHere
+                    ? CreateFinding(
+                        row,
+                        Enum_ReconciliationOutcome.Unchanged,
+                        row.SavedLocation,
+                        row.SavedLocation,
+                        $"Infor Visual received this material straight into {row.SavedLocation}, so the row already matches.",
+                        null,
+                        null
+                    )
+                    : CreateFinding(
+                        row,
+                        Enum_ReconciliationOutcome.NotFound,
+                        row.SavedLocation,
+                        string.Empty,
+                        $"Infor Visual received this material into {receivedInto}, so the saved location {row.SavedLocation} cannot be confirmed.",
+                        null,
+                        null
+                    )
+            );
+        }
+
+        group.Findings = findings;
+
+        _logger?.LogInfo(
+            $"Reconciliation run {runId}: group {group.Key.DisplayText} has no transfer, "
+                + $"resolved from the receipt into {receivedInto}."
+        );
+
+        return findings;
     }
 
     private static IReadOnlyList<Model_ReconciliationFinding> BuildFailureFindings(

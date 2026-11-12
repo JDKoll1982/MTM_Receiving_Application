@@ -333,6 +333,60 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
             _logger.Object
         );
 
+    [Fact]
+    public async Task PreviewDayAsync_ShouldReportUnchanged_WhenTheMaterialWasReceivedStraightIntoTheSavedLocation()
+    {
+        Model_ReconciliationDay day = DayOf(
+            Row("MMF0008050", "072689", 3_063, 1, savedLocation: "S-00")
+        );
+        StubGroup("MMF0008050", []);
+        _inforVisual.ReceiptsByPart["MMF0008050"] =
+        [
+            Receipt("MMF0008050", "S-00", 3_063m, "PO-072689"),
+        ];
+
+        Model_ReconciliationDay previewed = await PreviewAsync(day);
+
+        previewed.Summary.NotFound.Should().Be(0);
+        previewed.Summary.Unchanged.Should().Be(1);
+        previewed.Findings.Should()
+            .ContainSingle()
+            .Which.Outcome.Should()
+            .Be(Enum_ReconciliationOutcome.Unchanged);
+    }
+
+    [Fact]
+    public async Task PreviewDayAsync_ShouldNameTheReceiptLocation_WhenTheSavedLocationIsNotWhereTheMaterialLanded()
+    {
+        Model_ReconciliationDay day = DayOf(
+            Row("MMF0008050", "072689", 3_063, 1, savedLocation: "S-99")
+        );
+        StubGroup("MMF0008050", []);
+        _inforVisual.ReceiptsByPart["MMF0008050"] =
+        [
+            Receipt("MMF0008050", "S-00", 3_063m, "PO-072689"),
+        ];
+
+        Model_ReconciliationDay previewed = await PreviewAsync(day);
+
+        previewed.Summary.NotFound.Should().Be(1);
+        previewed.Findings.Should().ContainSingle().Which.Reason.Should().Contain("S-00");
+    }
+
+    [Fact]
+    public async Task PreviewDayAsync_ShouldKeepNotFound_WhenThereIsNeitherMovementNorReceipt()
+    {
+        Model_ReconciliationDay day = DayOf(
+            Row("MMF0008050", "072689", 3_063, 1, savedLocation: "S-00")
+        );
+        StubGroup("MMF0008050", []);
+
+        Model_ReconciliationDay previewed = await PreviewAsync(day);
+
+        previewed.Summary.NotFound.Should().Be(1);
+        _inforVisual.ReceiptReads.Should().Contain("MMF0008050");
+    }
+
     private void StubGroup(
         string partId,
         IReadOnlyList<Model_ReconciliationMovement> movements,
@@ -379,7 +433,8 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
         int loadNumber,
         bool isNonPurchaseOrder = false,
         string vendorName = "",
-        string unitOfMeasure = "EA"
+        string unitOfMeasure = "EA",
+        string savedLocation = "RECV"
     ) =>
         new()
         {
@@ -388,11 +443,30 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
             PurchaseOrderLineNumber = "1",
             TransactionDate = TestDay,
             Quantity = quantity,
-            SavedLocation = "RECV",
+            SavedLocation = savedLocation,
             UnitOfMeasure = unitOfMeasure,
             LoadNumber = loadNumber,
             IsNonPurchaseOrder = isNonPurchaseOrder,
             VendorName = vendorName,
+        };
+
+    private static Model_ReconciliationReceipt Receipt(
+        string partId,
+        string locationId,
+        decimal quantity,
+        string purchaseOrderNumber
+    ) =>
+        new()
+        {
+            PartId = partId,
+            WarehouseId = "002",
+            LocationId = locationId,
+            Quantity = quantity,
+            PurchaseOrderNumber = purchaseOrderNumber,
+            PurchaseOrderLineNumber = "1",
+            ReceiptDateTime = new DateTime(2026, 11, 12, 7, 24, 40, DateTimeKind.Unspecified),
+            ReceiptUserId = "JKOLL",
+            TransactionId = 3_870_899,
         };
 
     private static Model_ReconciliationMovement Movement(
@@ -441,6 +515,11 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
         public Dictionary<string, List<Model_ReconciliationLocationBalance>> BalancesByPart { get; } =
             new(StringComparer.OrdinalIgnoreCase);
 
+        public Dictionary<string, List<Model_ReconciliationReceipt>> ReceiptsByPart { get; } =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        public List<string> ReceiptReads { get; } = [];
+
         public HashSet<string> FailingParts { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         public List<string> MovementReads { get; } = [];
@@ -480,6 +559,20 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
                     BalancesByPart.TryGetValue(partId, out var balances)
                         ? balances
                         : new List<Model_ReconciliationLocationBalance>()
+                )
+            );
+        }
+
+        public override Task<Model_Dao_Result<List<Model_ReconciliationReceipt>>>
+            GetReceivingReceiptsAsync(string partId, DateOnly receivedDate, int windowDays)
+        {
+            ReceiptReads.Add(partId);
+
+            return Task.FromResult(
+                Model_Dao_Result_Factory.Success(
+                    ReceiptsByPart.TryGetValue(partId, out var receipts)
+                        ? receipts
+                        : new List<Model_ReconciliationReceipt>()
                 )
             );
         }

@@ -2,12 +2,6 @@
 
 Last Updated: 2026-11-12
 
-## D-04 — Reversed: the legs are paired by transaction id, and reachability walks in both directions
-
-The plan originally recorded that a transfer's direction comes from the `TYPE` flag rather than transaction id ordering. Live validation of `MTMFG` showed the two statements agree: every transfer pair is an `O` row at the lower transaction id and an `I` row at the higher, both positive, both pointing at the other leg through `TRANSFER_TRANS_ID`. The direction is therefore read from the paired legs, not inferred from a sign, and the id ordering is confirmed rather than assumed. The query pairs on `TRANSFER_TRANS_ID`, so it holds whichever leg carries the pointer.
-
-The same validation exposed a separate defect in how movements are admitted. A row's saved location is frequently the destination the material already reached, and Visual transfer rows usually carry no purchase order. A reachability test that only matched a movement's source could therefore admit nothing and report the part as not found while six transfers existed. The walk now matches either end and expands with both, so following the evidence backwards from a saved destination reaches the origin. Intermediate locations that forward everything net to zero and drop out of the buckets, so the widening does not create spurious destinations.
-
 ## D-01 — The module boundary is a namespace rule, not a project reference
 
 The repository compiles every module into one assembly, so there is no project reference to remove. The boundary is enforced by the module folder and namespace: no `using` of Receiving, no shared model, enum, constant, data access class, procedure name or settings key. It is verified by building with each module's folder excluded.
@@ -20,9 +14,15 @@ The repository compiles every module into one assembly, so there is no project r
 
 A row whose saved location is already a destination bucket with enough quantity left is bound there first and reported unchanged. Without this, today's allocate-then-compare order can move a row off a location the material genuinely reached.
 
-## D-04 — Movement direction comes from `TYPE`
+## D-04 — Movement direction comes from the paired legs
 
 The outbound leg is `TYPE='O'` and the inbound leg is `TYPE='I'`. The lower-id-is-source heuristic inverted source and destination whenever the out leg carried the higher id, which would have certified a wrong residual.
+
+Revised during live validation, in two ways.
+
+First, the two readings agree on this database: every transfer pair is an `O` row at the lower transaction id and an `I` row at the higher, both positive, both pointing at the other leg through `TRANSFER_TRANS_ID`. Direction is taken from the paired legs and the pair is resolved by transaction id, so it holds whichever leg carries the pointer; the id ordering is confirmed rather than assumed.
+
+Second, and separately, the reachability test that admits movements only matched a movement's **source**. A row's saved location is frequently the destination the material already reached, and Visual transfer rows usually carry no purchase order, so that test admitted nothing and reported a part as not found while six transfers existed for it. The walk now matches either end and expands with both, so following the evidence backwards from a saved destination reaches the origin. Intermediate locations that forward everything net to zero and drop out of the buckets, so the widening does not create spurious destinations.
 
 ## D-05 — The proof reads the integer quantity
 
@@ -59,3 +59,11 @@ The spec calls the values outcomes and pins their display names, so the type nou
 ## Open measurement — the quantity field
 
 The non-writable rate on one live day has not been measured. If weight-based parts diverge noticeably more than unit-count parts, reopening D-05 with the measured figure is the trigger to consider the decimal weight quantity instead of the integer.
+
+## D-13 — A direct receipt is evidence, and a matching line is not shown
+
+A part received straight into its stock location produces no transfer pair, so the movement queries cannot speak for it and a group would report that Infor Visual holds no evidence. Verified against `MTMFG`: part `MMF0008050` on 2026-11-12 has one unpaired receipt, `TYPE='I'`, `CLASS='R'`, into `S-00` for 3,063, and no transfer at all. The receipt is therefore read as its own evidence source, and only when a group resolves no transfer, so parts that moved keep their transfer-based verdict. The business logic lives in a service; the read goes through the module's own DAO and query (`18d`), as `R-DATA-04` requires.
+
+`CLASS = 'R'` identifies a receipt. Transfer legs carry `CLASS = 'A'` and issue-to-work-centre rows carry `TYPE = 'O'` with `CLASS = 'I'`, so the class filter and the null transfer id together select receipts and nothing else.
+
+A row whose saved location already matches where the material went is hidden from the grid and is not offered as a filter choice. It carries no decision for the reviewer, and the day summary still counts it, so nothing is lost. Hiding it is what makes the reported `S-00` case read correctly: once the receipt resolves the row to unchanged, the row stops appearing as something to act on.
