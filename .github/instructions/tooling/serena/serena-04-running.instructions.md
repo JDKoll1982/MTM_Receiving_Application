@@ -9,7 +9,7 @@ description: >
 [DOC-META-START]
 - File Name: serena-04-running.instructions.md
 - Description: How to run Serena — uvx (recommended), local install, Docker, Nix; MCP server modes (stdio, HTTP); and all command-line arguments.
-- Last Updated: 2026-08-28
+- Last Updated: 2026-11-12
 - Quick TOC:
   - Line 8-16: # Running Serena
   - Line 17-71: ## Ways of Running Serena
@@ -182,24 +182,16 @@ uvx \
   --open-web-dashboard false
 ```
 
-Or as a VSCode `mcp.json` entry (auto-started by VSCode):
+Or as a VSCode `mcp.json` entry. For MTM the entry uses **HTTP** so every chat connects to the
+single server started by `.serena/start-serena-http.ps1` (a `stdio` entry would spawn a new
+Serena process per chat session):
 
 ```json
 {
   "servers": {
     "serena": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "ide",
-        "--project",
-        "${workspaceFolder}"
-      ]
+      "type": "http",
+      "url": "http://127.0.0.1:24300/mcp"
     }
   }
 }

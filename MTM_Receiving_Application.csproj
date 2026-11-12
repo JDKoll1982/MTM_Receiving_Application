@@ -254,8 +254,8 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
-  <!-- Windows Desktop App runtime — enables System.Windows.Forms.SendKeys and
-         System.Windows.Automation without pulling in WPF XAML targets (MC6000). -->
+  <!-- Windows Desktop App runtime — enables System.Drawing.Printing and the WinForms
+         print dialogs used by the label overlay without pulling in WPF XAML targets (MC6000). -->
   <ItemGroup>
     <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
   </ItemGroup>

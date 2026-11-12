@@ -560,10 +560,6 @@ namespace MTM_Receiving_Application
                 typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),
                 string.Empty
             ),
-            ["VisualMacroTester"] = (
-                typeof(Module_VisualAutomation.Views.View_VisualAutomation_MacroTester),
-                "Visual Macro Tester"
-            ),
         };
 
         private static readonly Dictionary<
@@ -1146,17 +1142,6 @@ namespace MTM_Receiving_Application
                     "reprint",
                     "reprint labels",
                     "reprint labels page"
-                ),
-                CreateFrameDestination(
-                    "VisualMacroTester",
-                    "Visual Macro Tester",
-                    "Infor VISUAL Purchase Receipt Entry macro probes",
-                    "visual",
-                    "visual macro",
-                    "visual macro tester",
-                    "macro",
-                    "vmrcvent",
-                    "infor visual automation"
                 ),
                 CreateFrameDestination(
                     "AppDocumentation",

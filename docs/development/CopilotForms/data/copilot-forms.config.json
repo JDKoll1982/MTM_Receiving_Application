@@ -2250,7 +2250,6 @@
         "Module_Core/Contracts/Services/IService_Dispatcher.cs",
         "Module_Core/Contracts/Services/IService_Focus.cs",
         "Module_Core/Contracts/Services/IService_Pagination.cs",
-        "Module_Core/Contracts/Services/IService_UIAutomation.cs",
         "Module_Core/Contracts/Services/IService_ViewModelRegistry.cs",
         "Module_Core/Contracts/Services/IWindowService.cs",
         "Module_Core/Contracts/Services/Navigation/IService_Navigation.cs",
@@ -2265,14 +2264,12 @@
         "Module_Core/Services/Service_Pagination.cs",
         "Module_Core/Services/Service_Window.cs",
         "Module_Core/Services/UI/Service_ViewModelRegistry.cs",
-        "Module_Core/Services/VisualAutomation/Service_UIAutomation.cs",
         "Module_Core/Models/InforVisual/Model_FuzzySearchResult.cs"
       ],
       "relatedServices": [
         "IService_Dispatcher",
         "IService_Focus",
         "IService_Pagination",
-        "IService_UIAutomation",
         "IService_ViewModelRegistry",
         "IWindowService",
         "IService_Navigation",
@@ -2281,7 +2278,6 @@
         "Service_Pagination",
         "Service_Window",
         "Service_ViewModelRegistry",
-        "Service_UIAutomation",
         "Service_Navigation"
       ],
       "promptDefaults": {

@@ -189,23 +189,7 @@ column names (format: `colNAME=Visible/Hidden~TabOrder~Width~DisplayLabel`):
 
 ---
 
-## Section 3 — VBScript / Macro Infrastructure
-
-### Script Hosts Available
-
-| Executable | Path | Version |
-|---|---|---|
-| `wscript.exe` | `C:\WINDOWS\system32\wscript.exe` | 10.0.22621.5983 |
-| `cscript.exe` | `C:\WINDOWS\system32\cscript.exe` | 10.0.22621.5983 |
-
-**Both are present and functional.** VBScript can be invoked on this workstation.
-
-### Macro Files on VMFG Share
-
-No `.vbs`, `.vba`, `.bas`, `.hta`, or `.mac` files were found in `\\visual\visual908$\VMFG`.
-Visual does not ship macro files — any automation must be written externally.
-
-### INI Configuration Files Found on VMFG Share
+## Section 3 — Configuration Files Found on VMFG Share
 
 Key INI files that store per-module preferences (including `VMRCVENT.INI`):
 
@@ -219,23 +203,6 @@ The XML config files found:
 - `VISUALCONFIG.XML` — Core Visual configuration
 - `INFORVISUALENTERPRISEVIEWS.XML` — Enterprise view definitions
 - `CLOSED.xml` — Closed period marker (last modified 2025-05-05)
-
-### Execution Policy
-
-| Scope | Policy |
-|---|---|
-| MachinePolicy | Undefined |
-| UserPolicy | Undefined |
-| Process | Undefined |
-| CurrentUser | Undefined |
-| **LocalMachine** | **RemoteSigned** |
-
-### AppLocker / WDAC
-
-- **AppLocker:** Policy found but `RuleCollections` is empty — no script blocking rules.
-- **WDAC (CI Policy):** `EmodePolicyRequired=0`, `SkuPolicyRequired=0`, `VerifiedAndReputablePolicyState=0` — enforcement is off.
-
-**Conclusion:** `wscript.exe` can run unsigned `.vbs` files on this workstation without restriction.
 
 ---
 
@@ -293,8 +260,8 @@ HKCU:\SOFTWARE\Infor\ION           → Not found
 
 **ION is not installed, licensed, or reachable from this workstation.**  
 Any integration approach requiring ION (Approach 6) is not viable without a separate server
-deployment. Only Approach 2 (VBScript/SendKeys), Approach 3 (UI Automation), and
-Approach 5 (batch file import via `VMBTSRCV.EXE`) are feasible on this environment.
+deployment. Only Approach 3 (UI Automation) and Approach 5 (batch file import via `VMBTSRCV.EXE`)
+are feasible on this environment.
 
 ---
 
@@ -393,7 +360,6 @@ relative to left panel is TBD — complete with Inspect.exe.
 | `AutomationId` for Ship via | **4140** (ComboBox) |
 | `AutomationId` for line grid area | **4146** (`Gupta:ChildTable`) — only active cell (AutomationId 32791) accessible within it |
 | Tab order | ⚠️ Requires manual inspection — complete with Inspect.exe |
-| Whether `wscript.exe` can run unsigned VBS | **Yes** — RemoteSigned policy, no AppLocker rules |
 | Visual import facility | `VFIMPEXP.EXE` and `VMBTSRCV.EXE` present; format TBD manually |
 | ION present? | **No** — not installed, not reachable |
 | SQL Server hostname for MTMFG | **`visual`** — reachable on port 1433 ✅ |
@@ -408,7 +374,6 @@ relative to left panel is TBD — complete with Inspect.exe.
 
 | Approach | Feasible? | Notes |
 |---|---|---|
-| **Approach 2** — VBScript/SendKeys | ✅ Yes | `wscript.exe` available, no policy blocks, window title confirmed, AutomationIds captured |
 | **Approach 3** — UI Automation | ✅ Yes | `AutomationId` values confirmed for all header fields; grid is `Gupta:ChildTable` — column headers **NOT exposed via UIA**, only active cell (32791) accessible; grid navigation must use Tab/Enter keystrokes |
 | **Approach 5** — Batch file import (`VMBTSRCV.EXE`) | ⚠️ Possible | Executable found; file format must be confirmed by running the utility manually |
 | **Approach 6** — ION API | ❌ No | ION is not installed on this site |
@@ -417,7 +382,7 @@ relative to left panel is TBD — complete with Inspect.exe.
 
 ## Recommended Next Steps
 
-1. **Approach 2/3 (preferred):** Use the `AutomationId` map above to write a UI Automation
+1. **Approach 3:** Use the `AutomationId` map above to write a UI Automation
    script targeting `Purchase Receipt Entry - Infor VISUAL - MTMFG`, class `Gupta:AccFrame`.
    - Focus Order ID field (AutomationId `4103`) → enter PO number → press Enter/Tab
    - Visual will auto-populate: Buyer (`4136`), FOB (`4138`), dates, vendor info
@@ -426,11 +391,8 @@ relative to left panel is TBD — complete with Inspect.exe.
    - Navigate columns with **Tab** (next column), **Enter** (next row); track column by INI tab-order numbers
    - **Column headers are not addressable via UIA** — must know column position by count
 
-2. **Complete manual Tab-order walk:** With Inspect.exe open, press Tab from Order ID and
-   record every stop number. This is required for Approach 2 SendKeys sequencing.
-
-3. **Investigate `VMBTSRCV.EXE`:** Launch it and document the expected import file format
+2. **Investigate `VMBTSRCV.EXE`:** Launch it and document the expected import file format
    (column count, delimiters, field order). This resolves the remaining Approach 5 unknown.
 
-4. **Confirm MTMFG server name:** The ODBC DSN `VISUAL` connects to host `visual` (confirmed
+3. **Confirm MTMFG server name:** The ODBC DSN `VISUAL` connects to host `visual` (confirmed
    TCP). Update `appsettings.json` SQL Server connection string to use `Server=visual`.

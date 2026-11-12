@@ -9,7 +9,7 @@ description: >
 [DOC-META-START]
 - File Name: serena-01-overview.instructions.md
 - Description: Serena overview — what it is, key benefits for the MTM project, when to use it vs standard tools, and the quick-start command.
-- Last Updated: 2026-08-28
+- Last Updated: 2026-11-12
 - Quick TOC:
   - Line 8-19: # Serena Overview
   - Line 20-33: ## Key Benefits for the MTM Project
@@ -101,27 +101,18 @@ uvx --from git+https://github.com/oraios/serena serena start-mcp-server --help
 
 ### VSCode Integration (MTM .vscode/mcp.json)
 
-Paste this into `<project>/.vscode/mcp.json`:
+The MTM workspace connects over **HTTP** to one shared Serena server (port 24300) instead of
+spawning a process per chat. `.serena/start-serena-http.ps1` starts it only when nothing is
+already listening; the folder-open task in `.vscode/tasks.json` runs that script.
 
 ```json
 {
   "servers": {
     "oraios/serena": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "ide",
-        "--project",
-        "${workspaceFolder}"
-      ]
+      "type": "http",
+      "url": "http://127.0.0.1:24300/mcp"
     }
-  },
-  "inputs": []
+  }
 }
 ```
 
