@@ -37,6 +37,11 @@ SELECT
     COALESCE(dst.LOCATION_ID,  '')                                          AS DestinationLocationId,
     COALESCE(dst.QTY, 0)                                                    AS TransferQuantity,
     COALESCE(dst.TRANSACTION_DATE, src.TRANSACTION_DATE)                    AS TransactionDate,
+    -- TRANSACTION_DATE carries a date only in this database, so the UI would show
+    -- a fabricated 00:00. CREATE_DATE is the real posting timestamp and is what the
+    -- evidence pane shows; TRANSACTION_DATE stays for date-window arithmetic.
+    COALESCE(dst.CREATE_DATE, src.CREATE_DATE,
+             dst.TRANSACTION_DATE, src.TRANSACTION_DATE)                    AS MovementDateTime,
     COALESCE(NULLIF(LTRIM(RTRIM(dst.USER_ID)), ''),
              NULLIF(LTRIM(RTRIM(src.USER_ID)), ''), '')                     AS TransactionUserId,
     src.TRANSACTION_ID                                                      AS SourceTransactionId,

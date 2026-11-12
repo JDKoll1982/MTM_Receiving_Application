@@ -121,9 +121,27 @@ public sealed partial class Model_ReconciliationFinding : ObservableObject
     /// <summary>True only in <see cref="Enum_ReconciliationFindingState.Writable"/>.</summary>
     public bool IsWritable => State is Enum_ReconciliationFindingState.Writable;
 
-    /// <summary>The movement time as the detail pane shows it.</summary>
-    public string MovementTimeText =>
-        MovementAt?.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) ?? string.Empty;
+    /// <summary>
+    /// The movement time as the detail pane shows it. Visual's TRANSACTION_DATE
+    /// carries no time of day, so a midnight value means "the time is unknown" and
+    /// only the date is shown. A fabricated 00:00 is never displayed.
+    /// </summary>
+    public string MovementTimeText
+    {
+        get
+        {
+            if (MovementAt is null)
+            {
+                return string.Empty;
+            }
+
+            DateTime movedAt = MovementAt.Value;
+
+            return movedAt.TimeOfDay == TimeSpan.Zero
+                ? movedAt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+                : movedAt.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+        }
+    }
 
     /// <summary>The raw difference as the detail pane shows it.</summary>
     public string DifferenceText =>

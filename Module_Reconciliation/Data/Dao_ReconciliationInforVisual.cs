@@ -200,6 +200,7 @@ public class Dao_ReconciliationInforVisual
             DestinationLocationId = ReadString(record, "DestinationLocationId"),
             Quantity = ReadDecimal(record, "TransferQuantity"),
             TransactionDate = ReadDateTime(record, "TransactionDate"),
+            MovementDateTime = ReadDateTime(record, "MovementDateTime"),
             TransactionUserId = ReadString(record, "TransactionUserId"),
             SourceTransactionId = ReadInt32(record, "SourceTransactionId"),
             DestinationTransactionId = ReadInt32(record, "DestinationTransactionId"),

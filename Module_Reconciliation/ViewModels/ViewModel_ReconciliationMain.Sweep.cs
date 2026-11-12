@@ -31,11 +31,11 @@ public partial class ViewModel_ReconciliationMain
 
     /// <summary>The sweep start as the date picker understands it.</summary>
     public DateTimeOffset SweepStartDateOffset =>
-        new(SweepStartDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+        new(SweepStartDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local));
 
     /// <summary>The sweep end as the date picker understands it.</summary>
     public DateTimeOffset SweepEndDateOffset =>
-        new(SweepEndDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+        new(SweepEndDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local));
 
     /// <summary>Per-day progress, or an empty string when no sweep has run.</summary>
     [ObservableProperty]

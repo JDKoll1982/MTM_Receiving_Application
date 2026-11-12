@@ -87,7 +87,7 @@ public sealed class Service_ReconciliationBucketBuilder : IService_Reconciliatio
                     LocationId = latestInbound.DestinationLocationId.Trim(),
                     NetQuantity = netQuantity,
                     RemainingQuantity = netQuantity,
-                    LatestMovementAt = latestInbound.TransactionDate,
+                    LatestMovementAt = latestInbound.MovementDateTime,
                     TransactionUserId = latestInbound.TransactionUserId,
                     MovementCount = evidence.Count,
                     EvidenceLocations = BuildEvidence(evidence, latestInbound.DestinationLocationId),

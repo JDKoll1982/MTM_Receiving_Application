@@ -36,6 +36,80 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
+    public void SelectedDateOffsetShouldRoundTripToTheSameDayInLocalTime()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+
+        viewModel.SelectedDate = new DateOnly(2026, 11, 12);
+
+        // A UTC offset would land midnight of the 12th on the 11th west of Greenwich,
+        // so the picker showed the wrong day and every change walked it back one more.
+        DateOnly.FromDateTime(viewModel.SelectedDateOffset.Date)
+            .Should()
+            .Be(new DateOnly(2026, 11, 12));
+        viewModel.SelectedDateOffset.Offset.Should().Be(TimeZoneInfo.Local.GetUtcOffset(
+            new DateTime(2026, 11, 12, 0, 0, 0, DateTimeKind.Local)));
+    }
+
+    [Fact]
+    public void SweepOffsetsShouldRoundTripToTheSameDayInLocalTime()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+
+        viewModel.SweepStartDate = new DateOnly(2026, 11, 1);
+        viewModel.SweepEndDate = new DateOnly(2026, 11, 12);
+
+        DateOnly.FromDateTime(viewModel.SweepStartDateOffset.Date)
+            .Should()
+            .Be(new DateOnly(2026, 11, 1));
+        DateOnly.FromDateTime(viewModel.SweepEndDateOffset.Date)
+            .Should()
+            .Be(new DateOnly(2026, 11, 12));
+    }
+
+    [Fact]
+    public void MovementTimeTextShouldOmitTheTimeWhenVisualHeldOnlyADate()
+    {
+        var finding = new Model_ReconciliationFinding(
+            new Model_ReconciliationRow { PartId = "MMC0000850" },
+            Enum_ReconciliationOutcome.Updated,
+            "RECV",
+            "V-E0-03",
+            Enum_ReconciliationDestinationSource.Derived,
+            "Moved.",
+            null,
+            null
+        )
+        {
+            MovementAt = new DateTime(2026, 11, 12, 0, 0, 0, DateTimeKind.Unspecified),
+        };
+
+        // A midnight value means Visual recorded no time of day. Showing 00:00 would be
+        // a fabricated clock reading.
+        finding.MovementTimeText.Should().Be("2026-11-12");
+    }
+
+    [Fact]
+    public void MovementTimeTextShouldShowTheTimeWhenVisualRecordedOne()
+    {
+        var finding = new Model_ReconciliationFinding(
+            new Model_ReconciliationRow { PartId = "MMC0000850" },
+            Enum_ReconciliationOutcome.Updated,
+            "RECV",
+            "V-E0-03",
+            Enum_ReconciliationDestinationSource.Derived,
+            "Moved.",
+            null,
+            null
+        )
+        {
+            MovementAt = new DateTime(2026, 11, 12, 14, 32, 0, DateTimeKind.Unspecified),
+        };
+
+        finding.MovementTimeText.Should().Be("2026-11-12 14:32");
+    }
+
+    [Fact]
     public async Task GoToNextDayShouldMoveOnlyToADayThatHoldsRows()
     {
         ViewModel_ReconciliationMain viewModel = Build();

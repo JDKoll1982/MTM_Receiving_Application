@@ -111,3 +111,24 @@ The screenshot showed the page as a wall of unlabelled values: three indistingui
 - `dotnet build MTM_Receiving_Application.csproj` — 0 warnings, 0 errors.
 - Reconciliation unit tests — 77 passing, 0 failing.
 - Every binding remains a compiled binding with an explicit mode and every new control carries an accessible name (FR-051). The three apparent misses from a naive regex are nested `{StaticResource ...}` braces and all carry `Mode=OneWay`.
+
+## 2026-11-12 — Fix day picker drifting backwards and a fabricated 00:00
+
+**What changed**
+
+- `SelectedDateOffset`, `SweepStartDateOffset` and `SweepEndDateOffset` now build their `DateTimeOffset` with the machine's local offset. They previously used `TimeSpan.Zero`, so a midnight date landed on the previous calendar day anywhere west of Greenwich: the picker showed the wrong day, and each `Date` push re-entered `DateChanged` and walked the day back another one until the page crashed. Proven by `SelectedDateOffsetShouldRoundTripToTheSameDayInLocalTime`, which fails against the old construction.
+- `OnWorkingDayChanged` now ignores a `DateChanged` whose date already equals `SelectedDate`, so a programmatic push cannot re-enter the load. The sweep handlers got the same equality guard.
+- The evidence pane's `Moved at` reads the real posting timestamp from `INVENTORY_TRANS.CREATE_DATE` (query `18b` now returns `MovementDateTime`), because `TRANSACTION_DATE` holds no time of day in this database. `TRANSACTION_DATE` still drives all date-window arithmetic, so no outcome changed.
+- `MovementTimeText` shows only the date when Visual recorded no time of day, rather than inventing `00:00`.
+- `RunDurationText` is suppressed below one second instead of printing `0:00`.
+- The run identifier is no longer displayed; it remains in the log. The quiet line now reads cycle position, who moved the material in Infor Visual, and duration, and omits empty parts so no separator dangles.
+
+**Why**
+
+A date picker that silently changes the working day is a correctness problem, not a cosmetic one: every navigation moved backwards. The two time defects both showed a clock reading Visual never recorded.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.slnx` — 0 warnings, 0 errors.
+- Reconciliation unit tests — 81 passing, 0 failing (4 added).
+- The round-trip and both `MovementTimeText` cases fail against the previous code.

@@ -33,8 +33,18 @@ public sealed class Model_ReconciliationMovement
     /// <summary>The transferred quantity. Always positive.</summary>
     public decimal Quantity { get; init; }
 
-    /// <summary>The destination leg's posting time, which is when the material arrived.</summary>
+    /// <summary>
+    /// The destination leg's posting time, which is when the material arrived.
+    /// Date-scoped only: TRANSACTION_DATE holds no time of day in this database.
+    /// </summary>
     public DateTime TransactionDate { get; init; }
+
+    /// <summary>
+    /// The real posting timestamp from CREATE_DATE, which carries the time of day
+    /// the move was booked. Falls back to <see cref="TransactionDate"/> when Visual
+    /// has no create date, so the evidence pane never invents a 00:00.
+    /// </summary>
+    public DateTime MovementDateTime { get; init; }
 
     /// <summary>The Visual user attributed to the move.</summary>
     public string TransactionUserId { get; init; } = string.Empty;

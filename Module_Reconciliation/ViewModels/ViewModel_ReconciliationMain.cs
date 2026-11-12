@@ -138,9 +138,14 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     /// <summary>The visible findings grouped by part and received date, which is the grid's source.</summary>
     public ObservableCollection<Model_ReconciliationFindingGroup> GroupedFindings { get; } = [];
 
-    /// <summary>The working day as the date picker understands it.</summary>
+    /// <summary>
+    /// The working day as the date picker understands it. The offset must be the
+    /// machine's local offset: a UTC offset moves a midnight date into the previous
+    /// day west of Greenwich, so the picker would show the wrong day and every change
+    /// would push it back another one.
+    /// </summary>
     public DateTimeOffset SelectedDateOffset =>
-        new(SelectedDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+        new(SelectedDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local));
 
     /// <summary>The working day as the summary strip shows it.</summary>
     public string DayHeaderText =>
@@ -280,7 +285,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
                 : day.Run.RunId.ToString("D", CultureInfo.InvariantCulture);
         VisualUserText = day.Run?.VisualUserId ?? string.Empty;
         RunDurationText =
-            day.Run?.Duration is null
+            day.Run?.Duration is null or { TotalSeconds: < 1 }
                 ? string.Empty
                 : day.Run.Duration.Value.ToString(
                     @"m\:ss",
@@ -373,7 +378,14 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
 
         CurrentLineIndex = index + 1;
         OnPropertyChanged(nameof(CyclePositionText));
+        OnPropertyChanged(nameof(RunProvenanceText));
     }
+
+    partial void OnVisualUserTextChanged(string value) =>
+        OnPropertyChanged(nameof(RunProvenanceText));
+
+    partial void OnRunDurationTextChanged(string value) =>
+        OnPropertyChanged(nameof(RunProvenanceText));
 
     private void UpdateEmptyState(Model_ReconciliationDay day)
     {
@@ -424,6 +436,25 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
         TotalLineCount == 0 ? string.Empty
         : CurrentLineIndex == 0 ? $"{TotalLineCount} to review"
         : $"Line {CurrentLineIndex} of {TotalLineCount}";
+
+    /// <summary>
+    /// The quiet provenance line: cycle position, who moved the material in Infor
+    /// Visual, and how long the pass took. Empty parts are omitted, so no separator
+    /// is left dangling. The run identifier is deliberately not shown — it belongs in
+    /// the log, not on the page.
+    /// </summary>
+    public string RunProvenanceText =>
+        string.Join(
+            "   ·   ",
+            new[]
+            {
+                CyclePositionText,
+                string.IsNullOrWhiteSpace(VisualUserText)
+                    ? string.Empty
+                    : $"Moved in Infor Visual by {VisualUserText}",
+                RunDurationText,
+            }.Where(part => string.IsNullOrWhiteSpace(part) is false)
+        );
 
     /// <summary>
     /// The day's counts on one readable line. FR-049 requires every count to be

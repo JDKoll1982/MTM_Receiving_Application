@@ -56,16 +56,32 @@ public sealed partial class View_ReconciliationMain : Page
             return;
         }
 
-        await ViewModel.SelectDateAsync(DateOnly.FromDateTime(e.NewDate.Date));
+        // Setting Date from the view model's own SelectedDate raises this event too.
+        // Without this guard that push re-enters the load and walks the day backwards.
+        DateOnly selected = DateOnly.FromDateTime(e.NewDate.Date);
+
+        if (selected == ViewModel.SelectedDate)
+        {
+            return;
+        }
+
+        await ViewModel.SelectDateAsync(selected);
     }
 
     private void OnSweepStartChanged(object sender, DatePickerValueChangedEventArgs e)
     {
         _ = sender;
 
-        if (e.NewDate != default)
+        if (e.NewDate == default)
         {
-            ViewModel.SweepStartDate = DateOnly.FromDateTime(e.NewDate.Date);
+            return;
+        }
+
+        DateOnly start = DateOnly.FromDateTime(e.NewDate.Date);
+
+        if (start != ViewModel.SweepStartDate)
+        {
+            ViewModel.SweepStartDate = start;
         }
     }
 
@@ -73,9 +89,16 @@ public sealed partial class View_ReconciliationMain : Page
     {
         _ = sender;
 
-        if (e.NewDate != default)
+        if (e.NewDate == default)
         {
-            ViewModel.SweepEndDate = DateOnly.FromDateTime(e.NewDate.Date);
+            return;
+        }
+
+        DateOnly end = DateOnly.FromDateTime(e.NewDate.Date);
+
+        if (end != ViewModel.SweepEndDate)
+        {
+            ViewModel.SweepEndDate = end;
         }
     }
 

@@ -147,19 +147,11 @@
                 Text="{x:Bind ViewModel.SummaryLineText, Mode=OneWay}"
                 TextWrapping="Wrap" />
             <TextBlock
-                AutomationProperties.Name="Cycle position, run, and Infor Visual user"
+                AutomationProperties.Name="Cycle position, who moved the material, and run duration"
                 FontSize="12"
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                TextWrapping="Wrap">
-                <Run Text="{x:Bind ViewModel.CyclePositionText, Mode=OneWay}" />
-                <Run Text="   ·   " />
-                <Run Text="Run " />
-                <Run Text="{x:Bind ViewModel.RunIdentifier, Mode=OneWay}" />
-                <Run Text="   ·   Visual user " />
-                <Run Text="{x:Bind ViewModel.VisualUserText, Mode=OneWay}" />
-                <Run Text="   ·   " />
-                <Run Text="{x:Bind ViewModel.RunDurationText, Mode=OneWay}" />
-            </TextBlock>
+                Text="{x:Bind ViewModel.RunProvenanceText, Mode=OneWay}"
+                TextWrapping="Wrap" />
         </StackPanel>
 
         <!--  Row 2: the sweep, folded away so it does not compete with the day  -->
@@ -399,94 +391,59 @@
                                     TextWrapping="Wrap" />
                             </Grid>
 
-                            <!--  Where the row sits in the paperwork  -->
-                            <StackPanel Spacing="6">
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="PO / line" />
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderNumber, Mode=OneWay}" />
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="/" />
-                                        <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderLineNumber, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Load" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.LoadOrSkidText, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Unit" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.UnitOfMeasure, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Difference" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DifferenceText, Mode=OneWay}" />
-                                </Grid>
-                            </StackPanel>
+                            <!--  Two columns of fields, so the card fits the window height  -->
+                            <Grid ColumnSpacing="16" RowSpacing="6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="64" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" MinWidth="64" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <!--  The evidence the proposal rests on  -->
-                            <StackPanel Spacing="6">
-                                <TextBlock
-                                    FontSize="12"
-                                    FontWeight="SemiBold"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="EVIDENCE" />
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moved by" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementUserId, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moved at" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementTimeText, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moves" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.MovementCount, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="From" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.EvidenceLocations, Mode=OneWay}" />
-                                </Grid>
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="88" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Source" />
-                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DestinationSourceText, Mode=OneWay}" />
-                                </Grid>
-                            </StackPanel>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="PO / line" />
+                                <StackPanel
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="6">
+                                    <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderNumber, Mode=OneWay}" />
+                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="/" />
+                                    <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderLineNumber, Mode=OneWay}" />
+                                </StackPanel>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource FieldLabelStyle}" Text="Load" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.LoadOrSkidText, Mode=OneWay}" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Unit" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.UnitOfMeasure, Mode=OneWay}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource FieldLabelStyle}" Text="Difference" />
+                                <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DifferenceText, Mode=OneWay}" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moved by" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementUserId, Mode=OneWay}" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource FieldLabelStyle}" Text="Moved at" />
+                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementTimeText, Mode=OneWay}" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moves" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.MovementCount, Mode=OneWay}" />
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource FieldLabelStyle}" Text="Source" />
+                                <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DestinationSourceText, Mode=OneWay}" />
+                            </Grid>
+
+                            <!--  The transfer trail, on its own line because it can be long  -->
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="64" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="From" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.EvidenceLocations, Mode=OneWay}" />
+                            </Grid>
 
                             <!--  The action: the destination is pre-set, Enter writes, Escape skips  -->
                             <StackPanel Spacing="8">
