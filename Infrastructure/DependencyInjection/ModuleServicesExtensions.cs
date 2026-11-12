@@ -66,6 +66,65 @@ public static class ModuleServicesExtensions
         services.AddSharedModule(configuration);
         services.AddShipRecToolsModule(configuration);
         services.AddReprintModule();
+        services.AddReconciliationModule(configuration);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Receiving Validator module: its two DAOs, its collaborators, its
+    /// services, its view models, its views and its settings page (FR-061, R-DI-01,
+    /// R-DI-02).
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configuration">The application configuration.</param>
+    private static IServiceCollection AddReconciliationModule(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        var mySqlConnectionString =
+            configuration.GetConnectionString("MySql")
+            ?? throw new InvalidOperationException("MySql connection string not found");
+
+        var inforVisualConnectionString =
+            configuration.GetConnectionString("InforVisual")
+            ?? throw new InvalidOperationException("InforVisual connection string not found");
+
+        // Data access (Singleton, stateless)
+        services.AddSingleton(provider => new Module_Reconciliation.Data.Dao_ReconciliationReceivingRows(
+            mySqlConnectionString,
+            provider.GetService<IService_LoggingUtility>()
+        ));
+        services.AddSingleton(provider => new Module_Reconciliation.Data.Dao_ReconciliationInforVisual(
+            inforVisualConnectionString,
+            provider.GetService<IService_LoggingUtility>()
+        ));
+
+        // Collaborators and services (Singleton, they hold no per-day state)
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationSettings, Module_Reconciliation.Services.Service_ReconciliationSettings>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationNonPurchaseOrderResolver, Module_Reconciliation.Services.Service_ReconciliationNonPurchaseOrderResolver>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationGroupResolver, Module_Reconciliation.Services.Service_ReconciliationGroupResolver>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationMovementSelector, Module_Reconciliation.Services.Service_ReconciliationMovementSelector>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationBucketBuilder, Module_Reconciliation.Services.Service_ReconciliationBucketBuilder>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationAllocator, Module_Reconciliation.Services.Service_ReconciliationAllocator>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationQuantityProof, Module_Reconciliation.Services.Service_ReconciliationQuantityProof>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationDayReader, Module_Reconciliation.Services.Service_ReconciliationDayReader>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationPreview, Module_Reconciliation.Services.Service_ReconciliationPreviewOrchestrator>();
+        services.AddSingleton<Module_Reconciliation.Contracts.IService_ReconciliationWriteService, Module_Reconciliation.Services.Service_ReconciliationWriteService>();
+        services.AddSingleton<Module_Reconciliation.Navigation.ReconciliationHeaderTitleProvider>();
+
+        // View models and views (Transient, per navigation)
+        services.AddTransient<Module_Reconciliation.ViewModels.ViewModel_Reconciliation_Launcher>();
+        services.AddTransient<Module_Reconciliation.ViewModels.ViewModel_ReconciliationMain>();
+        services.AddTransient<Module_Reconciliation.ViewModels.ViewModel_ReconciliationNeedsAttention>();
+        services.AddTransient<Module_Reconciliation.Views.View_Reconciliation_Launcher>();
+        services.AddTransient<Module_Reconciliation.Views.View_ReconciliationMain>();
+        services.AddTransient<Module_Reconciliation.Views.View_ReconciliationNeedsAttentionWindow>();
+
+        // Settings page
+        services.AddTransient<Module_Settings.Reconciliation.ViewModels.ViewModel_Settings_Reconciliation_Main>();
+        services.AddTransient<Module_Settings.Reconciliation.Views.View_Settings_Reconciliation_Main>();
 
         return services;
     }
@@ -215,7 +274,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Receiving_HeatLot>();
         services.AddTransient<ViewModel_Receiving_PackageType>();
         services.AddTransient<ViewModel_Receiving_Review>();
-        services.AddTransient<ViewModel_Receiving_LocationReconciliationReview>();
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Receiving.Views.View_Receiving_Workflow>();
@@ -228,7 +286,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Receiving.Views.View_Receiving_HeatLot>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_PackageType>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_Review>();
-        services.AddTransient<Module_Receiving.Views.View_Receiving_Dialog_LocationReconciliationReview>();
 
         return services;
     }
@@ -542,7 +599,6 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_EntryDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_ValidationRules>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_PartFormatting>();
-        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables>();

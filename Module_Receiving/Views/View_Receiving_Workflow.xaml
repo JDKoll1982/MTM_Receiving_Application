@@ -76,15 +76,6 @@
                 VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsEditModeVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <!--  Reconciliation Review View  -->
-            <ContentControl
-                x:Name="ReconciliationReviewHost"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsReconciliationReviewVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
             <!--  Guided Wizard Views  -->
             <!--  PO Entry View  -->
             <ContentControl

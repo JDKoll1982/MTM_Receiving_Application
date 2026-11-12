@@ -5,11 +5,12 @@
     <!--
         Brand accent brushes for every working module. Single source of truth
         shared by the Receiving, Dunnage, Volvo, Reporting, Ship/Rec Tools,
-        Reprint, Scanner, and Settings modules. The fill brushes are fixed brand
-        colors — referenced with StaticResource and unchanged across light/dark
-        themes because white text is rendered on top of them.
+        Reprint, Scanner, Reconciliation and Settings modules. The fill brushes
+        are fixed brand colors — referenced with StaticResource and unchanged
+        across light/dark themes because white text is rendered on top of them.
     -->
     <SolidColorBrush x:Key="ReceivingAccentBrush" Color="#0B6157" />
+    <SolidColorBrush x:Key="ReconciliationAccentBrush" Color="#00838F" />
     <SolidColorBrush x:Key="DunnageAccentBrush" Color="#8A5E00" />
     <SolidColorBrush x:Key="VolvoAccentBrush" Color="#1E4F7A" />
     <SolidColorBrush x:Key="ReportingAccentBrush" Color="#6A1B9A" />
@@ -25,6 +26,7 @@
         fixed and remain visible against the fill in both light and dark mode.
     -->
     <SolidColorBrush x:Key="ReceivingAccentHighlightBrush" Color="#4DB6AC" />
+    <SolidColorBrush x:Key="ReconciliationAccentHighlightBrush" Color="#26C6DA" />
     <SolidColorBrush x:Key="DunnageAccentHighlightBrush" Color="#D9A441" />
     <SolidColorBrush x:Key="VolvoAccentHighlightBrush" Color="#64B5F6" />
     <SolidColorBrush x:Key="ReportingAccentHighlightBrush" Color="#BA68C8" />
@@ -44,6 +46,7 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="ReceivingAccentBorderBrush" Color="#0B6157" />
+            <SolidColorBrush x:Key="ReconciliationAccentBorderBrush" Color="#00838F" />
             <SolidColorBrush x:Key="DunnageAccentBorderBrush" Color="#8A5E00" />
             <SolidColorBrush x:Key="VolvoAccentBorderBrush" Color="#1E4F7A" />
             <SolidColorBrush x:Key="ReportingAccentBorderBrush" Color="#6A1B9A" />
@@ -54,6 +57,7 @@
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <SolidColorBrush x:Key="ReceivingAccentBorderBrush" Color="#4DB6AC" />
+            <SolidColorBrush x:Key="ReconciliationAccentBorderBrush" Color="#4DD0E1" />
             <SolidColorBrush x:Key="DunnageAccentBorderBrush" Color="#D9A441" />
             <SolidColorBrush x:Key="VolvoAccentBorderBrush" Color="#64B5F6" />
             <SolidColorBrush x:Key="ReportingAccentBorderBrush" Color="#BA68C8" />

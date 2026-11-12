@@ -33,10 +33,6 @@ public sealed partial class ViewModel_Settings_Receiving_CategoryHub
                 typeof(Views.View_Settings_Receiving_PartFormatting)
             ),
             new Model_SettingsNavigationStep(
-                "Reconciliation",
-                typeof(Views.View_Settings_Receiving_Reconciliation)
-            ),
-            new Model_SettingsNavigationStep(
                 "Workflow Defaults",
                 typeof(Views.View_Settings_Receiving_WorkflowDefaults)
             ),

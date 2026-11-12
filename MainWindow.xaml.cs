@@ -556,6 +556,10 @@ namespace MTM_Receiving_Application
                 typeof(Module_Reporting.Views.View_Reporting_Main),
                 "End of Day Reports"
             ),
+            ["ReconciliationLauncherPage"] = (
+                typeof(Module_Reconciliation.Views.View_Reconciliation_Launcher),
+                "Receiving Validator"
+            ),
             ["ShipRecToolsPage"] = (
                 typeof(Module_ShipRec_Tools.Views.View_ShipRecTools_Main),
                 string.Empty
@@ -1252,13 +1256,13 @@ namespace MTM_Receiving_Application
                     "receiving part formatting"
                 ),
                 CreateSettingsDestination(
-                    typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_Reconciliation),
-                    "Receiving Reconciliation",
-                    "Ignored recommended locations and reconciliation validation scope",
-                    "reconciliation",
-                    "reconciliation settings",
-                    "ignored locations",
-                    "recommended locations"
+                    typeof(Module_Settings.Reconciliation.Views.View_Settings_Reconciliation_Main),
+                    "Receiving Validator Settings",
+                    "Movement discovery and strict validation windows used by the Receiving Validator",
+                    "receiving validator settings",
+                    "reconciliation windows",
+                    "movement discovery window",
+                    "strict validation window"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults),
@@ -2277,6 +2281,8 @@ namespace MTM_Receiving_Application
             ModuleAccentMap =
             [
                 ("MTM_Receiving_Application.Module_Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Reconciliation", "ReconciliationAccentBrush", "ReconciliationAccentBorderBrush", "ReconciliationAccentHighlightBrush"),
+                ("MTM_Receiving_Application.Module_Settings.Reconciliation", "ReconciliationAccentBrush", "ReconciliationAccentBorderBrush", "ReconciliationAccentHighlightBrush"),
                 ("MTM_Receiving_Application.Module_Settings.Receiving", "ReceivingAccentBrush", "ReceivingAccentBorderBrush", "ReceivingAccentHighlightBrush"),
                 ("MTM_Receiving_Application.Module_Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),
                 ("MTM_Receiving_Application.Module_Settings.Dunnage", "DunnageAccentBrush", "DunnageAccentBorderBrush", "DunnageAccentHighlightBrush"),

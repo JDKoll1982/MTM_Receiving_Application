@@ -119,6 +119,7 @@ Pause and ask via chat approval flow when a major assumption is needed, includin
 - Module_Core: shared infra/helpers/base services.
 - Module_Shared: shared views/viewmodels/models.
 - Module_Receiving: receiving workflow + labels.
+- Module_Reconciliation: Receiving Validator — one-day location reconciliation against Infor Visual transfers.
 - Module_Dunnage: dunnage workflow.
 - Module_Reporting: reporting.
 - Module_Settings.*: settings UI + settings core.

@@ -297,7 +297,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "ModeSelection",
 
             // User Preferences defaults
-            [ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson] = "[]",
             [ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson] =
                 "[{\"VendorName\":\"Skana\",\"VariableName\":\"DM #\"}]",
         };
@@ -318,8 +317,6 @@ public static class ReceivingSettingsDefaults
             // Business Rules
             [ReceivingSettingsKeys.BusinessRules.ConfirmModeChange] = true,
             [ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault] = false,
-            [ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation] =
-                false,
 
             // Integrations
             [ReceivingSettingsKeys.Integrations.ErpSyncEnabled] = true,

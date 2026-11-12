@@ -36,9 +36,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules
     private bool _showReviewTableByDefault;
 
     [ObservableProperty]
-    private bool _validateAllHistoryForLocationReconciliation;
-
-    [ObservableProperty]
     private bool _useInforVisualMockData;
 
     [ObservableProperty]
@@ -98,10 +95,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules
                 ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault,
                 ShowReviewTableByDefault.ToString()
             );
-            await SaveSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
-                ValidateAllHistoryForLocationReconciliation.ToString()
-            );
             if (MockDataToggleVisibility == Visibility.Visible)
             {
                 var appSettingsResult = await _appSettings.SetUseInforVisualMockDataAsync(
@@ -142,9 +135,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.ConfirmModeChange);
             await ResetSettingAsync(ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault);
-            await ResetSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation
-            );
             if (MockDataToggleVisibility == Visibility.Visible)
             {
                 var appSettingsResult = await _appSettings.SetUseInforVisualMockDataAsync(false);
@@ -210,12 +200,6 @@ public sealed partial class ViewModel_Settings_Receiving_BusinessRules
                 ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault,
                 ReceivingSettingsDefaults.BoolDefaults[
                     ReceivingSettingsKeys.BusinessRules.ShowReviewTableByDefault
-                ]
-            );
-            ValidateAllHistoryForLocationReconciliation = await GetBoolSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
-                ReceivingSettingsDefaults.BoolDefaults[
-                    ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation
                 ]
             );
             UseInforVisualMockData = _appSettings.GetUseInforVisualMockData();

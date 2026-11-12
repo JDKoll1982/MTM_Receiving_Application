@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Reconciliation.Views.View_Settings_Reconciliation_Main"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="Transparent"
+    mc:Ignorable="d">
+
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <StackPanel Padding="24,20,24,20" Spacing="16">
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Windowing" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="The movement discovery window is how far either side of the receipt day the module looks for transfers. The strict validation window is how many days after the receipt day it treats as inside the receipt."
+                TextWrapping="Wrap" />
+
+            <NumberBox
+                AutomationProperties.Name="Movement discovery window in days"
+                Header="Movement discovery window (days either side)"
+                Minimum="0"
+                SpinButtonPlacementMode="Compact"
+                Value="{x:Bind ViewModel.DiscoveryWindowDays, Mode=TwoWay}" />
+            <NumberBox
+                AutomationProperties.Name="Strict validation window in days"
+                Header="Strict validation window (days after the receipt day)"
+                Minimum="0"
+                SpinButtonPlacementMode="Compact"
+                Value="{x:Bind ViewModel.StrictWindowDays, Mode=TwoWay}" />
+
+            <TextBlock
+                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                Text="{x:Bind ViewModel.ValidationMessage, Mode=OneWay}"
+                TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button
+                    AutomationProperties.Name="Save the Receiving Validator window settings"
+                    Command="{x:Bind ViewModel.SaveCommand, Mode=OneWay}"
+                    Content="Save" />
+                <Button
+                    AutomationProperties.Name="Reload the Receiving Validator window settings"
+                    Command="{x:Bind ViewModel.LoadCommand, Mode=OneWay}"
+                    Content="Reload" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

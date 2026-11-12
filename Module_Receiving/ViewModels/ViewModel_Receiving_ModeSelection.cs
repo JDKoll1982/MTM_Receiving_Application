@@ -186,14 +186,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task ReconcileSavedLocationsAsync()
-        {
-            _logger.LogInfo("User selected Reconcile Saved Locations.");
-            _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ReconciliationReview);
-            await Task.CompletedTask;
-        }
-
         /// <summary>
         /// Set by the view's code-behind so the mode can open the label overlay window without the
         /// ViewModel taking a dependency on UI types.

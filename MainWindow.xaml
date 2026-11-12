@@ -351,6 +351,19 @@
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
+        <!--  Receiving Validator: the module's single navigation entry, in the Reporting group (FR-062)  -->
+                <NavigationViewItem Margin="0,0,0,4" Tag="ReconciliationLauncherPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8B7;" />
+                    </NavigationViewItem.Icon>
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Receiving Validator" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="from Infor Visual" />
+                    </StackPanel>
+                </NavigationViewItem>
                 <NavigationViewItem
                     Margin="0,0,0,4"
                     Content="End of Day Reports"

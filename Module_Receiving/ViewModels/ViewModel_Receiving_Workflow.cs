@@ -43,7 +43,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService.CurrentStep switch
             {
                 Enum_ReceivingWorkflowStep.ModeSelection =>
-                    "Choose how you want to enter Receiving data: guided workflow, manual entry, edit mode, or reconciliation.",
+                    "Choose how you want to enter Receiving data: guided workflow, manual entry, or edit mode.",
                 Enum_ReceivingWorkflowStep.POEntry =>
                     "Enter a PO number or switch to the non-PO flow before loading parts.",
                 Enum_ReceivingWorkflowStep.PartSelection =>
@@ -58,8 +58,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     "Set the package type for each load so labels and saved records use the right packaging.",
                 Enum_ReceivingWorkflowStep.Review =>
                     "Review every generated load before saving labels and database records.",
-                Enum_ReceivingWorkflowStep.ReconciliationReview =>
-                    "Review the saved-location differences before deciding which reconciliation updates to keep.",
                 Enum_ReceivingWorkflowStep.ManualEntry =>
                     "Enter or revise rows directly when the guided workflow is not the best fit.",
                 Enum_ReceivingWorkflowStep.EditMode =>
@@ -96,12 +94,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isEditModeVisible;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
-        private bool _isReconciliationReviewVisible;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
@@ -430,7 +422,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsModeSelectionVisible = false;
             IsManualEntryVisible = false;
             IsEditModeVisible = false;
-            IsReconciliationReviewVisible = false;
             IsPOEntryVisible = false;
             IsPartSelectionVisible = false;
             IsLoadEntryVisible = false;
@@ -455,10 +446,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     IsEditModeVisible = true;
                     CurrentStepTitle = "Receiving - Edit Mode";
-                    break;
-                case Enum_ReceivingWorkflowStep.ReconciliationReview:
-                    IsReconciliationReviewVisible = true;
-                    CurrentStepTitle = "Receiving - Reconcile Saved Locations";
                     break;
                 case Enum_ReceivingWorkflowStep.POEntry:
                     IsPOEntryVisible = true;
@@ -1049,7 +1036,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     _startNewEntryStep = Enum_ReceivingWorkflowStep.EditMode;
                     break;
-                case Enum_ReceivingWorkflowStep.ReconciliationReview:
                 case Enum_ReceivingWorkflowStep.POEntry:
                 case Enum_ReceivingWorkflowStep.PartSelection:
                 case Enum_ReceivingWorkflowStep.LoadEntry:

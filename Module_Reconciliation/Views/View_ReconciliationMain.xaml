@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Reconciliation.Views.View_ReconciliationMain"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Reconciliation.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Reconciliation.Models"
+    Background="Transparent"
+    KeyDown="OnPageKeyDown"
+    Loaded="OnLoaded"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:Converter_ReconciliationOutcomeBrush x:Key="OutcomeBrushConverter" />
+        <converters:Converter_ReconciliationOutcomeText x:Key="OutcomeTextConverter" />
+        <CollectionViewSource
+            x:Name="GroupedFindingsSource"
+            IsSourceGrouped="True"
+            Source="{x:Bind ViewModel.GroupedFindings, Mode=OneWay}" />
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style x:Key="FieldValueStyle" TargetType="TextBlock">
+            <Setter Property="IsTextSelectionEnabled" Value="True" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="ColumnHeaderStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Padding="24,16,24,16" RowSpacing="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Row 0: the working day, the filters, and the attention action  -->
+        <Grid Grid.Row="0" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <DatePicker
+                    x:Name="WorkingDayPicker"
+                    AutomationProperties.Name="Working day"
+                    Date="{x:Bind ViewModel.SelectedDateOffset, Mode=OneWay}"
+                    DateChanged="OnWorkingDayChanged"
+                    Header="Working day" />
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Go to the previous receiving day"
+                    Command="{x:Bind ViewModel.GoToPreviousDayCommand, Mode=OneWay}"
+                    Content="Previous" />
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Go to the next receiving day"
+                    Command="{x:Bind ViewModel.GoToNextDayCommand, Mode=OneWay}"
+                    Content="Next" />
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Go to today"
+                    Command="{x:Bind ViewModel.GoToTodayCommand, Mode=OneWay}"
+                    Content="Today" />
+                <ProgressRing
+                    Width="20"
+                    Height="20"
+                    Margin="4,0,0,2"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Loading the working day"
+                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+            </StackPanel>
+
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal"
+                Spacing="8">
+                <TextBox
+                    MinWidth="200"
+                    AutomationProperties.Name="Filter by part or purchase order"
+                    Header="Filter"
+                    PlaceholderText="Part or PO"
+                    Text="{x:Bind ViewModel.TextFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ComboBox
+                    MinWidth="150"
+                    AutomationProperties.Name="Filter by outcome"
+                    Header="Outcome"
+                    ItemsSource="{x:Bind ViewModel.OutcomeFilterChoices, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.OutcomeFilterChoice, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_ReconciliationOutcomeFilterChoice">
+                            <TextBlock Text="{x:Bind DisplayText, Mode=OneTime}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Border
+                    Padding="10,6,10,6"
+                    VerticalAlignment="Bottom"
+                    Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                    CornerRadius="4"
+                    Visibility="{x:Bind ViewModel.IsSelectedDayCompleted, Mode=OneWay}">
+                    <TextBlock
+                        AutomationProperties.Name="This day is complete for this session"
+                        FontSize="12"
+                        Text="Day complete" />
+                </Border>
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Open the lines that need attention"
+                    Command="{x:Bind ViewModel.OpenNeedsAttentionCommand, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Needs Attention" />
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{x:Bind ViewModel.UnresolvedCount, Mode=OneWay}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!--  Row 1: the day in one sentence, plus run provenance  -->
+        <StackPanel Grid.Row="1" Spacing="2">
+            <TextBlock
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.SummaryLineText, Mode=OneWay}"
+                TextWrapping="Wrap" />
+            <TextBlock
+                AutomationProperties.Name="Cycle position, run, and Infor Visual user"
+                FontSize="12"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                TextWrapping="Wrap">
+                <Run Text="{x:Bind ViewModel.CyclePositionText, Mode=OneWay}" />
+                <Run Text="   ·   " />
+                <Run Text="Run " />
+                <Run Text="{x:Bind ViewModel.RunIdentifier, Mode=OneWay}" />
+                <Run Text="   ·   Visual user " />
+                <Run Text="{x:Bind ViewModel.VisualUserText, Mode=OneWay}" />
+                <Run Text="   ·   " />
+                <Run Text="{x:Bind ViewModel.RunDurationText, Mode=OneWay}" />
+            </TextBlock>
+        </StackPanel>
+
+        <!--  Row 2: the sweep, folded away so it does not compete with the day  -->
+        <Expander
+            Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            AutomationProperties.Name="Sweep a backlog one day at a time"
+            Header="Sweep a backlog">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <DatePicker
+                    AutomationProperties.Name="Sweep start date"
+                    Date="{x:Bind ViewModel.SweepStartDateOffset, Mode=OneWay}"
+                    DateChanged="OnSweepStartChanged"
+                    Header="From" />
+                <DatePicker
+                    AutomationProperties.Name="Sweep end date"
+                    Date="{x:Bind ViewModel.SweepEndDateOffset, Mode=OneWay}"
+                    DateChanged="OnSweepEndChanged"
+                    Header="To" />
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Start the backlog sweep"
+                    Command="{x:Bind ViewModel.StartSweepCommand, Mode=OneWay}"
+                    Content="Start" />
+                <Button
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Stop the backlog sweep between days"
+                    Command="{x:Bind ViewModel.StopSweepCommand, Mode=OneWay}"
+                    Content="Stop" />
+                <TextBlock
+                    Margin="8,0,0,2"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Sweep progress"
+                    Text="{x:Bind ViewModel.SweepProgressText, Mode=OneWay}" />
+            </StackPanel>
+        </Expander>
+
+        <!--  Row 3: Infor Visual retry banner  -->
+        <InfoBar
+            Grid.Row="3"
+            AutomationProperties.Name="Infor Visual retry banner"
+            IsClosable="False"
+            IsOpen="{x:Bind ViewModel.IsVisualUnavailable, Mode=OneWay}"
+            Message="Infor Visual could not be read for at least one group on this day. Those lines show as Error and can be retried by reloading the day."
+            Severity="Warning"
+            Title="Infor Visual unavailable" />
+
+        <!--  Row 4: page-level states  -->
+        <StackPanel Grid.Row="4" Spacing="2">
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="{x:Bind ViewModel.EmptyStateMessage, Mode=OneWay}"
+                TextWrapping="Wrap" />
+            <TextBlock
+                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                Text="{x:Bind ViewModel.FailureMessage, Mode=OneWay}"
+                TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!--  Row 5: the day's lines on the left, the selected line on the right  -->
+        <Grid Grid.Row="5" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" MinWidth="320" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" RowSpacing="6">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  Column captions, aligned with the row template below  -->
+                <Grid
+                    Grid.Row="0"
+                    Padding="12,0,28,0"
+                    ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource ColumnHeaderStyle}" Text="Part" />
+                    <TextBlock Grid.Column="1" Style="{StaticResource ColumnHeaderStyle}" Text="PO #" />
+                    <TextBlock
+                        Grid.Column="2"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource ColumnHeaderStyle}"
+                        Text="Qty" />
+                </Grid>
+
+                <ListView
+                    Grid.Row="1"
+                    AutomationProperties.Name="Receiving lines for the working day"
+                    ItemsSource="{x:Bind GroupedFindingsSource.View, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedFinding, Mode=TwoWay}"
+                    SelectionMode="Single">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="models:Model_ReconciliationFindingGroup">
+                                    <Grid Margin="0,12,0,4">
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Text="{x:Bind Key, Mode=OneWay}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Right"
+                                            FontSize="12"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{x:Bind Count, Mode=OneWay}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_ReconciliationFinding">
+                            <Grid
+                                Padding="8,6,8,6"
+                                Background="{x:Bind Outcome, Converter={StaticResource OutcomeBrushConverter}, Mode=OneWay}"
+                                ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    FontFamily="Consolas"
+                                    Text="{x:Bind Row.PartId, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{x:Bind Row.PurchaseOrderNumber, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    Text="{x:Bind Row.Quantity, Mode=OneWay}"
+                                    TextAlignment="Right" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!--  Detail pane: labelled fields, grouped, with the action at the bottom  -->
+            <Border
+                Grid.Column="1"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid>
+                    <!--  Nothing selected  -->
+                    <TextBlock
+                        x:Name="EmptyDetailHint"
+                        x:Load="{x:Bind ViewModel.HasNoSelectedFinding, Mode=OneWay}"
+                        VerticalAlignment="Top"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Select a line to see why it is here."
+                        TextWrapping="Wrap" />
+
+                    <!--  Selected line  -->
+                    <ScrollViewer
+                        x:Name="DetailPane"
+                        x:Load="{x:Bind ViewModel.HasSelectedFinding, Mode=OneWay}"
+                        AutomationProperties.Name="Selected line detail"
+                        Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+                        <StackPanel Spacing="14">
+
+                            <!--  What this line is  -->
+                            <StackPanel Spacing="2">
+                                <TextBlock
+                                    FontFamily="Consolas"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.SelectedFinding.Row.PartId, Mode=OneWay}" />
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind ViewModel.SelectedFinding.Row.PartDescription, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!--  The move this line records: saved -> proposed  -->
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Saved" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        IsTextSelectionEnabled="True"
+                                        Text="{x:Bind ViewModel.SelectedFinding.SavedLocation, Mode=OneWay}" />
+                                </StackPanel>
+                                <FontIcon
+                                    Grid.Column="1"
+                                    Margin="0,16,0,0"
+                                    FontSize="14"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Glyph="&#xE72A;" />
+                                <StackPanel Grid.Column="2" Spacing="2">
+                                    <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Visual says" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        FontWeight="SemiBold"
+                                        IsTextSelectionEnabled="True"
+                                        Text="{x:Bind ViewModel.SelectedFinding.ProposedLocation, Mode=OneWay}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!--  Why, in one sentence, next to the outcome badge  -->
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border
+                                    Grid.Column="0"
+                                    Padding="8,2,8,2"
+                                    VerticalAlignment="Top"
+                                    Background="{x:Bind ViewModel.SelectedFinding.Outcome, Converter={StaticResource OutcomeBrushConverter}, Mode=OneWay}"
+                                    CornerRadius="4">
+                                    <TextBlock
+                                        AutomationProperties.Name="Outcome"
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind ViewModel.SelectedFinding.Outcome, Converter={StaticResource OutcomeTextConverter}, Mode=OneWay}" />
+                                </Border>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    VerticalAlignment="Top"
+                                    Text="{x:Bind ViewModel.SelectedFinding.Reason, Mode=OneWay}"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+
+                            <!--  Where the row sits in the paperwork  -->
+                            <StackPanel Spacing="6">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="PO / line" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderNumber, Mode=OneWay}" />
+                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="/" />
+                                        <TextBlock Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.PurchaseOrderLineNumber, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Load" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.LoadOrSkidText, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Unit" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Row.UnitOfMeasure, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Difference" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DifferenceText, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!--  The evidence the proposal rests on  -->
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="EVIDENCE" />
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moved by" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementUserId, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moved at" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.MovementTimeText, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moves" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.MovementCount, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="From" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.EvidenceLocations, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="88" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Source" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DestinationSourceText, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!--  The action: the destination is pre-set, Enter writes, Escape skips  -->
+                            <StackPanel Spacing="8">
+                                <TextBox
+                                    AutomationProperties.Name="Destination location"
+                                    Header="Write this location"
+                                    Text="{x:Bind ViewModel.DestinationField, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button
+                                        MinWidth="96"
+                                        AutomationProperties.Name="Accept this line and write the destination"
+                                        Command="{x:Bind ViewModel.AcceptCommand, Mode=OneWay}"
+                                        Content="Accept"
+                                        Style="{StaticResource AccentButtonStyle}" />
+                                    <Button
+                                        MinWidth="96"
+                                        AutomationProperties.Name="Skip this line for this run"
+                                        Command="{x:Bind ViewModel.SkipCommand, Mode=OneWay}"
+                                        Content="Skip" />
+                                </StackPanel>
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="Enter accepts · Escape skips" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

@@ -337,14 +337,10 @@ public static class ReceivingSettingsKeys
         public const string ConfirmModeChange = "Receiving.BusinessRules.ConfirmModeChange";
         public const string ShowReviewTableByDefault =
             "Receiving.BusinessRules.ShowReviewTableByDefault";
-        public const string ValidateAllHistoryForLocationReconciliation =
-            "Receiving.BusinessRules.ValidateAllHistoryForLocationReconciliation";
     }
 
     public static class UserPreferences
     {
-        public const string IgnoredReconciliationLocationsJson =
-            "Receiving.UserPreferences.IgnoredReconciliationLocationsJson";
         public const string VendorVariableMappingsJson =
             "Receiving.UserPreferences.VendorVariableMappingsJson";
     }

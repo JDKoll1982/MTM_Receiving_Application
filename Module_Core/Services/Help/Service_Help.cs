@@ -157,7 +157,6 @@ public class Service_Help : IService_Help
             Enum_ReceivingWorkflowStep.EditMode => "Receiving.EditMode",
             Enum_ReceivingWorkflowStep.Saving => "Receiving.Saving",
             Enum_ReceivingWorkflowStep.Complete => "Receiving.Complete",
-            Enum_ReceivingWorkflowStep.ReconciliationReview => "Receiving.ReconciliationReview",
             _ => "Receiving.ModeSelection",
         };
 
@@ -258,7 +257,6 @@ public class Service_Help : IService_Help
             Enum_ReceivingWorkflowStep.Review => "Receiving.Review",
             Enum_ReceivingWorkflowStep.Saving => "Receiving.Saving",
             Enum_ReceivingWorkflowStep.Complete => "Receiving.Complete",
-            Enum_ReceivingWorkflowStep.ReconciliationReview => "Receiving.ReconciliationReview",
             _ => "",
         };
 
@@ -779,29 +777,6 @@ public class Service_Help : IService_Help
                 Icon = "CheckCircle",
                 Severity = Enum_HelpSeverity.Info,
                 RelatedKeys = new List<string> { "Receiving.ModeSelection", "Receiving.Review" },
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Receiving.ReconciliationReview",
-                Title = "Reconcile Saved Locations",
-                Content =
-                    "Review saved loads against InforVisual to verify their storage locations.\n\n"
-                    + "**What this screen does:**\n"
-                    + "• Compares InforVisual transaction history with current inventory\n"
-                    + "• Shows suggested locations where quantities match exactly\n"
-                    + "• Lets you confirm or adjust each saved load's location\n\n"
-                    + "**Why:**\n"
-                    + "• Keeps inventory locations accurate in InforVisual\n"
-                    + "• Prevents misplaced stock\n"
-                    + "• Uses read-only data from InforVisual",
-                Category = "Receiving Workflow",
-                HelpType = Enum_HelpType.Tutorial,
-                Icon = "MapMarker",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
             }
         );
 

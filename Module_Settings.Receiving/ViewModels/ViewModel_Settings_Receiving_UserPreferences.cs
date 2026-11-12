@@ -39,17 +39,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
     [ObservableProperty]
     private Model_PartNumberPrefixRule? _selectedRule;
 
-    [ObservableProperty]
-    private bool _validateAllHistoryForLocationReconciliation;
-
-    [ObservableProperty]
-    private ObservableCollection<string> _ignoredReconciliationLocations;
-
-    [ObservableProperty]
-    private string _pendingIgnoredLocation = string.Empty;
-
-    [ObservableProperty]
-    private string? _selectedIgnoredLocation;
 
     [ObservableProperty]
     private ObservableCollection<Model_ReceivingVendorVariableMapping> _vendorVariableMappings =
@@ -90,7 +79,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         _inforVisualService =
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
         _prefixRules = new ObservableCollection<Model_PartNumberPrefixRule>();
-        _ignoredReconciliationLocations = new ObservableCollection<string>();
 
         _ = InitializeAsync();
     }
@@ -120,17 +108,8 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
                 ReceivingSettingsKeys.PartNumberPadding.Enabled,
                 true
             );
-            ValidateAllHistoryForLocationReconciliation = await GetBoolSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
-                ReceivingSettingsDefaults.BoolDefaults[
-                    ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation
-                ]
-            );
             var rulesJson = await GetStringSettingAsync(
                 ReceivingSettingsKeys.PartNumberPadding.RulesJson
-            );
-            var ignoredLocationsJson = await GetStringSettingAsync(
-                ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson
             );
             var vendorMappingsJson = await GetStringSettingAsync(
                 ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson
@@ -159,9 +138,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             }
 
             ReplacePrefixRules(rulesToApply);
-            ReplaceIgnoredLocations(DeserializeIgnoredLocations(ignoredLocationsJson));
-            ReplaceVendorVariableMappings(DeserializeVendorVariableMappings(vendorMappingsJson));
-            PendingIgnoredLocation = string.Empty;
         }
         catch (Exception ex)
         {
@@ -239,126 +215,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         TestPadding();
     }
 
-    public async Task<Model_ReceivingValidationResult> ValidateIgnoredLocationAsync()
-    {
-        if (string.IsNullOrWhiteSpace(PendingIgnoredLocation))
-        {
-            return Model_ReceivingValidationResult.Success();
-        }
-
-        var locationToValidate = PendingIgnoredLocation.Trim();
-        var validation = await _receivingValidation.ValidateLocationAsync(
-            locationToValidate,
-            WarehouseCode
-        );
-
-        if (validation.IsValid)
-        {
-            PendingIgnoredLocation = locationToValidate;
-        }
-
-        return validation;
-    }
-
-    public async Task<
-        Model_Dao_Result<List<Model_FuzzySearchResult>>
-    > GetIgnoredLocationSuggestionsAsync()
-    {
-        if (string.IsNullOrWhiteSpace(PendingIgnoredLocation))
-        {
-            return Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>());
-        }
-
-        if (_receivingValidation.UseMockLocationList)
-        {
-            var normalizedSearch = NormalizeLocationForMatch(PendingIgnoredLocation);
-            var locationSuggestions = _receivingValidation
-                .PresetLocations.Where(presetLocation =>
-                {
-                    var normalizedPreset = NormalizeLocationForMatch(presetLocation);
-                    return normalizedPreset.Contains(
-                        normalizedSearch,
-                        StringComparison.OrdinalIgnoreCase
-                    );
-                })
-                .OrderByDescending(presetLocation =>
-                    presetLocation.StartsWith(
-                        PendingIgnoredLocation.Trim(),
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                .ThenBy(presetLocation => presetLocation, StringComparer.OrdinalIgnoreCase)
-                .Select(presetLocation => new Model_FuzzySearchResult
-                {
-                    Key = presetLocation,
-                    Label = presetLocation,
-                    Detail = "Preset mock location",
-                })
-                .ToList();
-
-            return Model_Dao_Result_Factory.Success(locationSuggestions);
-        }
-
-        var fuzzyResult = await _inforVisualService.FuzzySearchLocationsAsync(
-            PendingIgnoredLocation.Trim(),
-            WarehouseCode
-        );
-        if (!fuzzyResult.IsSuccess || fuzzyResult.Data is null)
-        {
-            return fuzzyResult;
-        }
-
-        var suggestions = fuzzyResult
-            .Data.Where(static result => string.IsNullOrWhiteSpace(result.Label) is false)
-            .GroupBy(static result => result.Label.Trim(), StringComparer.OrdinalIgnoreCase)
-            .Select(static group => group.First())
-            .ToList();
-
-        return Model_Dao_Result_Factory.Success(suggestions);
-    }
-
-    public bool TryAddIgnoredLocation(string? location, out string message)
-    {
-        var trimmedLocation = location?.Trim() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(trimmedLocation))
-        {
-            message =
-                "Enter a location to ignore before adding it to recommended-location preferences.";
-            return false;
-        }
-
-        if (
-            IgnoredReconciliationLocations.Any(existing =>
-                string.Equals(existing, trimmedLocation, StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            PendingIgnoredLocation = string.Empty;
-            message = $"Location '{trimmedLocation}' is already in the ignore list.";
-            return false;
-        }
-
-        IgnoredReconciliationLocations.Add(trimmedLocation);
-        PendingIgnoredLocation = string.Empty;
-        message =
-            $"Location '{trimmedLocation}' will be ignored for recommended locations and reconciliation.";
-        return true;
-    }
-
-    [RelayCommand]
-    private void RemoveIgnoredLocation()
-    {
-        if (string.IsNullOrWhiteSpace(SelectedIgnoredLocation))
-        {
-            return;
-        }
-
-        var locationToRemove = SelectedIgnoredLocation;
-        IgnoredReconciliationLocations.Remove(locationToRemove);
-        SelectedIgnoredLocation = null;
-        ShowStatus($"Removed '{locationToRemove}' from ignored recommended locations.");
-    }
-
     public void RefreshTestOutput()
     {
         TestPadding();
@@ -378,37 +234,9 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
                 IsPaddingEnabled.ToString()
             );
 
-            if (!string.IsNullOrWhiteSpace(PendingIgnoredLocation))
-            {
-                var validation = await ValidateIgnoredLocationAsync();
-                if (!validation.IsValid)
-                {
-                    ShowStatus(
-                        $"Resolve the pending ignored location before saving. {validation.Message}",
-                        InfoBarSeverity.Warning
-                    );
-                    StatusMessage = "Save blocked";
-                    return;
-                }
-
-                if (TryAddIgnoredLocation(PendingIgnoredLocation, out var addMessage))
-                {
-                    ShowStatus(addMessage, InfoBarSeverity.Success);
-                }
-            }
-
-            await SaveSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.ValidateAllHistoryForLocationReconciliation,
-                ValidateAllHistoryForLocationReconciliation.ToString()
-            );
-
             // Save rules as JSON
             var rulesJson = JsonSerializer.Serialize(PrefixRules.ToArray());
             await SaveSettingAsync(ReceivingSettingsKeys.PartNumberPadding.RulesJson, rulesJson);
-            await SaveSettingAsync(
-                ReceivingSettingsKeys.UserPreferences.IgnoredReconciliationLocationsJson,
-                JsonSerializer.Serialize(IgnoredReconciliationLocations.ToArray())
-            );
             await SaveSettingAsync(
                 ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson,
                 JsonSerializer.Serialize(VendorVariableMappings.ToArray())
@@ -527,19 +355,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
         SelectedRule ??= PrefixRules[0];
     }
 
-    private void ReplaceIgnoredLocations(IEnumerable<string> locations)
-    {
-        IgnoredReconciliationLocations = new ObservableCollection<string>(
-            locations
-                .Where(location => string.IsNullOrWhiteSpace(location) is false)
-                .Select(location => location.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(location => location, StringComparer.OrdinalIgnoreCase)
-        );
-
-        SelectedIgnoredLocation = null;
-    }
-
     private void ReplaceVendorVariableMappings(
         IEnumerable<Model_ReceivingVendorVariableMapping> mappings
     )
@@ -645,24 +460,6 @@ public sealed partial class ViewModel_Settings_Receiving_UserPreferences : ViewM
             $"Removed vendor variable mapping for '{removedVendorName}'.",
             InfoBarSeverity.Success
         );
-    }
-
-    private static IEnumerable<string> DeserializeIgnoredLocations(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return Array.Empty<string>();
-        }
-
-        try
-        {
-            return JsonSerializer.Deserialize<string[]>(json) ?? Array.Empty<string>();
-        }
-        catch
-        {
-            return json.Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(location => location.Trim());
-        }
     }
 
     private static IEnumerable<Model_ReceivingVendorVariableMapping> DeserializeVendorVariableMappings(
