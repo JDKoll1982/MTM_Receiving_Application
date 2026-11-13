@@ -1,6 +1,6 @@
 # Location Reconciliation Algorithm
 
-Last Updated: 2026-11-12
+Last Updated: 2026-11-13
 
 This document replaced the Receiving reconciliation process note when the algorithm moved into its own module. The rules below are the algorithm; the day scope, the settings and the outcomes are the ones the Receiving Validator uses.
 
@@ -10,6 +10,7 @@ This document replaced the Receiving reconciliation process note when the algori
 - It groups candidate rows by purchase order, part and receipt day. Two receipts of one purchase order and part on one day are one group; the same pair on two days is two groups; two different purchase orders of one part on one day are two groups.
 - Rows without a purchase order are grouped by part, receipt day and vendor instead, and are never skipped for lacking a purchase order.
 - It asks Infor Visual for the transfer movements of the group's part around the receipt day.
+- Only the movements booked at or after the receipt time count. The receipt time is the earliest receipt stamp on the group's rows, so a transfer another user posted into the same location earlier in the day is not treated as transport of this material. A movement whose stamp carries no time of day is kept, because that is the date-only record Infor Visual writes when it has no create date.
 - It follows chained moves from either end of a saved location and from the purchase order evidence tied to the group's rows. Because a row's saved location is often the destination the material already reached, and Infor Visual transfer rows usually carry no purchase order, the walk traces backwards as well as forwards; otherwise the movement that delivered the material would be rejected and the part reported as not found.
 - It collapses the movement graph into net destination buckets.
 - When a group resolves no transfer at all, it falls back to the day's receipts for that part: material received straight into its stock location never produces a transfer, and the receipt names the location the material reached. A row already saved against a receipt location is unchanged; any other row reports the receipt location instead of claiming Infor Visual holds no evidence.

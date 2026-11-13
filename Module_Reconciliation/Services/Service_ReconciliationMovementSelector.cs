@@ -19,6 +19,12 @@ namespace MTM_Receiving_Application.Module_Reconciliation.Services;
 /// reject the very movement that delivered it and report the part as not found.
 /// Transfer rows in Infor Visual usually carry no purchase order, so the purchase
 /// order branch cannot rescue those groups.
+/// <para>
+/// Only movements booked at or after the group's own receipt time count. Another
+/// user moving the same part into the same location earlier in the day is not
+/// transport of this material, and counting it would report the destination as
+/// having received more than these rows account for.
+/// </para>
 /// </remarks>
 public sealed class Service_ReconciliationMovementSelector
     : IService_ReconciliationMovementSelector
@@ -49,8 +55,11 @@ public sealed class Service_ReconciliationMovementSelector
             StringComparer.Ordinal
         );
 
+        DateTime? receivedNotBefore = EarliestReceiptTime(group);
+
         var pending = movements
             .Where(movement => movement.IsSameLocation is false)
+            .Where(movement => WasBookedAfterReceipt(movement, receivedNotBefore))
             .ToList();
         var selected = new List<Model_ReconciliationMovement>();
 
@@ -86,6 +95,55 @@ public sealed class Service_ReconciliationMovementSelector
             .ThenBy(movement => movement.DestinationTransactionId)
             .ThenBy(movement => movement.SourceTransactionId)
             .ToList();
+    }
+
+    /// <summary>
+    /// The moment the group's material arrived, which is the earliest receipt stamp
+    /// its rows carry. A group with no stamp keeps every movement in the window.
+    /// </summary>
+    private static DateTime? EarliestReceiptTime(Model_ReconciliationGroup group)
+    {
+        DateTime? earliest = null;
+
+        foreach (Model_ReconciliationRow row in group.Rows)
+        {
+            if (row.ReceivedAt is not DateTime received)
+            {
+                continue;
+            }
+
+            if (earliest is null || received < earliest.Value)
+            {
+                earliest = received;
+            }
+        }
+
+        return earliest;
+    }
+
+    /// <summary>
+    /// A movement booked before the material was received cannot have carried it.
+    /// A stamp with no time of day is a date-only record - Visual had no create date
+    /// and the date column holds no clock - so it is never excluded on time alone.
+    /// </summary>
+    private static bool WasBookedAfterReceipt(
+        Model_ReconciliationMovement movement,
+        DateTime? receivedNotBefore
+    )
+    {
+        if (receivedNotBefore is not DateTime notBefore)
+        {
+            return true;
+        }
+
+        DateTime booked = movement.MovementDateTime;
+
+        if (booked.TimeOfDay == TimeSpan.Zero)
+        {
+            return true;
+        }
+
+        return booked >= notBefore;
     }
 
     private static bool IsReachable(

@@ -7,6 +7,41 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### Reconciliation's detail pane names the move for every line that has evidence (2026-11-13)
+
+- **What changed:** **Moved by** and **Moved at** now fill in for surplus and shortfall lines. The finding model
+  copies the movement time and Visual user off its evidence bucket, so the two fields no longer depend on which
+  code path built the finding — only `Updated` lines used to receive them.
+- **Why:** the `MMC0000667` pane showed **Moves 1** and the `RECV → V-C0-01` trail with both move fields blank.
+- **Files:** `Module_Reconciliation/Models/Model_ReconciliationFinding.cs`,
+  `Module_Reconciliation/Services/Service_ReconciliationPreviewOrchestrator.cs`
+
+#### Reconciliation counts only transfers booked after the material was received (2026-11-13)
+
+- **What changed:** the transfer evidence for a receiving line is now limited to Infor Visual movements posted at or
+  after the line's own receipt time. Evidence comes from the earliest receipt stamp across the group's rows, so a
+  transfer another user booked into the same destination earlier in the day no longer counts against these rows.
+- **Why:** a `MMC0000089` line reported **Extra Surplus** because the destination bucket counted 12,020 received
+  against 5,970 of rows. The surplus was `MLAURIN`'s earlier transfer into the same location, not this material.
+- **Date-only records:** a movement whose stamp carries no time of day is kept. That is the date-only fallback used
+  when Infor Visual has no create date, and dropping it would lose evidence for the wrong reason.
+- **Text clipping:** the detail pane wraps its reason sentence inside the pane, and **Source** now has its own
+  full-width row so "Derived from Infor Visual" is readable.
+- **Files:** `Module_Reconciliation/Services/Service_ReconciliationMovementSelector.cs`,
+  `Module_Reconciliation/Views/View_ReconciliationMain.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/Services/Service_ReconciliationMovementSelectorTests.cs`
+
+#### The Receiving Validator launcher is one full-width card (2026-11-13)
+
+- **What changed:** the launcher page now leads with its title and then the **Work a Receiving Day** card, which
+  stretches the full page width instead of sitting in a narrow left column beside an empty right column.
+- **Text removed:** the "from Infor Visual" line under the title and the "Compare a day of saved receiving
+  locations …" paragraph on the right are gone, along with the now-unused `DescriptionText` property. The module
+  title still comes from `ReconciliationHeaderTitleProvider`, so the shell header and the navigation entry keep
+  reading **Receiving Validator / from Infor Visual**.
+- **Files:** `Module_Reconciliation/Views/View_Reconciliation_Launcher.xaml`,
+  `Module_Reconciliation/ViewModels/ViewModel_Reconciliation_Launcher.cs`
+
 #### The scanner footer is one row, and card edges read in both themes (2026-11-13)
 
 - **What changed:** the Scanner Workbench footer card is now a single row. The **"Was the transaction saved in

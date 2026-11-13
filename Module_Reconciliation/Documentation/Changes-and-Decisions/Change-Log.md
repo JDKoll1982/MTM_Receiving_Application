@@ -2,6 +2,39 @@
 
 Last Updated: 2026-11-13
 
+## 2026-11-13 — Every evidenced line names its move
+
+**What changed**
+
+- `Model_ReconciliationFinding`'s constructor now copies `LatestMovementAt` and `TransactionUserId` off the evidence bucket it is given, so **Moved by** and **Moved at** are filled for every line that has evidence.
+- `Service_ReconciliationPreviewOrchestrator.CreateWritableFinding` no longer sets those two fields itself, because the constructor now does it for all outcomes.
+
+**Why**
+
+Reported against 2026-11-13 from the `MMC0000667` pane: **Moves 1** and the `RECV → V-C0-01` trail were there, but **Moved by** and **Moved at** were blank. Only `Updated` lines went through `CreateWritableFinding`, which was the single place those two fields were assigned, so a surplus or shortfall line — which carries the same bucket — showed no move at all.
+
+**Verification**
+
+- Reconciliation unit tests: 94 passing, up from 92. `FindingShouldNameTheMoveFromItsBucketEvenWhenTheLineIsNotWritable` fails against the previous code; `MovementTimeTextShouldBeEmptyWhenTheBucketCarriesNoTime` pins the no-time case so a blank stays blank instead of becoming `0001-01-01`.
+
+## 2026-11-13 — Only transfers booked after the receipt count as evidence
+
+**What changed**
+
+- `Service_ReconciliationMovementSelector.Select` now drops any movement booked before the group's own receipt time before it runs the reachability walk. The receipt time is the earliest `ReceivedAt` stamp across the group's rows, so a group received at 13:20 cannot be credited with a transfer booked at 09:05.
+- A movement whose posting stamp carries no time of day is never excluded on time alone: that stamp is the date-only fallback used when Infor Visual has no `CREATE_DATE`, and dropping it would lose evidence for the wrong reason.
+- A group whose only movements are pre-receipt now resolves through the existing direct-receipt fallback, so material that stayed where it was received reports `Unchanged` instead of `NotFound`.
+- The detail pane's scroll viewer disables horizontal scrolling rather than only hiding it, so the reason sentence wraps inside the pane. `Source` moved to its own full-width row, because "Derived from Infor Visual" does not fit a half-width cell.
+
+**Why**
+
+Reported against 2026-11-13. Part `MMC0000089` was reported `Extra Surplus`: the destination `WC` bucket counted 12,020 received against 5,970 of rows. The bucket was fed by transfers `MLAURIN` booked into `WC` earlier that day, before this material was received in, so the extra 6,050 was somebody else's move counted against these rows. A transfer that was already posted before the material arrived cannot be the transport of that material, so it is not evidence.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.csproj` succeeded with 0 warnings and 0 errors.
+- Reconciliation selector tests: three added — a pre-receipt movement is rejected, a post-receipt movement is admitted, and a date-only movement survives the filter.
+
 ## 2026-11-13 — Matching lines are reachable through the outcome filter
 
 **What changed**

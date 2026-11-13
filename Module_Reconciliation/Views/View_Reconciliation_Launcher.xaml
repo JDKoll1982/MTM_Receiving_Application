@@ -19,7 +19,6 @@
         <Grid Padding="24" RowSpacing="12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -27,56 +26,40 @@
                 Grid.Row="0"
                 Style="{StaticResource TitleTextBlockStyle}"
                 Text="{x:Bind ViewModel.CurrentHeaderTitle, Mode=OneWay}" />
-            <TextBlock
+
+            <Button
                 Grid.Row="1"
-                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.CurrentHeaderContextSubtitle, Mode=OneWay}" />
-
-            <Grid Grid.Row="2" ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="2*" />
-                </Grid.ColumnDefinitions>
-
-                <Button
-                    Grid.Column="0"
-                    MinWidth="280"
-                    Padding="20"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    AutomationProperties.Name="{x:Bind ViewModel.CardAccessibilityName, Mode=OneWay}"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    Command="{x:Bind ViewModel.OpenWorkingDayCommand, Mode=OneWay}"
-                    CornerRadius="8">
-                    <StackPanel VerticalAlignment="Center" Spacing="12">
-                        <FontIcon
-                            FontSize="40"
-                            Foreground="{StaticResource ReconciliationAccentBrush}"
-                            Glyph="&#xE8B7;" />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                            Text="{x:Bind ViewModel.CardTitle, Mode=OneWay}" />
-                        <TextBlock
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="{x:Bind ViewModel.CardDescription, Mode=OneWay}"
-                            TextAlignment="Center"
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-                </Button>
-
-                <TextBlock
-                    Grid.Column="1"
-                    VerticalAlignment="Top"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource BodyTextBlockStyle}"
-                    Text="{x:Bind ViewModel.DescriptionText, Mode=OneWay}"
-                    TextWrapping="Wrap" />
-            </Grid>
+                Padding="24,20"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                AutomationProperties.Name="{x:Bind ViewModel.CardAccessibilityName, Mode=OneWay}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Command="{x:Bind ViewModel.OpenWorkingDayCommand, Mode=OneWay}"
+                CornerRadius="8">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+                    <FontIcon
+                        HorizontalAlignment="Center"
+                        FontSize="40"
+                        Foreground="{StaticResource ReconciliationAccentBrush}"
+                        Glyph="&#xE8B7;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="{x:Bind ViewModel.CardTitle, Mode=OneWay}" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="{x:Bind ViewModel.CardDescription, Mode=OneWay}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
         </Grid>
     </Border>
 </Page>

@@ -99,6 +99,16 @@ public sealed partial class Model_ReconciliationFinding : ObservableObject
         _reason = reason;
         _difference = difference;
         _bucket = bucket;
+
+        // The bucket carries the move the pane names as evidence, so every finding
+        // that has a bucket reports it - not just the writable ones. A bucket with no
+        // posting time leaves the pane blank rather than inventing a date.
+        if (bucket is not null)
+        {
+            _movementAt = bucket.LatestMovementAt == default ? null : bucket.LatestMovementAt;
+            _movementUserId = bucket.TransactionUserId;
+        }
+
         _state =
             requiresDifference
                 ? Enum_ReconciliationFindingState.Unresolved

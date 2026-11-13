@@ -410,8 +410,6 @@ public sealed class Service_ReconciliationPreviewOrchestrator : IService_Reconci
         );
 
         finding.State = Enum_ReconciliationFindingState.Writable;
-        finding.MovementAt = bucket.LatestMovementAt;
-        finding.MovementUserId = bucket.TransactionUserId;
 
         return finding;
     }

@@ -316,11 +316,15 @@
                         Text="Select a line to see why it is here."
                         TextWrapping="Wrap" />
 
-                    <!--  Selected line  -->
+                    <!--  Selected line. Horizontal scrolling is disabled rather than just
+                          hidden, so the content is measured against the pane width and the
+                          long reason sentence wraps instead of running past the edge.  -->
                     <ScrollViewer
                         x:Name="DetailPane"
                         x:Load="{x:Bind ViewModel.HasSelectedFinding, Mode=OneWay}"
                         AutomationProperties.Name="Selected line detail"
+                        HorizontalScrollBarVisibility="Disabled"
+                        HorizontalScrollMode="Disabled"
                         Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
                         <StackPanel Spacing="14">
 
@@ -404,6 +408,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="PO / line" />
@@ -431,8 +436,15 @@
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Moves" />
                                 <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.Bucket.MovementCount, Mode=OneWay}" />
-                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource FieldLabelStyle}" Text="Source" />
-                                <TextBlock Grid.Row="3" Grid.Column="3" Style="{StaticResource FieldValueStyle}" Text="{x:Bind ViewModel.SelectedFinding.DestinationSourceText, Mode=OneWay}" />
+
+                                <!--  Source reads as a sentence, so it gets the full width  -->
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Source" />
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="3"
+                                    Style="{StaticResource FieldValueStyle}"
+                                    Text="{x:Bind ViewModel.SelectedFinding.DestinationSourceText, Mode=OneWay}" />
                             </Grid>
 
                             <!--  The transfer trail, on its own line because it can be long  -->

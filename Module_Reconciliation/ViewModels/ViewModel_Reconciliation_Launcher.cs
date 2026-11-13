@@ -48,10 +48,6 @@ public sealed partial class ViewModel_Reconciliation_Launcher : ViewModel_Shared
     public string? CurrentHeaderContextSubtitle =>
         _headerTitleProvider.CurrentHeaderContextSubtitle;
 
-    /// <summary>What the module is for.</summary>
-    public string DescriptionText =>
-        "Compare a day of saved receiving locations against where Infor Visual actually moved the material, and correct one line at a time.";
-
     /// <summary>The one mode the module offers today.</summary>
     public string CardTitle => "Work a Receiving Day";
 

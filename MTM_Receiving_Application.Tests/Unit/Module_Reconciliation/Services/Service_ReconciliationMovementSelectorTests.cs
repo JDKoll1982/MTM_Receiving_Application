@@ -198,6 +198,71 @@ public sealed class Service_ReconciliationMovementSelectorTests
         selected.Should().BeEmpty();
     }
 
+    [Fact]
+    public void SelectShouldIgnoreMovementBookedBeforeTheRowsWereReceived()
+    {
+        Model_ReconciliationGroup group = Group(
+            ["RECV"],
+            Row("RECV", 5970, receivedAt: new DateTime(2026, 11, 13, 13, 20, 0, DateTimeKind.Unspecified))
+        );
+        Model_ReconciliationMovement earlierByAnotherUser = Movement(
+            "RECV",
+            "WC",
+            2200m,
+            1,
+            2,
+            bookedAt: new DateTime(2026, 11, 13, 9, 5, 0, DateTimeKind.Unspecified)
+        );
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [earlierByAnotherUser]
+        );
+
+        selected.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SelectShouldAdmitMovementBookedAfterTheRowsWereReceived()
+    {
+        Model_ReconciliationGroup group = Group(
+            ["RECV"],
+            Row("RECV", 5970, receivedAt: new DateTime(2026, 11, 13, 13, 20, 0, DateTimeKind.Unspecified))
+        );
+        Model_ReconciliationMovement afterReceipt = Movement(
+            "RECV",
+            "WC",
+            5970m,
+            3,
+            4,
+            bookedAt: new DateTime(2026, 11, 13, 13, 41, 0, DateTimeKind.Unspecified)
+        );
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [afterReceipt]
+        );
+
+        selected.Should().ContainSingle().Which.Should().BeSameAs(afterReceipt);
+    }
+
+    [Fact]
+    public void SelectShouldKeepDateOnlyMovementWhenTheReceiptTimeIsKnown()
+    {
+        Model_ReconciliationGroup group = Group(
+            ["RECV"],
+            Row("RECV", 5970, receivedAt: new DateTime(2026, 11, 13, 13, 20, 0, DateTimeKind.Unspecified))
+        );
+        Model_ReconciliationMovement dateOnly = Movement("RECV", "WC", 5970m, 1, 2);
+
+        IReadOnlyList<Model_ReconciliationMovement> selected = _selector.Select(
+            group,
+            [dateOnly]
+        );
+
+        selected.Should().ContainSingle().Which.Should().BeSameAs(dateOnly);
+    }
+
     private static Model_ReconciliationGroup Group(string[] locations, params Model_ReconciliationRow[] rows) =>
         new()
         {
@@ -207,13 +272,18 @@ public sealed class Service_ReconciliationMovementSelectorTests
             ReceivingLocation = locations[0],
         };
 
-    private static Model_ReconciliationRow Row(string savedLocation, int quantity) =>
+    private static Model_ReconciliationRow Row(
+        string savedLocation,
+        int quantity,
+        DateTime? receivedAt = null
+    ) =>
         new()
         {
             PartId = "MMC0001000",
             PurchaseOrderNumber = "PO-066868",
             PurchaseOrderLineNumber = "1",
             TransactionDate = WorkingDay,
+            ReceivedAt = receivedAt,
             Quantity = quantity,
             SavedLocation = savedLocation,
         };
@@ -226,7 +296,8 @@ public sealed class Service_ReconciliationMovementSelectorTests
         int destinationTransactionId,
         string purchaseOrderNumber = "PO-066868",
         string purchaseOrderLineNumber = "1",
-        DateTime? when = null
+        DateTime? when = null,
+        DateTime? bookedAt = null
     ) =>
         new()
         {
@@ -240,6 +311,7 @@ public sealed class Service_ReconciliationMovementSelectorTests
             Quantity = quantity,
             TransactionDate =
                 when ?? new DateTime(2026, 11, 12, 8, 0, 0, DateTimeKind.Unspecified),
+            MovementDateTime = bookedAt ?? default,
             TransactionUserId = "vuser",
             SourceTransactionId = sourceTransactionId,
             DestinationTransactionId = destinationTransactionId,

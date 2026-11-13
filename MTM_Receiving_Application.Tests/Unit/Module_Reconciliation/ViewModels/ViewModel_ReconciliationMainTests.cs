@@ -110,6 +110,58 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
+    public void FindingShouldNameTheMoveFromItsBucketEvenWhenTheLineIsNotWritable()
+    {
+        var bucket = new Model_ReconciliationDestinationBucket
+        {
+            LocationId = "V-C0-01",
+            NetQuantity = 8640m,
+            RemainingQuantity = 740m,
+            LatestMovementAt = new DateTime(2026, 11, 13, 9, 47, 0, DateTimeKind.Unspecified),
+            TransactionUserId = "MLAURIN",
+        };
+
+        var finding = new Model_ReconciliationFinding(
+            new Model_ReconciliationRow { PartId = "MMC0000667" },
+            Enum_ReconciliationOutcome.ExtraSurplus,
+            "RECV",
+            "V-C0-01",
+            Enum_ReconciliationDestinationSource.Derived,
+            "Destination V-C0-01 received 8640 but its rows account for 7900, leaving 740 unaccounted for.",
+            740m,
+            bucket
+        );
+
+        // A surplus line is evidence about a move, so the pane names that move even
+        // though the line itself cannot be written.
+        finding.MovementTimeText.Should().Be("2026-11-13 09:47");
+        finding.MovementUserId.Should().Be("MLAURIN");
+    }
+
+    [Fact]
+    public void MovementTimeTextShouldBeEmptyWhenTheBucketCarriesNoTime()
+    {
+        var bucket = new Model_ReconciliationDestinationBucket
+        {
+            LocationId = "V-C0-01",
+            NetQuantity = 8640m,
+        };
+
+        var finding = new Model_ReconciliationFinding(
+            new Model_ReconciliationRow { PartId = "MMC0000667" },
+            Enum_ReconciliationOutcome.NotEnough,
+            "RECV",
+            "V-C0-01",
+            Enum_ReconciliationDestinationSource.Derived,
+            "Destination V-C0-01 received less than its rows need.",
+            740m,
+            bucket
+        );
+
+        finding.MovementTimeText.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GoToNextDayShouldMoveOnlyToADayThatHoldsRows()
     {
         ViewModel_ReconciliationMain viewModel = Build();
