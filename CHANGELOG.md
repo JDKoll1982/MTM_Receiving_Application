@@ -7,6 +7,38 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### The Review page offers the Shape and Color cards only for parts on the lot marking list (2026-11-13)
+
+- **What changed:** on the receiving Review page, the **Shape** and **Color** cards are left off the entry form
+  unless the entry's part number is on the `lot_marking_part_scope` list (enabled rows). A part that is not on the
+  list never receives a marking, so the two cards no longer sit there blank.
+- **How:** `ViewModel_Receiving_Review.ShowsHeatMarkingCards` answers from the enabled list the page already reads
+  for the overlay reminder, matched case- and whitespace-insensitively by `Helper_ReceivingLotMarkingNeeds.NeedsMarking`.
+  The two cards use `x:Load`, so a hidden card takes no cell and the form's three columns reflow.
+- **Unread list:** if the list cannot be read, the cards stay hidden — the same fail-closed choice the overlay
+  reminder already makes, since guessing would offer a marking the part does not get.
+- **Files:** `Module_Receiving/Views/View_Receiving_Review.xaml`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs`,
+  `Module_Receiving/Helpers/Helper_ReceivingLotMarkingNeeds.cs`
+
+#### The Current Total reminder is a card whose border pulses, not pulsing text (2026-11-13)
+
+- **What changed:** the Weight / Quantity step's "Remember to validate Current Total to you Packing Slip!"
+  reminder is now a small card that fits its text, with the message in the normal theme text colour. The animation
+  sits on the card's 1px border, cycling black → red → black on a 2-second loop.
+- **Files:** `Module_Receiving/Views/View_Receiving_WeightQuantity.xaml`, `View_Receiving_WeightQuantity.xaml.cs`
+
+#### Part ids in the receiving grids stay readable in the dark theme (2026-11-13)
+
+- **What changed:** the quality-hold text converters used to hand back hard-coded black for every part that is not
+  on quality hold, which rendered the **Part ID** column black-on-dark in Enter PO, Manual Entry and Edit Mode. They
+  now return the theme's own text colour for the ordinary case and keep red for MMFSR/MMCSR.
+- **How:** a shared `Helper_UI_ThemeTextBrush.PrimaryText` reads the window content's `ActualTheme`, which is the
+  theme the theme manager applies, rather than the application's requested theme, which only follows Windows.
+- **Files:** `Module_Core/Helpers/UI/Helper_UI_ThemeTextBrush.cs`,
+  `Module_Core/Converters/Converter_QualityHoldToTextColor.cs`,
+  `Module_Core/Converters/Converter_PartIDToQualityHoldTextColor.cs`
+
 #### An accepted Reconciliation line leaves the list, and its group header leaves with it (2026-11-13)
 
 - **What changed:** once a line is accepted — or set by hand from **Needs Attention** — it is removed from the grid

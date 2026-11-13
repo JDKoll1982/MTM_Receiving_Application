@@ -244,9 +244,11 @@
                                     Text="{x:Bind ViewModel.CurrentEntry.HeatLotNumber, Mode=OneWay}" />
                             </controls:UniformGrid>
 
-                            <!--  Heat Shape  -->
+                            <!--  Heat Shape - only for parts on the lot marking list  -->
 
                             <controls:UniformGrid
+                                x:Name="HeatShapeCard"
+                                x:Load="{x:Bind ViewModel.ShowsHeatMarkingCards, Mode=OneWay}"
                                 Margin="0,0,8,0"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
@@ -280,9 +282,11 @@
                                     Text="{x:Bind ViewModel.CurrentEntry.HeatShapeCode, Mode=OneWay}" />
                             </controls:UniformGrid>
 
-                            <!--  Heat Color  -->
+                            <!--  Heat Color - only for parts on the lot marking list  -->
 
                             <controls:UniformGrid
+                                x:Name="HeatColorCard"
+                                x:Load="{x:Bind ViewModel.ShowsHeatMarkingCards, Mode=OneWay}"
                                 Margin="0,0,8,0"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"

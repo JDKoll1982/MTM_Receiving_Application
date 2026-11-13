@@ -13,8 +13,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
     public sealed partial class View_Receiving_WeightQuantity : UserControl, IReceivingWorkflowFocusable
     {
         private readonly Storyboard _currentTotalReminderStoryboard = new();
-        private readonly SolidColorBrush _currentTotalReminderBrush = new(
-            Windows.UI.Color.FromArgb(255, 153, 0, 0));
+        private readonly SolidColorBrush _currentTotalReminderBorderBrush = new(
+            Windows.UI.Color.FromArgb(255, 0, 0, 0));
         private bool _isViewLoaded;
         private bool _pendingCurrentTotalReminderAnimation;
 
@@ -53,7 +53,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             SizeChanged += View_Receiving_WeightQuantity_SizeChanged;
             this.Unloaded += View_Receiving_WeightQuantity_Unloaded;
             InitializeCurrentTotalReminderAnimation();
-            CurrentTotalReminderTextBlock.Foreground = _currentTotalReminderBrush;
+            CurrentTotalReminderCard.BorderBrush = _currentTotalReminderBorderBrush;
         }
 
         /// <summary>
@@ -143,46 +143,39 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private void InitializeCurrentTotalReminderAnimation()
         {
-            var first = new ColorAnimationUsingKeyFrames();
-            Storyboard.SetTarget(first, _currentTotalReminderBrush);
-            Storyboard.SetTargetProperty(first, "Color");
+            var cycle = new ColorAnimationUsingKeyFrames();
+            Storyboard.SetTarget(cycle, _currentTotalReminderBorderBrush);
+            Storyboard.SetTargetProperty(cycle, "Color");
 
-            first.AutoReverse = true;
+            //  Black to red and back, on a repeat, so the border reads as a rotating two-colour ring.
+            cycle.RepeatBehavior = RepeatBehavior.Forever;
 
-            // 0ms: Start at your base Dark Red
-            first.KeyFrames.Add(
+            // 0ms: black
+            cycle.KeyFrames.Add(
                 new LinearColorKeyFrame
                 {
                     KeyTime = KeyTime.FromTimeSpan(TimeSpan.Zero),
-                    Value = Windows.UI.Color.FromArgb(255, 153, 0, 0),
+                    Value = Windows.UI.Color.FromArgb(255, 0, 0, 0),
                 }
             );
-            // 500ms: Dim down to Maroon (40% red intensity)
-            first.KeyFrames.Add(
-                new LinearColorKeyFrame
-                {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(500)),
-                    Value = Windows.UI.Color.FromArgb(255, 102, 0, 0),
-                }
-            );
-            // 1000ms: Dim down to Very Dark Maroon (20% red intensity)
-            first.KeyFrames.Add(
+            // 1000ms: red
+            cycle.KeyFrames.Add(
                 new LinearColorKeyFrame
                 {
                     KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(1000)),
-                    Value = Windows.UI.Color.FromArgb(255, 51, 0, 0),
+                    Value = Windows.UI.Color.FromArgb(255, 204, 0, 0),
                 }
             );
-            // 1500ms: Turn completely Black, then immediately reverse back up
-            first.KeyFrames.Add(
-                new DiscreteColorKeyFrame
+            // 2000ms: back to black, which is where the repeat starts
+            cycle.KeyFrames.Add(
+                new LinearColorKeyFrame
                 {
-                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(1500)),
+                    KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(2000)),
                     Value = Windows.UI.Color.FromArgb(255, 0, 0, 0),
                 }
             );
 
-            _currentTotalReminderStoryboard.Children.Add(first);
+            _currentTotalReminderStoryboard.Children.Add(cycle);
         }
 
 

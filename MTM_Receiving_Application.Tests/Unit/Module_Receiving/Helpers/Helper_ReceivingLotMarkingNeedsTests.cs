@@ -48,6 +48,31 @@ public sealed class Helper_ReceivingLotMarkingNeedsTests
     }
 
     [Fact]
+    public void NeedsMarking_ShouldMatchThePartWhateverTheCaseOrSpacing()
+    {
+        var needs = Helper_ReceivingLotMarkingNeeds.Build(
+            [Load("MMC0000848", "L1", 1)],
+            ["MMC0000848"]
+        );
+
+        Helper_ReceivingLotMarkingNeeds.NeedsMarking(needs, " mmc0000848 ").Should().BeTrue();
+    }
+
+    [Fact]
+    public void NeedsMarking_ShouldBeFalseForAPartThatIsNotOnTheList()
+    {
+        var needs = Helper_ReceivingLotMarkingNeeds.Build(
+            [Load("MMC0000848", "L1", 1)],
+            ["MMC0000848"]
+        );
+
+        // The reviewing page hides the shape and color cards on this answer.
+        Helper_ReceivingLotMarkingNeeds.NeedsMarking(needs, "CLS-832-2").Should().BeFalse();
+        Helper_ReceivingLotMarkingNeeds.NeedsMarking(needs, string.Empty).Should().BeFalse();
+        Helper_ReceivingLotMarkingNeeds.NeedsMarking(null, "MMC0000848").Should().BeFalse();
+    }
+
+    [Fact]
     public void Build_ShouldMatchThePartWhateverTheCaseOrSpacing()
     {
         var loads = new List<Model_ReceivingLoad> { Load(" mmc0000848 ", "L1", 1) };

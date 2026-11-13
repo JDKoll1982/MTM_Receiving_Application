@@ -49,6 +49,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             ? "1 label"
             : $"{LotMarkingNeeds.Count} labels";
 
+    /// <summary>
+    /// True when the entry on show gets the lot shape and color treatment, which is when its part number is
+    /// on the enabled list. A part that is not on that list never receives a marking, so the two marking
+    /// cards are left off the form rather than shown blank.
+    /// </summary>
+    public bool ShowsHeatMarkingCards =>
+        CurrentEntry is Model_ReceivingLoad entry
+        && Helper_ReceivingLotMarkingNeeds.NeedsMarking(LotMarkingNeeds, entry.PartID);
+
+    partial void OnCurrentEntryChanged(Model_ReceivingLoad? value)
+    {
+        _ = value;
+        OnPropertyChanged(nameof(ShowsHeatMarkingCards));
+    }
+
         [ObservableProperty]
         private ObservableCollection<Model_ReceivingLoad> _loads = new();
 
@@ -448,6 +463,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             OnPropertyChanged(nameof(HasLotMarkingNeeds));
             OnPropertyChanged(nameof(LotMarkingNeedsText));
             OnPropertyChanged(nameof(LotMarkingNeedsCountText));
+            OnPropertyChanged(nameof(ShowsHeatMarkingCards));
         }
 
         /// <summary>

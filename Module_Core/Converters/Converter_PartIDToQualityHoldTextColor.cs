@@ -1,18 +1,19 @@
 using System;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 
 namespace MTM_Receiving_Application.Module_Core.Converters;
 
 /// <summary>
 /// Converts a Part ID string to a SolidColorBrush for text color (foreground) highlighting.
-/// Returns red for restricted parts (MMFSR, MMCSR), black otherwise.
+/// Returns red for restricted parts (MMFSR, MMCSR), the theme's own text colour otherwise,
+/// so an unrestricted part stays readable in the dark theme.
 /// Used in WinUI 3 DataGrid for conditional text color in restricted rows.
 /// </summary>
 public class Converter_PartIDToQualityHoldTextColor : IValueConverter
 {
     private static readonly SolidColorBrush RedTextBrush = new(Microsoft.UI.Colors.Red);
-    private static readonly SolidColorBrush BlackTextBrush = new(Microsoft.UI.Colors.Black);
 
     /// <summary>
     /// Converts a part ID string to a text color brush.
@@ -21,17 +22,17 @@ public class Converter_PartIDToQualityHoldTextColor : IValueConverter
     /// <param name="targetType">Target type (SolidColorBrush)</param>
     /// <param name="parameter">Optional parameter (not used)</param>
     /// <param name="language">Language string (not used)</param>
-    /// <returns>SolidColorBrush - Red text for restricted parts, black otherwise</returns>
+    /// <returns>SolidColorBrush - Red text for restricted parts, the theme text colour otherwise</returns>
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         if (value is not string partID)
         {
-            return BlackTextBrush;
+            return Helper_UI_ThemeTextBrush.PrimaryText;
         }
 
         if (string.IsNullOrWhiteSpace(partID))
         {
-            return BlackTextBrush;
+            return Helper_UI_ThemeTextBrush.PrimaryText;
         }
 
         // Check for restricted part patterns: MMFSR or MMCSR
@@ -43,7 +44,7 @@ public class Converter_PartIDToQualityHoldTextColor : IValueConverter
             return RedTextBrush;
         }
 
-        return BlackTextBrush;
+        return Helper_UI_ThemeTextBrush.PrimaryText;
     }
 
     /// <summary>

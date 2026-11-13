@@ -222,14 +222,22 @@
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap" />
                         </StackPanel>
-                        <TextBlock
-                            x:Name="CurrentTotalReminderTextBlock"
+                        <!--  Reminder card. Its border pulses from the view's code-behind.  -->
+                        <Border
+                            x:Name="CurrentTotalReminderCard"
                             Grid.Column="3"
+                            Padding="10,4"
+                            HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            MaxLines="1"
-                            Text="Remember to validate Current Total to you Packing Slip!"
-                            TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                            <TextBlock
+                                MaxLines="1"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="Remember to validate Current Total to you Packing Slip!"
+                                TextWrapping="NoWrap" />
+                        </Border>
                     </Grid>
 
                     <Button

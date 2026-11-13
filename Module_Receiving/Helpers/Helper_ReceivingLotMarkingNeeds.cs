@@ -116,6 +116,30 @@ public static class Helper_ReceivingLotMarkingNeeds
             : $"{load.HeatShapeCode} {load.HeatColorCode}";
 
     /// <summary>
+    /// True when one part number is among the labels that need the overlay. The reviewing page asks this per
+    /// entry so a part that is not on the list is offered no shape or color card at all.
+    /// </summary>
+    /// <param name="needs">The labels needing the overlay, as <see cref="Build"/> produced them.</param>
+    /// <param name="partId">The part number of the entry on show.</param>
+    public static bool NeedsMarking(
+        IEnumerable<Model_ReceivingLotMarkingNeed>? needs,
+        string? partId
+    )
+    {
+        if (needs is null || string.IsNullOrWhiteSpace(partId))
+        {
+            return false;
+        }
+
+        var part = partId.Trim();
+
+        return needs.Any(need =>
+            need is not null
+            && string.Equals(need.PartId?.Trim(), part, StringComparison.OrdinalIgnoreCase)
+        );
+    }
+
+    /// <summary>
     /// Names the labels that need the overlay in one short line, grouped by part with each lot listed once,
     /// so a receipt of five tags of the same part reads as one part and its lots rather than five repeat
     /// entries. How many labels that means is said separately by the count text.
