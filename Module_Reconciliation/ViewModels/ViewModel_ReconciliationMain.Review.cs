@@ -54,6 +54,7 @@ public partial class ViewModel_ReconciliationMain
         AcceptedCount++;
         RefreshSummaryFromFindings();
         ApplyFilters();
+        UpdateEmptyState();
         SelectNextReviewableLine(finding);
     }
 
@@ -74,6 +75,7 @@ public partial class ViewModel_ReconciliationMain
         SkippedCount++;
         RefreshSummaryFromFindings();
         ApplyFilters();
+        UpdateEmptyState();
         SelectNextReviewableLine(finding);
     }
 

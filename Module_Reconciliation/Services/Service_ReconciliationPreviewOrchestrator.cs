@@ -306,6 +306,34 @@ public sealed class Service_ReconciliationPreviewOrchestrator : IService_Reconci
             return CreateFinding(row, Enum_ReconciliationOutcome.Error, row.SavedLocation, string.Empty, "The destination bucket of this row could not be verified.", null, null);
         }
 
+        if (
+            verdict.Passed is false
+            && verdict.OutcomeWhenFailed is Enum_ReconciliationOutcome.ExtraSurplus
+            && Helper_ReconciliationCanonical.LocationsEqual(
+                row.SavedLocation,
+                group.ReceivingLocation
+            )
+            && Helper_ReconciliationCanonical.LocationsEqual(
+                allocation.Bucket.LocationId,
+                group.ReceivingLocation
+            )
+        )
+        {
+            // The material was received into the location the evidence names and no
+            // movement took it out, so anything extra in that location arrived on
+            // somebody else's receipt. Counting it here would ask a person to review a
+            // line that is already right.
+            return CreateFinding(
+                row,
+                Enum_ReconciliationOutcome.Unchanged,
+                row.SavedLocation,
+                allocation.Bucket.LocationId,
+                $"The material was received into {row.SavedLocation} and no movement took it out, so the row stays where it is.",
+                null,
+                allocation.Bucket
+            );
+        }
+
         if (verdict.Passed is false)
         {
             return CreateFinding(

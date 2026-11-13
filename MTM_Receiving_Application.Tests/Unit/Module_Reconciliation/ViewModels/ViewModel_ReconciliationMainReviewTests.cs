@@ -116,6 +116,50 @@ public sealed class ViewModel_ReconciliationMainReviewTests
     }
 
     [Fact]
+    public async Task AcceptShouldRemoveTheRowFromTheGrid()
+    {
+        ViewModel_ReconciliationMain viewModel = await Loaded();
+        Model_ReconciliationFinding accepted = viewModel.SelectedFinding!;
+
+        await viewModel.AcceptCommand.ExecuteAsync(null);
+
+        viewModel.VisibleFindings.Should().NotContain(accepted);
+    }
+
+    [Fact]
+    public async Task AcceptShouldRemoveTheGroup_WhenItsLastRowIsAccepted()
+    {
+        _preview
+            .Setup(preview => preview.PreviewDayAsync(Today))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(TodayWithOneWritableLine()));
+
+        ViewModel_ReconciliationMain viewModel = LoadedViewModel();
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.GroupedFindings.Should().ContainSingle();
+
+        await viewModel.AcceptCommand.ExecuteAsync(null);
+
+        // The grid is grouped from the rows that remain, so the header cannot outlive
+        // its last row.
+        viewModel.GroupedFindings.Should().BeEmpty();
+        viewModel.VisibleFindings.Should().BeEmpty();
+        viewModel.EmptyStateMessage.Should().Contain("is done");
+    }
+
+    [Fact]
+    public async Task AcceptShouldKeepTheGroup_WhenItsOtherRowsAreStillOpen()
+    {
+        ViewModel_ReconciliationMain viewModel = await Loaded();
+
+        await viewModel.AcceptCommand.ExecuteAsync(null);
+
+        viewModel.GroupedFindings.Should().ContainSingle();
+        viewModel.VisibleFindings.Should()
+            .OnlyContain(finding => finding.Outcome == Enum_ReconciliationOutcome.NotEnough);
+    }
+
+    [Fact]
     public async Task CountsShouldSurviveAReload()
     {
         Model_ReconciliationDay day = Day();
@@ -184,6 +228,26 @@ public sealed class ViewModel_ReconciliationMainReviewTests
             Findings = findings,
             State = Enum_ReconciliationDayState.Previewed,
             Summary = new Model_ReconciliationDaySummary { Scanned = findings.Count },
+        };
+    }
+
+    private static Model_ReconciliationDay TodayWithOneWritableLine()
+    {
+        Model_ReconciliationFinding finding = Finding(
+            Enum_ReconciliationOutcome.Updated,
+            "SHIP",
+            null,
+            Enum_ReconciliationFindingState.Writable
+        );
+
+        return new Model_ReconciliationDay
+        {
+            Date = Today,
+            HasActivity = true,
+            Rows = [finding.Row],
+            Findings = [finding],
+            State = Enum_ReconciliationDayState.Previewed,
+            Summary = new Model_ReconciliationDaySummary { Scanned = 1 },
         };
     }
 

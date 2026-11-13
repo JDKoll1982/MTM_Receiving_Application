@@ -1,6 +1,6 @@
 # Quick Start
 
-Last Updated: 2026-11-12
+Last Updated: 2026-11-13
 
 ## In one minute
 
@@ -8,7 +8,7 @@ Last Updated: 2026-11-12
 2. Choose **Work a Receiving Day**.
 3. The day opens on today. The top strip tells you how many lines were scanned and how they came out.
 4. Pick a line. The right-hand pane explains what the module found and fills in the destination it proposes.
-5. Press **Enter** to accept it, or **Escape** to skip it. A skipped line is only skipped for this session.
+5. Press **Enter** to accept it, or **Escape** to skip it. A skipped line is only skipped for this session. An accepted line leaves the list at once, and its group header goes with its last line.
 6. If the button marked **Needs Attention** is lit, something needs you: open it, read the reason, type a location, and set it.
 
 ## The colours

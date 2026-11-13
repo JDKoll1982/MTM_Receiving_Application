@@ -387,6 +387,31 @@ public sealed class Service_ReconciliationPreviewOrchestratorTests
         _inforVisual.ReceiptReads.Should().Contain("MMF0008050");
     }
 
+    [Fact]
+    public async Task PreviewDayAsync_ShouldLeaveTheRowsUnchanged_WhenMoreMaterialArrivedAtTheReceivingLocation()
+    {
+        Model_ReconciliationDay day = DayOf(
+            Row("MMC0000652", "071776", 12_640, 1, savedLocation: "S-00"),
+            Row("MMC0000652", "071776", 12_680, 2, savedLocation: "S-00"),
+            Row("MMC0000652", "071776", 12_670, 3, savedLocation: "S-00")
+        );
+
+        StubGroup(
+            "MMC0000652",
+            [Movement("MMC0000652", "071776", "S-00", 121_950m, 1, 2)],
+            onHand: 121_950m
+        );
+
+        Model_ReconciliationDay previewed = await PreviewAsync(day);
+
+        // The rows were received into S-00 and nothing moved them out, so the 121,950
+        // that arrived there is somebody else's receipt and must not read as surplus.
+        previewed.Findings.Should()
+            .OnlyContain(finding => finding.Outcome == Enum_ReconciliationOutcome.Unchanged);
+        previewed.Summary.Unchanged.Should().Be(3);
+        previewed.Summary.Written.Should().Be(0);
+    }
+
     private void StubGroup(
         string partId,
         IReadOnlyList<Model_ReconciliationMovement> movements,

@@ -310,15 +310,21 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     }
 
     /// <summary>
-    /// Rebuilds the visible grid from the current filters. A matching line is hidden
-    /// until the operator asks for it through the outcome filter, so the day reads as
-    /// the lines that still carry a decision (FR-043).
+    /// Rebuilds the visible grid from the current filters. A written line is gone, so
+    /// the grid only ever shows what is still open; a matching line is hidden until the
+    /// operator asks for it through the outcome filter, so the day reads as the lines
+    /// that still carry a decision (FR-043). A group header goes with its last row,
+    /// because the groups are rebuilt from the rows that remain.
     /// </summary>
     protected void ApplyFilters()
     {
+        IEnumerable<Model_ReconciliationFinding> open = Findings.Where(finding =>
+            finding.State is not Enum_ReconciliationFindingState.Written
+        );
+
         IEnumerable<Model_ReconciliationFinding> filtered = OutcomeFilter.HasValue
-            ? Findings.Where(finding => finding.Outcome == OutcomeFilter.Value)
-            : Findings.Where(finding => finding.Outcome is not Enum_ReconciliationOutcome.Unchanged);
+            ? open.Where(finding => finding.Outcome == OutcomeFilter.Value)
+            : open.Where(finding => finding.Outcome is not Enum_ReconciliationOutcome.Unchanged);
 
         string text = TextFilter.Trim();
 
@@ -417,6 +423,19 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
                     is Enum_ReconciliationOutcome.Unchanged
                         or Enum_ReconciliationOutcome.Skipped
             );
+
+        // Every line that needed a decision has been written, so the grid is empty
+        // because the work is done rather than because nothing loaded.
+        bool everyLineClosed = day.Findings.All(finding =>
+            finding.State is Enum_ReconciliationFindingState.Written
+            || finding.Outcome is Enum_ReconciliationOutcome.Unchanged
+        );
+
+        if (everyLineAlreadyMatches is false && everyLineClosed)
+        {
+            EmptyStateMessage = $"Every line saved for {day.Date:yyyy-MM-dd} is done.";
+            return;
+        }
 
         // Once the operator has asked for the matching lines, they are on screen, so the
         // sentence telling them how to see those lines would be describing nothing.

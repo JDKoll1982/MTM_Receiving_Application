@@ -7,6 +7,29 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### An accepted Reconciliation line leaves the list, and its group header leaves with it (2026-11-13)
+
+- **What changed:** once a line is accepted — or set by hand from **Needs Attention** — it is removed from the grid
+  instead of staying there in its written state. The grid's groups are rebuilt from the rows that remain, so a
+  part's header disappears with its last line. A day whose lines are all written now says so ("Every line saved for
+  … is done.") instead of showing an unexplained empty grid.
+- **Unchanged:** skipped lines still stay, the summary strip still counts written lines, and the day is unaffected —
+  only what the grid shows changes.
+- **Files:** `Module_Reconciliation/ViewModels/ViewModel_ReconciliationMain.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainReviewTests.cs`
+
+#### Extra material in the receiving location no longer reads as this group's surplus (2026-11-13)
+
+- **What changed:** a receiving line whose saved location is the group's own receiving location now reports
+  **Unchanged** when the destination bucket at that same location received more than the rows account for. The
+  rows were received into that location and no movement took them out, so the extra arrived on another receipt.
+- **Still failing as before:** a bucket that ran below zero, and a bucket that received *less* than its rows need,
+  keep their **Not Enough** verdict — those are about this material, not somebody else's.
+- **Why:** `MMC0000652` (PO 071776) showed three `S-00` rows totalling 37,990 as **Extra Surplus** because 121,950
+  of another transfer had been booked into `S-00` that morning. The rows never left `S-00`; they were already right.
+- **Files:** `Module_Reconciliation/Services/Service_ReconciliationPreviewOrchestrator.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/Services/Service_ReconciliationPreviewOrchestratorTests.cs`
+
 #### Reconciliation's detail pane names the move for every line that has evidence (2026-11-13)
 
 - **What changed:** **Moved by** and **Moved at** now fill in for surplus and shortfall lines. The finding model

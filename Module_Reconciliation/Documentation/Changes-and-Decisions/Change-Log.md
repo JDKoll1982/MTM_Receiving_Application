@@ -2,6 +2,37 @@
 
 Last Updated: 2026-11-13
 
+## 2026-11-13 — An accepted line leaves the grid, and its group leaves with it
+
+**What changed**
+
+- `ViewModel_ReconciliationMain.ApplyFilters` now drops every finding whose state is `Written` before it applies the outcome and text filters, so the grid only ever shows lines that are still open.
+- No group bookkeeping was needed: `RebuildGroups` derives the headers from `VisibleFindings`, so a header disappears as soon as its last row is accepted or manually set.
+- `UpdateEmptyState` gained the matching sentence for a finished day — "Every line saved for {date} is done." — and both `Accept` and `Skip` now refresh it, so an empty grid says why it is empty instead of looking like a failed load.
+
+**Why**
+
+Reported against 2026-11-13: after pressing **Accept** the row stayed on the page in its old amber/green state, so a reviewer could not tell at a glance which lines were still waiting. A line that has been written is done; the summary strip already counts it, and the pane clears because the selection moves to the next writable line.
+
+**Verification**
+
+- Reconciliation unit tests: 98 passing, up from 95. `AcceptShouldRemoveTheRowFromTheGrid`, `AcceptShouldRemoveTheGroup_WhenItsLastRowIsAccepted` and `AcceptShouldKeepTheGroup_WhenItsOtherRowsAreStillOpen` pin the three cases; all three fail against the previous code, which left the accepted row visible.
+
+## 2026-11-13 — Extra material in the receiving location is not this group's surplus
+
+**What changed**
+
+- `Service_ReconciliationPreviewOrchestrator.DeriveRowFinding` now checks the saved-location-and-surplus case before it reports a failed bucket. When the row's saved location is the group's receiving location and the failing bucket is that same location with a positive remainder, the row reports `Unchanged` with the sentence "The material was received into {location} and no movement took it out, so the row stays where it is."
+- Nothing else about the proof moved: a bucket that ran below zero still fails, and a bucket that received less than its rows still reports `Not Enough`.
+
+**Why**
+
+Reported against 2026-11-13. Part `MMC0000652`, PO 071776, three rows saved `S-00` totalling 37,990, was reported `Extra Surplus` because the `S-00` destination bucket counted 121,950 — all of it material `JKOLL` transferred into `S-00` from `V-B0-00 → V-B0-30 → V-F0-07` at 13:25, none of it this receipt. The rows were received into `S-00` and never left it, so the saved location already matches where the material is. The surplus belonged to another receipt and asked a person to review three lines that were already right.
+
+**Verification**
+
+- Reconciliation unit tests: 95 passing, up from 94. `PreviewDayAsync_ShouldLeaveTheRowsUnchanged_WhenMoreMaterialArrivedAtTheReceivingLocation` reproduces the reported shape — three `S-00` rows against a 121,950 movement into `S-00` — and fails against the previous code, which reported all three as `Extra Surplus`.
+
 ## 2026-11-13 — Every evidenced line names its move
 
 **What changed**

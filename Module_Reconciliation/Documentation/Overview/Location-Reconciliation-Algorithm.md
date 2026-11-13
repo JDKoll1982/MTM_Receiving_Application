@@ -55,6 +55,7 @@ This document replaced the Receiving reconciliation process note when the algori
 - Less allocated than the bucket received means extra surplus.
 - More allocated than the bucket received means not enough.
 - A bucket that ran below zero inside the window fails regardless of the arithmetic.
+- The exception is the group's own receiving location. Rows saved there were received into it and no movement took them out, so anything extra in that location came in on another receipt: those rows report `Unchanged` instead of `Extra Surplus`, whatever the size of the surplus.
 
 **Part two, the source residual.** What is left in the receiving location is the group total minus what was allocated to destinations.
 
