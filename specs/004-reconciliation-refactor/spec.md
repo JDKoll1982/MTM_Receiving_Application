@@ -28,7 +28,7 @@ An operator opens Receiving Validator from the Reporting group and lands on toda
 
 **Acceptance Scenarios**:
 
-1. **Given** the operator opens the module, **When** the page loads, **Then** the selected day is today and the list shows that day's receipt lines grouped by part and received date.
+1. **Given** the operator opens the module, **When** the page loads, **Then** the selected day is today and the list shows that day's receipt lines grouped by part and received date. A line that already matches is not listed and is reached through the outcome filter instead (FR-043, `D-13`).
 2. **Given** the operator steps to the next day, **When** the following day has no receiving rows, **Then** the page advances to the next day that has rows and states which day it landed on.
 3. **Given** the operator picks a date with the date picker, **When** the day loads, **Then** only rows received on that calendar day are listed.
 4. **Given** the selected day has no receiving rows at all, **When** the page loads, **Then** it shows an explicit empty state with a way to step to another day, not an empty grid.
@@ -239,7 +239,7 @@ The separation is the point of the change, and it is enforced the same way as th
 - **FR-040**: A reviewer MUST be able to change the destination before accepting or skip the line. A skip MUST apply to this run only and MUST resurface in the day summary (`UI-03`).
 - **FR-041**: Accepting a line MUST write that line immediately, MUST NOT offer an end-of-run bulk apply, and MUST refuse to write a line that failed the quantity proof (`UI-03`, `DS-06`).
 - **FR-042**: The review surface MUST be a page made of a grid and a detail pane, and the grid MUST show exactly three columns: part, purchase order number, and quantity (`UI-04`, `UI-05`). All remaining detail MUST live in the pane: description, purchase order line, load or skid, unit, saved location, proposed location, outcome, the Infor Visual user, movement time, movement count, evidence locations, and the reason.
-- **FR-043**: The page MUST support filtering by outcome and by part or purchase order text, and MUST group by part and received date (`UI-06`).
+- **FR-043**: The page MUST support filtering by outcome and by part or purchase order text, and MUST group by part and received date (`UI-06`). The outcome filter MUST offer every one of the eight named outcomes, including the unchanged outcome, so the lines that already match — which the default list does not show — remain reachable. Decided with the operator on 2026-11-13: matching lines are for checking rather than working, so they are filtered for, never listed by default.
 - **FR-044**: The cycle MUST show progress as line N of M together with accepted and skipped counts, and MUST be resumable within the session (`UI-08`).
 - **FR-045**: Enter MUST accept the pre-set proposal and Escape MUST skip the current line (`UI-08`).
 - **FR-046**: Lines that cannot be pre-filled MUST NOT enter the cycle. They MUST be reachable through a Needs Attention action that is disabled whenever the count is zero (`UI-07`).

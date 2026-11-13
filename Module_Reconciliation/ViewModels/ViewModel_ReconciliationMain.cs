@@ -23,6 +23,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
 {
     private readonly IService_ReconciliationPreview _preview;
     private readonly IService_ReconciliationDayReader _dayReader;
+    private Model_ReconciliationDay? _shownDay;
 
     /// <summary>Creates the working page view model.</summary>
     public ViewModel_ReconciliationMain(
@@ -255,6 +256,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     {
         Findings.Clear();
         ApplyFilters();
+        _shownDay = null;
         Summary = new Model_ReconciliationDaySummary();
         SelectedFinding = null;
         DestinationField = string.Empty;
@@ -301,23 +303,22 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
 
         ApplyFilters();
         UpdateProgress();
-        UpdateEmptyState(day);
+        _shownDay = day;
+        UpdateEmptyState();
         UpdateUnresolvedCount();
         SelectFirstReviewableLine();
     }
 
-    /// <summary>Rebuilds the visible grid from the current filters.</summary>
+    /// <summary>
+    /// Rebuilds the visible grid from the current filters. A matching line is hidden
+    /// until the operator asks for it through the outcome filter, so the day reads as
+    /// the lines that still carry a decision (FR-043).
+    /// </summary>
     protected void ApplyFilters()
     {
-        IEnumerable<Model_ReconciliationFinding> filtered = Findings.Where(finding =>
-            finding.Outcome is not Enum_ReconciliationOutcome.Unchanged
-        );
-
-        if (OutcomeFilter.HasValue)
-        {
-            Enum_ReconciliationOutcome outcome = OutcomeFilter.Value;
-            filtered = filtered.Where(finding => finding.Outcome == outcome);
-        }
+        IEnumerable<Model_ReconciliationFinding> filtered = OutcomeFilter.HasValue
+            ? Findings.Where(finding => finding.Outcome == OutcomeFilter.Value)
+            : Findings.Where(finding => finding.Outcome is not Enum_ReconciliationOutcome.Unchanged);
 
         string text = TextFilter.Trim();
 
@@ -389,8 +390,19 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     partial void OnRunDurationTextChanged(string value) =>
         OnPropertyChanged(nameof(RunProvenanceText));
 
-    private void UpdateEmptyState(Model_ReconciliationDay day)
+    /// <summary>
+    /// States the day in one sentence when the grid has nothing to show, and points at
+    /// the outcome filter when the lines it describes are the matching ones the grid
+    /// hides on purpose (FR-048, FR-043).
+    /// </summary>
+    private void UpdateEmptyState()
     {
+        if (_shownDay is not Model_ReconciliationDay day)
+        {
+            EmptyStateMessage = string.Empty;
+            return;
+        }
+
         if (Findings.Count == 0)
         {
             EmptyStateMessage = day.HasActivity
@@ -406,9 +418,13 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
                         or Enum_ReconciliationOutcome.Skipped
             );
 
-        EmptyStateMessage = everyLineAlreadyMatches
-            ? $"Every line saved for {day.Date:yyyy-MM-dd} already matches where the material went."
-            : string.Empty;
+        // Once the operator has asked for the matching lines, they are on screen, so the
+        // sentence telling them how to see those lines would be describing nothing.
+        EmptyStateMessage =
+            everyLineAlreadyMatches
+            && OutcomeFilter is not Enum_ReconciliationOutcome.Unchanged
+                ? $"Every line saved for {day.Date:yyyy-MM-dd} already matches where the material went. Choose the Unchanged outcome to see them."
+                : string.Empty;
     }
 
     partial void OnTextFilterChanged(string value) => ApplyFilters();
@@ -417,6 +433,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     {
         OnPropertyChanged(nameof(OutcomeFilterChoice));
         ApplyFilters();
+        UpdateEmptyState();
     }
 
     partial void OnSelectedFindingChanged(Model_ReconciliationFinding? value)

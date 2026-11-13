@@ -13,22 +13,21 @@ namespace MTM_Receiving_Application.Module_Reconciliation.Models;
 /// outcome strings exist (FR-032, FR-050).
 /// </summary>
 /// <remarks>
-/// <see cref="Enum_ReconciliationOutcome.Unchanged"/> is left out on purpose: a row
-/// whose saved location already matches where the material went needs no review, so
-/// it is excluded from the grid and must not be offered as a filter. The day summary
-/// still counts it, which is the only place the check is visible.
+/// <see cref="Enum_ReconciliationOutcome.Unchanged"/> is offered like every other
+/// outcome, even though the grid does not list matching rows by default: the filter is
+/// the only way to ask for them, so leaving the choice out would make a day of matching
+/// lines unreachable (FR-043).
 /// </remarks>
 public sealed record Model_ReconciliationOutcomeFilterChoice(
     Enum_ReconciliationOutcome? Outcome,
     string DisplayText
 )
 {
-    /// <summary>Every reviewable outcome in declared order, behind the line that clears the filter.</summary>
+    /// <summary>Every named outcome in declared order, behind the line that clears the filter.</summary>
     public static IReadOnlyList<Model_ReconciliationOutcomeFilterChoice> All { get; } =
     [
         new(null, "All outcomes"),
         .. Enum.GetValues<Enum_ReconciliationOutcome>()
-            .Where(outcome => outcome is not Enum_ReconciliationOutcome.Unchanged)
             .Select(outcome => new Model_ReconciliationOutcomeFilterChoice(
                 outcome,
                 Converter_ReconciliationOutcomeText.GetDisplayText(outcome)

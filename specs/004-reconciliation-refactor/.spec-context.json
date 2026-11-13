@@ -100,10 +100,914 @@
       "kind": "finish",
       "by": "ai",
       "at": "2026-11-12T20:24:17.963Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.011Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T072",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T073",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T074",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T075",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T076",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T077",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T078",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T079",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T080",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T081",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T082",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T083",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T084",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T085",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T086",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T087",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T088",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T089",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T090",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T091",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T092",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T093",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T094",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T095",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T096",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T097",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T098",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T099",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T101",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T102",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T103",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T104",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T105",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T106",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T107",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T108",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T109",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T110",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T111",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T112",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T113",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:54:21.012Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T117",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-13T11:59:08.455Z"
     }
   ],
-  "currentStep": "converge",
-  "status": "implemented",
+  "currentStep": "implement",
+  "status": "implementing",
   "last_action": "event: prompt submitted",
   "telemetryInstanceId": "323619d8-584a-4fbf-a252-c2eb7bc21930",
   "request": "as 004-reconciliation-refactor",
@@ -222,7 +1126,19 @@
     "T110-T113 closed; T110 was a data-integrity path where a failed day load left the previous days grid and a writable selection on screen.",
     "Open manual residuals, documented in Checks-and-Health.md: live Infor Visual validation of 18a/18b/18c against MMC0001000 and MMC0000650, and the SC-004 grid measurement. Neither is closable by an implement task; the suite is forbidden from reaching live Visual by TS-03.",
     "Open measurement that governs a locked decision: R-5, the non-writable rate for one live day, decides whether LG-05 keeps integer quantity or moves to decimal weight_quantity.",
-    "8 pre-existing ViewModel_Tool_ReceivingAnalyticsAppTests failures remain; verified identical at clean HEAD in a separate worktree, unrelated to this feature."
+    "8 pre-existing ViewModel_Tool_ReceivingAnalyticsAppTests failures remain; verified identical at clean HEAD in a separate worktree, unrelated to this feature.",
+    {
+      "note": "Convergence pass 4 appended T114-T117. All four are promises the page never keeps rather than missing infrastructure: the day summary shows neither the day reconciled nor a copyable run id, the review cycle never shows its accepted and skipped counts, the all-skipped and residual-disagreement page states do not exist, and the grid plus the outcome filter still drop Unchanged lines."
+    },
+    {
+      "note": "T117 is a decision-versus-spec contradiction, not an oversight. Decision D-13 and the newest change-log entry record hiding matching lines, while US1/AC1, US1's independent test, FR-036 and FR-043 read with FR-032's eight outcomes require those rows and the Unchanged filter choice. The spec wins until the spec itself is amended."
+    },
+    {
+      "note": "T100 stays open and no implement pass can close it: live Infor Visual validation of 18a/18b/18c/18d needs a connection and an operator, and TS-03 forbids the suite from reaching live Visual. It is recorded in Support-and-Fixes/Checks-and-Health.md beside the SC-004 grid measurement."
+    },
+    {
+      "note": "Converge pass 4 verification: dotnet build MTM_Receiving_Application.slnx reports 0 warnings and 0 errors, 88 reconciliation tests pass, and the full suite reports 1,157 passed with the same 8 pre-existing Module_ShipRec_Tools failures."
+    }
   ],
   "decisions": [
     {
@@ -1982,9 +2898,32 @@
   },
   "last_stop_interrupted_step": "converge",
   "openTasks": [
-    "T110",
-    "T111",
-    "T112",
-    "T113"
+    "T100",
+    "T114",
+    "T115",
+    "T116"
+  ],
+  "currentTask": "T100",
+  "verified": [
+    {
+      "what": "T117 matching lines reachable through the outcome filter",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter FullyQualifiedName~Module_Reconciliation",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 35.0,
+      "result": "Test run for C:\\Users\\johnk\\Source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 106 ms - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "b416f212",
+      "tree": "0822e400046ca0fae91616eac0620c0028519f60"
+    },
+    {
+      "what": "T117 solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 30.4,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:30.23",
+      "commit": "b416f212",
+      "tree": "056e96f3dafad2b7b161b665250d2083c5cfbc1c"
+    }
   ]
 }
