@@ -1,6 +1,23 @@
 # Change Log
 
-Last Updated: 2026-11-12
+Last Updated: 2026-11-13
+
+## 2026-11-13 — Matching lines are reachable through the outcome filter
+
+**What changed**
+
+- The outcome filter offers `Unchanged` like every other named outcome, so the lines the grid hides are one selection away. `Model_ReconciliationOutcomeFilterChoice.All` now builds its choices from all eight members of `Enum_ReconciliationOutcome` instead of excluding `Unchanged`.
+- `ApplyFilters` keeps the working view as the reviewer needs it: with no outcome selected the grid shows every outcome except `Unchanged`, and with an outcome selected it shows exactly that outcome, `Unchanged` included. The text filter narrows either view as before.
+- The all-match empty state now says how to see the lines it is describing: "Choose the Unchanged outcome to see them." The view model keeps the day it is showing so the sentence is recomputed when the outcome filter changes, and it is withdrawn once those lines are actually on screen.
+
+**Why**
+
+Decided with the operator on 2026-11-13: matching lines are for checking, not for working, so they must not appear in the default grid — but they must be reachable, and until now they were not. The selector's choices were built by excluding `Unchanged`, so a day whose receipts all matched rendered an empty grid with no way to ask why, and one of the eight outcomes FR-032 names could not be filtered at all (FR-043). Decision `D-13` is amended to record the rule as it now stands rather than the exclusion it used to state.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.slnx` succeeded with 0 warnings and 0 errors.
+- Reconciliation unit tests: 89 passing, including the rewritten `OutcomeChoicesShouldOfferEveryNamedOutcomeFromThePinnedText`, `AGridShouldHideMatchingLinesUntilTheUnchangedFilterAsksForThem`, which asserts both halves of the rule — hidden with no filter, shown when `Unchanged` is chosen, hidden again when the filter clears — and `AnAllMatchingDayShouldPointAtTheFilterUntilTheFilterIsChosen`.
 
 ## 2026-11-12 — Grid hides matching lines; direct receipts adjudicate groups with no transfer
 

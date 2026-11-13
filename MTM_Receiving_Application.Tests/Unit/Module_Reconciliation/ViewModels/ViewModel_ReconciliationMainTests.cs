@@ -182,18 +182,23 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
-    public void OutcomeChoicesShouldNameEveryReviewableOutcomeFromThePinnedText()
+    public void OutcomeChoicesShouldOfferEveryNamedOutcomeFromThePinnedText()
     {
         ViewModel_ReconciliationMain viewModel = Build();
 
         viewModel.OutcomeFilterChoices.Should().HaveCount(
-            Enum.GetValues<Enum_ReconciliationOutcome>().Length
+            Enum.GetValues<Enum_ReconciliationOutcome>().Length + 1
         );
         viewModel.OutcomeFilterChoices[0].Outcome.Should().BeNull();
         viewModel.OutcomeFilterChoices[0].DisplayText.Should().Be("All outcomes");
         viewModel
+            .OutcomeFilterChoices.Skip(1)
+            .Select(choice => choice.Outcome)
+            .Should()
+            .BeEquivalentTo(Enum.GetValues<Enum_ReconciliationOutcome>());
+        viewModel
             .OutcomeFilterChoices.Should()
-            .NotContain(choice => choice.Outcome == Enum_ReconciliationOutcome.Unchanged);
+            .Contain(choice => choice.Outcome == Enum_ReconciliationOutcome.Unchanged);
         viewModel
             .OutcomeFilterChoices.Skip(1)
             .Should()
@@ -204,7 +209,7 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
-    public async Task AGridShouldHideTheLinesWhoseSavedLocationAlreadyMatches()
+    public async Task AGridShouldHideMatchingLinesUntilTheUnchangedFilterAsksForThem()
     {
         ViewModel_ReconciliationMain viewModel = Build();
         StubDay(
@@ -218,6 +223,20 @@ public sealed class ViewModel_ReconciliationMainTests
         await viewModel.LoadSelectedDateAsync();
 
         viewModel.Findings.Should().HaveCount(2);
+        viewModel.VisibleFindings.Should().ContainSingle()
+            .Which.Row.PartId.Should().Be("MMC0001000");
+
+        viewModel.OutcomeFilterChoice = viewModel
+            .OutcomeFilterChoices.Single(choice =>
+                choice.Outcome == Enum_ReconciliationOutcome.Unchanged
+            );
+
+        viewModel.VisibleFindings.Should().ContainSingle()
+            .Which.Row.PartId.Should().Be("MMC0002000");
+        viewModel.GroupedFindings.Should().ContainSingle();
+
+        viewModel.OutcomeFilterChoice = viewModel.OutcomeFilterChoices[0];
+
         viewModel.VisibleFindings.Should().ContainSingle()
             .Which.Row.PartId.Should().Be("MMC0001000");
     }
@@ -358,6 +377,32 @@ public sealed class ViewModel_ReconciliationMainTests
 
         await viewModel.SelectDateAsync(Yesterday);
 
+        viewModel.EmptyStateMessage.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task AnAllMatchingDayShouldPointAtTheFilterUntilTheFilterIsChosen()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        StubDay(
+            viewModel,
+            Day(
+                Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Unchanged),
+                Finding("MMC0002000", "PO-066914", Enum_ReconciliationOutcome.Unchanged)
+            )
+        );
+
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.VisibleFindings.Should().BeEmpty();
+        viewModel.EmptyStateMessage.Should().Contain("Choose the Unchanged outcome");
+
+        viewModel.OutcomeFilterChoice = viewModel
+            .OutcomeFilterChoices.Single(choice =>
+                choice.Outcome == Enum_ReconciliationOutcome.Unchanged
+            );
+
+        viewModel.VisibleFindings.Should().HaveCount(2);
         viewModel.EmptyStateMessage.Should().BeEmpty();
     }
 
