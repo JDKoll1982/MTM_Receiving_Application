@@ -28,13 +28,16 @@
                         visible on the light surfaces the modules use. One override here reaches every
                         card that draws CardStrokeColorDefaultBrush, which is all of them.
                     -->
-                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#33000000" />
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#4D000000" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="White" />
                     <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="#5A5A5A" />
-                    <!--  The same darker edge, deepened so it still reads against the dark card fill.  -->
-                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#4D000000" />
+                    <!--
+                        The same visible edge in the dark theme. A black overlay disappears against a
+                        dark card, so the dark edge is a light overlay instead.
+                    -->
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#33FFFFFF" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
             <!--  Other app resources here  -->

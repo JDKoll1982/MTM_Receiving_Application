@@ -1412,6 +1412,7 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
                     marking.Id,
                     marking.HeatNumber,
                     marking.SupplierId,
+                    marking.SupplierName,
                     marking.ShapeCode,
                     marking.ColorCode
                 )

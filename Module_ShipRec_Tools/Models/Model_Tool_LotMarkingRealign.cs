@@ -76,15 +76,22 @@ public sealed record Model_Tool_LotMarkingRealignTarget(
 /// <param name="Id">The lot's id.</param>
 /// <param name="HeatNumber">The lot number as it was first captured.</param>
 /// <param name="SupplierId">The supplier group the lot belongs to.</param>
+/// <param name="SupplierName">The supplier name the receipt carried, empty when it named none.</param>
 /// <param name="ShapeCode">The shape being freed.</param>
 /// <param name="ColorCode">The color being freed.</param>
 public sealed record Model_Tool_LotMarkingRealignRemoval(
     int Id,
     string HeatNumber,
     string SupplierId,
+    string SupplierName,
     string ShapeCode,
     string ColorCode
-);
+)
+{
+    /// <summary>The supplier as a person reads it: the name when the receipt carried one, else the group.</summary>
+    public string SupplierText =>
+        string.IsNullOrWhiteSpace(SupplierName) ? SupplierId : SupplierName;
+}
 
 /// <summary>
 /// A lot the run will not touch, with the reason, so a person can deal with it by hand.

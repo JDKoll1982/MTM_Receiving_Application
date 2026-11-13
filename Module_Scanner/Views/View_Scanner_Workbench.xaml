@@ -278,7 +278,7 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="6">
-            <StackPanel Spacing="6">
+            <Grid>
                 <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -402,9 +402,10 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Saved? manual confirmation row -->
+                <!-- Saved? manual confirmation - same row as the toolbar, centred over it -->
                 <StackPanel
                     HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
                     Orientation="Horizontal"
                     Spacing="6"
                     Visibility="{x:Bind ViewModel.IsSendPromptVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -412,7 +413,7 @@
                     <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerSendPromptYes" Command="{x:Bind ViewModel.ConfirmSavedCommand}" Content="Yes" />
                     <Button Style="{StaticResource ScannerActionButtonStyle}" AutomationProperties.AutomationId="ScannerSendPromptNo" Command="{x:Bind ViewModel.ConfirmNotSavedCommand}" Content="No" />
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Page>

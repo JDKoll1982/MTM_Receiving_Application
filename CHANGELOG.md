@@ -7,6 +7,18 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### The scanner footer is one row, and card edges read in both themes (2026-11-13)
+
+- **What changed:** the Scanner Workbench footer card is now a single row. The **"Was the transaction saved in
+  Infor Visual?"** Yes/No prompt sits centred over the same bar as the batch buttons instead of in its own row
+  underneath, so the card is one toolbar tall. The left and right button groups keep their exact positions.
+- **Card edges:** the card stroke override in `App.xaml` is now 30% black in the light theme and 20% **white** in
+  the dark theme. The previous dark value was a black overlay, which disappears against a dark card, so cards had
+  no visible edge in the dark theme.
+- **Where to tune it:** the two colours still live side by side in `App.xaml`; that remains the only place to
+  change the strength of a card edge.
+- **Files:** `App.xaml`, `Module_Scanner/Views/View_Scanner_Workbench.xaml`
+
 #### Card borders are darker everywhere, and Label Overlay spans the mode chooser (2026-11-13)
 
 - **What changed:** every card edge in the app is drawn with a darker stroke, and the **Label Overlay** button
@@ -26,19 +38,24 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 #### The lot list names the supplier instead of its Infor Visual id (2026-11-13)
 
-- **What changed:** the **Supplier** column in Heat / Lot Management, the selected-lot summary, and the printed
-  report now read the supplier name the receipt carried — e.g. **MST STEEL CORPORATION** — instead of the
-  supplier group the lot is keyed on, which is the Infor Visual vendor id for most vendors.
+- **What changed:** the **Supplier** column in Heat / Lot Management, the selected-lot summary, the printed
+  **Heat / Lot Markings** sheet, and the **Update all lots** confirmation list now read the supplier name the
+  receipt carried — e.g. **MST STEEL CORPORATION** — instead of the supplier group the lot is keyed on, which
+  is the Infor Visual vendor id for most vendors.
 - **What was actually saved:** nothing changed on the write side, and nothing needed to. A marking is keyed on
   `supplier_id`, which by design holds the official vendor id when the vendor lookup matches exactly one
   vendor, and `supplier_name` holds the text the receipt carried. Only the display was reading the key.
 - **Rows recorded without a name:** a marking whose stored name is empty now takes the spelling its receiving
   lines carry when the list is read, so older id-keyed rows name the vendor too. A lot with no supplier still
   reads `NONPO`.
+- **Decided:** the key itself stays as it is. Display only — no re-keying of stored markings, and no change to
+  which value `supplier_id` holds.
 - **Files:** `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs` (`SupplierText`),
+  `Module_ShipRec_Tools/Models/Model_Tool_LotMarkingRealign.cs`,
   `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`,
   `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`,
   `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`,
+  `Module_ShipRec_Tools/Dialogs/Dialog_LotMarkingRealignConfirm.xaml.cs`,
   `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Models/Model_Tool_LotMarking_SupplierTextTests.cs`
 
 #### The overlay list leaves out tags that have no marking to print (2026-11-13)

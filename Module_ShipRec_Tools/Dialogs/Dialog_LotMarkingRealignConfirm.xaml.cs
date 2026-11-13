@@ -90,7 +90,7 @@ public sealed partial class Dialog_LotMarkingRealignConfirm : ContentDialog
         foreach (var removal in preview.Removals)
         {
             lines.Add(
-                $"{removal.HeatNumber} · {DescribeSupplier(removal.SupplierId)}: removed from the list, freeing {removal.ShapeCode}{removal.ColorCode}."
+                $"{removal.HeatNumber} · {DescribeSupplier(removal.SupplierText)}: removed from the list, freeing {removal.ShapeCode}{removal.ColorCode}."
             );
         }
 
