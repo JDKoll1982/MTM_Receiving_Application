@@ -249,7 +249,7 @@
                         <controls:DataGridTemplateColumn Width="220" Header="Supplier" Visibility="{x:Bind ViewModel.ShowSupplierColumn, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:Model_Tool_LotMarking">
-                                    <TextBlock Text="{x:Bind SupplierId, Mode=OneTime}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{x:Bind SupplierText, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
                                 </DataTemplate>
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>

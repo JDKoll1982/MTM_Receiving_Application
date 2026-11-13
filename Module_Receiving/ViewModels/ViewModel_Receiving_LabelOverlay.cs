@@ -238,9 +238,13 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
     /// <summary>True when the cut-out lot list has nothing to show.</summary>
     public bool IsCardSheetListEmpty => CardSheetLabels.Count == 0;
 
-    /// <summary>What the list says when it is empty, so an empty queue is not mistaken for a failure.</summary>
+    /// <summary>
+    /// What the list says when it is empty, so an empty queue is not mistaken for a failure. A tag whose
+    /// part carries no lot marking is not listed, so this also covers a queue that holds only those.
+    /// </summary>
     public string LabelListEmptyText =>
-        "No receiving tags are waiting in the label queue. Save a receipt first, then come back.";
+        "No receiving tags with a lot marking are waiting in the label queue. Save a receipt for a part "
+        + "that gets the lot marking, then come back.";
 
     [ObservableProperty]
     private string _printersSummary = string.Empty;
@@ -744,9 +748,11 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
             await LoadFiltersAsync();
             RebuildLists();
 
+            var overlayable = _allLabels.Count(item => item.HasMarking);
+
             ShowStatus(
-                items.Count == 0 ? LabelListEmptyText : $"{items.Count} tag(s) in the label queue.",
-                items.Count == 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Success
+                overlayable == 0 ? LabelListEmptyText : $"{overlayable} tag(s) in the label queue.",
+                overlayable == 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Success
             );
 
             ApplyPendingPreselection();
@@ -935,12 +941,16 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
     private bool _isRebuildingLists;
 
+    /// <summary>
+    /// The tags this tab offers: those whose part carries a lot marking, since a tag with no marking has
+    /// nothing to print and listing it only invites a tick that would be skipped.
+    /// </summary>
     private void RebuildOverlayLabels()
     {
         var filter = _filters[Enum_LabelOverlayPrintFormat.TagOverlay];
 
         var visible = SortForDisplay(
-            _allLabels.Where(item => filter.IncludesDate(item.ReceivedDate)),
+            _allLabels.Where(item => item.HasMarking && filter.IncludesDate(item.ReceivedDate)),
             filter
         );
 
@@ -1161,7 +1171,8 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
     /// <summary>
     /// Ticks every queued tag that matches a requested lot, once, and clears the request. A tag that is no
     /// longer in the queue is simply not found, which is why the count of what was ticked is reported
-    /// rather than assumed.
+    /// rather than assumed. A tag carrying no marking is not ticked, because it is not listed and could
+    /// not be printed.
     /// </summary>
     private void ApplyPendingPreselection()
     {
@@ -1177,14 +1188,15 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
         foreach (var item in _allLabels)
         {
-            var matches = requested.Any(lot =>
-                string.Equals(lot.PartId, item.PartId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(
-                    lot.HeatLotNumber?.Trim() ?? string.Empty,
-                    item.HeatLotNumber?.Trim() ?? string.Empty,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
+            var matches = item.HasMarking
+                && requested.Any(lot =>
+                    string.Equals(lot.PartId, item.PartId, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(
+                        lot.HeatLotNumber?.Trim() ?? string.Empty,
+                        item.HeatLotNumber?.Trim() ?? string.Empty,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
 
             item.IsSelected = matches;
 

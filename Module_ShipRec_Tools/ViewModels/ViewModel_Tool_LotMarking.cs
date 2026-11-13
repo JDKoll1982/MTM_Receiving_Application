@@ -155,7 +155,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
         SelectedMarking is null
             ? "Select a lot to change or protect its marking."
             : $"{SelectedMarking.ShapeCode} {SelectedMarking.ColorCode} · "
-                + $"{SelectedMarking.HeatNumber} · supplier {SelectedMarking.SupplierId}"
+                + $"{SelectedMarking.HeatNumber} · supplier {SelectedMarking.SupplierText}"
                 + (SelectedMarking.IsLocked ? " · locked" : string.Empty);
 
     // ─── Manual override ────────────────────────────────────────────────────
@@ -681,7 +681,7 @@ public partial class ViewModel_Tool_LotMarking : ViewModel_Tool_Base
             Model_Tool_LotMarkingColumnCatalog.Shape => ("shape", row.ShapeCode),
             Model_Tool_LotMarkingColumnCatalog.Color => (string.Empty, row.ColorCode),
             Model_Tool_LotMarkingColumnCatalog.Heat => (string.Empty, row.HeatNumber),
-            Model_Tool_LotMarkingColumnCatalog.Supplier => (string.Empty, row.SupplierId),
+            Model_Tool_LotMarkingColumnCatalog.Supplier => (string.Empty, row.SupplierText),
             Model_Tool_LotMarkingColumnCatalog.Parts => (string.Empty, row.PartsText),
             Model_Tool_LotMarkingColumnCatalog.Skids => ("number", row.LineCountText),
             Model_Tool_LotMarkingColumnCatalog.LastLine => (string.Empty, row.LastLineText),

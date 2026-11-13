@@ -12,7 +12,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Models;
 /// <remarks>
 /// The marking shown here is the one already recorded against the row, read rather than recomputed, so
 /// the overlay that prints is the same shape and color as the marking every other screen shows for that
-/// lot. A row with no marking is still listed, so a user can see why nothing will print for it.
+/// lot. A row with no marking is kept out of the overlay list, because a tag with nothing to print can
+/// only be ticked in error.
 /// </remarks>
 public sealed partial class Model_ReceivingLabelOverlayItem : ObservableObject
 {

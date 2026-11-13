@@ -31,13 +31,23 @@ public partial class Model_Tool_LotMarking : ObservableObject
     /// Never empty, because a unique key cannot treat one null as equal to another.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SupplierText))]
     private string _supplierId = string.Empty;
 
     /// <summary>
     /// The supplier name as it appeared on the receipt, kept for display and audit.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SupplierText))]
     private string _supplierName = string.Empty;
+
+    /// <summary>
+    /// The supplier as a person reads it: the name the receipt carried, and the group key only when the
+    /// receipt named none. A lot whose supplier resolved to its Infor Visual id still shows the vendor's
+    /// name, which is what every other screen and every receiving line calls it.
+    /// </summary>
+    public string SupplierText =>
+        string.IsNullOrWhiteSpace(SupplierName) ? SupplierId : SupplierName;
 
     /// <summary>
     /// The shape emoji stored in shape_code. The glyph itself is the persisted value, so a

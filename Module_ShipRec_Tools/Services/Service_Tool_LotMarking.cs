@@ -173,8 +173,8 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
 
             case Enum_LotMarkingSortField.Supplier:
                 return isDescending
-                    ? lots.OrderByDescending(lot => lot.SupplierId, StringComparer.OrdinalIgnoreCase)
-                    : lots.OrderBy(lot => lot.SupplierId, StringComparer.OrdinalIgnoreCase);
+                    ? lots.OrderByDescending(lot => lot.SupplierText, StringComparer.OrdinalIgnoreCase)
+                    : lots.OrderBy(lot => lot.SupplierText, StringComparer.OrdinalIgnoreCase);
 
             case Enum_LotMarkingSortField.PartNumber:
                 return isDescending
@@ -373,6 +373,14 @@ public class Service_Tool_LotMarking : IService_Tool_LotMarking
                 ShapeCode = group.ShapeCode,
                 ColorCode = group.ColorCode,
             };
+
+        // A marking recorded before the receipt's supplier name was stored names only its group, which
+        // is the id for most vendors. The lines carry the name every other screen shows, so it fills in
+        // the empty name and the list reads as the vendor rather than as a number no handler knows.
+        if (string.IsNullOrWhiteSpace(lot.SupplierName) && group.SupplierText.Length > 0)
+        {
+            lot.SupplierName = group.SupplierText;
+        }
 
         lot.LineCount = group.LineCount;
         lot.LastLineDate = group.LastLineDate;

@@ -23,10 +23,18 @@
                 <ResourceDictionary x:Key="Light">
                     <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="White" />
                     <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="#5A5A5A" />
+                    <!--
+                        Card borders are darker than the WinUI default (6% black) so a card edge is
+                        visible on the light surfaces the modules use. One override here reaches every
+                        card that draws CardStrokeColorDefaultBrush, which is all of them.
+                    -->
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#33000000" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="White" />
                     <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="#5A5A5A" />
+                    <!--  The same darker edge, deepened so it still reads against the dark card fill.  -->
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#4D000000" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
             <!--  Other app resources here  -->

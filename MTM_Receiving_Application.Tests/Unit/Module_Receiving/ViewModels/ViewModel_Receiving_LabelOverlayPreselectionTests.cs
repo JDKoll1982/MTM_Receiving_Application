@@ -89,6 +89,47 @@ public sealed class ViewModel_Receiving_LabelOverlayPreselectionTests
     }
 
     [Fact]
+    public async Task ActivateAsync_ShouldListOnlyTheTagsThatCarryAMarking()
+    {
+        var marked = Item("MMC0000848", "344934", 1);
+        var unmarked = new Model_ReceivingLabelOverlayItem
+        {
+            PartId = "MMC0000089",
+            HeatLotNumber = "812U43800",
+            LabelNumber = 2,
+            MarkingText = "no marking recorded",
+        };
+
+        var viewModel = CreateViewModel([marked, unmarked]);
+
+        await viewModel.ActivateAsync();
+
+        viewModel.Labels.Should().ContainSingle("a tag with no marking has nothing to overlay");
+        viewModel.Labels[0].PartId.Should().Be("MMC0000848");
+        viewModel.IsLabelListEmpty.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ActivateAsync_ShouldNotTickARequestedTagThatCarriesNoMarking()
+    {
+        var unmarked = new Model_ReceivingLabelOverlayItem
+        {
+            PartId = "MMC0000089",
+            HeatLotNumber = "812U43800",
+            LabelNumber = 1,
+            MarkingText = "no marking recorded",
+        };
+
+        var viewModel = CreateViewModel([unmarked]);
+        viewModel.RequestPreselection([("MMC0000089", "812U43800")]);
+
+        await viewModel.ActivateAsync();
+
+        unmarked.IsSelected.Should().BeFalse("a tag that is not listed cannot be printed");
+        viewModel.SelectionSummary.Should().Be("Nothing selected yet.");
+    }
+
+    [Fact]
     public async Task ActivateAsync_ShouldTickTheRequestedLot_AndNothingElse()
     {
         var wanted = Item("MMC0000848", "344934", 1);

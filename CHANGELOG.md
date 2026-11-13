@@ -5,7 +5,55 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Changed
+
+#### Card borders are darker everywhere, and Label Overlay spans the mode chooser (2026-11-13)
+
+- **What changed:** every card edge in the app is drawn with a darker stroke, and the **Label Overlay** button
+  on the receiving mode chooser now runs the full width of the window instead of sitting under the third card.
+- **How the borders changed:** `CardStrokeColorDefaultBrush` is overridden once, in `App.xaml`'s theme
+  dictionaries — 20% black in the light theme (WinUI's default is 6%) and 30% black in the dark theme — so
+  every card border that uses it deepens together, with no per-screen colour edits. The seven settings panels
+  that drew their edge with `ControlStrokeColorDefaultBrush` now use the card stroke too, so no card is left
+  pale, while text boxes and buttons keep their own control strokes.
+- **Where to tune it:** the two colours live side by side in `App.xaml`; that is the only place to change the
+  strength of a card edge.
+- **Files:** `App.xaml`, `Module_Receiving/Views/View_Receiving_ModeSelection.xaml`,
+  `Module_Settings.Receiving/Views/View_Settings_Receiving_PartFormatting.xaml`,
+  `Module_Settings.Receiving/Views/View_Settings_Receiving_UserPreferences.xaml`
+
 ### Fixed
+
+#### The lot list names the supplier instead of its Infor Visual id (2026-11-13)
+
+- **What changed:** the **Supplier** column in Heat / Lot Management, the selected-lot summary, and the printed
+  report now read the supplier name the receipt carried — e.g. **MST STEEL CORPORATION** — instead of the
+  supplier group the lot is keyed on, which is the Infor Visual vendor id for most vendors.
+- **What was actually saved:** nothing changed on the write side, and nothing needed to. A marking is keyed on
+  `supplier_id`, which by design holds the official vendor id when the vendor lookup matches exactly one
+  vendor, and `supplier_name` holds the text the receipt carried. Only the display was reading the key.
+- **Rows recorded without a name:** a marking whose stored name is empty now takes the spelling its receiving
+  lines carry when the list is read, so older id-keyed rows name the vendor too. A lot with no supplier still
+  reads `NONPO`.
+- **Files:** `Module_ShipRec_Tools/Models/Model_Tool_LotMarking.cs` (`SupplierText`),
+  `Module_ShipRec_Tools/Services/Service_Tool_LotMarking.cs`,
+  `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_LotMarking.cs`,
+  `Module_ShipRec_Tools/Views/View_Tool_LotMarking.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Models/Model_Tool_LotMarking_SupplierTextTests.cs`
+
+#### The overlay list leaves out tags that have no marking to print (2026-11-13)
+
+- **What changed:** the **Overlays** tab now lists only the tags whose part carries a lot marking. A tag whose
+  part gets no marking — every part except the ones enabled in the Heat / Lot Management tool — has nothing
+  to overlay, so it is no longer offered with a tick that would be skipped at print time.
+- **Why it mattered:** the list read every row in the label queue, so a receipt that saved one marked part
+  still opened on a queue of unmarked parts. Only the marked tag the receipt just saved is ticked now, and
+  the count above the list reports the tags that can actually be printed.
+- **Also:** a tag from the receipt that somehow carries no marking is not ticked, so the count of ticked
+  labels and the Print button always agree.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlay.cs`,
+  `Module_Receiving/Models/Model_ReceivingLabelOverlayItem.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlayPreselectionTests.cs`
 
 #### The Print button wakes up when the receipt's labels are ticked for you (2026-11-05)
 
