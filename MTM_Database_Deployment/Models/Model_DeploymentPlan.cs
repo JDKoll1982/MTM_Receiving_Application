@@ -23,11 +23,15 @@ public sealed class Model_DeploymentPlan
     public int ObjectUpdateCount => Changes.Count(change => change.Kind is Enum_ChangeKind.UpdateView
         or Enum_ChangeKind.UpdateProcedure or Enum_ChangeKind.UpdateTrigger or Enum_ChangeKind.RunSeed);
     public int ExtraCount => Changes.Count(change => change.IsRemoval);
+    public int BlockingExtraCount => Changes.Count(change => change.IsBlocking);
     public bool HasWork => Changes.Count > 0;
 
     public string Summary =>
         $"tables +{CreateTableCount}, columns +{AddColumnCount}, columns ~{AlterColumnCount}, " +
-        $"indexes +{IndexCount}, foreign keys +{ForeignKeyCount}, objects {ObjectUpdateCount}, extras {ExtraCount}";
+        $"indexes +{IndexCount}, foreign keys +{ForeignKeyCount}, objects {ObjectUpdateCount}, extras {ExtraCount}" +
+        (BlockingExtraCount > 0
+            ? $" ({BlockingExtraCount} database-only column(s) block inserts until removed)"
+            : string.Empty);
 
     public string ToReportText()
     {

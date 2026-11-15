@@ -66,6 +66,7 @@ public sealed class Service_DeploymentEngine
             cancellationToken.ThrowIfCancellationRequested();
             progress?.Report($"{change.KindLabel}: {change.Target}");
 
+            var failed = false;
             foreach (var statement in Service_SqlScriptParser.SplitStatements(change.Sql ?? string.Empty))
             {
                 try
@@ -78,11 +79,34 @@ public sealed class Service_DeploymentEngine
                 }
                 catch (Exception exception)
                 {
+                    failed = true;
                     result.MarkFailed($"{change.KindLabel} {change.Target}: {exception.Message}");
                 }
             }
 
-            result.MarkApplied($"{change.KindLabel}: {change.Target}");
+            if (!failed)
+            {
+                result.MarkApplied($"{change.KindLabel}: {change.Target}");
+            }
+        }
+
+        // 2b. Blocking removals run before anything writes. A database-only NOT NULL column with no
+        // default fails every insert that omits it, so a confirmed cleanup must land in this run
+        // rather than after the seeds it would otherwise break.
+        await ApplyRemovalsAsync(plan, dropConfirmedExtras, blocking: true, progress, result, cancellationToken)
+            .ConfigureAwait(false);
+
+        // A column that could not be added or altered invalidates every view, procedure, and seed
+        // that depends on it. Stopping here keeps the real error visible instead of burying it under
+        // a cascade of downstream failures.
+        if (result.FailedCount > 0)
+        {
+            result.AddMessage(
+                $"Stopped after schema reconciliation: {result.FailedCount} change(s) failed, so views, procedures, "
+                + "triggers, seeds, and the remaining removals were not run.");
+            stopwatch.Stop();
+            result.Duration = stopwatch.Elapsed;
+            return result;
         }
 
         // 3. Refresh views, procedures, and triggers.
@@ -158,29 +182,44 @@ public sealed class Service_DeploymentEngine
             }
         }
 
-        // 5. Confirmed removals last, so a failed deploy never destroys anything early.
-        if (dropConfirmedExtras)
-        {
-            foreach (var change in plan.Changes.Where(item => item.IsRemoval && !string.IsNullOrWhiteSpace(item.Sql)))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                progress?.Report($"Removing: {change.Target}");
-
-                try
-                {
-                    await _gateway.ExecuteAsync(plan.Database, change.Sql!, cancellationToken).ConfigureAwait(false);
-                    result.MarkApplied($"Removed {change.KindLabel}: {change.Target}");
-                }
-                catch (Exception exception)
-                {
-                    result.MarkFailed($"Remove {change.Target}: {exception.Message}");
-                }
-            }
-        }
+        // 5. Remaining removals last, so a failed deploy never destroys anything early.
+        await ApplyRemovalsAsync(plan, dropConfirmedExtras, blocking: false, progress, result, cancellationToken)
+            .ConfigureAwait(false);
 
         stopwatch.Stop();
         result.Duration = stopwatch.Elapsed;
         return result;
+    }
+
+    private async Task ApplyRemovalsAsync(
+        Model_DeploymentPlan plan,
+        bool dropConfirmedExtras,
+        bool blocking,
+        IProgress<string>? progress,
+        Model_DeploymentResult result,
+        CancellationToken cancellationToken)
+    {
+        if (!dropConfirmedExtras)
+        {
+            return;
+        }
+
+        foreach (var change in plan.Changes.Where(item =>
+                     item.IsRemoval && item.IsBlocking == blocking && !string.IsNullOrWhiteSpace(item.Sql)))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            progress?.Report($"Removing: {change.Target}");
+
+            try
+            {
+                await _gateway.ExecuteAsync(plan.Database, change.Sql!, cancellationToken).ConfigureAwait(false);
+                result.MarkApplied($"Removed {change.KindLabel}: {change.Target}");
+            }
+            catch (Exception exception)
+            {
+                result.MarkFailed($"Remove {change.Target}: {exception.Message}");
+            }
+        }
     }
 
     public async Task<Model_DeploymentResult> RebuildAsync(

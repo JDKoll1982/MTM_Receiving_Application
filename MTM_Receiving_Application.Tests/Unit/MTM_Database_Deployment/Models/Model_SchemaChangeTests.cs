@@ -71,6 +71,59 @@ public sealed class Model_SchemaChangeTests
         change.DisplayText.Should().Be("Extra table: legacy_table");
     }
 
+    [Fact]
+    public void IsBlocking_ShouldDefaultToFalse_WhenChangeWasNotFlagged()
+    {
+        CreateChange(Enum_ChangeKind.ExtraColumn).IsBlocking.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Summary_ShouldNameBlockingColumns_WhenADatabaseOnlyColumnBlocksInserts()
+    {
+        var plan = new Model_DeploymentPlan
+        {
+            Server = "127.0.0.1",
+            Port = 3306,
+            Database = "sample",
+            GeneratedAt = DateTimeOffset.Now,
+            Changes =
+            [
+                new Model_SchemaChange
+                {
+                    Kind = Enum_ChangeKind.ExtraColumn,
+                    Target = "dunnage_custom_fields.DatabaseColumnName",
+                    IsBlocking = true
+                },
+                new Model_SchemaChange
+                {
+                    Kind = Enum_ChangeKind.ExtraColumn,
+                    Target = "dunnage_types.icon"
+                }
+            ]
+        };
+
+        plan.BlockingExtraCount.Should().Be(1);
+        plan.ExtraCount.Should().Be(2);
+        plan.Summary.Should().Contain("extras 2")
+            .And.Contain("(1 database-only column(s) block inserts until removed)");
+    }
+
+    [Fact]
+    public void Summary_ShouldStayQuiet_WhenNoColumnBlocksInserts()
+    {
+        var plan = new Model_DeploymentPlan
+        {
+            Server = "127.0.0.1",
+            Port = 3306,
+            Database = "sample",
+            GeneratedAt = DateTimeOffset.Now,
+            Changes = [new Model_SchemaChange { Kind = Enum_ChangeKind.AddColumn, Target = "t.c" }]
+        };
+
+        plan.BlockingExtraCount.Should().Be(0);
+        plan.Summary.Should().NotContain("block inserts");
+    }
+
     private static Model_SchemaChange CreateChange(Enum_ChangeKind kind) =>
         new() { Kind = kind, Target = "sample" };
 }

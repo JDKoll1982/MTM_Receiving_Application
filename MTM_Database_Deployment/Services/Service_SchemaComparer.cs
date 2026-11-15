@@ -198,12 +198,16 @@ public sealed class Service_SchemaComparer
             {
                 if (expectedTable.FindColumn(liveColumn.Name) is null)
                 {
+                    var blocksInserts = !liveColumn.IsNullable && string.IsNullOrWhiteSpace(liveColumn.DefaultValue);
                     changes.Add(new Model_SchemaChange
                     {
                         Kind = Enum_ChangeKind.ExtraColumn,
                         Target = $"{tableName}.{liveColumn.Name}",
-                        Detail = $"{liveColumn.DataType} exists in the database only",
-                        Sql = $"ALTER TABLE `{database}`.`{tableName}` DROP COLUMN `{liveColumn.Name}`;"
+                        Detail = blocksInserts
+                            ? $"{liveColumn.DataType} exists in the database only; no default, so inserts that omit it fail"
+                            : $"{liveColumn.DataType} exists in the database only",
+                        Sql = $"ALTER TABLE `{database}`.`{tableName}` DROP COLUMN `{liveColumn.Name}`;",
+                        IsBlocking = blocksInserts
                     });
                 }
             }

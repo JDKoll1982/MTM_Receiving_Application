@@ -32,6 +32,12 @@ public sealed class Model_SchemaChange
     public string? Sql { get; init; }
     public string? SourcePath { get; init; }
 
+    /// <summary>
+    /// True for a database-only column that is NOT NULL and has no default. Inserts that do not
+    /// name it fail, which makes it block every seed and procedure that writes to the table.
+    /// </summary>
+    public bool IsBlocking { get; init; }
+
     public bool IsRemoval => Kind is Enum_ChangeKind.ExtraTable or Enum_ChangeKind.ExtraColumn
         or Enum_ChangeKind.ExtraIndex or Enum_ChangeKind.ExtraObject;
 

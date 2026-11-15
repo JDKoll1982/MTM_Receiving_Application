@@ -31,18 +31,12 @@ public sealed class Model_ColumnDefinition
 
         if (!string.IsNullOrWhiteSpace(DefaultValue))
         {
-            builder.Append(" DEFAULT ").Append(DefaultValue);
+            builder.Append(" DEFAULT ").Append(FormatDefault(DefaultValue, DataType, Extra));
         }
 
         if (Extra.Contains("auto_increment", StringComparison.OrdinalIgnoreCase))
         {
             builder.Append(" AUTO_INCREMENT");
-        }
-
-        if (Extra.Contains("DEFAULT_GENERATED", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(DefaultValue))
-        {
-            // MySQL stores CURRENT_TIMESTAMP defaults as DEFAULT_GENERATED; the value already carries the expression.
-            builder.Append(string.Empty);
         }
 
         if (Extra.Contains("on update", StringComparison.OrdinalIgnoreCase))
@@ -57,6 +51,55 @@ public sealed class Model_ColumnDefinition
 
         return builder.ToString();
     }
+
+    /// <summary>
+    /// information_schema reports a string default as the bare literal, so emitting it raw produces
+    /// <c>DEFAULT Quantity</c> and MySQL rejects the statement. Numeric and expression defaults are
+    /// already valid SQL and must stay unquoted.
+    /// </summary>
+    private static string FormatDefault(string value, string dataType, string extra)
+    {
+        if (extra.Contains("DEFAULT_GENERATED", StringComparison.OrdinalIgnoreCase)
+            || IsExpressionDefault(value)
+            || IsNumericType(dataType))
+        {
+            return value;
+        }
+
+        return "'" + value.Replace("'", "''") + "'";
+    }
+
+    private static bool IsExpressionDefault(string value)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length == 0)
+        {
+            return false;
+        }
+
+        return trimmed.Contains('(')
+            || trimmed.StartsWith("b'", StringComparison.OrdinalIgnoreCase)
+            || trimmed.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+            || trimmed.StartsWith("_binary", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("CURRENT_TIMESTAMP", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("CURRENT_DATE", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("CURRENT_TIME", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("NULL", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsNumericType(string dataType)
+    {
+        var typeName = dataType
+            .Split(['(', ' '], StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault() ?? string.Empty;
+        return NumericTypeNames.Contains(typeName);
+    }
+
+    private static readonly HashSet<string> NumericTypeNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "tinyint", "smallint", "mediumint", "int", "integer", "bigint",
+        "decimal", "numeric", "dec", "fixed", "float", "double", "real", "year"
+    };
 
     public string Signature => $"{DataType}|{IsNullable}|{DefaultValue ?? "<null>"}|{Extra}|{Comment}|{Collation ?? string.Empty}";
 }

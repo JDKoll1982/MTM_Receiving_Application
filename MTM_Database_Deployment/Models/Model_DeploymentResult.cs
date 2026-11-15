@@ -11,12 +11,14 @@ public sealed class Model_DeploymentResult
     public int BenignSkipCount { get; private set; }
     public TimeSpan Duration { get; set; }
     public IReadOnlyList<string> Messages => _messages;
-    public IReadOnlyList<string> Failures => _failures;
+    public IReadOnlyList<string> Failures => _failureOrder;
     public IReadOnlyDictionary<string, int> BenignSkips => _benignSkips;
+    public IReadOnlyDictionary<string, int> FailureCounts => _failures;
 
     private readonly List<string> _messages = new();
-    private readonly List<string> _failures = new();
+    private readonly List<string> _failureOrder = new();
     private readonly Dictionary<string, int> _benignSkips = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, int> _failures = new(StringComparer.Ordinal);
 
     public bool IsSuccess => _failures.Count == 0;
 
@@ -41,7 +43,14 @@ public sealed class Model_DeploymentResult
     public void MarkFailed(string message)
     {
         FailedCount++;
-        _failures.Add(message);
+        if (!_failures.TryGetValue(message, out var count))
+        {
+            _failures[message] = 1;
+            _failureOrder.Add(message);
+            return;
+        }
+
+        _failures[message] = count + 1;
     }
 
     public void AddMessage(string message) => _messages.Add(message);
@@ -68,13 +77,14 @@ public sealed class Model_DeploymentResult
             }
         }
 
-        if (_failures.Count > 0)
+        if (_failureOrder.Count > 0)
         {
             builder.AppendLine();
             builder.AppendLine("FAILURES");
-            foreach (var failure in _failures)
+            foreach (var failure in _failureOrder)
             {
-                builder.AppendLine("  - " + failure);
+                var count = _failures[failure];
+                builder.AppendLine(count > 1 ? $"  - {failure} (x{count})" : $"  - {failure}");
             }
         }
 

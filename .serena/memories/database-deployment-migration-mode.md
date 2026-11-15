@@ -54,3 +54,18 @@
 - Column renames are seen as a drop plus an add, so a rename must be deliberate and confirmed.
 - Table options (engine, charset, comments) are not compared; only columns, indexes, and foreign keys are.
 - Verified 2026-11-15 with the deployment harness: 12 of 12 checks pass - empty-DB preview, first apply (51 tables / 5 views / 232 routines / 2 triggers), converged second preview with zero table work, data preservation, stale-column restore, extra-column removal, and fresh rebuild.
+
+## Generated DDL gotchas
+
+- `information_schema.COLUMNS.COLUMN_DEFAULT` returns a string default as the bare literal. Emitting it raw produces `DEFAULT Quantity`, which MySQL rejects with a syntax error near the value. `Model_ColumnDefinition.ToColumnDefinitionSql` quotes character-type defaults, leaves numeric ones alone, and leaves expressions (`CURRENT_TIMESTAMP`, anything with `(`, `b'0'`, `0x..`) and `EXTRA=DEFAULT_GENERATED` unquoted.
+- A database-only `NOT NULL` column with no default silently breaks every insert that does not name it. Inside a procedure with an `EXIT HANDLER FOR SQLEXCEPTION` the insert fails without surfacing an error, so the symptom is empty tables and confusing downstream `Column 'X' cannot be null` failures rather than the real cause. The comparer therefore flags such a column as `IsBlocking`, the plan summary names it, and a confirmed removal runs it before the seeds.
+- Live-DB symptom seen 2026-11-15 on `mtm_receiving_application`: `dunnage_custom_fields.DatabaseColumnName varchar(64) NOT NULL` (no default, not in the file tree) left all 38 custom fields uninserted, which then failed all 20 choice inserts. After the fixes the same deploy reports one aggregated failure instead of 99, and converges in one pass once removal is confirmed.
+- If a schema change fails, the engine stops before views, procedures, triggers, and seeds. Continuing previously produced a cascade (3 bad `ALTER`s produced 99 reported failures).
+## Operator UI
+
+- `MTM_Database_Deployment` is a three-step wizard (Connect -> Check -> Save), not a control panel. Every label is plain language; SQL detail is folded behind a "Technical details - for IT" expander.
+- Connect proves sign-in with a real `SELECT 1`, so "Connected" never lies: 1049 (unknown database) is reported separately from 1045 (bad credentials) and from an unreachable host.
+- DevWinUI supplies `StepBar`, `InfoCard`, `SelectorBarSegmented`, and `ProgressButton`. `ms-appx:///DevWinUI/Themes/Generic.xaml` has to be merged in `App.xaml` because `StepBar` reads its templates from `Application.Current.Resources` in its constructor.
+- Do not use a converter for visibility in this window: its binding root is a `Window`, which is not a framework element, so x:Bind cannot build a converter lookup root. Use `x:Bind ui:Show.If(flag)` instead.
+- `ProgressButton` is a `ToggleButton` and does not refuse a second click, so `IsEnabled` must be bound to a `CanSave` flag.
+- Verified 2026-11-15 by driving the running app: connect (fallback to 127.0.0.1), check (251 changes on the live DB, 279 on an empty DB), save against a scratch database (51 tables / 232 routines, "All done - the database is up to date"), and the destructive mode keeping the save button disabled until the confirmation box is ticked.

@@ -97,6 +97,7 @@ Minimum project file for a WinUI 3, unpackaged, self-contained desktop exe.
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="DevWinUI" Version="10.9.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="MySql.Data" Version="9.7.0" />
   </ItemGroup>
@@ -105,6 +106,7 @@ Minimum project file for a WinUI 3, unpackaged, self-contained desktop exe.
 
 `app.manifest` declares the executable as Windows 10 compatible and DPI aware; `App.xaml.cs` creates and activates the window.
 The view model must be constructed and assigned before `InitializeComponent()` so `x:Bind` resolves.
+`App.xaml` must merge `ms-appx:///DevWinUI/Themes/Generic.xaml` or the DevWinUI controls render without templates.
 
 ## Settings File Contract
 
@@ -205,13 +207,15 @@ A preview never writes to the target database.
 
 ### Apply (Update In Place)
 
-Runs in five ordered phases:
+Runs in ordered phases:
 
 1. **Ensure tables.** Execute every table script against the target. `IF NOT EXISTS` makes this a no-op for tables that already exist.
-2. **Reconcile columns, indexes, and foreign keys.** Apply only the `AddColumn`, `AlterColumn`, `AddIndex`, and `AddForeignKey` changes the comparer produced.
-3. **Replace code objects.** Views, then procedures, then triggers.
-4. **Run seeds.** Continue-on-error so one stale seed cannot abort a deployment.
-5. **Remove extras.** Only when the operator ticked the removal confirmation, and only after everything else succeeded.
+2. **Reconcile columns, indexes, and foreign keys.** Apply only the `AddColumn`, `AlterColumn`, `AddIndex`, and `AddForeignKey` changes the comparer produced. A change whose statement failed is reported as a failure, never as applied.
+3. **Remove blocking extras.** When the operator confirmed removals, drop the database-only columns that are `NOT NULL` with no default. They have to go before anything writes, because every insert that omits them fails - including the seeds in phase 5.
+4. **Stop if the schema did not converge.** If any change in phase 2 failed, report and return. A missing column invalidates the views, procedures, and seeds that need it, and continuing buries the real error under a cascade of downstream failures.
+5. **Replace code objects.** Views, then procedures, then triggers.
+6. **Run seeds.** Continue-on-error so one stale seed cannot abort a deployment.
+7. **Remove the remaining extras.** Only when the operator ticked the removal confirmation, and only after everything else succeeded.
 
 ### Rebuild (Destructive)
 
@@ -230,8 +234,18 @@ The comparer compares live metadata against materialized expected metadata, neve
 - **AddIndex**: index missing, or present with a different signature (drop then re-create).
 - **AddForeignKey**: constraint missing, or present with a different signature (drop then re-create).
 - **ExtraColumn / ExtraTable**: present in the target, absent from the file tree. Reported always, removed only on confirmation.
+- **Blocking extra column**: an `ExtraColumn` that is `NOT NULL` with no default. It is flagged so the preview and the summary say so, and it is the one extra that must be removed before the seeds run.
 
 Signatures are compared as ordinal strings generated from normalized metadata, so formatting differences in the source DDL never cause false positives.
+
+### Generating A Column Definition
+
+`information_schema` reports a string default as the bare literal, so a naive `DEFAULT {value}` emits `DEFAULT Quantity` and MySQL rejects the statement. The generator must therefore:
+
+- quote the default for character types, doubling any embedded quote: `DEFAULT 'Quantity'`,
+- leave numeric defaults unquoted: `DEFAULT 0`,
+- leave expressions unquoted: `CURRENT_TIMESTAMP`, anything containing `(`, `b'0'`, `0x..`, `_binary..`,
+- treat `EXTRA` containing `DEFAULT_GENERATED` as already an expression.
 
 ## Data Safety Guarantees
 
@@ -240,7 +254,8 @@ Signatures are compared as ordinal strings generated from normalized metadata, s
 - Seeds insert only what is missing.
 - Extra objects are reported in the preview before they can be removed.
 - The scratch schema used for preview is always dropped, even when the preview throws.
-- Destructive modes require an explicit confirmation, and removals run last.
+- Destructive modes require an explicit confirmation.
+- Removals are split by risk: blocking columns go before anything writes, everything else runs last.
 
 ## Result Reporting
 
@@ -248,23 +263,64 @@ The in-memory result tracks four counters: applied, skipped, benign skips, and f
 
 - A statement whose error matches a benign pattern is counted as a benign skip, not a failure. Benign patterns include `already exists`, `duplicate entry`, `duplicate column name`, `duplicate key name`, `duplicate foreign key constraint name`, `multiple primary key defined`, `check that column/key exists`, and `can't drop`.
 - Benign skips are aggregated per object and printed once with an occurrence count, so a re-run of a large seed does not flood the report.
+- Failures are aggregated the same way, keyed by message and printed in first-seen order with an occurrence count. A seed that fails the same way 90 times appears as one line ending in `(x90)`.
 - A text report is written to `%LOCALAPPDATA%\<Tool Name>\reports\deployment-yyyyMMdd-HHmmss.txt` and includes the database, resolved server, mode, timestamp, counters, per-object messages, and failures.
+
 
 ## UI Surface
 
-A single window is sufficient.
+A single window, written for an operator with no database background. Three steps, one primary button each, and every label in plain language.
 
-- Connection fields: preferred server, fallback server, port, database, user, password.
-- `Test connection` resolves the server and reports which endpoint answered.
-- Mode selection: update in place, or fresh rebuild with its own acknowledgement checkbox.
-- `Remove database-only columns and tables` is opt-in and off by default.
-- `Preview (What-If)` fills a planned-change list and a summary line.
-- `Deploy` runs the selected mode, streams progress, and writes the report.
-- `Cancel` stops the run between statements.
-- `Export preview` writes the plan to a text file.
-- A read-only activity log pane shows progress and per-object outcomes.
+### Wizard shape
 
-All bindings use `x:Bind` with an explicit `Mode`. No runtime `{Binding}`.
+1. **Connect.** One button. The tool probes the preferred server, then the spare, then signs in for real (`SELECT 1` against the target database) before it claims success.
+2. **Check.** Builds the plan and renders it as plain-language groups, not SQL kinds.
+3. **Save.** Recaps the groups, offers the two modes, and runs the deployment.
+
+A `StepBar` trail shows progress and `AutoSelectOnItemClick` stays off so the trail cannot skip a step. `Back` re-shows the previous step without discarding the plan.
+
+### Plain-language mapping
+
+The view model turns `Model_SchemaChange` kinds into groups an operator understands, in this order:
+
+| Group | Change kinds | Wording intent |
+| --- | --- | --- |
+| Must be removed first | blocking `ExtraColumn` | "the standard lists cannot be saved until it is gone" |
+| New tables | `CreateTable` | brand-new tables |
+| New detail fields | `AddColumn` | "existing rows simply have it blank" |
+| Roomier fields | `AlterColumn` | "your values are kept" |
+| Speed-up rules | `AddIndex`, `AddForeignKey` | housekeeping |
+| Saved queries and rules | `UpdateView`, `UpdateProcedure`, `UpdateTrigger` | stored instructions refreshed |
+| Standard reference lists | `RunSeed` | "anything you added yourself stays" |
+| Leftovers found in the database | non-blocking removals | left alone unless the box is ticked |
+
+Identifiers become sentences: `dunnage_parts.quantity_type` renders as "Dunnage parts - quantity type", and `StoredProcedures/Dunnage/sp_Dunnage_Types_Insert.sql` as "Dunnage types insert".
+
+### Safety and disclosure
+
+- The safety line is always visible and changes with the mode: "Your records are kept. Nothing is deleted." versus "This erases every record."
+- Rebuild requires its own checkbox and keeps the save button disabled until it is ticked.
+- Leftover removal is opt-in and off by default.
+- SQL detail is folded behind a "Technical details - for IT" `Expander`, and the same text can be saved to a file for IT.
+
+### Controls
+
+DevWinUI supplies `StepBar`, `InfoCard`, `SelectorBarSegmented`, and `ProgressButton`; WinUI supplies `Expander`, `ScrollViewer`, `ProgressRing`, and the theme-resource card surfaces. `ms-appx:///DevWinUI/Themes/Generic.xaml` must be merged in `App.xaml`, because `StepBar` reads its own templates from `Application.Current.Resources` in its constructor.
+
+`ProgressButton` is a `ToggleButton`: bind `IsChecked` to the busy flag, `CheckedContent` to the busy label, and `IsEnabled` to a `CanSave` flag, because the control does not refuse a second click.
+
+### Binding rules
+
+- All bindings use `x:Bind` with an explicit `Mode`. No runtime `{Binding}`.
+- Visibility comes from `x:Bind` function calls (`ui:Show.If(flag)`), not a converter: this window's binding root is a `Window`, which is not a framework element, so the generated code cannot build a converter lookup root.
+- Controls that cannot be bound (`SelectorBarSegmented.SelectedItem`, `PasswordBox.Password`, window size) are wired in code behind; no business logic lives there.
+
+### Copy rules
+
+- Never show a raw change kind, table name, or SQL error as the headline.
+- State what happens to the operator's data before what will change.
+- A failure says the records are untouched and points at IT, then offers the details file.
+
 
 ## Porting Checklist
 
@@ -280,6 +336,10 @@ All bindings use `x:Bind` with an explicit `Mode`. No runtime `{Binding}`.
 ## Validation Checklist
 
 - [ ] Preview against an empty database plans one `CreateTable` per table script.
+- [ ] Connect reports success only after a real sign-in, not just a TCP probe.
+- [ ] A wrong password shows the sign-in message, and a missing database name is called out separately.
+- [ ] Step 1, 2, and 3 each render in light and dark themes with readable card edges.
+- [ ] Choosing "Start over" swaps the checkbox and keeps the save button disabled until it is ticked.
 - [ ] Apply against an empty database finishes with zero failures.
 - [ ] Object counts in the target match the file tree counts.
 - [ ] A second preview reports zero table, column, index, and foreign key changes.
@@ -289,6 +349,9 @@ All bindings use `x:Bind` with an explicit `Mode`. No runtime `{Binding}`.
 - [ ] A column that exists only in the target appears as an extra and is removed only when confirmed.
 - [ ] Fresh rebuild recreates every table and leaves them empty.
 - [ ] No script in the tree contains `USE `, `DROP TABLE`, or a raw `CREATE VIEW` without `OR REPLACE`.
+- [ ] A column whose file default is a string converges with `DEFAULT '<value>'`, not `DEFAULT <value>`.
+- [ ] A database-only `NOT NULL` column with no default is named as blocking in the preview summary.
+- [ ] A schema change that fails stops the run before views, procedures, and seeds are touched.
 
 ## Automated Tests
 

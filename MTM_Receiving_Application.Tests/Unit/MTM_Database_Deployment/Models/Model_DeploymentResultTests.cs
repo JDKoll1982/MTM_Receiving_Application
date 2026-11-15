@@ -52,6 +52,33 @@ public sealed class Model_DeploymentResultTests
     }
 
     [Fact]
+    public void MarkFailed_ShouldAggregateRepeats_WhenTheSameFailureOccursManyTimes()
+    {
+        var result = new Model_DeploymentResult();
+
+        for (var index = 0; index < 90; index++)
+        {
+            result.MarkFailed("SeedData/03_seed_dunnage_data.sql: Unknown column 'quantity_type' in 'field list'");
+        }
+
+        result.FailedCount.Should().Be(90);
+        result.Failures.Should().ContainSingle("a repeated failure is reported once");
+        result.FailureCounts.Should().ContainSingle().Which.Value.Should().Be(90);
+    }
+
+    [Fact]
+    public void MarkFailed_ShouldKeepFirstSeenOrder_WhenDifferentFailuresInterleave()
+    {
+        var result = new Model_DeploymentResult();
+
+        result.MarkFailed("first");
+        result.MarkFailed("second");
+        result.MarkFailed("first");
+
+        result.Failures.Should().Equal("first", "second");
+    }
+
+    [Fact]
     public void ToReportText_ShouldListEachSkippedObjectOnce_WhenBenignSkipsRepeat()
     {
         var result = new Model_DeploymentResult();
@@ -76,5 +103,18 @@ public sealed class Model_DeploymentResultTests
 
         report.Should().Contain("FAILURES");
         report.Should().Contain("Unknown column 'dld.quantity_type'");
+    }
+
+    [Fact]
+    public void ToReportText_ShouldPrintOccurrenceCount_WhenAFailureRepeats()
+    {
+        var result = new Model_DeploymentResult();
+        result.MarkFailed("SeedData/03_seed_dunnage_data.sql: Unknown column 'quantity_type' in 'field list'");
+        result.MarkFailed("SeedData/03_seed_dunnage_data.sql: Unknown column 'quantity_type' in 'field list'");
+
+        var report = result.ToReportText();
+
+        report.Should().Contain("Failed: 2");
+        report.Should().Contain("Unknown column 'quantity_type' in 'field list' (x2)");
     }
 }
