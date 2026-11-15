@@ -8,8 +8,6 @@
 -- Returns:  rows_updated.
 -- Errors:   SQLSTATE 45000 when the row does not exist.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_SetLocked`;
 
 DELIMITER $$

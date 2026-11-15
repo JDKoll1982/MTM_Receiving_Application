@@ -19,8 +19,6 @@
 --           Rows are matched on the supplier the way the preview reported it, so the same expression
 --           is used on both sides.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_LotMarking_RealignRows`;
 
 DELIMITER $$

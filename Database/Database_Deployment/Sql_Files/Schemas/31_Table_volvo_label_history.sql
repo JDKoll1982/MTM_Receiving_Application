@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_label_history;
 
 CREATE TABLE IF NOT EXISTS volvo_label_history (
   id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate PK for this history record',

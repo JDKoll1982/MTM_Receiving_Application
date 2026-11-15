@@ -13,8 +13,6 @@
 --           Rows with no heat, or with the value the receiving flow substitutes for blank, are
 --           returned like any other and skipped by the caller, so the blank rule lives in one place.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_UnmarkedLotMarkings_Preview`;
 
 DELIMITER $$

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS dunnage_label_data (
     udc9 VARCHAR(255) NULL COMMENT 'User Defined Column slot 9 snapshot - display name from dunnage_custom_fields',
     udc10 VARCHAR(255) NULL COMMENT 'User Defined Column slot 10 snapshot - display name from dunnage_custom_fields',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the queue record was inserted',
+    is_reprint TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 when this row was re-queued from dunnage_history for a label reprint',
     INDEX idx_load_uuid (load_uuid) COMMENT 'Lookup by workflow session GUID',
     INDEX idx_part_id (part_id) COMMENT 'Part-based queue queries',
     INDEX idx_employee_number (employee_number) COMMENT 'User-scoped clear queue filtering',

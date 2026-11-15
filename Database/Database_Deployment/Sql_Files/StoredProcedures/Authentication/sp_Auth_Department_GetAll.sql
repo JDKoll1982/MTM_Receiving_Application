@@ -4,7 +4,6 @@
 -- Feature: User Authentication & Login System (002-user-login)
 -- Created: December 16, 2025
 -- ============================================================================
-USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_Department_GetAll`;
 

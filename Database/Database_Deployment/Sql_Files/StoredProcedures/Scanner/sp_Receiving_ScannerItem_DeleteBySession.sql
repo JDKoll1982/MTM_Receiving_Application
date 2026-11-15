@@ -1,8 +1,6 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_DeleteBySession
 -- Description: Clears all items from a current-list session (used on reorder/clear).
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_DeleteBySession`;
 
 DELIMITER $$

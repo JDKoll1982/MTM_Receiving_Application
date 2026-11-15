@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS reporting_scheduled_reports;
 
 CREATE TABLE IF NOT EXISTS reporting_scheduled_reports (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key: unique scheduled report identifier',

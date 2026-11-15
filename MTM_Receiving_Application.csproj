@@ -152,6 +152,7 @@
   <ItemGroup>
     <Compile Remove=".agent_work\**" />
     <Compile Remove="MTM_Receiving_Application.Tests\**" />
+    <Compile Remove="MTM_Database_Deployment\**" />
     <Compile Remove="Scripts\**" />
     <Compile Remove="tools\**" />
     <Compile Remove="Module_Settings.Core\ViewModels\ViewModel_Settings_Database.cs" />
@@ -162,18 +163,21 @@
     <Compile Remove="obj_verify\**" />
     <EmbeddedResource Remove=".agent_work\**" />
     <EmbeddedResource Remove="MTM_Receiving_Application.Tests\**" />
+    <EmbeddedResource Remove="MTM_Database_Deployment\**" />
     <EmbeddedResource Remove="Properties\**" />
     <EmbeddedResource Remove="obj_verify\**" />
     <EmbeddedResource Remove="Scripts\**" />
     <EmbeddedResource Remove="tools\**" />
     <None Remove=".agent_work\**" />
     <None Remove="MTM_Receiving_Application.Tests\**" />
+    <None Remove="MTM_Database_Deployment\**" />
     <None Remove="Properties\**" />
     <None Remove="obj_verify\**" />
     <None Remove="Scripts\**" />
     <None Remove="tools\**" />
     <Page Remove=".agent_work\**" />
     <Page Remove="MTM_Receiving_Application.Tests\**" />
+    <Page Remove="MTM_Database_Deployment\**" />
     <Page Remove="Properties\**" />
     <Page Remove="obj_verify\**" />
     <Page Remove="tools\**" />
@@ -391,6 +395,7 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove="MTM_Receiving_Application.Tests\**" />
+    <PRIResource Remove="MTM_Database_Deployment\**" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Remove=".agent_work\**" />

@@ -1,8 +1,6 @@
 SET
     FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS settings_dunnage_personal;
-
 SET
     FOREIGN_KEY_CHECKS = 1;
 

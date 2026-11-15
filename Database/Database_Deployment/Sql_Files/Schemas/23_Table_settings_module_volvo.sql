@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS settings_module_volvo;
 
 CREATE TABLE IF NOT EXISTS settings_module_volvo (
     setting_key VARCHAR(100) NOT NULL COMMENT 'Unique key identifier for the setting (e.g., AutoPrintEnabled)',

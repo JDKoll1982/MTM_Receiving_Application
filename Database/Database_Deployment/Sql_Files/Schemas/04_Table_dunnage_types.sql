@@ -1,12 +1,10 @@
 SET
     FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS dunnage_types;
-
 SET
     FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE dunnage_types (
+CREATE TABLE IF NOT EXISTS dunnage_types (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for dunnage type',
     type_name VARCHAR(100) NOT NULL UNIQUE COMMENT 'Display name of dunnage type (e.g., Box, Pallet, Container)',
     icon VARCHAR(50) NOT NULL DEFAULT 'PackageVariantClosed' COMMENT 'MaterialIconKind name for UI display (e.g., PackageVariantClosed, Folder)',

@@ -1,12 +1,10 @@
 SET
     FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS dunnage_requires_inventory;
-
 SET
     FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE dunnage_requires_inventory (
+CREATE TABLE IF NOT EXISTS dunnage_requires_inventory (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for inventoried dunnage record',
     part_id VARCHAR(50) NOT NULL COMMENT 'Reference to dunnage part requiring inventory tracking',
     inventory_method VARCHAR(100) COMMENT 'Method used for Visual ERP inventory notification (e.g., manual, automatic)',

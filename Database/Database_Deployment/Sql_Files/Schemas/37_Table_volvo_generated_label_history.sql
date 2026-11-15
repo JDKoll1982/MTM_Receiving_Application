@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_generated_label_history;
 
 CREATE TABLE IF NOT EXISTS volvo_generated_label_history (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for one archived generated Volvo label row',

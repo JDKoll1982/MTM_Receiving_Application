@@ -39,8 +39,6 @@
 --           when it was last seen. Both are read here rather than counted separately so that one
 --           read answers both questions and the two answers can never disagree.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_HeatLotKeys_GetAll`;
 
 DELIMITER $$

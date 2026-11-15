@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS outside_service_request_line;
 
 CREATE TABLE IF NOT EXISTS outside_service_request_line (
     outside_service_request_line_id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for outside service request line',

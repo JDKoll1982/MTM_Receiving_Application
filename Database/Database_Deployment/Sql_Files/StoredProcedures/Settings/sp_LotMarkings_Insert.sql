@@ -16,8 +16,6 @@
 -- Returns:  new_id - the id of the inserted row.
 -- Errors:   SQLSTATE 45000 when a marking already exists for this lot and supplier.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_Insert`;
 
 DELIMITER $$

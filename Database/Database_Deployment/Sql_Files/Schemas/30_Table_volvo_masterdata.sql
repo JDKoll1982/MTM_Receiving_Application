@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_masterdata;
 
 CREATE TABLE IF NOT EXISTS volvo_masterdata (
     part_number VARCHAR(20) NOT NULL COMMENT 'Volvo part identifier (primary key)',

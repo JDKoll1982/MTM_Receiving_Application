@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_part_components;
 
 CREATE TABLE IF NOT EXISTS volvo_part_components (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for this table',

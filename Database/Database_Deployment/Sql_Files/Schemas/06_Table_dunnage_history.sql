@@ -1,10 +1,8 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS dunnage_history;
-
 SET FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE dunnage_history (
+CREATE TABLE IF NOT EXISTS dunnage_history (
     load_uuid CHAR(36) PRIMARY KEY COMMENT 'Unique identifier for the load transaction',
     part_id VARCHAR(50) NOT NULL COMMENT 'Foreign key to dunnage_parts',
     quantity DECIMAL(10, 2) NOT NULL COMMENT 'Quantity received in this transaction',

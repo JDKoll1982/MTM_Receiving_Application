@@ -15,8 +15,6 @@
 --           receipt left empty matches the empty value the preview reported.
 --           The work is wrapped in a transaction so the two tables cannot end up disagreeing.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_LotMarking_ClearRows`;
 
 DELIMITER $$

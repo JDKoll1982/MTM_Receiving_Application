@@ -15,8 +15,6 @@
 --           already been given the marking of the number they now carry, which is what the caller
 --           does first.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_Delete`;
 
 DELIMITER $$

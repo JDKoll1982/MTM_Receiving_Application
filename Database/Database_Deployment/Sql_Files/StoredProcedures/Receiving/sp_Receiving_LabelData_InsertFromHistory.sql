@@ -14,8 +14,6 @@
 --           lot is put on afterwards by the caller, because the matching key behind a marking is
 --           produced in the application and not in SQL.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_InsertFromHistory`;
 
 DELIMITER $$

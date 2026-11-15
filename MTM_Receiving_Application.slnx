@@ -6,4 +6,7 @@
     <Platform Project="x64" />
     <Deploy />
   </Project>
+  <Project Path="MTM_Database_Deployment/MTM_Database_Deployment.csproj">
+    <Platform Project="x64" />
+  </Project>
 </Solution>

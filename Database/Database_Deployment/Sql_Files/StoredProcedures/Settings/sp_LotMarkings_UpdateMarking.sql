@@ -12,8 +12,6 @@
 -- Returns:  rows_updated.
 -- Errors:   SQLSTATE 45000 when the row does not exist, or when a manual change carries no reason.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_UpdateMarking`;
 
 DELIMITER $$

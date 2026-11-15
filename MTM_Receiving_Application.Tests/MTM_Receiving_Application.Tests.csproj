@@ -57,6 +57,9 @@
     <ProjectReference Include="..\MTM_Receiving_Application.csproj">
       <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false;WindowsAppSDKSelfContained=false</AdditionalProperties>
     </ProjectReference>
+    <ProjectReference Include="..\MTM_Database_Deployment\MTM_Database_Deployment.csproj">
+      <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false;WindowsAppSDKSelfContained=false</AdditionalProperties>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

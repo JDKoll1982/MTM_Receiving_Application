@@ -1,12 +1,10 @@
 SET
     FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS dunnage_parts;
-
 SET
     FOREIGN_KEY_CHECKS = 1;
 
-CREATE TABLE dunnage_parts (
+CREATE TABLE IF NOT EXISTS dunnage_parts (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique identifier for dunnage part',
     part_id VARCHAR(50) NOT NULL UNIQUE COMMENT 'Business identifier (e.g., barcode, SKU) for the dunnage part',
     type_id INT NOT NULL COMMENT 'Foreign key to dunnage_types - defines what kind of dunnage this is',

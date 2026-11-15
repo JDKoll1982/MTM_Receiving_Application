@@ -7,8 +7,6 @@
 -- Returns:  rows_deleted.
 -- Errors:   none. A row that is already gone reports zero rows deleted.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkingPartScope_Delete`;
 
 DELIMITER $$

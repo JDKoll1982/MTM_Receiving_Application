@@ -1,8 +1,6 @@
 -- Stored Procedure: sp_Receiving_ScannerItem_GetBySession
 -- Description: Returns ordered scanner items for a current-list session.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerItem_GetBySession`;
 
 DELIMITER $$

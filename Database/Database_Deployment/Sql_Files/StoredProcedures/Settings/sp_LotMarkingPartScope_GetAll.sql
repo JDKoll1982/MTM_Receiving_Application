@@ -4,8 +4,6 @@
 -- Returns:  id, part_id, is_enabled, added_by, added_at.
 -- Errors:   none.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkingPartScope_GetAll`;
 
 DELIMITER $$

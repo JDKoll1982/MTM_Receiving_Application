@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS settings_volvo_recipents;
 
 CREATE TABLE IF NOT EXISTS settings_volvo_recipents (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the Volvo recipient row',

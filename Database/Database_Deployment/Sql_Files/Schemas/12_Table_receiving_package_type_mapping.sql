@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS receiving_package_type_mapping;
 
-CREATE TABLE receiving_package_type_mapping (
+CREATE TABLE IF NOT EXISTS receiving_package_type_mapping (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for mapping record',
     part_prefix VARCHAR(10) NOT NULL COMMENT 'Part number prefix (e.g., MCC, MMF)',
     package_type VARCHAR(50) NOT NULL COMMENT 'Package type label (e.g., Coils, Sheets, Skids)',

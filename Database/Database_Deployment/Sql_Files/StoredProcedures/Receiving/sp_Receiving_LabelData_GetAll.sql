@@ -4,8 +4,6 @@
 --              database instead of from XLS files.
 --              Returns actual snake_case column names from receiving_label_data.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_GetAll`;
 
 DELIMITER $$

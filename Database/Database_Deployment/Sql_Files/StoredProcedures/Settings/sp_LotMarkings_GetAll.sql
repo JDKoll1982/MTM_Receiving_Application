@@ -6,8 +6,6 @@
 --           change_reason, resolved_by, resolved_at, notes, created_at.
 -- Errors:   none.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_GetAll`;
 
 DELIMITER $$

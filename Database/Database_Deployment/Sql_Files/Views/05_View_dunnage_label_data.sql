@@ -18,9 +18,7 @@
 -- Note: this view is read-only (SELECT). It is safe to query from LabelView;
 --       the MTM application never writes to it.
 
-DROP VIEW IF EXISTS `view_dunnage_label_data`;
-
-CREATE VIEW `view_dunnage_label_data` AS
+CREATE OR REPLACE VIEW `view_dunnage_label_data` AS
 SELECT
     dld.id,
     dld.load_uuid,

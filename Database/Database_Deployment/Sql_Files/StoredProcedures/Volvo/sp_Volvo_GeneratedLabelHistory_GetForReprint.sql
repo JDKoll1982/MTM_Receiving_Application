@@ -5,8 +5,6 @@
 --              Supports the date range and the Search By / text filters used by the Reprint page.
 --              All parameters are optional; pass NULL / '' to skip a filter.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Volvo_GeneratedLabelHistory_GetForReprint`;
 
 DELIMITER $$

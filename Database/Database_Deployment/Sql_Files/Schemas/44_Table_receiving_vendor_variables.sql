@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS receiving_vendor_variables;
 
-CREATE TABLE receiving_vendor_variables (
+CREATE TABLE IF NOT EXISTS receiving_vendor_variables (
 	vendor_name VARCHAR(100) NOT NULL PRIMARY KEY COMMENT 'Vendor name from Infor Visual (unique key)',
 	variable_name VARCHAR(100) NOT NULL COMMENT 'Custom variable label for this vendor (e.g., DM #, Heat #)',
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',

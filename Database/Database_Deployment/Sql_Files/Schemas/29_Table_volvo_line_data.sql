@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_line_data;
 
 CREATE TABLE IF NOT EXISTS volvo_line_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for volvo_line_data',

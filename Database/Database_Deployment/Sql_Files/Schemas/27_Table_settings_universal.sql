@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS settings_universal;
 
-CREATE TABLE settings_universal (
+CREATE TABLE IF NOT EXISTS settings_universal (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto-incrementing primary key for the setting record',
     category VARCHAR(100) NOT NULL COMMENT 'Settings category (System, Security, Receiving, Dunnage, Volvo, Reporting, ERP, UserDefaults)',
     sub_category VARCHAR(100) NULL COMMENT 'Optional sub-category for hierarchical organization',

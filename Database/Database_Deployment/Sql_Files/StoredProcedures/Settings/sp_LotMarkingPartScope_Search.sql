@@ -6,8 +6,6 @@
 -- Returns:  id, part_id, is_enabled, added_by, added_at, capped at 100 rows.
 -- Errors:   none.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkingPartScope_Search`;
 
 DELIMITER $$

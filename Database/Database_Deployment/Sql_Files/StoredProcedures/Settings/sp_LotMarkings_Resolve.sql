@@ -8,8 +8,6 @@
 -- Returns:  The same column list as sp_LotMarkings_GetAll, or no row when the lot is new.
 -- Errors:   none.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_Resolve`;
 
 DELIMITER $$

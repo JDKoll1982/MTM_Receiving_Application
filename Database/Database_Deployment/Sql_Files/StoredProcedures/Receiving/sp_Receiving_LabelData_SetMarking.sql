@@ -12,8 +12,6 @@
 -- Returns:  rows_updated.
 -- Errors:   SQLSTATE 45000 when no queue row matches the supplied load id.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_LabelData_SetMarking`;
 
 DELIMITER $$

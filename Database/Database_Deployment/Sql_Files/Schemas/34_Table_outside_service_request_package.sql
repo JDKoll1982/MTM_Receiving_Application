@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS outside_service_request_package;
 
 CREATE TABLE IF NOT EXISTS outside_service_request_package (
     outside_service_request_package_id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for outside service package row',

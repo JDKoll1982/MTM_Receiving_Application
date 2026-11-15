@@ -4,8 +4,6 @@
 --              The duplicate guard keys on the history row's original_id (the original
 --              active-row id) matching an existing is_reprint = 1 generated label row.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Volvo_GeneratedLabelData_InsertFromHistory`;
 
 DELIMITER $$

@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_label_data;
 
 CREATE TABLE IF NOT EXISTS volvo_label_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for shipment record',

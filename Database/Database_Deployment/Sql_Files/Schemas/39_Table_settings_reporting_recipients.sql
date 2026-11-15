@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS settings_reporting_recipients;
 
 CREATE TABLE IF NOT EXISTS settings_reporting_recipients (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Primary key for the Reporting recipient row',

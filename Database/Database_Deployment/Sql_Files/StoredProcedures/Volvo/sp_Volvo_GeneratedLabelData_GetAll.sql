@@ -1,4 +1,3 @@
-USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Volvo_GeneratedLabelData_GetAll`;
 

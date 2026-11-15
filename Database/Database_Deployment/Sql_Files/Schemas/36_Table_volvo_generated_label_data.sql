@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS volvo_generated_label_data;
 
 CREATE TABLE IF NOT EXISTS volvo_generated_label_data (
     id INT NOT NULL AUTO_INCREMENT COMMENT 'Surrogate primary key for one generated Volvo label row',
@@ -13,6 +12,7 @@ CREATE TABLE IF NOT EXISTS volvo_generated_label_data (
     employee_number INT NULL COMMENT '4-digit employee identifier for the user whose shipment generated this label row',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was written',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when this generated label row was last refreshed',
+    is_reprint TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 when this row was re-queued from volvo_generated_label_history for a label reprint',
     PRIMARY KEY (id),
     INDEX idx_volvo_generated_label_shipment_id (shipment_id),
     INDEX idx_volvo_generated_label_shipment_number (shipment_number),

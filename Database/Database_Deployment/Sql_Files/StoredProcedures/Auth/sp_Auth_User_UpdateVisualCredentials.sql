@@ -4,7 +4,6 @@
 -- Feature: User Management UI
 -- Created: 2026-03-08
 -- ============================================================================
-USE mtm_receiving_application;
 
 DROP PROCEDURE IF EXISTS `sp_Auth_User_UpdateVisualCredentials`;
 

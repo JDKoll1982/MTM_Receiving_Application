@@ -1,8 +1,6 @@
 -- Stored Procedure: sp_Receiving_ScannerProfile_Upsert
 -- Description: Creates or updates one scanner profile, including target app metadata and warehouse defaults.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_ScannerProfile_Upsert`;
 
 DELIMITER $$

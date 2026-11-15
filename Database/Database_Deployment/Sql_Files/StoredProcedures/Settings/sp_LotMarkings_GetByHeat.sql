@@ -5,8 +5,6 @@
 -- Returns:  The same column list as sp_LotMarkings_GetAll, capped at 100 rows.
 -- Errors:   none.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkings_GetByHeat`;
 
 DELIMITER $$

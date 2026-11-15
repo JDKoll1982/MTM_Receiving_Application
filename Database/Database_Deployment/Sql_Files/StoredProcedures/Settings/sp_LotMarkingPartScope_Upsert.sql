@@ -7,8 +7,6 @@
 -- Returns:  part_scope_id - the id of the enabled row.
 -- Errors:   SQLSTATE 45000 when the part number is empty.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_LotMarkingPartScope_Upsert`;
 
 DELIMITER $$

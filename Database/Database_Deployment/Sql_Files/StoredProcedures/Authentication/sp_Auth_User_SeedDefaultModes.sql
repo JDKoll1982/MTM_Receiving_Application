@@ -5,8 +5,6 @@
 --   - Safe to run even if the default_* columns have not been migrated yet.
 --   - Does NOT throw if columns are missing; it simply skips those updates.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Auth_User_SeedDefaultModes`;
 
 DELIMITER $$

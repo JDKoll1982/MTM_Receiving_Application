@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS settings_personal;
 
-CREATE TABLE settings_personal (
+CREATE TABLE IF NOT EXISTS settings_personal (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for the settings_personal table',
     user_id INT NOT NULL COMMENT 'FK to users.id - identifies the user owning this setting',
     category VARCHAR(100) NOT NULL COMMENT 'Settings category (matches settings_universal.category)',

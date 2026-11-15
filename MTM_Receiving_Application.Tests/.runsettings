@@ -11,8 +11,9 @@
         <DataCollectors>
             <DataCollector friendlyName="XPlat code coverage">
                 <Configuration>
-                    <!-- Limit coverage to the publishable application assembly only -->
+                    <!-- Limit coverage to the publishable application assemblies only -->
                     <Include>[MTM_Receiving_Application]*</Include>
+                    <Include>[MTM_Database_Deployment]*</Include>
                     <Exclude>[MTM_Receiving_Application.Tests]*</Exclude>
                     <IncludeTestAssembly>false</IncludeTestAssembly>
                     <ExcludeByFile>**/*.g.cs,**/*.g.i.cs,**/*.designer.cs,**/obj/**,**/bin/**,**/MTM_Receiving_Application.Tests/**,**/.nuget/**,**/packages/**,**/WindowsAppRuntimeAutoInitializer.cs,**/UndockedRegFreeWinRT-AutoInitializer.cs</ExcludeByFile>

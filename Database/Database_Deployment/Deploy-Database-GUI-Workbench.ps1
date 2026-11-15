@@ -1,12 +1,16 @@
 # MTM Receiving Application — Database Deployment (MySQL Workbench / MySQL Server)
-# Supports both the standard MySQL Server installation and MAMP-managed MySQL.
-# MAMP's MySQL 5.7 client does not reliably process DELIMITER directives in batch
-# mode, so delimiter-based scripts are normalized before execution in that mode.
+# Targets the standard MySQL Server installation. A MySQL 5.7 client does not
+# reliably process DELIMITER directives in batch mode, so delimiter-based scripts
+# are normalized before execution when an older client is detected.
+#
+# LEGACY: the supported deployment tool is now the WinUI app in MTM_Database_Deployment/.
+# This script is kept for reference and for scripted/no-UI runs only. It deploys the same
+# Sql_Files tree, so the two tools stay in sync as long as the tree stays idempotent.
 
 param(
     [string]$Server = "172.16.1.104",
     [string]$Port = "3306",
-    [string]$Database = "mtm_receiving_application_test",
+    [string]$Database = "mtm_receiving_application",
     [string]$User = "root",
     [string]$Password = "root"
 )
@@ -26,26 +30,12 @@ $script:Config = [ordered]@{
         WorkbenchInstallRoot  = 'C:\Program Files\MySQL'
         WorkbenchProgramData  = 'C:\ProgramData\MySQL'
         DefaultWorkbenchMyIni = 'C:\ProgramData\MySQL\MySQL Server 9.6\my.ini'
-        MampRoot              = 'C:\MAMP'
-        MampConfigPath        = 'C:\MAMP\conf\mysql\my.ini'
-        MampExecutablePaths   = @(
-            'C:\MAMP\MAMP.exe',
-            'C:\MAMP\LauncherMAMP.exe'
-        )
-        MampMysqlAdminPaths   = @(
-            'C:\MAMP\bin\mysql\bin\mysqladmin.exe',
-            'C:\MAMP\bin\mysql8.0.31\bin\mysqladmin.exe',
-            'C:\MAMP\bin\mysql5.7.39\bin\mysqladmin.exe',
-            'C:\MAMP\bin\mysql5.7.24\bin\mysqladmin.exe'
-        )
     }
-    Providers = [ordered]@{
-        Mamp = [ordered]@{
-            Server   = '172.16.1.104'
-            Port     = '3306'
-            User     = 'root'
-            Password = 'root'
-        }
+    Connection = [ordered]@{
+        # Used when the configured server is unreachable so the tool still works on this PC.
+        FallbackServer            = '127.0.0.1'
+        ProbeTimeoutMilliseconds  = 2000
+        ClientConnectTimeoutSeconds = 5
     }
     # AUTH-SECRET-LOGIC-BEGIN
     Security  = [ordered]@{
@@ -127,18 +117,8 @@ $xaml = @"
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Provider:" FontWeight="Bold" Margin="0,5"/>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="10,5">
                     <Border Background="#E3F2FD" BorderBrush="#90CAF9" BorderThickness="1" CornerRadius="14" Padding="10,4">
-                        <TextBlock Name="ProviderValueText" Text="MySQL Workbench" Foreground="#1565C0" FontWeight="SemiBold"/>
+                        <TextBlock Name="ProviderValueText" Text="MySQL Server" Foreground="#1565C0" FontWeight="SemiBold"/>
                     </Border>
-                    <ToggleButton Name="ProviderToggleButton"
-                                  Width="170"
-                                  Height="30"
-                                  Margin="12,0,0,0"
-                                  Background="#1976D2"
-                                  Foreground="White"
-                                  BorderThickness="0"
-                                  FontWeight="SemiBold"
-                                  Cursor="Hand"
-                                  Content="Switch to MAMP"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -296,7 +276,7 @@ $xaml = @"
                 BorderThickness="1" CornerRadius="5" Padding="15"
                 Margin="0,20,0,0" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock Text="Deployment Successful!" FontSize="16" FontWeight="Bold"
+                <TextBlock Name="SummaryTitleText" Text="Deployment Successful!" FontSize="16" FontWeight="Bold"
                            Foreground="#2E7D32" Margin="0,0,0,10"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -327,12 +307,12 @@ $xaml = @"
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="4" Name="ProviderSwitchBorder" Background="#E3F2FD" BorderBrush="#64B5F6"
+        <Border Grid.Row="4" Name="OperationProgressBorder" Background="#E3F2FD" BorderBrush="#64B5F6"
                 BorderThickness="1" CornerRadius="5" Padding="12" Margin="0,16,0,0" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock Name="ProviderSwitchStatusText" Text="Switching database provider..."
+                <TextBlock Name="OperationProgressStatusText" Text="Working..."
                            FontWeight="SemiBold" Foreground="#1565C0" Margin="0,0,0,8"/>
-                <ProgressBar Name="ProviderSwitchProgress" Height="10" Minimum="0" Maximum="100" Value="0"/>
+                <ProgressBar Name="OperationProgressBar" Height="10" Minimum="0" Maximum="100" Value="0"/>
             </StackPanel>
         </Border>
 
@@ -403,17 +383,16 @@ $seedDataCount = $window.FindName("SeedDataCount")
 $errorBorder = $window.FindName("ErrorBorder")
 $errorText = $window.FindName("ErrorText")
 $summaryBorder = $window.FindName("SummaryBorder")
+$summaryTitleText = $window.FindName("SummaryTitleText")
 $summarySchemas = $window.FindName("SummarySchemas")
 $summaryMigrations = $window.FindName("SummaryMigrations")
 $summaryViews = $window.FindName("SummaryViews")
 $summaryStoredProcs = $window.FindName("SummaryStoredProcs")
 $summaryTriggers = $window.FindName("SummaryTriggers")
 $summarySeedData = $window.FindName("SummarySeedData")
-$providerSwitchBorder = $window.FindName("ProviderSwitchBorder")
-$providerSwitchStatusText = $window.FindName("ProviderSwitchStatusText")
-$providerSwitchProgress = $window.FindName("ProviderSwitchProgress")
-$providerValueText = $window.FindName("ProviderValueText")
-$providerToggleButton = $window.FindName("ProviderToggleButton")
+$operationProgressBorder = $window.FindName("OperationProgressBorder")
+$operationProgressStatusText = $window.FindName("OperationProgressStatusText")
+$operationProgressBar = $window.FindName("OperationProgressBar")
 $deploymentPanel = $window.FindName("DeploymentPanel")
 $catalogPanel = $window.FindName("CatalogPanel")
 $catalogStatusText = $window.FindName("CatalogStatusText")
@@ -439,48 +418,8 @@ $script:WorkbenchProfile = [ordered]@{
     Password = $Password
 }
 
-$script:MampConfigPath = $script:Config.Paths.MampConfigPath
-$script:MampProfile = [ordered]@{
-    Server   = $script:Config.Providers.Mamp.Server
-    Port     = $script:Config.Providers.Mamp.Port
-    User     = $script:Config.Providers.Mamp.User
-    Password = $script:Config.Providers.Mamp.Password
-}
-
-if (Test-Path $script:MampConfigPath) {
-    $mampConfigLines = Get-Content -Path $script:MampConfigPath -ErrorAction SilentlyContinue
-    $currentSection = ''
-
-    foreach ($line in $mampConfigLines) {
-        $trimmedLine = $line.Trim()
-        if ([string]::IsNullOrWhiteSpace($trimmedLine) -or $trimmedLine.StartsWith('#') -or $trimmedLine.StartsWith(';')) {
-            continue
-        }
-
-        if ($trimmedLine -match '^\[(.+)\]$') {
-            $currentSection = $matches[1].ToLowerInvariant()
-            continue
-        }
-
-        if ($currentSection -eq 'client' -and $trimmedLine -match '^password\s*=\s*(.+)$') {
-            $script:MampProfile.Password = $matches[1].Trim().Trim('"')
-            continue
-        }
-
-        if ($currentSection -eq 'client' -and $trimmedLine -match '^port\s*=\s*(\d+)$') {
-            $script:MampProfile.Port = $matches[1]
-            continue
-        }
-
-        if ($currentSection -eq 'mysqld' -and $trimmedLine -match '^port\s*=\s*(\d+)$') {
-            $script:MampProfile.Port = $matches[1]
-            continue
-        }
-    }
-}
-
 $script:CurrentMode = 'deployment'
-$script:CurrentProvider = 'workbench'
+$script:PreferredServer = $script:WorkbenchProfile.Server
 $script:CurrentServer = $script:WorkbenchProfile.Server
 $script:CurrentPort = $script:WorkbenchProfile.Port
 $script:CurrentUser = $script:WorkbenchProfile.User
@@ -490,7 +429,7 @@ $script:CatalogPath = Join-Path $PSScriptRoot $script:Config.Paths.CatalogFileNa
 $script:ValidationOutputsPath = Join-Path $PSScriptRoot $script:Config.Paths.OutputsFolder
 $script:ExcludePatterns = $script:Config.Sql.ExcludePatterns
 $script:MySqlClientInfoCache = @{}
-$script:MySqlExeCache = @{}
+$script:MySqlExePath = $null
 $script:SharedMySqlDefaultsFile = $null
 $script:SharedMySqlDefaultsFileKey = $null
 
@@ -498,22 +437,22 @@ function Sync-UiRender {
     $window.Dispatcher.Invoke([System.Action] {}, [System.Windows.Threading.DispatcherPriority]::Render)
 }
 
-function Show-ProviderSwitchProgress {
+function Show-OperationProgress {
     param(
         [string]$StatusText,
         [double]$ProgressValue
     )
 
-    $providerSwitchBorder.Visibility = 'Visible'
-    $providerSwitchStatusText.Text = $StatusText
-    $providerSwitchProgress.Value = [Math]::Max(0, [Math]::Min(100, $ProgressValue))
+    $operationProgressBorder.Visibility = 'Visible'
+    $operationProgressStatusText.Text = $StatusText
+    $operationProgressBar.Value = [Math]::Max(0, [Math]::Min(100, $ProgressValue))
     Sync-UiRender
 }
 
-function Hide-ProviderSwitchProgress {
-    $providerSwitchProgress.Value = 0
-    $providerSwitchStatusText.Text = 'Switching database provider...'
-    $providerSwitchBorder.Visibility = 'Collapsed'
+function Hide-OperationProgress {
+    $operationProgressBar.Value = 0
+    $operationProgressStatusText.Text = 'Working...'
+    $operationProgressBorder.Visibility = 'Collapsed'
     Sync-UiRender
 }
 
@@ -532,7 +471,7 @@ function Show-HostSwapProgress {
         [Math]::Round(($CurrentFileIndex / $safeTotalFileCount) * 100, 2)
     }
 
-    Show-ProviderSwitchProgress -StatusText "Swapping host references ($CurrentFileIndex/$TotalFileCount)..." -ProgressValue $currentProgress
+    Show-OperationProgress -StatusText "Swapping host references ($CurrentFileIndex/$TotalFileCount)..." -ProgressValue $currentProgress
     $currentFileText.Text = "Scanning file $CurrentFileIndex of ${TotalFileCount}: $CurrentFilePath"
     Sync-UiRender
 }
@@ -555,7 +494,7 @@ function Update-ConnectionDisplay {
 }
 
 function Get-MySqlExecutionCacheKey {
-    return "$($script:CurrentProvider)|$($script:CurrentServer)|$($script:CurrentPort)|$($script:CurrentUser)|$Database"
+    return "$($script:CurrentServer)|$($script:CurrentPort)|$($script:CurrentUser)|$Database"
 }
 
 function Clear-SharedMySqlDefaultsFile {
@@ -582,7 +521,15 @@ function Test-IslocalValue {
 
 function New-AuthSecretValue {
     $bytes = New-Object byte[] 32
-    [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+    $randomNumberGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+
+    try {
+        $randomNumberGenerator.GetBytes($bytes)
+    }
+    finally {
+        $randomNumberGenerator.Dispose()
+    }
+
     return [Convert]::ToBase64String($bytes)
 }
 
@@ -775,13 +722,12 @@ function Update-HostProfilesAfterSwap {
         [string]$ToHost
     )
 
-    foreach ($profile in @($script:WorkbenchProfile, $script:MampProfile)) {
-        if ($profile['Server'] -eq $FromHost) {
-            $profile['Server'] = $ToHost
-        }
-        elseif ($profile['Server'] -eq $ToHost) {
-            $profile['Server'] = $FromHost
-        }
+    $profile = $script:WorkbenchProfile
+    if ($profile['Server'] -eq $FromHost) {
+        $profile['Server'] = $ToHost
+    }
+    elseif ($profile['Server'] -eq $ToHost) {
+        $profile['Server'] = $FromHost
     }
 
     if ($script:CurrentServer -eq $FromHost) {
@@ -789,6 +735,13 @@ function Update-HostProfilesAfterSwap {
     }
     elseif ($script:CurrentServer -eq $ToHost) {
         $script:CurrentServer = $FromHost
+    }
+
+    if ($script:PreferredServer -eq $FromHost) {
+        $script:PreferredServer = $ToHost
+    }
+    elseif ($script:PreferredServer -eq $ToHost) {
+        $script:PreferredServer = $FromHost
     }
 
     Update-ConnectionDisplay
@@ -805,7 +758,7 @@ function Invoke-RepoHostReferenceSwap {
     $totalFiles = $repoFiles.Count
 
     if ($totalFiles -eq 0) {
-        Show-ProviderSwitchProgress -StatusText 'No eligible repository files found for host swap.' -ProgressValue 100
+        Show-OperationProgress -StatusText 'No eligible repository files found for host swap.' -ProgressValue 100
     }
 
     for ($fileIndex = 0; $fileIndex -lt $totalFiles; $fileIndex++) {
@@ -826,7 +779,7 @@ function Invoke-RepoHostReferenceSwap {
 
     Update-HostProfilesAfterSwap -FromHost $fromHost -ToHost $toHost
 
-    Show-ProviderSwitchProgress -StatusText "Host reference swap complete ($totalFiles/$totalFiles)." -ProgressValue 100
+    Show-OperationProgress -StatusText "Host reference swap complete ($totalFiles/$totalFiles)." -ProgressValue 100
 
     return [PSCustomObject]@{
         FromHost     = $fromHost
@@ -835,70 +788,6 @@ function Invoke-RepoHostReferenceSwap {
         FilesScanned = $totalFiles
         RepoRoot     = $repoRoot
     }
-}
-
-function Test-IsMampListener {
-    $mampPort = [int]$script:MampProfile.Port
-    $listener = Get-ListeningProcessInfo -HostName $script:MampProfile.Server -Port $mampPort
-
-    if ($null -eq $listener) {
-        return $false
-    }
-
-    if ([string]::IsNullOrWhiteSpace($listener.Path)) {
-        return $false
-    }
-
-    return $listener.Path.StartsWith($script:Config.Paths.MampRoot, [System.StringComparison]::OrdinalIgnoreCase)
-}
-
-function Get-InitialProvider {
-    if (Test-IsMampListener) {
-        return 'mamp'
-    }
-
-    $mampProcess = Get-Process -Name 'MAMP', 'LauncherMAMP' -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($null -ne $mampProcess) {
-        return 'mamp'
-    }
-
-    return 'workbench'
-}
-
-function Set-ProviderState {
-    param(
-        [ValidateSet('workbench', 'mamp')]
-        [string]$Provider
-    )
-
-    Clear-SharedMySqlDefaultsFile
-
-    $script:CurrentProvider = $Provider
-
-    if ($Provider -eq 'mamp') {
-        $script:CurrentServer = $script:MampProfile.Server
-        $script:CurrentPort = $script:MampProfile.Port
-        $script:CurrentUser = $script:MampProfile.User
-        $script:CurrentPassword = $script:MampProfile.Password
-        $providerValueText.Text = 'MAMP'
-        $providerValueText.Foreground = '#E65100'
-        $providerToggleButton.Content = 'Switch to Workbench'
-        $providerToggleButton.Background = '#FB8C00'
-        $providerToggleButton.IsChecked = $true
-    }
-    else {
-        $script:CurrentServer = $script:WorkbenchProfile.Server
-        $script:CurrentPort = $script:WorkbenchProfile.Port
-        $script:CurrentUser = $script:WorkbenchProfile.User
-        $script:CurrentPassword = $script:WorkbenchProfile.Password
-        $providerValueText.Text = 'MySQL Workbench'
-        $providerValueText.Foreground = '#1565C0'
-        $providerToggleButton.Content = 'Switch to MAMP'
-        $providerToggleButton.Background = '#1976D2'
-        $providerToggleButton.IsChecked = $false
-    }
-
-    Update-ConnectionDisplay
 }
 
 function Test-TcpPortOpen {
@@ -945,12 +834,12 @@ function Wait-ForTcpPortState {
             $elapsedSeconds = ((Get-Date) - $startTime).TotalSeconds
             $ratio = [Math]::Min(1, $elapsedSeconds / [Math]::Max($TimeoutSeconds, 1))
             $currentProgress = $ProgressStart + (($ProgressEnd - $ProgressStart) * $ratio)
-            Show-ProviderSwitchProgress -StatusText $ProgressStatusText -ProgressValue $currentProgress
+            Show-OperationProgress -StatusText $ProgressStatusText -ProgressValue $currentProgress
         }
 
         if ((Test-TcpPortOpen -HostName $HostName -Port $Port) -eq $ExpectedOpen) {
             if (-not [string]::IsNullOrWhiteSpace($ProgressStatusText)) {
-                Show-ProviderSwitchProgress -StatusText $ProgressStatusText -ProgressValue $ProgressEnd
+                Show-OperationProgress -StatusText $ProgressStatusText -ProgressValue $ProgressEnd
             }
             return $true
         }
@@ -1008,7 +897,7 @@ function Invoke-WorkbenchServiceAction {
         "Stop-Service -Name '$ServiceName' -Force -ErrorAction Stop"
     }
 
-    Show-ProviderSwitchProgress -StatusText "Waiting for Windows elevation to $($Action.ToLowerInvariant()) Workbench MySQL service..." -ProgressValue 58
+    Show-OperationProgress -StatusText "Waiting for Windows elevation to $($Action.ToLowerInvariant()) Workbench MySQL service..." -ProgressValue 58
 
     $elevatedProcess = Start-Process -FilePath 'powershell.exe' `
         -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', $serviceCommand) `
@@ -1177,7 +1066,7 @@ function Start-WorkbenchStandaloneServer {
     $configInfo = Get-WorkbenchConfigInfo
     $workbenchPort = [int]$script:WorkbenchProfile.Port
     $currentFileText.Text = 'Starting Workbench standalone MySQL server...'
-    Show-ProviderSwitchProgress -StatusText 'Starting Workbench standalone MySQL server...' -ProgressValue 60
+    Show-OperationProgress -StatusText 'Starting Workbench standalone MySQL server...' -ProgressValue 60
 
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName = $mysqldExe
@@ -1218,90 +1107,6 @@ function Start-WorkbenchStandaloneServer {
     }
 }
 
-function Get-MampExePath {
-    $candidates = $script:Config.Paths.MampExecutablePaths
-
-    foreach ($candidate in $candidates) {
-        if (Test-Path $candidate) {
-            return $candidate
-        }
-    }
-
-    throw "Unable to locate MAMP.exe under $($script:Config.Paths.MampRoot)."
-}
-
-function Get-MampMysqlAdminExePath {
-    $candidates = $script:Config.Paths.MampMysqlAdminPaths
-
-    foreach ($candidate in $candidates) {
-        if (Test-Path $candidate) {
-            return $candidate
-        }
-    }
-
-    $dynamicCandidate = Get-Item (Join-Path $script:Config.Paths.MampRoot 'bin\mysql*\bin\mysqladmin.exe') -ErrorAction SilentlyContinue |
-    Sort-Object FullName -Descending |
-    Select-Object -First 1
-
-    if ($dynamicCandidate) {
-        return $dynamicCandidate.FullName
-    }
-
-    throw "Unable to locate mysqladmin.exe under $($script:Config.Paths.MampRoot)."
-}
-
-function Get-MampManagedProcesses {
-    $mampRootNormalized = $script:Config.Paths.MampRoot.TrimEnd('\').ToLowerInvariant() + '\'
-    $managedExecutableNames = @('MAMP.exe', 'LauncherMAMP.exe', 'httpd.exe', 'mysqld.exe', 'ApacheMonitor.exe')
-
-    return @(
-        Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
-        Where-Object {
-            if ($_.Name -notin $managedExecutableNames) {
-                return $false
-            }
-
-            $executablePath = $_.ExecutablePath
-            if ([string]::IsNullOrWhiteSpace($executablePath)) {
-                return $false
-            }
-
-            return $executablePath.ToLowerInvariant().StartsWith($mampRootNormalized)
-        } |
-        ForEach-Object {
-            [PSCustomObject]@{
-                Id          = $_.ProcessId
-                ProcessName = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
-                Path        = $_.ExecutablePath
-            }
-        }
-    )
-}
-
-function Stop-MampProcessesByName {
-    param(
-        [string[]]$ProcessNames,
-        [string]$StatusText,
-        [int]$ProgressValue
-    )
-
-    $matchingProcesses = @(Get-MampManagedProcesses | Where-Object { $_.ProcessName -in $ProcessNames })
-    if ($matchingProcesses.Count -eq 0) {
-        return
-    }
-
-    Show-ProviderSwitchProgress -StatusText $StatusText -ProgressValue $ProgressValue
-    foreach ($process in $matchingProcesses) {
-        try {
-            Stop-Process -Id $process.Id -Force -ErrorAction Stop
-        }
-        catch {
-        }
-    }
-
-    Start-Sleep -Milliseconds 500
-}
-
 function Ensure-WorkbenchServerRunning {
     $service = Get-WorkbenchService
     $workbenchPort = [int]$script:WorkbenchProfile.Port
@@ -1317,7 +1122,7 @@ function Ensure-WorkbenchServerRunning {
 
     if ($service.Status -ne 'Running') {
         $currentFileText.Text = "Starting Workbench server service: $($service.Name)"
-        Show-ProviderSwitchProgress -StatusText 'Starting Workbench MySQL service...' -ProgressValue 60
+        Show-OperationProgress -StatusText 'Starting Workbench MySQL service...' -ProgressValue 60
         Invoke-WorkbenchServiceAction -Action 'Start' -ServiceName $service.Name
     }
 
@@ -1346,7 +1151,7 @@ function Stop-WorkbenchServer {
 
     if ($service.Status -eq 'Running') {
         $currentFileText.Text = "Stopping Workbench server service: $($service.Name)"
-        Show-ProviderSwitchProgress -StatusText 'Stopping Workbench MySQL service...' -ProgressValue 18
+        Show-OperationProgress -StatusText 'Stopping Workbench MySQL service...' -ProgressValue 18
         Invoke-WorkbenchServiceAction -Action 'Stop' -ServiceName $service.Name
     }
 
@@ -1355,141 +1160,69 @@ function Stop-WorkbenchServer {
     }
 }
 
-function Ensure-MampApplicationOpen {
-    $mampProcess = Get-Process -Name 'MAMP', 'LauncherMAMP' -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($mampProcess) {
-        return
-    }
-
-    $mampExe = Get-MampExePath
-    $currentFileText.Text = "Opening MAMP application..."
-    Show-ProviderSwitchProgress -StatusText 'Opening MAMP application...' -ProgressValue 48
-    Start-Process -FilePath $mampExe | Out-Null
-    Start-Sleep -Seconds 2
-    Show-ProviderSwitchProgress -StatusText 'MAMP application opened. Waiting for MySQL...' -ProgressValue 54
-}
-
-function Restart-MampApplication {
-    Close-MampApplication -ProgressValue 70
-    Ensure-MampApplicationOpen
-}
-
-function Close-MampApplication {
+# Picks the server to run against: the configured server when it answers,
+# otherwise the local MySQL instance, so a missing VPN/remote server does not
+# stall every script in the deployment.
+function Resolve-MySqlServer {
     param(
-        [int]$ProgressValue = 82
+        [int]$TimeoutMilliseconds = $script:Config.Connection.ProbeTimeoutMilliseconds
     )
 
-    $mampProcesses = @(Get-MampManagedProcesses | Where-Object { $_.ProcessName -in @('MAMP', 'LauncherMAMP') })
-    if ($mampProcesses.Count -eq 0) {
-        return
-    }
+    $port = [int]$script:CurrentPort
+    $preferredServer = $script:PreferredServer
+    $fallbackServer = $script:Config.Connection.FallbackServer
 
-    $currentFileText.Text = 'Closing MAMP application...'
-    Show-ProviderSwitchProgress -StatusText 'Closing MAMP application...' -ProgressValue $ProgressValue
-
-    foreach ($mampProcess in $mampProcesses) {
-        try {
-            $process = Get-Process -Id $mampProcess.Id -ErrorAction Stop
-            if ($process.MainWindowHandle -ne 0) {
-                [void]$process.CloseMainWindow()
-            }
+    if (Test-TcpPortOpen -HostName $preferredServer -Port $port -TimeoutMilliseconds $TimeoutMilliseconds) {
+        if ($script:CurrentServer -ne $preferredServer) {
+            $script:WorkbenchProfile['Server'] = $preferredServer
+            $script:CurrentServer = $preferredServer
+            Clear-SharedMySqlDefaultsFile
+            Update-ConnectionDisplay
         }
-        catch {
-        }
-    }
 
-    Start-Sleep -Seconds 2
-
-    $remainingProcesses = @(Get-MampManagedProcesses | Where-Object { $_.ProcessName -in @('MAMP', 'LauncherMAMP') })
-    if ($remainingProcesses.Count -gt 0) {
-        Stop-MampProcessesByName -ProcessNames @('MAMP', 'LauncherMAMP') -StatusText 'Forcing MAMP application shutdown...' -ProgressValue $ProgressValue
-    }
-}
-
-function Ensure-MampServerRunning {
-    $mampPort = [int]$script:MampProfile.Port
-
-    if (Test-TcpPortOpen -HostName $script:MampProfile.Server -Port $mampPort) {
-        return
-    }
-
-    Ensure-MampApplicationOpen
-
-    if (-not (Wait-ForTcpPortState -HostName $script:MampProfile.Server -Port $mampPort -ExpectedOpen $true -TimeoutSeconds 30 -ProgressStatusText 'Waiting for MAMP MySQL to start...' -ProgressStart 56 -ProgressEnd 88)) {
-        Restart-MampApplication
-
-        if (-not (Wait-ForTcpPortState -HostName $script:MampProfile.Server -Port $mampPort -ExpectedOpen $true -TimeoutSeconds 30 -ProgressStatusText 'Waiting for MAMP MySQL to start after restart...' -ProgressStart 72 -ProgressEnd 88)) {
-            throw "MAMP did not start MySQL on port $mampPort after reopening the application. Verify MAMP is configured to start MySQL automatically."
+        return [pscustomobject]@{
+            Server          = $preferredServer
+            UsedFallback    = $false
+            StatusMessage   = "MySQL server $preferredServer`:$port is available."
         }
     }
-}
 
-function Stop-MampServer {
-    $mampPort = [int]$script:MampProfile.Port
-
-    Close-MampApplication -ProgressValue 18
-
-    if (-not (Wait-ForTcpPortState -HostName $script:MampProfile.Server -Port $mampPort -ExpectedOpen $false -TimeoutSeconds 30 -ProgressStatusText 'Waiting for MAMP to stop MySQL...' -ProgressStart 22 -ProgressEnd 74)) {
-        throw "MAMP MySQL server did not stop listening on port $mampPort after closing the MAMP application. Verify the MAMP setting to stop servers when the app closes is enabled."
-    }
-}
-
-function Switch-ProviderEnvironment {
-    param(
-        [ValidateSet('workbench', 'mamp')]
-        [string]$TargetProvider
-    )
-
-    if ($TargetProvider -eq $script:CurrentProvider) {
-        return
+    if ($preferredServer -eq $fallbackServer) {
+        throw "MySQL server $preferredServer`:$port is not reachable. Start MySQL Server (or connect to the network) and retry."
     }
 
-    if ($TargetProvider -eq 'mamp') {
-        Show-ProviderSwitchProgress -StatusText 'Switching provider to MAMP...' -ProgressValue 8
-        $overallStatusText.Text = 'Switching provider to MAMP...'
-        Stop-WorkbenchServer
-        Ensure-MampServerRunning
-        Show-ProviderSwitchProgress -StatusText 'Finalizing MAMP provider...' -ProgressValue 94
-        Set-ProviderState -Provider 'mamp'
-        $overallStatusText.Text = 'MAMP provider is ready.'
-        $currentFileText.Text = 'Switched provider to MAMP and started its MySQL server.'
-        return
+    if (-not (Test-TcpPortOpen -HostName $fallbackServer -Port $port -TimeoutMilliseconds $TimeoutMilliseconds)) {
+        throw "Neither $preferredServer`:$port nor the local fallback $fallbackServer`:$port is reachable. Start MySQL Server and retry."
     }
 
-    Show-ProviderSwitchProgress -StatusText 'Switching provider to Workbench...' -ProgressValue 8
-    $overallStatusText.Text = 'Switching provider to Workbench...'
-    Stop-MampServer
-    Ensure-WorkbenchServerRunning
-    Show-ProviderSwitchProgress -StatusText 'Finalizing Workbench provider...' -ProgressValue 94
-    Set-ProviderState -Provider 'workbench'
-    $overallStatusText.Text = 'Workbench provider is ready.'
-    $currentFileText.Text = 'Switched provider to Workbench and started its MySQL service.'
+    $script:WorkbenchProfile['Server'] = $fallbackServer
+    $script:CurrentServer = $fallbackServer
+    Clear-SharedMySqlDefaultsFile
+    Update-ConnectionDisplay
+
+    return [pscustomobject]@{
+        Server        = $fallbackServer
+        UsedFallback  = $true
+        StatusMessage = "$preferredServer`:$port is unavailable. Using local MySQL server $fallbackServer`:$port."
+    }
 }
 
 Update-ConnectionDisplay
 
+try {
+    $script:StartupServerStatus = (Resolve-MySqlServer).StatusMessage
+    $currentFileText.Text = $script:StartupServerStatus
+}
+catch {
+    $script:StartupServerStatus = $_.Exception.Message
+    $currentFileText.Text = $script:StartupServerStatus
+}
+
 # Locate mysql.exe under the default MySQL Server install directory.
 # Falls back to whatever is on the system PATH.
 function Find-MySqlExe {
-    if ($script:MySqlExeCache.ContainsKey($script:CurrentProvider)) {
-        return $script:MySqlExeCache[$script:CurrentProvider]
-    }
-
-    if ($script:CurrentProvider -eq 'mamp') {
-        $mampRoot = $script:Config.Paths.MampRoot
-        if (Test-Path $mampRoot) {
-            $mampHit = Get-ChildItem $mampRoot -Recurse -Filter 'mysql.exe' -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -match '\\mysql\\bin\\mysql\.exe$' } |
-            Sort-Object FullName -Descending |
-            Select-Object -First 1
-
-            if ($mampHit) {
-                $script:MySqlExeCache[$script:CurrentProvider] = $mampHit.FullName
-                return $mampHit.FullName
-            }
-        }
-
-        throw "mysql.exe not found under '$mampRoot' for MAMP mode."
+    if (-not [string]::IsNullOrWhiteSpace($script:MySqlExePath)) {
+        return $script:MySqlExePath
     }
 
     $installRoot = $script:Config.Paths.WorkbenchInstallRoot
@@ -1499,13 +1232,13 @@ function Find-MySqlExe {
         Sort-Object FullName -Descending |
         Select-Object -First 1
         if ($hit) {
-            $script:MySqlExeCache[$script:CurrentProvider] = $hit.FullName
+            $script:MySqlExePath = $hit.FullName
             return $hit.FullName
         }
     }
     try {
         $null = Get-Command mysql -ErrorAction Stop
-        $script:MySqlExeCache[$script:CurrentProvider] = 'mysql'
+        $script:MySqlExePath = 'mysql'
         return "mysql"
     }
     catch { }
@@ -1619,7 +1352,7 @@ function Test-RequiresLegacyBatchCompatibility {
         [hashtable]$ClientInfo
     )
 
-    return $script:CurrentProvider -eq 'mamp' -and $ClientInfo.majorVersion -gt 0 -and $ClientInfo.majorVersion -lt 8
+    return $ClientInfo.majorVersion -gt 0 -and $ClientInfo.majorVersion -lt 8
 }
 
 function Invoke-MySqlBatchFile {
@@ -1629,16 +1362,19 @@ function Invoke-MySqlBatchFile {
         [string]$TargetFile,
         [string]$StdoutFile,
         [string]$StderrFile,
-        [string]$Delimiter = ';'
+        [string]$Delimiter = ';',
+        [string]$DatabaseName
     )
 
+    $targetDatabase = if (-not [string]::IsNullOrWhiteSpace($DatabaseName)) { $DatabaseName } else { $Database }
     $mysqlArgs = @(
         "--defaults-extra-file=$DefaultsFile",
         "-h$($script:CurrentServer)",
         "-P$($script:CurrentPort)",
+        "--connect-timeout=$($script:Config.Connection.ClientConnectTimeoutSeconds)",
         '--default-character-set=utf8mb4',
         "--delimiter=$Delimiter",
-        $Database
+        $targetDatabase
     )
 
     $quotedMysqlExe = '"' + $Exe.Replace('"', '""') + '"'
@@ -1697,6 +1433,45 @@ function Expand-MySqlSourceReferences {
     }
 
     return ($outputLines -join "`r`n")
+}
+
+# Rewrites a script so it can run against a database that already holds live data:
+# destructive DDL is removed and object creation becomes repeatable.
+function ConvertTo-MigrationSafeSqlText {
+    param(
+        [string]$SqlText
+    )
+
+    if ([string]::IsNullOrWhiteSpace($SqlText)) {
+        return $SqlText
+    }
+
+    $migrationSafeText = $SqlText
+
+    $destructivePatterns = @(
+        '(?im)^[ \t]*DROP[ \t]+(?:TEMPORARY[ \t]+)?TABLE[ \t]+(?:IF[ \t]+EXISTS[ \t]+)?[^;]*;[ \t]*\r?\n?',
+        '(?im)^[ \t]*DROP[ \t]+(?:DATABASE|SCHEMA)[ \t]+(?:IF[ \t]+EXISTS[ \t]+)?[^;]*;[ \t]*\r?\n?',
+        '(?im)^[ \t]*TRUNCATE[ \t]+(?:TABLE[ \t]+)?[^;]*;[ \t]*\r?\n?',
+        '(?im)^[ \t]*DELETE[ \t]+FROM[ \t]+[^;]*;[ \t]*\r?\n?'
+    )
+
+    foreach ($pattern in $destructivePatterns) {
+        $migrationSafeText = [regex]::Replace($migrationSafeText, $pattern, [string]::Empty)
+    }
+
+    $migrationSafeText = [regex]::Replace(
+        $migrationSafeText,
+        '(?im)^(?<indent>[ \t]*)CREATE[ \t]+TABLE[ \t]+(?!IF[ \t]+NOT[ \t]+EXISTS)',
+        '${indent}CREATE TABLE IF NOT EXISTS '
+    )
+
+    $migrationSafeText = [regex]::Replace(
+        $migrationSafeText,
+        '(?im)^(?<indent>[ \t]*)CREATE[ \t]+VIEW[ \t]+',
+        '${indent}CREATE OR REPLACE VIEW '
+    )
+
+    return $migrationSafeText
 }
 
 # Returns an ordered list of *.sql FileInfo objects for $BasePath.
@@ -1771,12 +1546,14 @@ function Get-SharedMySqlDefaultsFile {
 function Execute-SqlCommand {
     param(
         [string]$SqlCommand,
-        [switch]$NoDatabase
+        [switch]$NoDatabase,
+        [string]$DatabaseName
     )
     $exe = Find-MySqlExe
     $defaultsFile = Get-SharedMySqlDefaultsFile
-    $dbPart = if ($NoDatabase) { "" } else { $Database }
-    $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$($script:CurrentServer) -P$($script:CurrentPort) --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
+    $targetDatabase = if (-not [string]::IsNullOrWhiteSpace($DatabaseName)) { $DatabaseName } else { $Database }
+    $dbPart = if ($NoDatabase) { "" } else { $targetDatabase }
+    $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$($script:CurrentServer) -P$($script:CurrentPort) --connect-timeout=$($script:Config.Connection.ClientConnectTimeoutSeconds) --default-character-set=utf8mb4 $dbPart -e `"$SqlCommand`""
 
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName = $exe
@@ -1797,6 +1574,41 @@ function Execute-SqlCommand {
     return $true
 }
 
+# Runs a query and returns the raw batch output so callers can parse metadata.
+function Invoke-MySqlQuery {
+    param(
+        [string]$SqlCommand,
+        [string]$DatabaseName,
+        [switch]$NoDatabase
+    )
+
+    $exe = Find-MySqlExe
+    $defaultsFile = Get-SharedMySqlDefaultsFile
+    $targetDatabase = if (-not [string]::IsNullOrWhiteSpace($DatabaseName)) { $DatabaseName } else { $Database }
+    $dbPart = if ($NoDatabase) { "" } else { $targetDatabase }
+    $singleLineCommand = ($SqlCommand -split "\r?\n" | ForEach-Object { $_.Trim() } | Where-Object { $_ }) -join ' '
+    $argStr = "--defaults-extra-file=`"$defaultsFile`" -h$($script:CurrentServer) -P$($script:CurrentPort) --connect-timeout=$($script:Config.Connection.ClientConnectTimeoutSeconds) --default-character-set=utf8mb4 --batch --raw $dbPart -e `"$singleLineCommand`""
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $exe
+    $psi.Arguments = $argStr
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo = $psi
+    $proc.Start() | Out-Null
+    $stdout = $proc.StandardOutput.ReadToEnd()
+    $stderr = $proc.StandardError.ReadToEnd()
+    $proc.WaitForExit()
+
+    if ($proc.ExitCode -ne 0) { throw "MySQL error: $stderr" }
+
+    return @($stdout -split "`r?`n")
+}
+
 # Execute a .sql file by redirecting a real file handle into mysql.exe.
 # This is required for client-side DELIMITER handling to behave consistently on
 # Windows across both MySQL 5.7 and 8.0. Pipe-based stdin is not reliable here
@@ -1804,10 +1616,15 @@ function Execute-SqlCommand {
 #
 # When FK checks must be disabled the file content is wrapped with the toggle
 # statements so they run in the same mysql session.
+#
+# MigrationSafe keeps an existing database intact: destructive DDL is stripped
+# out and object creation is made repeatable before the script is executed.
 function Execute-SqlFile {
     param(
         [string]$FilePath,
-        [switch]$DisableForeignKeyChecks
+        [switch]$DisableForeignKeyChecks,
+        [switch]$MigrationSafe,
+        [string]$DatabaseName
     )
     if (-not (Test-Path $FilePath)) { throw "File not found: $FilePath" }
 
@@ -1825,12 +1642,19 @@ function Execute-SqlFile {
         $body = [System.IO.File]::ReadAllText($FilePath)
         $body = Expand-MySqlSourceReferences -SqlText $body -BaseDirectory $repoRoot
 
-        if ($DisableForeignKeyChecks) {
+        if ($MigrationSafe) {
+            $body = ConvertTo-MigrationSafeSqlText -SqlText $body
+        }
+
+        if ($DisableForeignKeyChecks -or $MigrationSafe) {
             $tempSql = [System.IO.Path]::ChangeExtension([System.IO.Path]::GetTempFileName(), '.sql')
+            $prefix = if ($DisableForeignKeyChecks) { "SET FOREIGN_KEY_CHECKS = 0;`r`n" } else { [string]::Empty }
+            $suffix = if ($DisableForeignKeyChecks) { "`r`nSET FOREIGN_KEY_CHECKS = 1;" } else { [string]::Empty }
+
             # UTF-8 without BOM — a BOM at byte 0 corrupts mysql's client-side parser.
             [System.IO.File]::WriteAllText(
                 $tempSql,
-                "SET FOREIGN_KEY_CHECKS = 0;`r`n" + $body + "`r`nSET FOREIGN_KEY_CHECKS = 1;",
+                $prefix + $body + $suffix,
                 [System.Text.UTF8Encoding]::new($false)
             )
             $targetFile = $tempSql
@@ -1851,7 +1675,7 @@ function Execute-SqlFile {
 
                 $stdoutFile = [System.IO.Path]::GetTempFileName()
                 $stderrFile = [System.IO.Path]::GetTempFileName()
-                $exitCode = Invoke-MySqlBatchFile -Exe $exe -DefaultsFile $defaultsFile -TargetFile $segmentFile -StdoutFile $stdoutFile -StderrFile $stderrFile -Delimiter $segment.delimiter
+                $exitCode = Invoke-MySqlBatchFile -Exe $exe -DefaultsFile $defaultsFile -TargetFile $segmentFile -StdoutFile $stdoutFile -StderrFile $stderrFile -Delimiter $segment.delimiter -DatabaseName $DatabaseName
 
                 $stdout = if (Test-Path $stdoutFile) { [System.IO.File]::ReadAllText($stdoutFile) } else { [string]::Empty }
                 $stderr = if (Test-Path $stderrFile) { [System.IO.File]::ReadAllText($stderrFile) } else { [string]::Empty }
@@ -1878,7 +1702,7 @@ function Execute-SqlFile {
 
         $stdoutFile = [System.IO.Path]::GetTempFileName()
         $stderrFile = [System.IO.Path]::GetTempFileName()
-        $exitCode = Invoke-MySqlBatchFile -Exe $exe -DefaultsFile $defaultsFile -TargetFile $targetFile -StdoutFile $stdoutFile -StderrFile $stderrFile
+        $exitCode = Invoke-MySqlBatchFile -Exe $exe -DefaultsFile $defaultsFile -TargetFile $targetFile -StdoutFile $stdoutFile -StderrFile $stderrFile -DatabaseName $DatabaseName
 
         $stdout = if (Test-Path $stdoutFile) {
             [System.IO.File]::ReadAllText($stdoutFile)
@@ -1922,6 +1746,119 @@ function Execute-SqlFile {
         if ($null -ne $stderrFile -and (Test-Path $stderrFile -ErrorAction SilentlyContinue)) {
             Remove-Item $stderrFile -ErrorAction SilentlyContinue
         }
+    }
+}
+
+# Reads the column definitions that exist in the schema files but not yet in the
+# live database, so new columns can be added without touching existing rows.
+function Get-MissingSchemaColumnDefinition {
+    param(
+        [string]$SourceDatabase,
+        [string]$TargetDatabase
+    )
+
+    $missingColumnQuery = "SELECT e.TABLE_NAME, e.COLUMN_NAME FROM information_schema.COLUMNS e WHERE e.TABLE_SCHEMA = '$SourceDatabase' AND EXISTS (SELECT 1 FROM information_schema.TABLES t WHERE t.TABLE_SCHEMA = '$TargetDatabase' AND t.TABLE_NAME = e.TABLE_NAME AND t.TABLE_TYPE = 'BASE TABLE') AND e.COLUMN_NAME NOT IN (SELECT l.COLUMN_NAME FROM information_schema.COLUMNS l WHERE l.TABLE_SCHEMA = '$TargetDatabase' AND l.TABLE_NAME = e.TABLE_NAME) ORDER BY e.TABLE_NAME, e.ORDINAL_POSITION"
+
+    $rows = @(Invoke-MySqlQuery -SqlCommand $missingColumnQuery -NoDatabase)
+    $missingByTable = [ordered]@{}
+
+    for ($index = 1; $index -lt $rows.Count; $index++) {
+        $row = [string]$rows[$index]
+        if ([string]::IsNullOrWhiteSpace($row)) { continue }
+
+        $fields = $row -split "`t"
+        if ($fields.Count -lt 2) { continue }
+
+        $tableName = $fields[0].Trim()
+        $columnName = $fields[1].Trim()
+        if (-not $missingByTable.Contains($tableName)) {
+            $missingByTable[$tableName] = New-Object System.Collections.Generic.List[string]
+        }
+
+        $missingByTable[$tableName].Add($columnName)
+    }
+
+    $definitions = New-Object System.Collections.Generic.List[object]
+
+    foreach ($tableName in @($missingByTable.Keys)) {
+        $createRows = @(Invoke-MySqlQuery -SqlCommand "SHOW CREATE TABLE ``$SourceDatabase``.``$tableName``" -NoDatabase)
+        if ($createRows.Count -le 1) { continue }
+
+        $definitionText = ($createRows[1..($createRows.Count - 1)] -join "`n")
+        $tablePrefix = "$tableName`t"
+        if ($definitionText.StartsWith($tablePrefix)) {
+            $definitionText = $definitionText.Substring($tablePrefix.Length)
+        }
+
+        foreach ($missingColumn in $missingByTable[$tableName]) {
+            foreach ($definitionLine in ($definitionText -split "`r?`n")) {
+                $columnMatch = [regex]::Match($definitionLine, '^\s+`(?<name>[^`]+)`\s+(?<definition>.+?),?\s*$')
+                if (-not $columnMatch.Success) { continue }
+                if ($columnMatch.Groups['name'].Value -ne $missingColumn) { continue }
+
+                $definitions.Add([pscustomobject]@{
+                        Table      = $tableName
+                        Column     = $missingColumn
+                        Definition = $columnMatch.Groups['definition'].Value.TrimEnd(',', ' ')
+                    })
+                break
+            }
+        }
+    }
+
+    return $definitions
+}
+
+# Adds columns that exist in Sql_Files/Schemas but are missing from the live
+# database, so 'Migrate Existing' brings an older schema up to date in place.
+function Sync-MySqlSchemaColumns {
+    param(
+        [string]$SchemasPath,
+        [string[]]$ExcludedPatterns
+    )
+
+    $liveDatabase = $Database
+    $syncDatabase = "mtm_schema_sync_$([guid]::NewGuid().ToString('N').Substring(0, 8))"
+    $addedCount = 0
+    $messages = New-Object System.Collections.Generic.List[string]
+
+    try {
+        Execute-SqlCommand -SqlCommand "CREATE DATABASE ``$syncDatabase`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" -NoDatabase
+
+        $schemaFiles = @(Get-SqlFiles -BasePath $SchemasPath -ExcludedPatterns $ExcludedPatterns | Sort-Object Name)
+        foreach ($file in $schemaFiles) {
+            try {
+                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks -DatabaseName $syncDatabase
+            }
+            catch {
+                Write-Host "DEBUG: Schema sync reference skipped $($file.Name): $($_.Exception.Message)" -ForegroundColor DarkYellow
+            }
+        }
+
+        $missingColumns = @(Get-MissingSchemaColumnDefinition -SourceDatabase $syncDatabase -TargetDatabase $liveDatabase)
+        Write-Host "DEBUG: Schema sync found $($missingColumns.Count) missing column(s) in $liveDatabase" -ForegroundColor Cyan
+
+        foreach ($missingColumn in $missingColumns) {
+            try {
+                Execute-SqlCommand -SqlCommand "ALTER TABLE ``$($missingColumn.Table)`` ADD COLUMN ``$($missingColumn.Column)`` $($missingColumn.Definition);"
+                $addedCount++
+            }
+            catch {
+                $messages.Add("Column $($missingColumn.Table).$($missingColumn.Column): $($_.Exception.Message)")
+            }
+        }
+    }
+    finally {
+        try {
+            Execute-SqlCommand -SqlCommand "DROP DATABASE IF EXISTS ``$syncDatabase``;" -NoDatabase
+        }
+        catch {
+        }
+    }
+
+    return [pscustomobject]@{
+        AddedCount = $addedCount
+        Messages   = $messages
     }
 }
 
@@ -1983,7 +1920,10 @@ function Test-CanIgnoreMigrationSqlError {
     $sharedPatterns = @(
         'already exists',
         'duplicate column name',
-        'duplicate key name'
+        'duplicate key name',
+        'duplicate foreign key constraint name',
+        'multiple primary key defined',
+        "check that column/key exists"
     )
 
     foreach ($pattern in $sharedPatterns) {
@@ -2064,6 +2004,11 @@ function Start-DatabaseExecution {
         $script:CurrentExecutionMode = $ExecutionMode
         $overallStatusText.Text = if ($ExecutionMode -eq 'migration') { 'Migrating existing database...' } else { 'Deploying database...' }
 
+        $serverStatus = Resolve-MySqlServer
+        Write-Host "DEBUG: $($serverStatus.StatusMessage)" -ForegroundColor Cyan
+        $currentFileText.Text = $serverStatus.StatusMessage
+        $overallStatusText.Text = $serverStatus.StatusMessage
+
         $script:ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
         $secretSetup = Ensure-AuthSecretConfigured
@@ -2079,6 +2024,8 @@ function Start-DatabaseExecution {
         $script:StoredProcCountTotal = 0
         $script:TriggerCountTotal = 0
         $script:SeedDataCountTotal = 0
+        $script:SchemaSyncAddedTotal = 0
+        $script:WarningMessages = New-Object System.Collections.Generic.List[string]
 
         $script:timer = New-Object System.Windows.Threading.DispatcherTimer
         $script:timer.Interval = [TimeSpan]::FromMilliseconds(1)
@@ -2120,7 +2067,7 @@ function Start-DatabaseExecution {
                             $currentFileText.Text = "Deploying: $($file.Name)"
 
                             try {
-                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks
+                                Execute-SqlFile -FilePath $file.FullName -DisableForeignKeyChecks -MigrationSafe:($script:CurrentExecutionMode -eq 'migration')
                                 $script:SchemaCountTotal++
                             }
                             catch {
@@ -2141,6 +2088,21 @@ function Start-DatabaseExecution {
                         }
                         else {
                             Write-Host 'DEBUG: Schema deployment complete, moving to step 3' -ForegroundColor Green
+
+                            if ($script:CurrentExecutionMode -eq 'migration') {
+                                $overallStatusText.Text = 'Adding new columns to existing tables...'
+                                $currentFileText.Text = 'Comparing schema files against the live database...'
+                                Sync-UiRender
+
+                                $schemaSyncResult = Sync-MySqlSchemaColumns -SchemasPath (Join-Path $script:DatabaseRoot 'Schemas') -ExcludedPatterns $script:ExcludePatterns
+                                $script:SchemaSyncAddedTotal = $schemaSyncResult.AddedCount
+                                foreach ($syncMessage in $schemaSyncResult.Messages) {
+                                    $script:WarningMessages.Add("Column sync $syncMessage")
+                                }
+
+                                Write-Host "DEBUG: Column sync added $($schemaSyncResult.AddedCount) column(s)" -ForegroundColor Green
+                            }
+
                             $script:currentFiles = @()
                             $script:currentIndex = 0
                             $script:step = 3
@@ -2168,7 +2130,15 @@ function Start-DatabaseExecution {
                                 $script:MigrationCountTotal++
                             }
                             catch {
-                                Write-Host "DEBUG: Migration warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
+                                if (Test-CanIgnoreMigrationSqlError -Stage 'migration' -ErrorMessage $_.Exception.Message) {
+                                    Write-Host "DEBUG: Migration already applied, continuing: $($file.Name)" -ForegroundColor DarkYellow
+                                    $currentFileText.Text = "Skipping already-applied migration: $($file.Name)"
+                                    $script:MigrationCountTotal++
+                                }
+                                else {
+                                    Write-Host "DEBUG: Migration warning (continuing): $($file.Name) - $($_.Exception.Message)" -ForegroundColor Yellow
+                                    $script:WarningMessages.Add("Migration $($file.Name): $($_.Exception.Message)")
+                                }
                             }
                             $script:currentIndex++
                         }
@@ -2196,7 +2166,7 @@ function Start-DatabaseExecution {
                             $viewProgress.Value = $pct
                             $viewCount.Text = "$($script:currentIndex + 1)/$($script:currentFiles.Count)"
                             $currentFileText.Text = "Deploying: $($file.Name)"
-                            Execute-SqlFile -FilePath $file.FullName
+                            Execute-SqlFile -FilePath $file.FullName -MigrationSafe:($script:CurrentExecutionMode -eq 'migration')
                             $script:ViewCountTotal++
                             $script:currentIndex++
                         }
@@ -2295,6 +2265,7 @@ function Start-DatabaseExecution {
                                 }
                                 else {
                                     Write-Host "DEBUG: Seed data warning (continuing): $($_.Exception.Message)" -ForegroundColor Yellow
+                                    $script:WarningMessages.Add("Seed data $($file.Name): $($_.Exception.Message)")
                                 }
                             }
                             $script:currentIndex++
@@ -2351,8 +2322,29 @@ function Start-DatabaseExecution {
 
                         Write-Host 'DEBUG: Deployment complete!' -ForegroundColor Green
                         $script:timer.Stop()
-                        $overallStatusText.Text = if ($script:CurrentExecutionMode -eq 'migration') { 'Migration completed successfully!' } else { 'Deployment completed successfully!' }
-                        $currentFileText.Text = $finalStatusMessage
+                        $warningCount = $script:WarningMessages.Count
+                        $completionText = if ($script:CurrentExecutionMode -eq 'migration') { 'Migration completed successfully!' } else { 'Deployment completed successfully!' }
+
+                        if ($warningCount -gt 0) {
+                            $completionText = if ($script:CurrentExecutionMode -eq 'migration') {
+                                "Migration completed with $warningCount skipped script(s)."
+                            }
+                            else {
+                                "Deployment completed with $warningCount skipped script(s)."
+                            }
+
+                            $errorBorder.Visibility = 'Visible'
+                            $errorText.Text = "Skipped script(s):`n`n" + ($script:WarningMessages -join "`n")
+                        }
+
+                        $overallStatusText.Text = $completionText
+                        $currentFileText.Text = if ($script:SchemaSyncAddedTotal -gt 0) {
+                            "$($script:SchemaSyncAddedTotal) new column(s) added to existing tables. $finalStatusMessage"
+                        }
+                        else {
+                            $finalStatusMessage
+                        }
+                        $summaryTitleText.Text = if ($script:CurrentExecutionMode -eq 'migration') { 'Migration Successful!' } else { 'Deployment Successful!' }
                         $summaryBorder.Visibility = 'Visible'
                         $summarySchemas.Text = "$($script:SchemaCountTotal) file(s)"
                         $summaryMigrations.Text = "$($script:MigrationCountTotal) file(s)"
@@ -2428,8 +2420,6 @@ function Set-UIMode {
     }
 }
 
-Set-ProviderState -Provider (Get-InitialProvider)
-
 $deployButton.Add_Click({
         Start-DatabaseExecution -ExecutionMode 'deployment'
     })
@@ -2442,11 +2432,10 @@ $swapHostsButton.Add_Click({
         try {
             $errorBorder.Visibility = 'Collapsed'
             $swapHostsButton.IsEnabled = $false
-            $providerToggleButton.IsEnabled = $false
             Set-DeploymentButtonsEnabled -IsEnabled $false
             $modeSwitchButton.IsEnabled = $false
             $overallStatusText.Text = 'Swapping host references across repository...'
-            Show-ProviderSwitchProgress -StatusText 'Preparing repository host swap...' -ProgressValue 0
+            Show-OperationProgress -StatusText 'Preparing repository host swap...' -ProgressValue 0
             $currentFileText.Text = 'Collecting eligible files under the solution folder...'
 
             $swapResult = Invoke-RepoHostReferenceSwap
@@ -2460,34 +2449,8 @@ $swapHostsButton.Add_Click({
             $overallStatusText.Text = 'Repository host swap failed.'
         }
         finally {
-            Hide-ProviderSwitchProgress
+            Hide-OperationProgress
             $swapHostsButton.IsEnabled = $true
-            $providerToggleButton.IsEnabled = $true
-            Set-DeploymentButtonsEnabled -IsEnabled $true
-            $modeSwitchButton.IsEnabled = $true
-        }
-    })
-
-$providerToggleButton.Add_Click({
-        $targetProvider = if ($providerToggleButton.IsChecked) { 'mamp' } else { 'workbench' }
-        $previousProvider = $script:CurrentProvider
-
-        try {
-            $errorBorder.Visibility = 'Collapsed'
-            $providerToggleButton.IsEnabled = $false
-            Set-DeploymentButtonsEnabled -IsEnabled $false
-            $modeSwitchButton.IsEnabled = $false
-            Switch-ProviderEnvironment -TargetProvider $targetProvider
-        }
-        catch {
-            Set-ProviderState -Provider $previousProvider
-            $errorBorder.Visibility = 'Visible'
-            $errorText.Text = "Provider switch error:`n`n$($_.Exception.Message)"
-            $overallStatusText.Text = 'Provider switch failed.'
-        }
-        finally {
-            Hide-ProviderSwitchProgress
-            $providerToggleButton.IsEnabled = $true
             Set-DeploymentButtonsEnabled -IsEnabled $true
             $modeSwitchButton.IsEnabled = $true
         }

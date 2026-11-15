@@ -2,8 +2,6 @@
 -- Description: Inserts one row into dunnage_label_data (active print queue for LabelView2022)
 -- Lifecycle: Workflow Complete -> Queue Insert
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Dunnage_LabelData_Insert`;
 
 DELIMITER $$

@@ -7,8 +7,6 @@
 -- MySQL Version: 5.7 compatible
 -- ============================================================================
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_PackageTypes_Delete`;
 
 DELIMITER $$

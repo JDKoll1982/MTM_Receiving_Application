@@ -1,0 +1,9 @@
+{
+  "PreferredServer": "172.16.1.104",
+  "FallbackServer": "127.0.0.1",
+  "Port": 3306,
+  "Database": "mtm_receiving_application",
+  "User": "root",
+  "Password": "",
+  "ConnectTimeoutSeconds": 5
+}

@@ -36,10 +36,14 @@ CREATE TABLE IF NOT EXISTS receiving_label_data (
     is_quality_hold_acknowledged TINYINT (1) NOT NULL DEFAULT 0 COMMENT '1 when quality hold has been formally acknowledged',
     is_reprint TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 when this row was re-queued from receiving_history for a label reprint',
     quality_hold_restriction_type VARCHAR(255) NULL COMMENT 'Restriction type code from the quality hold check',
+    part_skid_sequence INT NULL COMMENT 'Position of this skid among all skids for this part_id in the save batch (e.g. 2)',
+    part_skid_total INT NULL COMMENT 'Total skids for this part_id in the save batch (e.g. 6 - label reads "N of 6")',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when record was created',
-    INDEX idx_load_id (load_id) COMMENT 'Index for GUID-based session lookups',
+    UNIQUE KEY uq_receiving_label_data_load_id (load_id) COMMENT 'One queue row per workflow session GUID',
     INDEX idx_part_id (part_id) COMMENT 'Index for part lookup queries',
     INDEX idx_po_number (po_number) COMMENT 'Index for PO-based queries',
     INDEX idx_transaction_date (transaction_date) COMMENT 'Index for date range queries',
-    INDEX idx_employee_number (employee_number) COMMENT 'Index for employee activity queries'
+    INDEX idx_employee_number (employee_number) COMMENT 'Index for employee activity queries',
+    INDEX idx_received_date (received_date) COMMENT 'Index for received-date range queries',
+    INDEX idx_user_id (user_id) COMMENT 'Index for user-scoped history queries'
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Active receiving label queue - rows are moved to receiving_history when the workflow completes (see sp_Receiving_LabelData_ClearToHistory).';

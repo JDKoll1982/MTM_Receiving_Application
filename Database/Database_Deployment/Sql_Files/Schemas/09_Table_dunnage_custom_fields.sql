@@ -1,8 +1,6 @@
 SET
     FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS dunnage_custom_fields;
-
 SET
     FOREIGN_KEY_CHECKS = 1;
 
@@ -15,7 +13,7 @@ CREATE TABLE IF NOT EXISTS dunnage_custom_fields (
     IsRequired BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Whether field is mandatory during data entry',
     Unit VARCHAR(50) NULL COMMENT 'Unit of measure shown on the UI for this field',
     MinValue DECIMAL(18, 4) NULL COMMENT 'Minimum value enforced when the field is a Number',
-    MaxValue DECIMAL(18, 4) NULL COMMENT 'Maximum value enforced when the field is a Number',
+    `MaxValue` DECIMAL(18, 4) NULL COMMENT 'Maximum value enforced when the field is a Number',
     DefaultValue VARCHAR(255) NULL COMMENT 'Default value pre-filled when the field has no stored value',
     ValidationRules TEXT NULL COMMENT 'Reserved for future use',
     CreatedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when field was created',

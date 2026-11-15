@@ -18,8 +18,6 @@
 --           Every row matching the part, heat and supplier is written in one statement, so all rows
 --           of a lot always end up with identical codes.
 
-USE mtm_receiving_application;
-
 DROP PROCEDURE IF EXISTS `sp_Receiving_UnmarkedLotMarkings_Apply`;
 
 DELIMITER $$

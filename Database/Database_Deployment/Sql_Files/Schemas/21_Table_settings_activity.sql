@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS settings_activity;
 
-CREATE TABLE settings_activity (
+CREATE TABLE IF NOT EXISTS settings_activity (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Primary key for the audit record',
     scope VARCHAR(20) NOT NULL COMMENT 'Setting scope: System or User',
     category VARCHAR(100) NOT NULL COMMENT 'Settings category (matches settings_universal.category)',
