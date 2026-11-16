@@ -31,3 +31,8 @@ Versioned pages and the mockup should reference the MTM logo from:
 - Only describe changes verified by the actual diff.
 - Call out required user action explicitly.
 - If no action is required, say so plainly.
+
+## Producing a release page
+
+Use the `.github/skills/mtm-update-application-version` skill. It owns bump selection, the version
+source inventory, the page template, and the validation scripts.

@@ -23,6 +23,8 @@ This directory contains the active AI customization surfaces for the repository.
 - `instructions/` — categorized custom instruction files
 - `prompts/` — categorized prompt library
 - `agents/` — repository-specific and imported agent definitions
+- `skills/` — Agent Skills, one folder per workflow area, each with a `SKILL.md` plus optional
+  `references/`, `scripts/`, `templates/`, and `assets/`
 - `copilot-agents.json` — Copilot agent registration metadata
 - `archive/` — historical snapshots that should not be treated as active guidance
 

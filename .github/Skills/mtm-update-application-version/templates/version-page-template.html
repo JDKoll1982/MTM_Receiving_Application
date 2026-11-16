@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- 
+  MTM version update page template.
+  Copy to docs/updates/[VERSION]/index.html and replace every [PLACEHOLDER].
+  Replace [PLACEHOLDER] blocks with real content; delete unused highlight cards or change items.
+  Keep the ids, classes, and data- attributes exactly as written: docs/updates/app.js and
+  docs/updates/styles.css depend on them.
+  Never add inline <style> or <script>; the shared assets are ../styles.css and ../app.js.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version [VERSION] - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version [VERSION]</h1>
+                    <p class="hero-copy">[ONE_SENTENCE_SUMMARY_OF_THE_RELEASE_IN_OPERATOR_LANGUAGE]</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version [VERSION]</span>
+                <span class="meta-text">Released [MONTH DD, YYYY]</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="[VERSION]">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in [VERSION]</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">[HIGHLIGHT_1_TITLE]</p>
+                            <p class="highlight-text">[HIGHLIGHT_1_TEXT_TWO_OR_THREE_SENTENCES]</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">[HIGHLIGHT_2_TITLE]</p>
+                            <p class="highlight-text">[HIGHLIGHT_2_TEXT_TWO_OR_THREE_SENTENCES]</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">[HIGHLIGHT_3_TITLE]</p>
+                            <p class="highlight-text">[HIGHLIGHT_3_TEXT_TWO_OR_THREE_SENTENCES]</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="tools">Tools</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>[CHANGE_1_SUMMARY]</summary>
+                        <p>[CHANGE_1_DETAIL]</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>[CHANGE_2_SUMMARY]</summary>
+                        <p>[CHANGE_2_DETAIL]</p>
+                        <ul>
+                            <li>[CHANGE_2_BULLET_1]</li>
+                            <li>[CHANGE_2_BULLET_2]</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>[CHANGE_3_SUMMARY]</summary>
+                        <p>[CHANGE_3_DETAIL]</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>[IMPACT_1_TITLE]</h3>
+                            <p>[IMPACT_1_TEXT]</p>
+                        </article>
+                        <article>
+                            <h3>[IMPACT_2_TITLE]</h3>
+                            <p>[IMPACT_2_TEXT]</p>
+                        </article>
+                        <article>
+                            <h3>[IMPACT_3_TITLE]</h3>
+                            <p>[IMPACT_3_TEXT]</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>[ACTION_HEADING]</h2>
+                    </div>
+                    <p class="action-state success">[NO_ACTION_SENTENCE_OR_REQUIRED_STEP]</p>
+                    <ul class="action-list">
+                        <li>[ACTION_ITEM_1]</li>
+                        <li>[ACTION_ITEM_2]</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If [SYMPTOM_1], [SYMPTOM_2], or the application will not start, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!--
+  Release row template for docs/updates/index.html.
+  Insert as the FIRST <tr> inside the <tbody> of table.release-table so the newest release stays
+  at the top. Replace every [PLACEHOLDER]. The summary is one sentence in operator language and
+  must not contradict the version page.
+-->
+<tr>
+    <td><a class="release-link" href="[VERSION]/index.html"><strong>[VERSION]</strong></a></td>
+    <td>[MONTH DD, YYYY]</td>
+    <td>[ONE_SENTENCE_SUMMARY_OF_THE_RELEASE]</td>
+</tr>
+
+<!--
+  Companion edits in docs/updates/index.html for the same release:
+  1. Hero badge:            <span class="badge">Latest release [VERSION]</span>
+  2. Hero copy button:      id="copy-version" data-copy-text="[VERSION]"
+  3. Latest section title:  <h2>Version [VERSION] at a glance</h2>
+  4. At-a-glance cards:     replace the three article.highlight-card blocks with this release's
+                            highlights, keeping accent-blue, accent-green, accent-gold.
+  5. Hero meta line:        update the month shown in <span class="meta-text">Updated ...</span>
+-->
