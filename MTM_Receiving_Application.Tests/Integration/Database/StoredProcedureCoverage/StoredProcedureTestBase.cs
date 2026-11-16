@@ -33,6 +33,29 @@ public abstract class StoredProcedureTestBase
 
     protected static string UniqueToken(string prefix) => prefix + Guid.NewGuid().ToString("N")[..10];
 
+    /// <summary>
+    /// Adds parameters after guarding against the enum-overload trap. A literal <c>0</c> converts
+    /// implicitly to any enum, so <c>new MySqlParameter("p_flag", 0)</c> binds the
+    /// <c>MySqlDbType</c> overload and leaves <c>Value</c> null, which sends NULL to the procedure.
+    /// </summary>
+    private static void AddParameters(MySqlCommand command, MySqlParameter[] parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            if (parameter.Direction == ParameterDirection.Input
+                && parameter.Value is null
+                && parameter.MySqlDbType == default(MySqlDbType))
+            {
+                throw new InvalidOperationException(
+                    $"Parameter '{parameter.ParameterName}' has no value. Cast the literal to object "
+                        + "when 0 is intended: new MySqlParameter(\"name\", (object)0)."
+                );
+            }
+
+            command.Parameters.Add(parameter);
+        }
+    }
+
     protected async Task<DataTable> QueryAsync(
         string procedureName,
         params MySqlParameter[] parameters)
@@ -44,7 +67,7 @@ public abstract class StoredProcedureTestBase
             CommandType = CommandType.StoredProcedure,
             CommandTimeout = 60,
         };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
 
         await using var reader = await command.ExecuteReaderAsync();
         var table = new DataTable();
@@ -57,7 +80,7 @@ public abstract class StoredProcedureTestBase
         await using var connection = await OpenAsync();
 
         await using var command = new MySqlCommand(sql, connection) { CommandTimeout = 60 };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
 
         await using var reader = await command.ExecuteReaderAsync();
         var table = new DataTable();
@@ -76,7 +99,7 @@ public abstract class StoredProcedureTestBase
             CommandType = CommandType.StoredProcedure,
             CommandTimeout = 60,
         };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
 
         return await command.ExecuteNonQueryAsync();
     }
@@ -95,7 +118,7 @@ public abstract class StoredProcedureTestBase
             CommandType = CommandType.StoredProcedure,
             CommandTimeout = 60,
         };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
         await command.ExecuteNonQueryAsync();
 
         var outputs = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
@@ -136,7 +159,7 @@ public abstract class StoredProcedureTestBase
         {
             CommandTimeout = 60,
         };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
 
         return await command.ExecuteNonQueryAsync();
     }
@@ -146,7 +169,7 @@ public abstract class StoredProcedureTestBase
         await using var connection = await OpenAsync();
 
         await using var command = new MySqlCommand(sql, connection) { CommandTimeout = 60 };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
         return await command.ExecuteNonQueryAsync();
     }
 
@@ -155,7 +178,7 @@ public abstract class StoredProcedureTestBase
         await using var connection = await OpenAsync();
 
         await using var command = new MySqlCommand(sql, connection) { CommandTimeout = 60 };
-        command.Parameters.AddRange(parameters);
+        AddParameters(command, parameters);
         var value = await command.ExecuteScalarAsync();
         return value == DBNull.Value ? null : value;
     }

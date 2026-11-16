@@ -104,7 +104,7 @@ public sealed class LotMarkingStoredProceduresIntegrationTests
             "sp_Receiving_LabelData_ClearToHistory",
             new MySqlParameter("p_archived_by", $"TEST-{suffix}"),
             new MySqlParameter("p_employee_number", _employeeNumber),
-            new MySqlParameter("p_clear_all", 0),
+            new MySqlParameter("p_clear_all", (object)0),
             new MySqlParameter("p_rows_moved", MySqlDbType.Int32)
             {
                 Direction = ParameterDirection.Output,

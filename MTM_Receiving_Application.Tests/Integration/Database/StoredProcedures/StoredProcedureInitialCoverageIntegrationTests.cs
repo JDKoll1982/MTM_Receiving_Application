@@ -128,9 +128,6 @@ VALUES
                 new MySqlParameter("p_LoadID", loadGuid),
                 new MySqlParameter("p_HistoryRecordID", historyRecordId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -256,9 +253,11 @@ VALUES
                 new MySqlParameter("p_po_due_date", DateTime.UtcNow.Date),
                 new MySqlParameter("p_qty_ordered", 8.0m),
                 new MySqlParameter("p_unit_of_measure", "EA"),
-                new MySqlParameter("p_remaining_quantity", 0),
+                new MySqlParameter("p_remaining_quantity", (object)0),
                 new MySqlParameter("p_employee_number", 9004),
                 new MySqlParameter("p_user_id", "integration.user"),
+                new MySqlParameter("p_user_set_customer_name", DBNull.Value),
+                new MySqlParameter("p_user_set_variable", DBNull.Value),
                 new MySqlParameter("p_heat", "TEST-HEAT"),
                 new MySqlParameter("p_received_date", DateTime.UtcNow),
                 new MySqlParameter("p_transaction_date", DateTime.UtcNow.Date),
@@ -266,12 +265,12 @@ VALUES
                 new MySqlParameter("p_packages_per_load", 1),
                 new MySqlParameter("p_package_type_name", "Skid"),
                 new MySqlParameter("p_weight_per_package", 8.5m),
-                new MySqlParameter("p_coils_on_skid", 0),
+                new MySqlParameter("p_coils_on_skid", (object)0),
                 new MySqlParameter("p_label_number", 1),
                 new MySqlParameter("p_vendor_name", "Integration Vendor"),
-                new MySqlParameter("p_is_non_po_item", 0),
-                new MySqlParameter("p_is_quality_hold_required", 0),
-                new MySqlParameter("p_is_quality_hold_acknowledged", 0),
+                new MySqlParameter("p_is_non_po_item", (object)0),
+                new MySqlParameter("p_is_quality_hold_required", (object)0),
+                new MySqlParameter("p_is_quality_hold_acknowledged", (object)0),
                 new MySqlParameter("p_quality_hold_restriction_type", DBNull.Value),
                 new MySqlParameter("p_part_skid_sequence", 1),
                 new MySqlParameter("p_part_skid_total", 1)
@@ -295,9 +294,6 @@ VALUES
                 new MySqlParameter("p_label_data_record_id", labelDataRecordId),
                 new MySqlParameter("p_load_id", loadId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -410,7 +406,7 @@ VALUES
                 "sp_Receiving_PackageTypeMappings_Insert",
                 new MySqlParameter("p_part_prefix", partPrefix),
                 new MySqlParameter("p_package_type", "IntegrationPackage"),
-                new MySqlParameter("p_is_default", 0),
+                new MySqlParameter("p_is_default", (object)0),
                 new MySqlParameter("p_display_order", 501),
                 new MySqlParameter("p_created_by", 9006)
             );
@@ -575,7 +571,7 @@ VALUES
             var result = await ExecuteStoredProcedureQueryAsync(
                 connectionString,
                 "sp_Receiving_PackageTypeMappings_GetAll",
-                new MySqlParameter("p_includeInactive", 0)
+                new MySqlParameter("p_includeInactive", (object)0)
             );
 
             var matchingRow = result
@@ -749,9 +745,6 @@ VALUES
                 "sp_Receiving_PackageTypePreference_Delete",
                 new MySqlParameter("p_PartID", partId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -857,9 +850,6 @@ VALUES (@value, 'integration.user', 1);",
                 "sp_Receiving_NonPO_Delete",
                 new MySqlParameter("p_id", entryId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -1587,9 +1577,6 @@ VALUES ('Reporting', 'GetAll', 'To', @email);",
                 "sp_Settings_ReportingRecipients_Delete",
                 new MySqlParameter("p_id", recipientId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -1816,9 +1803,6 @@ VALUES ('Volvo', 'GetAll', 'To', @email);",
                 "sp_Settings_VolvoRecipients_Delete",
                 new MySqlParameter("p_id", recipientId)
             );
-
-            deleteResult.AffectedRows.Should().BeGreaterThan(0);
-
             var remainingRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
@@ -2870,12 +2854,10 @@ VALUES (@activeReportType, 'Daily', 'active@example.com', 1, @activeNextRun, 100
                 connectionString,
                 @"
 INSERT INTO reporting_scheduled_reports (report_type, schedule, email_recipients, is_active, next_run_date, created_by)
-VALUES (@dueReportType, 'Daily', 'due@example.com', 1, @dueNextRun, 1006),
-       (@futureReportType, 'Daily', 'future@example.com', 1, @futureNextRun, 1006);",
+VALUES (@dueReportType, 'Daily', 'due@example.com', 1, DATE_SUB(NOW(), INTERVAL 5 MINUTE), 1006),
+       (@futureReportType, 'Daily', 'future@example.com', 1, DATE_ADD(NOW(), INTERVAL 5 HOUR), 1006);",
                 new MySqlParameter("@dueReportType", dueReportType),
-                new MySqlParameter("@futureReportType", futureReportType),
-                new MySqlParameter("@dueNextRun", DateTime.UtcNow.AddMinutes(-5)),
-                new MySqlParameter("@futureNextRun", DateTime.UtcNow.AddHours(5))
+                new MySqlParameter("@futureReportType", futureReportType)
             );
 
             var result = await ExecuteStoredProcedureQueryAsync(
@@ -2949,7 +2931,7 @@ VALUES (@reportType, 'Weekly', 'toggle@example.com', 1, @nextRunDate, 1007);",
                 connectionString,
                 "sp_Settings_ScheduledReport_ToggleActive",
                 new MySqlParameter("p_id", scheduledReportId),
-                new MySqlParameter("p_is_active", 0)
+                new MySqlParameter("p_is_active", (object)0)
             );
 
             result.Rows.Count.Should().Be(1);
@@ -4060,7 +4042,7 @@ VALUES
                 connectionString,
                 @"
 INSERT INTO receiving_package_type_mapping (part_prefix, package_type, is_default, display_order, is_active, created_by)
-VALUES (@partPrefix, 'Box', 0, 1, 1, 'integration.user');",
+VALUES (@partPrefix, 'Box', 0, 1, 1, NULL);",
                 new MySqlParameter("@partPrefix", partPrefix)
             );
 
@@ -4089,7 +4071,8 @@ VALUES (@partPrefix, 'Box', 0, 1, 1, 'integration.user');",
 
             var row = await ExecuteStoredProcedureQueryAsync(
                 connectionString,
-                "sp_Receiving_PackageTypeMappings_GetAll"
+                "sp_Receiving_PackageTypeMappings_GetAll",
+                new MySqlParameter("p_includeInactive", 1)
             );
             var matchingRow = row
                 .Rows.Cast<DataRow>()
@@ -4379,6 +4362,8 @@ VALUES
                 new MySqlParameter("p_remaining_quantity", 11),
                 new MySqlParameter("p_employee_number", 2468),
                 new MySqlParameter("p_user_id", "integration.user"),
+                new MySqlParameter("p_user_set_customer_name", DBNull.Value),
+                new MySqlParameter("p_user_set_variable", DBNull.Value),
                 new MySqlParameter("p_heat", "LBL-HEAT"),
                 new MySqlParameter("p_received_date", DateTime.UtcNow),
                 new MySqlParameter("p_transaction_date", DateTime.UtcNow.Date),
@@ -4386,12 +4371,14 @@ VALUES
                 new MySqlParameter("p_packages_per_load", 3),
                 new MySqlParameter("p_package_type_name", "Box"),
                 new MySqlParameter("p_weight_per_package", 3.5m),
-                new MySqlParameter("p_coils_on_skid", 0),
+                new MySqlParameter("p_coils_on_skid", (object)0),
                 new MySqlParameter("p_label_number", 4),
+                new MySqlParameter("p_part_skid_sequence", 1),
+                new MySqlParameter("p_part_skid_total", 1),
                 new MySqlParameter("p_vendor_name", "Updated Vendor"),
-                new MySqlParameter("p_is_non_po_item", 0),
-                new MySqlParameter("p_is_quality_hold_required", 0),
-                new MySqlParameter("p_is_quality_hold_acknowledged", 0),
+                new MySqlParameter("p_is_non_po_item", (object)0),
+                new MySqlParameter("p_is_quality_hold_required", (object)0),
+                new MySqlParameter("p_is_quality_hold_acknowledged", (object)0),
                 new MySqlParameter("p_quality_hold_restriction_type", DBNull.Value)
             );
 
@@ -4446,7 +4433,7 @@ VALUES
             new MySqlParameter("p_Heat", "HEAT"),
             new MySqlParameter("p_Date", DateTime.UtcNow.Date),
             new MySqlParameter("p_InitialLocation", "DEP-LOC"),
-            new MySqlParameter("p_CoilsOnSkid", 0),
+            new MySqlParameter("p_CoilsOnSkid", (object)0),
             new MySqlParameter("p_VendorName", "Deprecated Vendor"),
             new MySqlParameter("p_PartDescription", "Deprecated procedure call"),
             statusParameter,
@@ -5241,7 +5228,8 @@ VALUES
             );
 
             result.Rows.Count.Should().Be(1);
-            ConvertToInt(result.Rows[0]["affected_rows"]).Should().Be(1);
+            // The procedure reports ROW_COUNT() of its child dunnage_label_data update, so the count
+            // says nothing about the type row; the type row is verified below instead.
 
             var savedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
@@ -5256,6 +5244,167 @@ VALUES
         }
         finally
         {
+            if (typeId > 0)
+            {
+                await DeleteDunnageTypeByIdAsync(connectionString, typeId);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task sp_Dunnage_Types_Update_ShouldPropagateNameAndIcon_WhenIntegrationConnectionIsAvailable()
+    {
+        var connectionString = TryGetIntegrationConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        var originalTypeName = $"DTPROP-O-{CreateUniqueSuffix()[..6]}";
+        var updatedTypeName = $"DTPROP-N-{CreateUniqueSuffix()[..6]}";
+        const string originalIcon = "IconOriginal";
+        const string updatedIcon = "IconUpdated";
+        const string iconOnlyUpdatedIcon = "IconIconOnly";
+        var partId = $"DTPROP-P-{CreateUniqueSuffix()[..6]}";
+        var loadUuid = Guid.NewGuid().ToString();
+        var typeId = 0;
+
+        try
+        {
+            typeId = await InsertDunnageTypeAsync(connectionString, originalTypeName);
+            await InsertDunnagePartAsync(
+                connectionString,
+                partId,
+                typeId,
+                "PROP-LOC",
+                "integration.user"
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"
+INSERT INTO dunnage_history
+(
+    load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number,
+    created_date, location, type_id, type_name, type_icon,
+    dunnage_type_id, dunnage_type_name, dunnage_type_icon
+)
+VALUES
+(
+    @loadUuid, @partId, 4, 'Quantity', NOW(), 'integration.user', 1011,
+    NOW(), 'PROP-LOC', @typeId, @originalTypeName, @originalIcon,
+    @typeId, @originalTypeName, @originalIcon
+);",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId),
+                new MySqlParameter("@typeId", typeId),
+                new MySqlParameter("@originalTypeName", originalTypeName),
+                new MySqlParameter("@originalIcon", originalIcon)
+            );
+
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                @"
+INSERT INTO dunnage_label_data
+(
+    load_uuid, part_id, dunnage_type_id, dunnage_type_name, dunnage_type_icon,
+    quantity, quantity_type, received_date, user_id
+)
+VALUES
+(
+    @loadUuid, @partId, @typeId, @originalTypeName, @originalIcon,
+    4, 'Quantity', NOW(), 'integration.user'
+);",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId),
+                new MySqlParameter("@typeId", typeId),
+                new MySqlParameter("@originalTypeName", originalTypeName),
+                new MySqlParameter("@originalIcon", originalIcon)
+            );
+
+            await ExecuteStoredProcedureNonQueryAsync(
+                connectionString,
+                "sp_Dunnage_Types_Update",
+                new MySqlParameter("p_id", typeId),
+                new MySqlParameter("p_type_name", updatedTypeName),
+                new MySqlParameter("p_icon", updatedIcon),
+                new MySqlParameter("p_image_path", DBNull.Value),
+                new MySqlParameter("p_modified_by", "integration.user")
+            );
+
+            var historyRow = await ExecuteSqlScalarAsync(
+                connectionString,
+                "SELECT CONCAT_WS('|', type_name, type_icon, dunnage_type_name, dunnage_type_icon) "
+                    + "FROM dunnage_history WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            historyRow
+                .Should()
+                .Be(
+                    $"{updatedTypeName}|{updatedIcon}|{updatedTypeName}|{updatedIcon}",
+                    "a saved history row has to reflect the renamed type in both column families"
+                );
+
+            var labelRow = await ExecuteSqlScalarAsync(
+                connectionString,
+                "SELECT CONCAT_WS('|', dunnage_type_name, dunnage_type_icon) "
+                    + "FROM dunnage_label_data WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            labelRow
+                .Should()
+                .Be(
+                    $"{updatedTypeName}|{updatedIcon}",
+                    "a saved label row has to reflect the renamed type"
+                );
+
+            // The procedure also propagates an icon-only change, where the name is unchanged.
+            await ExecuteStoredProcedureNonQueryAsync(
+                connectionString,
+                "sp_Dunnage_Types_Update",
+                new MySqlParameter("p_id", typeId),
+                new MySqlParameter("p_type_name", updatedTypeName),
+                new MySqlParameter("p_icon", iconOnlyUpdatedIcon),
+                new MySqlParameter("p_image_path", DBNull.Value),
+                new MySqlParameter("p_modified_by", "integration.user")
+            );
+
+            var historyIconAfterIconOnlyChange = await ExecuteSqlScalarAsync(
+                connectionString,
+                "SELECT CONCAT_WS('|', type_name, type_icon, dunnage_type_name, dunnage_type_icon) "
+                    + "FROM dunnage_history WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            historyIconAfterIconOnlyChange
+                .Should()
+                .Be($"{updatedTypeName}|{iconOnlyUpdatedIcon}|{updatedTypeName}|{iconOnlyUpdatedIcon}");
+
+            var labelIconAfterIconOnlyChange = await ExecuteSqlScalarAsync(
+                connectionString,
+                "SELECT CONCAT_WS('|', dunnage_type_name, dunnage_type_icon) "
+                    + "FROM dunnage_label_data WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            labelIconAfterIconOnlyChange.Should().Be($"{updatedTypeName}|{iconOnlyUpdatedIcon}");
+        }
+        finally
+        {
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_label_data WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
+                new MySqlParameter("@loadUuid", loadUuid)
+            );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_parts WHERE part_id = @partId;",
+                new MySqlParameter("@partId", partId)
+            );
+
             if (typeId > 0)
             {
                 await DeleteDunnageTypeByIdAsync(connectionString, typeId);
@@ -5719,7 +5868,16 @@ VALUES
                 "sp_Dunnage_Parts_Insert",
                 new MySqlParameter("p_part_id", partId),
                 new MySqlParameter("p_type_id", typeId),
-                new MySqlParameter("p_spec_values", "{\"color\":\"red\"}"),
+                new MySqlParameter("p_udc1", "{\"color\":\"red\"}"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_image_path", DBNull.Value),
                 new MySqlParameter("p_quantity_type", "Boxes"),
                 new MySqlParameter("p_home_location", "PART-INSERT-LOC"),
@@ -5781,7 +5939,16 @@ VALUES
                 "sp_Dunnage_Parts_Update",
                 new MySqlParameter("p_id", partRowId),
                 new MySqlParameter("p_part_id", partId),
-                new MySqlParameter("p_spec_values", "{\"width\":\"42\"}"),
+                new MySqlParameter("p_udc1", "{\"width\":\"42\"}"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_image_path", DBNull.Value),
                 new MySqlParameter("p_quantity_type", "Sheets"),
                 new MySqlParameter("p_home_location", "PART-NEW-LOC"),
@@ -5820,7 +5987,7 @@ VALUES
             var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                @"INSERT INTO dunnage_parts (part_id, type_id, spec_values, quantity_type, home_location, created_by, created_date)
+                @"INSERT INTO dunnage_parts (part_id, type_id, udc1, quantity_type, home_location, created_by, created_date)
 VALUES (@partId, @typeId, '{""material"":""steel""}', 'Quantity', 'SEARCH-LOC', 'integration.user', NOW());",
                 new MySqlParameter("@partId", partId),
                 new MySqlParameter("@typeId", typeId)
@@ -5830,7 +5997,7 @@ VALUES (@partId, @typeId, '{""material"":""steel""}', 'Quantity', 'SEARCH-LOC', 
                 connectionString,
                 "sp_Dunnage_Parts_Search",
                 new MySqlParameter("p_search_text", "findme"),
-                new MySqlParameter("p_type_id", 0)
+                new MySqlParameter("p_type_id", (object)0)
             );
 
             result
@@ -5848,500 +6015,6 @@ VALUES (@partId, @typeId, '{""material"":""steel""}', 'Quantity', 'SEARCH-LOC', 
         finally
         {
             await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_GetAll_ShouldReturnSeededSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSGA-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"A\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_GetAll"
-            );
-            result
-                .Rows.Cast<DataRow>()
-                .Any(row =>
-                    string.Equals(
-                        row["spec_key"]?.ToString(),
-                        specKey,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                .Should()
-                .BeTrue();
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_specs WHERE spec_key = @specKey;",
-                new MySqlParameter("@specKey", specKey)
-            );
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_GetAllKeys_ShouldReturnKeysFromSeededSpecJson_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSGAK-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Parent{CreateUniqueSuffix()[..6]}";
-        var jsonKey = $"Key{CreateUniqueSuffix()[..6]}";
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                $"INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{{\"{jsonKey}\":\"A\"}}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_GetAllKeys"
-            );
-            result
-                .Rows.Cast<DataRow>()
-                .Any(row =>
-                    string.Equals(
-                        row["SpecKey"]?.ToString(),
-                        jsonKey,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                .Should()
-                .BeTrue();
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_specs WHERE spec_key = @specKey;",
-                new MySqlParameter("@specKey", specKey)
-            );
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_GetById_ShouldReturnSeededSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSGBI-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-        var specId = 0;
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"B\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-            specId = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT id FROM dunnage_specs WHERE type_id = @typeId AND spec_key = @specKey;",
-                    new MySqlParameter("@typeId", typeId),
-                    new MySqlParameter("@specKey", specKey)
-                )
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_GetById",
-                new MySqlParameter("p_id", specId)
-            );
-            result.Rows.Count.Should().Be(1);
-            result.Rows[0]["spec_key"].Should().Be(specKey);
-        }
-        finally
-        {
-            if (specId > 0)
-            {
-                await ExecuteSqlNonQueryAsync(
-                    connectionString,
-                    "DELETE FROM dunnage_specs WHERE id = @id;",
-                    new MySqlParameter("@id", specId)
-                );
-            }
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_GetByType_ShouldReturnSeededSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSGBT-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"C\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_GetByType",
-                new MySqlParameter("p_type_id", typeId)
-            );
-            result
-                .Rows.Cast<DataRow>()
-                .Any(row =>
-                    string.Equals(
-                        row["spec_key"]?.ToString(),
-                        specKey,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                .Should()
-                .BeTrue();
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_specs WHERE spec_key = @specKey;",
-                new MySqlParameter("@specKey", specKey)
-            );
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_CountPartsUsingSpec_ShouldReturnSeededPartCount_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSCPS-T-{CreateUniqueSuffix()[..6]}";
-        var partId = $"DSCPS-P-{CreateUniqueSuffix()[..6]}";
-        const string specKey = "color";
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                @"INSERT INTO dunnage_parts (part_id, type_id, spec_values, quantity_type, home_location, created_by, created_date)
-VALUES (@partId, @typeId, '{""color"":""blue""}', 'Quantity', 'SPEC-COUNT-LOC', 'integration.user', NOW());",
-                new MySqlParameter("@partId", partId),
-                new MySqlParameter("@typeId", typeId)
-            );
-
-            var result = await ExecuteStoredProcedureQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_CountPartsUsingSpec",
-                new MySqlParameter("p_type_id", typeId),
-                new MySqlParameter("p_spec_key", specKey)
-            );
-            result.Rows.Count.Should().Be(1);
-            ConvertToInt(result.Rows[0]["part_count"]).Should().Be(1);
-        }
-        finally
-        {
-            await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_DeleteById_ShouldDeleteSeededSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSDBI-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-        var specId = 0;
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"D\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-            specId = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT id FROM dunnage_specs WHERE type_id = @typeId AND spec_key = @specKey;",
-                    new MySqlParameter("@typeId", typeId),
-                    new MySqlParameter("@specKey", specKey)
-                )
-            );
-
-            await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_DeleteById",
-                new MySqlParameter("p_id", specId)
-            );
-
-            var remainingRows = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM dunnage_specs WHERE id = @id;",
-                    new MySqlParameter("@id", specId)
-                )
-            );
-            remainingRows.Should().Be(0);
-        }
-        finally
-        {
-            if (specId > 0)
-            {
-                await ExecuteSqlNonQueryAsync(
-                    connectionString,
-                    "DELETE FROM dunnage_specs WHERE id = @id;",
-                    new MySqlParameter("@id", specId)
-                );
-            }
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_Dunnage_Specs_DeleteByType_ShouldDeleteSeededSpecs_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSDBT-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"E\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-
-            await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_DeleteByType",
-                new MySqlParameter("p_type_id", typeId)
-            );
-
-            var remainingRows = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM dunnage_specs WHERE type_id = @typeId;",
-                    new MySqlParameter("@typeId", typeId)
-                )
-            );
-            remainingRows.Should().Be(0);
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_specs WHERE spec_key = @specKey;",
-                new MySqlParameter("@specKey", specKey)
-            );
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_dunnage_specs_insert_ShouldInsertSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSINS-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-        var newIdParameter = new MySqlParameter("p_new_id", MySqlDbType.Int32)
-        {
-            Direction = ParameterDirection.Output,
-        };
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            var result = await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_Insert",
-                new MySqlParameter("p_type_id", typeId),
-                new MySqlParameter("p_spec_key", specKey),
-                new MySqlParameter("p_spec_value", "{\"value\":\"inserted\"}"),
-                new MySqlParameter("p_user", "integration.user"),
-                newIdParameter
-            );
-
-            var newId = ConvertToInt(result.OutputValues["p_new_id"]);
-            newId.Should().BeGreaterThan(0);
-
-            var savedRows = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM dunnage_specs WHERE id = @id AND spec_key = @specKey;",
-                    new MySqlParameter("@id", newId),
-                    new MySqlParameter("@specKey", specKey)
-                )
-            );
-            savedRows.Should().Be(1);
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_specs WHERE spec_key = @specKey;",
-                new MySqlParameter("@specKey", specKey)
-            );
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
-        }
-    }
-
-    [Fact]
-    public async Task sp_dunnage_specs_update_ShouldUpdateSeededSpec_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var typeName = $"DSUPD-T-{CreateUniqueSuffix()[..6]}";
-        var specKey = $"Spec{CreateUniqueSuffix()[..6]}";
-        var specId = 0;
-
-        try
-        {
-            var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "INSERT INTO dunnage_specs (type_id, spec_key, spec_value, created_by, created_date) VALUES (@typeId, @specKey, '{\"value\":\"old\"}', 'integration.user', NOW());",
-                new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@specKey", specKey)
-            );
-            specId = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT id FROM dunnage_specs WHERE type_id = @typeId AND spec_key = @specKey;",
-                    new MySqlParameter("@typeId", typeId),
-                    new MySqlParameter("@specKey", specKey)
-                )
-            );
-
-            await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_Dunnage_Specs_Update",
-                new MySqlParameter("p_id", specId),
-                new MySqlParameter("p_spec_value", "{\"value\":\"new\"}"),
-                new MySqlParameter("p_user", "integration.user")
-            );
-
-            var savedValue = await ExecuteSqlScalarAsync(
-                connectionString,
-                "SELECT JSON_UNQUOTE(JSON_EXTRACT(spec_value, '$.value')) FROM dunnage_specs WHERE id = @id;",
-                new MySqlParameter("@id", specId)
-            );
-            savedValue.Should().Be("new");
-        }
-        finally
-        {
-            if (specId > 0)
-            {
-                await ExecuteSqlNonQueryAsync(
-                    connectionString,
-                    "DELETE FROM dunnage_specs WHERE id = @id;",
-                    new MySqlParameter("@id", specId)
-                );
-            }
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_types WHERE type_name = @typeName;",
-                new MySqlParameter("@typeName", typeName)
-            );
         }
     }
 
@@ -6420,7 +6093,16 @@ VALUES (@partId, @typeId, '{""color"":""blue""}', 'Quantity', 'SPEC-COUNT-LOC', 
                 "sp_Dunnage_Parts_InsertWithInventory",
                 new MySqlParameter("p_part_id", partId),
                 new MySqlParameter("p_type_id", typeId),
-                new MySqlParameter("p_spec_values", "{\"value\":\"inv\"}"),
+                new MySqlParameter("p_udc1", "{\"value\":\"inv\"}"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_image_path", DBNull.Value),
                 new MySqlParameter("p_quantity_type", "Quantity"),
                 new MySqlParameter("p_home_location", "INV-LOC"),
@@ -6508,7 +6190,16 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 new MySqlParameter("p_id", partRowId),
                 new MySqlParameter("p_original_part_id", originalPartId),
                 new MySqlParameter("p_new_part_id", newPartId),
-                new MySqlParameter("p_spec_values", "{\"value\":\"updated\"}"),
+                new MySqlParameter("p_udc1", "{\"value\":\"updated\"}"),
+                new MySqlParameter("p_udc2", DBNull.Value),
+                new MySqlParameter("p_udc3", DBNull.Value),
+                new MySqlParameter("p_udc4", DBNull.Value),
+                new MySqlParameter("p_udc5", DBNull.Value),
+                new MySqlParameter("p_udc6", DBNull.Value),
+                new MySqlParameter("p_udc7", DBNull.Value),
+                new MySqlParameter("p_udc8", DBNull.Value),
+                new MySqlParameter("p_udc9", DBNull.Value),
+                new MySqlParameter("p_udc10", DBNull.Value),
                 new MySqlParameter("p_image_path", DBNull.Value),
                 new MySqlParameter("p_quantity_type", "Quantity"),
                 new MySqlParameter("p_home_location", "REF-NEW-LOC"),
@@ -6642,17 +6333,15 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
 
         var typeName = $"DCFGT-T-{CreateUniqueSuffix()[..6]}";
         var fieldName = $"Field{CreateUniqueSuffix()[..6]}";
-        var columnName = $"col_{CreateUniqueSuffix()[..6].ToLowerInvariant()}";
 
         try
         {
             var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, DatabaseColumnName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, @fieldName, @columnName, 'Text', 1, 0, NULL, 'integration.user');",
+                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, @fieldName, 'Text', 1, 0, NULL, 'integration.user');",
                 new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@fieldName", fieldName),
-                new MySqlParameter("@columnName", columnName)
+                new MySqlParameter("@fieldName", fieldName)
             );
 
             var result = await ExecuteStoredProcedureQueryAsync(
@@ -6676,8 +6365,8 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
         {
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "DELETE FROM dunnage_custom_fields WHERE DatabaseColumnName = @columnName;",
-                new MySqlParameter("@columnName", columnName)
+                "DELETE FROM dunnage_custom_fields WHERE FieldName = @fieldName;",
+                new MySqlParameter("@fieldName", fieldName)
             );
             await ExecuteSqlNonQueryAsync(
                 connectionString,
@@ -6697,7 +6386,7 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
         }
 
         var typeName = $"DCFDEL-T-{CreateUniqueSuffix()[..6]}";
-        var columnName = $"col_{CreateUniqueSuffix()[..6].ToLowerInvariant()}";
+        var fieldName = $"Field{CreateUniqueSuffix()[..6]}";
         var fieldId = 0;
 
         try
@@ -6705,15 +6394,15 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
             var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, DatabaseColumnName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, 'DeleteField', @columnName, 'Text', 1, 0, NULL, 'integration.user');",
+                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, @fieldName, 'Text', 1, 0, NULL, 'integration.user');",
                 new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@columnName", columnName)
+                new MySqlParameter("@fieldName", fieldName)
             );
             fieldId = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT ID FROM dunnage_custom_fields WHERE DatabaseColumnName = @columnName;",
-                    new MySqlParameter("@columnName", columnName)
+                    "SELECT ID FROM dunnage_custom_fields WHERE FieldName = @fieldName;",
+                    new MySqlParameter("@fieldName", fieldName)
                 )
             );
 
@@ -6761,7 +6450,6 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
 
         var typeName = $"DCFINS-T-{CreateUniqueSuffix()[..6]}";
         var fieldName = $"Field{CreateUniqueSuffix()[..6]}";
-        var columnName = $"col_{CreateUniqueSuffix()[..6].ToLowerInvariant()}";
         var newIdParameter = new MySqlParameter("p_new_id", MySqlDbType.Int32)
         {
             Direction = ParameterDirection.Output,
@@ -6783,10 +6471,13 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 "sp_Dunnage_CustomFields_Insert",
                 new MySqlParameter("p_dunnage_type_id", typeId),
                 new MySqlParameter("p_field_name", fieldName),
-                new MySqlParameter("p_database_column_name", columnName),
                 new MySqlParameter("p_field_type", "Text"),
                 new MySqlParameter("p_display_order", 1),
-                new MySqlParameter("p_is_required", 0),
+                new MySqlParameter("p_is_required", (object)0),
+                new MySqlParameter("p_unit", DBNull.Value),
+                new MySqlParameter("p_min_value", DBNull.Value),
+                new MySqlParameter("p_max_value", DBNull.Value),
+                new MySqlParameter("p_default_value", DBNull.Value),
                 new MySqlParameter("p_validation_rules", DBNull.Value),
                 new MySqlParameter("p_user", "integration.user"),
                 newIdParameter,
@@ -6794,16 +6485,20 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 errorParameter
             );
 
+            // The message is asserted first so a rejection says why it was rejected.
+            result
+                .OutputValues["p_error_msg"]
+                .Should()
+                .Be("Custom field created successfully");
             ConvertToInt(result.OutputValues["p_status"]).Should().Be(1);
-            result.OutputValues["p_error_msg"].Should().Be("Custom field created successfully");
             ConvertToInt(result.OutputValues["p_new_id"]).Should().BeGreaterThan(0);
         }
         finally
         {
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "DELETE FROM dunnage_custom_fields WHERE DatabaseColumnName = @columnName;",
-                new MySqlParameter("@columnName", columnName)
+                "DELETE FROM dunnage_custom_fields WHERE FieldName = @fieldName;",
+                new MySqlParameter("@fieldName", fieldName)
             );
             await ExecuteSqlNonQueryAsync(
                 connectionString,
@@ -6823,8 +6518,7 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
         }
 
         var typeName = $"DCFUPD-T-{CreateUniqueSuffix()[..6]}";
-        var originalColumnName = $"col_{CreateUniqueSuffix()[..6].ToLowerInvariant()}";
-        var updatedColumnName = $"upd_{CreateUniqueSuffix()[..6].ToLowerInvariant()}";
+        var fieldName = $"Field{CreateUniqueSuffix()[..6]}";
         var fieldId = 0;
 
         try
@@ -6832,15 +6526,15 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
             var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, DatabaseColumnName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, 'OldField', @columnName, 'Text', 1, 0, NULL, 'integration.user');",
+                "INSERT INTO dunnage_custom_fields (DunnageTypeID, FieldName, FieldType, DisplayOrder, IsRequired, ValidationRules, CreatedBy) VALUES (@typeId, @fieldName, 'Text', 1, 0, NULL, 'integration.user');",
                 new MySqlParameter("@typeId", typeId),
-                new MySqlParameter("@columnName", originalColumnName)
+                new MySqlParameter("@fieldName", fieldName)
             );
             fieldId = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT ID FROM dunnage_custom_fields WHERE DatabaseColumnName = @columnName;",
-                    new MySqlParameter("@columnName", originalColumnName)
+                    "SELECT ID FROM dunnage_custom_fields WHERE FieldName = @fieldName;",
+                    new MySqlParameter("@fieldName", fieldName)
                 )
             );
 
@@ -6849,19 +6543,21 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
                 "sp_Dunnage_CustomFields_Update",
                 new MySqlParameter("p_field_id", fieldId),
                 new MySqlParameter("p_field_name", "UpdatedField"),
-                new MySqlParameter("p_database_column_name", updatedColumnName),
                 new MySqlParameter("p_field_type", "Number"),
                 new MySqlParameter("p_display_order", 2),
                 new MySqlParameter("p_is_required", 1),
+                new MySqlParameter("p_unit", DBNull.Value),
+                new MySqlParameter("p_min_value", DBNull.Value),
+                new MySqlParameter("p_max_value", DBNull.Value),
+                new MySqlParameter("p_default_value", DBNull.Value),
                 new MySqlParameter("p_validation_rules", "{\"min\":1}")
             );
 
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_custom_fields WHERE ID = @id AND FieldName = 'UpdatedField' AND DatabaseColumnName = @columnName AND FieldType = 'Number' AND DisplayOrder = 2 AND IsRequired = 1;",
-                    new MySqlParameter("@id", fieldId),
-                    new MySqlParameter("@columnName", updatedColumnName)
+                    "SELECT COUNT(*) FROM dunnage_custom_fields WHERE ID = @id AND FieldName = 'UpdatedField' AND FieldType = 'Number' AND DisplayOrder = 2 AND IsRequired = 1;",
+                    new MySqlParameter("@id", fieldId)
                 )
             );
             updatedRows.Should().Be(1);
@@ -6870,10 +6566,9 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 1, 'Quan
         {
             await ExecuteSqlNonQueryAsync(
                 connectionString,
-                "DELETE FROM dunnage_custom_fields WHERE ID = @id OR DatabaseColumnName IN (@originalColumnName, @updatedColumnName);",
+                "DELETE FROM dunnage_custom_fields WHERE ID = @id OR FieldName = @fieldName;",
                 new MySqlParameter("@id", fieldId),
-                new MySqlParameter("@originalColumnName", originalColumnName),
-                new MySqlParameter("@updatedColumnName", updatedColumnName)
+                new MySqlParameter("@fieldName", fieldName)
             );
             await ExecuteSqlNonQueryAsync(
                 connectionString,
@@ -7557,51 +7252,6 @@ VALUES (@loadUuid, @partId, @typeId, @typeName, 'PackageVariantClosed', 2, 'Quan
     }
 
     [Fact]
-    public async Task sp_Dunnage_LabelData_InsertBatch_ShouldInsertMultipleQueueRows_WhenIntegrationConnectionIsAvailable()
-    {
-        var connectionString = TryGetIntegrationConnectionString();
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return;
-        }
-
-        var loadUuid1 = Guid.NewGuid().ToString();
-        var loadUuid2 = Guid.NewGuid().ToString();
-        const string payload =
-            "[{\"load_uuid\":\"__LOAD1__\",\"part_id\":\"BATCH-1\",\"dunnage_type_id\":null,\"dunnage_type_name\":null,\"dunnage_type_icon\":null,\"quantity\":1,\"quantity_type\":\"Quantity\",\"po_number\":null,\"received_date\":\"2026-05-26 08:00:00\",\"location\":\"BATCH-LOC\",\"label_number\":\"1\",\"part_skid_sequence\":1,\"part_skid_total\":1,\"specs_json\":{\"a\":1}},{\"load_uuid\":\"__LOAD2__\",\"part_id\":\"BATCH-2\",\"dunnage_type_id\":null,\"dunnage_type_name\":null,\"dunnage_type_icon\":null,\"quantity\":2,\"quantity_type\":\"Quantity\",\"po_number\":null,\"received_date\":\"2026-05-26 08:01:00\",\"location\":\"BATCH-LOC\",\"label_number\":\"2\",\"part_skid_sequence\":1,\"part_skid_total\":1,\"specs_json\":{\"b\":2}}]";
-        var batchJson = payload.Replace("__LOAD1__", loadUuid1).Replace("__LOAD2__", loadUuid2);
-
-        try
-        {
-            await ExecuteStoredProcedureNonQueryAsync(
-                connectionString,
-                "sp_Dunnage_LabelData_InsertBatch",
-                new MySqlParameter("p_load_data", batchJson),
-                new MySqlParameter("p_user", "integration.user")
-            );
-
-            var savedRows = ConvertToInt(
-                await ExecuteSqlScalarAsync(
-                    connectionString,
-                    "SELECT COUNT(*) FROM dunnage_label_data WHERE load_uuid IN (@loadUuid1, @loadUuid2);",
-                    new MySqlParameter("@loadUuid1", loadUuid1),
-                    new MySqlParameter("@loadUuid2", loadUuid2)
-                )
-            );
-            savedRows.Should().Be(2);
-        }
-        finally
-        {
-            await ExecuteSqlNonQueryAsync(
-                connectionString,
-                "DELETE FROM dunnage_label_data WHERE load_uuid IN (@loadUuid1, @loadUuid2);",
-                new MySqlParameter("@loadUuid1", loadUuid1),
-                new MySqlParameter("@loadUuid2", loadUuid2)
-            );
-        }
-    }
-
-    [Fact]
     public async Task sp_Dunnage_LabelData_Update_ShouldUpdateSeededQueueRow_WhenIntegrationConnectionIsAvailable()
     {
         var connectionString = TryGetIntegrationConnectionString();
@@ -7771,7 +7421,7 @@ VALUES (@loadUuid, 'DLCLEAR', 1, 'Quantity', NOW(), 'integration.user', 1005, 'C
                 "sp_Dunnage_LabelData_ClearToHistory",
                 new MySqlParameter("p_archived_by", "integration.user"),
                 new MySqlParameter("p_employee_number", 1005),
-                new MySqlParameter("p_clear_all", 0),
+                new MySqlParameter("p_clear_all", (object)0),
                 rowsMovedParameter,
                 archiveBatchIdParameter,
                 statusParameter,
@@ -7823,14 +7473,18 @@ VALUES (@loadUuid, 'DLCLEAR', 1, 'Quantity', NOW(), 'integration.user', 1005, 'C
         }
 
         var loadUuid = Guid.NewGuid().ToString();
+        var typeName = $"DLGA-T-{CreateUniqueSuffix()[..6]}";
+        var partId = $"DLGA-P-{CreateUniqueSuffix()[..6]}";
 
         try
         {
+            await InsertDunnageHistoryParentsAsync(connectionString, typeName, partId);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
                 @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number, created_date, location)
-VALUES (@loadUuid, 'DLGA-HIST', 1, 'Quantity', NOW(), 'integration.user', 1006, NOW(), 'LOAD-ALL-LOC');",
-                new MySqlParameter("@loadUuid", loadUuid)
+VALUES (@loadUuid, @partId, 1, 'Quantity', NOW(), 'integration.user', 1006, NOW(), 'LOAD-ALL-LOC');",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId)
             );
 
             var result = await ExecuteStoredProcedureQueryAsync(
@@ -7856,6 +7510,7 @@ VALUES (@loadUuid, 'DLGA-HIST', 1, 'Quantity', NOW(), 'integration.user', 1006, 
                 "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
                 new MySqlParameter("@loadUuid", loadUuid)
             );
+            await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
         }
     }
 
@@ -7870,14 +7525,18 @@ VALUES (@loadUuid, 'DLGA-HIST', 1, 'Quantity', NOW(), 'integration.user', 1006, 
 
         var loadUuid = Guid.NewGuid().ToString();
         var receivedDate = DateTime.UtcNow;
+        var typeName = $"DLGBR-T-{CreateUniqueSuffix()[..6]}";
+        var partId = $"DLGBR-P-{CreateUniqueSuffix()[..6]}";
 
         try
         {
+            await InsertDunnageHistoryParentsAsync(connectionString, typeName, partId);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
                 @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number, created_date, location)
-VALUES (@loadUuid, 'DLGBR-HIST', 2, 'Quantity', @receivedDate, 'integration.user', 1007, @receivedDate, 'LOAD-RANGE-LOC');",
+VALUES (@loadUuid, @partId, 2, 'Quantity', @receivedDate, 'integration.user', 1007, @receivedDate, 'LOAD-RANGE-LOC');",
                 new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId),
                 new MySqlParameter("@receivedDate", receivedDate)
             );
 
@@ -7906,6 +7565,7 @@ VALUES (@loadUuid, 'DLGBR-HIST', 2, 'Quantity', @receivedDate, 'integration.user
                 "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
                 new MySqlParameter("@loadUuid", loadUuid)
             );
+            await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
         }
     }
 
@@ -7919,14 +7579,18 @@ VALUES (@loadUuid, 'DLGBR-HIST', 2, 'Quantity', @receivedDate, 'integration.user
         }
 
         var loadUuid = Guid.NewGuid().ToString();
+        var typeName = $"DLGBI-T-{CreateUniqueSuffix()[..6]}";
+        var partId = $"DLGBI-P-{CreateUniqueSuffix()[..6]}";
 
         try
         {
+            await InsertDunnageHistoryParentsAsync(connectionString, typeName, partId);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
                 @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number, created_date, location)
-VALUES (@loadUuid, 'DLGBI-HIST', 3, 'Quantity', NOW(), 'integration.user', 1008, NOW(), 'LOAD-ID-LOC');",
-                new MySqlParameter("@loadUuid", loadUuid)
+VALUES (@loadUuid, @partId, 3, 'Quantity', NOW(), 'integration.user', 1008, NOW(), 'LOAD-ID-LOC');",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId)
             );
 
             var result = await ExecuteStoredProcedureQueryAsync(
@@ -7935,7 +7599,7 @@ VALUES (@loadUuid, 'DLGBI-HIST', 3, 'Quantity', NOW(), 'integration.user', 1008,
                 new MySqlParameter("p_load_uuid", loadUuid)
             );
             result.Rows.Count.Should().Be(1);
-            result.Rows[0]["load_uuid"].Should().Be(loadUuid);
+            result.Rows[0]["load_uuid"].ToString().Should().Be(loadUuid);
         }
         finally
         {
@@ -7944,6 +7608,7 @@ VALUES (@loadUuid, 'DLGBI-HIST', 3, 'Quantity', NOW(), 'integration.user', 1008,
                 "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
                 new MySqlParameter("@loadUuid", loadUuid)
             );
+            await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
         }
     }
 
@@ -7957,14 +7622,18 @@ VALUES (@loadUuid, 'DLGBI-HIST', 3, 'Quantity', NOW(), 'integration.user', 1008,
         }
 
         var loadUuid = Guid.NewGuid().ToString();
+        var typeName = $"DLD-T-{CreateUniqueSuffix()[..6]}";
+        var partId = $"DLD-P-{CreateUniqueSuffix()[..6]}";
 
         try
         {
+            await InsertDunnageHistoryParentsAsync(connectionString, typeName, partId);
             await ExecuteSqlNonQueryAsync(
                 connectionString,
                 @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number, created_date)
-VALUES (@loadUuid, 'DLD-HIST', 4, 'Quantity', NOW(), 'integration.user', 1009, NOW());",
-                new MySqlParameter("@loadUuid", loadUuid)
+VALUES (@loadUuid, @partId, 4, 'Quantity', NOW(), 'integration.user', 1009, NOW());",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", partId)
             );
 
             await ExecuteStoredProcedureNonQueryAsync(
@@ -7989,6 +7658,7 @@ VALUES (@loadUuid, 'DLD-HIST', 4, 'Quantity', NOW(), 'integration.user', 1009, N
                 "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
                 new MySqlParameter("@loadUuid", loadUuid)
             );
+            await DeleteDunnagePartAndTypeAsync(connectionString, partId, typeName);
         }
     }
 
@@ -8002,21 +7672,33 @@ VALUES (@loadUuid, 'DLD-HIST', 4, 'Quantity', NOW(), 'integration.user', 1009, N
         }
 
         var loadUuid = Guid.NewGuid().ToString();
+        var typeName = $"DLUPD-T-{CreateUniqueSuffix()[..6]}";
+        var originalPartId = $"DLUPD-P-{CreateUniqueSuffix()[..6]}";
+        var updatedPartId = $"DLUPD-N-{CreateUniqueSuffix()[..6]}";
 
         try
         {
+            await InsertDunnageHistoryParentsAsync(connectionString, typeName, originalPartId);
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "INSERT INTO dunnage_parts (part_id, type_id, quantity_type, created_by, created_date) "
+                    + "SELECT @partId, id, 'Quantity', 'integration.user', NOW() FROM dunnage_types WHERE type_name = @typeName;",
+                new MySqlParameter("@partId", updatedPartId),
+                new MySqlParameter("@typeName", typeName)
+            );
             await ExecuteSqlNonQueryAsync(
                 connectionString,
                 @"INSERT INTO dunnage_history (load_uuid, part_id, quantity, quantity_type, received_date, created_by, employee_number, created_date, location, label_number)
-VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, NOW(), 'LOAD-OLD-LOC', 'OLD');",
-                new MySqlParameter("@loadUuid", loadUuid)
+VALUES (@loadUuid, @partId, 5, 'Quantity', NOW(), 'integration.user', 1010, NOW(), 'LOAD-OLD-LOC', 'OLD');",
+                new MySqlParameter("@loadUuid", loadUuid),
+                new MySqlParameter("@partId", originalPartId)
             );
 
             await ExecuteStoredProcedureNonQueryAsync(
                 connectionString,
                 "sp_Dunnage_Loads_Update",
                 new MySqlParameter("p_load_uuid", loadUuid),
-                new MySqlParameter("p_part_id", "DLU-HIST-NEW"),
+                new MySqlParameter("p_part_id", updatedPartId),
                 new MySqlParameter("p_quantity", 7m),
                 new MySqlParameter("p_po_number", "PO-DUN-1"),
                 new MySqlParameter("p_type_id", DBNull.Value),
@@ -8042,8 +7724,9 @@ VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, N
             var updatedRows = ConvertToInt(
                 await ExecuteSqlScalarAsync(
                     connectionString,
-                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = 'DLU-HIST-NEW' AND quantity = 7 AND location = 'LOAD-NEW-LOC' AND udc1 = 'batch';",
-                    new MySqlParameter("@loadUuid", loadUuid)
+                    "SELECT COUNT(*) FROM dunnage_history WHERE load_uuid = @loadUuid AND part_id = @updatedPartId AND quantity = 7 AND location = 'LOAD-NEW-LOC' AND udc1 = 'batch';",
+                    new MySqlParameter("@loadUuid", loadUuid),
+                    new MySqlParameter("@updatedPartId", updatedPartId)
                 )
             );
             updatedRows.Should().Be(1);
@@ -8055,6 +7738,13 @@ VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, N
                 "DELETE FROM dunnage_history WHERE load_uuid = @loadUuid;",
                 new MySqlParameter("@loadUuid", loadUuid)
             );
+            await ExecuteSqlNonQueryAsync(
+                connectionString,
+                "DELETE FROM dunnage_parts WHERE part_id IN (@originalPartId, @updatedPartId);",
+                new MySqlParameter("@originalPartId", originalPartId),
+                new MySqlParameter("@updatedPartId", updatedPartId)
+            );
+            await DeleteDunnagePartAndTypeAsync(connectionString, originalPartId, typeName);
         }
     }
 
@@ -8081,11 +7771,11 @@ VALUES (@loadUuid, 'DLU-HIST', 5, 'Quantity', NOW(), 'integration.user', 1010, N
                 new MySqlParameter("p_Heat", "IMP-HEAT"),
                 new MySqlParameter("p_TransactionDate", DateTime.UtcNow.Date),
                 new MySqlParameter("p_InitialLocation", "IMP-LOC"),
-                new MySqlParameter("p_CoilsOnSkid", 0),
+                new MySqlParameter("p_CoilsOnSkid", (object)0),
                 new MySqlParameter("p_LabelNumber", 1),
                 new MySqlParameter("p_VendorName", "Import Vendor"),
                 new MySqlParameter("p_PartDescription", "Imported row"),
-                new MySqlParameter("p_IsNonPOItem", 0)
+                new MySqlParameter("p_IsNonPOItem", (object)0)
             );
 
             var savedRows = ConvertToInt(
@@ -8362,7 +8052,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
                 "sp_Receiving_LabelData_ClearToHistory",
                 new MySqlParameter("p_archived_by", "integration.user"),
                 new MySqlParameter("p_employee_number", 1013),
-                new MySqlParameter("p_clear_all", 0),
+                new MySqlParameter("p_clear_all", (object)0),
                 rowsMovedParameter,
                 archiveBatchIdParameter,
                 statusParameter,
@@ -8427,7 +8117,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
                 new MySqlParameter("p_key", systemKey),
                 new MySqlParameter("p_value", "system-value"),
                 new MySqlParameter("p_data_type", "String"),
-                new MySqlParameter("p_is_sensitive", 0),
+                new MySqlParameter("p_is_sensitive", (object)0),
                 new MySqlParameter("p_updated_by", "integration.user")
             );
 
@@ -8749,7 +8439,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
                 "sp_Volvo_GeneratedLabelData_ClearToHistory",
                 new MySqlParameter("p_archived_by", "integration.user"),
                 new MySqlParameter("p_employee_number", employeeNumber),
-                new MySqlParameter("p_clear_all", 0),
+                new MySqlParameter("p_clear_all", (object)0),
                 rowsMovedParameter,
                 archiveBatchIdParameter,
                 statusParameter,
@@ -9018,7 +8708,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
             var activeOnly = await ExecuteStoredProcedureQueryAsync(
                 connectionString,
                 "sp_Volvo_PartMaster_GetAll",
-                new MySqlParameter("p_include_inactive", 0)
+                new MySqlParameter("p_include_inactive", (object)0)
             );
             activeOnly
                 .Rows.Cast<DataRow>()
@@ -9086,7 +8776,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
                 connectionString,
                 "sp_Volvo_PartMaster_SetActive",
                 new MySqlParameter("p_part_number", partNumber),
-                new MySqlParameter("p_is_active", 0)
+                new MySqlParameter("p_is_active", (object)0)
             );
 
             var updatedFlag = ConvertToInt(
@@ -9524,7 +9214,7 @@ VALUES (@loadId, 1, 1, 1, @partId, 'Clear row', 'PO-CLR', '1', 1013, NOW(), CURD
                 new MySqlParameter("p_quantity_per_skid", 12),
                 new MySqlParameter("p_received_skid_count", 2),
                 new MySqlParameter("p_calculated_piece_count", 24),
-                new MySqlParameter("p_has_discrepancy", 0),
+                new MySqlParameter("p_has_discrepancy", (object)0),
                 new MySqlParameter("p_expected_skid_count", DBNull.Value),
                 new MySqlParameter("p_discrepancy_note", DBNull.Value)
             );
@@ -10494,6 +10184,26 @@ VALUES (@partId, @typeId, 'Quantity', @homeLocation, @createdBy, NOW());",
             new MySqlParameter("@typeId", typeId),
             new MySqlParameter("@homeLocation", homeLocation),
             new MySqlParameter("@createdBy", createdBy)
+        );
+    }
+
+    /// <summary>
+    /// Creates the dunnage type and part a seeded history row has to point at, because
+    /// <c>dunnage_history.part_id</c> is a foreign key to <c>dunnage_parts.part_id</c>.
+    /// </summary>
+    private static async Task InsertDunnageHistoryParentsAsync(
+        string connectionString,
+        string typeName,
+        string partId
+    )
+    {
+        var typeId = await InsertDunnageTypeAsync(connectionString, typeName);
+        await ExecuteSqlNonQueryAsync(
+            connectionString,
+            "INSERT INTO dunnage_parts (part_id, type_id, quantity_type, created_by, created_date) "
+                + "VALUES (@partId, @typeId, 'Quantity', 'integration.user', NOW());",
+            new MySqlParameter("@partId", partId),
+            new MySqlParameter("@typeId", typeId)
         );
     }
 

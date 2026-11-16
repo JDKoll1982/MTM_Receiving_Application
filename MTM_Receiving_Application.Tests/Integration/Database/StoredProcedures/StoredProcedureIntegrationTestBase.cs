@@ -16,6 +16,29 @@ public abstract class StoredProcedureIntegrationTestBase
         return Guid.NewGuid().ToString("N");
     }
 
+    /// <summary>
+    /// Adds parameters after guarding against the enum-overload trap. A literal <c>0</c> converts
+    /// implicitly to any enum, so <c>new MySqlParameter("p_flag", 0)</c> binds the
+    /// <c>MySqlDbType</c> overload and leaves <c>Value</c> null, which sends NULL to the procedure.
+    /// </summary>
+    private static void AddParameters(MySqlCommand command, MySqlParameter[] parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            if (parameter.Direction == ParameterDirection.Input
+                && parameter.Value is null
+                && parameter.MySqlDbType == default(MySqlDbType))
+            {
+                throw new InvalidOperationException(
+                    $"Parameter '{parameter.ParameterName}' has no value. Cast the literal to object "
+                        + "when 0 is intended: new MySqlParameter(\"name\", (object)0)."
+                );
+            }
+
+            command.Parameters.Add(parameter);
+        }
+    }
+
     protected static async Task<DataTable> ExecuteStoredProcedureQueryAsync(
         string connectionString,
         string procedureName,
@@ -32,7 +55,7 @@ public abstract class StoredProcedureIntegrationTestBase
 
         if (parameters.Length > 0)
         {
-            command.Parameters.AddRange(parameters);
+            AddParameters(command, parameters);
         }
 
         await using var reader = await command.ExecuteReaderAsync();
@@ -57,7 +80,7 @@ public abstract class StoredProcedureIntegrationTestBase
 
         if (parameters.Length > 0)
         {
-            command.Parameters.AddRange(parameters);
+            AddParameters(command, parameters);
         }
 
         var affectedRows = await command.ExecuteNonQueryAsync();
@@ -91,7 +114,7 @@ public abstract class StoredProcedureIntegrationTestBase
         await using var command = new MySqlCommand(sql, connection);
         if (parameters.Length > 0)
         {
-            command.Parameters.AddRange(parameters);
+            AddParameters(command, parameters);
         }
 
         return await command.ExecuteNonQueryAsync();
@@ -109,7 +132,7 @@ public abstract class StoredProcedureIntegrationTestBase
         await using var command = new MySqlCommand(sql, connection);
         if (parameters.Length > 0)
         {
-            command.Parameters.AddRange(parameters);
+            AddParameters(command, parameters);
         }
 
         var value = await command.ExecuteScalarAsync();
