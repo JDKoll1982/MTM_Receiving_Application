@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-10T00:00:00Z",
+  "updated_at": "2026-11-16T00:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json",
   "extensions": {
     "ado": {
@@ -2350,6 +2350,41 @@
       "created_at": "2026-07-08T00:00:00Z",
       "updated_at": "2026-07-08T00:00:00Z"
     },
+    "egm": {
+      "name": "Elephant-Goldfish Model",
+      "id": "egm",
+      "description": "Design with an elephant. Review with a goldfish.",
+      "author": "Kapil Sachdeva",
+      "version": "0.9.1",
+      "download_url": "https://github.com/ksachdeva/spec-kit-extensions/releases/download/egm-v0.9.1/egm-0.9.1.zip",
+      "sha256": "920f2570be2d40f2a5abe359dd7f58658e90aea317b38438bb8444f8a01d4deb",
+      "repository": "https://github.com/ksachdeva/spec-kit-extensions",
+      "homepage": "https://github.com/ksachdeva/spec-kit-extensions",
+      "documentation": "https://github.com/ksachdeva/spec-kit-extensions/blob/main/extensions/egm/README.md",
+      "changelog": "https://github.com/ksachdeva/spec-kit-extensions/blob/main/extensions/egm/CHANGELOG.md",
+      "license": "MIT",
+      "category": "process",
+      "effect": "read-write",
+      "requires": {
+        "speckit_version": ">=0.9.0"
+      },
+      "provides": {
+        "commands": 7,
+        "hooks": 0
+      },
+      "tags": [
+        "assessment",
+        "discovery",
+        "triage",
+        "product",
+        "workflow"
+      ],
+      "verified": false,
+      "downloads": 0,
+      "stars": 0,
+      "created_at": "2026-11-16T00:00:00Z",
+      "updated_at": "2026-11-16T00:00:00Z"
+    },
     "epic": {
       "name": "Epic",
       "id": "epic",
@@ -3301,6 +3336,56 @@
       "created_at": "2026-03-05T00:00:00Z",
       "updated_at": "2026-03-05T00:00:00Z"
     },
+    "jira-lifecycle": {
+      "name": "Spec Kit lifecycle for Jira",
+      "id": "jira-lifecycle",
+      "description": "A Jira story to Done through Spec Kit, with a human sign-off before every Jira or PR write.",
+      "author": "praveenlavu",
+      "version": "0.1.0",
+      "download_url": "https://github.com/praveenlavu/spec-kit-jira/archive/refs/tags/v0.1.0.zip",
+      "sha256": "2ef9ca5ea40b3cc05b1043fc39dd01019615ad9d5766e46e5d7389d2e1159902",
+      "repository": "https://github.com/praveenlavu/spec-kit-jira",
+      "homepage": "https://github.com/praveenlavu/spec-kit-jira",
+      "documentation": "https://github.com/praveenlavu/spec-kit-jira/blob/v0.1.0/README.md",
+      "changelog": "https://github.com/praveenlavu/spec-kit-jira/blob/v0.1.0/CHANGELOG.md",
+      "license": "MIT",
+      "category": "integration",
+      "effect": "read-write",
+      "requires": {
+        "speckit_version": ">=1.2.1",
+        "tools": [
+          {
+            "name": "skj",
+            "version": ">=0.1.0",
+            "required": true
+          },
+          {
+            "name": "git",
+            "required": true
+          },
+          {
+            "name": "gh",
+            "required": false
+          }
+        ]
+      },
+      "provides": {
+        "commands": 13,
+        "hooks": 2
+      },
+      "tags": [
+        "jira",
+        "issue-tracking",
+        "hitl",
+        "workflow",
+        "governance"
+      ],
+      "verified": false,
+      "downloads": 0,
+      "stars": 0,
+      "created_at": "2026-11-16T00:00:00Z",
+      "updated_at": "2026-11-16T00:00:00Z"
+    },
     "jira-mirror": {
       "name": "Jira Mirror",
       "id": "jira-mirror",
@@ -4251,6 +4336,42 @@
       "created_at": "2026-05-04T02:51:52Z",
       "updated_at": "2026-06-18T00:00:00Z"
     },
+    "multi-repo": {
+      "name": "Multi-Repo Workspace Orchestration",
+      "id": "multi-repo",
+      "description": "Orchestrate spec-driven implementation across a workspace: a central specs repository dispatches implementation to member repositories",
+      "author": "Joao Victor",
+      "version": "0.7.1",
+      "download_url": "https://github.com/joaopaschuino/speckit-multirepo/archive/refs/tags/v0.7.1.zip",
+      "sha256": "d2206a8285491886f9b548cfca4db5b752d19667239d7d403d7b7ecc075271b9",
+      "repository": "https://github.com/joaopaschuino/speckit-multirepo",
+      "homepage": "https://github.com/joaopaschuino/speckit-multirepo",
+      "documentation": "https://github.com/joaopaschuino/speckit-multirepo/blob/main/README.md",
+      "changelog": "https://github.com/joaopaschuino/speckit-multirepo/blob/main/CHANGELOG.md",
+      "license": "MIT",
+      "category": "process",
+      "effect": "read-write",
+      "requires": {
+        "speckit_version": ">=1.1.0"
+      },
+      "provides": {
+        "commands": 5,
+        "hooks": 1
+      },
+      "tags": [
+        "multi-repo",
+        "orchestration",
+        "workspace",
+        "specs",
+        "spec-driven-development",
+        "dependency-graph"
+      ],
+      "verified": false,
+      "downloads": 0,
+      "stars": 0,
+      "created_at": "2026-11-16T00:00:00Z",
+      "updated_at": "2026-11-16T00:00:00Z"
+    },
     "multi-repo-sync": {
       "name": "Multi-Repo Branch Sync",
       "id": "multi-repo-sync",
@@ -4375,6 +4496,41 @@
       "stars": 0,
       "created_at": "2026-07-17T00:00:00Z",
       "updated_at": "2026-09-23T00:00:00Z"
+    },
+    "okr": {
+      "name": "OKR Bets",
+      "id": "okr",
+      "description": "Treat each spec as a Key Result bet: define a hypothesis and verification contract before /speckit.specify, plan measurement, assess results after launch before scaling. Company OKRs stay read-only.",
+      "author": "juanl",
+      "version": "0.2.1",
+      "download_url": "https://github.com/juanl/spec-kit-okr/releases/download/v0.2.1/spec-kit-okr-0.2.1.zip",
+      "sha256": "56b17e6dce43b6fd28e0b33778dc13d11695f57a46d755c4d714c716a373292f",
+      "repository": "https://github.com/juanl/spec-kit-okr",
+      "homepage": "https://github.com/juanl/spec-kit-okr",
+      "documentation": "https://github.com/juanl/spec-kit-okr/blob/v0.2.1/README.md",
+      "changelog": "https://github.com/juanl/spec-kit-okr/blob/v0.2.1/CHANGELOG.md",
+      "license": "MIT",
+      "category": "process",
+      "effect": "read-write",
+      "requires": {
+        "speckit_version": ">=0.9.0"
+      },
+      "provides": {
+        "commands": 7,
+        "hooks": 3
+      },
+      "tags": [
+        "okr",
+        "hypothesis",
+        "metrics",
+        "experimentation",
+        "product"
+      ],
+      "verified": false,
+      "downloads": 0,
+      "stars": 0,
+      "created_at": "2026-11-12T00:00:00Z",
+      "updated_at": "2026-11-12T00:00:00Z"
     },
     "onboard": {
       "name": "Onboard",
@@ -5956,15 +6112,15 @@
     "sizing": {
       "name": "T-Shirt Sizing Gate",
       "id": "sizing",
-      "description": "Adds T-Shirt sizing estimates (XS\u2013XL) and an explicit human approval gate between planning and implementation, with SHA-256 checks to detect changes to approved planning artifacts.",
+      "description": "Preliminary XS\u2013XL estimates from change descriptions, plus planned-feature sizing and explicit approval within the Spec Kit workflow, with SHA-256 checks for planning changes.",
       "author": "Maurizio Pinotti",
-      "version": "0.1.2",
-      "download_url": "https://github.com/mauriziopinotti/spec-kit-sizing/archive/refs/tags/v0.1.2.zip",
-      "sha256": "4815e6b30bffead28befa7f849a79c44e5b93717ccddc27ded6c14d07a6c7e99",
+      "version": "0.2.0",
+      "download_url": "https://github.com/mauriziopinotti/spec-kit-sizing/archive/refs/tags/v0.2.0.zip",
+      "sha256": "86171fe7f654f8ba664a045d473fea994d816b20b23753aabc7b17e9cc5be567",
       "repository": "https://github.com/mauriziopinotti/spec-kit-sizing",
       "homepage": "https://github.com/mauriziopinotti/spec-kit-sizing",
-      "documentation": "https://github.com/mauriziopinotti/spec-kit-sizing/blob/main/README.md",
-      "changelog": "https://github.com/mauriziopinotti/spec-kit-sizing/blob/main/CHANGELOG.md",
+      "documentation": "https://github.com/mauriziopinotti/spec-kit-sizing/blob/v0.2.0/README.md",
+      "changelog": "https://github.com/mauriziopinotti/spec-kit-sizing/blob/v0.2.0/CHANGELOG.md",
       "license": "MIT",
       "category": "process",
       "effect": "read-write",
@@ -5979,7 +6135,7 @@
         ]
       },
       "provides": {
-        "commands": 3,
+        "commands": 4,
         "hooks": 2
       },
       "tags": [
@@ -5991,7 +6147,7 @@
       "downloads": 0,
       "stars": 0,
       "created_at": "2026-11-09T00:00:00Z",
-      "updated_at": "2026-11-09T00:00:00Z"
+      "updated_at": "2026-11-12T00:00:00Z"
     },
     "spec-reference-loader": {
       "name": "Spec Reference Loader",
