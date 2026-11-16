@@ -877,7 +877,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "ShipRecTools.Main",
-                Title = "Ship/Rec Tools",
+                Title = "Extra Tools",
                 Content =
                     "Utilities for shipping and receiving operations.\n\n"
                     + "• Choose a tool from the selection screen\n"
@@ -949,7 +949,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "ShipRecTools.ToolSelection",
-                Title = "Ship/Rec Tools",
+                Title = "Extra Tools",
                 Content =
                     "Choose a utility from the tool cards.\n\n"
                     + "• Outside Service History\n"

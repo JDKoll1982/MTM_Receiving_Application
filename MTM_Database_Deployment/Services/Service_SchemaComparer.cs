@@ -102,6 +102,23 @@ public sealed class Service_SchemaComparer
         string database,
         List<Model_SchemaChange> changes)
     {
+        // MySQL refuses to drop an index a foreign key relies on, so a rebuilt index needs its
+        // dependent keys dropped first. Both directions are computed up front, because an inbound
+        // key lives in another table that may be walked before or after this one.
+        var dependentForeignKeys = CollectIndexDependentForeignKeys(live);
+        var rebuiltIndexes = FindRebuiltIndexes(expected, live);
+        var droppedForeignKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var key in rebuiltIndexes)
+        {
+            if (dependentForeignKeys.TryGetValue(key, out var dependents))
+            {
+                foreach (var dependent in dependents)
+                {
+                    droppedForeignKeys.Add(ForeignKeyKey(dependent.Table, dependent.ForeignKey.Name));
+                }
+            }
+        }
+
         foreach (var (tableName, expectedTable) in expected.OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase))
         {
             if (!live.TryGetValue(tableName, out var liveTable))
@@ -159,12 +176,57 @@ public sealed class Service_SchemaComparer
                 }
                 else if (!string.Equals(liveIndex.Signature, index.Signature, StringComparison.Ordinal))
                 {
+                    var key = IndexKey(tableName, index.Name);
+                    var dependents = dependentForeignKeys.TryGetValue(key, out var found)
+                        ? found
+                        : new List<DependentForeignKey>();
+
+                    // A key this table owns is released in the same statement as the index swap, so the
+                    // index can never vanish while the key still points at it. A key owned by another
+                    // table cannot join that statement - ALTER TABLE touches one table - so it is
+                    // dropped before and re-added after.
+                    var local = dependents
+                        .Where(dependent => string.Equals(dependent.Table, tableName, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                    var remote = dependents.Except(local).ToList();
+
+                    var sql = new System.Text.StringBuilder();
+
+                    foreach (var dependent in remote)
+                    {
+                        sql.AppendLine($"ALTER TABLE `{database}`.`{dependent.Table}` DROP FOREIGN KEY `{dependent.ForeignKey.Name}`;");
+                    }
+
+                    // MySQL checks every ADD clause before any DROP clause, so a key cannot be dropped
+                    // and re-added under the same name in one statement (1826). Releasing it and
+                    // swapping the index together is what keeps the swap safe.
+                    sql.AppendLine($"ALTER TABLE `{database}`.`{tableName}`");
+                    sql.Append("  ").AppendLine(
+                        string.Join(
+                            "," + Environment.NewLine + "  ",
+                            local.Select(dependent => $"DROP FOREIGN KEY `{dependent.ForeignKey.Name}`")
+                                .Append($"DROP INDEX `{index.Name}`")
+                                .Append(index.ToAddClause())));
+                    sql.AppendLine(";");
+
+                    foreach (var dependent in dependents)
+                    {
+                        // A key whose own definition also changed is re-created by the foreign key
+                        // change below, with the new columns, so re-adding it here would collide.
+                        if (!IsForeignKeyRebuilt(expected, live, dependent))
+                        {
+                            sql.AppendLine(dependent.ForeignKey.ToCreateSql(dependent.Table, database));
+                        }
+                    }
+
                     changes.Add(new Model_SchemaChange
                     {
                         Kind = Enum_ChangeKind.AddIndex,
                         Target = $"{tableName}.{index.Name}",
-                        Detail = "definition differs",
-                        Sql = $"ALTER TABLE `{database}`.`{tableName}` DROP INDEX `{index.Name}`;" + Environment.NewLine + index.ToCreateSql(tableName, database)
+                        Detail = dependents.Count == 0
+                            ? "definition differs"
+                            : "definition differs; dependent foreign key(s) dropped and re-added",
+                        Sql = sql.ToString()
                     });
                 }
             }
@@ -184,12 +246,17 @@ public sealed class Service_SchemaComparer
                 }
                 else if (!string.Equals(liveForeignKey.Signature, foreignKey.Signature, StringComparison.Ordinal))
                 {
+                    // The key may already be gone because an index change dropped it to rebuild itself.
+                    var dropPrefix = droppedForeignKeys.Contains(ForeignKeyKey(tableName, foreignKey.Name))
+                        ? string.Empty
+                        : $"ALTER TABLE `{database}`.`{tableName}` DROP FOREIGN KEY `{foreignKey.Name}`;{Environment.NewLine}";
+
                     changes.Add(new Model_SchemaChange
                     {
                         Kind = Enum_ChangeKind.AddForeignKey,
                         Target = $"{tableName}.{foreignKey.Name}",
                         Detail = "definition differs",
-                        Sql = $"ALTER TABLE `{database}`.`{tableName}` DROP FOREIGN KEY `{foreignKey.Name}`;" + Environment.NewLine + foreignKey.ToCreateSql(tableName, database)
+                        Sql = dropPrefix + foreignKey.ToCreateSql(tableName, database)
                     });
                 }
             }
@@ -223,6 +290,145 @@ public sealed class Service_SchemaComparer
                 Sql = $"DROP TABLE `{database}`.`{tableName}`;"
             });
         }
+    }
+
+    /// <summary>
+    /// A foreign key MySQL will not release its index for. <c>Table</c> is the table that owns the
+    /// key, which is the table being altered - not always the table whose index is being rebuilt.
+    /// </summary>
+    private sealed record DependentForeignKey(string Table, Model_ForeignKeyDefinition ForeignKey);
+
+    private static string IndexKey(string table, string index) => $"{table}|{index}";
+
+    private static string ForeignKeyKey(string table, string foreignKey) => $"{table}|{foreignKey}";
+
+    /// <summary>
+    /// Every index whose definition differs between the SQL tree and the live database.
+    /// </summary>
+    private static HashSet<string> FindRebuiltIndexes(
+        Dictionary<string, Model_TableSnapshot> expected,
+        Dictionary<string, Model_TableSnapshot> live)
+    {
+        var rebuilt = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (tableName, expectedTable) in expected)
+        {
+            if (!live.TryGetValue(tableName, out var liveTable))
+            {
+                continue;
+            }
+
+            foreach (var index in expectedTable.Indexes)
+            {
+                var liveIndex = liveTable.Indexes.FirstOrDefault(
+                    item => string.Equals(item.Name, index.Name, StringComparison.OrdinalIgnoreCase));
+                if (liveIndex is not null
+                    && !string.Equals(liveIndex.Signature, index.Signature, StringComparison.Ordinal))
+                {
+                    rebuilt.Add(IndexKey(tableName, index.Name));
+                }
+            }
+        }
+
+        return rebuilt;
+    }
+
+    /// <summary>
+    /// Maps <c>table|index</c> to the foreign keys that use that index, in both directions:
+    /// a key on the same table whose columns are the index prefix, and a key on another table that
+    /// references this one through those columns. Both make <c>DROP INDEX</c> fail with
+    /// "Cannot drop index ...: needed in a foreign key constraint".
+    /// </summary>
+    private static Dictionary<string, List<DependentForeignKey>> CollectIndexDependentForeignKeys(
+        Dictionary<string, Model_TableSnapshot> live)
+    {
+        var dependents = new Dictionary<string, List<DependentForeignKey>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (indexTable, indexTableSnapshot) in live)
+        {
+            foreach (var index in indexTableSnapshot.Indexes)
+            {
+                var found = new List<DependentForeignKey>();
+
+                foreach (var foreignKey in indexTableSnapshot.ForeignKeys)
+                {
+                    if (IsLeftmostPrefix(foreignKey.Columns, index.Columns))
+                    {
+                        found.Add(new DependentForeignKey(indexTable, foreignKey));
+                    }
+                }
+
+                foreach (var (childTable, childSnapshot) in live)
+                {
+                    if (string.Equals(childTable, indexTable, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    foreach (var foreignKey in childSnapshot.ForeignKeys)
+                    {
+                        if (string.Equals(foreignKey.ReferencedTable, indexTable, StringComparison.OrdinalIgnoreCase)
+                            && IsLeftmostPrefix(foreignKey.ReferencedColumns, index.Columns))
+                        {
+                            found.Add(new DependentForeignKey(childTable, foreignKey));
+                        }
+                    }
+                }
+
+                if (found.Count > 0)
+                {
+                    dependents[IndexKey(indexTable, index.Name)] = found;
+                }
+            }
+        }
+
+        return dependents;
+    }
+
+    /// <summary>
+    /// True when the key's own definition also changed, so the foreign key change re-creates it and
+    /// this one must not add it a second time.
+    /// </summary>
+    private static bool IsForeignKeyRebuilt(
+        Dictionary<string, Model_TableSnapshot> expected,
+        Dictionary<string, Model_TableSnapshot> live,
+        DependentForeignKey dependent)
+    {
+        if (!expected.TryGetValue(dependent.Table, out var expectedTable)
+            || !live.TryGetValue(dependent.Table, out var liveTable))
+        {
+            return false;
+        }
+
+        var expectedKey = expectedTable.ForeignKeys.FirstOrDefault(
+            item => string.Equals(item.Name, dependent.ForeignKey.Name, StringComparison.OrdinalIgnoreCase));
+        if (expectedKey is null)
+        {
+            return false;
+        }
+
+        var liveKey = liveTable.ForeignKeys.FirstOrDefault(
+            item => string.Equals(item.Name, dependent.ForeignKey.Name, StringComparison.OrdinalIgnoreCase));
+
+        return liveKey is not null
+            && !string.Equals(liveKey.Signature, expectedKey.Signature, StringComparison.Ordinal);
+    }
+
+    private static bool IsLeftmostPrefix(IReadOnlyList<string> candidate, IReadOnlyList<string> indexColumns)
+    {
+        if (candidate.Count == 0 || candidate.Count > indexColumns.Count)
+        {
+            return false;
+        }
+
+        for (var position = 0; position < candidate.Count; position++)
+        {
+            if (!string.Equals(candidate[position], indexColumns[position], StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void BuildObjectChanges(

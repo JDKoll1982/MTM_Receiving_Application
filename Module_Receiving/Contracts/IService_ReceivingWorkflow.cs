@@ -105,6 +105,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync();
 
         /// <summary>
+        /// Moves from the PO step straight to the load step, skipping the part page.
+        /// Used when the PO carries a single part number, so there is nothing to choose.
+        /// </summary>
+        /// <returns>Result indicating success and any validation errors</returns>
+        public Model_ReceivingWorkflowStepResult SkipPartSelection();
+
+        /// <summary>
         /// Goes back to the previous step.
         /// </summary>
         /// <returns>Result indicating success</returns>

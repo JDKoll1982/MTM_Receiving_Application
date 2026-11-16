@@ -26,19 +26,13 @@ public sealed class Service_DatabaseTargetManager : IService_DatabaseTargetManag
                 "live",
                 "Live (core)",
                 "mtm_receiving_application",
-                "The production database the SyncTool writes reference data into."
+                "The production database every workstation uses."
             ),
             new(
                 "test",
                 "Test",
-                "mtm_receiving_application",
-                "The regular test database used for development."
-            ),
-            new(
-                "sync-copy",
-                "SyncTool copy",
-                "mtm_receiving_application_backup_test",
-                "Disposable verification copy produced by the SyncTool."
+                "mtm_receiving_application_test",
+                "Development copy, safe to write to. Intended for testing on this PC."
             ),
         };
 

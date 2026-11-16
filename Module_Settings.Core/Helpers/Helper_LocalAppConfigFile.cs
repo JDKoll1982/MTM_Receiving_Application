@@ -8,9 +8,9 @@ namespace MTM_Receiving_Application.Module_Settings.Core.Helpers;
 
 /// <summary>
 /// Reads and writes the machine-local appsettings.local.json override file that
-/// sits next to the running application. The Database Config feature uses it to
-/// persist the MySQL database target and the SyncTool launch paths; keys it
-/// defines are applied at startup (see App.ConfigureAppConfiguration).
+/// sits next to the running application. The Database Config page uses it to
+/// persist the MySQL database target for this PC; keys it defines are applied at
+/// startup (see App.ConfigureAppConfiguration).
 /// </summary>
 public static class Helper_LocalAppConfigFile
 {

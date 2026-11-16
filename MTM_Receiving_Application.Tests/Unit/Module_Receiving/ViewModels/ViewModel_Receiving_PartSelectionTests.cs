@@ -63,6 +63,16 @@ public sealed class ViewModel_Receiving_PartSelectionTests
         viewModel.QualityHoldText.Should().Be("Sheet Material - Quality Hold Required");
     }
 
+    [Fact]
+    public void PoContextText_ShouldShowOnlyThePoNumber_WhenAPoIsLoaded()
+    {
+        var viewModel = CreateViewModel(out _, out _);
+
+        viewModel
+            .PoContextText.Should()
+            .Be("PO-066868", "the stored number already carries its prefix, so no label belongs in front of it");
+    }
+
     private static ViewModel_Receiving_PartSelection CreateViewModel(
         out Mock<IService_ReceivingWorkflow> workflow,
         out Mock<IService_ViewModelRegistry> registry)

@@ -273,6 +273,22 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         _ = sender;
         _ = e;
 
+        await AdvanceToNextStepAsync();
+    }
+
+    /// <summary>
+    /// Double-tapping a part card means the same thing as pressing Next, so it runs the same guarded
+    /// advance - including the validation message when the step is not finished.
+    /// </summary>
+    private async void OnPartCardActivated(object? sender, EventArgs e)
+    {
+        _ = sender;
+
+        await AdvanceToNextStepAsync();
+    }
+
+    private async Task AdvanceToNextStepAsync()
+    {
         if (_isNextNavigationInProgress)
         {
             return;

@@ -149,7 +149,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
     }
 
     [Fact]
-    public async Task WorkflowTrail_ShouldMarkTheCurrentStepAndCountTheWalk_WhenThePartStepIsOpen()
+    public async Task HeaderStepBar_ShouldListTheWalkAndPointAtThePartStep_WhenThePartStepIsOpen()
     {
         var workflow = CreateWorkflowMock();
         workflow
@@ -160,24 +160,17 @@ public sealed class ViewModel_Receiving_WorkflowTests
         await Task.Delay(25);
         RaiseStepChanged(workflow);
 
-        viewModel.ShowWorkflowTrail.Should().BeTrue();
+        viewModel.IsHeaderStepBarVisible.Should().BeTrue();
         viewModel
-            .WorkflowTrail.Select(step => step.Label)
-            .Should()
+            .HeaderStepBarSteps.Should()
             .Equal("Enter PO", "Part", "Loads", "Weight/Qty", "Heat/Lot", "Package", "Review");
-
-        var current = viewModel.WorkflowTrail.Should().ContainSingle(s => s.IsCurrent).Subject;
-        current.Label.Should().Be("Part");
-        current.Number.Should().Be(2);
-        viewModel.WorkflowTrailSummaryText.Should().Be("Step 2 of 7");
         viewModel
-            .WorkflowTrail.Count(step => step.IsComplete)
-            .Should()
-            .Be(1, "only Enter PO is behind the clerk at the part step");
+            .HeaderStepBarIndex.Should()
+            .Be(1, "the header bar is zero-based and Part is the second step");
     }
 
     [Fact]
-    public async Task WorkflowTrail_ShouldBeEmpty_WhenTheModeIsNotAWalk()
+    public async Task HeaderStepBar_ShouldHideItself_WhenTheModeIsNotAWalk()
     {
         var workflow = CreateWorkflowMock();
         workflow
@@ -188,9 +181,12 @@ public sealed class ViewModel_Receiving_WorkflowTests
         await Task.Delay(25);
         RaiseStepChanged(workflow);
 
-        viewModel.ShowWorkflowTrail.Should().BeFalse();
-        viewModel.WorkflowTrail.Should().BeEmpty();
-        viewModel.WorkflowTrailSummaryText.Should().BeEmpty();
+        viewModel
+            .IsHeaderStepBarVisible.Should()
+            .BeFalse("manual entry is not part of the guided walk");
+        viewModel
+            .HeaderStepBarIndex.Should()
+            .Be(-1);
     }
 
     private static void RaiseStepChanged(Mock<IService_ReceivingWorkflow> workflow)

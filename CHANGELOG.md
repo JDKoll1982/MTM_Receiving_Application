@@ -5,7 +5,200 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Fixed
+
+#### The image search filter row no longer touches its neighbours (2026-11-16)
+
+- **What changed:** the filter box, **Refresh**, and the **Images only** toggle in the Dunnage image search dialog now
+  sit 12px apart instead of flush against each other.
+- **How:** the row's grid carries `ColumnSpacing="12"` rather than hand-placed margins, so the gap survives a change
+  of button text or toggle label.
+- **Files:** `Module_Dunnage/Views/View_Dunnage_Dialog_ImagePartSearch.xaml`
+
+#### A safe update no longer writes the seed data a second time (2026-11-16)
+
+- **What changed:** the deployment tool now remembers which seed scripts have already run against a database and skips
+  them on later **Safe update** runs. The record is kept per server, port, and database inside
+  `deployment.settings.json` next to the tool, keyed by a fingerprint of each seed file.
+- **Why:** every safe update replayed the whole `SeedData` folder. The seeds are written to tolerate that, but it meant
+  the tool kept writing reference data - and rewriting values the operator had since edited - on a database that
+  already had it, and the report showed "Seeding: …" for work that changed nothing.
+- **Edited seeds still apply:** the fingerprint is a hash of the file text, so changing a seed (even adding one row)
+  makes the next safe update run it. Line endings are ignored so a fresh checkout does not look like an edit.
+- **Rebuild is unchanged:** starting over erases the database, so a rebuild always runs every seed and then records the
+  fingerprints, which leaves the safe update that follows with nothing to seed.
+- **Reporting:** skipped seeds get their own counter and section - `ALREADY SEEDED (left alone - this database already
+  holds the data)` - instead of being counted as applied work, and the outcome line says how many standard lists were
+  left alone.
+- **Files:** `MTM_Database_Deployment/Services/Service_SeedLedger.cs` (new),
+  `MTM_Database_Deployment/Services/Service_DeploymentEngine.cs`,
+  `MTM_Database_Deployment/Models/Model_ConnectionSettings.cs`,
+  `MTM_Database_Deployment/Models/Model_DeploymentResult.cs`,
+  `MTM_Database_Deployment/ViewModels/ViewModel_DatabaseDeployment.cs`,
+  `docs/database-deployment-module-spec.md`,
+  `MTM_Receiving_Application.Tests/Unit/MTM_Database_Deployment/Services/Service_SeedLedgerTests.cs` (new),
+  `MTM_Receiving_Application.Tests/Integration/Database/Service_DeploymentEngineSeedLedgerTests.cs` (new)
+
+#### The database picker finally switches this PC to the test database (2026-11-16)
+
+- **What changed:** the Database Config page now offers **Live (core)** and **Test** and actually saves the one you
+  pick. The old list carried a "Test" entry that pointed at `mtm_receiving_application` — the live schema — so
+  choosing Test saved the name it was already using and nothing ever changed.
+- **Per PC only:** the choice is written to `appsettings.local.json` beside the executable and applied on restart.
+  The shared `appsettings.json` and every other computer keep the live database.
+- **Picker accuracy:** the list is built from the databases that exist on the configured server, the entry for the
+  database this PC is running against is preselected, and a change you have not applied yet is reported under the
+  picker instead of silently replacing your choice.
+- **Removed:** the Reference-Data SyncTool card at the bottom of the page. The page is about choosing a database on
+  this PC; running the SyncTool from inside the settings window duplicated `Database/SyncTool` with its own password
+  box and output pane, so the launcher, its service, models, enum, and DI registration are gone.
+- **Why:** the page was the only way to point a workstation at the test database for testing, and it could not do it.
+- **Files:** `Module_Settings.Core/Services/Service_DatabaseTargetManager.cs`,
+  `Module_Settings.Core/ViewModels/ViewModel_Settings_DatabaseConfig.cs`,
+  `Module_Settings.Core/Views/View_Settings_DatabaseConfig.xaml` (+ `.xaml.cs`),
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/Service_DatabaseTargetManagerTests.cs` (new)
+
 ### Changed
+
+#### The dunnage seed now matches the live database (2026-11-16)
+
+- **What changed:** `03_seed_dunnage_data.sql` is regenerated from a capture of the live database, so a fresh
+  install gets the real lists instead of a snapshot from March. It now covers **24 types** (was 13),
+  **44 custom fields + 21 choices** (was 38 / 20), **158 parts** (was 75), **28 → 18 returnable-dunnage rows**,
+  **14 non-PO reasons** (was 6), and — new — **8 no-label parts** and **49 per-part non-PO defaults**.
+- **Shape:** 1,700 lines of `CALL sp_…` became 762 lines of one existence-guarded `INSERT … SELECT` per table,
+  keyed on natural keys (`type_name`, `part_id`, `(DunnageTypeID, FieldName)`, `(CustomFieldID, Choice)`, `value`).
+  A replay inserts nothing and no longer trips duplicate-key errors or bumps
+  `dunnage_non_po_entries.use_count`.
+- **Quantity types:** schema file `40_Table_dunnage_quantity_types.sql` now seeds all 20 live values (was 6) with
+  `INSERT IGNORE`.
+- **What a seed cannot carry, and is named in the file header:** 32 `dunnage_custom_fields` rows (and their 16
+  choices) point at `DunnageTypeID` values with no `dunnage_types` row — types 4, 25–31, 34, 35, 37 — so the app
+  cannot reach them either; 10 `dunnage_requires_inventory` and 8 `dunnage_non_po_part_defaults` rows name a
+  `part_id` that is not in `dunnage_parts`, which would break the foreign key on a fresh install.
+- **Verified:** a scratch schema built from `Sql_Files/Schemas`, seeded twice, matches live column-for-column on all
+  eight tables, with identical row counts across the two runs.
+- **Files:** `Database/Database_Deployment/Sql_Files/SeedData/03_seed_dunnage_data.sql`,
+  `Database/Database_Deployment/Sql_Files/Schemas/40_Table_dunnage_quantity_types.sql`,
+  `docs/database-deployment-module-spec.md`
+
+#### The Ship/Rec Tools page is now called Extra Tools (2026-11-16)
+
+- **What changed:** the navigation button, the page header, the tool-selection prompt, and the two help topics that
+  named **Ship/Rec Tools** now say **Extra Tools**. The page still opens the same tools (Outside Service History,
+  Material Availability Board, PO Line Spec Search, Dunnage Book, Welded Coils, Receiving Analytics, Delivery
+  Schedule).
+- **Search still finds it:** the page search keeps `ship rec` and `shipping receiving tools` as aliases, so anyone who
+  knows the old name still lands on it, and `extra` / `extra tools` are added.
+- **Unchanged:** the module folder, namespaces, navigation tag, help keys, and settings keys stay `ShipRec_Tools` /
+  `ShipRecTools`, so no stored user setting or route breaks.
+- **Files:** `MainWindow.xaml` (+ `.xaml.cs`), `Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_Main.cs`,
+  `Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelection.cs`,
+  `Module_Core/Services/Help/Service_Help.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_MainTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_ShipRecTools_ToolSelectionTests.cs`
+
+#### The deployment tool offers Start over once a run finishes (2026-11-16)
+
+- **What changed:** after a save that finished cleanly, the **Save the changes** button becomes **Start over**. It
+  forgets the plan, the outcome card, the change list, the technical details, the report path, and the log, then
+  returns to the connect screen so another database can be updated without closing the window.
+- **Why:** saving twice replayed the same in-memory plan. The second run repeated 47 `ALTER COLUMN` statements and
+  logged three failures for extra tables the first run had already dropped - harmless, but it reads like a broken
+  migration. A finished run has nothing left to save.
+- **Failure keeps Save:** a run that reported a failure still shows the save button so the operator can retry, and a
+  run in progress keeps showing its progress state.
+- **Defaults restored:** Start over puts the mode back on the recommended safe update and clears the two
+  confirmations, so the next run starts from the same place a fresh launch would. The saved sign-in stays, because it
+  describes this PC rather than the run.
+- **Files:** `MTM_Database_Deployment/ViewModels/ViewModel_DatabaseDeployment.cs` (`StartOverCommand`, `ShowSave`,
+  `ShowStartOver`), `MTM_Database_Deployment/MainWindow.xaml`, `docs/database-deployment-module-spec.md`,
+  `MTM_Receiving_Application.Tests/Unit/MTM_Database_Deployment/ViewModels/ViewModel_DatabaseDeploymentStartOverTests.cs`
+  (new)
+
+#### A PO with one part number skips the part page (2026-11-16)
+
+- **What changed:** when the PO carries a single part number, the receiving walk selects that part and moves
+  straight to the loads step. The part page is left out of the walk instead of being a stop with one card on it.
+- **Several lines, one part:** the count is of distinct part numbers, not PO lines, so a PO with three lines of the
+  same part is treated the same way. The part page only appears when there is a real choice.
+- **Nothing is guessed:** the app still announces which part it picked ("Part {0} was auto selected because it is the
+  only part on this PO."), and a part under a quality hold still stops the walk until the hold is acknowledged.
+- **Back behaves:** because the part page was never shown, **Previous** from the loads step returns to the PO step.
+  A walk that did visit the part page still goes back to it, and starting a new entry restores the full walk.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`,
+  `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/Contracts/IService_ReceivingWorkflow.cs` (`SkipPartSelection`), `docs/features/receiving/index.html`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_POEntryTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStepSkipTests.cs` (new)
+
+#### The dunnage results page reads like a card, not a form (2026-11-16)
+
+- **What changed:** the single-entry view of the review page is now two rounded cards on the page background
+  instead of one outlined panel of `Label: value` rows. A tinted band names the part and its type, with
+  "Entry N of M" on the right; the details card leads with the quantity, then Location, PO number, Inventory method,
+  and Vendor in a two-column grid; a divider and a "Load details" caption hold the specs; the photo sits in its own
+  card.
+- **Why:** right-aligned colon labels and a centred heading fought the rest of the dunnage screens and made a record
+  you are about to confirm harder to scan than it needed to be. Labels now sit above their values, flush left, so the
+  eye reads down one column.
+- **Layout:** card surfaces use `CardBackgroundFillColorDefaultBrush` with a 1px `CardStrokeColorDefaultBrush` edge and
+  an 8px corner radius, 20px inside padding, and 12px between cards — the layering, spacing, and type ramp Windows
+  guidance asks for. The photo card collapses completely when an entry has no image, so the details then use the width.
+- **Unchanged:** every command, binding, and the vendor error styling. Still `x:Bind` only, and no view-model changes.
+- **Files:** `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml`
+
+#### Double-tapping a dunnage part card carries on to the next step (2026-11-16)
+
+- **What changed:** in the dunnage walk, double-tapping a part card selects it and moves to the next step, the same as
+  pressing **Next**. One click still just selects; the second click is what carries on.
+- **Gated like Next:** the card must hold a real part and the selection must be valid, so a double-tap on empty space or
+  on a card that cannot be picked does nothing. A step that is not finished still shows the usual
+  "Finish This Step First" message instead of advancing.
+- **No duplicated logic:** the part page raises a `PartCardActivated` event and the workflow page runs it through the
+  same guarded `AdvanceToNextStepAsync()` that the Next button uses, so the two routes can never drift apart.
+- **Files:** `Module_Dunnage/Views/View_Dunnage_PartSelectionView.xaml` (+ `.xaml.cs`),
+  `Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml` (+ `.xaml.cs`)
+
+#### The guided walk's step bar lives in the title bar (2026-11-16)
+- **What changed:** the Receiving walk now shows a DevWinUI **StepBar** — numbered steps, a progress line, done steps
+  ticked — instead of the row of text chips at the top of the workflow page. It is drawn once, in the main window's
+  header, between the page title and the user card.
+- **Why:** the trail described the same walk on every workflow page it appeared on, and the chip row was a second,
+  plainer way of saying what a step bar says properly. The header is the one place a persistent walk belongs.
+- **Read-only:** the bar reports where the clerk is. `AutoSelectOnItemClick` stays off and no click handler is wired, so
+  Back and Next remain the only way to move through the walk.
+- **Hidden outside the walk:** mode selection, manual entry, edit mode, saving and finished show no bar. It also hides
+  the moment the app navigates to another page.
+- **Sits on the header, not in a card:** the control's own background, border and padding are cleared so only the
+  circles, the progress line and the labels show. Labels are white because the bar only appears on the fixed dark
+  accent fill of the module header.
+- **Contract:** a guided page supplies it through the new `IViewModel_HeaderStepBarProvider`
+  (`IsHeaderStepBarVisible`, `HeaderStepBarSteps`, `HeaderStepBarIndex`), resolved by the same `SyncPageHeader`
+  chokepoint as the page title. `Model_ReceivingWorkflowTrailStep` and the page-local trail are gone.
+- **Dunnage too:** `ViewModel_Dunnage_WorkFlowViewModel` implements the same contract for its five-step walk
+  (Type → Part → Loads → Details → Review), so both guided workflows describe themselves in the header and hide the
+  bar for mode selection, manual entry, edit mode and image search.
+- **One-time wiring:** `App.xaml` now merges `ms-appx:///DevWinUI/Themes/Generic.xaml`. `StepBar` reads its templates
+  from `Application.Current.Resources` in its constructor, so without that merge it renders as nothing.
+- **Files:** `MainWindow.xaml`, `MainWindow.xaml.cs`, `App.xaml`,
+  `Module_Core/Contracts/ViewModels/IViewModel_HeaderStepBarProvider.cs` (new),
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/Views/View_Receiving_Workflow.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_WorkflowTests.cs`
+
+#### Enter PO hands the parts list to the part page (2026-11-16)
+- **What changed:** the duplicate **Available Parts** grid is gone from the Enter PO page, and a PO that loads
+  successfully now moves straight to the Part page. Entering or loading a PO is all that page does now.
+- **One part still short-circuits:** a PO with a single part is selected automatically and the clerk lands on the part
+  page with it already chosen, exactly as before.
+- **Why:** the grid was a leftover from before the part step had its own page, so the same list appeared twice and the
+  clerk had to pick twice - and with the grid gone, staying on Enter PO would have left nothing to do.
+- **Unchanged:** a PO with no parts is still rejected, cleared, and refocused; the non-PO flow still types its part on
+  this page and skips the part step, because there is no PO part list to choose from.
+- **Files:** `Module_Receiving/Views/View_Receiving_POEntry.xaml`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`
 
 #### The guided walk has a part page of its own and a trail across the top (2026-11-15)
 

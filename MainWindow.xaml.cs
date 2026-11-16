@@ -27,6 +27,7 @@ using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.Graphics;
+using StepBarItem = DevWinUI.StepBarItem;
 
 namespace MTM_Receiving_Application
 {
@@ -60,6 +61,8 @@ namespace MTM_Receiving_Application
         private int _labelButtonsPageIndex;
         private System.ComponentModel.INotifyPropertyChanged? _currentWorkflowViewModel;
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
+        private IViewModel_HeaderStepBarProvider? _currentStepBarProvider;
+        private System.ComponentModel.PropertyChangedEventHandler? _currentStepBarPropertyChangedHandler;
         private string? _settingsReturnRouteTag;
         private Type? _currentSettingsPageType;
 
@@ -1124,8 +1127,10 @@ namespace MTM_Receiving_Application
                 ),
                 CreateFrameDestination(
                     "ShipRecToolsPage",
-                    "Ship/Rec Tools",
-                    "Shipping and receiving tools hub",
+                    "Extra Tools",
+                    "Hub of extra shipping, receiving, and reporting tools",
+                    "extra",
+                    "extra tools",
                     "ship rec",
                     "ship rec tools",
                     "shipping receiving tools",
@@ -2261,6 +2266,19 @@ namespace MTM_Receiving_Application
 
             _currentWorkflowViewModel = null;
             _currentPropertyChangedHandler = null;
+
+            if (_currentStepBarProvider != null && _currentStepBarPropertyChangedHandler != null)
+            {
+                _currentStepBarProvider.PropertyChanged -= _currentStepBarPropertyChangedHandler;
+            }
+
+            _currentStepBarProvider = null;
+            _currentStepBarPropertyChangedHandler = null;
+
+            if (HeaderStepBar is not null)
+            {
+                HeaderStepBar.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void UpdateHeaderText(string title)
@@ -2533,6 +2551,7 @@ namespace MTM_Receiving_Application
             _headerBackNavigation.ClearBackAction();
 
             ApplyHeaderAccent(content?.GetType());
+            TrackHeaderStepBar(content);
 
             var headerProvider = ResolveHeaderProvider(content);
             if (headerProvider != null)
@@ -2575,6 +2594,125 @@ namespace MTM_Receiving_Application
 
             var viewModelProperty = content.GetType().GetProperty("ViewModel");
             return viewModelProperty?.GetValue(content) as IViewModel_HeaderTitleProvider;
+        }
+
+        /// <summary>
+        /// Finds the page's step-bar provider, using the same lookup order as the title provider so a
+        /// page that supplies one supplies both.
+        /// </summary>
+        private static IViewModel_HeaderStepBarProvider? ResolveStepBarProvider(object? content)
+        {
+            if (content is null)
+            {
+                return null;
+            }
+
+            if (content is IViewModel_HeaderStepBarProvider directProvider)
+            {
+                return directProvider;
+            }
+
+            if (
+                content is FrameworkElement frameworkElement
+                && frameworkElement.DataContext is IViewModel_HeaderStepBarProvider dataContextProvider
+            )
+            {
+                return dataContextProvider;
+            }
+
+            var viewModelProperty = content.GetType().GetProperty("ViewModel");
+            return viewModelProperty?.GetValue(content) as IViewModel_HeaderStepBarProvider;
+        }
+
+        /// <summary>
+        /// Shows, updates, or hides the header step bar for the page that just became active. A page
+        /// without a step-bar provider leaves the header without one.
+        /// </summary>
+        private void TrackHeaderStepBar(object? content)
+        {
+            var provider = ResolveStepBarProvider(content);
+            if (provider is null)
+            {
+                return;
+            }
+
+            UpdateHeaderStepBar(provider);
+
+            _currentStepBarProvider = provider;
+            _currentStepBarPropertyChangedHandler = (s, args) =>
+            {
+                if (
+                    string.IsNullOrEmpty(args.PropertyName)
+                    || args.PropertyName
+                        is nameof(IViewModel_HeaderStepBarProvider.HeaderStepBarIndex)
+                            or nameof(IViewModel_HeaderStepBarProvider.HeaderStepBarSteps)
+                            or nameof(IViewModel_HeaderStepBarProvider.IsHeaderStepBarVisible)
+                )
+                {
+                    UpdateHeaderStepBar(provider);
+                }
+            };
+
+            provider.PropertyChanged += _currentStepBarPropertyChangedHandler;
+        }
+
+        private void UpdateHeaderStepBar(IViewModel_HeaderStepBarProvider provider)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (HeaderStepBar is null)
+                {
+                    return;
+                }
+
+                var steps = provider.HeaderStepBarSteps;
+                if (!provider.IsHeaderStepBarVisible || steps.Count == 0)
+                {
+                    HeaderStepBar.Visibility = Visibility.Collapsed;
+                    return;
+                }
+
+                if (!StepBarMatches(steps))
+                {
+                    HeaderStepBar.Items.Clear();
+                    foreach (var step in steps)
+                    {
+                        HeaderStepBar.Items.Add(new StepBarItem { Content = step });
+                    }
+                }
+
+                HeaderStepBar.StepIndex = Math.Clamp(
+                    provider.HeaderStepBarIndex,
+                    0,
+                    steps.Count - 1
+                );
+                HeaderStepBar.Visibility = Visibility.Visible;
+            });
+        }
+
+        private bool StepBarMatches(IReadOnlyList<string> steps)
+        {
+            if (HeaderStepBar.Items.Count != steps.Count)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < steps.Count; index++)
+            {
+                if (
+                    HeaderStepBar.Items[index] is not StepBarItem item
+                    || !string.Equals(
+                        item.Content as string,
+                        steps[index],
+                        StringComparison.Ordinal
+                    )
+                )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static string GetFallbackTitle(Type? pageType)

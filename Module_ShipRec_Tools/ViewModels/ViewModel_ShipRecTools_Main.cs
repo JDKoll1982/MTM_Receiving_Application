@@ -24,7 +24,7 @@ public partial class ViewModel_ShipRecTools_Main
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
-    private string _currentToolTitle = "Ship/Rec Tools";
+    private string _currentToolTitle = "Extra Tools";
 
     public string CurrentHeaderTitle => CurrentToolTitle;
 
@@ -161,7 +161,7 @@ public partial class ViewModel_ShipRecTools_Main
     {
         HideAllViews();
         IsToolSelectionVisible = true;
-        CurrentToolTitle = "Ship/Rec Tools";
+        CurrentToolTitle = "Extra Tools";
         _headerBackNavigation.ClearBackAction();
         _logger.LogInfo("Returned to ShipRec tool selection.");
     }

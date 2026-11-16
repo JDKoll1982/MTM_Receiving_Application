@@ -94,6 +94,31 @@ public sealed class Model_DeploymentResultTests
     }
 
     [Fact]
+    public void ToReportText_ShouldSeparateAlreadySeededSeeds_WhenASafeUpdateLeavesThemAlone()
+    {
+        var result = new Model_DeploymentResult();
+        result.MarkApplied("Sql_Files/Views/05_View_dunnage_label_data.sql");
+        result.MarkAlreadySeeded("SeedData/01_seed_volvo_data.sql");
+        result.MarkAlreadySeeded("SeedData/06_seed_module_email_recipients.sql");
+
+        var report = result.ToReportText();
+
+        report.Should().Contain("Already seeded: 2");
+        report.Should().Contain("ALREADY SEEDED (left alone - this database already holds the data)");
+        report.Should().Contain("SeedData/01_seed_volvo_data.sql (x1)");
+        result.AppliedCount.Should().Be(1, "a skipped seed was not applied again");
+    }
+
+    [Fact]
+    public void ToReportText_ShouldOmitTheAlreadySeededCount_WhenNothingWasSkipped()
+    {
+        var result = new Model_DeploymentResult();
+        result.MarkApplied("Sql_Files/Schemas/04_Table_dunnage_types.sql");
+
+        result.ToReportText().Should().NotContain("ALREADY SEEDED");
+    }
+
+    [Fact]
     public void ToReportText_ShouldIncludeFailureSection_WhenAFailureIsRecorded()
     {
         var result = new Model_DeploymentResult();

@@ -111,6 +111,30 @@ public sealed class Service_MySqlGateway
         await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Executes one statement on a connection that is not enforcing foreign keys.
+    /// </summary>
+    /// <remarks>
+    /// Used only to re-attach a constraint to a table whose existing rows already point at missing
+    /// parents. MySQL refuses that with 1452 while checks are on, and refuses it just as loudly on
+    /// every later run, so the alternative would be deleting the operator's rows.
+    /// </remarks>
+    public async Task ExecuteIgnoringForeignKeyChecksAsync(
+        string database,
+        string sql,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = await OpenAsync(database, cancellationToken).ConfigureAwait(false);
+
+        await using (var toggleOff = new MySqlCommand("SET FOREIGN_KEY_CHECKS = 0;", connection) { CommandTimeout = 0 })
+        {
+            await toggleOff.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        await using var command = new MySqlCommand(sql, connection) { CommandTimeout = 0 };
+        await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task ExecuteWithoutDatabaseAsync(string sql, CancellationToken cancellationToken)
     {
         await using var connection = await OpenAsync(null, cancellationToken).ConfigureAwait(false);

@@ -2,14 +2,14 @@
 [DOC-META-START]
 - File Name: database-deployment-migration-mode.md
 - Description: Notes on the idempotent MySQL object deployment model, the WinUI deployment tool, and the retired migration layer.
-- Last Updated: 2026-11-15
+- Last Updated: 2026-11-16
 - Quick TOC:
   - Line 18-25: # Database Deployment (Idempotent Object Model)
   - Line 26-33: ## Supported tools
   - Line 34-46: ## Object tree contract
   - Line 47-56: ## Seed idempotency
   - Line 57-65: ## Server selection
-  - Line 66-74: ## Known constraints
+  - Line 66-77: ## Known constraints
 - Critical Notes: Migrations are archived; every SQL object is re-runnable and no script may contain USE, DROP TABLE, or non-idempotent DDL.
 [DOC-META-END]
 -->
@@ -24,6 +24,7 @@
 ## Supported tools
 
 - `MTM_Database_Deployment/` (WinUI 3, .NET 10) is the supported deployment app. It builds a preview from a scratch schema, then applies an update in place or a confirmed fresh rebuild.
+- Both modes first copy the target into `<database>_backup` (`Service_DatabaseBackup`). The copy holds tables and rows only - views, procedures, triggers, and seeds come back from the SQL tree - and a failed copy throws before anything is written.
 - `Database/Database_Deployment/Deploy-Database-GUI-Workbench.ps1` is legacy. It deploys the same tree for scripted/no-UI runs and is kept for reference only.
 - Module spec for porting the app to another repo: `docs/database-deployment-module-spec.md`.
 
@@ -38,6 +39,8 @@
 
 ## Seed idempotency
 
+- A safe update skips any seed whose file text has not changed since it last ran on that database. `Service_SeedLedger` keeps the fingerprints in `deployment.settings.json` under `AppliedSeeds`, keyed `server:port/database` then by seed path. A rebuild always runs every seed and then records the fingerprints; the safe update that follows has nothing to seed. Skipped seeds are reported under `ALREADY SEEDED (left alone - this database already holds the data)`, never as applied work.
+- The ledger is a convenience, not a substitute for idempotency: a fresh installation, a rebuilt database, or a wiped settings file runs the seeds again, so they must still be re-runnable.
 - `03_seed_dunnage_data.sql` resolves parent ids from natural keys (`type_name`, `FieldName`) immediately before use. Do not trust the insert procedures' `OUT` id: on a repeat run they skip the insert and leave the variable at its previous value, which silently attaches child rows to the wrong parent.
 - The `dunnage_requires_inventory` block is a set-based `INSERT ... SELECT ... WHERE NOT EXISTS` because `sp_Dunnage_Inventory_Insert` has no duplicate guard and would double the rows on every run.
 - `dunnage_types` and `dunnage_parts` still raise benign duplicate errors on a repeat run (the insert procedures guard with `SIGNAL` / unique keys). The deployment engine classifies those as already applied and aggregates them.
@@ -60,9 +63,12 @@
 - `information_schema.COLUMNS.COLUMN_DEFAULT` returns a string default as the bare literal. Emitting it raw produces `DEFAULT Quantity`, which MySQL rejects with a syntax error near the value. `Model_ColumnDefinition.ToColumnDefinitionSql` quotes character-type defaults, leaves numeric ones alone, and leaves expressions (`CURRENT_TIMESTAMP`, anything with `(`, `b'0'`, `0x..`) and `EXTRA=DEFAULT_GENERATED` unquoted.
 - A database-only `NOT NULL` column with no default silently breaks every insert that does not name it. Inside a procedure with an `EXIT HANDLER FOR SQLEXCEPTION` the insert fails without surfacing an error, so the symptom is empty tables and confusing downstream `Column 'X' cannot be null` failures rather than the real cause. The comparer therefore flags such a column as `IsBlocking`, the plan summary names it, and a confirmed removal runs it before the seeds.
 - Live-DB symptom seen 2026-11-15 on `mtm_receiving_application`: `dunnage_custom_fields.DatabaseColumnName varchar(64) NOT NULL` (no default, not in the file tree) left all 38 custom fields uninserted, which then failed all 20 choice inserts. After the fixes the same deploy reports one aggregated failure instead of 99, and converges in one pass once removal is confirmed.
+- Live-DB symptom seen 2026-11-16 on `mtm_receiving_application_test`: `Add index dunnage_custom_fields.IDX_CUSTOM_001` failed with `Cannot drop index 'IDX_CUSTOM_001': needed in a foreign key constraint`. The live index was a plain key on `DunnageTypeID` while the tree declares the unique `(DunnageTypeID, DisplayOrder)`, and that plain key was the one the foreign key used. The comparer now releases dependent keys (same table and inbound) around an index rebuild. Once the swap landed, re-adding the key hit 1452 because 3 rows point at a `dunnage_types` id that does not exist; the engine now retries that one statement with foreign key checks off and reports it.
+- `ALTER TABLE` checks every ADD clause before any DROP clause: dropping and re-adding the same constraint name in one statement fails with 1826. Index swap plus key release can share one statement, key re-add cannot.
 - If a schema change fails, the engine stops before views, procedures, triggers, and seeds. Continuing previously produced a cascade (3 bad `ALTER`s produced 99 reported failures).
 ## Operator UI
 
+- After a successful save the bottom button becomes **Start over** (`StartOverCommand`): it clears the plan, outcome, change list, technical details, report path, and log, resets the mode to the safe update and both confirmations, and returns to step 1. A failed save keeps the save button so the run can be retried. Saving twice replayed the same in-memory plan (47 duplicate `ALTER`s plus "Unknown table" failures for extras the first run already dropped), which is why the finished state no longer offers Save.
 - `MTM_Database_Deployment` is a three-step wizard (Connect -> Check -> Save), not a control panel. Every label is plain language; SQL detail is folded behind a "Technical details - for IT" expander.
 - Connect proves sign-in with a real `SELECT 1`, so "Connected" never lies: 1049 (unknown database) is reported separately from 1045 (bad credentials) and from an unreachable host.
 - DevWinUI supplies `StepBar`, `InfoCard`, `SelectorBarSegmented`, and `ProgressButton`. `ms-appx:///DevWinUI/Themes/Generic.xaml` has to be merged in `App.xaml` because `StepBar` reads its templates from `Application.Current.Resources` in its constructor.

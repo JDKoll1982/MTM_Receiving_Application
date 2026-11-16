@@ -9,6 +9,12 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <!--
+                    DevWinUI templates and styles. StepBar reads its templates from
+                    Application.Current.Resources in its constructor, so this has to be merged
+                    before any page that shows one is created.
+                -->
+                <ResourceDictionary Source="ms-appx:///DevWinUI/Themes/Generic.xaml" />
                 <ResourceDictionary Source="ms-appx:///Module_Core/Themes/MaterialIcons.xaml" />
                 <ResourceDictionary Source="ms-appx:///Module_Core/Themes/ModuleAccentBrushes.xaml" />
                 <!--  Other merged dictionaries here  -->

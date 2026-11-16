@@ -115,11 +115,17 @@ public sealed class Model_IndexDefinition
 
     public string Signature => $"{(IsUnique ? "UNIQUE" : "INDEX")}|{string.Join(",", Columns)}";
 
-    public string ToCreateSql(string tableName, string schemaName)
+    public string ToCreateSql(string tableName, string schemaName) =>
+        $"ALTER TABLE `{schemaName}`.`{tableName}` {ToAddClause()};";
+
+    /// <summary>
+    /// The <c>ADD ... INDEX</c> clause, for joining several changes into one <c>ALTER TABLE</c>.
+    /// </summary>
+    public string ToAddClause()
     {
         var columnList = string.Join(", ", Columns.Select(column => "`" + column + "`"));
         var uniqueKeyword = IsUnique ? "UNIQUE " : string.Empty;
-        return $"ALTER TABLE `{schemaName}`.`{tableName}` ADD {uniqueKeyword}INDEX `{Name}` ({columnList});";
+        return $"ADD {uniqueKeyword}INDEX `{Name}` ({columnList})";
     }
 }
 
@@ -138,12 +144,19 @@ public sealed class Model_ForeignKeyDefinition
     public string Signature =>
         $"{string.Join(",", Columns)}->{ReferencedTable}({string.Join(",", ReferencedColumns)})|{UpdateRule}|{DeleteRule}";
 
-    public string ToCreateSql(string tableName, string schemaName)
+    public string ToCreateSql(string tableName, string schemaName) =>
+        $"ALTER TABLE `{schemaName}`.`{tableName}` {ToAddClause()};";
+
+    /// <summary>
+    /// The <c>ADD CONSTRAINT ... FOREIGN KEY</c> clause, for joining several changes into one
+    /// <c>ALTER TABLE</c>.
+    /// </summary>
+    public string ToAddClause()
     {
         var columnList = string.Join(", ", Columns.Select(column => "`" + column + "`"));
         var referencedList = string.Join(", ", ReferencedColumns.Select(column => "`" + column + "`"));
-        return $"ALTER TABLE `{schemaName}`.`{tableName}` ADD CONSTRAINT `{Name}` FOREIGN KEY ({columnList}) " +
-               $"REFERENCES `{ReferencedTable}` ({referencedList}) ON UPDATE {UpdateRule} ON DELETE {DeleteRule};";
+        return $"ADD CONSTRAINT `{Name}` FOREIGN KEY ({columnList}) "
+               + $"REFERENCES `{ReferencedTable}` ({referencedList}) ON UPDATE {UpdateRule} ON DELETE {DeleteRule}";
     }
 }
 

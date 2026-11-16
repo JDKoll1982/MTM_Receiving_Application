@@ -58,7 +58,7 @@ public sealed class ViewModel_ShipRecTools_MainTests
         viewModel.ShowToolSelectionCommand.Execute(null);
 
         viewModel.IsToolSelectionVisible.Should().BeTrue();
-        viewModel.CurrentHeaderTitle.Should().Be("Ship/Rec Tools");
+        viewModel.CurrentHeaderTitle.Should().Be("Extra Tools");
         headerBackServiceMock.Verify(service => service.ClearBackAction(), Times.Once);
     }
 

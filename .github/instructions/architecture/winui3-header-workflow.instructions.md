@@ -7,7 +7,7 @@ applyTo: 'MainWindow.xaml,MainWindow.xaml.cs,Module_Core/Contracts/ViewModels/IV
 [DOC-META-START]
 - File Name: winui3-header-workflow.instructions.md
 - Description: MTM main-window header workflow covering the shell header anatomy, title resolution (IViewModel_HeaderTitleProvider + fallback titles), the shared back action (IService_HeaderBackNavigation), per-module accent coloring, settings drill-down back state, and the sync rules.
-- Last Updated: 2026-08-28
+- Last Updated: 2026-11-16
 - Quick TOC:
   - Line 6: # WinUI 3 Main-Window Header Workflow
   - Line 14: ## Header Anatomy (MainWindow.xaml)
@@ -110,8 +110,59 @@ point (title + subtitle + image/icon below the main title). The shell currently
 renders only `CurrentHeaderTitle`; `ResetHeaderContext()` is a stub. Keep the
 contract shape stable even if the rich header is not yet rendered.
 
-### Static / fallback titles
+### Guided-walk step bar (IViewModel_HeaderStepBarProvider)
 
+A page that is part of a guided walk describes its steps once, in the header,
+instead of drawing a copy inside itself. The contract lives in
+`Module_Core/Contracts/ViewModels/IViewModel_HeaderStepBarProvider`:
+
+```csharp
+public interface IViewModel_HeaderStepBarProvider : INotifyPropertyChanged
+{
+    bool IsHeaderStepBarVisible { get; }
+    IReadOnlyList<string> HeaderStepBarSteps { get; }
+    int HeaderStepBarIndex { get; }
+}
+```
+
+Current implementers: `ViewModel_Receiving_Workflow` (the seven-step receiving
+walk: Enter PO → Part → Loads → Weight/Qty → Heat/Lot → Package → Review) and
+`ViewModel_Dunnage_WorkFlowViewModel` (the five-step dunnage walk: Type → Part →
+Loads → Details → Review). Both report `-1` outside their walk (mode selection,
+manual entry, edit mode, image search, saving, finished) so the bar hides rather
+than keeping a stale highlight.
+
+Mechanics:
+
+- `MainWindow` renders a DevWinUI `StepBar` named `HeaderStepBar` inside
+  `HeaderBarBorder`, in the column between the title and the user card, centred
+  in that column. It is `Collapsed` until a provider says otherwise.
+- `SyncPageHeader` calls `TrackHeaderStepBar(content)` right after
+  `ApplyHeaderAccent`, using the same lookup order as the title provider.
+  `ClearHeaderSubscription` unsubscribes and hides the bar on every navigation.
+- `UpdateHeaderStepBar` rebuilds the `StepBarItem` children only when the labels
+  change, then sets `StepIndex` and shows the bar.
+- The bar is display-only: `AutoSelectOnItemClick` stays false, so the walk's
+  Next/Back buttons remain the only way to move. Never wire `StepChanged` or
+  `ItemClick` to navigation.
+- `HeaderBarBorder` lays out as `*` (title) / `Auto` (step bar) / `*` (user card),
+  so the bar takes exactly the width its labels need and stays centred.
+- The labels come from `StepBar.ItemTemplate` — the control copies it onto every
+  `StepBarItem` and the item template renders `PART_Content` with it. Keep the
+  font at 10px: the labels sit under 40px markers, and anything larger truncates
+  "Weight/Qty" and "Package".
+- Strip the control's own chrome (`Background="Transparent"`,
+  `BorderThickness="0"`, `Padding="0"`) so the steps sit directly on the header
+  instead of inside a lighter card. Labels are `White` because the bar only
+  appears on the fixed dark accent fill; the item template's visual states cannot
+  recolour a `TextBlock` supplied here, so the color must be explicit.
+
+DevWinUI's `StepBar` reads its templates and styles out of
+`Application.Current.Resources` in its constructor, so `App.xaml` must merge
+`ms-appx:///DevWinUI/Themes/Generic.xaml` before any window is created. Without
+that merge the control has no template and renders as nothing.
+
+### Static / fallback titles
 When no provider is found, the title comes from:
 
 - The nav route table `MainWindow._navRoutes` (e.g. `Reprint Labels`,
@@ -219,6 +270,9 @@ application and settings items and restore the return route on exit
   navigation paths through it instead of duplicating title/accent logic.
 - New module landing pages that change title by context should implement
   `IViewModel_HeaderTitleProvider` and notify `CurrentHeaderTitle`.
+- Guided-walk pages supply the header step bar through
+  `IViewModel_HeaderStepBarProvider`; never draw a step trail inside a workflow
+  page and never make the header bar drive navigation.
 - Use the shared module accent brushes; do not hardcode hex values or duplicate
   the `*AccentBrush` / `*AccentBorderBrush` / `*AccentHighlightBrush` keys
   locally.
@@ -256,9 +310,11 @@ application and settings items and restore the return route on exit
 
 - `MainWindow.xaml` / `MainWindow.xaml.cs` — header UI and sync logic.
 - `Module_Core/Contracts/ViewModels/IViewModel_HeaderTitleProvider.cs` — dynamic title contract.
+- `Module_Core/Contracts/ViewModels/IViewModel_HeaderStepBarProvider.cs` — guided-walk step bar contract.
 - `Module_Core/Contracts/Services/IService_HeaderBackNavigation.cs` and
   `Module_Core/Services/Service_HeaderBackNavigation.cs` — shared back action.
 - `Module_Settings.Core/Views/View_Settings_CoreWindow.xaml.cs` — settings page headers
   and module contexts (`GetPageHeader`, `TryGetModuleContext`).
 - `Module_Core/Themes/ModuleAccentBrushes.xaml` — the module accent brushes.
 - `architecture/mvvm-pattern.instructions.md` — ViewModel layering that feeds the header.
+

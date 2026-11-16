@@ -114,11 +114,14 @@ public partial class ViewModel_Receiving_PartSelection
             ? restriction
             : "This part needs a quality hold acknowledgement before it can be received.";
 
-    /// <summary>The PO the list belongs to, so the page cannot be mistaken for an unprompted search.</summary>
+    /// <summary>
+    /// The PO the list belongs to, so the page cannot be mistaken for an unprompted search. The PO
+    /// number already carries its own prefix ("PO-073026"), so no label is added in front of it.
+    /// </summary>
     public string PoContextText =>
         string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber)
             ? "No PO loaded"
-            : $"PO {_workflowService.CurrentPONumber.Trim()}";
+            : _workflowService.CurrentPONumber.Trim();
 
     /// <summary>
     /// Re-reads the part list from the PO page and re-applies the current search.

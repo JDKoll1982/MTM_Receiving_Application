@@ -35,6 +35,8 @@ These rules are the contract. Changing one changes the tool's safety model.
   it raw produces `DEFAULT Quantity` and MySQL rejects the statement.
 - Destructive work runs last, and only when the operator explicitly confirmed it. The one exception is a database-only
   `NOT NULL` column with no default, which must be removed before anything writes.
+- Every run copies the target into `<database>_backup` before the first write. A copy that cannot be taken stops the
+  run, so no database is ever changed without a snapshot of its previous state.
 - The tool never retargets silently. Whatever database is configured is always one of the choices the operator sees.
 
 ## Repository Layout
@@ -231,7 +233,20 @@ The active server and whether the fallback was used are surfaced in the UI and i
 ### Seed Scripts
 
 - Re-runnable by construction. Second run must insert zero rows.
-- Resolve parent ids from natural keys immediately before use, for example:
+- Resolve parents by natural key in the statement itself, preferably with a join:
+
+```sql
+INSERT INTO dunnage_parts (part_id, type_id, ...)
+SELECT v.part_id, t.id, ...
+FROM (SELECT 'AKK543' AS part_id, 'Metal Dunnage' AS type_name UNION ALL ...) AS v
+JOIN dunnage_types t ON t.type_name = v.type_name
+WHERE NOT EXISTS (SELECT 1 FROM dunnage_parts p WHERE p.part_id = v.part_id);
+```
+
+- Prefer one guarded `INSERT ... SELECT` per table over a `CALL` per row. The insert procedures are
+  not uniformly idempotent: `sp_Dunnage_Types_Insert` SIGNALs on a duplicate, the parts insert relies
+  on duplicate-key errors, and `sp_Dunnage_NonPO_Upsert` increments `use_count` on every replay.
+- When an `OUT` id has to be used instead, resolve the parent immediately before use:
 
 ```sql
 SET @type_id = (SELECT id FROM dunnage_types WHERE type_name = 'Bags' ORDER BY id LIMIT 1);
@@ -239,9 +254,28 @@ SET @type_id = (SELECT id FROM dunnage_types WHERE type_name = 'Bags' ORDER BY i
 
 - Do not rely on an insert procedure's `OUT` id when the procedure may skip the insert; a skipped insert leaves the
   variable at its previous value and silently attaches child rows to the wrong parent.
-- Guard set-based seeds with `WHERE NOT EXISTS` rather than one `CALL` per row when the write procedure is not
-  idempotent.
+- Join the parent table when a row may reference a record that does not exist. A seed that runs with foreign key
+  checks on cannot insert a child whose parent is missing, so `JOIN dunnage_parts` both filters those rows and keeps
+  the run clean.
 - Duplicate-key errors are tolerated by the engine, but a seed should not depend on that tolerance.
+
+#### Seed History
+
+A safe update does not write reference data a second time. `Service_SeedLedger` records, per server, port, and
+database, the fingerprint of each seed file that ran, and the engine skips a seed whose fingerprint has not moved:
+
+- **Scope:** the key is `server:port/database`, so pointing the tool at the test database starts with an empty
+  history and does nothing to the live one.
+- **Fingerprint:** SHA-256 of the file text with `\r\n` normalised to `\n`. Editing a seed - even adding one row -
+  changes the fingerprint, so the edited file is applied on the next safe update.
+- **Storage:** `AppliedSeeds` inside `deployment.settings.json` next to the tool. It is written after every run, so
+  a re-run from the same installation skips what it already seeded.
+- **Rebuild:** a rebuild starts from an empty database and always runs every seed, then records the fingerprints so
+  the safe update that follows has nothing to do.
+- **Reporting:** a skipped seed is counted separately and listed under `ALREADY SEEDED (left alone - this database
+  already holds the data)`, not as a failure and not as work that was applied.
+- **Not a replacement for idempotent seeds:** the ledger survives only as long as the settings file. A seed must
+  still be re-runnable, because a fresh installation or a rebuilt database runs it from scratch.
 
 ## Deployment Engine Behavior
 
@@ -256,15 +290,35 @@ SET @type_id = (SELECT id FROM dunnage_types WHERE type_name = 'Bags' ORDER BY i
 
 A preview never writes to the target database.
 
+### Backup (Both Modes)
+
+Both apply and rebuild copy the existing database into a sibling schema named `<database>_backup` before the first
+write. The copy runs on the `Service_DatabaseBackup` service, which the engine owns.
+
+1. Resolve the server, then read `information_schema` to confirm the target exists. A database that does not exist
+   yet has nothing to lose, so no backup schema is created and the run continues.
+2. `DROP DATABASE IF EXISTS <database>_backup` then `CREATE DATABASE <database>_backup` with `utf8mb4` /
+   `utf8mb4_unicode_ci`, so each run keeps exactly one, current snapshot.
+3. For every base table, `CREATE TABLE <database>_backup.<table> LIKE <database>.<table>` followed by
+   `INSERT INTO ... SELECT ...` over an explicit column list.
+
+The copy holds tables and their rows only. Views, procedures, triggers, and seeds are not copied because the deploy
+recreates them from the SQL tree. Foreign keys are not copied either, which is what allows the tables to be filled in
+any order. Generated columns are left out of the insert list and recomputed by MySQL in the backup.
+
+A backup that fails throws, and the engine stops before writing anything. A database whose name is long enough that
+`<database>_backup` would exceed MySQL's 64-character identifier limit is rejected up front.
+
 ### Apply (Update In Place)
 
 Runs in ordered phases:
 
+0. **Back up.** Copy the target into `<database>_backup` (see above).
 1. **Ensure tables.** Execute every table script against the target. `IF NOT EXISTS` makes this a no-op for tables
    that already exist.
 2. **Reconcile columns, indexes, and foreign keys.** Apply only the `AddColumn`, `AlterColumn`, `AddIndex`, and
    `AddForeignKey` changes the comparer produced. A change whose statement failed is reported as a failure, never as
-   applied.
+   applied. A rebuilt index first releases the foreign keys that use it - see [Rebuilding An Index](#rebuilding-an-index).
 3. **Remove blocking extras.** When the operator confirmed removals, drop the database-only columns that are
    `NOT NULL` with no default. They have to go before anything writes, because every insert that omits them fails -
    including the seeds in phase 5.
@@ -272,14 +326,17 @@ Runs in ordered phases:
    invalidates the views, procedures, and seeds that need it, and continuing buries the real error under a cascade of
    downstream failures.
 5. **Replace code objects.** Views, then procedures, then triggers.
-6. **Run seeds.** Continue-on-error so one stale seed cannot abort a deployment.
+6. **Run seeds.** Each seed whose text has not changed since it last ran on this database is skipped and reported as
+   already seeded; the rest run continue-on-error so one stale seed cannot abort a deployment. See
+   [Seed History](#seed-history).
 7. **Remove the remaining extras.** Only when the operator ticked the removal confirmation, and only after everything
    else succeeded.
 
 ### Rebuild (Destructive)
 
-1. `DROP DATABASE IF EXISTS` then `CREATE DATABASE` with `utf8mb4` / `utf8mb4_unicode_ci`.
-2. Deploy the full tree in order: tables, views, procedures, triggers, seeds.
+1. Back up the target into `<database>_backup` (see above). Nothing is dropped until this copy exists.
+2. `DROP DATABASE IF EXISTS` then `CREATE DATABASE` with `utf8mb4` / `utf8mb4_unicode_ci`.
+3. Deploy the full tree in order: tables, views, procedures, triggers, seeds.
 
 The UI requires a separate acknowledgement checkbox before this mode can run.
 
@@ -300,8 +357,41 @@ The comparer compares live metadata against materialized expected metadata, neve
 Signatures are compared as ordinal strings generated from normalized metadata, so formatting differences in the source
 DDL never cause false positives.
 
-### Generating A Column Definition
+### Rebuilding An Index
 
+Changing an index means dropping it first, and MySQL refuses that while a foreign key relies on it
+(`Cannot drop index '...': needed in a foreign key constraint`). The comparer therefore finds every key that uses the
+index - a key on the same table whose columns are the index prefix, and a key on another table that references this one
+through those columns - and orders the work around them.
+
+1. Keys owned by another table are dropped, because `ALTER TABLE` only ever touches one table.
+2. One statement releases this table's keys and swaps the index:
+   `ALTER TABLE t DROP FOREIGN KEY fk, DROP INDEX i, ADD UNIQUE INDEX i (...)`.
+3. The released keys are re-added, each as its own `ALTER TABLE ... ADD CONSTRAINT`.
+
+Steps 2 and 3 cannot be one statement: MySQL checks every `ADD` clause before any `DROP` clause, so re-adding a
+constraint under the name it is simultaneously dropping fails with `Duplicate foreign key constraint name`. Keeping the
+release and the swap together is what matters - the index must never disappear while a key still points at it.
+
+A key whose own definition also changed is not re-added here; the `AddForeignKey` change recreates it with the new
+columns, and its `DROP FOREIGN KEY` prefix is suppressed because the key is already gone.
+
+#### Constraints Over Orphaned Rows
+
+A table can already hold rows whose parent record is missing. The seeds here run table scripts with foreign key checks
+off, so live databases reach that state with the constraint still attached, and re-attaching it fails with 1452
+(`Cannot add or update a child row`). When that happens the engine retries the single statement with
+`FOREIGN_KEY_CHECKS = 0` and records it in the report:
+
+```
+Add foreign key t.fk: attached with foreign key checks off - the table already holds rows whose parent record is
+missing, so the constraint is not validated.
+```
+
+Deleting the operator's rows to make the constraint validate is never an option, and skipping the constraint would
+silently diverge from the tree, so the constraint is restored and the exception is made visible instead.
+
+### Generating A Column Definition
 `information_schema` reports a string default as the bare literal, so a naive `DEFAULT {value}` emits `DEFAULT Quantity`
 and MySQL rejects the statement. The generator must therefore:
 
@@ -312,19 +402,27 @@ and MySQL rejects the statement. The generator must therefore:
 
 ## Data Safety Guarantees
 
+- Every apply and rebuild copies the target into `<database>_backup` before the first write. A backup that cannot be
+  taken stops the run, so nothing is ever written to an unbacked database.
+- The backup schema is dropped and recreated each run, so it always holds the state from just before the current run
+  rather than a stale snapshot from an earlier one.
 - A normal apply never drops anything on its own. A table or column is only removed after the operator ticks the
   removal box.
 - A normal apply never truncates or rewrites existing rows.
-- Seeds insert only what is missing.
+- Seeds insert only what is missing: a seed whose file has not changed since it ran on this database is skipped
+  outright, and the seeds that do run are written to be re-runnable anyway.
 - Extra objects are reported in the preview before they can be removed.
 - The scratch schema used for preview is always dropped, even when the preview throws.
 - Destructive modes require an explicit confirmation.
 - Removals are split by risk: blocking columns go before anything writes, everything else runs last.
+- A column that could not be added or altered stops the run, as does a failed change of any other kind.
+- A foreign key that cannot be validated against existing rows is still attached, with checks off, and named in the
+  report. The rows are never deleted to make a constraint agree.
 - A schema change that fails stops the run, so a half-converged schema never gets seeds written against it.
 
 ## Result Reporting
 
-The in-memory result tracks four counters: applied, skipped, benign skips, and failures.
+The in-memory result tracks five counters: applied, skipped, benign skips, already seeded, and failures.
 
 - A statement whose error matches a benign pattern is counted as a benign skip, not a failure. Benign patterns include
   `already exists`, `duplicate entry`, `duplicate column name`, `duplicate key name`, `can't drop`,
@@ -333,8 +431,10 @@ The in-memory result tracks four counters: applied, skipped, benign skips, and f
   not flood the report.
 - Failures are aggregated the same way, keyed by message and printed in first-seen order with an occurrence count. A
   seed that fails the same way 90 times appears as one line ending in `(x90)`.
+- Already-seeded seeds are listed under their own heading, so the operator can see the tool did not touch reference
+  data rather than reading it as a silent no-op.
 - A text report is written to `%LOCALAPPDATA%\<Tool Name>\reports\deployment-yyyyMMdd-HHmmss.txt` and includes the
-  database, resolved server, mode, timestamp, counters, per-object messages, and failures.
+  database, resolved server, mode, backup schema, timestamp, counters, per-object messages, and failures.
 - An unhandled exception - including one thrown before the window exists - is written to
   `%LOCALAPPDATA%\<Tool Name>\logs\failure-yyyyMMdd-HHmmss.log` with the executable folder, server, database and
   user name, and the exception chain. The password is never written. Without this a crash during startup leaves the
@@ -400,7 +500,8 @@ Identifiers become sentences: `dunnage_parts.quantity_type` renders as "Dunnage 
 ### Safety and disclosure
 
 - The safety line is always visible and changes with the mode: "Your records are kept. Nothing is deleted." versus
-  "This erases every record."
+  "This erases every record." Every variant names the `<database>_backup` schema the run copies the old data into, so
+  the operator knows a recovery point exists before pressing Save.
 - Rebuild requires its own checkbox and keeps the save button disabled until it is ticked.
 - Leftover removal is opt-in and off by default.
 - SQL detail is folded behind a "Technical details - for IT" `Expander`. A finished run writes a report file and
@@ -469,6 +570,9 @@ constructor.
   rather than a type name.
 - [ ] Changing the database clears the plan and returns to step 1.
 - [ ] Choosing "Start over" swaps the checkbox and keeps the save button disabled until it is ticked.
+- [ ] After a successful save the save button becomes "Start over", which forgets the plan, the outcome, the change
+  list, and the log, and returns to the connect screen with the mode back on the recommended choice. A failed save
+  keeps the save button so the run can be retried.
 - [ ] Steps 1, 2, and 3 render in light and dark themes with readable card edges.
 - [ ] A crash before the window opens writes a file under `logs/`.
 

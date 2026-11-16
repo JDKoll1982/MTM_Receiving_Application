@@ -526,7 +526,16 @@
                     IsEnabled="{x:Bind ViewModel.CanSave, Mode=OneWay}"
                     IsIndeterminateProgressRing="True"
                     ProgressRingVisibility="Visible"
-                    Visibility="{x:Bind ui:Show.If(ViewModel.IsStep3), Mode=OneWay}" />
+                    Visibility="{x:Bind ui:Show.If(ViewModel.ShowSave), Mode=OneWay}" />
+
+                <Button
+                    Grid.Column="3"
+                    MinWidth="190"
+                    AutomationProperties.Name="Start over with another database"
+                    Command="{x:Bind ViewModel.StartOverCommand}"
+                    Content="Start over"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Visibility="{x:Bind ui:Show.If(ViewModel.ShowStartOver), Mode=OneWay}" />
             </Grid>
         </Border>
     </Grid>

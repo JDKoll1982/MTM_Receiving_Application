@@ -40,226 +40,210 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!--  Entry Counter  -->
+                <!--  Entry Header  -->
                 <Border
                     Grid.Row="0"
-                    Padding="12,6"
+                    Padding="16,10"
                     Background="{StaticResource DunnageAccentBrush}"
-                    CornerRadius="8,8,0,0">
-                    <StackPanel
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal"
-                        Spacing="8">
+                    CornerRadius="8">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
                         <FontIcon
-                            FontSize="16"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="20"
                             Foreground="White"
                             Glyph="&#xE8FD;" />
-                        <TextBlock Foreground="White" Style="{StaticResource SubtitleTextBlockStyle}">
+
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="0">
+                            <TextBlock
+                                Foreground="White"
+                                Style="{StaticResource BodyLargeTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentLoad.PartId, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Foreground="White"
+                                Opacity="0.85"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentLoad.TypeName, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Foreground="White"
+                            Opacity="0.85"
+                            Style="{StaticResource CaptionTextBlockStyle}">
                             <Run Text="Entry" />
                             <Run Text="{x:Bind ViewModel.CurrentEntryIndex, Mode=OneWay}" />
                             <Run Text="of" />
                             <Run Text="{x:Bind ViewModel.LoadCount, Mode=OneWay}" />
                         </TextBlock>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!--  Single Entry Form  -->
+                <!--  Single Entry Content  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,12,0,0"
+                    ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <Grid Grid.Row="1">
+                    <!--  Details Card  -->
                     <Border
+                        Grid.Column="0"
+                        MaxWidth="820"
                         Padding="20"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1,0,1,1"
-                        CornerRadius="0,0,8,8">
-                        <Grid MaxWidth="900">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <StackPanel Spacing="16">
 
-                            <!--  Left Column  -->
-                            <Grid
-                                Grid.Column="0"
-                                ColumnSpacing="16"
-                                RowSpacing="10">
+                            <StackPanel Spacing="2">
+                                <TextBlock
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Quantity" />
+                                <TextBlock
+                                    FontWeight="SemiBold"
+                                    Style="{StaticResource BodyLargeTextBlockStyle}"
+                                    Text="{x:Bind ViewModel.CurrentLoad.QuantityDisplay, Mode=OneWay}" />
+                            </StackPanel>
+
+                            <Rectangle Height="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}" />
+
+                            <Grid ColumnSpacing="24" RowSpacing="16">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock
+                                <StackPanel
                                     Grid.Row="0"
                                     Grid.Column="0"
-                                    Grid.ColumnSpan="2"
-                                    Margin="0,0,0,8"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Stretch"
-                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                    Text="Load Details" />
+                                    Spacing="2">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Location" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
 
-                                <TextBlock
+                                <StackPanel
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Spacing="2">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="PO number" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentLoad.PoNumber, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+
+                                <StackPanel
                                     Grid.Row="1"
                                     Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Part ID:" />
+                                    Spacing="2">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Inventory method" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
 
-                                <TextBlock
+                                <StackPanel
                                     Grid.Row="1"
                                     Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.PartId, Mode=OneWay}" />
+                                    Spacing="2"
+                                    Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                        Text="Vendor" />
+                                    <TextBlock
+                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                        Text="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay}"
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+                            </Grid>
 
+                            <TextBlock
+                                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay}"
+                                TextWrapping="WrapWholeWords"
+                                Visibility="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
+
+                            <Rectangle Height="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}" />
+
+                            <StackPanel Spacing="4">
                                 <TextBlock
-                                    Grid.Row="2"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Type:" />
-
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="Load details" />
                                 <TextBlock
-                                    Grid.Row="2"
-                                    Grid.Column="1"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.TypeName, Mode=OneWay}" />
-
-                                <TextBlock
-                                    Grid.Row="3"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Quantity:" />
-
-                                <TextBlock
-                                    Grid.Row="3"
-                                    Grid.Column="1"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.Quantity, Mode=OneWay}" />
-
-                                <TextBlock
-                                    Grid.Row="4"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="PO Number:" />
-
-                                <TextBlock
-                                    Grid.Row="4"
-                                    Grid.Column="1"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.PoNumber, Mode=OneWay}" />
-
-                                <TextBlock
-                                    Grid.Row="5"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Location:" />
-
-                                <TextBlock
-                                    Grid.Row="5"
-                                    Grid.Column="1"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.Location, Mode=OneWay}" />
-
-                                <TextBlock
-                                    Grid.Row="6"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Vendor:"
-                                    Visibility="{x:Bind ViewModel.HasCurrentVendorState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                                <TextBlock
-                                    Grid.Row="6"
-                                    Grid.Column="1"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay}"
-                                    TextWrapping="WrapWholeWords"
-                                    Visibility="{x:Bind ViewModel.CurrentVendorName, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-
-                                <TextBlock
-                                    Grid.Row="7"
-                                    Grid.Column="0"
-                                    Grid.ColumnSpan="2"
-                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                    Style="{StaticResource BodyTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay}"
-                                    TextWrapping="WrapWholeWords"
-                                    Visibility="{x:Bind ViewModel.CurrentVendorErrorMessage, Mode=OneWay, Converter={StaticResource EmptyStringToVisibilityConverter}}" />
-
-                                <TextBlock
-                                    Grid.Row="8"
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Inventory Method:" />
-
-                                <TextBlock
-                                    Grid.Row="8"
-                                    Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                    Text="{x:Bind ViewModel.CurrentLoad.InventoryMethod, Mode=OneWay}" />
-
-                                <TextBlock
-                                    Grid.Row="9"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Style="{StaticResource BaseTextBlockStyle}"
-                                    Text="Load Details:" />
-                                <TextBlock
-                                    Grid.Row="9"
-                                    Grid.Column="1"
-                                    VerticalAlignment="Center"
                                     Style="{StaticResource BodyTextBlockStyle}"
                                     Text="{x:Bind ViewModel.CurrentLoad.SpecSummaryDisplay, Mode=OneWay}"
                                     TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
 
-                            </Grid>
-
-                            <!--  Right Column  -->
-
+                    <!--  Photo Card  -->
+                    <Border
+                        Grid.Column="1"
+                        Width="360"
+                        Padding="12"
+                        VerticalAlignment="Top"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Spacing="8">
                             <Border
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
-                                CornerRadius="8"
-                                Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Image Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" Stretch="Uniform" />
+                                CornerRadius="6">
+                                <Image
+                                    MaxHeight="300"
+                                    Source="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}"
+                                    Stretch="Uniform" />
                             </Border>
-
-
-                        </Grid>
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Part photo" />
+                        </StackPanel>
                     </Border>
                 </Grid>
 

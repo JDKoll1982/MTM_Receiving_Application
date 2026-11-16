@@ -9,15 +9,18 @@ public sealed class Model_DeploymentResult
     public int SkippedCount { get; private set; }
     public int FailedCount { get; private set; }
     public int BenignSkipCount { get; private set; }
+    public int AlreadySeededCount { get; private set; }
     public TimeSpan Duration { get; set; }
     public IReadOnlyList<string> Messages => _messages;
     public IReadOnlyList<string> Failures => _failureOrder;
     public IReadOnlyDictionary<string, int> BenignSkips => _benignSkips;
+    public IReadOnlyDictionary<string, int> AlreadySeeded => _alreadySeeded;
     public IReadOnlyDictionary<string, int> FailureCounts => _failures;
 
     private readonly List<string> _messages = new();
     private readonly List<string> _failureOrder = new();
     private readonly Dictionary<string, int> _benignSkips = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, int> _alreadySeeded = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _failures = new(StringComparer.Ordinal);
 
     public bool IsSuccess => _failures.Count == 0;
@@ -40,6 +43,15 @@ public sealed class Model_DeploymentResult
         _benignSkips[message] = _benignSkips.TryGetValue(message, out var count) ? count + 1 : 1;
     }
 
+    /// <summary>
+    /// Reports a seed that was left alone because this database already holds the data in it.
+    /// </summary>
+    public void MarkAlreadySeeded(string message)
+    {
+        AlreadySeededCount++;
+        _alreadySeeded[message] = _alreadySeeded.TryGetValue(message, out var count) ? count + 1 : 1;
+    }
+
     public void MarkFailed(string message)
     {
         FailedCount++;
@@ -58,13 +70,24 @@ public sealed class Model_DeploymentResult
     public string ToReportText()
     {
         var builder = new System.Text.StringBuilder();
-        builder.AppendLine($"Applied: {AppliedCount} | Skipped: {SkippedCount} | Already applied: {BenignSkipCount} | Failed: {FailedCount}");
+        var seeded = AlreadySeededCount > 0 ? $" | Already seeded: {AlreadySeededCount}" : string.Empty;
+        builder.AppendLine($"Applied: {AppliedCount} | Skipped: {SkippedCount} | Already applied: {BenignSkipCount}{seeded} | Failed: {FailedCount}");
         builder.AppendLine($"Duration: {Duration:h\\:mm\\:ss}");
         builder.AppendLine(new string('-', 100));
 
         foreach (var message in _messages)
         {
             builder.AppendLine(message);
+        }
+
+        if (_alreadySeeded.Count > 0)
+        {
+            builder.AppendLine();
+            builder.AppendLine("ALREADY SEEDED (left alone - this database already holds the data)");
+            foreach (var entry in _alreadySeeded)
+            {
+                builder.AppendLine($"  - {entry.Key} (x{entry.Value})");
+            }
         }
 
         if (_benignSkips.Count > 0)

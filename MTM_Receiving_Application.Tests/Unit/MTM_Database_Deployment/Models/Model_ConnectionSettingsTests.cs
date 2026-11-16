@@ -83,6 +83,23 @@ public sealed class Model_ConnectionSettingsTests
     }
 
     [Fact]
+    public void AppliedSeeds_ShouldSurviveASaveAndReload_WhenWrittenToTheSettingsFile()
+    {
+        var settings = new Model_ConnectionSettings();
+        settings.AppliedSeeds["172.16.1.104:3306/mtm_receiving_application"] =
+            new Dictionary<string, string> { ["seeddata/01_seed_volvo_data.sql"] = "abc123" };
+
+        var json = System.Text.Json.JsonSerializer.Serialize(settings);
+        var reloaded = System.Text.Json.JsonSerializer.Deserialize<Model_ConnectionSettings>(json);
+
+        reloaded.Should().NotBeNull();
+        reloaded!.AppliedSeeds.Should().ContainKey("172.16.1.104:3306/mtm_receiving_application");
+        reloaded.AppliedSeeds["172.16.1.104:3306/mtm_receiving_application"]
+            .Should().ContainKey("seeddata/01_seed_volvo_data.sql")
+            .WhoseValue.Should().Be("abc123");
+    }
+
+    [Fact]
     public void For_ShouldWarnThatTheLiveDatabaseIsReal_WhenNameHasNoTestSuffix()
     {
         var option = Model_DatabaseOption.For(Model_ConnectionSettings.LiveDatabase);

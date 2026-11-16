@@ -21,7 +21,7 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="10">
-            <Grid>
+            <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -38,7 +38,6 @@
                     Content="Refresh" />
                 <ToggleSwitch
                     Grid.Column="2"
-                    Margin="12,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     IsOn="{x:Bind ViewModel.ShowPartsWithoutImages, Mode=TwoWay}"

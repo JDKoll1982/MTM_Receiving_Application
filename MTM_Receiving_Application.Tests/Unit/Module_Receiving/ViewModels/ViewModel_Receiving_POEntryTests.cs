@@ -121,7 +121,12 @@ public sealed class ViewModel_Receiving_POEntryTests
         viewModel.Parts.Should().Contain(part => part.PartID == "MMC0000850");
         viewModel.Parts.Single(part => part.PartID == "MMC0000850").OnHandQty.Should().Be(42);
         viewModel.Parts.Single(part => part.PartID == "MMC0000850").Location.Should().Be("RECV");
-        workflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
+        workflowService
+            .Verify(
+                service => service.AdvanceToNextStepAsync(),
+                Times.Once,
+                "a PO that returns several parts now moves straight to the part page"
+            );
     }
 
     [Fact]
@@ -145,7 +150,6 @@ public sealed class ViewModel_Receiving_POEntryTests
         harness.ViewModel.Parts.Should().BeEmpty();
         harness.ViewModel.SelectedPart.Should().BeNull();
         harness.ViewModel.PoStatus.Should().BeEmpty();
-        harness.ViewModel.IsPartsListVisible.Should().BeFalse();
         harness
             .RefocusRequestCount.Should()
             .Be(1, "the PO field must be cleared and refocused after rejection");
@@ -163,7 +167,7 @@ public sealed class ViewModel_Receiving_POEntryTests
     }
 
     [Fact]
-    public async Task LoadPOCommand_ShouldAutoSelectAndAdvance_WhenPoHasExactlyOneUniquePart()
+    public async Task LoadPOCommand_ShouldAutoSelectAndSkipPartPage_WhenPoHasExactlyOneUniquePart()
     {
         var inforVisualService = new Mock<IService_InforVisual>();
         inforVisualService
@@ -198,7 +202,14 @@ public sealed class ViewModel_Receiving_POEntryTests
         harness.ViewModel.SelectedPart!.PartID.Should().Be("MMC0000850");
         harness.WorkflowService.Object.CurrentPart.Should().NotBeNull();
         harness.WorkflowService.Object.CurrentPart!.PartID.Should().Be("MMC0000850");
-        harness.WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Once);
+        harness
+            .WorkflowService.Verify(
+                service => service.SkipPartSelection(),
+                Times.Once,
+                "there is nothing to choose, so the part page is left out of the walk"
+            );
+        harness
+            .WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
         harness
             .StatusMessages.Should()
             .ContainSingle()
@@ -210,6 +221,45 @@ public sealed class ViewModel_Receiving_POEntryTests
             .Which.Should()
             .Be(InfoBarSeverity.Informational);
         harness.RefocusRequestCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task LoadPOCommand_ShouldSkipPartPage_WhenEveryLineOnThePoIsTheSamePart()
+    {
+        var inforVisualService = new Mock<IService_InforVisual>();
+        inforVisualService
+            .Setup(service => service.GetPOUniquePartsWithOnHandAsync("500004"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPO?>(
+                    new Model_InforVisualPO
+                    {
+                        PONumber = "500004",
+                        Status = "R",
+                        Parts = new List<Model_InforVisualPart>
+                        {
+                            new() { PartID = "MMC0000850", POLineNumber = "1" },
+                            new() { PartID = "MMC0000850", POLineNumber = "2" },
+                            new() { PartID = "mmc0000850", POLineNumber = "3" },
+                        },
+                    }
+                )
+            );
+
+        var harness = new Harness(inforVisualService);
+        harness.ViewModel.PoNumber = "500004";
+
+        await harness.ViewModel.LoadPOCommand.ExecuteAsync(null);
+
+        harness.ViewModel.SelectedPart.Should().NotBeNull();
+        harness.ViewModel.SelectedPart!.PartID.Should().Be("MMC0000850");
+        harness
+            .WorkflowService.Verify(
+                service => service.SkipPartSelection(),
+                Times.Once,
+                "several lines of one part number are still a single part to receive"
+            );
+        harness
+            .WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
     }
 
     [Fact]

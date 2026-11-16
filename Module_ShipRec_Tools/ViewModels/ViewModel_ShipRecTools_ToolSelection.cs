@@ -43,7 +43,7 @@ public partial class ViewModel_ShipRecTools_ToolSelection : ViewModel_Shared_Bas
     /// </summary>
     public void ActivateView()
     {
-        ShowStatus("Choose a Ship/Rec tool to continue.", InfoBarSeverity.Informational);
+        ShowStatus("Choose an extra tool to continue.", InfoBarSeverity.Informational);
     }
 
     /// <summary>

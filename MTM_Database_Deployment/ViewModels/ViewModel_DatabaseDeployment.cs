@@ -153,6 +153,15 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
 
     public bool CanSave => !IsBusy && HasChecked && (IsSafeMode || ConfirmRebuild);
 
+    /// <summary>
+    /// True once a run finished cleanly: the work is done, so the button offers a fresh start
+    /// instead of saving the same plan again. Gated on the last step so it never shares the button
+    /// slot with Connect or Check.
+    /// </summary>
+    public bool ShowStartOver => IsStep3 && HasResult && !ResultIsFailure && !IsBusy;
+
+    public bool ShowSave => IsStep3 && !ShowStartOver;
+
     public string SaveButtonText => IsRebuildMode ? "Erase everything and rebuild" : "Save the changes";
 
     public string SaveButtonBusyText => IsRebuildMode ? "Rebuilding the database..." : "Saving the changes...";
@@ -257,7 +266,12 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
         OnPropertyChanged(nameof(IsStep2));
         OnPropertyChanged(nameof(IsStep3));
         OnPropertyChanged(nameof(CanGoBack));
+        OnPropertyChanged(nameof(ShowSave));
     }
+
+    partial void OnHasResultChanged(bool value) => RaiseRunState();
+
+    partial void OnResultIsFailureChanged(bool value) => RaiseRunState();
 
     partial void OnTechnicalDetailsChanged(string value) => OnPropertyChanged(nameof(HasTechnicalDetails));
 
@@ -284,21 +298,25 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
         OnPropertyChanged(nameof(CanConnect));
         OnPropertyChanged(nameof(CanCheck));
         OnPropertyChanged(nameof(CanSave));
+        OnPropertyChanged(nameof(ShowSave));
+        OnPropertyChanged(nameof(ShowStartOver));
     }
 
     private void UpdateSafetyLine()
     {
+        var backup = Service_DatabaseBackup.BackupNameFor(Database);
+
         if (IsRebuildMode)
         {
             SafetyLine = ConfirmRebuild
-                ? "Everything in the database will be erased and rebuilt. This cannot be undone."
-                : "This erases every record. Only do this on a database you are happy to wipe.";
+                ? $"Everything in the database will be erased and rebuilt. A copy of the old one is saved as {backup} first."
+                : $"This erases every record. A copy of the old one is saved as {backup} first, but check that copy before you rely on it.";
             return;
         }
 
         SafetyLine = RemoveDatabaseOnlyObjects
-            ? "Your records are kept. Leftover columns and tables this tool does not use will be deleted."
-            : "Your records are kept. Nothing is deleted.";
+            ? $"Your records are kept. Leftover columns and tables this tool does not use will be deleted. A copy is saved as {backup} first."
+            : $"Your records are kept. Nothing is deleted. A copy is saved as {backup} first.";
     }
 
     /// <summary>
@@ -460,7 +478,10 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
         try
         {
             var gateway = CreateGateway();
-            var engine = new Service_DeploymentEngine(gateway, _catalog);
+            var engine = new Service_DeploymentEngine(
+                gateway,
+                _catalog,
+                new Service_SeedLedger(_settings));
             var progress = new Progress<string>(message =>
             {
                 ProgressMessage = message;
@@ -485,6 +506,11 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
             OnPropertyChanged(nameof(HasReport));
             TechnicalDetails = result.ToReportText();
             DescribeResult(result);
+
+            // The run just recorded which seeds are in the database; keep that on disk so the next
+            // safe update knows not to write them again.
+            SaveSettings();
+
             AppendLog(ResultHeadline);
         }
         catch (OperationCanceledException)
@@ -515,6 +541,44 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
 
     [RelayCommand]
     private void Cancel() => _cancellation?.Cancel();
+
+    /// <summary>
+    /// Forgets the run that just finished and returns to the connect screen, ready for another
+    /// database. The saved sign-in details stay, because they describe this PC rather than the run.
+    /// </summary>
+    [RelayCommand]
+    private void StartOver()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        _cancellation?.Dispose();
+        _cancellation = null;
+        _plan = null;
+        IsConnected = false;
+        HasChecked = false;
+        HasResult = false;
+        ResultIsFailure = false;
+        ResultHeadline = string.Empty;
+        ResultDetail = string.Empty;
+        TechnicalDetails = string.Empty;
+        ReportPath = string.Empty;
+        ProgressMessage = string.Empty;
+        ChangeGroups.Clear();
+        ChangeHeadline = "Nothing checked yet";
+        ChangeDetail = "Connect first, then press Check the database.";
+        ConnectionHeadline = "Not connected yet";
+        ConnectionDetail = "Press Connect and we will check the database for you.";
+        ModeIndex = 0;
+        ConfirmRebuild = false;
+        RemoveDatabaseOnlyObjects = false;
+        StepIndex = 0;
+        ApplyStepText();
+        LogText = string.Empty;
+        AppendLog("Started over. Nothing was changed.");
+    }
 
     /// <summary>
     /// Saves the sign-in details on this PC only. Called from the flyout, which then closes itself.
@@ -820,8 +884,12 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
         ResultGlyph = GlyphCheck;
         ResultHeadline = IsRebuildMode ? "The database was rebuilt" : "All done - the database is up to date";
         ResultDetail = IsRebuildMode
-            ? "Every table was recreated empty and the standard lists were filled in."
-            : $"{result.AppliedCount} item(s) saved, {result.BenignSkipCount} were already in place. "
+            ? "Every table was recreated empty and the standard lists were filled in. "
+              + $"The records that were there before are in {Service_DatabaseBackup.BackupNameFor(Database)}."
+            : $"{result.AppliedCount} item(s) saved, {result.BenignSkipCount} were already in place"
+              + (result.AlreadySeededCount > 0
+                  ? $", {result.AlreadySeededCount} standard list(s) already seeded and left alone. "
+                  : ". ")
               + "Your records were not changed.";
     }
 
@@ -875,6 +943,7 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
             builder.AppendLine($"Database: {Database}");
             builder.AppendLine($"Server: {gateway.ActiveServer}:{gateway.Port}");
             builder.AppendLine($"Mode: {(IsRebuildMode ? "Fresh rebuild" : "Update in place")}");
+            builder.AppendLine($"Backup: {Service_DatabaseBackup.BackupNameFor(Database)}");
             builder.AppendLine($"Completed: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             builder.AppendLine(result.ToReportText());
             File.WriteAllText(path, builder.ToString());

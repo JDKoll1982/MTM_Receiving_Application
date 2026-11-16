@@ -213,6 +213,61 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         viewModel.CanClearLabelData.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task StepChanged_ShouldPointTheHeaderStepBarAtTheCurrentWalkStep()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+
+        viewModel
+            .IsHeaderStepBarVisible.Should()
+            .BeFalse("mode selection is not part of the walk");
+        viewModel.HeaderStepBarIndex.Should().Be(-1);
+
+        currentStep = Enum_DunnageWorkflowStep.DetailsEntry;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+
+        viewModel.IsHeaderStepBarVisible.Should().BeTrue();
+        viewModel
+            .HeaderStepBarSteps.Should()
+            .Equal("Type", "Part", "Loads", "Details", "Review");
+        viewModel
+            .HeaderStepBarIndex.Should()
+            .Be(3, "Enter Details is the fourth step of the walk");
+    }
+
+    [Fact]
+    public async Task StepChanged_ShouldHideTheHeaderStepBar_WhenTheModeIsNotAWalk()
+    {
+        var workflow = CreateWorkflowMock();
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.Review;
+        workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        viewModel.IsHeaderStepBarVisible.Should().BeTrue();
+
+        currentStep = Enum_DunnageWorkflowStep.EditMode;
+        workflow.Raise(
+            service => service.StepChanged += null,
+            workflow.Object,
+            System.EventArgs.Empty
+        );
+
+        viewModel
+            .IsHeaderStepBarVisible.Should()
+            .BeFalse("edit mode is not part of the walk");
+        viewModel.HeaderStepBarIndex.Should().Be(-1);
+    }
+
     private static Mock<IService_DunnageWorkflow> CreateWorkflowMock()
     {
         var workflow = new Mock<IService_DunnageWorkflow>();

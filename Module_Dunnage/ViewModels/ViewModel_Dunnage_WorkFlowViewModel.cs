@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,7 +25,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 /// </summary>
 public partial class ViewModel_Dunnage_WorkFlowViewModel
     : ViewModel_Shared_Base,
-        IViewModel_HeaderTitleProvider
+        IViewModel_HeaderTitleProvider,
+        IViewModel_HeaderStepBarProvider
 {
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_DunnageSettings _dunnageSettings;
@@ -129,7 +132,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
 
     public string CurrentHeaderTitle => CurrentStepTitle;
     public string? CurrentHeaderContextTitle => GetHeaderContextTitle();
-
     public string? CurrentHeaderContextSubtitle => GetHeaderContextSubtitle();
 
     public ImageSource? CurrentHeaderContextImageSource =>
@@ -162,6 +164,37 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     }
 
     public bool CanNavigate => !IsNavigationLocked;
+
+    /// <summary>The dunnage walk, in the order the header step bar draws it.</summary>
+    private static readonly (Enum_DunnageWorkflowStep Step, string Label)[] GuidedWalk =
+    [
+        (Enum_DunnageWorkflowStep.TypeSelection, "Type"),
+        (Enum_DunnageWorkflowStep.PartSelection, "Part"),
+        (Enum_DunnageWorkflowStep.QuantityEntry, "Loads"),
+        (Enum_DunnageWorkflowStep.DetailsEntry, "Details"),
+        (Enum_DunnageWorkflowStep.Review, "Review"),
+    ];
+
+    /// <summary>True while the clerk is somewhere in the guided dunnage walk.</summary>
+    public bool IsHeaderStepBarVisible => HeaderStepBarIndex >= 0;
+
+    /// <summary>The walk's steps, in order, for the main-window header step bar.</summary>
+    public IReadOnlyList<string> HeaderStepBarSteps =>
+        GuidedWalk.Select(entry => entry.Label).ToArray();
+
+    /// <summary>
+    /// The step the clerk is on, or -1 outside the walk (mode selection, manual entry, edit mode,
+    /// image search) so the header hides the bar rather than keeping a stale highlight.
+    /// </summary>
+    public int HeaderStepBarIndex =>
+        Array.FindIndex(GuidedWalk, entry => entry.Step == _workflowService.CurrentStep);
+
+    private void NotifyHeaderStepBarChanged()
+    {
+        OnPropertyChanged(nameof(HeaderStepBarIndex));
+        OnPropertyChanged(nameof(HeaderStepBarSteps));
+        OnPropertyChanged(nameof(IsHeaderStepBarVisible));
+    }
 
     private string? GetHeaderContextTitle()
     {
@@ -264,6 +297,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         }
 
         NotifyHeaderContextChanged();
+        NotifyHeaderStepBarChanged();
 
         _ = RefreshClearLabelDataAvailabilityAsync();
     }

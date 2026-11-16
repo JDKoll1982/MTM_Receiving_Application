@@ -97,6 +97,7 @@
                         <GridView
                             x:Name="PartCardGridView"
                             HorizontalAlignment="Stretch"
+                            DoubleTapped="OnPartCardDoubleTapped"
                             IsItemClickEnabled="False"
                             ItemsSource="{x:Bind ViewModel.AvailableParts, Mode=OneWay}"
                             ScrollViewer.HorizontalScrollBarVisibility="Visible"

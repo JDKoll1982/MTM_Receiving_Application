@@ -503,9 +503,8 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_SettingsUserLabelButtons, Service_SettingsUserLabelButtons>();
         services.AddSingleton<IService_SettingsUserDirectory, Service_SettingsUserDirectory>();
 
-        // Database Config (admin/developer): runtime MySQL target selection + SyncTool launcher
+        // Database Config: per-PC MySQL target selection for testing
         services.AddSingleton<IService_DatabaseTargetManager, Service_DatabaseTargetManager>();
-        services.AddSingleton<IService_SyncToolRunner, Service_SyncToolRunner>();
 
         // Settings ViewModels (Transient - Per-settings-page instances)
         RegisterSettingsViewModels(services);

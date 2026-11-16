@@ -23,6 +23,14 @@ public sealed class Model_ConnectionSettings
     public List<string> AvailableDatabases { get; set; } = [LiveDatabase, TestDatabase];
 
     /// <summary>
+    /// Seed scripts already written into each database: the outer key is
+    /// <c>server:port/database</c> and the inner key is the seed's path in the SQL tree, holding the
+    /// fingerprint of the file that ran. A safe update skips a seed whose fingerprint has not moved,
+    /// so reference data is never written twice.
+    /// </summary>
+    public Dictionary<string, Dictionary<string, string>> AppliedSeeds { get; set; } = [];
+
+    /// <summary>
     /// The selectable databases, guaranteed to contain <see cref="Database"/> so a name that is not in
     /// the list is never silently swapped for another one.
     /// </summary>
@@ -63,6 +71,12 @@ public sealed class Model_ConnectionSettings
         User = User,
         Password = Password,
         ConnectTimeoutSeconds = ConnectTimeoutSeconds,
-        AvailableDatabases = [.. AvailableDatabases ?? []]
+        AvailableDatabases = [.. AvailableDatabases ?? []],
+        AppliedSeeds = (AppliedSeeds ?? []).ToDictionary(
+            entry => entry.Key,
+            entry => new Dictionary<string, string>(
+                entry.Value ?? [],
+                StringComparer.OrdinalIgnoreCase),
+            StringComparer.OrdinalIgnoreCase)
     };
 }

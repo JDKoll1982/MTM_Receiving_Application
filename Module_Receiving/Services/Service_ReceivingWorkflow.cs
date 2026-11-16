@@ -40,6 +40,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
 
+        /// <summary>
+        /// True while the walk is past a part page it never showed, because the PO had one part.
+        /// Back then returns to the PO step instead of a page the clerk never saw.
+        /// </summary>
+        private bool _partSelectionSkipped;
+
         public event EventHandler? StepChanged
         {
             add => _stepChanged.Subscribe(value);
@@ -276,6 +282,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     CurrentStep = IsNonPOItem
                         ? Enum_ReceivingWorkflowStep.LoadEntry
                         : Enum_ReceivingWorkflowStep.PartSelection;
+                    _partSelectionSkipped = false;
                     break;
 
                 case Enum_ReceivingWorkflowStep.PartSelection:
@@ -424,6 +431,45 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             );
         }
 
+        /// <summary>
+        /// Moves from the PO step straight to the load step, leaving the part page out of the walk.
+        /// A PO that carries a single part number has nothing to choose, so that page would only be a
+        /// stop the clerk has to click through.
+        /// </summary>
+        /// <returns>Result indicating success and any validation errors</returns>
+        public Model_ReceivingWorkflowStepResult SkipPartSelection()
+        {
+            if (
+                CurrentStep != Enum_ReceivingWorkflowStep.POEntry
+                && CurrentStep != Enum_ReceivingWorkflowStep.PartSelection
+            )
+            {
+                return Model_ReceivingWorkflowStepResult.ErrorResult(
+                    new List<string> { $"Cannot skip the part step from {CurrentStep}" }
+                );
+            }
+
+            if (CurrentPart == null)
+            {
+                return Model_ReceivingWorkflowStepResult.ErrorResult(
+                    new List<string> { "Choose the part you are receiving." }
+                );
+            }
+
+            CurrentSession.IsNonPO = IsNonPOItem;
+            CurrentSession.PoNumber = string.IsNullOrWhiteSpace(CurrentPONumber)
+                ? null
+                : CurrentPONumber;
+
+            _partSelectionSkipped = true;
+            CurrentStep = Enum_ReceivingWorkflowStep.LoadEntry;
+
+            return Model_ReceivingWorkflowStepResult.SuccessResult(
+                CurrentStep,
+                "Skipped the part page - the PO has one part number"
+            );
+        }
+
         private void GenerateLoads()
         {
             // Remove previous loads from this batch if they exist
@@ -497,9 +543,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             switch (CurrentStep)
             {
                 case Enum_ReceivingWorkflowStep.LoadEntry:
-                    CurrentStep = IsNonPOItem
-                        ? Enum_ReceivingWorkflowStep.POEntry
-                        : Enum_ReceivingWorkflowStep.PartSelection;
+                    // Back returns to the part page only when the walk actually visited it.
+                    CurrentStep =
+                        IsNonPOItem || _partSelectionSkipped
+                            ? Enum_ReceivingWorkflowStep.POEntry
+                            : Enum_ReceivingWorkflowStep.PartSelection;
+                    _partSelectionSkipped = false;
                     break;
 
                 case Enum_ReceivingWorkflowStep.PartSelection:
@@ -553,6 +602,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 IsManualEntryFlow = false;
             }
 
+            // Entering the PO or part step by hand restores the full walk.
+            if (
+                step is Enum_ReceivingWorkflowStep.POEntry
+                    or Enum_ReceivingWorkflowStep.PartSelection
+            )
+            {
+                _partSelectionSkipped = false;
+            }
+
             CurrentStep = step;
             return Model_ReceivingWorkflowStepResult.SuccessResult(
                 CurrentStep,
@@ -572,6 +630,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;
+            _partSelectionSkipped = false;
 
             CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
         }

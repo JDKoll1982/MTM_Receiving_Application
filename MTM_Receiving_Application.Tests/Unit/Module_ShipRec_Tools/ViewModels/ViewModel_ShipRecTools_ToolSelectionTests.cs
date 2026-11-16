@@ -25,7 +25,7 @@ public sealed class ViewModel_ShipRecTools_ToolSelectionTests
         notificationServiceMock.Verify(
             service =>
                 service.ShowStatus(
-                    "Choose a Ship/Rec tool to continue.",
+                    "Choose an extra tool to continue.",
                     MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity.Informational
                 ),
             Times.Once

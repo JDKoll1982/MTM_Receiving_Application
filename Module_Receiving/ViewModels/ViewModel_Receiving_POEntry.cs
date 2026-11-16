@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,7 +29,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_AppSettings _appSettings;
         private readonly IService_ReceivingSettings _receivingSettings;
         private DateTime? _currentPoHeaderPromiseDate;
-        private NotifyCollectionChangedEventHandler? _partsCollectionChangedHandler;
         private bool _isClearingRestrictedSelection;
         private string? _lastLoadedPoNumber;
         private Task<bool>? _pendingQualityHoldCheck;
@@ -76,9 +74,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private bool _isPOClosed = false;
 
-        [ObservableProperty]
-        private bool _isPartsListVisible;
-
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
         private string _poNumberHeaderText = "Purchase Order Number";
@@ -104,30 +99,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [ObservableProperty]
         private string _switchToPoButtonText = "Switch to PO Entry";
 
-        [ObservableProperty]
-        private string _availablePartsHeaderText = "Available Parts";
-
-        [ObservableProperty]
-        private string _columnPartIdHeaderText = "Part ID";
-
-        [ObservableProperty]
-        private string _columnDescriptionHeaderText = "Description";
-
-        [ObservableProperty]
-        private string _columnRemainingQtyHeaderText = "Remaining";
-
-        [ObservableProperty]
-        private string _columnQtyOrderedHeaderText = "Ordered";
-
-        [ObservableProperty]
-        private string _columnLineNumberHeaderText = "Line #";
-
-        [ObservableProperty]
-        private string _columnOnHandHeaderText = "On Hand";
-
-        [ObservableProperty]
-        private string _columnLocationHeaderText = "Location";
-
         // Accessibility Properties
         [ObservableProperty]
         private string _poNumberAccessibilityName = "Purchase Order Number";
@@ -140,9 +111,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _lookupPartAccessibilityName = "Look Up Part";
-
-        [ObservableProperty]
-        private string _partsListAccessibilityName = "Parts List";
 
         /// <summary>
         /// Gets a value indicating whether a part is currently selected for guided PO entry.
@@ -182,8 +150,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             _viewModelRegistry.Register(this);
 
-            AttachPartsCollectionHandler();
-
             // Load UI text from settings
             _ = LoadUITextAsync();
 
@@ -219,31 +185,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 SwitchToPoButtonText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.PoEntrySwitchToPo
                 );
-                AvailablePartsHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryAvailableParts
-                );
-
-                ColumnPartIdHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnPartId
-                );
-                ColumnDescriptionHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnDescription
-                );
-                ColumnRemainingQtyHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnRemainingQty
-                );
-                ColumnQtyOrderedHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnQtyOrdered
-                );
-                ColumnLineNumberHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnLineNumber
-                );
-                ColumnOnHandHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnOnHand
-                );
-                ColumnLocationHeaderText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.PoEntryColumnLocation
-                );
 
                 PoNumberAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.PoEntryPONumber
@@ -256,9 +197,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 LookupPartAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.PoEntryLookupPart
-                );
-                PartsListAccessibilityName = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Accessibility.PoEntryPartsList
                 );
 
                 _logger.LogInfo("PO Entry UI text loaded from settings successfully");
@@ -348,18 +286,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                     ReplaceParts(parts, clearSelection: true);
 
-                    if (parts.Count == 1)
+                    // One part number is no choice at all, so select it and step past the part page.
+                    // Several PO lines for the same part still count as one part.
+                    var distinctPartCount = parts
+                        .Select(part => part.PartID?.Trim() ?? string.Empty)
+                        .Where(partId => partId.Length > 0)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .Count();
+
+                    if (distinctPartCount == 1)
                     {
-                        await AutoSelectSinglePartAndAdvanceAsync(parts[0]);
+                        var onlyPart = parts.First(part =>
+                            !string.IsNullOrWhiteSpace(part.PartID)
+                        );
+                        await AutoSelectSinglePartAndAdvanceAsync(onlyPart);
                         return;
                     }
 
+                    // The parts list has its own page now, so a successful load moves straight there
+                    // instead of leaving the clerk on a page with nothing left to do.
                     var msg = await _receivingSettings.FormatAsync(
                         ReceivingSettingsKeys.Messages.InfoPoLoadedWithParts,
                         PoNumber,
                         (object)Parts.Count
                     );
                     _workflowService.RaiseStatusMessage(msg);
+                    await _workflowService.AdvanceToNextStepAsync();
                 }
                 else
                 {
@@ -435,7 +387,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         /// <summary>
-        /// Selects the only part on the PO, notifies the operator, and advances to the load information step.
+        /// Selects the only part on the PO, notifies the operator, and moves straight to the load step.
         /// </summary>
         private async Task AutoSelectSinglePartAndAdvanceAsync(Model_InforVisualPart onlyPart)
         {
@@ -453,7 +405,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             );
             ShowStatus(message, InfoBarSeverity.Informational);
 
-            await _workflowService.AdvanceToNextStepAsync();
+            _workflowService.SkipPartSelection();
         }
 
         private async Task<bool> AwaitPendingQualityHoldCheckAsync()
@@ -677,25 +629,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : selectedPart?.PartID ?? SelectedPart?.PartID;
 
             Parts = new ObservableCollection<Model_InforVisualPart>(parts);
-            AttachPartsCollectionHandler();
-            IsPartsListVisible = Parts.Count > 0;
             SelectedPart = string.IsNullOrWhiteSpace(selectedPartId)
                 ? null
                 : Parts.FirstOrDefault(part =>
                     string.Equals(part.PartID, selectedPartId, StringComparison.OrdinalIgnoreCase)
                 );
-        }
-
-        private void AttachPartsCollectionHandler()
-        {
-            if (_partsCollectionChangedHandler != null)
-            {
-                Parts.CollectionChanged -= _partsCollectionChangedHandler;
-            }
-
-            _partsCollectionChangedHandler = (s, e) => IsPartsListVisible = Parts.Count > 0;
-            Parts.CollectionChanged += _partsCollectionChangedHandler;
-            IsPartsListVisible = Parts.Count > 0;
         }
 
         partial void OnPoNumberChanged(string value)

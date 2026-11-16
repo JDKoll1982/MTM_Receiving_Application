@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dev="using:DevWinUI"
     xmlns:local="using:MTM_Receiving_Application"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="MainWindowRoot"
@@ -230,6 +231,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel
@@ -262,9 +264,41 @@
                                     TextTrimming="CharacterEllipsis" />
                             </StackPanel>
 
+                            <!--
+                                Guided-walk step bar. MainWindow owns it so the walk is described once,
+                                in the title bar, instead of by a copy on every workflow page. The card
+                                chrome is stripped so the steps sit directly on the header, and the
+                                labels are white because the bar only appears on the fixed dark accent
+                                fill of the module header.
+                            -->
+                            <dev:StepBar
+                                x:Name="HeaderStepBar"
+                                Grid.Column="1"
+                                Margin="16,0"
+                                Padding="0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Workflow steps"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Orientation="Horizontal"
+                                ShowStepIndex="True"
+                                Visibility="Collapsed">
+                                <dev:StepBar.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            MaxLines="1"
+                                            FontSize="10"
+                                            Foreground="White"
+                                            Text="{Binding}"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </dev:StepBar.ItemTemplate>
+                            </dev:StepBar>
+
                             <Button
                                 x:Name="UserMenuButton"
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
                                 Style="{StaticResource HeaderUserMenuButtonStyle}">
@@ -374,7 +408,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem
                     Margin="0,0,0,4"
-                    Content="Ship/Rec Tools"
+                    Content="Extra Tools"
                     Tag="ShipRecToolsPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE90F;" />

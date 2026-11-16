@@ -24,7 +24,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 {
     public partial class ViewModel_Receiving_Workflow
         : ViewModel_Shared_Base,
-            IViewModel_HeaderTitleProvider
+            IViewModel_HeaderTitleProvider,
+            IViewModel_HeaderStepBarProvider
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
@@ -199,17 +200,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public bool ShowWorkflowNavigationButtons =>
             ShowWorkflowBackButton || ShowWorkflowNextButton;
 
-        /// <summary>
-        /// The chips of the guided walk, in order, with the current one marked. Replaced whole on each
-        /// step change so the row never redraws chip by chip, and empty for the modes that are not a
-        /// walk (mode selection, manual entry, edit mode, saving, finished).
-        /// </summary>
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowTrail))]
-        [NotifyPropertyChangedFor(nameof(WorkflowTrailSummaryText))]
-        private ObservableCollection<Model_ReceivingWorkflowTrailStep> _workflowTrail = [];
-
-        /// <summary>The order of the guided walk, which is also the order the chips are drawn in.</summary>
+        /// <summary>The order of the guided walk, which is also the order the header step bar draws.</summary>
         private static readonly (Enum_ReceivingWorkflowStep Step, string Label)[] GuidedTrail =
         [
             (Enum_ReceivingWorkflowStep.POEntry, "Enter PO"),
@@ -222,46 +213,28 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         ];
 
         /// <summary>True while the clerk is somewhere in the guided walk.</summary>
-        public bool ShowWorkflowTrail => WorkflowTrail.Count > 0;
+        public bool IsHeaderStepBarVisible => HeaderStepBarIndex >= 0;
 
-        /// <summary>Where the clerk is in the walk, in words, for the one-line summary beside the trail.</summary>
-        public string WorkflowTrailSummaryText
-        {
-            get
-            {
-                var current = WorkflowTrail.FirstOrDefault(step => step.IsCurrent);
-                return current is null
-                    ? string.Empty
-                    : $"Step {current.Number} of {WorkflowTrail.Count}";
-            }
-        }
+        /// <summary>The walk's steps, in order, for the main-window header step bar.</summary>
+        public IReadOnlyList<string> HeaderStepBarSteps =>
+            GuidedTrail.Select(entry => entry.Label).ToArray();
 
         /// <summary>
-        /// Rebuilds the trail from the current step. A step outside the walk clears it rather than
+        /// The step the clerk is on, or -1 outside the walk so the header hides the bar rather than
         /// leaving a stale highlight behind.
         /// </summary>
-        private void RefreshWorkflowTrail()
-        {
-            var currentIndex = Array.FindIndex(
-                GuidedTrail,
-                entry => entry.Step == _workflowService.CurrentStep
-            );
+        public int HeaderStepBarIndex =>
+            Array.FindIndex(GuidedTrail, entry => entry.Step == _workflowService.CurrentStep);
 
-            WorkflowTrail =
-                currentIndex < 0
-                    ? []
-                    : new ObservableCollection<Model_ReceivingWorkflowTrailStep>(
-                        GuidedTrail.Select(
-                            (entry, index) =>
-                                new Model_ReceivingWorkflowTrailStep
-                                {
-                                    Number = index + 1,
-                                    Label = entry.Label,
-                                    IsCurrent = index == currentIndex,
-                                    IsComplete = index < currentIndex,
-                                }
-                        )
-                    );
+        /// <summary>
+        /// Re-announces the step bar state after a step change, so the header re-reads the index and
+        /// the walk's visibility.
+        /// </summary>
+        private void RefreshHeaderStepBar()
+        {
+            OnPropertyChanged(nameof(HeaderStepBarIndex));
+            OnPropertyChanged(nameof(HeaderStepBarSteps));
+            OnPropertyChanged(nameof(IsHeaderStepBarVisible));
         }
 
         // UI Text Properties (Loaded from Settings)
@@ -574,7 +547,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             );
 
             UpdateNextButtonEnabled();
-            RefreshWorkflowTrail();
+            RefreshHeaderStepBar();
             _ = RefreshClearLabelDataAvailabilityAsync();
         }
 

@@ -47,6 +47,7 @@
             <views:View_Dunnage_PartSelectionView
                 x:Name="PartSelectionView"
                 HorizontalAlignment="Stretch"
+                PartCardActivated="OnPartCardActivated"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
