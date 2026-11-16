@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 5.0.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 5.0.0</h1>
+                    <p class="hero-copy">This release adds the Receiving Validator, which checks one day of receiving at a time against Infor Visual and proposes where each load really went. The guided receiving walk gains a part page and a step trail, one batch of edits can now fix many ticked rows, and the Material Availability sheet tells you how many skids or packages arrived before you start. The Visual Macro Tester has been removed, and IT now deploys database changes with a new tool that backs up first.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 5.0.0</span>
+                <span class="meta-text">Released November 16, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="5.0.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 5.0.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">The Receiving Validator checks a day at a time</p>
+                            <p class="highlight-text">Open <strong>Receiving Validator</strong> from the Reporting group. It reads the receiving lines saved for one day, reads the transfers for those parts from Infor Visual, and proposes a destination for every line. It only writes a line it can fully account for, and a person accepts every write. A colour tells you where each line stands, from green for written to red for not enough material.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">A part page and a step trail in the guided walk</p>
+                            <p class="highlight-text">When a purchase order carries more than one part, the guided walk now stops on a <strong>Part</strong> page: scan or type to narrow the list, read the part's details, and see a quality hold named before you reach the save. A trail across the top of the window lists every step, lights the one you are on, and shows <strong>Step 3 of 7</strong> beside it.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Batch edit changes many rows at once</p>
+                            <p class="highlight-text">In <strong>Edit Mode</strong>, tick as many rows as you need and set Heat/Lot, Location, Package type, Packages per load, or Weight per package for all of them together. Each value is read and checked first, so a word in a whole-number field is refused with a reason instead of being saved, and nothing reaches the database until you press <strong>Save</strong>.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="tools">Tools</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Receiving Validator replaces the old reconcile screen</summary>
+                        <p>The <strong>Reconcile Saved Locations from Infor Visual</strong> entry is gone from Receiving. In its place, <strong>Receiving Validator</strong> sits in the Reporting group with <strong>from Infor Visual</strong> beneath it. It opens a launcher, and <strong>Work a Receiving Day</strong> opens the working page on today.</p>
+                        <p>The page works exactly one day at a time. <strong>Previous</strong> and <strong>Next</strong> skip days with no receiving, and <strong>Today</strong> brings you back. Pick a line and the right-hand pane explains what was found and fills in the proposed destination; press <strong>Enter</strong> to accept it or <strong>Escape</strong> to skip it for this session. An accepted line leaves the list at once, and a day that has been fully written says every line is done instead of showing an empty grid.</p>
+                        <p>Extra material that arrived on another receipt in the same location no longer reads as surplus against your lines. When something needs a person, the <strong>Needs Attention</strong> button lights up: open it, read the reason, type the location, and set it.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>The guided receiving walk has a part page and a step trail</summary>
+                        <p>The <strong>Part</strong> page only appears when there is something to choose. A purchase order with a single part number is selected for you and the walk goes straight to the loads; <strong>Back</strong> from the loads returns you to the purchase order in that case. Non-purchase-order receipts are unchanged, because there is no part list to pick from.</p>
+                        <p>The step trail moved out of the pages and into a strip in the window header, so it stays put while you work and a clerk who walks away mid-receipt can see where they were.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Manual Entry reviews before it saves</summary>
+                        <p>A manual receipt used to write straight from the grid. It now runs the same row checks and then shows the <strong>Review</strong> page, which also carries the Shape and Colour cards for parts on the lot marking list. Review sends a manual receipt back to the grid and a guided one on to the <strong>Package</strong> step, so the walk remembers which door the receipt came in through.</p>
+                        <p>The Shape and Colour cards are left off the entry form entirely for parts that are not on the lot marking list, so the columns reflow and the form is shorter.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Edit Mode gains a batch edit panel</summary>
+                        <p>Ticking rows used to be a way to remove them. The new <strong>Batch edit</strong> panel applies one value to every ticked row at once, and an unknown package type or a word in a whole-number field is refused with a reason instead of being written as a zero.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Dunnage walk shares the step trail and reads as two cards</summary>
+                        <p>The dunnage walk uses the same step trail in the window header, double-tapping a part card carries on the same way <strong>Next</strong> does, and the results page is drawn as two cards instead of a label-and-value form.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>The Material Availability sheet names the skids or packages received</summary>
+                        <p>The transaction sheet now carries a <strong>Skids / packages received</strong> row for the part, counted from the board's <strong>Date Range</strong>. Leaving both dates empty counts today only; a single date counts that day; dates entered the wrong way round are swapped. When the count cannot be read the row shows <strong>n/a</strong> instead of blocking the sheet, and the old destination Location row is gone because the page subtitle already names the location.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Lot Marking search reaches part numbers</summary>
+                        <p>The search box now takes a heat or lot number or a part number, and the realign confirmation shows the supplier name the receipt carried instead of the supplier group.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Ship/Rec Tools is now Extra Tools</summary>
+                        <p>The navigation entry and its pages are renamed <strong>Extra Tools</strong>. The tools inside are the ones you already know.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>A new database deployment tool for IT</summary>
+                        <p>Database changes are now deployed with <strong>MTM Database Deployment</strong>, a separate tool with three steps: <strong>Connect</strong>, <strong>Check</strong>, and <strong>Save</strong>. <strong>Check</strong> previews every change before anything is written, in plain language, with the technical detail available under <strong>Technical details - for IT</strong>.</p>
+                        <ul>
+                            <li>The tool copies the target database to a backup before its first write, and a backup it cannot take stops the run.</li>
+                            <li>A second run skips the reference data it has already applied instead of replaying it.</li>
+                            <li>A rebuild that starts from nothing needs its own confirmation box ticked before the save button unlocks.</li>
+                            <li>Schema scripts can now be re-applied safely, so the old migration layer is retired and is no longer deployed.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Start-up uses the spare database server when the shop server is down</summary>
+                        <p>When the shop database server cannot be reached, the application now tries the configured spare server instead of waiting out a long timeout for each saved setting. Start-up finishes in seconds and says which server it used. When the shop server answers, nothing is redirected.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Readability fixes</summary>
+                        <p>Part ids are readable in the dark theme on Enter PO, Manual Entry, and Edit Mode. Card edges are visible in both themes. The Scanner footer is one row tall, so the left and right button groups keep their places. The Current Total reminder is a card with a slow animated border instead of pulsing red text, and the image-search filters on Dunnage no longer touch each other.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Pages that are gone</summary>
+                        <p>The <strong>Visual Macro Tester</strong> page has been removed, along with the <strong>Visual Macro</strong> and <strong>Visual Macro Tester</strong> search entries. The database <strong>Sync Tool</strong> card is also gone from the database settings page.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>A wrong location is either fixed or explained</h3>
+                            <p>The validator names what is wrong instead of saying a line is ambiguous. It either writes a location it can prove, or it tells you exactly what is missing and lets you set the location yourself.</p>
+                        </article>
+                        <article>
+                            <h3>The walk shows you where you are</h3>
+                            <p>The step trail and the part page mean a receipt started in the middle of a busy shift is easy to pick up again, and the part you are about to save is named before you save it.</p>
+                        </article>
+                        <article>
+                            <h3>Corrections arrive in batches</h3>
+                            <p>One panel fixes Heat/Lot, Location, package type, or weights on every ticked row, with the values checked before anything is written.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Nothing to install or set up yourself</h2>
+                    </div>
+                    <p class="action-state success">No action is required from operators after this update.</p>
+                    <ul class="action-list">
+                        <li>Your saved settings and preferences are kept; the screens you already use behave as they did.</li>
+                        <li><strong>Receiving Validator</strong> is a new entry in the Reporting group. The old Reconcile entry is no longer inside Receiving.</li>
+                        <li>Batch edits write nothing until you press <strong>Save</strong>, so a batch you abandon changes no rows.</li>
+                        <li>The MTM IT support team deploys the database changes with the new deployment tool, which backs the database up first. There is nothing for you to run.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If the Receiving Validator proposes a location in the wrong place, a line stays red or amber with a reason you cannot act on, a part page appears when there is nothing to choose, a batch edit refuses a value you know is correct, the Material Availability sheet shows <strong>n/a</strong> when it should show a count, or the application will not start from the MTM Loader, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
