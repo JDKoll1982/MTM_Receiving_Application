@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using MTM_Receiving_Application.Infrastructure.DependencyInjection;
 using MTM_Receiving_Application.Infrastructure.Logging;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.Database;
 using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MySql.Data.MySqlClient;
 using Serilog;
@@ -67,6 +68,35 @@ public partial class App : Application
                         Path.Combine(AppContext.BaseDirectory, "appsettings.local.json"),
                         optional: true,
                         reloadOnChange: false
+                    );
+                }
+            )
+            // Same server rule the deployment tool uses: keep the configured MySQL server when it
+            // answers, otherwise aim at the spare (localhost by default) so a PC that cannot see the
+            // shop server still starts instead of burning the connect timeout on every call.
+            .ConfigureAppConfiguration(
+                (context, config) =>
+                {
+                    var configuredServer = Helper_Database_ServerFallback.DescribeTargetServer(
+                        context.Configuration.GetConnectionString("MySql")
+                    );
+
+                    var serverOverride =
+                        Helper_Database_ServerFallback.BuildConfigurationOverride(
+                            context.Configuration
+                        );
+
+                    if (serverOverride.Count == 0)
+                    {
+                        return;
+                    }
+
+                    config.AddInMemoryCollection(serverOverride);
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DB] MySQL server {configuredServer} did not answer; using "
+                        + Helper_Database_ServerFallback.DescribeTargetServer(
+                            serverOverride["ConnectionStrings:MySql"]
+                        )
                     );
                 }
             )

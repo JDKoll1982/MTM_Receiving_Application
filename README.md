@@ -36,6 +36,28 @@ dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.cspr
 
 Use narrower workspace tasks when validating a focused change.
 
+### Database-Backed Tests
+
+The stored procedure coverage suite deploys the whole SQL tree into a throwaway schema, so it needs
+one MySQL account that may create databases:
+
+```powershell
+$env:MTM_TEST_MYSQL_CONNECTION_STRING='Server=127.0.0.1;Port=3306;User ID=root;Password=root;AllowUserVariables=true;'
+dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj `
+  --filter "FullyQualifiedName~StoredProcedureCoverage"
+```
+
+Without that variable the database tests report as skipped and the tree-shape checks still run.
+
+## Database Server Selection
+
+Startup resolves the MySQL server the same way the deployment tool does: the host in
+`ConnectionStrings:MySql` is probed first, and when it does not answer the app uses
+`AppSettings:MySqlFallbackServer` (localhost by default). The probe is a short TCP connect, so a PC
+that cannot see the shop server starts against its local copy instead of waiting out a connect
+timeout on every call. Nothing is retargeted when the configured server answers, and a wrong
+password still surfaces as a sign-in failure.
+
 ## Architecture Rules
 
 - Keep the MVVM boundary intact: View → ViewModel → Service → DAO → Database.
