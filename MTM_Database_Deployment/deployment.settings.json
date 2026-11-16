@@ -5,5 +5,9 @@
   "Database": "mtm_receiving_application",
   "User": "root",
   "Password": "",
-  "ConnectTimeoutSeconds": 5
+  "ConnectTimeoutSeconds": 5,
+  "AvailableDatabases": [
+    "mtm_receiving_application",
+    "mtm_receiving_application_test"
+  ]
 }

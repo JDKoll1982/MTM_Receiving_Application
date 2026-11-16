@@ -1,5 +1,4 @@
 using DevWinUI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Database_Deployment.ViewModels;
@@ -22,7 +21,6 @@ public sealed partial class MainWindow : Window
         Title = "Update the MTM database";
         TryResize(1120, 860);
         ApplyStepBarStyle();
-        PasswordBox.Password = ViewModel.Password;
         Closed += (_, _) => ViewModel.CancelCommand.Execute(null);
     }
 
@@ -53,8 +51,18 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void OnPasswordChanged(object sender, RoutedEventArgs e) =>
-        ViewModel.Password = PasswordBox.Password;
+    /// <summary>PasswordBox.Password is not bindable, so it is pushed in when the flyout opens.</summary>
+    private void OnSignInFlyoutOpening(object? sender, object e) =>
+        FlyoutPasswordBox.Password = ViewModel.Password;
+
+    private void OnFlyoutPasswordChanged(object sender, RoutedEventArgs e) =>
+        ViewModel.Password = FlyoutPasswordBox.Password;
+
+    private void OnSaveCredentialsClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SaveCredentialsCommand.Execute(null);
+        SignInFlyout.Hide();
+    }
 
     /// <summary>SelectorBarSegmented reports a changed selection; the tag is the view model mode index.</summary>
     private void OnModeChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)

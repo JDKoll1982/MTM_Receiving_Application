@@ -42,6 +42,9 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
     private string database = string.Empty;
 
     [ObservableProperty]
+    private int databaseIndex;
+
+    [ObservableProperty]
     private string userName = string.Empty;
 
     [ObservableProperty]
@@ -122,7 +125,21 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
     [ObservableProperty]
     private string serverDetail = string.Empty;
 
+    [ObservableProperty]
+    private string signInMessage = "Not checked yet.";
+
+    [ObservableProperty]
+    private string signInGlyph = GlyphLock;
+
+    [ObservableProperty]
+    private string signInSummary = "Sign in";
+
     public ObservableCollection<Model_ChangeGroup> ChangeGroups { get; } = new();
+
+    /// <summary>
+    /// The databases the operator can choose between, in the order the settings file lists them.
+    /// </summary>
+    public IReadOnlyList<Model_DatabaseOption> DatabaseOptions { get; }
 
     public string FolderDetail => _catalog.SqlRoot;
 
@@ -167,6 +184,57 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
         UserName = _settings.User;
         Password = _settings.Password;
         ServerDetail = $"First tries {PreferredServer}, then {FallbackServer}.";
+        SignInSummary = string.IsNullOrWhiteSpace(UserName) ? "Sign in" : $"Sign in as {UserName}";
+
+        DatabaseOptions = _settings
+            .ResolveAvailableDatabases()
+            .Select(Model_DatabaseOption.For)
+            .ToList();
+
+        for (var index = 0; index < DatabaseOptions.Count; index++)
+        {
+            if (string.Equals(DatabaseOptions[index].Name, Database, StringComparison.OrdinalIgnoreCase))
+            {
+                DatabaseIndex = index;
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A plan describes one database, so switching target throws the connection and the plan away
+    /// instead of letting the operator save a plan that was built against the other one.
+    /// </summary>
+    partial void OnDatabaseIndexChanged(int value)
+    {
+        if (value < 0 || value >= DatabaseOptions.Count)
+        {
+            return;
+        }
+
+        var option = DatabaseOptions[value];
+        if (string.Equals(Database, option.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        Database = option.Name;
+        _plan = null;
+        HasChecked = false;
+        HasResult = false;
+        IsConnected = false;
+        ChangeGroups.Clear();
+        ChangeHeadline = "Nothing checked yet";
+        ChangeDetail = "Connect first, then press Check the database.";
+        ConnectionHeadline = "Not connected yet";
+        ConnectionDetail = "Press Connect and we will check the database for you.";
+        ResultHeadline = string.Empty;
+        ResultDetail = string.Empty;
+        TechnicalDetails = string.Empty;
+        StepIndex = 0;
+        ApplyStepText();
+        UpdateSafetyLine();
+        AppendLog($"Target database is now {Database}.");
     }
 
     partial void OnIsBusyChanged(bool value)
@@ -274,6 +342,7 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
 
             IsConnected = true;
             ServerDetail = $"Connected to {gateway.ActiveServer}:{gateway.Port}";
+            SignInSummary = string.IsNullOrWhiteSpace(UserName) ? "Signed in" : $"Signed in as {UserName}";
 
             if (databaseMissing)
             {
@@ -446,6 +515,75 @@ public partial class ViewModel_DatabaseDeployment : ObservableObject
 
     [RelayCommand]
     private void Cancel() => _cancellation?.Cancel();
+
+    /// <summary>
+    /// Saves the sign-in details on this PC only. Called from the flyout, which then closes itself.
+    /// </summary>
+    [RelayCommand]
+    private void SaveCredentials()
+    {
+        SaveSettings();
+        SignInSummary = string.IsNullOrWhiteSpace(UserName) ? "Sign in" : $"Sign in as {UserName}";
+        SignInGlyph = GlyphLock;
+        SignInMessage = $"Saved on this PC. The tool will use {UserName} from now on.";
+        AppendLog($"Database sign-in saved for {UserName}.");
+    }
+
+    /// <summary>
+    /// Checks the user name and password without moving the wizard on, so a wrong password is caught
+    /// while the operator is still looking at the field.
+    /// </summary>
+    [RelayCommand]
+    private async Task CheckSignInAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        SaveSettings();
+        SignInGlyph = GlyphLock;
+        SignInMessage = "Checking the sign-in...";
+
+        try
+        {
+            var gateway = CreateGateway();
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            await gateway.ResolveServerAsync(cancellation.Token).ConfigureAwait(true);
+
+            await using var connection = await gateway.OpenAsync(Database, cancellation.Token).ConfigureAwait(true);
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT 1;";
+            await command.ExecuteScalarAsync(cancellation.Token).ConfigureAwait(true);
+
+            SignInGlyph = GlyphCheck;
+            SignInMessage = $"Signed in as {UserName} on {gateway.ActiveServer}. Database: {Database}.";
+            SignInSummary = $"Signed in as {UserName}";
+            AppendLog(SignInMessage);
+        }
+        catch (MySqlException mysql) when (mysql.Number == 1045)
+        {
+            SignInGlyph = GlyphError;
+            SignInMessage = "That user name or password was not accepted. Check them with IT.";
+            SignInSummary = "Sign-in failed";
+            AppendLog("Sign-in refused for " + UserName + ".");
+        }
+        catch (MySqlException mysql) when (mysql.Number == 1049)
+        {
+            SignInGlyph = GlyphWarning;
+            SignInMessage = $"Signed in as {UserName}, but there is no database called {Database} on that computer.";
+            SignInSummary = "Signed in - database missing";
+            AppendLog("Signed in, but " + Database + " does not exist.");
+        }
+        catch (Exception exception)
+        {
+            SignInGlyph = GlyphError;
+            SignInMessage = "We could not reach the database computer. Ask IT whether it is switched on.";
+            SignInSummary = "Sign-in failed";
+            TechnicalDetails = exception.Message;
+            AppendLog("Sign-in check failed: " + exception.Message);
+        }
+    }
 
     [RelayCommand]
     private void GoBack()

@@ -57,8 +57,10 @@
     <ProjectReference Include="..\MTM_Receiving_Application.csproj">
       <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false;WindowsAppSDKSelfContained=false</AdditionalProperties>
     </ProjectReference>
+    <!-- The deployment project keeps WindowsAppSDKSelfContained so its WindowsAppRuntime assets land
+         in the test output; its assembly carries the runtime auto-initializer, which needs that DLL. -->
     <ProjectReference Include="..\MTM_Database_Deployment\MTM_Database_Deployment.csproj">
-      <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false;WindowsAppSDKSelfContained=false</AdditionalProperties>
+      <AdditionalProperties>WindowsAppSdkBootstrapInitialize=false;WindowsAppSdkUndockedRegFreeWinRTInitialize=false</AdditionalProperties>
     </ProjectReference>
   </ItemGroup>
 

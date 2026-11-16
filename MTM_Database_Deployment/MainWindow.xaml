@@ -46,6 +46,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -69,6 +70,51 @@
                     Text="{x:Bind ViewModel.ServerDetail, Mode=OneWay}"
                     TextTrimming="CharacterEllipsis" />
             </StackPanel>
+
+            <!--  Sign-in lives behind a person icon so the user name and password are one click away.  -->
+            <Button
+                Grid.Column="2"
+                MinWidth="150"
+                VerticalAlignment="Center"
+                AutomationProperties.Name="Database sign-in">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" Glyph="&#xE77B;" />
+                        <TextBlock Text="{x:Bind ViewModel.SignInSummary, Mode=OneWay}" VerticalAlignment="Center" />
+                        <FontIcon FontSize="10" Glyph="&#xE70D;" />
+                    </StackPanel>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout x:Name="SignInFlyout" Opening="OnSignInFlyoutOpening" Placement="BottomEdgeAlignedRight">
+                        <StackPanel Width="340" Spacing="12">
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Database sign-in" />
+                            <TextBlock Style="{StaticResource FriendlyHint}" Text="The user name and password for the database computer. They are remembered on this PC only." />
+
+                            <TextBox Header="User name" Text="{x:Bind ViewModel.UserName, Mode=TwoWay}" />
+                            <PasswordBox
+                                x:Name="FlyoutPasswordBox"
+                                Header="Password"
+                                PasswordChanged="OnFlyoutPasswordChanged" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Command="{x:Bind ViewModel.CheckSignInCommand}" Content="Check sign-in" />
+                                <Button
+                                    Click="OnSaveCredentialsClick"
+                                    Content="Save"
+                                    Style="{StaticResource AccentButtonStyle}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon
+                                    FontSize="14"
+                                    Glyph="{x:Bind ViewModel.SignInGlyph, Mode=OneWay}"
+                                    VerticalAlignment="Top" />
+                                <TextBlock Style="{StaticResource FriendlyHint}" Text="{x:Bind ViewModel.SignInMessage, Mode=OneWay}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
 
         <!--  Progress trail. AutoSelectOnItemClick stays off so the trail cannot skip a step.  -->
@@ -119,6 +165,31 @@
                             Title="Your records stay put" />
                     </StackPanel>
 
+                    <!--  Which database. Two clear choices beat a free-text box for an operator.  -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Which database should we update?" />
+                            <TextBlock Style="{StaticResource FriendlyHint}" Text="Pick the live database unless IT has asked you to work on the test copy." />
+
+                            <RadioButtons
+                                AutomationProperties.Name="Which database"
+                                ItemsSource="{x:Bind ViewModel.DatabaseOptions}"
+                                SelectedIndex="{x:Bind ViewModel.DatabaseIndex, Mode=TwoWay}">
+                                <RadioButtons.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_DatabaseOption">
+                                        <StackPanel Margin="0,6" Spacing="2">
+                                            <TextBlock
+                                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                Text="{x:Bind Display}"
+                                                TextWrapping="Wrap" />
+                                            <TextBlock Style="{StaticResource FriendlyHint}" Text="{x:Bind Description}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </RadioButtons.ItemTemplate>
+                            </RadioButtons>
+                        </StackPanel>
+                    </Border>
+
                     <Border Style="{StaticResource CardStyle}">
                         <Grid ColumnSpacing="16">
                             <Grid.ColumnDefinitions>
@@ -168,33 +239,22 @@
                                 Header="Spare (this PC)"
                                 Text="{x:Bind ViewModel.FallbackServer, Mode=TwoWay}" />
 
-                            <TextBox
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Header="Database name"
-                                Text="{x:Bind ViewModel.Database, Mode=TwoWay}" />
-
                             <NumberBox
                                 Grid.Row="1"
-                                Grid.Column="1"
+                                Grid.Column="0"
                                 Header="Port"
                                 Value="{x:Bind ViewModel.Port, Mode=TwoWay}" />
 
-                            <TextBox
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                Header="User name"
-                                Text="{x:Bind ViewModel.UserName, Mode=TwoWay}" />
-
-                            <PasswordBox
-                                x:Name="PasswordBox"
-                                Grid.Row="2"
+                            <TextBlock
+                                Grid.Row="1"
                                 Grid.Column="1"
-                                Header="Password"
-                                PasswordChanged="OnPasswordChanged" />
+                                VerticalAlignment="Bottom"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                Text="A different database name can be added to deployment.settings.json." />
 
                             <TextBlock
-                                Grid.Row="3"
+                                Grid.Row="2"
                                 Grid.ColumnSpan="2"
                                 Style="{StaticResource CaptionTextBlockStyle}"
                                 Foreground="{ThemeResource TextFillColorTertiaryBrush}"
