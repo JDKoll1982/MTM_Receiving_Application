@@ -23,7 +23,20 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.ViewModels;
 /// </summary>
 public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
 {
-    private const string MillTestStart = "2026-09-30";
+    /// <summary>
+    /// Where every sample dataset starts.
+    /// </summary>
+    /// <remarks>
+    /// The panels only bucket rows that land inside the default "last 30 days" window, and the day
+    /// axis drops weekends, so the anchor is the Monday three weeks back. That keeps every sample
+    /// row a weekday well inside the window, which a pinned calendar date does not: the data used
+    /// to sit on 2026-09-30, so once the clock moved on the rows fell outside the window and the
+    /// series came back empty.
+    /// </remarks>
+    private static readonly DateTime MillTestStart = MondayOnOrBefore(DateTime.Today.AddDays(-21));
+
+    private static DateTime MondayOnOrBefore(DateTime date) =>
+        date.AddDays(-(((int)date.DayOfWeek + 6) % 7));
 
     private static ViewModel_Tool_ReceivingAnalyticsApp CreateViewModel(
         Mock<IService_Tool_ReceivingAnalyticsApp> serviceMock,
@@ -67,7 +80,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
 
     private static Model_Tool_ReceivingAnalyticsAppDataset SampleDataset()
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
 
         return new Model_Tool_ReceivingAnalyticsAppDataset
         {
@@ -245,7 +258,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     [Fact]
     public async Task LoadAsync_ShouldDrawOneQuantityLinePerUnit_WhenTwoUnitsTie()
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
             ActivityRows =
@@ -407,7 +420,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
         int noDueDate
     )
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
         var onTimeRows = new List<Model_Tool_ReceivingAnalyticsAppOnTimeRow>();
 
         void Add(string status, int count)
@@ -596,7 +609,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
         params Model_Tool_ReceivingAnalyticsAppSupplierRow[] suppliers
     )
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
 
         return new Model_Tool_ReceivingAnalyticsAppDataset
         {
@@ -814,7 +827,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     [Fact]
     public async Task LoadAsync_ShouldAlignBothCoverageLinesOnTheSameDates()
     {
-        var first = DateTime.Parse(MillTestStart);
+        var first = MillTestStart;
         var comparison = new Model_Tool_ReceivingAnalyticsAppComparison
         {
             AppCoverageSeries = [new(first, 5), new(first.AddDays(2), 3)],
@@ -834,7 +847,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     [Fact]
     public async Task LoadAsync_ShouldNameTheSameFiveCategoriesOnBothSplits_EachSummingTo100()
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
             ActivityRows = [Activity(start, "STANDARD", "LB", 60m, receipts: 2)],
@@ -883,7 +896,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     [Fact]
     public async Task LoadAsync_ShouldGiveTheOneCategoryAMonthHolds_AHundredPerCentAppShare()
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
             ActivityRows = [Activity(start, "STANDARD", "LB", 40m, receipts: 3)],
@@ -915,7 +928,7 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsAppTests
     [Fact]
     public async Task LoadAsync_ShouldKeepAnErpOnlyCategoryAsItsOwnSegment()
     {
-        var start = DateTime.Parse(MillTestStart);
+        var start = MillTestStart;
         var dataset = new Model_Tool_ReceivingAnalyticsAppDataset
         {
             ActivityRows = [Activity(start, "STANDARD", "LB", 10m)],
