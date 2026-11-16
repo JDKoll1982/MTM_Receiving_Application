@@ -55,7 +55,14 @@ $RECYCLE.BIN/
 **/Logs/
 *.log
 .env*
-Scripts/
+# Root-level scripts only. An unanchored "Scripts/" is case-insensitive on
+# Windows and swallowed Database/Scripts and .specify/**/scripts, including
+# the SpecKit Companion extension scripts.
+/Scripts/
+
+# Python bytecode (SpecKit Companion extension scripts)
+__pycache__/
+*.pyc
 
 # IDEs and editors
 .vs/
