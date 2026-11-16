@@ -69,8 +69,10 @@ public sealed class ViewModel_Receiving_WorkflowTests
     }
 
     [Fact]
-    public async Task NextStepCommand_ShouldNotExecute_WhenPoEntryStepHasNoSelectedPart()
+    public async Task NextStepCommand_ShouldExecuteOnThePoPage_WhenNoPartIsChosenYet()
     {
+        // The part is chosen on the page after the PO, so the PO page must be free to move on
+        // without one.
         var workflow = CreateWorkflowMock();
         workflow
             .SetupGet(service => service.CurrentStep)
@@ -81,16 +83,32 @@ public sealed class ViewModel_Receiving_WorkflowTests
         await Task.Delay(25);
         RaiseStepChanged(workflow);
 
-        viewModel.NextStepCommand.CanExecute(null).Should().BeFalse();
+        viewModel.NextStepCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Fact]
-    public async Task NextStepCommand_ShouldExecute_WhenPoEntryStepHasSelectedPart()
+    public async Task NextStepCommand_ShouldNotExecute_WhenThePartStepHasNoSelectedPart()
     {
         var workflow = CreateWorkflowMock();
         workflow
             .SetupGet(service => service.CurrentStep)
-            .Returns(Enum_ReceivingWorkflowStep.POEntry);
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
+        workflow.SetupGet(service => service.CurrentPart).Returns((Model_InforVisualPart?)null);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.NextStepCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task NextStepCommand_ShouldExecute_WhenThePartStepHasASelectedPart()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
         workflow
             .SetupGet(service => service.CurrentPart)
             .Returns(new Model_InforVisualPart { PartID = "TEST-PART" });
@@ -128,6 +146,51 @@ public sealed class ViewModel_Receiving_WorkflowTests
 
         viewModel.PreviousStepCommand.CanExecute(null).Should().BeTrue();
         viewModel.NextStepCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task WorkflowTrail_ShouldMarkTheCurrentStepAndCountTheWalk_WhenThePartStepIsOpen()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.ShowWorkflowTrail.Should().BeTrue();
+        viewModel
+            .WorkflowTrail.Select(step => step.Label)
+            .Should()
+            .Equal("Enter PO", "Part", "Loads", "Weight/Qty", "Heat/Lot", "Package", "Review");
+
+        var current = viewModel.WorkflowTrail.Should().ContainSingle(s => s.IsCurrent).Subject;
+        current.Label.Should().Be("Part");
+        current.Number.Should().Be(2);
+        viewModel.WorkflowTrailSummaryText.Should().Be("Step 2 of 7");
+        viewModel
+            .WorkflowTrail.Count(step => step.IsComplete)
+            .Should()
+            .Be(1, "only Enter PO is behind the clerk at the part step");
+    }
+
+    [Fact]
+    public async Task WorkflowTrail_ShouldBeEmpty_WhenTheModeIsNotAWalk()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.ManualEntry);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.ShowWorkflowTrail.Should().BeFalse();
+        viewModel.WorkflowTrail.Should().BeEmpty();
+        viewModel.WorkflowTrailSummaryText.Should().BeEmpty();
     }
 
     private static void RaiseStepChanged(Mock<IService_ReceivingWorkflow> workflow)

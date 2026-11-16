@@ -7,6 +7,52 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Changed
 
+#### The guided walk has a part page of its own and a trail across the top (2026-11-15)
+
+- **What changed:** the guided Receiving walk is now Enter PO → **Part** → Loads → Weight/Qty → Heat/Lot →
+  Package → Review. The part used to be picked from a grid sitting under the PO box; that grid is now its own
+  page, with a scan-or-type box that narrows the list as the clerk types and a summary card for the chosen part
+  that names the quality hold before it can surprise anyone at the save.
+- **The trail:** a chip row shows every step of the walk with the current one lit and `Step 3 of 7` beside it, so
+  a clerk who walks away mid-receipt can see where they stopped. It is hidden outside the walk.
+- **Why:** the Part Selection step existed in the workflow enum and in the step titles but had no page and no
+  transition, so `POEntry` skipped straight to `LoadEntry`; and the walk never told anyone where they were.
+- **Unchanged:** the non-PO flow types its part on the PO page and still skips the part step, because there is no
+  PO part list to choose from.
+- **Files:** `Module_Receiving/Views/View_Receiving_PartSelection.xaml` (new),
+  `Module_Receiving/ViewModels/ViewModel_Receiving_PartSelection.cs` (new),
+  `Module_Receiving/Models/Model_ReceivingWorkflowTrailStep.cs` (new),
+  `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/Views/View_Receiving_Workflow.xaml`
+
+#### A manual receipt is reviewed before it is written (2026-11-15)
+
+- **What changed:** pressing **Save & Finish** on the manual grid now validates every row and then shows the
+  Review page instead of writing straight from the grid. That is the same page the guided flow uses, so a manual
+  clerk finally sees the receipt as it will be saved, and gets the Shape/Color cards for parts on the lot marking
+  list.
+- **Going back:** Review returns a manual receipt to the grid and a guided receipt to the Package step, which is
+  why the workflow now remembers which door the receipt came in through.
+- **Files:** `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/Contracts/IService_ReceivingWorkflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`
+
+#### Edit Mode can change one field on every ticked row (2026-11-15)
+
+- **What changed:** a **Batch edit** toggle in the Edit toolbar opens a panel that sets Heat/Lot, Location, Package
+  type, Packages per load or Weight per package on every ticked row at once. Nothing is written until Save, so a
+  mistake is one Back away from being abandoned.
+- **Guardrail:** the typed value is read and checked before it is applied — a word in a whole-number field, a
+  package type that is not one of the nine, or a blank value is refused with the reason instead of being written as
+  a zero. Identifiers and the received amount are deliberately not offered.
+- **Why:** ticking rows already worked for removing them, so fixing the same wrong location on twenty rows meant
+  twenty separate edits.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs`,
+  `Module_Receiving/Models/Model_EditModeBatchField.cs` (new),
+  `Module_Receiving/Helpers/Helper_ReceivingEditModeBatchValue.cs` (new),
+  `Module_Receiving/Views/View_Receiving_EditMode.xaml`
+
 #### The Review page offers the Shape and Color cards only for parts on the lot marking list (2026-11-13)
 
 - **What changed:** on the receiving Review page, the **Shape** and **Color** cards are left off the entry form

@@ -61,6 +61,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             View_Receiving_ManualEntry manualEntryView,
             View_Receiving_EditMode editModeView,
             View_Receiving_POEntry poEntryView,
+            View_Receiving_PartSelection partSelectionView,
             View_Receiving_LoadEntry loadEntryView,
             View_Receiving_WeightQuantity weightQuantityView,
             View_Receiving_HeatLot heatLotView,
@@ -78,6 +79,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(manualEntryView);
             ArgumentNullException.ThrowIfNull(editModeView);
             ArgumentNullException.ThrowIfNull(poEntryView);
+            ArgumentNullException.ThrowIfNull(partSelectionView);
             ArgumentNullException.ThrowIfNull(loadEntryView);
             ArgumentNullException.ThrowIfNull(weightQuantityView);
             ArgumentNullException.ThrowIfNull(heatLotView);
@@ -98,6 +100,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ManualEntryHost.Content = manualEntryView;
             EditModeHost.Content = editModeView;
             POEntryHost.Content = poEntryView;
+            PartSelectionHost.Content = partSelectionView;
             LoadEntryHost.Content = loadEntryView;
             WeightQuantityHost.Content = weightQuantityView;
             HeatLotHost.Content = heatLotView;
@@ -218,6 +221,10 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private void RegisterGuidedStepFocusHooks()
         {
             RegisterGuidedStepHostFocusHook(POEntryHost, Enum_ReceivingWorkflowStep.POEntry);
+            RegisterGuidedStepHostFocusHook(
+                PartSelectionHost,
+                Enum_ReceivingWorkflowStep.PartSelection
+            );
             RegisterGuidedStepHostFocusHook(LoadEntryHost, Enum_ReceivingWorkflowStep.LoadEntry);
             RegisterGuidedStepHostFocusHook(
                 WeightQuantityHost,
@@ -256,6 +263,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             return _workflowService.CurrentStep switch
             {
                 Enum_ReceivingWorkflowStep.POEntry => TryFocusHostedStep(POEntryHost),
+                Enum_ReceivingWorkflowStep.PartSelection => TryFocusHostedStep(PartSelectionHost),
                 Enum_ReceivingWorkflowStep.LoadEntry => TryFocusHostedStep(LoadEntryHost),
                 Enum_ReceivingWorkflowStep.WeightQuantityEntry => TryFocusHostedStep(
                     WeightQuantityHost

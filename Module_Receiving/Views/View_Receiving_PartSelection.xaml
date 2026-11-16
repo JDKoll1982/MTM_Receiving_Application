@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_PartSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+        <converters:Converter_QualityHoldToTextColor x:Key="QualityHoldToTextColorConverter" />
+    </UserControl.Resources>
+
+    <Grid
+        x:Name="PartSelectionRootGrid"
+        Padding="24,0,24,0"
+        RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Row 0: which PO, and the search/scan box  -->
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon
+                        FontSize="16"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        Glyph="&#xE8FD;" />
+                    <TextBlock
+                        Style="{ThemeResource SubtitleTextBlockStyle}"
+                        Text="Which part are you receiving?" />
+                </StackPanel>
+
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="Scan the part label, or type part of the number or description to narrow the list. Pick the row that matches what is on the dock."
+                    TextWrapping="Wrap" />
+
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border
+                        Grid.Column="0"
+                        Padding="10,4"
+                        VerticalAlignment="Center"
+                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                        CornerRadius="4">
+                        <TextBlock
+                            Style="{ThemeResource CaptionTextBlockStyle}"
+                            Text="{x:Bind ViewModel.PoContextText, Mode=OneWay}" />
+                    </Border>
+
+                    <TextBox
+                        x:Name="PartSearchBox"
+                        Grid.Column="1"
+                        AutomationProperties.Name="Search the parts on this PO"
+                        PlaceholderText="Scan or type a part number"
+                        Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Button
+                        Grid.Column="2"
+                        VerticalAlignment="Stretch"
+                        AutomationProperties.Name="Clear the part search"
+                        Command="{x:Bind ViewModel.ClearSearchCommand}">
+                        <FontIcon Glyph="&#xE711;" />
+                    </Button>
+
+                    <TextBlock
+                        Grid.Column="3"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{ThemeResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.PartsCountText, Mode=OneWay}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!--  Row 1: the parts to choose from  -->
+        <Grid Grid.Row="1">
+            <Border
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <controls:DataGrid
+                    x:Name="PartsGrid"
+                    AutoGenerateColumns="False"
+                    AutomationProperties.Name="Parts on this purchase order"
+                    GridLinesVisibility="Horizontal"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                    SelectionMode="Single">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTemplateColumn Width="2*" Header="Part ID" IsReadOnly="True">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Foreground="{Binding RequiresQualityHold, Converter={StaticResource QualityHoldToTextColorConverter}}"
+                                        Text="{Binding PartID}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
+                        <controls:DataGridTextColumn
+                            Width="4*"
+                            Binding="{Binding Description}"
+                            Header="Description" />
+                        <controls:DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding OnHandQtyDisplay}"
+                            Header="On Hand" />
+                        <controls:DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Location}"
+                            Header="Location" />
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+
+            <!--  Nothing to choose from, with the reason  -->
+            <StackPanel
+                MaxWidth="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="8"
+                Visibility="{x:Bind ViewModel.ShowEmptyState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <FontIcon
+                    FontSize="32"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Glyph="&#xE946;" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="{x:Bind ViewModel.EmptyStateText, Mode=OneWay}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
+        <!--  Row 2: the chosen part, with the one thing that can stop the receipt  -->
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <StackPanel Spacing="8">
+                <TextBlock
+                    Style="{ThemeResource BodyStrongTextBlockStyle}"
+                    Text="{x:Bind ViewModel.SelectedPartSummaryText, Mode=OneWay}"
+                    TextWrapping="Wrap" />
+
+                <StackPanel
+                    Orientation="Horizontal"
+                    Spacing="16"
+                    Visibility="{x:Bind ViewModel.HasSelectedPart, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Spacing="2">
+                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="On hand" />
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPart.OnHandQtyDisplay, Mode=OneWay}" />
+                    </StackPanel>
+                    <StackPanel Spacing="2">
+                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Default location" />
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPart.Location, Mode=OneWay}" />
+                    </StackPanel>
+                    <StackPanel Spacing="2">
+                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Unit of measure" />
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPart.UnitOfMeasure, Mode=OneWay}" />
+                    </StackPanel>
+                    <StackPanel Spacing="2">
+                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="Remaining on PO" />
+                        <TextBlock Text="{x:Bind ViewModel.SelectedPart.RemainingQuantity, Mode=OneWay}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <InfoBar
+                    IsClosable="False"
+                    IsOpen="{x:Bind ViewModel.HasQualityHold, Mode=OneWay}"
+                    Message="{x:Bind ViewModel.QualityHoldText, Mode=OneWay}"
+                    Severity="Warning"
+                    Title="Quality hold" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

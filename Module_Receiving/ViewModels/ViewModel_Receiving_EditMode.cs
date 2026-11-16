@@ -12,6 +12,7 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
@@ -761,6 +762,177 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private void ShowColumnChooser() =>
             ShowColumnChooserRequested?.Invoke(this, EventArgs.Empty);
 
+        // ------------------------------------------------------------------ batch edit
+        /// <summary>
+        /// The fields a clerk can set across every ticked row. Identifiers and receipt amounts are
+        /// deliberately absent: a bulk edit is for corrections, not for rewriting a receipt.
+        /// </summary>
+        public IReadOnlyList<Model_EditModeBatchField> BatchFields { get; } =
+        [
+            new()
+            {
+                Key = "HeatLotNumber",
+                Label = "Heat/Lot number",
+                Kind = Enum_EditModeBatchFieldKind.Text,
+                Hint = "e.g. 25-1043",
+            },
+            new()
+            {
+                Key = "InitialLocation",
+                Label = "Location",
+                Kind = Enum_EditModeBatchFieldKind.Text,
+                Hint = "e.g. RECV",
+            },
+            new()
+            {
+                Key = "PackageTypeName",
+                Label = "Package type",
+                Kind = Enum_EditModeBatchFieldKind.PackageType,
+                Hint = "Skid, Box, Crate, Bundle, Roll, Piece, Pallet, Coil or Sheet",
+            },
+            new()
+            {
+                Key = "PackagesPerLoad",
+                Label = "Packages per load",
+                Kind = Enum_EditModeBatchFieldKind.Integer,
+                Hint = "whole number",
+            },
+            new()
+            {
+                Key = "WeightPerPackage",
+                Label = "Weight per package",
+                Kind = Enum_EditModeBatchFieldKind.Decimal,
+                Hint = "e.g. 1250.5",
+            },
+        ];
+
+        [ObservableProperty]
+        private Model_EditModeBatchField? _selectedBatchField;
+
+        [ObservableProperty]
+        private string _batchValue = string.Empty;
+
+        [ObservableProperty]
+        private bool _isBatchPanelOpen;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BatchEditSelectionText))]
+        private int _selectedLoadCount;
+
+        /// <summary>How many rows the batch edit would touch, in words.</summary>
+        public string BatchEditSelectionText =>
+            SelectedLoadCount switch
+            {
+                0 => "Tick the rows you want to change",
+                1 => "1 row ticked",
+                _ => $"{SelectedLoadCount} rows ticked",
+            };
+
+        /// <summary>True when a batch edit can run: a field, a value, and at least one ticked row.</summary>
+        public bool CanApplyBatch =>
+            !IsBusy
+            && SelectedBatchField is not null
+            && !string.IsNullOrWhiteSpace(BatchValue)
+            && SelectedLoadCount > 0;
+
+        [RelayCommand]
+        private void ToggleBatchPanel()
+        {
+            IsBatchPanelOpen = !IsBatchPanelOpen;
+            RefreshSelectedLoadCount();
+        }
+
+        /// <summary>
+        /// Writes the typed value onto every ticked row. Nothing is saved here - the clerk still has
+        /// to press Save - so a mistake is one Back away from being abandoned.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanApplyBatch))]
+        private void ApplyBatch()
+        {
+            if (SelectedBatchField is not { } field)
+            {
+                return;
+            }
+
+            if (!Helper_ReceivingEditModeBatchValue.TryRead(field, BatchValue, out var value, out var error))
+            {
+                _ = ShowBatchValueErrorAsync(error);
+                return;
+            }
+
+            var targets = _allLoads
+                .Where(load => load.IsSelected && !_deletedLoads.Contains(load))
+                .ToList();
+
+            if (targets.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var load in targets)
+            {
+                ApplyBatchValue(load, field.Key, value);
+            }
+
+            _logger.LogInfo(
+                $"Batch edit set {field.Key} on {targets.Count} load(s) from edit mode"
+            );
+            StatusMessage =
+                $"{field.Label} set on {targets.Count} row{(targets.Count == 1 ? string.Empty : "s")}. Press Save when the rows look right.";
+            BatchValue = string.Empty;
+            RefreshBatchFilters();
+            FilterAndPaginate();
+            PersistEditModePreferencesIfReady();
+        }
+
+        private async Task ShowBatchValueErrorAsync(string message)
+        {
+            await _errorHandler.HandleErrorAsync(message, Enum_ErrorSeverity.Warning);
+        }
+
+
+        private static void ApplyBatchValue(Model_ReceivingLoad load, string key, object? value)
+        {
+            switch (key)
+            {
+                case "HeatLotNumber":
+                    load.HeatLotNumber = value as string ?? string.Empty;
+                    break;
+                case "InitialLocation":
+                    load.InitialLocation = value as string ?? string.Empty;
+                    break;
+                case "PackageTypeName":
+                    load.PackageTypeName = value as string ?? load.PackageTypeName;
+                    break;
+                case "PackagesPerLoad":
+                    load.PackagesPerLoad = value is int packages ? packages : load.PackagesPerLoad;
+                    break;
+                case "WeightPerPackage":
+                    load.WeightPerPackage =
+                        value is decimal weight ? weight : load.WeightPerPackage;
+                    break;
+            }
+        }
+
+        private void RefreshSelectedLoadCount()
+        {
+            SelectedLoadCount = _allLoads.Count(load => load.IsSelected);
+            OnPropertyChanged(nameof(CanApplyBatch));
+            ApplyBatchCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnSelectedBatchFieldChanged(Model_EditModeBatchField? value)
+        {
+            OnPropertyChanged(nameof(CanApplyBatch));
+            ApplyBatchCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnBatchValueChanged(string value)
+        {
+            OnPropertyChanged(nameof(CanApplyBatch));
+            ApplyBatchCommand.NotifyCanExecuteChanged();
+        }
+
         // ------------------------------------------------------------------ column definitions
         private static IEnumerable<Model_EditModeColumn> BuildAllColumns() =>
             [
@@ -1084,6 +1256,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             if (e.PropertyName == nameof(Model_ReceivingLoad.IsSelected))
             {
                 RemoveRowCommand.NotifyCanExecuteChanged();
+                RefreshSelectedLoadCount();
             }
         }
 

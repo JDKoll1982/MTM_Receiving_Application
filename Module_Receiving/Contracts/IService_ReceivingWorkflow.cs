@@ -85,6 +85,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Enum_DataSourceType RequestedEditDataSource { get; set; }
 
         /// <summary>
+        /// True while the receipt being entered came from Manual Entry rather than the guided walk.
+        /// Review uses it to send the clerk back to the grid they typed into, not to a guided step
+        /// they never saw.
+        /// </summary>
+        public bool IsManualEntryFlow { get; }
+
+        /// <summary>
         /// Starts a new receiving workflow session.
         /// Always starts fresh and discards any stale persisted draft session.
         /// </summary>

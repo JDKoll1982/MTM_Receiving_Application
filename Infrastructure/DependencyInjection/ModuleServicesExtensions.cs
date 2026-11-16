@@ -269,6 +269,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Receiving_ManualEntry>();
         services.AddTransient<ViewModel_Receiving_EditMode>();
         services.AddTransient<ViewModel_Receiving_POEntry>();
+        services.AddTransient<ViewModel_Receiving_PartSelection>();
         services.AddTransient<ViewModel_Receiving_LoadEntry>();
         services.AddTransient<ViewModel_Receiving_WeightQuantity>();
         services.AddTransient<ViewModel_Receiving_HeatLot>();
@@ -281,6 +282,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Receiving.Views.View_Receiving_ManualEntry>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_EditMode>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_POEntry>();
+        services.AddTransient<Module_Receiving.Views.View_Receiving_PartSelection>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_LoadEntry>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_WeightQuantity>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_HeatLot>();

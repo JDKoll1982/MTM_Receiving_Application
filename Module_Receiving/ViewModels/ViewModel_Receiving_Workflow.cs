@@ -199,6 +199,71 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public bool ShowWorkflowNavigationButtons =>
             ShowWorkflowBackButton || ShowWorkflowNextButton;
 
+        /// <summary>
+        /// The chips of the guided walk, in order, with the current one marked. Replaced whole on each
+        /// step change so the row never redraws chip by chip, and empty for the modes that are not a
+        /// walk (mode selection, manual entry, edit mode, saving, finished).
+        /// </summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowTrail))]
+        [NotifyPropertyChangedFor(nameof(WorkflowTrailSummaryText))]
+        private ObservableCollection<Model_ReceivingWorkflowTrailStep> _workflowTrail = [];
+
+        /// <summary>The order of the guided walk, which is also the order the chips are drawn in.</summary>
+        private static readonly (Enum_ReceivingWorkflowStep Step, string Label)[] GuidedTrail =
+        [
+            (Enum_ReceivingWorkflowStep.POEntry, "Enter PO"),
+            (Enum_ReceivingWorkflowStep.PartSelection, "Part"),
+            (Enum_ReceivingWorkflowStep.LoadEntry, "Loads"),
+            (Enum_ReceivingWorkflowStep.WeightQuantityEntry, "Weight/Qty"),
+            (Enum_ReceivingWorkflowStep.HeatLotEntry, "Heat/Lot"),
+            (Enum_ReceivingWorkflowStep.PackageTypeEntry, "Package"),
+            (Enum_ReceivingWorkflowStep.Review, "Review"),
+        ];
+
+        /// <summary>True while the clerk is somewhere in the guided walk.</summary>
+        public bool ShowWorkflowTrail => WorkflowTrail.Count > 0;
+
+        /// <summary>Where the clerk is in the walk, in words, for the one-line summary beside the trail.</summary>
+        public string WorkflowTrailSummaryText
+        {
+            get
+            {
+                var current = WorkflowTrail.FirstOrDefault(step => step.IsCurrent);
+                return current is null
+                    ? string.Empty
+                    : $"Step {current.Number} of {WorkflowTrail.Count}";
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds the trail from the current step. A step outside the walk clears it rather than
+        /// leaving a stale highlight behind.
+        /// </summary>
+        private void RefreshWorkflowTrail()
+        {
+            var currentIndex = Array.FindIndex(
+                GuidedTrail,
+                entry => entry.Step == _workflowService.CurrentStep
+            );
+
+            WorkflowTrail =
+                currentIndex < 0
+                    ? []
+                    : new ObservableCollection<Model_ReceivingWorkflowTrailStep>(
+                        GuidedTrail.Select(
+                            (entry, index) =>
+                                new Model_ReceivingWorkflowTrailStep
+                                {
+                                    Number = index + 1,
+                                    Label = entry.Label,
+                                    IsCurrent = index == currentIndex,
+                                    IsComplete = index < currentIndex,
+                                }
+                        )
+                    );
+        }
+
         // UI Text Properties (Loaded from Settings)
         [ObservableProperty]
         private string _workflowHelpText = "Help";
@@ -509,6 +574,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             );
 
             UpdateNextButtonEnabled();
+            RefreshWorkflowTrail();
             _ = RefreshClearLabelDataAvailabilityAsync();
         }
 
@@ -530,7 +596,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void UpdateNextButtonEnabled()
         {
-            IsNextButtonEnabled = !IsPOEntryVisible || _workflowService.CurrentPart is not null;
+            // The PO page only needs its number, because the part is chosen on the next page. The
+            // part page is the one that cannot move on without a part.
+            IsNextButtonEnabled = !IsPartSelectionVisible || _workflowService.CurrentPart is not null;
             NotifyWorkflowCommandStates();
         }
 
@@ -1036,13 +1104,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     _startNewEntryStep = Enum_ReceivingWorkflowStep.EditMode;
                     break;
+                case Enum_ReceivingWorkflowStep.Review:
+                    // Review keeps whatever door the clerk came in through, so a manual receipt
+                    // starts over in the grid rather than in the guided walk.
+                    break;
+
                 case Enum_ReceivingWorkflowStep.POEntry:
                 case Enum_ReceivingWorkflowStep.PartSelection:
                 case Enum_ReceivingWorkflowStep.LoadEntry:
                 case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
                 case Enum_ReceivingWorkflowStep.HeatLotEntry:
                 case Enum_ReceivingWorkflowStep.PackageTypeEntry:
-                case Enum_ReceivingWorkflowStep.Review:
                     _startNewEntryStep = Enum_ReceivingWorkflowStep.POEntry;
                     break;
             }

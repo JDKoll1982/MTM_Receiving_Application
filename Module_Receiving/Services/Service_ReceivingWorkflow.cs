@@ -86,6 +86,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         public Enum_DataSourceType RequestedEditDataSource { get; set; } =
             Enum_DataSourceType.Memory;
 
+        /// <summary>
+        /// True while the receipt being entered came from Manual Entry rather than the guided walk.
+        /// </summary>
+        public bool IsManualEntryFlow { get; private set; }
+
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
             IService_ReceivingLabelData labelDataService,
@@ -227,8 +232,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
 
                 case Enum_ReceivingWorkflowStep.ManualEntry:
-                    // Manual entry goes directly to saving.
-                    // Validation happens on save; check for unacknowledged quality holds first.
+                    // Manual entry has already checked every row, so the next page is the review
+                    // rather than a save the clerk cannot see. Validation happens on save; check for
+                    // unacknowledged quality holds first.
                     var loadsWithHolds = CurrentSession
                         .Loads.Where(l => l.IsQualityHoldRequired && !l.IsQualityHoldAcknowledged)
                         .ToList();
@@ -239,8 +245,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         );
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    CurrentStep = Enum_ReceivingWorkflowStep.Saving;
-                    break; // Fall through to PersistSessionAsync so session is saved before the save cycle begins
+                    CurrentStep = Enum_ReceivingWorkflowStep.Review;
+                    break;
 
                 case Enum_ReceivingWorkflowStep.EditMode:
                     // Edit mode goes to saving/review
@@ -253,7 +259,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         validationErrors.Add("PO Number is required.");
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
-                    if (CurrentPart == null)
+
+                    // The non-PO flow types its part on this page, so it has no part step to visit.
+                    if (IsNonPOItem && CurrentPart == null)
                     {
                         validationErrors.Add("Part selection is required.");
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
@@ -265,6 +273,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                         ? null
                         : CurrentPONumber;
 
+                    CurrentStep = IsNonPOItem
+                        ? Enum_ReceivingWorkflowStep.LoadEntry
+                        : Enum_ReceivingWorkflowStep.PartSelection;
+                    break;
+
+                case Enum_ReceivingWorkflowStep.PartSelection:
+                    if (CurrentPart == null)
+                    {
+                        validationErrors.Add("Choose the part you are receiving.");
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    }
+
+                    CurrentSession.PoNumber = string.IsNullOrWhiteSpace(CurrentPONumber)
+                        ? null
+                        : CurrentPONumber;
                     CurrentStep = Enum_ReceivingWorkflowStep.LoadEntry;
                     break;
 
@@ -474,6 +497,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             switch (CurrentStep)
             {
                 case Enum_ReceivingWorkflowStep.LoadEntry:
+                    CurrentStep = IsNonPOItem
+                        ? Enum_ReceivingWorkflowStep.POEntry
+                        : Enum_ReceivingWorkflowStep.PartSelection;
+                    break;
+
+                case Enum_ReceivingWorkflowStep.PartSelection:
                     CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
                     break;
 
@@ -490,7 +519,9 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     break;
 
                 case Enum_ReceivingWorkflowStep.Review:
-                    CurrentStep = Enum_ReceivingWorkflowStep.PackageTypeEntry;
+                    CurrentStep = IsManualEntryFlow
+                        ? Enum_ReceivingWorkflowStep.ManualEntry
+                        : Enum_ReceivingWorkflowStep.PackageTypeEntry;
                     break;
 
                 default:
@@ -507,6 +538,21 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step)
         {
+            // Remember which door the clerk came in through. Only the three entry modes set it, so
+            // stepping forward or back inside a receipt cannot flip the flow underneath it.
+            if (step is Enum_ReceivingWorkflowStep.ManualEntry)
+            {
+                IsManualEntryFlow = true;
+            }
+            else if (
+                step
+                is Enum_ReceivingWorkflowStep.POEntry
+                    or Enum_ReceivingWorkflowStep.EditMode
+            )
+            {
+                IsManualEntryFlow = false;
+            }
+
             CurrentStep = step;
             return Model_ReceivingWorkflowStepResult.SuccessResult(
                 CurrentStep,

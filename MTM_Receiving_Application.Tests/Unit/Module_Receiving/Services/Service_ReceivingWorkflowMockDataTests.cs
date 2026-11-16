@@ -551,4 +551,165 @@ public sealed class Service_ReceivingWorkflowMockDataTests
             .CurrentSession.Loads.Should()
             .OnlyContain(load => load.IsNonPOItem && load.PoNumber == "Stock Replenishment");
     }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldAskForThePart_WhenThePoHasNoPartChosenYet()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.IsNonPOItem = false;
+        service.CurrentPONumber = "PO-066868";
+        service.CurrentPart = null;
+        service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+
+        var poStepResult = await service.AdvanceToNextStepAsync();
+
+        poStepResult.Success.Should().BeTrue();
+        service
+            .CurrentStep.Should()
+            .Be(
+                Enum_ReceivingWorkflowStep.PartSelection,
+                "the part belongs on its own page now, not on the PO page"
+            );
+
+        var withoutPart = await service.AdvanceToNextStepAsync();
+
+        withoutPart.Success.Should().BeFalse();
+        withoutPart.ValidationErrors.Should().Contain("Choose the part you are receiving.");
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.PartSelection);
+
+        service.CurrentPart = new Model_InforVisualPart
+        {
+            PartID = "MMFTEST002",
+            POLineNumber = "1",
+            Description = "Part step test part",
+            UnitOfMeasure = "EA",
+        };
+
+        var withPart = await service.AdvanceToNextStepAsync();
+
+        withPart.Success.Should().BeTrue();
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.LoadEntry);
+    }
+
+    [Fact]
+    public async Task GoToPreviousStep_ShouldReturnToThePartStep_WhenThePartWasChosenOnAPo()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.IsNonPOItem = false;
+        service.GoToStep(Enum_ReceivingWorkflowStep.LoadEntry);
+
+        var result = service.GoToPreviousStep();
+
+        result.Success.Should().BeTrue();
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.PartSelection);
+        service.GoToPreviousStep();
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.POEntry);
+    }
+
+    [Fact]
+    public async Task GoToPreviousStep_ShouldSkipThePartStep_WhenTheReceiptIsNonPo()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.IsNonPOItem = true;
+        service.GoToStep(Enum_ReceivingWorkflowStep.LoadEntry);
+
+        var result = service.GoToPreviousStep();
+
+        result.Success.Should().BeTrue();
+        service
+            .CurrentStep.Should()
+            .Be(
+                Enum_ReceivingWorkflowStep.POEntry,
+                "a non-PO receipt types its part on the PO page and never visits the part step"
+            );
+    }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldShowTheReview_WhenTheRowsCameFromManualEntry()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
+
+        var result = await service.AdvanceToNextStepAsync();
+
+        result.Success.Should().BeTrue();
+        service
+            .CurrentStep.Should()
+            .Be(
+                Enum_ReceivingWorkflowStep.Review,
+                "a manual receipt is reviewed before it is written, like every other receipt"
+            );
+    }
+
+    [Fact]
+    public async Task GoToPreviousStep_ShouldReturnToTheGrid_WhenTheReviewCameFromManualEntry()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
+        await service.AdvanceToNextStepAsync();
+
+        var result = service.GoToPreviousStep();
+
+        result.Success.Should().BeTrue();
+        service
+            .CurrentStep.Should()
+            .Be(
+                Enum_ReceivingWorkflowStep.ManualEntry,
+                "a manual clerk goes back to the grid they typed into, not into the guided walk"
+            );
+    }
+
+    [Fact]
+    public async Task GoToPreviousStep_ShouldReturnToThePackageStep_WhenTheReviewCameFromTheWalk()
+    {
+        var service = CreateWorkflowServiceForStepTests();
+        await service.StartWorkflowAsync();
+        service.GoToStep(Enum_ReceivingWorkflowStep.Review);
+
+        var result = service.GoToPreviousStep();
+
+        result.Success.Should().BeTrue();
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.PackageTypeEntry);
+    }
+
+    private static Service_ReceivingWorkflow CreateWorkflowServiceForStepTests()
+    {
+        var receivingSettingsMock = new Mock<IService_ReceivingSettings>();
+        receivingSettingsMock
+            .Setup(service => service.GetStringAsync(It.IsAny<string>(), It.IsAny<int?>()))
+            .ReturnsAsync(string.Empty);
+
+        var validationMock = new Mock<IService_ReceivingValidation>();
+        validationMock
+            .Setup(service =>
+                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+            )
+            .ReturnsAsync(Model_ReceivingValidationResult.Success());
+
+        var sessionManagerMock = new Mock<IService_SessionManager>();
+        sessionManagerMock.Setup(service => service.SessionExists()).Returns(false);
+
+        var appSettingsMock = new Mock<IService_AppSettings>();
+        appSettingsMock.Setup(service => service.GetUseInforVisualMockData()).Returns(false);
+
+        return new Service_ReceivingWorkflow(
+            sessionManagerMock.Object,
+            new Mock<IService_ReceivingLabelData>().Object,
+            new Mock<IService_MySQL_Receiving>().Object,
+            validationMock.Object,
+            new Mock<IService_QualityHoldWarning>().Object,
+            receivingSettingsMock.Object,
+            appSettingsMock.Object,
+            new Mock<IService_InforVisualMockDataCatalog>().Object,
+            new Mock<IService_LoggingUtility>().Object,
+            new Mock<IService_ViewModelRegistry>().Object,
+            new Mock<IService_UserSessionManager>().Object,
+            new Mock<IService_UserPrivileges>().Object
+        );
+    }
 }

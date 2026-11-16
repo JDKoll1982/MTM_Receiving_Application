@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dev="using:DevWinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Receiving.Models"
     xmlns:viewmodels="using:MTM_Receiving_Application.Module_Receiving.ViewModels"
     mc:Ignorable="d">
     <Page.Resources>
@@ -41,6 +42,100 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <!--  Guided walk trail: where the clerk is and what is left. Hidden outside the walk.  -->
+        <Border
+            Grid.Row="0"
+            Margin="16,12,16,0"
+            Padding="12,8"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Visibility="{x:Bind ViewModel.ShowWorkflowTrail, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ItemsControl
+                    Grid.Column="0"
+                    AutomationProperties.Name="Receiving steps"
+                    ItemsSource="{x:Bind ViewModel.WorkflowTrail, Mode=OneWay}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Model_ReceivingWorkflowTrailStep">
+                            <StackPanel
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="{x:Bind AccessibleName}"
+                                Orientation="Horizontal"
+                                Spacing="6">
+                                <!--  Current step: filled chip  -->
+                                <Border
+                                    Width="22"
+                                    Height="22"
+                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                    CornerRadius="11"
+                                    Visibility="{x:Bind IsCurrent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind Number}" />
+                                </Border>
+                                <!--  Other steps: outlined chip, or a check once done  -->
+                                <Border
+                                    Width="22"
+                                    Height="22"
+                                    Background="Transparent"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="11"
+                                    Visibility="{x:Bind IsCurrent, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{x:Bind Number}" />
+                                </Border>
+
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Bind Label}"
+                                    Visibility="{x:Bind IsCurrent, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind Label}"
+                                    Visibility="{x:Bind IsCurrent, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+
+                                <FontIcon
+                                    FontSize="10"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Glyph="&#xE76C;"
+                                    Visibility="{x:Bind IsComplete, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{ThemeResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.WorkflowTrailSummaryText, Mode=OneWay}" />
+            </Grid>
+        </Border>
 
         <!--  Content Area  -->
         <Grid
@@ -85,6 +180,14 @@
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <!--  Part Selection View  -->
+            <ContentControl
+                x:Name="PartSelectionHost"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsPartSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Load Entry View  -->
             <ContentControl
                 x:Name="LoadEntryHost"
