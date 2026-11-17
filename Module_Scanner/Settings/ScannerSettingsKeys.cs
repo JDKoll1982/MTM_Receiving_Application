@@ -21,4 +21,16 @@ public static class ScannerSettingsKeys
         /// <summary>Default value written when the allow-list has never been saved.</summary>
         public const string DefaultAllowedEmployeeNumbers = "[]";
     }
+
+    public static class Automation
+    {
+        /// <summary>
+        /// User-scoped flag for Auto Mode: press Alt+S as the automation's last step and chain
+        /// straight to the next line when the operator answers Yes to the save prompt.
+        /// </summary>
+        public const string AutoModeEnabled = "Scanner.Automation.AutoModeEnabled";
+
+        /// <summary>Auto Mode starts off, so it is only ever on because an operator turned it on.</summary>
+        public const string DefaultAutoModeEnabled = "false";
+    }
 }

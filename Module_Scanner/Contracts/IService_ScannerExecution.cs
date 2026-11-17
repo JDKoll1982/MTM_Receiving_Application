@@ -59,6 +59,13 @@ public interface IService_ScannerExecution : INotifyPropertyChanged
 	bool IsAutomationRunning { get; }
 
 	/// <summary>
+	/// True while Auto Mode is on. The automation then presses Alt+S as its last step, after the
+	/// field sequence and its pause, so the operator only has to answer the save prompt instead of
+	/// also keying the save in Infor Visual.
+	/// </summary>
+	bool IsAutoModeEnabled { get; set; }
+
+	/// <summary>
 	/// Reports whether the Infor Visual Inventory Transfers window the profile targets is
 	/// currently open. Read-only and side-effect free: the window is never launched, activated,
 	/// or typed into, so it is safe to call from a timer while the Workbench is open.

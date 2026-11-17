@@ -140,6 +140,7 @@ public sealed class WorkbenchInputLockoutTests
             new Mock<IService_ScannerHotkey>().Object,
             new Mock<IService_Window>().Object,
             new Mock<IService_SharedLocationRange>().Object,
+            new Mock<MTM_Receiving_Application.Module_Settings.Core.Interfaces.IService_SettingsCoreFacade>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

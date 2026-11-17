@@ -310,6 +310,19 @@
                             <FontIcon FontSize="16" Glyph="&#xE724;" />
                         </Button>
 
+                        <!--  Auto Mode: the automation presses Alt+S as its last step and, on a
+                              Yes to the save prompt, sends the next line straight away.  -->
+                        <ToggleSwitch
+                            MinWidth="0"
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            AutomationProperties.AutomationId="ScannerAutoModeToggle"
+                            AutomationProperties.Name="Auto Mode"
+                            IsOn="{x:Bind ViewModel.IsAutoModeEnabled, Mode=TwoWay}"
+                            OffContent="Auto"
+                            OnContent="Auto"
+                            ToolTipService.ToolTip="Auto Mode: the automation presses Save (Alt+S) for you, and answering Yes to the save prompt sends the next line straight away" />
+
                         <!--  Explains the Send button beside it, which is disabled while Infor
                               Visual's Inventory Transactions window is closed.  -->
                         <TextBlock

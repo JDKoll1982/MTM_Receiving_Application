@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Scanner.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.ViewModels;
 
@@ -1739,13 +1740,290 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.IsHeaderErrorVisible.Should().BeFalse();
     }
 
+    // ── Auto Mode ───────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void AutoMode_ShouldStartOff_SoTheAutomationNeverSavesOnItsOwn()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+
+        viewModel.IsAutoModeEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void TogglingAutoMode_ShouldTellTheAutomationAndSaveTheChoice()
+    {
+        var execution = new Mock<IService_ScannerExecution>();
+        var settingsCore = new Mock<IService_SettingsCoreFacade>();
+        settingsCore
+            .Setup(service =>
+                service.SetSettingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>())
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+
+        var viewModel = CreateWorkbenchViewModel(execution: execution.Object, settingsCore: settingsCore.Object);
+
+        viewModel.IsAutoModeEnabled = true;
+
+        execution.VerifySet(service => service.IsAutoModeEnabled = true, Times.AtLeastOnce);
+        settingsCore.Verify(
+            service =>
+                service.SetSettingAsync(
+                    "Scanner",
+                    "Scanner.Automation.AutoModeEnabled",
+                    "true"
+                ),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task LoadAutoMode_ShouldApplyTheSavedValueWithoutWritingItBack()
+    {
+        var execution = new Mock<IService_ScannerExecution>();
+        var settingsCore = new Mock<IService_SettingsCoreFacade>();
+        settingsCore
+            .Setup(service =>
+                service.GetSettingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>())
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new MTM_Receiving_Application.Module_Settings.Core.Models.Model_SettingsValue
+                    {
+                        Value = "true",
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(execution: execution.Object, settingsCore: settingsCore.Object);
+
+        await viewModel.LoadAutoModeAsync();
+
+        viewModel.IsAutoModeEnabled.Should().BeTrue();
+        execution.VerifySet(service => service.IsAutoModeEnabled = true, Times.AtLeastOnce);
+        settingsCore.Verify(
+            service =>
+                service.SetSettingAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string?>()
+                ),
+            Times.Never,
+            "loading the stored value must not write it straight back"
+        );
+    }
+
+    [Fact]
+    public async Task ConfirmNotSaved_ShouldTurnAutoModeOff()
+    {
+        var (viewModel, execution, _) = await SentOnceWithAutoModeAsync();
+
+        await viewModel.ConfirmNotSavedCommand.ExecuteAsync(null);
+
+        viewModel.IsAutoModeEnabled.Should().BeFalse("a No is a full stop");
+        execution.Verify(
+            service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once,
+            "the next line must not be sent after a No"
+        );
+    }
+
+    [Fact]
+    public async Task ConfirmSaved_ShouldSendTheNextLineStraightAway_WhenAutoModeIsOn()
+    {
+        var (viewModel, execution, _) = await SentOnceWithAutoModeAsync();
+
+        await viewModel.ConfirmSavedCommand.ExecuteAsync(null);
+
+        viewModel.IsAutoModeEnabled.Should().BeTrue();
+        execution.Verify(
+            service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Exactly(2),
+            "a Yes means the save landed, so the next line goes out without another click"
+        );
+        viewModel.IsSendPromptVisible.Should().BeTrue("the second line waits on its own Yes/No");
+    }
+
+    [Fact]
+    public async Task ConfirmSaved_ShouldStopAutoMode_WhenTheNextLineIsNotGreen()
+    {
+        var (viewModel, execution, second) = await SentOnceWithAutoModeAsync(secondIsValid: false);
+
+        await viewModel.ConfirmSavedCommand.ExecuteAsync(null);
+
+        viewModel.IsAutoModeEnabled.Should().BeFalse();
+        viewModel.SelectedSessionItem.Should().BeSameAs(second, "the line stays selected so it can be fixed");
+        execution.Verify(
+            service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once,
+            "an unvalidated line must never reach Infor Visual"
+        );
+    }
+
+    [Fact]
+    public async Task ConfirmSaved_ShouldNotChain_WhenAutoModeIsOff()
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var first = NewBatchItem(session, sequence: 1, Enum_ScannerValidationState.Valid);
+        var second = NewBatchItem(session, sequence: 2, Enum_ScannerValidationState.Valid);
+        session.Items.Add(first);
+        session.Items.Add(second);
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new Model_ScannerExecutionOutcome { SentCount = 1 }));
+
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        workflow
+            .Setup(service =>
+                service.ReplaceSessionItemsAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Model_ScannerBatchSession session, CancellationToken _) =>
+                Model_Dao_Result_Factory.Success(session));
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, execution: execution.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.SelectedSessionItem = first;
+        viewModel.IsInventoryWindowOpen = true;
+
+        await viewModel.SendSelectedCommand.ExecuteAsync(null);
+        await viewModel.ConfirmSavedCommand.ExecuteAsync(null);
+
+        execution.Verify(
+            service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once,
+            "with Auto Mode off the operator still presses Send for each line"
+        );
+    }
+
+    private static Model_ScannerBatchItem NewBatchItem(
+        Model_ScannerBatchSession session,
+        int sequence,
+        Enum_ScannerValidationState validationState
+    ) =>
+        new()
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = sequence,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToLocation = "R-05",
+            PayloadQuantity = "5",
+            ValidationState = validationState,
+            ExecutionState = Enum_ScannerExecutionState.Waiting,
+        };
+
+    /// <summary>
+    /// A Workbench with two lines, Auto Mode already on, the first line sent and its Yes/No prompt
+    /// waiting — the state every Auto Mode assertion starts from.
+    /// </summary>
+    private static async Task<(
+        ViewModel_Scanner_Workbench ViewModel,
+        Mock<IService_ScannerExecution> Execution,
+        Model_ScannerBatchItem Second
+    )> SentOnceWithAutoModeAsync(bool secondIsValid = true)
+    {
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var first = NewBatchItem(session, sequence: 1, Enum_ScannerValidationState.Valid);
+        var second = NewBatchItem(
+            session,
+            sequence: 2,
+            secondIsValid ? Enum_ScannerValidationState.Valid : Enum_ScannerValidationState.Invalid
+        );
+        session.Items.Add(first);
+        session.Items.Add(second);
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service =>
+                service.SendSpecificItemAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<Model_ScannerBatchItem>(),
+                    It.IsAny<Model_ScannerProfile>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(new Model_ScannerExecutionOutcome { SentCount = 1 }));
+
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        workflow
+            .Setup(service =>
+                service.ReplaceSessionItemsAsync(
+                    It.IsAny<Model_ScannerBatchSession>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Model_ScannerBatchSession sent, CancellationToken _) =>
+                Model_Dao_Result_Factory.Success(sent));
+
+        var settingsCore = new Mock<IService_SettingsCoreFacade>();
+        settingsCore
+            .Setup(service =>
+                service.SetSettingAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>())
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+
+        var viewModel = CreateWorkbenchViewModel(
+            workflow.Object,
+            execution: execution.Object,
+            settingsCore: settingsCore.Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [.. session.Items];
+        viewModel.SelectedSessionItem = first;
+        viewModel.IsInventoryWindowOpen = true;
+        viewModel.IsAutoModeEnabled = true;
+
+        await viewModel.SendSelectedCommand.ExecuteAsync(null);
+
+        return (viewModel, execution, second);
+    }
+
     // ── Helpers ─────────────────────────────────────────────────────────────────
 
     private static ViewModel_Scanner_Workbench CreateWorkbenchViewModel(
         IService_ScannerWorkflow? workflow = null,
         IService_ScannerValidation? validation = null,
         IService_ScannerExecution? execution = null,
-        IService_SharedLocationRange? locationRange = null
+        IService_SharedLocationRange? locationRange = null,
+        IService_SettingsCoreFacade? settingsCore = null
     )
     {
         return new ViewModel_Scanner_Workbench(
@@ -1756,6 +2034,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
             new Mock<IService_ScannerHotkey>().Object,
             new Mock<IService_Window>().Object,
             locationRange ?? new Mock<IService_SharedLocationRange>().Object,
+            settingsCore ?? new Mock<IService_SettingsCoreFacade>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

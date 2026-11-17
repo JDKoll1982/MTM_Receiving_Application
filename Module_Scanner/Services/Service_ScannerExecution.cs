@@ -23,6 +23,8 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 {
 	private const ushort VkTab = 0x09;
 	private const ushort VkReturn = 0x0D;
+	private const ushort VkS = 0x53;
+	private const uint ModAlt = 0x0001;
 
 	/// <summary>
 	/// Infor Visual dialogs that can appear after Save when a part has never been inventoried at
@@ -60,6 +62,10 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 	/// </summary>
 	[ObservableProperty]
 	private bool _isAutomationRunning;
+
+	/// <inheritdoc />
+	[ObservableProperty]
+	private bool _isAutoModeEnabled;
 
 	public Service_ScannerExecution(
 		IService_ScannerInputEngine engine,
@@ -285,10 +291,9 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 		cancellationToken.ThrowIfCancellationRequested();
 
 		// Alt+L clears the active Inventory Transfers form in Infor Visual.
-		const uint modAlt = 0x0001;
 		const ushort vkL = 0x4C;
 
-		return _engine.SendChord(modAlt, vkL)
+		return _engine.SendChord(ModAlt, vkL)
 			? Task.FromResult(Model_Dao_Result_Factory.Success())
 			: Task.FromResult(
 				Model_Dao_Result_Factory.Failure("Could not clear the target form.")
@@ -466,6 +471,19 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 			if (profile.PauseAfterItemMs > 0)
 			{
 				await Task.Delay(profile.PauseAfterItemMs, cancellationToken);
+			}
+
+			// Auto Mode finishes the job the field sequence started: Alt+S saves the Inventory
+			// Transfers record, so the operator answers the save prompt instead of also keying
+			// the save. Off by default, because it is the one step that writes in Infor Visual.
+			if (IsAutoModeEnabled && !_engine.SendChord(ModAlt, VkS))
+			{
+				return await MarkFailedAsync(
+					session,
+					item,
+					Enum_ScannerIssueType.Integrity,
+					"Auto Mode could not press Save (Alt+S) in the target window."
+				);
 			}
 
 			item.ExecutionState = Enum_ScannerExecutionState.Sent;

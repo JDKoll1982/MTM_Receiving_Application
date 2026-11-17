@@ -18,6 +18,7 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Helpers;
 using MTM_Receiving_Application.Module_Scanner.Models;
+using MTM_Receiving_Application.Module_Scanner.Settings;
 using MTM_Receiving_Application.Module_Scanner.Views;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
@@ -39,6 +40,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private readonly IService_ScannerHotkey _hotkeyService;
     private readonly IService_Window _windowService;
     private readonly IService_SharedLocationRange _locationRangeService;
+    private readonly Module_Settings.Core.Interfaces.IService_SettingsCoreFacade _settingsCore;
 
     // ── Entry fields ─────────────────────────────────────────────────────────────
     [ObservableProperty]
@@ -150,6 +152,139 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     private Model_ScannerBatchItem? _pendingSendItem;
 
+    // ── Auto Mode ────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Auto Mode: the automation presses Alt+S as its last step, and answering Yes to the save
+    /// prompt sends the next line straight away. Saved per user, and off until an operator turns
+    /// it on, because it is the setting that writes in Infor Visual without a second click.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isAutoModeEnabled;
+
+    /// <summary>Guards the save path while the stored value is being applied on page load.</summary>
+    private bool _isApplyingAutoMode;
+
+    partial void OnIsAutoModeEnabledChanged(bool value)
+    {
+        // The automation reads this, so it follows the toggle rather than the saved value.
+        _executionService.IsAutoModeEnabled = value;
+
+        if (_isApplyingAutoMode)
+        {
+            return;
+        }
+
+        _ = SaveAutoModeAsync(value);
+    }
+
+    /// <summary>
+    /// Applies the saved Auto Mode value. Public so a test can await it; <see cref="Activate"/>
+    /// runs it fire-and-forget, the same way the inventory window watch starts.
+    /// </summary>
+    public async Task LoadAutoModeAsync()
+    {
+        try
+        {
+            var stored = await _settingsCore.GetSettingAsync(
+                ScannerSettingsKeys.Category,
+                ScannerSettingsKeys.Automation.AutoModeEnabled
+            );
+
+            bool enabled =
+                stored.Success
+                && stored.Data is not null
+                && bool.TryParse(stored.Data.Value, out var parsed)
+                && parsed;
+
+            _isApplyingAutoMode = true;
+            try
+            {
+                IsAutoModeEnabled = enabled;
+            }
+            finally
+            {
+                _isApplyingAutoMode = false;
+            }
+
+            _executionService.IsAutoModeEnabled = enabled;
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Low,
+                nameof(LoadAutoModeAsync),
+                nameof(ViewModel_Scanner_Workbench)
+            );
+        }
+    }
+
+    private async Task SaveAutoModeAsync(bool enabled)
+    {
+        try
+        {
+            var result = await _settingsCore.SetSettingAsync(
+                ScannerSettingsKeys.Category,
+                ScannerSettingsKeys.Automation.AutoModeEnabled,
+                enabled ? "true" : "false"
+            );
+
+            if (!result.Success)
+            {
+                await _logger.LogWarningAsync(
+                    $"Auto Mode could not be saved: {result.ErrorMessage}",
+                    nameof(ViewModel_Scanner_Workbench)
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Low,
+                nameof(SaveAutoModeAsync),
+                nameof(ViewModel_Scanner_Workbench)
+            );
+        }
+    }
+
+    /// <summary>
+    /// Sends the next line straight after a Yes, or switches Auto Mode off and explains why when
+    /// there is nothing safe to send. A line that is not green never reaches Infor Visual.
+    /// </summary>
+    private async Task ContinueAutoModeAsync()
+    {
+        if (IsAutoModeEnabled is false)
+        {
+            return;
+        }
+
+        if (SelectedSessionItem is not { ValidationState: Enum_ScannerValidationState.Valid })
+        {
+            StopAutoMode(
+                SelectedSessionItem is null
+                    ? "Auto Mode stopped: no lines left to send."
+                    : "Auto Mode stopped: the next line needs fixing before it can be sent."
+            );
+            return;
+        }
+
+        if (IsInventoryWindowOpen is false)
+        {
+            StopAutoMode("Auto Mode stopped: the Inventory Transactions window is closed.");
+            return;
+        }
+
+        await SendSelectedAsync();
+    }
+
+    /// <summary>Switches Auto Mode off and says why, so it never looks like it silently failed.</summary>
+    private void StopAutoMode(string reason)
+    {
+        IsAutoModeEnabled = false;
+        ShowStatus(reason, InfoBarSeverity.Informational);
+    }
+
     // Reentrancy guard: Enter + LostFocus (or a double scan) can trigger the part/location
     // add flow twice. Ignore a second run while the first is still in flight so the part is
     // not validated/added twice.
@@ -256,6 +391,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         IService_ScannerHotkey hotkeyService,
         IService_Window windowService,
         IService_SharedLocationRange locationRangeService,
+        Module_Settings.Core.Interfaces.IService_SettingsCoreFacade settingsCore,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -269,6 +405,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         ArgumentNullException.ThrowIfNull(hotkeyService);
         ArgumentNullException.ThrowIfNull(windowService);
         ArgumentNullException.ThrowIfNull(locationRangeService);
+        ArgumentNullException.ThrowIfNull(settingsCore);
         _navigationService = navigationService;
         _workflowService = workflowService;
         _validationService = validationService;
@@ -276,6 +413,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         _hotkeyService = hotkeyService;
         _windowService = windowService;
         _locationRangeService = locationRangeService;
+        _settingsCore = settingsCore;
 
         // Input lockout while automation runs (ScannerUpdate.md Task 1).
         _executionService.PropertyChanged += OnExecutionPropertyChanged;
@@ -1318,6 +1456,9 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
                     $"Line {savedItem.SequenceNumber} cleared from the current list.",
                     InfoBarSeverity.Success
                 );
+
+                // Auto Mode: a Yes means the save landed, so the next line goes straight out.
+                await ContinueAutoModeAsync();
             }
         }
     }
@@ -1345,6 +1486,15 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         }
 
         RecomputeSendEnabled();
+
+        // Auto Mode: a No is a full stop, so the chain ends here rather than sending the next
+        // line on top of a save that did not happen.
+        if (IsAutoModeEnabled)
+        {
+            StopAutoMode("Auto Mode stopped: the line was not saved in Infor Visual.");
+            return;
+        }
+
         ShowStatus("Line kept as not sent. You can send it again.", InfoBarSeverity.Warning);
     }
 
@@ -1558,6 +1708,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
         _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
 
+        _ = LoadAutoModeAsync();
         StartInventoryWindowWatch();
     }
 
