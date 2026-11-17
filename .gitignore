@@ -101,3 +101,7 @@ artifacts/
 
 # Google Cloud service account credentials - NEVER commit real keys
 **/visual-easy-inventory-*.json
+
+# SpecKit Companion append buffer, folded into .spec-context.json by --materialize.
+specs/**/.spec-context.events.jsonl
+

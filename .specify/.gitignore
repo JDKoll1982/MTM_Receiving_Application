@@ -8,6 +8,10 @@ feature.json
 # Per-machine extension config overrides.
 extensions/*/local-config.yml
 
+# Transient run state: an install lock, and the append buffer that
+# write-context.py folds into .spec-context.json with --materialize.
+.workflow-install.lock
+
 # Executable adapter packages and their per-checkout provenance registry.
 # Execution consent is stored separately in the user's local trust registry.
 integrations/packages/
