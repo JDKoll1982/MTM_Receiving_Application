@@ -471,6 +471,161 @@ public sealed class ViewModel_ReconciliationMainTests
         viewModel.DayState.Should().Be(Enum_ReconciliationDayState.Previewed);
     }
 
+    [Fact]
+    public async Task ADayOfCandidacySkipsShouldNotClaimTheOperatorSkippedIt()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+
+        // The preview marks a row Skipped when it cannot be assessed at all, and leaves its
+        // state Proposed. Those rows are still in the grid, so the page must not tell the
+        // operator they skipped the day or send them to reload it.
+        var rowWithoutPart = new Model_ReconciliationRow
+        {
+            PartId = string.Empty,
+            PurchaseOrderNumber = string.Empty,
+            PurchaseOrderLineNumber = "1",
+            TransactionDate = Today,
+            Quantity = 10,
+            SavedLocation = "RECV",
+            UnitOfMeasure = "EA",
+        };
+
+        Model_ReconciliationDay day = Day(
+            new Model_ReconciliationFinding(
+                rowWithoutPart,
+                Enum_ReconciliationOutcome.Skipped,
+                "RECV",
+                string.Empty,
+                Enum_ReconciliationDestinationSource.Derived,
+                "The row has no part, so it cannot be matched to a movement.",
+                null,
+                null
+            )
+        );
+        StubDay(viewModel, day);
+
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.EmptyStateMessage.Should().NotContain("skipped for this session");
+        viewModel.EmptyStateMessage.Should().NotContain("Reload the day");
+        viewModel.EmptyStateMessage.Should().NotContain("already matches");
+    }
+
+    [Fact]
+    public async Task TheDaySummaryShouldCarryTheDayReconciledAndItsRunId()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        Model_ReconciliationDay day = Day(
+            Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated)
+        );
+        var runId = Guid.NewGuid();
+        day.Run = new Model_ReconciliationRun
+        {
+            RunId = runId,
+            Day = Today,
+            StartedAt = DateTime.Now,
+            FinishedAt = DateTime.Now,
+        };
+        StubDay(viewModel, day);
+
+        await viewModel.LoadSelectedDateAsync();
+
+        // FR-049: the day reconciled and a copyable run id, on the page rather than in the log.
+        viewModel.DayHeaderText.Should().Be(Today.ToString("yyyy-MM-dd"));
+        viewModel.RunIdentifier.Should().Be(runId.ToString("D"));
+        viewModel.HasRunIdentifier.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task AFailedDayShouldClearTheDayAndTheRunIdTheStripShows()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        Model_ReconciliationDay good = Day(
+            Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated)
+        );
+        good.Run = new Model_ReconciliationRun
+        {
+            RunId = Guid.NewGuid(),
+            Day = Today,
+            StartedAt = DateTime.Now,
+            FinishedAt = DateTime.Now,
+        };
+        StubDay(viewModel, good);
+
+        await viewModel.LoadSelectedDateAsync();
+        viewModel.HasRunIdentifier.Should().BeTrue();
+
+        _preview
+            .Setup(preview => preview.PreviewDayAsync(Yesterday))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<Model_ReconciliationDay>(
+                    "The day could not be read."
+                )
+            );
+
+        await viewModel.SelectDateAsync(Yesterday);
+
+        viewModel.RunIdentifier.Should().BeEmpty();
+        viewModel.HasRunIdentifier.Should().BeFalse("the strip must not offer a copy action for no id");
+    }
+
+    [Fact]
+    public async Task AnAllSkippedDayShouldSayItWasSkippedRatherThanThatItMatches()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        Model_ReconciliationDay day = Day(
+            Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Skipped),
+            Finding("MMC0002000", "PO-066914", Enum_ReconciliationOutcome.Skipped)
+        );
+
+        foreach (Model_ReconciliationFinding finding in day.Findings)
+        {
+            finding.State = Enum_ReconciliationFindingState.SkippedForRun;
+        }
+
+        StubDay(viewModel, day);
+
+        await viewModel.LoadSelectedDateAsync();
+
+        // FR-048 names both states, and a skipped line did not match anything.
+        viewModel.EmptyStateMessage.Should().Contain("skipped for this session");
+        viewModel.EmptyStateMessage.Should().NotContain("already matches");
+        viewModel.EmptyStateMessage.Should().NotContain("Choose the Unchanged outcome");
+    }
+
+    [Fact]
+    public async Task ADisagreeingResidualShouldBeStatedOnThePageNotOnlyInALineReason()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        Model_ReconciliationDay day = Day(
+            Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.NotEnough)
+        );
+        day.Summary.ResidualDisagreement = true;
+        StubDay(viewModel, day);
+
+        await viewModel.LoadSelectedDateAsync();
+
+        // FR-024 and FR-048: a page-level state, so it does not depend on a line being read.
+        viewModel.HasResidualDisagreement.Should().BeTrue();
+        viewModel.ResidualDisagreementText.Should().NotBeNullOrWhiteSpace();
+        viewModel.ResidualDisagreementText.Should().Contain("does not agree with live on-hand");
+    }
+
+    [Fact]
+    public async Task AnAgreeingResidualShouldSayNothingOnThePage()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        StubDay(
+            viewModel,
+            Day(Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated))
+        );
+
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.HasResidualDisagreement.Should().BeFalse();
+        viewModel.ResidualDisagreementText.Should().BeEmpty();
+    }
+
     private static Model_ReconciliationDay YahooDay(DateOnly date) =>
         Day(date, Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated));
 

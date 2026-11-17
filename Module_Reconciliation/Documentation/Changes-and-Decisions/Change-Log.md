@@ -1,6 +1,37 @@
 # Change Log
 
-Last Updated: 2026-11-13
+Last Updated: 2026-11-17
+
+## 2026-11-17 — The page states the day, the run id, the session tally, and a skipped or disagreeing day
+
+**What changed**
+
+- `ViewModel_ReconciliationMain` now shows the day reconciled and the run id in the summary strip, with a **Copy** action bound to the new `CopyRunIdentifierCommand` that puts the run id on the clipboard. `HasRunIdentifier` hides the strip when there is no run, so a failed day offers no copy action for an empty string. `RunProvenanceText` no longer documents the run id as "deliberately not shown".
+- `CyclePositionText` carries the session tally: "Line 3 of 12   ·   2 accepted, 1 skipped". `AcceptedCount` and `SkippedCount` now raise change notifications for it and for `RunProvenanceText`, so the line moves on every accept and every skip instead of waiting for the next reload.
+- `UpdateEmptyState` no longer folds `Skipped` into the all-matching sentence. A day whose every line the operator skipped now says so and points at reloading; a day whose lines all match keeps the outcome-filter sentence; a day the preview set aside for failing candidacy stays silent rather than claiming either, because those rows are still in the grid.
+- `ResidualDisagreementText` and `HasResidualDisagreement` surface `Summary.ResidualDisagreement` in the page-level states row, so a residual that disagrees with live on-hand is stated on the page rather than only inside a surviving line's reason.
+
+**Why**
+
+Phase 14 of `tasks.md` (T114, T115, T116) found three promises only the page could keep. FR-049 requires the day reconciled and a copyable run id; `DayHeaderText` and `RunIdentifier` were computed on every load and bound nowhere, and the module had no clipboard call at all. FR-044 requires the cycle to state "line N of M together with accepted and skipped counts"; `AcceptedCount` and `SkippedCount` were incremented and bound by no view. FR-048 names "all lines already match" and "all lines skipped" as separate page-level states, and FR-024 requires a residual disagreement on the page — a skipped line was being described as one that "already matches", which is false, and the disagreement was rendered nowhere.
+
+**Review correction**
+
+The first cut of the all-skipped state keyed on `Outcome is Skipped`, which is set in two places: `Skip()` sets it with `State = SkippedForRun`, and the preview sets it for rows that fail candidacy with `State = Proposed`. A day whose every row could not be assessed therefore told the operator they had skipped it and sent them to reload, which would mark the same rows the same way again. The branch now keys on `SkippedForRun`, the only state `Skip()` writes, and such a day stays silent because those rows are visible in the grid. `ADayOfCandidacySkipsShouldNotClaimTheOperatorSkippedIt` pins it.
+
+The tally test also asserted only the getters, so it passed with the change notifications removed; it now subscribes to `PropertyChanged` and asserts the cycle phrase is re-raised on both an accept and a skip.
+
+A second review caught two defects in the XAML: the day label and its value carried the same `AutomationProperties.Name`, which both announced the same phrase twice and suppressed the date a screen reader would otherwise read from the TextBlock, and the residual-disagreement TextBlock had no `Visibility` binding, so an empty value still measured a full line and left a permanent gap on every page where the residual agrees. The value TextBlock now takes its name from its text, and the disagreement row collapses on `HasResidualDisagreement`.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.slnx` — 0 warnings, 0 errors.
+- Full suite: 1,351 passing, 264 skipped, 0 failed (was 1,344 passing).
+- Reconciliation unit tests: 105 passing. `TheDaySummaryShouldCarryTheDayReconciledAndItsRunId` and `AFailedDayShouldClearTheDayAndTheRunIdTheStripShows` pin FR-049 for a loaded day and a failed one; `TheCycleShouldStateItsPositionTogetherWithTheAcceptedAndSkippedCounts` pins FR-044 by asserting the cycle phrase is re-raised on an accept and on a skip; `AnAllSkippedDayShouldSayItWasSkippedRatherThanThatItMatches` and `ADayOfCandidacySkipsShouldNotClaimTheOperatorSkippedIt` pin the two FR-048 states apart; `ADisagreeingResidualShouldBeStatedOnThePageNotOnlyInALineReason` and `AnAgreeingResidualShouldSayNothingOnThePage` pin FR-024. All seven assert behaviour the previous code did not have: the two state tests fail against the old `UpdateEmptyState`, and the rest need the properties this change introduces in order to compile.
+
+**Not verified**
+
+The three `x:Bind` additions are compiled but no test renders the page, so the bindings themselves are covered only by the build. The live Infor Visual validation (T100) and the shop-floor timing measurement remain the module's two documented manual residuals.
 
 ## 2026-11-13 — An accepted line leaves the grid, and its group leaves with it
 

@@ -90,6 +90,52 @@ public sealed class ViewModel_ReconciliationMainReviewTests
     }
 
     [Fact]
+    public async Task TheCycleShouldStateItsPositionTogetherWithTheAcceptedAndSkippedCounts()
+    {
+        Model_ReconciliationDay day = Day();
+        Model_ReconciliationFinding extra = Finding(
+            Enum_ReconciliationOutcome.Updated,
+            "R-04",
+            null,
+            Enum_ReconciliationFindingState.Writable
+        );
+        day.Findings = [.. day.Findings, extra];
+        day.Rows = [.. day.Rows, extra.Row];
+
+        _preview.Setup(preview => preview.PreviewDayAsync(Today))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(day));
+
+        ViewModel_ReconciliationMain viewModel = LoadedViewModel();
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.CyclePositionText.Should().Contain("0 accepted, 0 skipped");
+        viewModel.RunProvenanceText.Should().Contain("0 accepted, 0 skipped");
+
+        // The counters must raise the phrase themselves. Asserting only the getter would pass
+        // with the notification removed, and the operator would read a stale tally.
+        var raised = new List<string?>();
+        viewModel.PropertyChanged += (_, e) => raised.Add(e.PropertyName);
+
+        await viewModel.AcceptCommand.ExecuteAsync(null);
+
+        viewModel.CyclePositionText.Should().Contain("1 accepted, 0 skipped");
+        viewModel.RunProvenanceText.Should().Contain("1 accepted, 0 skipped");
+        raised
+            .Should()
+            .Contain(
+                nameof(ViewModel_ReconciliationMain.CyclePositionText),
+                "the tally rides on the cycle phrase, so a moved counter has to re-raise it"
+            );
+
+        raised.Clear();
+        viewModel.SkipCommand.Execute(null);
+
+        viewModel.CyclePositionText.Should().Contain("1 accepted, 1 skipped");
+        viewModel.RunProvenanceText.Should().Contain("1 accepted, 1 skipped");
+        raised.Should().Contain(nameof(ViewModel_ReconciliationMain.CyclePositionText));
+    }
+
+    [Fact]
     public async Task UnresolvedLinesShouldNotEnterTheCycleButShouldStayReachableAsNeedsAttention()
     {
         ViewModel_ReconciliationMain viewModel = await Loaded();

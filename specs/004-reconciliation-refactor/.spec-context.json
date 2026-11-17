@@ -1004,11 +1004,35 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-13T11:59:08.455Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T114",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-17T18:24:40.100Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T115",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-17T18:24:40.102Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T116",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-17T18:24:40.104Z"
     }
   ],
-  "currentStep": "implement",
-  "status": "implementing",
-  "last_action": "event: prompt submitted",
+  "currentStep": "converge",
+  "status": "implemented",
+  "last_action": "Fixed the accessibility and layout defects from the second review, then rebuilt and re-ran the suite",
   "telemetryInstanceId": "323619d8-584a-4fbf-a252-c2eb7bc21930",
   "request": "as 004-reconciliation-refactor",
   "unattended": true,
@@ -1138,6 +1162,22 @@
     },
     {
       "note": "Converge pass 4 verification: dotnet build MTM_Receiving_Application.slnx reports 0 warnings and 0 errors, 88 reconciliation tests pass, and the full suite reports 1,157 passed with the same 8 pre-existing Module_ShipRec_Tools failures."
+    },
+    {
+      "note": "The three new x:Bind additions in View_ReconciliationMain.xaml are compiled but no test renders the page, so the bindings are covered by the build only",
+      "step": "implement"
+    },
+    {
+      "note": "T100 stays open: the live Infor Visual validation of 18a/18b/18c needs a connection and an operator, and TS-03 forbids the suite from reaching live Visual",
+      "step": "implement"
+    },
+    {
+      "note": "The first cut of the all-skipped state mislabelled candidacy skips and its tally test only read getters; both were caught in review and fixed, and the change log records the correction",
+      "step": "implement"
+    },
+    {
+      "note": "Two XAML defects the second review caught are fixed: the day label and value shared one AutomationProperties.Name, which suppressed the date, and the residual-disagreement row had no Visibility so an empty value still measured a full line",
+      "step": "converge"
     }
   ],
   "decisions": [
@@ -1265,58 +1305,48 @@
       "decision": "Make the launcher view model the IViewModel_HeaderTitleProvider that delegates to ReconciliationHeaderTitleProvider",
       "why": "The shell resolves the page DataContext before the page ViewModel property, so the header is tracked with no MainWindow change",
       "rejected": "Changing MainWindow resolution order, or making the Page itself the provider"
+    },
+    {
+      "decision": "The run id is shown in the summary strip with its own Copy command rather than in the provenance line",
+      "why": "FR-049 asks for a copyable run id, which needs a control beside it; the provenance line stays a quiet one-liner",
+      "rejected": "Appending the run id to RunProvenanceText, which is not selectable or copyable as a unit",
+      "by": "agent",
+      "at": "2026-11-17T18:24:46.107Z"
+    },
+    {
+      "decision": "The clipboard write lives in the view model through Windows.ApplicationModel.DataTransfer",
+      "why": "ViewModel_Shared_HelpDialog already copies this way, and adding a clipboard service would mean touching DI wiring",
+      "rejected": "A new IService_ReconciliationClipboard registered in the DI extensions",
+      "by": "agent",
+      "at": "2026-11-17T18:24:46.107Z"
+    },
+    {
+      "decision": "CyclePositionText carries the session tally on the same phrase",
+      "why": "FR-044 wants the position and the counts together; a second line would let the operator read the position without the counts",
+      "rejected": "A separate SessionTallyText line",
+      "by": "agent",
+      "at": "2026-11-17T18:24:46.107Z"
+    },
+    {
+      "decision": "AcceptedCount and SkippedCount stay session counters and are not reset per day",
+      "why": "CountsShouldSurviveAReload already pins that they survive a reload, and they count what this session wrote",
+      "rejected": "Resetting them in ApplyDay",
+      "by": "agent",
+      "at": "2026-11-17T18:24:46.107Z"
+    },
+    {
+      "decision": "The all-skipped sentence keys on FindingState.SkippedForRun, not on Outcome.Skipped",
+      "why": "Outcome.Skipped is also what the preview writes for rows that fail candidacy, and those rows are still in the grid, so the operator never skipped them",
+      "rejected": "Keying on Outcome.Skipped and rewording the sentence, which would still describe a day the operator did not touch",
+      "by": "agent",
+      "at": "2026-11-17T18:34:17.673Z"
     }
   ],
-  "step_summaries": [
-    {
-      "summary": "Plan, research and Phase 1 design for the Receiving Validator extraction, with R-1 through R-10 closed and eleven design decisions recorded.",
-      "key_finding": "CR_PART_LOCATION is a live snapshot, so the residual check needs an as-of balance reconstructed from post-window movement; without it every historical day in a sweep would fail Part 2 of the quantity proof."
-    },
-    {
-      "summary": "102 tasks in 10 phases; Setup, Foundational, US3 proof lifted ahead of US1, then US1, US2, US4, US5, US6, US7 removal and Polish, every phase laid out in waves with explicit joins."
-    },
-    {
-      "summary": "Receiving Validator extracted into its own module: one-day reconciliation, a two-part quantity proof as the only write gate, one write procedure, its own daily-use documentation, and the old Receiving surface removed."
-    },
-    {
-      "summary": "Converge found genuine unbuilt work rather than a finished feature: the build is clean with 0 warnings and 0 errors and all 63 reconciliation tests pass, but T043's four preview-orchestrator cases were never written and the MMC0001000 outcome half of SC-001 was never asserted, so T103 and T104 were appended under a new Phase 11: Convergence section.",
-      "key_finding": "The full suite is 1132 passing and 8 failing, and all 8 failures sit in Module_ShipRec_Tools (7 ViewModel_Tool_ReceivingAnalyticsAppTests, 1 Service_Tool_DunnageBookTests) with none in the code this change touched.",
-      "verdict": "tasks_appended",
-      "residuals": "T100 (live Infor Visual validation of 18a, 18b and 18c) is an accepted manual residual per decision TS-03=A, recorded in Checks-and-Health.md; SC-008 is judged adequate because D-01 single-assembly makes the literal exclusion build impossible while R-MOD-07 code-coupling verification passes in both directions with zero grep hits.",
-      "next_action": "Run /speckit.implement to close T103 and T104."
-    },
-    {
-      "summary": "Closed T103 and T104. Wrote the four preview-orchestrator cases T043 never delivered and the outcome half of the MMC0001000 reference case, drove them through PreviewDayAsync over the real collaborators, and fixed the one defect the fourth case exposed: a group failure named the part and day but never the group, so FR-069 was only two thirds met.",
-      "checks": [
-        "dotnet build MTM_Receiving_Application.slnx: succeeded, 0 warnings, 0 errors",
-        "dotnet build MTM_Receiving_Application.Tests.csproj: succeeded, 0 warnings, 0 errors",
-        "dotnet test --filter FullyQualifiedName~Module_Reconciliation: 68 passed, 0 failed",
-        "dotnet test (full suite): 1136 passed, 9 failed, all 9 in Module_ShipRec_Tools and none reachable from reconciliation"
-      ],
-      "key_finding": "The fourth case failed on first run against real behaviour: the movement-read failure reason stopped at part and day. Fixed by passing the group key into both retry helpers and using DisplayText in all four group failure reasons and both retry warnings."
-    },
-    {
-      "summary": "Closed the five Phase 12 convergence tasks: the run now carries its Infor Visual attribution and the summary strip shows it, the page binds the text and outcome filters the view model already honoured, every module x:Bind states its mode, the change log records the run-identity fix and the corrected test count, and the SC-004 measurement is logged as an outstanding manual check.",
-      "checks": [
-        "dotnet build MTM_Receiving_Application.slnx: succeeded, 0 warnings, 0 errors",
-        "dotnet test --filter FullyQualifiedName~Module_Reconciliation: 72 passed, 0 failed (68 before this pass)",
-        "grep: zero x:Bind usages in Module_Reconciliation/Views that omit a Mode",
-        "grep: View_ReconciliationMain.xaml binds ViewModel.TextFilter and ViewModel.OutcomeFilterChoice",
-        "module boundary: zero code or XAML files under Module_Reconciliation name Module_Receiving; zero files under Module_Receiving name Module_Reconciliation"
-      ],
-      "coverage": "FR-043 by ViewModel_ReconciliationMainTests::FiltersShouldNarrowTheVisibleGridByOutcomeAndText and ::OutcomeSelectorShouldDriveTheFilterAndClearBackToEveryOutcome; FR-049 by Service_ReconciliationPreviewOrchestratorTests::PreviewDayAsync_ShouldAttributeTheRunToTheDaysDistinctInforVisualUsers and ViewModel_ReconciliationMainTests::LoadShouldShowTheRunsInforVisualUserAttribution; FR-051 verified by grep and the XAML compiler; FR-069 and SC-004 are documentation-only in this pass",
-      "next_action": "Run specktit.converge specs/004-reconciliation-refactor"
-    },
-    {
-      "summary": "Converge pass 3 of 3: the build and the reconciliation suite are green, but three implementation gaps and one documentation drift remain, so T110-T113 were appended under a new Phase 13: Convergence section and the spec was left at implemented.",
-      "key_finding": "The failed-day branch of LoadDayAsync clears findings, summary and run identity but leaves GroupedFindings (the grid's actual source), SelectedFinding, DestinationField, EmptyStateMessage, the line counters and UnresolvedCount holding the previous day's values, so a failed day renders the earlier day's rows under the new day's header and AcceptCommand can still write that stale line.",
-      "verdict": "tasks_appended",
-      "residuals": "T110 (FR-048, FR-046) HIGH; T111 (FR-028) MEDIUM, missing; T112 (FR-062, R-HDR-01) MEDIUM; T113 (R-DOC-02, R-DOC-03) LOW. Two accepted manual residuals were judged again and deliberately not appended: live Infor Visual validation of 18a, 18b and 18c, and the SC-004 shop-floor grid measurement; both are documented in Module_Reconciliation/Documentation/Support-and-Fixes/Checks-and-Health.md and no /speckit.implement pass can close them."
-    },
-    {
-      "summary": "Closed T110 to T113: whole-page reset on a failed day, FR-028 mixed-unit warning, header title through the provider, change log at 76 tests"
+  "step_summaries": {
+    "implement": {
+      "summary": "The working page states the day reconciled and its copyable run id, the cycle position with the session accepted and skipped counts, an all-skipped day as skipped rather than matching, and a residual disagreement as a page-level state"
     }
-  ],
+  },
   "approach": "Split the Receiving reconciliation service into focused collaborators behind the new Module_Reconciliation, prove every line with a two-part quantity gate before any write, and write through one reconciliation-owned stored procedure. The module reads the day's rows and Infor Visual through its own data access, so it shares no code with Receiving.",
   "decisions_amended": "D-07 amended during auto run to honour locked decision UI-01: launcher page retained",
   "tasks": {
@@ -2890,11 +2920,11 @@
     }
   },
   "risk": {
-    "level": "high",
-    "size": "oversized",
-    "stepsCompleted": 5,
-    "concerns": 14,
-    "at": "2026-11-12T20:38:38.237Z"
+    "tier": "high",
+    "computed": "high",
+    "reasons": [
+      "touches Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType.sql, Database/InforVisualScripts/Queries/28_GetPOUniquePartsWithOnHand.sql"
+    ]
   },
   "last_stop_interrupted_step": "converge",
   "openTasks": [
@@ -2903,7 +2933,7 @@
     "T115",
     "T116"
   ],
-  "currentTask": "T100",
+  "currentTask": "T116",
   "verified": [
     {
       "what": "T117 matching lines reachable through the outcome filter",
@@ -2924,6 +2954,87 @@
       "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:30.23",
       "commit": "b416f212",
       "tree": "056e96f3dafad2b7b161b665250d2083c5cfbc1c"
+    },
+    {
+      "what": "solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 38.7,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:38.44",
+      "commit": "2ed5e42d",
+      "tree": "f0ef88682eb6bdb03d51e9d3b5822a3b5d7cff31"
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --no-build",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 3.4,
+      "result": "  Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.Types_GetDeleteImpact_ShouldCountPartsQueueAndHistoryRows [1 ms] ·   Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.NoLabelParts_Set_ShouldAddAndRemoveTheFlag [1 ms] · Passed!  - Failed:     0, Passed:  1351, Skipped:   264, Total:  1615, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "2ed5e42d",
+      "tree": "f0ef88682eb6bdb03d51e9d3b5822a3b5d7cff31"
     }
-  ]
+  ],
+  "workingBranch": "master",
+  "task_summaries": {
+    "T114": {
+      "status": "DONE",
+      "did": "Brought the day, its run id, the session tally, the all-skipped state and the residual disagreement onto the page",
+      "files": [
+        "Module_Reconciliation/ViewModels/ViewModel_ReconciliationMain.cs",
+        "Module_Reconciliation/Views/View_ReconciliationMain.xaml",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainReviewTests.cs",
+        "Module_Reconciliation/Documentation/Changes-and-Decisions/Change-Log.md"
+      ],
+      "wave": "T114-T116"
+    },
+    "T115": {
+      "status": "DONE",
+      "did": "Brought the day, its run id, the session tally, the all-skipped state and the residual disagreement onto the page",
+      "files": [
+        "Module_Reconciliation/ViewModels/ViewModel_ReconciliationMain.cs",
+        "Module_Reconciliation/Views/View_ReconciliationMain.xaml",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainReviewTests.cs",
+        "Module_Reconciliation/Documentation/Changes-and-Decisions/Change-Log.md"
+      ],
+      "wave": "T114-T116"
+    },
+    "T116": {
+      "status": "DONE",
+      "did": "Brought the day, its run id, the session tally, the all-skipped state and the residual disagreement onto the page",
+      "files": [
+        "Module_Reconciliation/ViewModels/ViewModel_ReconciliationMain.cs",
+        "Module_Reconciliation/Views/View_ReconciliationMain.xaml",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Reconciliation/ViewModels/ViewModel_ReconciliationMainReviewTests.cs",
+        "Module_Reconciliation/Documentation/Changes-and-Decisions/Change-Log.md"
+      ],
+      "wave": "T114-T116"
+    }
+  },
+  "coverage": {
+    "FR-049": {
+      "tests": [
+        "ViewModel_ReconciliationMainTests::AFailedDayShouldClearTheDayAndTheRunIdTheStripShows"
+      ]
+    },
+    "FR-044": {
+      "tests": [
+        "ViewModel_ReconciliationMainReviewTests::TheCycleShouldStateItsPositionTogetherWithTheAcceptedAndSkippedCounts"
+      ]
+    },
+    "FR-048": {
+      "tests": [
+        "ViewModel_ReconciliationMainTests::ADayOfCandidacySkipsShouldNotClaimTheOperatorSkippedIt"
+      ]
+    },
+    "FR-024": {
+      "tests": [
+        "ViewModel_ReconciliationMainTests::AnAgreeingResidualShouldSayNothingOnThePage"
+      ]
+    }
+  }
 }

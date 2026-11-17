@@ -11,6 +11,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Reconciliation.Contracts;
 using MTM_Receiving_Application.Module_Reconciliation.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace MTM_Receiving_Application.Module_Reconciliation.ViewModels;
 
@@ -73,6 +74,9 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
 
     /// <summary>The day's counts.</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SummaryLineText))]
+    [NotifyPropertyChangedFor(nameof(ResidualDisagreementText))]
+    [NotifyPropertyChangedFor(nameof(HasResidualDisagreement))]
     private Model_ReconciliationDaySummary _summary = new();
 
     /// <summary>The day's lifecycle state.</summary>
@@ -91,8 +95,12 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     [ObservableProperty]
     private bool _isVisualUnavailable;
 
-    /// <summary>The copyable run identifier.</summary>
+    /// <summary>
+    /// The run identifier the summary strip shows and the copy action writes to the
+    /// clipboard. FR-049 requires it on the page, not only in the log.
+    /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasRunIdentifier))]
     private string _runIdentifier = string.Empty;
 
     /// <summary>The Infor Visual user attribution the summary strip shows.</summary>
@@ -113,10 +121,14 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
 
     /// <summary>Accepted lines for this session.</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CyclePositionText))]
+    [NotifyPropertyChangedFor(nameof(RunProvenanceText))]
     private int _acceptedCount;
 
     /// <summary>Skipped lines for this session.</summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CyclePositionText))]
+    [NotifyPropertyChangedFor(nameof(RunProvenanceText))]
     private int _skippedCount;
 
     /// <summary>Every finding the loaded day produced.</summary>
@@ -401,6 +413,11 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     /// the outcome filter when the lines it describes are the matching ones the grid
     /// hides on purpose (FR-048, FR-043).
     /// </summary>
+    /// <remarks>
+    /// FR-048 names "all lines already match" and "all lines skipped" as separate
+    /// page-level states. A skipped line is not a matched one, so folding them together
+    /// told the operator a day they had just set aside was already correct.
+    /// </remarks>
     private void UpdateEmptyState()
     {
         if (_shownDay is not Model_ReconciliationDay day)
@@ -417,11 +434,19 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
             return;
         }
 
+        // A skipped line comes from two places, and only one of them is the operator:
+        // the preview marks a row Skipped when it fails candidacy (no part, no purchase
+        // order), while Skip() is the only thing that sets SkippedForRun. Keying this on
+        // the outcome told a day of candidacy failures that the operator had skipped
+        // them, and pointed at a reload that would mark them the same way again.
+        bool everyLineSkipped = day.Findings.All(finding =>
+            finding.State is Enum_ReconciliationFindingState.SkippedForRun
+        );
+
         bool everyLineAlreadyMatches =
-            day.Findings.All(finding =>
-                finding.Outcome
-                    is Enum_ReconciliationOutcome.Unchanged
-                        or Enum_ReconciliationOutcome.Skipped
+            everyLineSkipped is false
+            && day.Findings.All(finding =>
+                finding.Outcome is Enum_ReconciliationOutcome.Unchanged
             );
 
         // Every line that needed a decision has been written, so the grid is empty
@@ -430,6 +455,13 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
             finding.State is Enum_ReconciliationFindingState.Written
             || finding.Outcome is Enum_ReconciliationOutcome.Unchanged
         );
+
+        if (everyLineSkipped)
+        {
+            EmptyStateMessage =
+                $"Every line saved for {day.Date:yyyy-MM-dd} was skipped for this session, so nothing was written. Reload the day to review them again.";
+            return;
+        }
 
         if (everyLineAlreadyMatches is false && everyLineClosed)
         {
@@ -469,17 +501,25 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     /// <summary>True when nothing is selected, so the pane can show its placeholder.</summary>
     public bool HasNoSelectedFinding => SelectedFinding is null;
 
-    /// <summary>The cycle position as one readable phrase, for the summary line.</summary>
+    /// <summary>
+    /// The cycle position as one readable phrase, for the summary line. FR-044 needs the
+    /// position and the session's accepted and skipped counts together, so the tally rides
+    /// on the same phrase rather than on a second line the operator has to find.
+    /// </summary>
     public string CyclePositionText =>
-        TotalLineCount == 0 ? string.Empty
-        : CurrentLineIndex == 0 ? $"{TotalLineCount} to review"
-        : $"Line {CurrentLineIndex} of {TotalLineCount}";
+        TotalLineCount == 0
+            ? SessionTallyText
+        : CurrentLineIndex == 0 ? $"{TotalLineCount} to review   ·   {SessionTallyText}"
+        : $"Line {CurrentLineIndex} of {TotalLineCount}   ·   {SessionTallyText}";
+
+    /// <summary>What this session has written and set aside, in one phrase.</summary>
+    private string SessionTallyText => $"{AcceptedCount} accepted, {SkippedCount} skipped";
 
     /// <summary>
     /// The quiet provenance line: cycle position, who moved the material in Infor
     /// Visual, and how long the pass took. Empty parts are omitted, so no separator
-    /// is left dangling. The run identifier is deliberately not shown — it belongs in
-    /// the log, not on the page.
+    /// is left dangling. The run identifier is shown in the summary strip beside the
+    /// day, where it has its own copy action (FR-049).
     /// </summary>
     public string RunProvenanceText =>
         string.Join(
@@ -493,6 +533,53 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
                 RunDurationText,
             }.Where(part => string.IsNullOrWhiteSpace(part) is false)
         );
+
+    /// <summary>True when the day carries a run, so the strip can offer its identifier.</summary>
+    public bool HasRunIdentifier => string.IsNullOrWhiteSpace(RunIdentifier) is false;
+
+    /// <summary>
+    /// Copies the run identifier, so an operator reporting a problem can paste it into a
+    /// ticket instead of reading it off the screen (FR-049).
+    /// </summary>
+    [RelayCommand]
+    private void CopyRunIdentifier()
+    {
+        if (HasRunIdentifier is false)
+        {
+            return;
+        }
+
+        try
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(RunIdentifier);
+            Clipboard.SetContent(dataPackage);
+
+            ShowStatus("Run id copied.", InfoBarSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            _errorHandler.HandleException(
+                ex,
+                Enum_ErrorSeverity.Low,
+                nameof(CopyRunIdentifier),
+                nameof(ViewModel_ReconciliationMain)
+            );
+            ShowStatus("The run id could not be copied.", InfoBarSeverity.Warning);
+        }
+    }
+
+    /// <summary>
+    /// States the residual disagreement FR-024 requires on the page, or an empty string
+    /// when the day's residual agrees with live on-hand.
+    /// </summary>
+    public string ResidualDisagreementText =>
+        Summary.ResidualDisagreement
+            ? "The day's residual does not agree with live on-hand, so those lines were not written. Check the balances before working this day."
+            : string.Empty;
+
+    /// <summary>True when the page must show the residual disagreement banner.</summary>
+    public bool HasResidualDisagreement => Summary.ResidualDisagreement;
 
     /// <summary>
     /// The day's counts on one readable line. FR-049 requires every count to be
