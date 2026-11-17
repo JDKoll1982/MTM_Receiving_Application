@@ -23,6 +23,9 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
     private const string CardBorder = "#D0DAE5";
     private const string AccentBackground = "#E9D5FF";
     private const string AccentForeground = "#1F1633";
+
+    /// <summary>Red used for a projected on-hand balance that runs short.</summary>
+    private const string NegativeBalanceColor = "#C42B1C";
     private const int PartColorClassCount = 15;
     private const int ManualTransferRowCount = 5;
 
@@ -630,14 +633,18 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
                 partIncomingRows,
                 incomingWindowDays
             );
-            var associatedPartPresentation = BuildAssociatedPartPresentation(
-                partAssociatedRuns,
-                incomingWindowDays
-            );
             var searchLocationQuantity = currentLocations
                 .Where(location => location.IsSearchLocation)
                 .Sum(location => location.Quantity);
             var totalPositiveQuantity = currentLocations.Sum(location => location.Quantity);
+            var availableOnHandForJobs = currentLocations
+                .Where(location => IsJobConsumableLocation(location.LocationId))
+                .Sum(location => location.Quantity);
+            var associatedPartPresentation = BuildAssociatedPartPresentation(
+                partAssociatedRuns,
+                incomingWindowDays,
+                availableOnHandForJobs
+            );
             var partDescription =
                 partCurrentRows
                     .Select(row => row.PartDescription)
@@ -893,7 +900,8 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
 
     private static AssociatedPartPresentation BuildAssociatedPartPresentation(
         IReadOnlyList<Model_InforVisualAssociatedPartRunRow> partAssociatedRuns,
-        int? incomingWindowDays
+        int? incomingWindowDays,
+        decimal availableOnHandForJobs
     )
     {
         if (partAssociatedRuns.Count == 0)
@@ -1001,12 +1009,54 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         var summaryText =
             $"{firstRun.RunTimingLabel}: {summarySubject}{summaryDate} | Required Parts: {firstRun.RequiredPartsQuantityDisplay} | Estimated Coil Use: {firstRun.EstimatedCoilUseDisplay}{usageUnit}";
 
+        // The board lists the jobs by run date and walks the on-hand balance down that order, so a
+        // job that has not run yet shows what is left after it consumes its material. Past jobs are
+        // history: they carry no requirement, no balance, and do not reduce what is left.
+        var datedRuns = associatedRuns
+            .OrderBy(run => run.RunSortDate ?? DateTime.MaxValue)
+            .ThenBy(run => run.AssociatedPartNumber, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(run => run.WorkOrderDisplay, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var remainingOnHand = availableOnHandForJobs;
+        foreach (var run in datedRuns)
+        {
+            if (run.IsPastJob)
+            {
+                run.JobMaterialRequirement = 0m;
+                run.RemainingOnHandAfterRun = null;
+                continue;
+            }
+
+            run.JobMaterialRequirement = run.EstimatedCoilUse;
+            remainingOnHand -= run.JobMaterialRequirement;
+            run.RemainingOnHandAfterRun = remainingOnHand;
+        }
+
         return new AssociatedPartPresentation(
-            associatedRuns,
+            datedRuns,
             summaryText,
             GetAssociatedPartSortBucket(firstRun),
             firstRun.NextDueToRunDate ?? DateTime.MaxValue
         );
+    }
+
+    /// <summary>
+    /// True when material sitting in the location can be issued to a job. Shipping and
+    /// non-conforming material cannot, so a location named SHIP - or one whose id mentions NCM - is
+    /// left out of the on-hand figure the associated parts are projected against.
+    /// </summary>
+    private static bool IsJobConsumableLocation(string? locationId)
+    {
+        if (string.IsNullOrWhiteSpace(locationId))
+        {
+            return true;
+        }
+
+        var trimmedLocationId = locationId.Trim();
+
+        return string.Equals(trimmedLocationId, "SHIP", StringComparison.OrdinalIgnoreCase) is false
+            && trimmedLocationId.Contains("NCM", StringComparison.OrdinalIgnoreCase) is false;
     }
 
     private static IncomingLinePresentation SelectBestIncomingDate(
@@ -1528,10 +1578,14 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         AppendHeaderCell(html, "Work order", null);
         AppendHeaderCell(html, "Timing", null);
         AppendHeaderCell(html, "Run date", null);
+        AppendHeaderCell(html, "Material required", null);
+        AppendHeaderCell(html, "Remaining after run", null);
         html.AppendLine("</tr>");
         html.AppendLine("</thead>");
         html.AppendLine("<tbody>");
-        plainText.AppendLine("Associated part\tDescription\tWork order\tTiming\tRun date");
+        plainText.AppendLine(
+            "Associated part\tDescription\tWork order\tTiming\tRun date\tMaterial required\tRemaining after run"
+        );
 
         foreach (var associatedRun in card.AssociatedPartRuns)
         {
@@ -1541,9 +1595,20 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
             AppendBodyCell(html, associatedRun.WorkOrderDisplay);
             AppendBodyCell(html, associatedRun.RunTimingLabel);
             AppendBodyCell(html, GetAssociatedRunDateDisplay(associatedRun));
+            AppendBodyCell(
+                html,
+                associatedRun.JobMaterialRequirementDisplay,
+                "right"
+            );
+            AppendBodyCell(
+                html,
+                associatedRun.RemainingOnHandAfterRunDisplay,
+                "right",
+                textColor: associatedRun.IsRemainingOnHandNegative ? NegativeBalanceColor : null
+            );
             html.AppendLine("</tr>");
             plainText.AppendLine(
-                $"{associatedRun.AssociatedPartNumber}\t{associatedRun.AssociatedPartDescription}\t{associatedRun.WorkOrderDisplay}\t{associatedRun.RunTimingLabel}\t{GetAssociatedRunDateDisplay(associatedRun)}"
+                $"{associatedRun.AssociatedPartNumber}\t{associatedRun.AssociatedPartDescription}\t{associatedRun.WorkOrderDisplay}\t{associatedRun.RunTimingLabel}\t{GetAssociatedRunDateDisplay(associatedRun)}\t{associatedRun.JobMaterialRequirementDisplay}\t{associatedRun.RemainingOnHandAfterRunDisplay}"
             );
         }
 
@@ -1563,15 +1628,19 @@ public class Service_Tool_MaterialAvailabilityBoard : IService_Tool_MaterialAvai
         StringBuilder html,
         string? value,
         string alignment = "left",
-        string? cssClass = null
+        string? cssClass = null,
+        string? textColor = null
     )
     {
         var classAttribute = string.IsNullOrWhiteSpace(cssClass)
             ? string.Empty
             : $" class='{cssClass}'";
+        var colorStyle = string.IsNullOrWhiteSpace(textColor)
+            ? string.Empty
+            : $" color: {textColor}; font-weight: 700;";
 
         html.AppendLine(
-            $"<td{classAttribute} style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;'>{HtmlEncode(value)}</td>"
+            $"<td{classAttribute} style='border: 1px solid {CardBorder}; padding: 8px 10px; text-align: {alignment}; vertical-align: top;{colorStyle}'>{HtmlEncode(value)}</td>"
         );
     }
 

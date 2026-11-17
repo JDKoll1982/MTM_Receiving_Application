@@ -167,6 +167,75 @@ public sealed class Service_Tool_ReceivingAnalyticsAppTests
     }
 
     [Fact]
+    public async Task GetBusiestDaysAsync_ShouldReadEachDaysTotalsOnce_NotSumThemAcrossItemTypes()
+    {
+        var dao = CreateDaoMock();
+        dao.Setup(x => x.GetActivityByDayAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_Tool_ReceivingAnalyticsAppActivityRow>
+                    {
+                        // One day, three item types, each row repeating the day's own totals.
+                        new()
+                        {
+                            BucketDate = RangeStart,
+                            PartType = "Coil",
+                            UnitOfMeasure = "EA",
+                            LoadCount = 10,
+                            LabelCount = 12,
+                        },
+                        new()
+                        {
+                            BucketDate = RangeStart,
+                            PartType = "Sheet",
+                            UnitOfMeasure = "EA",
+                            LoadCount = 10,
+                            LabelCount = 12,
+                        },
+                        new()
+                        {
+                            BucketDate = RangeStart.AddDays(1),
+                            PartType = "Standard",
+                            UnitOfMeasure = "LB",
+                            LoadCount = 4,
+                            LabelCount = 5,
+                        },
+                    }
+                )
+            );
+
+        var service = CreateService(dao);
+
+        var result = await service.GetBusiestDaysAsync(CreateFilter());
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().HaveCount(2);
+        result.Data![0].DayDate.Should().Be(RangeStart);
+        result.Data[0].LoadCount.Should().Be(10);
+        result.Data[0].LabelCount.Should().Be(12);
+        result.Data[1].LoadCount.Should().Be(4);
+    }
+
+    [Fact]
+    public async Task GetBusiestDaysAsync_ShouldCarryTheReason_WhenTheReadFails()
+    {
+        var dao = CreateDaoMock();
+        dao.Setup(x => x.GetActivityByDayAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<
+                    List<Model_Tool_ReceivingAnalyticsAppActivityRow>
+                >("activity unavailable")
+            );
+
+        var service = CreateService(dao);
+
+        var result = await service.GetBusiestDaysAsync(CreateFilter());
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("activity unavailable");
+    }
+
+    [Fact]
     public async Task GetComparisonAsync_ShouldPassTheSameBoundsToTheErpRead()
     {
         Model_InforVisualReceivingAnalyticsFilter? requested = null;

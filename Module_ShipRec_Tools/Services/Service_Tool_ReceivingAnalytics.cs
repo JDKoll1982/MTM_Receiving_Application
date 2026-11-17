@@ -74,8 +74,7 @@ public class Service_Tool_ReceivingAnalytics : IService_Tool_ReceivingAnalytics
 
     /// <inheritdoc />
     public Task<Model_Tool_ReceivingAnalyticsStats> ComputeStatsAsync(
-        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint> currentPoints,
-        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>? previousPeriodPoints = null
+        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint> currentPoints
     )
     {
         if (currentPoints is null || currentPoints.Count == 0)
@@ -93,26 +92,12 @@ public class Service_Tool_ReceivingAnalytics : IService_Tool_ReceivingAnalytics
         var peakDay = perDayTotals.Count == 0 ? 0 : perDayTotals.Max();
         var avgPerDay = distinctDates.Count == 0 ? 0.0 : (double)totalLines / distinctDates.Count;
 
-        // Trend vs previous equivalent period: total in the current window compared
-        // against the caller-supplied previous window (same length, immediately prior).
-        var previousTotal = previousPeriodPoints?.Sum(p => p.LineCount) ?? 0;
-
-        double trend = 0.0;
-        if (previousTotal > 0)
-        {
-            trend = Math.Round(
-                ((double)(totalLines - previousTotal) / previousTotal) * 100.0,
-                1
-            );
-        }
-
         return Task.FromResult(
             new Model_Tool_ReceivingAnalyticsStats
             {
                 TotalLines = totalLines,
                 AvgPerDay = Math.Round(avgPerDay, 1),
                 PeakDay = peakDay,
-                TrendVsLastWeek = trend,
             }
         );
     }

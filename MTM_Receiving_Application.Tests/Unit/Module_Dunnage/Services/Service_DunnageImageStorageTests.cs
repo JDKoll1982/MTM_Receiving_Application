@@ -9,8 +9,20 @@ using Windows.Graphics.Imaging;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.Services;
 
-public sealed class Service_DunnageImageStorageTests
+[Collection(DunnageImagePathCollection.Name)]
+public sealed class Service_DunnageImageStorageTests : IDisposable
 {
+    /// <summary>
+    /// Puts the shared image roots back after every test, so a test that pointed them at a temporary
+    /// folder cannot leave the next test - or another class - writing into a directory that has been
+    /// deleted.
+    /// </summary>
+    public void Dispose()
+    {
+        Helper_DunnageImagePaths.SetRootFolder(null);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(null);
+    }
+
     [Fact]
     public async Task CreateRotatedWorkingCopyAsync_ShouldSwapImageDimensions()
     {

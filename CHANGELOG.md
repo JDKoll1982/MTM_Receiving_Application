@@ -5,7 +5,139 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Added
+
+#### The Label Overlay window says what it is doing while print setup loads and print jobs go out (2026-11-17)
+
+- **What changed:** the window now puts a modal progress card over itself whenever something slow is running, so the
+  wait that used to look like a frozen window is explained. The card names the work, says which step it is on, and
+  fills a progress bar; input behind it is blocked, because a second click during a load or a print only ever starts
+  the same work twice.
+- **Where it shows:** opening the window (five reads: saved setup, printers, paper sizes, trays, label queue),
+  switching the settings tab to another output (paper sizes and trays), changing printer, **Reset setup**, and
+  **Printer setup** while the driver's own dialog is opening. **Print** reports the same run the button already
+  does - preparing, page or sheet *n* of *m*, sent.
+- **The print wait:** building the pages and sending the job run on the UI thread, so the card is put up and given a
+  frame to paint before that work starts. While the preview window is open it belongs to WinForms and the card behind
+  it does not repaint - the preview itself is the feedback at that point.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlay.cs`,
+  `Module_Receiving/Views/View_Receiving_LabelOverlayDialog.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_LabelOverlayWorkOverlayTests.cs` (new)
+
+#### Non-PO part lookup now carries the clerk to the load step (2026-11-17)
+
+- **What changed:** in Non-PO Entry mode, pressing **Lookup Part** on the Enter PO page now uses the part it finds and
+  moves the walk to the load step, instead of leaving the clerk to press **Next**. The part can come from the exact
+  match or from the fuzzy picker; either way the wizard advances once the quality-hold check passes.
+- **Not on blur:** only the explicit button advances. Leaving the part field still looks the part up (as before) but
+  never moves the page out from under someone still typing.
+- **Failure keeps you put:** a part that is not found, or a restricted part whose quality hold is not acknowledged,
+  leaves the clerk on the Enter PO page with the usual message.
+- **Also:** the new `Receiving.Messages.Info.NonPoPartReady` message ("Part {0} selected. Continue to the load step.")
+  is user-editable in Settings like every other receiving message.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`,
+  `Module_Receiving/Settings/ReceivingSettingsKeys.cs`, `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`,
+  `Module_Settings.Core/Defaults/settings.manifest.json`, `docs/features/receiving/index.html`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_POEntryTests.cs`
+
+#### Material Availability shows what each job consumes and what is left (2026-11-17)
+
+- **What changed:** the Associated Parts section on a card now carries two extra figures, on the board and on the
+  print/export sheet: **Material required** (what that job consumes) and **Remaining after run** (projected on hand
+  once it has consumed it, shown in red when it goes negative). The rows are ordered by run date.
+- **The maths:** the balance starts from usable on hand - every positive location except a location named `SHIP` and
+  any location whose id contains `NCM` - then walks the rows in run-date order, subtracting each live job's estimated
+  use (component requirement plus scrap). A past job shows blanks in both columns and does not reduce the balance.
+- **Files:** `Module_ShipRec_Tools/Models/Model_Tool_MaterialAvailabilityAssociatedPartRun.cs`,
+  `Module_ShipRec_Tools/Services/Service_Tool_MaterialAvailabilityBoard.cs`,
+  `Module_ShipRec_Tools/Views/View_Tool_MaterialAvailabilityBoard.xaml`,
+  `Module_Core/Converters/Converter_BoolToColor.cs` (adds a `theme` colour so only a negative balance is tinted),
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_MaterialAvailabilityBoardTests.cs`,
+  `Module_ShipRec_Tools/docs/MaterialAvailabilityAssociatedPartsBalance.md` (new)
+
+#### The Scanner Workbench watches for the Infor Visual window (2026-11-17)
+
+- **What changed:** the Workbench checks whether the Infor Visual Inventory Transfers window is open as soon as
+  the page opens, then every five seconds while it stays open. The checks stop when the page closes, so nothing
+  keeps polling in the background.
+- **Effect:** **Remove Selected** is enabled only when a line is selected *and* that window is open. While it is
+  closed, a note to the left of the button reads "Inventory Transactions window is closed - Open it to enable this
+  button." and the button stays greyed out. Reopening the window re-enables it on the next poll without a reload.
+- **How:** the window lookup runs on a background thread and is read-only - it never launches, activates, or types
+  into Infor Visual. It uses the same active profile the send workflow already uses, checking the profile's child
+  window title first and falling back to the app window title, and it rejects a same-titled window owned by another
+  process. The profile is resolved once per page visit rather than on every poll.
+- **Files:** `Module_Scanner/Contracts/IService_ScannerExecution.cs`,
+  `Module_Scanner/Services/Service_ScannerExecution.cs`,
+  `Module_Scanner/ViewModels/ViewModel_Scanner_Workbench.cs`,
+  `Module_Scanner/Views/View_Scanner_Workbench.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Scanner/Services/Service_ScannerExecutionInventoryWindowTests.cs` (new),
+  `MTM_Receiving_Application.Tests/Unit/Module_Scanner/ViewModels/ViewModel_Scanner_WorkbenchTests.cs`,
+  `docs/help/scanner/workbench.html`
+
+#### Receiving Analytics has a Record Days tab (2026-11-17)
+
+- **What changed:** Receiving Analytics is now three tabs. **Record Days** shows three ranked lists side by side -
+  coils, flat stock, and everything else - naming the days with the most loads in the selected range, with the label
+  count beside each day. A fourth table underneath spans the full width and ranks the busiest days overall, using the
+  day's own load total so a load carrying two item types is counted once.
+- **Tidying:** all four tables share one row layout (rank, day, loads, labels), the numeric columns are right-aligned
+  to line up with their headers, each card has a rule under its header, and the three item-type lists sit above the
+  busiest-days table instead of floating in a full-height card.
+- **Where the numbers come from:** our own MySQL receiving history, not Infor Visual. In the per-item-type lists a load
+  is counted once per item type it carried, so a load holding both coil and flat stock material appears in both
+  rankings. Item type comes from the part number (contains MMC -> Coil, contains MMF -> Sheet, else Standard), the
+  same rule the App Data tab uses. Weekends are excluded, as every other app figure is.
+- **How:** the tab has its own From/To range (defaults to the last 90 days), a **Show** control (top 5, 10, or 20), and
+  **Load**/**Clear**. Changing the top count reloads; changing the range waits for **Load**.
+- **Database:** new read-only procedure `sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType`. It must be deployed
+  before the tab can read anything.
+- **Files:** `Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType.sql` (new),
+  `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsTopDays.cs` (new),
+  `Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalyticsTopDays.xaml` (+ `.xaml.cs`, new),
+  `Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsAppTopDayRow.cs` (new),
+  `Module_ShipRec_Tools/Data/Dao_Tool_ReceivingAnalyticsApp.cs`,
+  `Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsApp.cs`,
+  `Module_ShipRec_Tools/Contracts/IService_Tool_ReceivingAnalyticsApp.cs`,
+  `Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml` (+ `.xaml.cs`),
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsTopDaysTests.cs` (new),
+  `MTM_Receiving_Application.Tests/Integration/Database/StoredProcedures/ReceivingAnalyticsAppStoredProcedureTests.cs`
+
 ### Fixed
+
+#### Remaining on PO no longer reads 0 on the part card (2026-11-17)
+
+- **What changed:** the guided walk's part card now shows the real remaining quantity for the part instead of `0`.
+  In the case the clerk reported (55,000 ordered, 6,570 received) it now reads `48,430`.
+- **Why it was wrong:** the PO load reads one row per unique part from
+  `28_GetPOUniquePartsWithOnHand.sql`, and neither that query nor the part conversion carried a remaining figure, so
+  the card fell back to the model default of `0`. The other PO path (`01_GetPOWithParts.sql`) has always mapped it,
+  which is why only this screen was wrong.
+- **How:** the query now returns `RemainingQty` - ordered minus received, summed across every line that carries the
+  part, which is the rule `01_GetPOWithParts.sql` and `GetRemainingQuantityAsync` already use - the DAO maps it, and
+  the conversion into the part row sets `RemainingQuantity`. The figure also flows into the saved receipt's
+  `remaining_quantity` snapshot, which used to store 0 as well.
+- **Also:** the card formats the figure with thousands separators (`48,430`) to match how PO quantities read in Visual.
+- **Files:** `Database/InforVisualScripts/Queries/28_GetPOUniquePartsWithOnHand.sql`,
+  `Module_Core/Models/InforVisual/Model_InforVisualPOUniquePart.cs`,
+  `Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs`,
+  `Module_Core/Services/Database/Service_InforVisualConnect.cs`,
+  `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`,
+  `Module_Receiving/Views/View_Receiving_PartSelection.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Core/Services/Database/Service_InforVisualConnectTests.cs`
+
+#### The Receiving Analytics period toggle now changes the chart (2026-11-17)
+
+- **What changed:** choosing **Week** or **Month** on the ERP Data tab now re-buckets the chart. Every point used to be
+  plotted per day whatever the period said, so the setting appeared to do nothing.
+- **How:** the cached points are collapsed into day, week (Sunday start), or month buckets and re-rendered without
+  re-querying, the same way the History/Incoming toggle works. Axis labels follow the period ("Week of 08/31",
+  "Aug 2026"). Changing the chart type also re-renders now instead of waiting for the next load.
+- **Also:** the requested date range is no longer widened to the start of the week or month, so the range you type is
+  the range you get.
+- **Files:** `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalytics.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsTests.cs`
 
 #### The image search filter row no longer touches its neighbours (2026-11-16)
 
@@ -58,6 +190,24 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   `Module_Settings.Core/Views/View_Settings_DatabaseConfig.xaml` (+ `.xaml.cs`),
   `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`,
   `MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/Service_DatabaseTargetManagerTests.cs` (new)
+
+### Removed
+
+#### The Trend vs Last Week card is gone from Receiving Analytics (2026-11-17)
+
+- **What changed:** the fourth stat card and the **Compare Previous Period** filter are removed from the ERP Data
+  tab. The card compared the window total against the immediately prior window of the same length, which nobody read
+  and which cost a second Infor Visual query on every load.
+- **How:** the trend property, its display text, the previous-period fetch and filter builder, the stats-model field,
+  the `ComputeStatsAsync` parameter, the card, and the checkbox are all gone. `ComputeStatsAsync` now takes only the
+  current points.
+- **Files:** `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalytics.cs`,
+  `Module_ShipRec_Tools/Views/View_Tool_ReceivingAnalytics.xaml`,
+  `Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalytics.cs`,
+  `Module_ShipRec_Tools/Contracts/IService_Tool_ReceivingAnalytics.cs`,
+  `Module_ShipRec_Tools/Models/Model_Tool_ReceivingAnalyticsStats.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_ReceivingAnalyticsTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsTests.cs`
 
 ### Changed
 

@@ -209,6 +209,86 @@ public sealed class Service_Tool_ReceivingAnalyticsApp : IService_Tool_Receiving
         return Model_Dao_Result_Factory.Success(comparison);
     }
 
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_Tool_ReceivingAnalyticsAppTopDayRow>>
+    > GetTopDaysByItemTypeAsync(Model_Tool_ReceivingAnalyticsAppFilter filter, int topCount)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        var wanted = topCount > 0 ? topCount : 10;
+
+        var result = await _dao.GetTopDaysByItemTypeAsync(
+            filter.StartDate,
+            filter.EndDate,
+            wanted
+        );
+
+        if (!result.IsSuccess)
+        {
+            _logger.LogError(
+                $"ReceivingAnalytics record days: read failed. {result.ErrorMessage}",
+                result.Exception
+            );
+            return Model_Dao_Result_Factory.Failure<List<Model_Tool_ReceivingAnalyticsAppTopDayRow>>(
+                result.ErrorMessage,
+                result.Exception
+            );
+        }
+
+        var rows = result.Data ?? [];
+        _logger.LogInfo(
+            $"ReceivingAnalytics record days: {rows.Count} day/item-type rows for the top {wanted} per item type."
+        );
+
+        return Model_Dao_Result_Factory.Success(rows);
+    }
+
+    /// <inheritdoc />
+    public async Task<
+        Model_Dao_Result<List<Model_Tool_ReceivingAnalyticsAppBusiestDayRow>>
+    > GetBusiestDaysAsync(Model_Tool_ReceivingAnalyticsAppFilter filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        var result = await _dao.GetActivityByDayAsync(filter.StartDate, filter.EndDate);
+        if (!result.IsSuccess)
+        {
+            _logger.LogError(
+                $"ReceivingAnalytics record days: busiest-day read failed. {result.ErrorMessage}",
+                result.Exception
+            );
+            return Model_Dao_Result_Factory.Failure<
+                List<Model_Tool_ReceivingAnalyticsAppBusiestDayRow>
+            >(result.ErrorMessage, result.Exception);
+        }
+
+        // The activity rows repeat the day's own load and label counts on every item type and unit
+        // row, so each day is read once rather than summed - summing would count a load that
+        // carried two item types twice.
+        var rows = (result.Data ?? [])
+            .GroupBy(row => row.BucketDate.Date)
+            .Select(group =>
+            {
+                var day = group.First();
+                return new Model_Tool_ReceivingAnalyticsAppBusiestDayRow
+                {
+                    DayDate = group.Key,
+                    LoadCount = day.LoadCount,
+                    LabelCount = day.LabelCount,
+                };
+            })
+            .OrderByDescending(row => row.LoadCount)
+            .ThenByDescending(row => row.DayDate)
+            .ToList();
+
+        _logger.LogInfo(
+            $"ReceivingAnalytics record days: {rows.Count} day totals for the busiest-days table."
+        );
+
+        return Model_Dao_Result_Factory.Success(rows);
+    }
+
     /// <summary>
     /// One coverage point per received date for the app side, counting purchase-order lines the same
     /// way Infor Visual does: each line once, on the date it was last received.

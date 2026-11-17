@@ -158,13 +158,15 @@ through the service with a substituted DAO, which does not count as procedure co
 - [x] sp_Reporting_ReceivingAnalyticsApp_GetMissingLoadNumberCount
 - [x] sp_Reporting_ReceivingAnalyticsApp_GetOnTimeByDay
 - [x] sp_Reporting_ReceivingAnalyticsApp_GetSupplierTotals
+- [x] sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType
 - [x] sp_Reporting_ReceivingHistory_GetByDateRange
 - [x] sp_Reporting_VolvoHistory_GetByDateRange
 
-The four `sp_Reporting_ReceivingAnalyticsApp_*` procedures are exercised directly by
+The five `sp_Reporting_ReceivingAnalyticsApp_*` procedures are exercised directly by
 `ReceivingAnalyticsAppStoredProcedureTests`, which seeds its own rows in a far-future window and
 deletes them again: the range boundary, a row carrying both date columns, a row carrying only
-`transaction_date`, a blank supplier, the missing-load count, and the four on-time statuses.
+`transaction_date`, a blank supplier, the missing-load count, the four on-time statuses, and the
+per-item-type load ranking.
 
 ## Settings
 

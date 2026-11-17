@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 
@@ -38,6 +39,109 @@ public sealed class ViewModel_Receiving_POEntryTests
 
         inforVisualService.Verify(service => service.GetPartByIDAsync("MMC650"), Times.Once);
         harness.ViewModel.Parts.Should().ContainSingle(part => part.PartID == "MMC650");
+    }
+
+    // ── Non-PO lookup: a found part is used and the walk moves on ────────────────
+
+    [Fact]
+    public async Task LookupPartCommand_ShouldUseThePartAndAdvanceToTheLoadStep_WhenNonPoPartIsFound()
+    {
+        var inforVisualService = new Mock<IService_InforVisual>();
+        inforVisualService
+            .Setup(service => service.GetPartByIDAsync("MMC650"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart { PartID = "MMC650", Description = "Mock part" }
+                )
+            );
+
+        var harness = new Harness(inforVisualService, currentStep: Enum_ReceivingWorkflowStep.POEntry);
+        harness.WorkflowService
+            .Setup(service => service.AdvanceToNextStepAsync())
+            .ReturnsAsync(
+                Model_ReceivingWorkflowStepResult.SuccessResult(
+                    Enum_ReceivingWorkflowStep.LoadEntry,
+                    "moved"
+                )
+            );
+
+        harness.ViewModel.IsNonPOItem = true;
+        harness.ViewModel.PartID = "MMC650";
+
+        await harness.ViewModel.LookupPartCommand.ExecuteAsync(null);
+
+        harness.ViewModel.PartID.Should().Be("MMC650");
+        harness.ViewModel.SelectedPart.Should().NotBeNull();
+        harness.WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task LookupPartCommand_ShouldStayOnThePage_WhenNonPoPartIsNotFound()
+    {
+        var inforVisualService = new Mock<IService_InforVisual>();
+        inforVisualService
+            .Setup(service => service.GetPartByIDAsync("NOPE"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<Model_InforVisualPart?>("Part not found.")
+            );
+        inforVisualService
+            .Setup(service => service.FuzzySearchPartsAsync(It.IsAny<string>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_FuzzySearchResult>())
+            );
+
+        var harness = new Harness(inforVisualService);
+
+        harness.ViewModel.IsNonPOItem = true;
+        harness.ViewModel.PartID = "NOPE";
+
+        await harness.ViewModel.LookupPartCommand.ExecuteAsync(null);
+
+        harness.WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task PartTextBoxLostFocusCommand_ShouldLookupWithoutAdvancingTheWalk()
+    {
+        var inforVisualService = new Mock<IService_InforVisual>();
+        inforVisualService
+            .Setup(service => service.GetPartByIDAsync("MMC650"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart { PartID = "MMC650", Description = "Mock part" }
+                )
+            );
+
+        var harness = new Harness(inforVisualService);
+
+        harness.ViewModel.IsNonPOItem = true;
+        harness.ViewModel.PartID = "MMC650";
+
+        await harness.ViewModel.PartTextBoxLostFocusCommand.ExecuteAsync(null);
+
+        harness.ViewModel.Parts.Should().ContainSingle();
+        harness.WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task LookupPartCommand_ShouldNotAdvance_WhenPoModeFindsAPart()
+    {
+        var inforVisualService = new Mock<IService_InforVisual>();
+        inforVisualService
+            .Setup(service => service.GetPartByIDAsync("MMC650"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success<Model_InforVisualPart?>(
+                    new Model_InforVisualPart { PartID = "MMC650", Description = "Mock part" }
+                )
+            );
+
+        var harness = new Harness(inforVisualService);
+        harness.ViewModel.IsNonPOItem = false;
+        harness.ViewModel.PartID = "MMC650";
+
+        await harness.ViewModel.LookupPartCommand.ExecuteAsync(null);
+
+        harness.WorkflowService.Verify(service => service.AdvanceToNextStepAsync(), Times.Never);
     }
 
     [Fact]
@@ -410,3 +514,4 @@ public sealed class ViewModel_Receiving_POEntryTests
         public int RefocusRequestCount { get; private set; }
     }
 }
+

@@ -11,6 +11,7 @@
     <Page.Resources>
         <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
         <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+        <converters:Converter_BoolToColor x:Key="BoolToColorConverter" />
 
         <!--  Shared part card: used by the flat list and by each location group  -->
         <DataTemplate x:Key="MaterialAvailabilityCardTemplate" x:DataType="models:Model_Tool_MaterialAvailabilityCard">
@@ -352,39 +353,67 @@
                                                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                         BorderThickness="1"
                                                         CornerRadius="6">
-                                                        <Grid ColumnSpacing="6">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*" />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <StackPanel Grid.Column="0" Spacing="2">
-                                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind AssociatedPartNumber}" />
-                                                                <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind AssociatedPartDescription}" />
-                                                                <TextBlock
-                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                                    Text="{x:Bind WorkOrderDisplay}" />
+                                                        <Grid RowSpacing="6">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid Grid.Row="0" ColumnSpacing="6">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind AssociatedPartNumber}" />
+                                                                    <TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind AssociatedPartDescription}" />
+                                                                    <TextBlock
+                                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind WorkOrderDisplay}" />
+                                                                </StackPanel>
+                                                                <StackPanel
+                                                                    Grid.Column="1"
+                                                                    HorizontalAlignment="Right"
+                                                                    Spacing="2">
+                                                                    <TextBlock
+                                                                        HorizontalAlignment="Right"
+                                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind RunTimingLabel}" />
+                                                                    <TextBlock
+                                                                        HorizontalAlignment="Right"
+                                                                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                                        Text="{x:Bind NextRunDateDisplay}" />
+                                                                    <TextBlock
+                                                                        HorizontalAlignment="Right"
+                                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                        Style="{StaticResource CaptionTextBlockStyle}"
+                                                                        Text="{x:Bind OutsideWindowHintDisplay}"
+                                                                        Visibility="{x:Bind HasOutsideWindowHint, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                                </StackPanel>
+                                                            </Grid>
+
+                                                        <!--  What this job consumes and what is left after it runs  -->
+                                                        <StackPanel
+                                                            Grid.Row="1"
+                                                            Orientation="Horizontal"
+                                                            Spacing="24">
+                                                            <StackPanel
+                                                                Spacing="2"
+                                                                Visibility="{x:Bind HasJobMaterialRequirement, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Material required" />
+                                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind JobMaterialRequirementDisplay}" />
                                                             </StackPanel>
                                                             <StackPanel
-                                                                Grid.Column="1"
-                                                                HorizontalAlignment="Right"
-                                                                Spacing="2">
+                                                                Spacing="2"
+                                                                Visibility="{x:Bind HasJobMaterialRequirement, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Remaining after run" />
                                                                 <TextBlock
-                                                                    HorizontalAlignment="Right"
-                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                                    Text="{x:Bind RunTimingLabel}" />
-                                                                <TextBlock
-                                                                    HorizontalAlignment="Right"
+                                                                    Foreground="{x:Bind IsRemainingOnHandNegative, Mode=OneTime, Converter={StaticResource BoolToColorConverter}, ConverterParameter='red|theme'}"
                                                                     Style="{StaticResource BodyStrongTextBlockStyle}"
-                                                                    Text="{x:Bind NextRunDateDisplay}" />
-                                                                <TextBlock
-                                                                    HorizontalAlignment="Right"
-                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                                                    Text="{x:Bind OutsideWindowHintDisplay}"
-                                                                    Visibility="{x:Bind HasOutsideWindowHint, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                                    Text="{x:Bind RemainingOnHandAfterRunDisplay}" />
                                                             </StackPanel>
+                                                        </StackPanel>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>

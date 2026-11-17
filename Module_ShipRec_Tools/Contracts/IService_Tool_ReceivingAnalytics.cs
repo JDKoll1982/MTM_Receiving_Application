@@ -23,11 +23,9 @@ public interface IService_Tool_ReceivingAnalytics
 
     /// <summary>
     /// Computes summary statistics (total, average/day, peak day) from the
-    /// supplied current-period points, plus the trend vs the previous equivalent
-    /// period when <paramref name="previousPeriodPoints"/> is provided.
+    /// supplied current-period points.
     /// </summary>
     Task<Model_Tool_ReceivingAnalyticsStats> ComputeStatsAsync(
-        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint> currentPoints,
-        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>? previousPeriodPoints = null
+        IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint> currentPoints
     );
 }

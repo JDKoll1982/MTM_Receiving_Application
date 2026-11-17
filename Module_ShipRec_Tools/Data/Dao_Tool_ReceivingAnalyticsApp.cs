@@ -129,6 +129,28 @@ public class Dao_Tool_ReceivingAnalyticsApp
     }
 
     /// <summary>
+    /// Reads the busiest receiving days per item type for the range (start inclusive, end
+    /// exclusive). Loads are counted per day and item type, so the same load can appear under more
+    /// than one item type when it carried material of more than one kind.
+    /// </summary>
+    public virtual async Task<
+        Model_Dao_Result<List<Model_Tool_ReceivingAnalyticsAppTopDayRow>>
+    > GetTopDaysByItemTypeAsync(DateTime startDate, DateTime endDate, int topCount)
+    {
+        var parameters = BuildDateParameters(startDate, endDate);
+        parameters["top_count"] = topCount;
+
+        return await Helper_Database_StoredProcedure.ExecuteListAsync<
+            Model_Tool_ReceivingAnalyticsAppTopDayRow
+        >(
+            _connectionString,
+            "sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType",
+            MapTopDayRow,
+            parameters
+        );
+    }
+
+    /// <summary>
     /// Reads the app's completed purchase-order lines attributed to the date each was last received,
     /// which is how Infor Visual dates a PO line. Used by the coverage comparison so both sides
     /// count the same thing.
@@ -172,8 +194,18 @@ public class Dao_Tool_ReceivingAnalyticsApp
         };
     }
 
-    private static Model_Tool_ReceivingAnalyticsAppOnTimeRow MapOnTimeRow(IDataReader reader)
+    private static Model_Tool_ReceivingAnalyticsAppTopDayRow MapTopDayRow(IDataReader reader)
     {
+        return new Model_Tool_ReceivingAnalyticsAppTopDayRow
+        {
+            DayDate = reader.GetDateTime(reader.GetOrdinal("day_date")),
+            ItemType = GetNullableString(reader, "item_type"),
+            LoadCount = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("load_count"))),
+            LabelCount = Convert.ToInt32(reader.GetValue(reader.GetOrdinal("label_count"))),
+        };
+    }
+
+    private static Model_Tool_ReceivingAnalyticsAppOnTimeRow MapOnTimeRow(IDataReader reader)    {
         return new Model_Tool_ReceivingAnalyticsAppOnTimeRow
         {
             BucketDate = reader.GetDateTime(reader.GetOrdinal("bucket_date")),

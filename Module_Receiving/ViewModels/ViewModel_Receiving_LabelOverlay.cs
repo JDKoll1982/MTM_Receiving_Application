@@ -503,8 +503,7 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
         }
 
         ApplyPrintSettings(ActiveProfile);
-        _ = LoadPapersAsync();
-        _ = LoadPaperSourcesAsync();
+        _ = ReloadPrinterMediaAsync();
     }
 
     partial void OnSelectedOrientationIndexChanged(int value) => OnPrintSetupChanged();
@@ -535,11 +534,39 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
     [RelayCommand]
     public async Task ReloadAsync()
     {
-        await LoadPrintSettingsAsync();
-        await LoadPrintersAsync();
-        await LoadPapersAsync();
-        await LoadPaperSourcesAsync();
-        await LoadLabelsAsync();
+        // The label queue and the driver's own lists are slow enough to look like a hang, so the window
+        // says which one is being read instead of going quiet.
+        const int totalSteps = 5;
+        BeginWorkOverlay("Loading label overlay", "Reading the saved print setup…", $"Step 1 of {totalSteps}");
+
+        try
+        {
+            await LoadPrintSettingsAsync();
+
+            ReportWorkOverlay(2, totalSteps, "Finding the printers on this PC…");
+            await LoadPrintersAsync();
+
+            ReportWorkOverlay(
+                3,
+                totalSteps,
+                string.IsNullOrWhiteSpace(SelectedPrinter)
+                    ? "Reading the paper sizes…"
+                    : $"Reading the paper sizes {SelectedPrinter} takes…"
+            );
+            await LoadPapersAsync();
+
+            ReportWorkOverlay(4, totalSteps, "Reading the trays the printer takes…");
+            await LoadPaperSourcesAsync();
+
+            ReportWorkOverlay(5, totalSteps, "Reading the label queue…");
+            await LoadLabelsAsync();
+
+            ReportWorkOverlay(totalSteps, totalSteps, "Ready.");
+        }
+        finally
+        {
+            EndWorkOverlay();
+        }
     }
 
     private async Task LoadPrintSettingsAsync()
@@ -1259,6 +1286,15 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
         try
         {
+            BeginWorkOverlay(
+                "Printer setup",
+                "Opening the printer's own settings…"
+            );
+
+            // The driver's dialog belongs to the printer, not to us, so the overlay is put up first and
+            // taken down once it closes - the wait before it appears is what looks like a hang.
+            await LetWorkOverlayPaintAsync();
+
             var chosen = Helper_PrinterDevMode.EditForJob(
                 SelectedPrinter,
                 PrinterSetupOwnerHandle,
@@ -1272,6 +1308,7 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
             }
 
             ActiveProfile.SetDevMode(chosen);
+            ReportWorkOverlay(1, 2, "Keeping the setup for this output…");
             await PersistPrintSettingsAsync();
             RefreshPrintSetupText();
 
@@ -1289,6 +1326,10 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
                 nameof(ViewModel_Receiving_LabelOverlay)
             );
             ShowStatus("The printer setup could not be opened.", InfoBarSeverity.Error);
+        }
+        finally
+        {
+            EndWorkOverlay();
         }
     }
 
@@ -1311,8 +1352,19 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
     /// <summary>Puts the paper picker back on the default media and keeps the result.</summary>
     private async Task ReapplyDefaultPaperAsync()
     {
-        await LoadPapersAsync();
-        await PersistPrintSettingsAsync();
+        const int totalSteps = 2;
+        BeginWorkOverlay("Resetting the print setup", "Reading the paper sizes…", $"Step 1 of {totalSteps}");
+
+        try
+        {
+            await LoadPapersAsync();
+            ReportWorkOverlay(2, totalSteps, "Keeping the setup…");
+            await PersistPrintSettingsAsync();
+        }
+        finally
+        {
+            EndWorkOverlay();
+        }
     }
 
     private void OnPrintSetupChanged()
@@ -1327,9 +1379,50 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
     private async Task OnPrinterChangedAsync()
     {
-        await LoadPapersAsync();
-        await LoadPaperSourcesAsync();
-        await PersistPrintSettingsAsync();
+        const int totalSteps = 3;
+        BeginWorkOverlay(
+            "Reading the printer",
+            $"Reading the paper sizes {SelectedPrinter} takes…",
+            $"Step 1 of {totalSteps}"
+        );
+
+        try
+        {
+            await LoadPapersAsync();
+            ReportWorkOverlay(2, totalSteps, "Reading the trays the printer takes…");
+            await LoadPaperSourcesAsync();
+            ReportWorkOverlay(3, totalSteps, "Keeping the setup…");
+            await PersistPrintSettingsAsync();
+        }
+        finally
+        {
+            EndWorkOverlay();
+        }
+    }
+
+    /// <summary>
+    /// Reads the paper sizes and trays for the output whose settings tab was switched to. Both come from
+    /// the driver, so the window says so while they are fetched.
+    /// </summary>
+    private async Task ReloadPrinterMediaAsync()
+    {
+        const int totalSteps = 2;
+        BeginWorkOverlay(
+            "Reading the printer",
+            "Reading the paper sizes…",
+            $"Step 1 of {totalSteps}"
+        );
+
+        try
+        {
+            await LoadPapersAsync();
+            ReportWorkOverlay(2, totalSteps, "Reading the trays the printer takes…");
+            await LoadPaperSourcesAsync();
+        }
+        finally
+        {
+            EndWorkOverlay();
+        }
     }
 
     private void RefreshPrintSetupText()
@@ -1452,6 +1545,112 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
     // ─── Printing ───────────────────────────────────────────────────────────
 
+    // ─── Work overlay (shown over the window while something slow is running) ───
+
+    /// <summary>
+    /// True while a slow step owns the window. Everything behind it is blocked, because a second click
+    /// during a load or a print is always the operator thinking the app has hung.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isWorkOverlayVisible;
+
+    /// <summary>What is running, in the operator's words, for example "Printing" or "Loading label overlay".</summary>
+    [ObservableProperty]
+    private string _workOverlayTitle = string.Empty;
+
+    /// <summary>The part of that work being done right now, so the wait is never unexplained.</summary>
+    [ObservableProperty]
+    private string _workOverlayDetail = string.Empty;
+
+    /// <summary>Where the run has got to, for example "Step 2 of 5". Blank when there are no steps.</summary>
+    [ObservableProperty]
+    private string _workOverlayStepText = string.Empty;
+
+    /// <summary>True when the work cannot report a percentage, so the bar sweeps instead.</summary>
+    [ObservableProperty]
+    private bool _isWorkOverlayIndeterminate = true;
+
+    /// <summary>How far through the work this is, from 0 to 100, when it can be measured.</summary>
+    [ObservableProperty]
+    private double _workOverlayPercent;
+
+    private int _workOverlayDepth;
+
+    /// <summary>True when the overlay has a numbered step to show, so the line can be hidden when it has not.</summary>
+    public bool HasWorkOverlayStepText => !string.IsNullOrWhiteSpace(WorkOverlayStepText);
+
+    partial void OnWorkOverlayStepTextChanged(string value) =>
+        OnPropertyChanged(nameof(HasWorkOverlayStepText));
+
+    /// <summary>Puts the overlay up. Nested calls keep the innermost text and the outermost hide.</summary>
+    private void BeginWorkOverlay(string title, string detail, string stepText = "")
+    {
+        _workOverlayDepth++;
+        WorkOverlayTitle = title;
+        WorkOverlayDetail = detail;
+        WorkOverlayStepText = stepText;
+        IsWorkOverlayIndeterminate = true;
+        WorkOverlayPercent = 0;
+        IsWorkOverlayVisible = true;
+    }
+
+    /// <summary>Moves the overlay on to a numbered step and fills the bar from the step count.</summary>
+    private void ReportWorkOverlay(int step, int totalSteps, string detail)
+    {
+        WorkOverlayDetail = detail;
+
+        if (totalSteps <= 0)
+        {
+            return;
+        }
+
+        var current = Math.Clamp(step, 1, totalSteps);
+        WorkOverlayStepText = $"Step {current} of {totalSteps}";
+        IsWorkOverlayIndeterminate = false;
+        WorkOverlayPercent = Math.Min(100d, (current * 100d) / totalSteps);
+    }
+
+    /// <summary>Reports measured progress, for work that knows its own page or item count.</summary>
+    private void ReportWorkOverlayProgress(double percent, string detail)
+    {
+        WorkOverlayDetail = detail;
+        IsWorkOverlayIndeterminate = false;
+        WorkOverlayPercent = Math.Clamp(percent, 0d, 100d);
+    }
+
+    /// <summary>Takes the overlay down once the outermost step has finished.</summary>
+    private void EndWorkOverlay()
+    {
+        if (_workOverlayDepth > 0)
+        {
+            _workOverlayDepth--;
+        }
+
+        if (_workOverlayDepth > 0)
+        {
+            return;
+        }
+
+        IsWorkOverlayVisible = false;
+        WorkOverlayTitle = string.Empty;
+        WorkOverlayDetail = string.Empty;
+        WorkOverlayStepText = string.Empty;
+        IsWorkOverlayIndeterminate = true;
+        WorkOverlayPercent = 0;
+    }
+
+    /// <summary>
+    /// Gives the caller's frame a chance to render before a call that blocks the UI thread, so the
+    /// overlay is on screen instead of appearing all at once at the end.
+    /// </summary>
+    private static async Task LetWorkOverlayPaintAsync()
+    {
+        await Task.Yield();
+
+        // One frame at 60 Hz; enough for the compositor to put the overlay up.
+        await Task.Delay(20);
+    }
+
     /// <summary>
     /// True from the moment the print is asked for until the driver has taken the last page. Drives the
     /// button's progress state rather than a spinner, because a print is slow enough to look like a hang.
@@ -1495,18 +1694,31 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
             ? $"Preparing {printed} card(s)…"
             : $"Preparing {printed} tag(s)…";
 
+        // Building every page and sending the job happens on this thread and can take a while, so the
+        // window explains the wait instead of appearing to have stopped responding.
+        BeginWorkOverlay(
+            IsCardSheet ? "Printing card sheets" : "Printing tags",
+            PrintingStatus
+        );
+
         var progress = new Progress<Model_LabelOverlayPrintProgress>(report =>
         {
             PrintProgress = report.PercentComplete;
-            PrintingStatus = IsCardSheet
+
+            var pageText = IsCardSheet
                 ? $"Printing sheet {report.Completed} of {report.Total}…"
                 : $"Printing page {report.Completed} of {report.Total}…";
+
+            PrintingStatus = pageText;
+            ReportWorkOverlayProgress(report.PercentComplete, pageText);
         });
 
         try
         {
             // The job is shown before it is sent. Printing happens from the preview, where the print
             // dialog opens on this output's own printer, tray, media and copies.
+            await LetWorkOverlayPaintAsync();
+
             var result = IsCardSheet
                 ? _overlayService.PreviewCardSheet(
                     PrinterSetupOwnerHandle,
@@ -1540,6 +1752,7 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
 
             PrintProgress = 100;
             PrintingStatus = "Sent.";
+            ReportWorkOverlayProgress(100, "Sent to the printer.");
 
             ShowStatus(
                 IsCardSheet
@@ -1560,6 +1773,7 @@ public partial class ViewModel_Receiving_LabelOverlay : ViewModel_Shared_Base
         }
         finally
         {
+            EndWorkOverlay();
             IsBusy = false;
             IsPrinting = false;
             PrintingStatus = string.Empty;

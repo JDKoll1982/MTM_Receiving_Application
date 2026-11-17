@@ -571,7 +571,7 @@
                         <tr><td><strong>Export</strong></td><td>Writes the current list out to a file.</td></tr>
                         <tr><td><strong>Manage items</strong></td><td>Opens a window for editing the whole list at once — see below.</td></tr>
                         <tr><td><strong>Search By</strong></td><td>Switches between Part and Location lookup.</td></tr>
-                        <tr><td><strong>Remove Selected</strong></td><td>Deletes the selected line from the list.</td></tr>
+                        <tr><td><strong>Remove Selected</strong></td><td>Deletes the selected line from the list. It stays greyed out while the Infor Visual Inventory Transfers window is closed, and a note to its left says so.</td></tr>
                         <tr><td><strong>Help</strong></td><td>Opens a short reminder of what this screen does.</td></tr>
                     </tbody>
                 </table>
@@ -582,7 +582,10 @@
                 <div class="callout-body">
                     Buttons that do not apply are greyed out. For example,
                     <strong>Send</strong> and <strong>Remove Selected</strong> stay unavailable
-                    until you select a line.
+                    until you select a line. <strong>Remove Selected</strong> also needs the Infor
+                    Visual Inventory Transfers window to be open: the screen checks for it when it
+                    loads and every five seconds after, and the note beside the button tells you why
+                    it is unavailable.
                 </div>
             </div>
 

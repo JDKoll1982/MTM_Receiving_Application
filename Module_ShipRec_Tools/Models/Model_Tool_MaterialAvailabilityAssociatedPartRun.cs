@@ -106,7 +106,36 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
 
     public decimal EstimatedCoilUse { get; set; }
 
+    /// <summary>
+    /// Material this job consumes, in the usage unit (estimated use, which is the component
+    /// requirement plus scrap). Zero for a past job, whose demand is history.
+    /// </summary>
+    public decimal JobMaterialRequirement { get; set; }
+
+    /// <summary>
+    /// Material left on hand after this job runs, working down the card's jobs in run-date order.
+    /// Null for a past job, which consumes nothing and so has no projected balance.
+    /// </summary>
+    public decimal? RemainingOnHandAfterRun { get; set; }
+
+    /// <summary>True when the row is live demand, so it carries a requirement and a balance.</summary>
+    public bool HasJobMaterialRequirement => IsPastJob is false;
+
+    /// <summary>True when the projected balance is negative, so the board paints it in red.</summary>
+    public bool IsRemainingOnHandNegative => RemainingOnHandAfterRun is < 0;
+
     public string NormalizedUsageUnitOfMeasure { get; set; } = string.Empty;
+
+    /// <summary>Run date used to order the associated parts list; null when the job has no date.</summary>
+    public DateTime? RunSortDate => ScheduledStartDate ?? NextDueToRunDate;
+
+    public string JobMaterialRequirementDisplay =>
+        HasJobMaterialRequirement ? FormatQuantityWithUsageUnit(JobMaterialRequirement) : string.Empty;
+
+    public string RemainingOnHandAfterRunDisplay =>
+        RemainingOnHandAfterRun.HasValue
+            ? FormatQuantityWithUsageUnit(RemainingOnHandAfterRun.Value)
+            : string.Empty;
 
     public string NextRunDateDisplay =>
         FormatDate(ScheduledStartDate ?? NextDueToRunDate, "No scheduled date");
@@ -194,6 +223,14 @@ public class Model_Tool_MaterialAvailabilityAssociatedPartRun
     private static string FormatGroupedDecimal(decimal value, bool forceWholeNumber = false)
     {
         return value.ToString(forceWholeNumber ? "#,0" : "#,0.##", CultureInfo.InvariantCulture);
+    }
+
+    private string FormatQuantityWithUsageUnit(decimal value)
+    {
+        var number = value.ToString("#,0.##", CultureInfo.InvariantCulture);
+        return string.IsNullOrWhiteSpace(NormalizedUsageUnitOfMeasure)
+            ? number
+            : $"{number} {NormalizedUsageUnitOfMeasure}";
     }
 
     private static string NormalizeWorkOrderStatus(string? status)

@@ -28,8 +28,127 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.IsSendEnabled.Should().BeFalse();
     }
 
-    // ── Per-row To/Qty validation (editable table columns) ──────────────────────
+    // ── Inventory window watch: Remove Selected gate ────────────────────────────
 
+    [Fact]
+    public void IsRemoveSelectedEnabled_ShouldBeFalse_WhenNoLineIsSelected()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.IsInventoryWindowOpen = true;
+
+        viewModel.IsRemoveSelectedEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsRemoveSelectedEnabled_ShouldBeFalse_WhenInventoryWindowIsClosed()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.SelectedSessionItem = new Model_ScannerBatchItem { ItemId = Guid.NewGuid() };
+        viewModel.IsInventoryWindowOpen = false;
+
+        viewModel.IsInventoryWindowClosed.Should().BeTrue();
+        viewModel.IsRemoveSelectedEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsRemoveSelectedEnabled_ShouldBeTrue_WhenLineSelectedAndWindowOpen()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.SelectedSessionItem = new Model_ScannerBatchItem { ItemId = Guid.NewGuid() };
+        viewModel.IsInventoryWindowOpen = true;
+
+        viewModel.IsInventoryWindowClosed.Should().BeFalse();
+        viewModel.IsRemoveSelectedEnabled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void InventoryWindowClosedMessage_ShouldExplainTheDisabledButton()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+
+        viewModel.InventoryWindowClosedMessage.Should()
+            .Be("Inventory Transactions window is closed - Open it to enable this button.");
+    }
+
+    [Fact]
+    public async Task CheckInventoryWindowAsync_ShouldApplyTheExecutionServiceResult()
+    {
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.IsInventoryWindowOpen(It.IsAny<Model_ScannerProfile>()))
+            .Returns(false);
+
+        var viewModel = CreateWorkbenchViewModel(execution: execution.Object);
+
+        var firstCheck = await viewModel.CheckInventoryWindowAsync(new Model_ScannerProfile());
+
+        firstCheck.Should().BeFalse();
+        viewModel.IsInventoryWindowOpen.Should().BeFalse();
+
+        execution
+            .Setup(service => service.IsInventoryWindowOpen(It.IsAny<Model_ScannerProfile>()))
+            .Returns(true);
+
+        var secondCheck = await viewModel.CheckInventoryWindowAsync(new Model_ScannerProfile());
+
+        secondCheck.Should().BeTrue();
+        viewModel.IsInventoryWindowOpen.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CheckInventoryWindowAsync_ShouldResolveTheActiveProfile_WhenNoneIsPassed()
+    {
+        var workflow = new Mock<IService_ScannerWorkflow>();
+        workflow
+            .Setup(service => service.GetProfilesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_ScannerProfile>
+                    {
+                        new() { ProfileName = "Default", IsDefaultForUser = true },
+                    }
+                )
+            );
+
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.IsInventoryWindowOpen(It.IsAny<Model_ScannerProfile>()))
+            .Returns(true);
+
+        var viewModel = CreateWorkbenchViewModel(workflow.Object, execution: execution.Object);
+
+        var isOpen = await viewModel.CheckInventoryWindowAsync();
+
+        isOpen.Should().BeTrue();
+        workflow.Verify(
+            service => service.GetProfilesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public void ActivateThenDeactivate_ShouldStartAndStopTheWindowWatch_WithoutThrowing()
+    {
+        var execution = new Mock<IService_ScannerExecution>();
+        execution
+            .Setup(service => service.IsInventoryWindowOpen(It.IsAny<Model_ScannerProfile>()))
+            .Returns(false);
+
+        var viewModel = CreateWorkbenchViewModel(execution: execution.Object);
+
+        var act = () =>
+        {
+            viewModel.Activate();
+            viewModel.Deactivate();
+            // A second cycle must not leave a live token behind.
+            viewModel.Activate();
+            viewModel.Deactivate();
+        };
+
+        act.Should().NotThrow();
+    }
+
+    // ── Per-row To/Qty validation (editable table columns) ──────────────────────
     private static Mock<IService_ScannerWorkflow> SetupUpsertWorkflow(
         Model_ScannerBatchSession session
     )

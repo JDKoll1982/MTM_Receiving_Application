@@ -274,6 +274,7 @@ public static class ReceivingSettingsKeys
         public const string InfoPoSinglePartAutoSelected =
             "Receiving.Messages.Info.PoSinglePartAutoSelected";
         public const string InfoPartFound = "Receiving.Messages.Info.PartFound";
+        public const string InfoNonPoPartReady = "Receiving.Messages.Info.NonPoPartReady";
 
         public const string WarningSameDayReceiving = "Receiving.Messages.Warning.SameDayReceiving";
         public const string WarningExceedsOrdered = "Receiving.Messages.Warning.ExceedsOrdered";

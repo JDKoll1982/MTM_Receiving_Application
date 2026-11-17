@@ -833,5 +833,55 @@
                     ToolTipService.ToolTip="Open the print dialog, then send the markings to the printer" />
             </Grid>
         </Border>
+
+        <!--  ═══ Work overlay  ═══  Covers the whole window while a slow step runs - reading the printer's
+              own lists or sending a job - so the wait is explained and a second click cannot start the same
+              work twice.  -->
+        <Grid
+            Grid.RowSpan="3"
+            Canvas.ZIndex="10"
+            Background="#99000000"
+            Visibility="{x:Bind ViewModel.IsWorkOverlayVisible, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+            <Border
+                MaxWidth="520"
+                Padding="28,24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="14">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Text="{x:Bind ViewModel.WorkOverlayTitle, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+
+                    <ProgressBar
+                        Height="6"
+                        IsIndeterminate="{x:Bind ViewModel.IsWorkOverlayIndeterminate, Mode=OneWay}"
+                        Maximum="100"
+                        Value="{x:Bind ViewModel.WorkOverlayPercent, Mode=OneWay}" />
+
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{x:Bind ViewModel.WorkOverlayDetail, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Text="{x:Bind ViewModel.WorkOverlayStepText, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.HasWorkOverlayStepText, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Text="The window will not respond until this finishes."
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

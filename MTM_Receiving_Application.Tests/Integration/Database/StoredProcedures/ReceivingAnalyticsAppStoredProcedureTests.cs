@@ -5,9 +5,10 @@ using MySql.Data.MySqlClient;
 namespace MTM_Receiving_Application.Tests.Integration.Database.StoredProcedures;
 
 /// <summary>
-/// Exercises the four <c>sp_Reporting_ReceivingAnalyticsApp_*</c> procedures against the test
+/// Exercises the five <c>sp_Reporting_ReceivingAnalyticsApp_*</c> procedures against the test
 /// database: the range boundary, a row that carries both date columns, a row that carries only
-/// <c>transaction_date</c>, a blank supplier, the missing-load count, and the on-time split.
+/// <c>transaction_date</c>, a blank supplier, the missing-load count, the on-time split, and the
+/// per-item-type load ranking behind the Record Days panel.
 /// </summary>
 /// <remarks>
 /// Every row is seeded inside a window no real receiving history can occupy (March 2099) and is
@@ -219,6 +220,53 @@ public sealed class ReceivingAnalyticsAppStoredProcedureTests
         byStatus["NoDueDate"].Should().Be(1);
     }
 
+    [Fact]
+    public async Task GetTopDaysByItemType_ShouldCountLoadsPerItemTypeAndDay()
+    {
+        var connectionString = TestConnection();
+        if (connectionString is null)
+        {
+            return;
+        }
+
+        // 2099-03-10 is a Tuesday and 2099-03-12 a Thursday, so both days survive the
+        // weekend filter the procedure applies.
+        var busiest = WindowStart;
+        var quieter = WindowStart.AddDays(2);
+
+        await SeedAsync(connectionString, "Coil", busiest, busiest, "ITEST VENDOR", "LB", 1, null, $"{_partIdPrefix}-MMC-1");
+        await SeedAsync(connectionString, "Coil", busiest, busiest, "ITEST VENDOR", "LB", 2, null, $"{_partIdPrefix}-MMC-2");
+        await SeedAsync(connectionString, "Coil", quieter, quieter, "ITEST VENDOR", "LB", 3, null, $"{_partIdPrefix}-MMC-3");
+        await SeedAsync(connectionString, "Standard", busiest, busiest, "ITEST VENDOR", "LB", 1, null, $"{_partIdPrefix}-PLAIN-1");
+
+        var table = await ExecuteStoredProcedureQueryAsync(
+            connectionString,
+            "sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType",
+            new MySqlParameter("p_start_date", WindowStart),
+            new MySqlParameter("p_end_date", WindowEnd),
+            new MySqlParameter("p_top_count", 10)
+        );
+
+        var coilRows = table
+            .Rows.Cast<DataRow>()
+            .Where(row => Convert.ToString(row["item_type"]) == "Coil")
+            .ToDictionary(row => Convert.ToDateTime(row["day_date"]).Date, row => row);
+
+        ConvertToInt(coilRows[busiest.Date]["load_count"]).Should().Be(2);
+        ConvertToInt(coilRows[busiest.Date]["label_count"]).Should().Be(2);
+        ConvertToInt(coilRows[quieter.Date]["load_count"]).Should().Be(1);
+
+        var standardRow = table
+            .Rows.Cast<DataRow>()
+            .Where(row => Convert.ToString(row["item_type"]) == "Standard")
+            .Should()
+            .ContainSingle()
+            .Subject;
+
+        Convert.ToDateTime(standardRow["day_date"]).Date.Should().Be(busiest.Date);
+        ConvertToInt(standardRow["load_count"]).Should().Be(1);
+    }
+
     private string? TestConnection()
     {
         var connectionString = _connectionString;
@@ -235,7 +283,8 @@ public sealed class ReceivingAnalyticsAppStoredProcedureTests
         string? vendorName,
         string unit,
         int? loadNumber,
-        DateTime? poDueDate
+        DateTime? poDueDate,
+        string? partId = null
     )
     {
         _seedSequence++;
@@ -274,7 +323,7 @@ VALUES
     1
 );",
             new MySqlParameter("@loadGuid", Guid.NewGuid().ToString()),
-            new MySqlParameter("@partId", $"{_partIdPrefix}-{_seedSequence}"),
+            new MySqlParameter("@partId", partId ?? $"{_partIdPrefix}-{_seedSequence}"),
             new MySqlParameter("@partType", partType),
             new MySqlParameter("@transactionDate", transactionDate.Date),
             new MySqlParameter("@receivedDate", (object?)receivedDate ?? DBNull.Value),

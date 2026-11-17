@@ -116,6 +116,110 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     }
 
     [Fact]
+    public async Task GetBoardByLocationAsync_ShouldProjectOnHandAfterEachJobInRunDateOrder()
+    {
+        var inforVisualMock = new Mock<IService_InforVisual>();
+        var today = DateTime.Today;
+
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityCurrentStockAsync("RECV", null, "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualMaterialLocationRow>
+                    {
+                        new() { PartId = "PART-A", LocationId = "RECV", WarehouseCode = "002", Quantity = 100 },
+                        new() { PartId = "PART-A", LocationId = "A-02", WarehouseCode = "002", Quantity = 50 },
+                        // Shipping and non-conforming material cannot be issued to a job.
+                        new() { PartId = "PART-A", LocationId = "SHIP", WarehouseCode = "002", Quantity = 40 },
+                        new() { PartId = "PART-A", LocationId = "NCM-HOLD", WarehouseCode = "002", Quantity = 30 },
+                    }
+                )
+            );
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityIncomingSupplyAsync("RECV", null, "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(new List<Model_InforVisualIncomingSupplyRow>())
+            );
+        inforVisualMock
+            .Setup(service => service.GetMaterialAvailabilityAssociatedPartRunsAsync("RECV", null, "002"))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InforVisualAssociatedPartRunRow>
+                    {
+                        // History: consumes nothing and carries no balance.
+                        new()
+                        {
+                            InputPartNumber = "PART-A",
+                            ComponentPartNumber = "PART-A",
+                            AssociatedPartNumber = "PARENT-PAST",
+                            IsPastJob = true,
+                            CalcQty = 500,
+                            NextDueToRunDate = today.AddDays(-30),
+                            ScheduledStartDate = today.AddDays(-30),
+                            UsageUm = "LB",
+                        },
+                        // Later job, listed first here so the ordering is what puts it last.
+                        new()
+                        {
+                            InputPartNumber = "PART-A",
+                            ComponentPartNumber = "PART-A",
+                            AssociatedPartNumber = "PARENT-LATER",
+                            CalcQty = 200,
+                            NextDueToRunDate = today.AddDays(10),
+                            ScheduledStartDate = today.AddDays(10),
+                            UsageUm = "LB",
+                        },
+                        // Earlier job at 100 plus 10% scrap = 110 required.
+                        new()
+                        {
+                            InputPartNumber = "PART-A",
+                            ComponentPartNumber = "PART-A",
+                            AssociatedPartNumber = "PARENT-SOON",
+                            CalcQty = 100,
+                            ScrapPercent = 10,
+                            NextDueToRunDate = today.AddDays(5),
+                            ScheduledStartDate = today.AddDays(5),
+                            UsageUm = "LB",
+                        },
+                    }
+                )
+            );
+
+        var service = new Service_Tool_MaterialAvailabilityBoard(
+            inforVisualMock.Object,
+            new Mock<IService_LoggingUtility>().Object,
+            CreateReceiptsDao()
+        );
+
+        var result = await service.GetBoardByLocationAsync("RECV", "002", 30);
+
+        result.IsSuccess.Should().BeTrue();
+        var card = result.Data!.Single();
+        var runs = card.AssociatedPartRuns;
+
+        // Sorted by run date, oldest first.
+        runs.Select(run => run.AssociatedPartNumber)
+            .Should()
+            .ContainInOrder("PARENT-PAST", "PARENT-SOON", "PARENT-LATER");
+
+        // 150 usable on hand: the SHIP and NCM locations are excluded from the 220 total.
+        runs[1].JobMaterialRequirement.Should().Be(110m);
+        runs[1].RemainingOnHandAfterRun.Should().Be(40m);
+        runs[1].IsRemainingOnHandNegative.Should().BeFalse();
+
+        // The later job runs the remainder dry.
+        runs[2].JobMaterialRequirement.Should().Be(200m);
+        runs[2].RemainingOnHandAfterRun.Should().Be(-160m);
+        runs[2].IsRemainingOnHandNegative.Should().BeTrue();
+
+        // The past job is history: no requirement, no balance, and it does not consume.
+        runs[0].HasJobMaterialRequirement.Should().BeFalse();
+        runs[0].RemainingOnHandAfterRun.Should().BeNull();
+        runs[0].JobMaterialRequirementDisplay.Should().BeEmpty();
+        runs[0].RemainingOnHandAfterRunDisplay.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GetBoardByPartAsync_ShouldCreateCardWhenPositiveLocationsDoNotExist()
     {
         var inforVisualMock = new Mock<IService_InforVisual>();

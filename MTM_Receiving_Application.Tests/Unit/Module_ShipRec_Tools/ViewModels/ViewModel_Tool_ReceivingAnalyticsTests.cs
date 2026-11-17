@@ -22,6 +22,9 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsTests
             new Mock<IService_Notification>().Object
         );
 
+    private static int AxisLabelCount(ViewModel_Tool_ReceivingAnalytics viewModel) =>
+        viewModel.XAxes.Cast<LiveChartsCore.SkiaSharpView.Axis>().Single().Labels?.Count ?? 0;
+
     private static Mock<IService_Tool_ReceivingAnalytics> CreateServiceMock()
     {
         var mock = new Mock<IService_Tool_ReceivingAnalytics>();
@@ -44,14 +47,13 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsTests
                     }
                 )
             );
-        mock.Setup(service => service.ComputeStatsAsync(It.IsAny<IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>>(), It.IsAny<IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>?>()))
+        mock.Setup(service => service.ComputeStatsAsync(It.IsAny<IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>>()))
             .ReturnsAsync(
                 new Model_Tool_ReceivingAnalyticsStats
                 {
                     TotalLines = 22,
                     AvgPerDay = 11.0,
                     PeakDay = 15,
-                    TrendVsLastWeek = 10.0,
                 }
             );
         return mock;
@@ -68,33 +70,16 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsTests
         viewModel.TotalLines.Should().Be(22);
         viewModel.AvgPerDay.Should().Be(11.0);
         viewModel.PeakDay.Should().Be(15);
-        viewModel.TrendVsLastWeek.Should().Be(10.0);
         viewModel.Series.Should().NotBeEmpty();
         viewModel.XAxes.Should().NotBeEmpty();
         viewModel.YAxes.Should().NotBeEmpty();
     }
 
     [Fact]
-    public async Task LoadAsync_ShouldRequestPreviousPeriod_WhenCompareEnabled()
+    public async Task LoadAsync_ShouldRequestSingleDataset()
     {
         var serviceMock = CreateServiceMock();
         var viewModel = CreateViewModel(serviceMock);
-        viewModel.ComparePreviousPeriod = true;
-
-        await viewModel.LoadCommand.ExecuteAsync(null);
-
-        serviceMock.Verify(
-            service => service.GetAnalyticsAsync(It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()),
-            Times.Exactly(2)
-        );
-    }
-
-    [Fact]
-    public async Task LoadAsync_ShouldRequestSinglePeriod_WhenCompareDisabled()
-    {
-        var serviceMock = CreateServiceMock();
-        var viewModel = CreateViewModel(serviceMock);
-        viewModel.ComparePreviousPeriod = false;
 
         await viewModel.LoadCommand.ExecuteAsync(null);
 
@@ -135,6 +120,48 @@ public sealed class ViewModel_Tool_ReceivingAnalyticsTests
 
         viewModel.ViewModeLabel.Should().Be("Incoming");
         viewModel.Series.Should().NotBeEmpty();
+        serviceMock.Verify(
+            service => service.GetAnalyticsAsync(It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task SelectedPeriod_ShouldRebucketChartWithoutRequery_WhenPeriodChanges()
+    {
+        var serviceMock = new Mock<IService_Tool_ReceivingAnalytics>();
+        serviceMock
+            .Setup(service => service.GetAnalyticsAsync(It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_Tool_ReceivingAnalytics
+                    {
+                        History =
+                        [
+                            new() { Date = new System.DateTime(2026, 8, 5), Category = "Parts", LineCount = 3 },
+                            new() { Date = new System.DateTime(2026, 8, 20), Category = "Parts", LineCount = 4 },
+                            new() { Date = new System.DateTime(2026, 9, 1), Category = "Parts", LineCount = 5 },
+                        ],
+                        Forecast = [],
+                    }
+                )
+            );
+        serviceMock
+            .Setup(service => service.ComputeStatsAsync(It.IsAny<IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>>()))
+            .ReturnsAsync(new Model_Tool_ReceivingAnalyticsStats());
+
+        var viewModel = CreateViewModel(serviceMock);
+        viewModel.ViewMode = "History";
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        // Day keeps one point per received date.
+        AxisLabelCount(viewModel).Should().Be(3);
+
+        // Month collapses to one bucket per calendar month.
+        viewModel.SelectedPeriodIndex = 2;
+
+        AxisLabelCount(viewModel).Should().Be(2);
         serviceMock.Verify(
             service => service.GetAnalyticsAsync(It.IsAny<Model_InforVisualReceivingAnalyticsFilter>()),
             Times.Once

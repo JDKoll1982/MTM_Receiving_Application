@@ -59,6 +59,14 @@ public interface IService_ScannerExecution : INotifyPropertyChanged
 	bool IsAutomationRunning { get; }
 
 	/// <summary>
+	/// Reports whether the Infor Visual Inventory Transfers window the profile targets is
+	/// currently open. Read-only and side-effect free: the window is never launched, activated,
+	/// or typed into, so it is safe to call from a timer while the Workbench is open.
+	/// </summary>
+	/// <param name="profile">Active scanner profile that identifies the Infor Visual process.</param>
+	bool IsInventoryWindowOpen(Model_ScannerProfile profile);
+
+	/// <summary>
 	/// Poll interval used while watching for the Infor Visual part-assignment dialogs.
 	/// </summary>
 	TimeSpan TransferDialogPollInterval { get; set; }

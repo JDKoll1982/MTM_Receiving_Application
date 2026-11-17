@@ -10,7 +10,4 @@ public class Model_Tool_ReceivingAnalyticsStats
     public double AvgPerDay { get; set; }
 
     public int PeakDay { get; set; }
-
-    /// <summary>Percent change in total lines vs the previous equivalent period.</summary>
-    public double TrendVsLastWeek { get; set; }
 }

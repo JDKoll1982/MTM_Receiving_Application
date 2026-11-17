@@ -49,12 +49,6 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     /// </summary>
     private Model_Tool_ReceivingAnalytics? _lastData;
 
-    /// <summary>
-    /// Previous-period dataset (same window length, immediately prior) when
-    /// <see cref="ComparePreviousPeriod"/> is enabled. Null when not requested.
-    /// </summary>
-    private IReadOnlyList<Model_Tool_ReceivingAnalyticsPoint>? _lastPreviousPoints;
-
     // Default window mirrors the WIP app's analytics queue: -1 year (history) to
     // +6 months (incoming forecast). Keeps both View Mode datasets populated by default.
     [ObservableProperty]
@@ -110,9 +104,6 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     private bool _scopeUninventoried = true;
 
     [ObservableProperty]
-    private bool _comparePreviousPeriod;
-
-    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalLinesText))]
     private int _totalLines;
 
@@ -123,10 +114,6 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PeakDayText))]
     private int _peakDay;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(TrendText))]
-    private double _trendVsLastWeek;
 
     [ObservableProperty]
     private IReadOnlyList<ISeries> _series = [];
@@ -159,13 +146,6 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
     public string AvgPerDayText => AvgPerDay.ToString("N1");
 
     public string PeakDayText => PeakDay.ToString("N0");
-
-    public string TrendText =>
-        TrendVsLastWeek > 0
-            ? $"▲ {TrendVsLastWeek:0.#}%"
-            : TrendVsLastWeek < 0
-                ? $"▼ {Math.Abs(TrendVsLastWeek):0.#}%"
-                : "0%";
 
     public ViewModel_Tool_ReceivingAnalytics(
         IService_Tool_ReceivingAnalytics service,
@@ -236,6 +216,13 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             "Month" => 2,
             _ => 0,
         };
+
+        // Re-bucket the cached points client-side so the Period toggle takes effect
+        // immediately, the same way the History/Incoming toggle does.
+        if (_lastData is not null)
+        {
+            _ = RenderFromLastDataAsync();
+        }
     }
 
     partial void OnChartTypeChanged(string value)
@@ -246,6 +233,11 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             "Stacked" => 2,
             _ => 0,
         };
+
+        if (_lastData is not null)
+        {
+            _ = RenderFromLastDataAsync();
+        }
     }
 
     public void ActivateView()
@@ -266,26 +258,12 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             if (!result.IsSuccess || result.Data is null)
             {
                 _lastData = null;
-                _lastPreviousPoints = null;
                 ResetStatsAndSeries();
                 ShowStatus(result.ErrorMessage, InfoBarSeverity.Warning);
                 return;
             }
 
             _lastData = result.Data;
-
-            _lastPreviousPoints = null;
-            if (ComparePreviousPeriod)
-            {
-                var previousResult = await _service.GetAnalyticsAsync(BuildPreviousPeriodFilter(filter));
-                if (previousResult.IsSuccess && previousResult.Data is not null)
-                {
-                    _lastPreviousPoints =
-                        ViewMode == "Incoming"
-                            ? previousResult.Data.Forecast
-                            : previousResult.Data.History;
-                }
-            }
 
             await RenderFromLastDataAsync();
         }
@@ -402,12 +380,11 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
         }
 
         var activePoints = ViewMode == "Incoming" ? _lastData.Forecast : _lastData.History;
-        var stats = await _service.ComputeStatsAsync(activePoints, _lastPreviousPoints);
+        var stats = await _service.ComputeStatsAsync(activePoints);
 
         TotalLines = stats.TotalLines;
         AvgPerDay = stats.AvgPerDay;
         PeakDay = stats.PeakDay;
-        TrendVsLastWeek = stats.TrendVsLastWeek;
 
         BuildSeries(activePoints);
         ShowStatus(
@@ -423,34 +400,7 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
         TotalLines = 0;
         AvgPerDay = 0;
         PeakDay = 0;
-        TrendVsLastWeek = 0;
         Series = [];
-    }
-
-    private static Model_InforVisualReceivingAnalyticsFilter BuildPreviousPeriodFilter(
-        Model_InforVisualReceivingAnalyticsFilter current
-    )
-    {
-        if (current.FromDate is null || current.ToDate is null)
-        {
-            return current;
-        }
-
-        var span = (current.ToDate.Value.Date - current.FromDate.Value.Date).Days + 1;
-        var previousFrom = current.FromDate.Value.Date.AddDays(-span);
-        var previousTo = current.ToDate.Value.Date.AddDays(-span);
-
-        return new Model_InforVisualReceivingAnalyticsFilter
-        {
-            FromDate = previousFrom,
-            ToDate = previousTo,
-            ScopeParts = current.ScopeParts,
-            ScopeCoils = current.ScopeCoils,
-            ScopeFlat = current.ScopeFlat,
-            ScopeOutside = current.ScopeOutside,
-            ScopeUninventoried = current.ScopeUninventoried,
-            MaxResults = current.MaxResults,
-        };
     }
 
     [RelayCommand]
@@ -466,9 +416,7 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
         ScopeFlat = true;
         ScopeOutside = true;
         ScopeUninventoried = true;
-        ComparePreviousPeriod = false;
         _lastData = null;
-        _lastPreviousPoints = null;
         ResetStatsAndSeries();
         ShowStatus("Filters cleared.", InfoBarSeverity.Informational);
     }
@@ -521,7 +469,7 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
         html.AppendLine($"<p><strong>Date Range:</strong> {rangeLabel}</p>");
         html.AppendLine($"<p><strong>View Mode:</strong> {ViewMode} &nbsp; <strong>View Period:</strong> {ViewPeriod}</p>");
         html.AppendLine($"<p><strong>Total Lines:</strong> {TotalLinesText}</p>");
-        html.AppendLine($"<p><strong>Avg/Day:</strong> {AvgPerDayText} &nbsp; <strong>Peak Day:</strong> {PeakDayText} &nbsp; <strong>Trend vs Last Week:</strong> {TrendText}</p>");
+        html.AppendLine($"<p><strong>Avg/Day:</strong> {AvgPerDayText} &nbsp; <strong>Peak Day:</strong> {PeakDayText}</p>");
 
         if (chartImageDataUri is not null)
         {
@@ -567,24 +515,10 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
 
     private Model_InforVisualReceivingAnalyticsFilter BuildFilter()
     {
-        // View period collapses the date range to the nearest Day/Week/Month boundary.
-        var from = FromDate.Date;
-        var to = ToDate.Date;
-
-        switch (ViewPeriod)
-        {
-            case "Week":
-                from = from.AddDays(-((int)from.DayOfWeek));
-                break;
-            case "Month":
-                from = new DateTime(from.Year, from.Month, 1);
-                break;
-        }
-
         return new Model_InforVisualReceivingAnalyticsFilter
         {
-            FromDate = from,
-            ToDate = to,
+            FromDate = FromDate.Date,
+            ToDate = ToDate.Date,
             ScopeParts = ScopeParts,
             ScopeCoils = ScopeCoils,
             ScopeFlat = ScopeFlat,
@@ -614,20 +548,42 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             [Translation_ReceivingAnalyticsCategory.ErpUninventoried] = ScopeUninventoried,
         };
 
-        // Build a sorted, distinct date index so each series uses a stable integer
-        // X coordinate and the axis can render short-date labels from a Labels list
-        // (avoids DateTime tick/seconds conversion issues in the axis labeler).
-        var distinctDates = new SortedSet<DateTime>();
+        // Collapse the points into the selected period bucket (Day/Week/Month) so the
+        // Period toggle changes the chart instead of only the requested date range.
+        var bucketStarts = new SortedSet<DateTime>();
         foreach (var point in points)
         {
-            distinctDates.Add(point.Date.Date);
+            bucketStarts.Add(ResolveBucketStart(point.Date));
         }
 
-        var dates = distinctDates.ToList();
-        var dateIndex = new Dictionary<DateTime, int>(dates.Count);
-        for (var index = 0; index < dates.Count; index++)
+        var buckets = bucketStarts.ToList();
+        var bucketIndex = new Dictionary<DateTime, int>(buckets.Count);
+        for (var index = 0; index < buckets.Count; index++)
         {
-            dateIndex[dates[index]] = index;
+            bucketIndex[buckets[index]] = index;
+        }
+
+        var categoryIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (var index = 0; index < categories.Length; index++)
+        {
+            categoryIndex[categories[index].Key] = index;
+        }
+
+        // [category, bucket] -> line count for that period.
+        var counts = new int[categories.Length, buckets.Count];
+        foreach (var point in points)
+        {
+            if (!categoryIndex.TryGetValue(point.Category, out var category))
+            {
+                continue;
+            }
+
+            if (!bucketIndex.TryGetValue(ResolveBucketStart(point.Date), out var bucket))
+            {
+                continue;
+            }
+
+            counts[category, bucket] += point.LineCount;
         }
 
         var seriesList = new List<ISeries>();
@@ -638,17 +594,15 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
                 continue;
             }
 
-            var categoryPoints = points
-                .Where(p => string.Equals(p.Category, category.Key, StringComparison.Ordinal))
-                .OrderBy(p => p.Date)
-                .Select(
-                    p =>
-                        new ScheduleChartPoint(
-                            dateIndex.TryGetValue(p.Date.Date, out var i) ? i : 0,
-                            p.LineCount
-                        )
-                )
-                .ToList();
+            var categoryPoints = new List<ScheduleChartPoint>(buckets.Count);
+            for (var bucket = 0; bucket < buckets.Count; bucket++)
+            {
+                var count = counts[categoryIndex[category.Key], bucket];
+                if (count > 0)
+                {
+                    categoryPoints.Add(new ScheduleChartPoint(bucket, count));
+                }
+            }
 
             if (categoryPoints.Count == 0)
             {
@@ -700,10 +654,10 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
 
         Series = seriesList;
 
-        var labels = new List<string>(dates.Count);
-        foreach (var date in dates)
+        var labels = new List<string>(buckets.Count);
+        foreach (var bucket in buckets)
         {
-            labels.Add(date.ToShortDateString());
+            labels.Add(FormatBucketLabel(bucket));
         }
 
         XAxes =
@@ -711,7 +665,7 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             new Axis
             {
                 Labels = labels,
-                LabelsRotation = 0,
+                LabelsRotation = ViewPeriod == "Day" ? 0 : -45,
                 TextSize = 12,
                 MinStep = 1,
                 UnitWidth = 1,
@@ -727,6 +681,27 @@ public partial class ViewModel_Tool_ReceivingAnalytics : ViewModel_Tool_Base
             },
         ];
     }
+
+    /// <summary>Start of the period bucket that contains <paramref name="date"/>.</summary>
+    private DateTime ResolveBucketStart(DateTime date)
+    {
+        var day = date.Date;
+        return ViewPeriod switch
+        {
+            // Sunday-based week start, matching the week boundary used elsewhere in the app.
+            "Week" => day.AddDays(-(int)day.DayOfWeek),
+            "Month" => new DateTime(day.Year, day.Month, 1),
+            _ => day,
+        };
+    }
+
+    private string FormatBucketLabel(DateTime bucketStart) =>
+        ViewPeriod switch
+        {
+            "Week" => $"Week of {bucketStart:MM/dd}",
+            "Month" => bucketStart.ToString("MMM yyyy"),
+            _ => bucketStart.ToShortDateString(),
+        };
 
     /// <summary>
     /// Chart point whose X coordinate is an integer index into the axis date labels.

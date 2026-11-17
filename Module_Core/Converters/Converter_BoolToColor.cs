@@ -1,5 +1,6 @@
 using System;
 using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 
@@ -40,7 +41,22 @@ public class Converter_BoolToColor : IValueConverter
             "orange" => new SolidColorBrush(Colors.Orange),
             "blue" => new SolidColorBrush(Colors.Blue),
             "black" => new SolidColorBrush(Colors.Black),
+            "theme" => ResolveThemeForegroundBrush(),
             _ => new SolidColorBrush(Colors.Black),
         };
+    }
+
+    /// <summary>
+    /// The normal text brush, so a value can be coloured only when a flag is set and otherwise
+    /// keep the theme's own foreground instead of a hard-coded colour.
+    /// </summary>
+    private static SolidColorBrush ResolveThemeForegroundBrush()
+    {
+        var brush = Application.Current?.Resources is { } resources
+            && resources.TryGetValue("TextFillColorPrimaryBrush", out var resolved)
+                ? resolved as SolidColorBrush
+                : null;
+
+        return brush ?? new SolidColorBrush(Colors.White);
     }
 }

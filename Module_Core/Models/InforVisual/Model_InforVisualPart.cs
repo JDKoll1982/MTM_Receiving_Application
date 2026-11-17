@@ -65,6 +65,12 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public string OnHandQtyDisplay => OnHandQty.ToString("0.##");
 
         /// <summary>
+        /// Remaining-on-PO quantity formatted with thousands separators, matching how the PO
+        /// quantities read in Infor Visual (for example "48,430").
+        /// </summary>
+        public string RemainingQuantityDisplay => RemainingQuantity.ToString("#,0");
+
+        /// <summary>
         /// Display text for UI showing part ID, description, and line number.
         /// </summary>
         public string DisplayText => $"{PartID} - {Description} (Line {POLineNumber})";

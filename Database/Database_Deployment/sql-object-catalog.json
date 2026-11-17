@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T14:18:43.0526024-06:00",
+  "generatedAt": "2026-11-17T08:12:08.1083916-06:00",
   "databaseRoot": "Database/Database_Deployment/Sql_Files",
   "entries": [
     {
@@ -1088,13 +1088,6 @@
       "qualifiedColumns": [],
       "insertTargets": [
         {
-          "table": "volvo_masterdata",
-          "columns": [
-            "part_number",
-            "quantity_per_skid"
-          ]
-        },
-        {
           "table": "volvo_part_components",
           "columns": [
             "parent_part_number",
@@ -1146,23 +1139,174 @@
       "declaredVariables": [],
       "referencedObjects": [
         "dunnage_types",
+        "dunnage_custom_fields",
+        "dunnage_custom_field_choices",
         "dunnage_parts",
         "dunnage_requires_inventory",
         "dunnage_non_po_entries",
-        "dunnage_quantity_types"
+        "dunnage_no_label_parts",
+        "dunnage_non_po_part_defaults"
       ],
-      "qualifiedColumns": [],
-      "insertTargets": [],
+      "qualifiedColumns": [
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "type_name"
+        },
+        {
+          "qualifier": "t",
+          "resolvedObject": "dunnage_types",
+          "column": "id"
+        },
+        {
+          "qualifier": "f",
+          "resolvedObject": "dunnage_custom_fields",
+          "column": "DunnageTypeID"
+        },
+        {
+          "qualifier": "f",
+          "resolvedObject": "dunnage_custom_fields",
+          "column": "FieldName"
+        },
+        {
+          "qualifier": "f",
+          "resolvedObject": "dunnage_custom_fields",
+          "column": "ID"
+        },
+        {
+          "qualifier": "c",
+          "resolvedObject": "dunnage_custom_field_choices",
+          "column": "CustomFieldID"
+        },
+        {
+          "qualifier": "c",
+          "resolvedObject": "dunnage_custom_field_choices",
+          "column": "Choice"
+        },
+        {
+          "qualifier": "p",
+          "resolvedObject": "dunnage_parts",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "dunnage_requires_inventory",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "r",
+          "resolvedObject": "dunnage_requires_inventory",
+          "column": "inventory_method"
+        },
+        {
+          "qualifier": "e",
+          "resolvedObject": "dunnage_non_po_entries",
+          "column": "value"
+        },
+        {
+          "qualifier": "n",
+          "resolvedObject": "dunnage_no_label_parts",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "d",
+          "resolvedObject": "dunnage_non_po_part_defaults",
+          "column": "part_id"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "dunnage_types",
+          "columns": [
+            "type_name",
+            "icon",
+            "image_path",
+            "created_by",
+            "created_date"
+          ]
+        },
+        {
+          "table": "dunnage_custom_fields",
+          "columns": [
+            "DunnageTypeID",
+            "FieldName",
+            "FieldType",
+            "DisplayOrder",
+            "IsRequired",
+            "Unit",
+            "MinValue",
+            "MaxValue",
+            "DefaultValue",
+            "CreatedBy"
+          ]
+        },
+        {
+          "table": "dunnage_custom_field_choices",
+          "columns": [
+            "CustomFieldID",
+            "Choice",
+            "SortOrder"
+          ]
+        },
+        {
+          "table": "dunnage_parts",
+          "columns": [
+            "part_id",
+            "type_id",
+            "image_path",
+            "quantity_type",
+            "home_location",
+            "udc1",
+            "udc2",
+            "udc3",
+            "udc4",
+            "udc5",
+            "udc6",
+            "udc7",
+            "udc8",
+            "udc9",
+            "udc10",
+            "created_by",
+            "created_date"
+          ]
+        },
+        {
+          "table": "dunnage_requires_inventory",
+          "columns": [
+            "part_id",
+            "inventory_method",
+            "created_by",
+            "created_date"
+          ]
+        },
+        {
+          "table": "dunnage_non_po_entries",
+          "columns": [
+            "value",
+            "created_by",
+            "use_count"
+          ]
+        },
+        {
+          "table": "dunnage_no_label_parts",
+          "columns": [
+            "part_id",
+            "created_by",
+            "created_date"
+          ]
+        },
+        {
+          "table": "dunnage_non_po_part_defaults",
+          "columns": [
+            "part_id",
+            "value",
+            "updated_by"
+          ]
+        }
+      ],
       "updateTargets": [],
       "deleteTargets": [],
-      "calledRoutines": [
-        "sp_Dunnage_Types_Insert",
-        "sp_Dunnage_Parts_Insert",
-        "sp_Dunnage_CustomFields_Insert",
-        "sp_Dunnage_CustomFieldChoices_Insert",
-        "sp_Dunnage_Inventory_Insert",
-        "sp_Dunnage_NonPO_Upsert"
-      ],
+      "calledRoutines": [],
       "parameterTokensUsed": [],
       "variableTokensUsed": [],
       "temporaryTables": [],
@@ -1172,7 +1316,31 @@
           "object": "dunnage_types"
         },
         {
+          "alias": "t",
+          "object": "dunnage_types"
+        },
+        {
+          "alias": "dunnage_custom_fields",
+          "object": "dunnage_custom_fields"
+        },
+        {
+          "alias": "f",
+          "object": "dunnage_custom_fields"
+        },
+        {
+          "alias": "dunnage_custom_field_choices",
+          "object": "dunnage_custom_field_choices"
+        },
+        {
+          "alias": "c",
+          "object": "dunnage_custom_field_choices"
+        },
+        {
           "alias": "dunnage_parts",
+          "object": "dunnage_parts"
+        },
+        {
+          "alias": "p",
           "object": "dunnage_parts"
         },
         {
@@ -1180,12 +1348,36 @@
           "object": "dunnage_requires_inventory"
         },
         {
+          "alias": "r",
+          "object": "dunnage_requires_inventory"
+        },
+        {
           "alias": "dunnage_non_po_entries",
           "object": "dunnage_non_po_entries"
         },
         {
-          "alias": "dunnage_quantity_types",
-          "object": "dunnage_quantity_types"
+          "alias": "e",
+          "object": "dunnage_non_po_entries"
+        },
+        {
+          "alias": "dunnage_no_label_parts",
+          "object": "dunnage_no_label_parts"
+        },
+        {
+          "alias": "n",
+          "object": "dunnage_no_label_parts"
+        },
+        {
+          "alias": "dunnage_non_po_part_defaults",
+          "object": "dunnage_non_po_part_defaults"
+        },
+        {
+          "alias": "d",
+          "object": "dunnage_non_po_part_defaults"
+        },
+        {
+          "alias": "v",
+          "object": "__derived__:v"
         }
       ]
     },
@@ -12560,13 +12752,7 @@
         }
       ],
       "referencedObjects": [],
-      "qualifiedColumns": [
-        {
-          "qualifier": "mtm_receiving_application",
-          "resolvedObject": "mtm_receiving_application",
-          "column": "receiving_vendor_variables"
-        }
-      ],
+      "qualifiedColumns": [],
       "insertTargets": [
         {
           "table": "receiving_vendor_variables",
@@ -12625,13 +12811,7 @@
         }
       ],
       "referencedObjects": [],
-      "qualifiedColumns": [
-        {
-          "qualifier": "mtm_receiving_application",
-          "resolvedObject": "mtm_receiving_application",
-          "column": "receiving_vendor_variables"
-        }
-      ],
+      "qualifiedColumns": [],
       "insertTargets": [],
       "updateTargets": [
         {
@@ -13449,6 +13629,167 @@
         {
           "alias": "receiving_history",
           "object": "receiving_history"
+        }
+      ]
+    },
+    {
+      "relativePath": "Database/Database_Deployment/Sql_Files/StoredProcedures/Reporting/sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType.sql",
+      "category": "stored_procedure_file",
+      "objectType": "stored_procedure",
+      "objectName": "sp_Reporting_ReceivingAnalyticsApp_GetTopDaysByItemType",
+      "procedureCount": 1,
+      "codebaseReferenceCount": 0,
+      "codebaseReferenceFileCount": 0,
+      "codebaseReferences": [],
+      "parameters": [
+        {
+          "direction": "IN",
+          "name": "p_start_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_end_date",
+          "sqlType": "DATETIME"
+        },
+        {
+          "direction": "IN",
+          "name": "p_top_count",
+          "sqlType": "INT"
+        }
+      ],
+      "declaredVariables": [
+        {
+          "name": "v_top_count",
+          "sqlType": "INT DEFAULT 10"
+        }
+      ],
+      "referencedObjects": [
+        "receiving_history",
+        "tmp_receiving_analytics_top_days",
+        "tmp_receiving_analytics_busier_days"
+      ],
+      "qualifiedColumns": [
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "received_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "transaction_date"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "part_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_id"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "load_guid"
+        },
+        {
+          "qualifier": "rh",
+          "resolvedObject": "receiving_history",
+          "column": "id"
+        },
+        {
+          "qualifier": "top_days",
+          "resolvedObject": "tmp_receiving_analytics_top_days",
+          "column": "day_date"
+        },
+        {
+          "qualifier": "top_days",
+          "resolvedObject": "tmp_receiving_analytics_top_days",
+          "column": "item_type"
+        },
+        {
+          "qualifier": "top_days",
+          "resolvedObject": "tmp_receiving_analytics_top_days",
+          "column": "load_count"
+        },
+        {
+          "qualifier": "top_days",
+          "resolvedObject": "tmp_receiving_analytics_top_days",
+          "column": "label_count"
+        },
+        {
+          "qualifier": "busier",
+          "resolvedObject": "tmp_receiving_analytics_busier_days",
+          "column": "item_type"
+        },
+        {
+          "qualifier": "busier",
+          "resolvedObject": "tmp_receiving_analytics_busier_days",
+          "column": "load_count"
+        }
+      ],
+      "insertTargets": [
+        {
+          "table": "tmp_receiving_analytics_top_days",
+          "columns": [
+            "day_date",
+            "item_type",
+            "load_count",
+            "label_count"
+          ]
+        },
+        {
+          "table": "tmp_receiving_analytics_busier_days",
+          "columns": [
+            "day_date",
+            "item_type",
+            "load_count",
+            "label_count"
+          ]
+        }
+      ],
+      "updateTargets": [],
+      "deleteTargets": [],
+      "calledRoutines": [],
+      "parameterTokensUsed": [
+        "p_start_date",
+        "p_end_date",
+        "p_top_count"
+      ],
+      "variableTokensUsed": [
+        "v_top_count"
+      ],
+      "temporaryTables": [
+        "__temp__:tmp_receiving_analytics_top_days",
+        "__temp__:tmp_receiving_analytics_busier_days"
+      ],
+      "aliasMap": [
+        {
+          "alias": "receiving_history",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "rh",
+          "object": "receiving_history"
+        },
+        {
+          "alias": "tmp_receiving_analytics_top_days",
+          "object": "__temp__:tmp_receiving_analytics_top_days"
+        },
+        {
+          "alias": "top_days",
+          "object": "tmp_receiving_analytics_top_days"
+        },
+        {
+          "alias": "tmp_receiving_analytics_busier_days",
+          "object": "__temp__:tmp_receiving_analytics_busier_days"
+        },
+        {
+          "alias": "busier",
+          "object": "tmp_receiving_analytics_busier_days"
         }
       ]
     },
@@ -18388,12 +18729,16 @@
         }
       ],
       "referencedObjects": [
+        "volvo_line_data",
         "volvo_label_data"
       ],
       "qualifiedColumns": [],
       "insertTargets": [],
       "updateTargets": [],
       "deleteTargets": [
+        {
+          "table": "volvo_line_data"
+        },
         {
           "table": "volvo_label_data"
         }
@@ -18407,6 +18752,10 @@
       ],
       "temporaryTables": [],
       "aliasMap": [
+        {
+          "alias": "volvo_line_data",
+          "object": "volvo_line_data"
+        },
         {
           "alias": "volvo_label_data",
           "object": "volvo_label_data"
@@ -18943,12 +19292,16 @@
         }
       ],
       "referencedObjects": [
+        "volvo_line_history",
         "volvo_label_history"
       ],
       "qualifiedColumns": [],
       "insertTargets": [],
       "updateTargets": [],
       "deleteTargets": [
+        {
+          "table": "volvo_line_history"
+        },
         {
           "table": "volvo_label_history"
         }
@@ -18962,6 +19315,10 @@
       ],
       "temporaryTables": [],
       "aliasMap": [
+        {
+          "alias": "volvo_line_history",
+          "object": "volvo_line_history"
+        },
         {
           "alias": "volvo_label_history",
           "object": "volvo_label_history"

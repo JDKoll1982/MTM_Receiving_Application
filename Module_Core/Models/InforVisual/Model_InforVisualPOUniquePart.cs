@@ -42,6 +42,13 @@ public partial class Model_InforVisualPOUniquePart : ObservableObject
     [ObservableProperty]
     private decimal _onHandQty;
 
+    /// <summary>
+    /// Ordered minus received, summed across every line of the PO that carries this part. This is
+    /// the quantity the clerk can still receive against the PO.
+    /// </summary>
+    [ObservableProperty]
+    private decimal _remainingQty;
+
     [ObservableProperty]
     private string _location = string.Empty;
 }

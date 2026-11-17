@@ -1,6 +1,6 @@
 # Receiving Analytics & Delivery Schedule Tools — Feature Update
 
-- **Last Updated:** 2026-10-29
+- **Last Updated:** 2026-11-17
 - **Module:** Ship/Rec Tools (`Module_ShipRec_Tools`)
 - **Data Source:** Infor Visual SQL Server (MTMFG) — **read-only**
 - **Charting:** LiveCharts2 (WinUI) — `LiveChartsCore.SkiaSharpView.WinUI`
@@ -128,8 +128,8 @@ Reference: `ReceivingAnalytics_SQL_Queue_Sequences.md` (top-level).
 7. Use the **View Mode** toggle to switch between **History** (past received items) and
    **Incoming** (open PO lines due). The toggle re-renders instantly from the loaded
    datasets — no re-query is issued.
-7. Switch Chart Type (Line / Bar / Stacked) and View Period (Day / Week / Month);
-   check **Compare Previous Period** to show the trend stat.
+7. Switch Chart Type (Line / Bar / Stacked) and View Period (Day / Week / Month). The period
+   re-buckets the loaded points immediately; no re-query is issued.
 7. Click **Export Chart** to open an HTML export with the rendered chart image.
 
 ## Tests

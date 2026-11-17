@@ -199,6 +199,17 @@ public sealed class Service_InforVisualConnectTests
             .Data.Parts.Single(part => part.PartID == "MMC0000875")
             .POLineNumber.Should()
             .Be("3");
+
+        // The part card's "Remaining on PO" reads this value, so the whole PO's outstanding
+        // quantity for the part has to survive the conversion.
+        result
+            .Data.Parts.Single(part => part.PartID == "MMC0000850")
+            .RemainingQuantity.Should()
+            .Be(192220);
+        result
+            .Data.Parts.Single(part => part.PartID == "MMC0000875")
+            .RemainingQuantity.Should()
+            .Be(5000);
     }
 
     [Fact]

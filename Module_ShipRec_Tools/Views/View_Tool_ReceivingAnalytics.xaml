@@ -36,7 +36,6 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -81,21 +80,6 @@
                         FontWeight="Bold"
                         Foreground="White"
                         Text="{x:Bind ViewModel.PeakDayText, Mode=OneWay}" />
-                </StackPanel>
-            </Border>
-
-            <Border
-                Grid.Column="3"
-                Padding="16"
-                Background="#4CAF50"
-                CornerRadius="8">
-                <StackPanel Spacing="4">
-                    <TextBlock Foreground="White" Text="Trend vs Last Week" />
-                    <TextBlock
-                        FontSize="32"
-                        FontWeight="Bold"
-                        Foreground="White"
-                        Text="{x:Bind ViewModel.TrendText, Mode=OneWay}" />
                 </StackPanel>
             </Border>
         </Grid>
@@ -352,9 +336,6 @@
                                         <CheckBox Content="MMF (Flat)" IsChecked="{x:Bind ViewModel.ScopeFlat, Mode=TwoWay}" />
                                         <CheckBox Content="Outside Service" IsChecked="{x:Bind ViewModel.ScopeOutside, Mode=TwoWay}" />
                                         <CheckBox Content="Uninventoried" IsChecked="{x:Bind ViewModel.ScopeUninventoried, Mode=TwoWay}" />
-                                        <CheckBox
-                                            Content="Compare Previous Period"
-                                            IsChecked="{x:Bind ViewModel.ComparePreviousPeriod, Mode=TwoWay}" />
                                         <StackPanel
                                             HorizontalAlignment="Right"
                                             Orientation="Horizontal"
@@ -468,6 +449,17 @@
             IsClosable="False">
             <ContentControl
                 x:Name="AppDataHost"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch" />
+        </TabViewItem>
+        <TabViewItem
+            Header="Record Days"
+            HorizontalContentAlignment="Stretch"
+            IsClosable="False">
+            <ContentControl
+                x:Name="RecordDaysHost"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"

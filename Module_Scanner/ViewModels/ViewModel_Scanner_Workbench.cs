@@ -139,6 +139,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedSessionItem))]
+    [NotifyPropertyChangedFor(nameof(IsRemoveSelectedEnabled))]
     [NotifyPropertyChangedFor(nameof(IsSendEnabled))]
     private Model_ScannerBatchItem? _selectedSessionItem;
 
@@ -157,6 +158,30 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     public bool HasActiveSession => CurrentSession is not null;
 
     public bool HasSelectedSessionItem => SelectedSessionItem is not null;
+
+    // ── Inventory window watch (polled while the page is open) ───────────────────
+    /// <summary>How often the open Infor Visual window is re-checked while the page is open.</summary>
+    public static readonly TimeSpan InventoryWindowPollInterval = TimeSpan.FromSeconds(5);
+
+    /// <summary>Message shown left of Remove Selected while the Infor Visual window is closed.</summary>
+    public string InventoryWindowClosedMessage =>
+        "Inventory Transactions window is closed - Open it to enable this button.";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsInventoryWindowClosed))]
+    [NotifyPropertyChangedFor(nameof(IsRemoveSelectedEnabled))]
+    private bool _isInventoryWindowOpen;
+
+    /// <summary>True when the last poll found the Infor Visual Inventory Transfers window closed.</summary>
+    public bool IsInventoryWindowClosed => !IsInventoryWindowOpen;
+
+    /// <summary>
+    /// Remove Selected needs a selected line and an open Infor Visual window; the line itself
+    /// stays selected while the window is closed so the operator can reopen it and carry on.
+    /// </summary>
+    public bool IsRemoveSelectedEnabled => HasSelectedSessionItem && IsInventoryWindowOpen;
+
+    private CancellationTokenSource? _inventoryWindowTokenSource;
 
     /// <summary>
     /// Send is enabled only when the selected line has validated (Valid state) and no
@@ -1526,6 +1551,8 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     {
         _hotkeyService.SendShortcutPressed -= OnSendShortcutPressed;
         _hotkeyService.SendShortcutPressed += OnSendShortcutPressed;
+
+        StartInventoryWindowWatch();
     }
 
     public void Deactivate()
@@ -1535,6 +1562,117 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         // Leaving the Workbench abandons the "Was the transaction saved?" prompt, so stop
         // answering Infor Visual dialogs on the operator's behalf.
         _executionService.StopTransferDialogWatcher();
+
+        StopInventoryWindowWatch();
+    }
+
+    // ── Inventory window watch ───────────────────────────────────────────────────
+
+    private void StartInventoryWindowWatch()
+    {
+        StopInventoryWindowWatch();
+
+        var tokenSource = new CancellationTokenSource();
+        _inventoryWindowTokenSource = tokenSource;
+        _ = WatchInventoryWindowAsync(tokenSource.Token);
+    }
+
+    private void StopInventoryWindowWatch()
+    {
+        var tokenSource = Interlocked.Exchange(ref _inventoryWindowTokenSource, null);
+        if (tokenSource is null)
+        {
+            return;
+        }
+
+        tokenSource.Cancel();
+        tokenSource.Dispose();
+    }
+
+    /// <summary>
+    /// Checks the Infor Visual window once as soon as the page opens, then every
+    /// <see cref="InventoryWindowPollInterval"/> until the page closes. The window lookup runs on
+    /// a background thread; the result is applied back on the caller's context so the bindings
+    /// update safely.
+    /// </summary>
+    private async Task WatchInventoryWindowAsync(CancellationToken cancellationToken)
+    {
+        Model_ScannerProfile profile;
+        try
+        {
+            // Resolved once: a poll must not re-read the profile table every five seconds.
+            profile = await ResolveActiveProfileAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"Scanner: inventory window watch could not resolve the profile. {ex.Message}",
+                nameof(ViewModel_Scanner_Workbench)
+            );
+            return;
+        }
+
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                await CheckInventoryWindowAsync(profile, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (ObjectDisposedException)
+            {
+                // The page closed and the token source was disposed mid-poll.
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    $"Scanner: inventory window watch check failed. {ex.Message}",
+                    nameof(ViewModel_Scanner_Workbench)
+                );
+            }
+
+            try
+            {
+                await Task.Delay(InventoryWindowPollInterval, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Runs one window check and applies the result. Public so the page lifecycle and tests can
+    /// drive a single poll without waiting for the timer.
+    /// </summary>
+    /// <param name="profile">Profile to check; resolved from the active profile when omitted.</param>
+    public async Task<bool> CheckInventoryWindowAsync(
+        Model_ScannerProfile? profile = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        profile ??= await ResolveActiveProfileAsync();
+
+        var isOpen = await Task.Run(
+            () => _executionService.IsInventoryWindowOpen(profile),
+            cancellationToken
+        );
+
+        if (!cancellationToken.IsCancellationRequested)
+        {
+            IsInventoryWindowOpen = isOpen;
+        }
+
+        return isOpen;
     }
 
     private void OnSendShortcutPressed(object? sender, EventArgs e)

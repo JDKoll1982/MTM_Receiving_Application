@@ -190,6 +190,7 @@ public class Dao_InforVisualConnection
                         PoLineNumber = reader["FirstLineNumber"].ToString() ?? string.Empty,
                         PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
                         OnHandQty = Math.Round(Convert.ToDecimal(reader["OnHandQty"]), 2),
+                        RemainingQty = Math.Round(Convert.ToDecimal(reader["RemainingQty"]), 2),
                         Location = reader["Location"].ToString() ?? string.Empty,
                     }
                 );

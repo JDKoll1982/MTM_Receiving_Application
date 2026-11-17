@@ -433,7 +433,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         }
 
         [RelayCommand]
-        private async Task LookupPartAsync()
+        private Task LookupPartAsync() => LookupPartAsync(advanceWhenFound: true);
+
+        /// <summary>
+        /// Looks the typed part up and applies it to the line.
+        /// </summary>
+        /// <param name="advanceWhenFound">
+        /// True only for the explicit Lookup Part click. A non-PO line has no part page to choose
+        /// from, so a found part is used straight away and the walk moves on; leaving the field on
+        /// its own must never push the clerk off the page mid-entry.
+        /// </param>
+        private async Task LookupPartAsync(bool advanceWhenFound)
         {
             if (string.IsNullOrWhiteSpace(PartID))
             {
@@ -453,15 +463,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 var result = await _inforVisualService.GetPartByIDAsync(searchTerm);
                 if (result.IsSuccess && result.Data != null)
                 {
-                    PartID = result.Data.PartID.Trim();
-                    _currentPoHeaderPromiseDate = null;
-                    _workflowService.CurrentPODueDate = null;
-                    ReplaceParts([result.Data], result.Data);
-                    var msg = await _receivingSettings.FormatAsync(
-                        ReceivingSettingsKeys.Messages.InfoPartFound,
-                        result.Data.PartID
-                    );
-                    _workflowService.RaiseStatusMessage(msg);
+                    await ApplyFoundPartAsync(result.Data, advanceWhenFound);
                 }
                 else if (IsNonPOItem)
                 {
@@ -527,15 +529,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         return;
                     }
 
-                    PartID = selectedPartResult.Data.PartID.Trim();
-                    _currentPoHeaderPromiseDate = null;
-                    _workflowService.CurrentPODueDate = null;
-                    ReplaceParts([selectedPartResult.Data], selectedPartResult.Data);
-                    var msg = await _receivingSettings.FormatAsync(
-                        ReceivingSettingsKeys.Messages.InfoPartFound,
-                        selectedPartResult.Data.PartID
-                    );
-                    _workflowService.RaiseStatusMessage(msg);
+                    await ApplyFoundPartAsync(selectedPartResult.Data, advanceWhenFound);
                 }
                 else
                 {
@@ -579,7 +573,63 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            await LookupPartAsync();
+            await LookupPartAsync(advanceWhenFound: false);
+        }
+
+        /// <summary>
+        /// Applies a found part to the current line and, on a non-PO line whose lookup the operator
+        /// asked for explicitly, steps straight past the part page.
+        /// </summary>
+        private async Task ApplyFoundPartAsync(Model_InforVisualPart part, bool advanceWhenFound)
+        {
+            PartID = part.PartID.Trim();
+            _currentPoHeaderPromiseDate = null;
+            _workflowService.CurrentPODueDate = null;
+            ReplaceParts([part], part);
+
+            var message = await _receivingSettings.FormatAsync(
+                ReceivingSettingsKeys.Messages.InfoPartFound,
+                part.PartID
+            );
+            _workflowService.RaiseStatusMessage(message);
+
+            if (advanceWhenFound && IsNonPOItem)
+            {
+                await AdvanceAfterPartLookupAsync(part);
+            }
+        }
+
+        /// <summary>
+        /// A non-PO line carries one part and has no part page to choose from, so the found part is
+        /// used and the walk moves to the load entry step - the same hand-off a single-part PO gets.
+        /// The quality-hold check runs first: a restricted part keeps the clerk on this page.
+        /// </summary>
+        private async Task AdvanceAfterPartLookupAsync(Model_InforVisualPart part)
+        {
+            if (_workflowService.CurrentStep != Enum_ReceivingWorkflowStep.POEntry)
+            {
+                return;
+            }
+
+            var isPartUsable = await AwaitPendingQualityHoldCheckAsync();
+            if (!isPartUsable || SelectedPart is null)
+            {
+                return;
+            }
+
+            var message = await _receivingSettings.FormatAsync(
+                ReceivingSettingsKeys.Messages.InfoNonPoPartReady,
+                part.PartID
+            );
+            ShowStatus(message, InfoBarSeverity.Informational);
+
+            // Same transition the Next button makes from this page; it lands on the load step
+            // because the non-PO flow has no part page to visit.
+            var stepResult = await _workflowService.AdvanceToNextStepAsync();
+            if (!stepResult.Success)
+            {
+                ShowStatus(string.Join(" ", stepResult.ValidationErrors), InfoBarSeverity.Warning);
+            }
         }
 
         private async Task<Model_FuzzySearchResult?> ShowPartFuzzyPickerAsync(
@@ -904,7 +954,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
                 PartID = defaultPart.PartID.Trim();
                 _workflowService.RaiseStatusMessage($"[MOCK DATA] Auto-filled part: {PartID}");
-                await LookupPartAsync();
+                await LookupPartAsync(advanceWhenFound: false);
             }
             catch (Exception ex)
             {

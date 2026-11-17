@@ -281,8 +281,7 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 
 	public Task<Model_Dao_Result> ClearTargetFormAsync(
 		CancellationToken cancellationToken = default
-	)
-	{
+	)	{
 		cancellationToken.ThrowIfCancellationRequested();
 
 		// Alt+L clears the active Inventory Transfers form in Infor Visual.
@@ -295,6 +294,42 @@ public sealed partial class Service_ScannerExecution : ObservableObject, IServic
 				Model_Dao_Result_Factory.Failure("Could not clear the target form.")
 			);
 	}
+
+	/// <inheritdoc />
+	public bool IsInventoryWindowOpen(Model_ScannerProfile profile)
+	{
+		if (profile is null)
+		{
+			return false;
+		}
+
+		// The Transfers form is the window the operator is being asked about, so it is checked
+		// first: a configured app window title must not report "open" for VMINVENT sitting on its
+		// home screen with the form closed.
+		if (
+			!string.IsNullOrWhiteSpace(profile.TargetChildWindowTitle)
+			&& _engine.TryFindWindow(null, profile.TargetChildWindowTitle, out var transfersHwnd)
+			&& transfersHwnd != IntPtr.Zero
+			&& IsOwnedByTargetProcess(transfersHwnd, profile)
+		)
+		{
+			return true;
+		}
+
+		return
+			!string.IsNullOrWhiteSpace(profile.AppWindowTitle)
+			&& _engine.TryFindWindow(profile.AppWindowClass, profile.AppWindowTitle, out var appHwnd)
+			&& appHwnd != IntPtr.Zero
+			&& IsOwnedByTargetProcess(appHwnd, profile);
+	}
+
+	/// <summary>
+	/// Guards a window lookup against an unrelated application that owns a window with the same
+	/// title.
+	/// </summary>
+	private bool IsOwnedByTargetProcess(IntPtr hwnd, Model_ScannerProfile profile) =>
+		_engine.TryGetWindowProcessName(hwnd, out var processName)
+		&& Helper_ScannerSequence.IsTargetProcess(processName, profile.TargetExecutableName);
 
 	/// <summary>Shortcut that opens the Inventory Transfers window inside VMINVENT.</summary>
 	private const string OpenWindowShortcutChord = "Alt+I";

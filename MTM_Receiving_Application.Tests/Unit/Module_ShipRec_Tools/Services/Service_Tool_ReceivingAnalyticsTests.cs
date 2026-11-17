@@ -105,37 +105,4 @@ public sealed class Service_Tool_ReceivingAnalyticsTests
         stats.PeakDay.Should().Be(0);
         stats.AvgPerDay.Should().Be(0.0);
     }
-
-    [Fact]
-    public async Task ComputeStatsAsync_ShouldComputeTrendVsPreviousPeriod()
-    {
-        var service = CreateService(CreateInforVisualMock());
-        var current = new List<Model_Tool_ReceivingAnalyticsPoint>
-        {
-            new() { Date = new System.DateTime(2026, 8, 31), Category = "Parts", LineCount = 150 },
-        };
-        var previous = new List<Model_Tool_ReceivingAnalyticsPoint>
-        {
-            new() { Date = new System.DateTime(2026, 8, 24), Category = "Parts", LineCount = 100 },
-        };
-
-        var stats = await service.ComputeStatsAsync(current, previous);
-
-        stats.TrendVsLastWeek.Should().Be(50.0);
-    }
-
-    [Fact]
-    public async Task ComputeStatsAsync_ShouldReturnZeroTrend_WhenNoPreviousPeriod()
-    {
-        var service = CreateService(CreateInforVisualMock());
-        var current = new List<Model_Tool_ReceivingAnalyticsPoint>
-        {
-            new() { Date = new System.DateTime(2026, 8, 31), Category = "Parts", LineCount = 150 },
-        };
-
-        var stats = await service.ComputeStatsAsync(current);
-
-        stats.TrendVsLastWeek.Should().Be(0.0);
-        stats.TotalLines.Should().Be(150);
-    }
 }

@@ -363,12 +363,20 @@
                         </Button>
                     </StackPanel>
 
-                    <!--  Right: remove selected (red), help  -->
+                    <!--  Right: window-closed notice, remove selected (red), help  -->
                     <StackPanel
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
                         Spacing="10">
+                        <TextBlock
+                            MaxWidth="320"
+                            VerticalAlignment="Center"
+                            AutomationProperties.AutomationId="ScannerInventoryWindowClosedNotice"
+                            Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                            Text="{x:Bind ViewModel.InventoryWindowClosedMessage}"
+                            TextWrapping="Wrap"
+                            Visibility="{x:Bind ViewModel.IsInventoryWindowClosed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         <Button
                             Height="34"
                             Padding="14,0"
@@ -380,7 +388,7 @@
                             Content="Remove Selected"
                             CornerRadius="4"
                             Foreground="White"
-                            IsEnabled="{x:Bind ViewModel.HasSelectedSessionItem, Mode=OneWay}" />
+                            IsEnabled="{x:Bind ViewModel.IsRemoveSelectedEnabled, Mode=OneWay}" />
                         <Rectangle
                             Width="1"
                             Height="24"

@@ -7,11 +7,24 @@ using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Services;
+using MTM_Receiving_Application.Tests.Unit.Module_Dunnage;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_ShipRec_Tools.Services;
 
-public sealed class Service_Tool_DunnageBookTests
+[Collection(DunnageImagePathCollection.Name)]
+public sealed class Service_Tool_DunnageBookTests : IDisposable
 {
+    /// <summary>
+    /// Puts the shared image roots back after every test, so a test that pointed them at a temporary
+    /// folder cannot leave the next test - or another class - writing into a directory that has been
+    /// deleted.
+    /// </summary>
+    public void Dispose()
+    {
+        Helper_DunnageImagePaths.SetRootFolder(null);
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(null);
+    }
+
     private static Model_DunnageType CreateType(int id, string name) =>
         new() { Id = id, TypeName = name };
 

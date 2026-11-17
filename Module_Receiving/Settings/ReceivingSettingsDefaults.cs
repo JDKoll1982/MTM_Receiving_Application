@@ -247,6 +247,8 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Messages.InfoPoSinglePartAutoSelected] =
                 "Part {0} was auto selected because it is the only part on this PO.",
             [ReceivingSettingsKeys.Messages.InfoPartFound] = "Part {0} found.",
+            [ReceivingSettingsKeys.Messages.InfoNonPoPartReady] =
+                "Part {0} selected. Continue to the load step.",
             [ReceivingSettingsKeys.Messages.WarningSameDayReceiving] =
                 "Warning: {0:N2} of this part has already been received today on this PO.",
             [ReceivingSettingsKeys.Messages.WarningExceedsOrdered] =

@@ -568,6 +568,11 @@ public class Service_InforVisualConnect : IService_InforVisual
                 POLineNumber = row.PoLineNumber,
                 PartType = "FG", // Default - could be enhanced with additional query
                 OnHandQty = row.OnHandQty,
+                // The PO-side figure the part card shows; without it the card reads 0 because the
+                // model default is 0.
+                RemainingQuantity = Convert.ToInt32(
+                    Math.Round(row.RemainingQty, MidpointRounding.AwayFromZero)
+                ),
                 Location = row.Location,
             }),
         };
@@ -621,14 +626,16 @@ public class Service_InforVisualConnect : IService_InforVisual
 
         var uniqueParts = baseResult.Data.Parts
             .GroupBy(part => part.PartID, StringComparer.OrdinalIgnoreCase)
-            .Select(group => group.First())
-            .Select(part => new Model_InforVisualPart
+            .Select(group => new Model_InforVisualPart
             {
-                PartID = part.PartID,
-                Description = part.Description,
-                POLineNumber = part.POLineNumber,
-                PartType = part.PartType,
+                PartID = group.First().PartID,
+                Description = group.First().Description,
+                POLineNumber = group.First().POLineNumber,
+                PartType = group.First().PartType,
                 OnHandQty = 0,
+                // Same rule as the real query: every line carrying this part contributes its
+                // ordered-minus-received quantity.
+                RemainingQuantity = group.Sum(part => part.RemainingQuantity),
                 Location = string.Empty,
             })
             .ToList();

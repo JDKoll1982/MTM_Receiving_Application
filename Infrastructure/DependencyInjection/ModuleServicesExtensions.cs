@@ -751,6 +751,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Tool_WeldedCoils>();
         services.AddTransient<ViewModel_Tool_ReceivingAnalytics>();
         services.AddTransient<ViewModel_Tool_ReceivingAnalyticsApp>();
+        services.AddTransient<ViewModel_Tool_ReceivingAnalyticsTopDays>();
         services.AddTransient<ViewModel_Tool_DeliverySchedule>();
         services.AddTransient<ViewModel_Tool_LotMarking>();
 
@@ -764,6 +765,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_WeldedCoils>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalytics>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalyticsApp>();
+        services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_ReceivingAnalyticsTopDays>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_DeliverySchedule>();
         services.AddTransient<Module_ShipRec_Tools.Views.View_Tool_LotMarking>();
 

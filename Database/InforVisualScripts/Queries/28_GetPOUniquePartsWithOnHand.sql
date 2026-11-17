@@ -32,7 +32,10 @@ POUniqueParts AS (
     SELECT
         pol.PART_ID AS PartNumber,
         pm.WarehouseId,
-        MIN(pol.LINE_NO) AS FirstLineNumber
+        MIN(pol.LINE_NO) AS FirstLineNumber,
+        -- What is still owed on this part across every line of the PO. Several lines can carry
+        -- the same part, so the lines are summed rather than read one at a time.
+        CAST(ROUND(COALESCE(SUM(COALESCE(pol.ORDER_QTY, 0) - COALESCE(pol.TOTAL_RECEIVED_QTY, 0)), 0), 2) AS decimal(18, 2)) AS RemainingQty
     FROM dbo.PURC_ORDER_LINE pol
     INNER JOIN POMerge pm ON pm.PoNumber = pol.PURC_ORDER_ID
     WHERE NULLIF(LTRIM(RTRIM(pol.PART_ID)), '') IS NOT NULL
@@ -48,6 +51,7 @@ SELECT
     pm.FreeOnBoard,
     pup.PartNumber,
     pup.FirstLineNumber,
+    pup.RemainingQty,
     COALESCE(p.DESCRIPTION, '')  AS PartDescription,
     CAST(ROUND(COALESCE(SUM(COALESCE(pl.QTY, 0)), 0), 2) AS decimal(18, 2)) AS OnHandQty,
     CASE
@@ -82,6 +86,7 @@ GROUP BY
     pm.FreeOnBoard,
     pup.PartNumber,
     pup.FirstLineNumber,
+    pup.RemainingQty,
     p.DESCRIPTION
 ORDER BY pup.PartNumber;
 
@@ -89,5 +94,6 @@ ORDER BY pup.PartNumber;
 -- - PoNumber / PoStatus / VendorName / HeaderPromiseDate / HeaderDesiredRecvDate / FreeOnBoard: PO header
 -- - PartNumber: Unique part ID on the PO
 -- - PartDescription: Part description
+-- - RemainingQty: Ordered minus received, summed across every line that carries this part
 -- - OnHandQty: Total on-hand across all locations in the PO's site
 -- - Location: Single location when only one location holds stock, 'Multiple Locations' otherwise

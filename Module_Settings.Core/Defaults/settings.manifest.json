@@ -2138,6 +2138,17 @@
     },
     {
       "category": "Receiving",
+      "key": "Receiving.Messages.Info.NonPoPartReady",
+      "displayName": "Messages - Non-PO Part Ready",
+      "defaultValue": "Part {0} selected. Continue to the load step.",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
       "key": "Receiving.Messages.Warning.SameDayReceiving",
       "displayName": "Messages - Same Day Receiving Warning",
       "defaultValue": "Warning: {0:N2} of this part has already been received today on this PO.",

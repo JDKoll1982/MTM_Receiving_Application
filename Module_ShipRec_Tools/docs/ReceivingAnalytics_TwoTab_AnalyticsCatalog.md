@@ -1,6 +1,6 @@
 # Receiving Analytics Two-Tab Analytics Catalog
 
-- **Last Updated:** 2026-10-29
+- **Last Updated:** 2026-11-17
 - **Module:** Ship/Rec Tools
 - **Status:** Delivery marked per item — **Built** shipped in the two-tab slice, **Deferred** is not built yet
 
@@ -9,15 +9,18 @@ tabs. Nothing here is a commitment. It is a menu to pick from.
 
 ## What The Page Will Look Like
 
-The page becomes two tabs that answer two different questions.
+The page becomes three tabs that answer three different questions.
 
 - **ERP Data** — what you have today. It reads Infor Visual and answers "what did the business
   receive, and what is still coming?" It keeps its current filters and charts unchanged.
 - **App Data** — new. It reads our own receiving application and answers "what did we actually do,
   when, how, and how well?" It gets its own filters, because it needs a different date range.
+- **Record Days** — new. It reads our own receiving application and answers "which days were our
+  busiest, per item type?" It ranks days by loads for coils, flat stock, and everything else.
 
 Tab 2 is the reason this work exists. Infor Visual knows what arrived at the plant. Only our app
-knows who received it, how long it took, whether it was on time, and what went wrong.
+knows who received it, how long it took, whether it was on time, and what went wrong. Tab 3 is the
+same app data read the other way round: instead of a trend line, it names the record days.
 
 ## How To Read This List
 
@@ -53,6 +56,9 @@ real work. Without them, Tab 2 is just another dashboard.
 - **2 ★ Labels per day** — one line per day. Tells you how many labels were printed and applied. — **Built.**
 - **3 ★ Quantity by category** — stacked bars for Parts, Coils, Flat, Outside Service, and — **Built.**
   Uninventoried. Tells you what kind of material is coming in.
+- **4 ★ Record days per item type** — three ranked lists, one for coils, one for flat stock, one for
+  everything else, each naming the days with the most loads in the selected range, plus a table of the
+  busiest days overall underneath. Tells you which days to staff for and how big a real day is. — **Built.**
 - **5 Load density** — average labels per load and average quantity per label, by week. Tells you — **Deferred.**
   whether loads are getting bigger or smaller.
 - **6 Receiving clock** — a grid of hour by weekday showing when the dock is busiest. Tells you when — **Deferred.**
