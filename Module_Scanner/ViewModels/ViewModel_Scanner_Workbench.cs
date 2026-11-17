@@ -163,32 +163,37 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     /// <summary>How often the open Infor Visual window is re-checked while the page is open.</summary>
     public static readonly TimeSpan InventoryWindowPollInterval = TimeSpan.FromSeconds(5);
 
-    /// <summary>Message shown left of Remove Selected while the Infor Visual window is closed.</summary>
+    /// <summary>Message shown beside the Send button while the Infor Visual window is closed.</summary>
     public string InventoryWindowClosedMessage =>
         "Inventory Transactions window is closed - Open it to enable this button.";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsInventoryWindowClosed))]
-    [NotifyPropertyChangedFor(nameof(IsRemoveSelectedEnabled))]
+    [NotifyPropertyChangedFor(nameof(IsSendEnabled))]
     private bool _isInventoryWindowOpen;
 
     /// <summary>True when the last poll found the Infor Visual Inventory Transfers window closed.</summary>
     public bool IsInventoryWindowClosed => !IsInventoryWindowOpen;
 
+    partial void OnIsInventoryWindowOpenChanged(bool value) =>
+        SendSelectedCommand.NotifyCanExecuteChanged();
+
     /// <summary>
-    /// Remove Selected needs a selected line and an open Infor Visual window; the line itself
-    /// stays selected while the window is closed so the operator can reopen it and carry on.
+    /// Remove Selected only needs a selected line. It drops the row from this session and
+    /// never reaches Infor Visual, so the inventory window has nothing to do with it.
     /// </summary>
-    public bool IsRemoveSelectedEnabled => HasSelectedSessionItem && IsInventoryWindowOpen;
+    public bool IsRemoveSelectedEnabled => HasSelectedSessionItem;
 
     private CancellationTokenSource? _inventoryWindowTokenSource;
 
     /// <summary>
-    /// Send is enabled only when the selected line has validated (Valid state) and no
-    /// automation, confirmation prompt, or busy state is active.
+    /// Send is enabled only when the selected line has validated (Valid state), the Infor
+    /// Visual Inventory Transactions window is open, and no automation, confirmation prompt,
+    /// or busy state is active. Send types into that window, so it cannot run without it.
     /// </summary>
     public bool IsSendEnabled =>
         SelectedSessionItem is { ValidationState: Enum_ScannerValidationState.Valid }
+        && IsInventoryWindowOpen
         && !_executionService.IsAutomationRunning
         && !IsSendPromptVisible
         && !IsBusy;
@@ -1253,6 +1258,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
     private bool CanSendSelected()
     {
         return SelectedSessionItem is not null
+            && IsInventoryWindowOpen
             && !IsSendPromptVisible
             && !_executionService.IsAutomationRunning;
     }

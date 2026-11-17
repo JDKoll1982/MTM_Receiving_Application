@@ -60,9 +60,11 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 - **What changed:** the Workbench checks whether the Infor Visual Inventory Transfers window is open as soon as
   the page opens, then every five seconds while it stays open. The checks stop when the page closes, so nothing
   keeps polling in the background.
-- **Effect:** **Remove Selected** is enabled only when a line is selected *and* that window is open. While it is
-  closed, a note to the left of the button reads "Inventory Transactions window is closed - Open it to enable this
-  button." and the button stays greyed out. Reopening the window re-enables it on the next poll without a reload.
+- **Effect:** **Send** is enabled only when a line is selected, its validation is green, *and* that window is open,
+  because Send is what types into it. While it is closed, a note beside the button reads "Inventory Transactions
+  window is closed - Open it to enable this button." and the button stays greyed out. Reopening the window
+  re-enables it on the next poll without a reload. **Remove Selected** only changes the local list and never reaches
+  Infor Visual, so it is not gated on the window.
 - **How:** the window lookup runs on a background thread and is read-only - it never launches, activates, or types
   into Infor Visual. It uses the same active profile the send workflow already uses, checking the profile's child
   window title first and falling back to the app window title, and it rejects a same-titled window owned by another

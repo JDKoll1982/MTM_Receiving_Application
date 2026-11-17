@@ -28,7 +28,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.IsSendEnabled.Should().BeFalse();
     }
 
-    // ── Inventory window watch: Remove Selected gate ────────────────────────────
+    // ── Inventory window watch: Send gate ───────────────────────────────────────
 
     [Fact]
     public void IsRemoveSelectedEnabled_ShouldBeFalse_WhenNoLineIsSelected()
@@ -40,14 +40,16 @@ public sealed class ViewModel_Scanner_WorkbenchTests
     }
 
     [Fact]
-    public void IsRemoveSelectedEnabled_ShouldBeFalse_WhenInventoryWindowIsClosed()
+    public void IsRemoveSelectedEnabled_ShouldBeTrue_EvenWhenTheInventoryWindowIsClosed()
     {
         var viewModel = CreateWorkbenchViewModel();
         viewModel.SelectedSessionItem = new Model_ScannerBatchItem { ItemId = Guid.NewGuid() };
         viewModel.IsInventoryWindowOpen = false;
 
+        // Remove Selected drops the row from this session and never reaches Infor Visual,
+        // so the window being closed must not take it away.
         viewModel.IsInventoryWindowClosed.Should().BeTrue();
-        viewModel.IsRemoveSelectedEnabled.Should().BeFalse();
+        viewModel.IsRemoveSelectedEnabled.Should().BeTrue();
     }
 
     [Fact]
@@ -59,6 +61,38 @@ public sealed class ViewModel_Scanner_WorkbenchTests
 
         viewModel.IsInventoryWindowClosed.Should().BeFalse();
         viewModel.IsRemoveSelectedEnabled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsSendEnabled_ShouldBeFalse_WhenTheInventoryWindowIsClosed()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.SelectedSessionItem = new Model_ScannerBatchItem
+        {
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+
+        viewModel.IsInventoryWindowOpen = false;
+        viewModel.IsSendEnabled.Should().BeFalse("Send types into that window");
+
+        viewModel.IsInventoryWindowOpen = true;
+        viewModel.IsSendEnabled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void SendCommand_ShouldNotExecute_WhileTheInventoryWindowIsClosed()
+    {
+        var viewModel = CreateWorkbenchViewModel();
+        viewModel.SelectedSessionItem = new Model_ScannerBatchItem
+        {
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+
+        viewModel.IsInventoryWindowOpen = false;
+        viewModel.SendSelectedCommand.CanExecute(null).Should().BeFalse();
+
+        viewModel.IsInventoryWindowOpen = true;
+        viewModel.SendSelectedCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Fact]
@@ -221,6 +255,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         viewModel.CurrentSession = session;
         viewModel.SessionItems = [item];
         viewModel.SelectedSessionItem = item;
+        viewModel.IsInventoryWindowOpen = true;
 
         var result = await viewModel.ValidateSessionItemAsync(item);
 
@@ -665,6 +700,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
     public void IsSendEnabled_ShouldBeTrueOnly_WhenSelectedLineIsValid()
     {
         var viewModel = CreateWorkbenchViewModel();
+        viewModel.IsInventoryWindowOpen = true;
 
         var item = new Model_ScannerBatchItem { ValidationState = Enum_ScannerValidationState.Invalid };
         viewModel.SelectedSessionItem = item;
