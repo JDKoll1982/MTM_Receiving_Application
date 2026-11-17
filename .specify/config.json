@@ -2,7 +2,7 @@
   "project": {
     "name": "MTM Receiving Application",
     "type": "winui3",
-    "framework": ".NET 8.0",
+    "framework": ".NET 10.0",
     "pattern": "MVVM"
   },
   "templates": {

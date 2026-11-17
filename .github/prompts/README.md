@@ -24,9 +24,20 @@ by workflow so they can be found and maintained without relying on one large fla
 - `design/` — diagram and mockup generation prompts
 - `maintenance/` — repository maintenance, documentation, and release prompts
 - `quality/` — review and optimization prompts
-- `speckit/` — specification and planning workflow prompts
+- `speckit/` — the local spec-kit prompt (`speckit.module-specify`)
 - `testing/` — test generation and verification prompts
 - `workflow/` — general-purpose prompts such as MCP triage and noob mode
+
+## Generated Prompts
+
+The `speckit.*.prompt.md` files sitting at the root of this folder are **generated** by the specify
+CLI (`specify integration upgrade copilot`) and by the installed spec-kit extensions. They are thin
+selectors (`agent: speckit.<command>`) for the matching `.github/agents/speckit.*.agent.md`.
+
+- Do not hand-edit them; the change is lost on the next upgrade.
+- Regenerate the matching `.github/Skills/speckit-*` wrappers with
+  `pwsh -File tools\spec-kit\sync-command-skills.ps1 -RemoveStale`.
+- Setup, upgrade order, and troubleshooting: `docs/development/Spec-Kit-Setup.md`.
 
 ## Start Points
 
@@ -39,7 +50,8 @@ by workflow so they can be found and maintained without relying on one large fla
 - CopilotForms intake:
   `.github/prompts/copilotforms/`
 - Spec-driven work:
-  `.github/prompts/speckit/`
+  `.github/prompts/speckit.module-specify.prompt.md` (local) or any generated
+  `.github/prompts/speckit.*.prompt.md` at the root of this folder
 
 ## Standards
 

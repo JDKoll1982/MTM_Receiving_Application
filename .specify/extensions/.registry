@@ -36,9 +36,9 @@
       "installed_at": "2026-11-09T12:11:00.027957+00:00"
     },
     "companion": {
-      "version": "0.27.0",
+      "version": "0.28.0",
       "source": "local",
-      "manifest_hash": "sha256:1659a88136635fccc4ac2e84a1fffba1005cb378a50631e5a00dad05c0122e88",
+      "manifest_hash": "sha256:fd7829e5f90bfdfd9a8f8a918d44356b45a24db03ac75cfea0fbad7565dc7beb",
       "enabled": true,
       "priority": 10,
       "registered_commands": {
@@ -65,7 +65,53 @@
         ]
       },
       "registered_skills": [],
-      "installed_at": "2026-11-12T21:53:05.173490+00:00"
+      "installed_at": "2026-11-17T16:38:05.045947+00:00"
+    },
+    "github": {
+      "version": "1.0.5",
+      "source": "local",
+      "manifest_hash": "sha256:72a5e53c586714c757db44ab4e1c89a915b15dd05baf7e272e37fc3c84e5afae",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "copilot": [
+          "speckit.github.taskstoissues"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-11-17T16:38:19.367927+00:00"
+    },
+    "agent-context": {
+      "version": "1.0.3",
+      "source": "local",
+      "manifest_hash": "sha256:790fe14ee139490b46d25ebdc37964b9e620e88c65d92ba21e6bdf5274ea7a81",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "copilot": [
+          "speckit.agent-context.update"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-11-17T16:38:20.455609+00:00"
+    },
+    "git": {
+      "version": "1.0.5",
+      "source": "local",
+      "manifest_hash": "sha256:57082e8d6bafa628f2dc21dd8c5f863c1d2025c86dcd16a9b41e2b53989bf0aa",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "copilot": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-11-17T16:38:22.252950+00:00"
     }
   }
 }

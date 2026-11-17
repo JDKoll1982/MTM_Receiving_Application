@@ -155,3 +155,9 @@ If code changes invalidate source-of-truth docs, update matching files under .gi
 - For Azure tasks, use Azure tools.
 - If azmcp_bestpractices_get exists, run it first.
 - If not available, ask user to enable it.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+at specs/004-reconciliation-refactor/plan.md
+<!-- SPECKIT END -->
