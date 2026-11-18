@@ -12,6 +12,6 @@ public sealed partial class ViewModel_Settings_Dunnage_Audit : ViewModel_Shared_
     )
         : base(errorHandler, logger, notificationService)
     {
-        Title = "Dunnage Audit";
+        Title = "Non-Inventoried Labels Audit";
     }
 }

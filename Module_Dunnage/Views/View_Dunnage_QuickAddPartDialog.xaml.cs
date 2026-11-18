@@ -24,6 +24,10 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
     private const int ConfiguredSpecsPerPage = 6;
     private const int QuantityTypeWizardStep = 2;
 
+    // The preview frame is 96 px; decode at 2x so 200% display scaling stays sharp without
+    // holding a full-size photo in memory.
+    private const int ThumbnailDecodeWidth = 192;
+
     public bool WasAccepted { get; private set; }
 
     public string PartId { get; private set; } = string.Empty;
@@ -631,6 +635,22 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
         UpdateImagePreview();
     }
 
+    private async void CropImageButton_Click(object sender, RoutedEventArgs e)
+    {
+        var croppedPath = await View_Dunnage_Dialog_ImageCrop.ShowAsync(
+            SelectedImagePath,
+            XamlRoot
+        );
+
+        if (string.IsNullOrWhiteSpace(croppedPath))
+        {
+            return;
+        }
+
+        SelectedImagePath = croppedPath;
+        UpdateImagePreview();
+    }
+
     private void OnOpenImageFolderTapped(object sender, TappedRoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(SelectedImagePath))
@@ -932,11 +952,14 @@ public sealed partial class View_Dunnage_QuickAddPartDialog : ContentDialog
 
     private void UpdateImagePreview()
     {
-        PartImagePreview.Source = Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
+        PartImagePreview.Source = Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath, ThumbnailDecodeWidth);
         PartImagePathTextBlock.Text = string.IsNullOrWhiteSpace(SelectedImagePath)
             ? string.Empty
             : Path.GetFileName(SelectedImagePath);
-        RotateImageButton.IsEnabled = string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+
+        var hasImage = string.IsNullOrWhiteSpace(SelectedImagePath) is false;
+        RotateImageButton.IsEnabled = hasImage;
+        CropImageButton.IsEnabled = hasImage;
     }
 
     private async Task<string?> ResolvePreferredImageFolderAsync()

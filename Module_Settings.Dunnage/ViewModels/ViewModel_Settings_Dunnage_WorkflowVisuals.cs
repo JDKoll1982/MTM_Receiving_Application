@@ -42,7 +42,7 @@ public sealed partial class ViewModel_Settings_Dunnage_WorkflowVisuals : ViewMod
         _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
-        Title = "Dunnage Workflow Visuals";
+        Title = "Non-Inventoried Labels Workflow Visuals";
         _ = LoadAsync();
     }
 
@@ -68,12 +68,12 @@ public sealed partial class ViewModel_Settings_Dunnage_WorkflowVisuals : ViewMod
                 DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing,
                 FallbackToTypeImageWhenPartMissing.ToString()
             );
-            ShowStatus("Dunnage workflow visual settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels workflow visual settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage workflow visual settings.",
+                "Failed to save Non-Inventoried Labels workflow visual settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -112,12 +112,12 @@ public sealed partial class ViewModel_Settings_Dunnage_WorkflowVisuals : ViewMod
                 null
             );
             await LoadAsync();
-            ShowStatus("Dunnage workflow visual settings reset.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels workflow visual settings reset.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset Dunnage workflow visual settings.",
+                "Failed to reset Non-Inventoried Labels workflow visual settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -149,7 +149,7 @@ public sealed partial class ViewModel_Settings_Dunnage_WorkflowVisuals : ViewMod
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to load Dunnage workflow visual settings.",
+                "Failed to load Non-Inventoried Labels workflow visual settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

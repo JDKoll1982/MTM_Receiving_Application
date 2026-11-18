@@ -148,7 +148,7 @@ public class Dao_DunnageType
             ? Model_Dao_Result_Factory.Success(result.AffectedRows)
             : Model_Dao_Result_Factory.Failure(
                 string.IsNullOrWhiteSpace(errorMessage)
-                    ? "Unable to delete dunnage type."
+                    ? "Unable to delete non-inventoried type."
                     : errorMessage
             );
     }

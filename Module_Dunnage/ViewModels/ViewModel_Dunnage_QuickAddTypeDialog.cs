@@ -18,10 +18,10 @@ namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Base
 {
     [ObservableProperty]
-    private string _dialogTitle = "Add New Dunnage Type";
+    private string _dialogTitle = "Add New Non-Inventoried Type";
 
     [ObservableProperty]
-    private string _dialogDescription = "Enter details for the new dunnage type.";
+    private string _dialogDescription = "Enter details for the new non-inventoried type.";
 
     [ObservableProperty]
     private string _primaryButtonText = "Add Type";
@@ -135,7 +135,7 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
     public bool ShowChoicesDefaultNote => ShowChoicesOptions;
 
     public ImageSource? SelectedImageSource =>
-        Helpers.Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath);
+        Helpers.Helper_DunnageImagePaths.CreateImageSource(SelectedImagePath, 192);
 
     public string SelectedImageFileName =>
         string.IsNullOrWhiteSpace(SelectedImagePath)
@@ -156,8 +156,8 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
 
     public void InitializeForCreate()
     {
-        DialogTitle = "Add New Dunnage Type";
-        DialogDescription = "Enter details for the new dunnage type.";
+        DialogTitle = "Add New Non-Inventoried Type";
+        DialogDescription = "Enter details for the new non-inventoried type.";
         PrimaryButtonText = "Add Type";
         TypeName = string.Empty;
         ValidationMessage = string.Empty;
@@ -175,7 +175,7 @@ public partial class ViewModel_Dunnage_QuickAddTypeDialog : ViewModel_Shared_Bas
         List<Model_CustomFieldDefinition> customFields
     )
     {
-        DialogTitle = "Edit Dunnage Type";
+        DialogTitle = "Edit Non-Inventoried Type";
         DialogDescription = "Update the type name, visual mode, and custom fields.";
         PrimaryButtonText = "Save Changes";
         TypeName = typeName;

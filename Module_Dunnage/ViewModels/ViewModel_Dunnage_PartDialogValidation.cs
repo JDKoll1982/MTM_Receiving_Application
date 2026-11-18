@@ -48,7 +48,7 @@ public partial class ViewModel_Dunnage_PartDialogValidation : ObservableObject
 
         if (TypeId <= 0)
         {
-            ValidationMessage = "A dunnage type is required.";
+            ValidationMessage = "A non-inventoried type is required.";
             return;
         }
 

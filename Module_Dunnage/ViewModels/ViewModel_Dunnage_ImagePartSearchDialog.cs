@@ -24,7 +24,10 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_DunnageSettings _dunnageSettings;
     private readonly IService_UserSessionManager _sessionManager;
+    private const int MaxUdcSlots = 10;
     private List<Model_DunnagePart> _allParts = new();
+    private Dictionary<string, Model_InventoriedDunnage> _inventoryDetailsByPartId =
+        new(StringComparer.OrdinalIgnoreCase);
     private bool _isRestoringShowPartsPreference;
     private bool _persistedShowPartsWithoutImages;
 
@@ -67,7 +70,7 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
 
     public bool HasNoResults => DisplayedParts.Count == 0;
 
-    public string Heading => "Search Dunnage Parts by Image";
+    public string Heading => "Search Non-Inventoried Parts by Image";
 
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
     {
@@ -97,19 +100,21 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         {
             IsBusy = true;
             EmptyStateMessage = ShowPartsWithoutImages
-                ? "Loading Dunnage parts..."
+                ? "Loading non-inventoried parts..."
                 : "Loading parts with images...";
 
             var result = await _dunnageService.GetAllPartsAsync();
             if (!result.IsSuccess || result.Data is null)
             {
                 DisplayedParts = new ObservableCollection<Model_DunnagePart>();
-                EmptyStateMessage = result.ErrorMessage ?? "Failed to load Dunnage parts.";
+                EmptyStateMessage = result.ErrorMessage ?? "Failed to load non-inventoried parts.";
                 OnPropertyChanged(nameof(HasNoResults));
                 return;
             }
 
             _allParts = result.Data.OrderBy(static part => part.PartId).ToList();
+
+            await LoadInventoryDetailsAsync();
 
             ApplyFilter();
         }
@@ -122,7 +127,7 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
                 nameof(ViewModel_Dunnage_ImagePartSearchDialog)
             );
             DisplayedParts = new ObservableCollection<Model_DunnagePart>();
-            EmptyStateMessage = "Failed to load Dunnage parts.";
+            EmptyStateMessage = "Failed to load non-inventoried parts.";
             OnPropertyChanged(nameof(HasNoResults));
         }
         finally
@@ -282,6 +287,42 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         return employeeNumber.HasValue && employeeNumber.Value > 0 ? employeeNumber : null;
     }
 
+    /// <summary>
+    /// Loads the inventory type and additional notes per part so the filter can match them.
+    /// A failure here only narrows what the filter can find, so it never blocks the dialog.
+    /// </summary>
+    private async Task LoadInventoryDetailsAsync()
+    {
+        _inventoryDetailsByPartId = new Dictionary<string, Model_InventoriedDunnage>(
+            StringComparer.OrdinalIgnoreCase
+        );
+
+        try
+        {
+            var result = await _dunnageService.GetAllInventoriedPartsAsync();
+            if (result?.IsSuccess != true || result.Data is null)
+            {
+                return;
+            }
+
+            foreach (
+                var details in result.Data.Where(details =>
+                    string.IsNullOrWhiteSpace(details.PartId) is false
+                )
+            )
+            {
+                _inventoryDetailsByPartId[details.PartId] = details;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                $"ImagePartSearch: Failed to load inventory details for filtering. Error: {ex.Message}",
+                "ImagePartSearch"
+            );
+        }
+    }
+
     private void ApplyFilter()
     {
         IEnumerable<Model_DunnagePart> filteredParts = _allParts;
@@ -293,13 +334,10 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
             );
         }
 
-        if (string.IsNullOrWhiteSpace(FilterText) is false)
+        var filter = FilterText.Trim();
+        if (string.IsNullOrWhiteSpace(filter) is false)
         {
-            filteredParts = filteredParts.Where(part =>
-                part.PartId.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-                || part.DunnageTypeName.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-                || part.HomeLocation.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-            );
+            filteredParts = filteredParts.Where(part => MatchesFilter(part, filter));
         }
 
         var filteredList = filteredParts.ToList();
@@ -308,15 +346,52 @@ public partial class ViewModel_Dunnage_ImagePartSearchDialog : ViewModel_Shared_
         OnPropertyChanged(nameof(HasNoResults));
     }
 
+    /// <summary>
+    /// Matches the filter against every searchable part value: part ID, type, home location,
+    /// saved quantity type, the ten user defined variables, and the stored inventory type and
+    /// additional notes.
+    /// </summary>
+    private bool MatchesFilter(Model_DunnagePart part, string filter)
+    {
+        if (
+            ContainsText(part.PartId, filter)
+            || ContainsText(part.DunnageTypeName, filter)
+            || ContainsText(part.HomeLocation, filter)
+            || ContainsText(part.QuantityType, filter)
+        )
+        {
+            return true;
+        }
+
+        for (var slot = 1; slot <= MaxUdcSlots; slot++)
+        {
+            if (ContainsText(part.GetUdcValue(slot), filter))
+            {
+                return true;
+            }
+        }
+
+        if (_inventoryDetailsByPartId.TryGetValue(part.PartId, out var details) is false)
+        {
+            return false;
+        }
+
+        return ContainsText(details.InventoryMethod, filter) || ContainsText(details.Notes, filter);
+    }
+
+    private static bool ContainsText(string? value, string filter) =>
+        string.IsNullOrWhiteSpace(value) is false
+        && value.Contains(filter, StringComparison.OrdinalIgnoreCase);
+
     private string BuildEmptyStateMessage()
     {
         if (_allParts.Count == 0)
         {
             return ShowPartsWithoutImages
-                ? "No Dunnage parts found."
-                : "No Dunnage parts currently have image paths configured.";
+                ? "No non-inventoried parts found."
+                : "No non-inventoried parts currently have image paths configured.";
         }
 
-        return "No Dunnage parts matched the current filter.";
+        return "No non-inventoried parts matched the current filter.";
     }
 }

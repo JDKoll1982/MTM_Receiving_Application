@@ -158,7 +158,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading dunnage types...";
+            StatusMessage = "Loading non-inventoried types...";
             await EnsurePrivilegeStateAsync();
             await LoadSortPreferenceAsync();
             _logger.LogInfo(
@@ -168,13 +168,13 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
 
             await LoadTypesAsync();
 
-            StatusMessage = $"Loaded {_paginationService.TotalItems} dunnage types";
+            StatusMessage = $"Loaded {_paginationService.TotalItems} non-inventoried types";
         }
         catch (Exception ex)
         {
             _errorHandler
                 .HandleErrorAsync(
-                    "Failed to load dunnage types",
+                    "Failed to load non-inventoried types",
                     Enum_ErrorSeverity.Error,
                     ex,
                     true
@@ -232,7 +232,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 );
 
                 _logger.LogInfo(
-                    $"TypeSelection: Successfully loaded {result.Data.Count} dunnage types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}",
+                    $"TypeSelection: Successfully loaded {result.Data.Count} non-inventoried types with {TotalPages} pages, DisplayedTypes.Count={DisplayedTypes.Count}",
                     "ViewModel_dunnage_typeselection"
                 );
             }
@@ -244,7 +244,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error loading dunnage types",
+                "Error loading non-inventoried types",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -298,7 +298,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             SelectedType = type;
 
             _logger.LogInfo(
-                $"TypeSelection: Selected dunnage type: {type.TypeName} (ID: {type.Id})",
+                $"TypeSelection: Selected non-inventoried type: {type.TypeName} (ID: {type.Id})",
                 "TypeSelection"
             );
 
@@ -324,7 +324,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
                 "TypeSelection"
             );
             await _errorHandler.HandleErrorAsync(
-                "Error selecting dunnage type",
+                "Error selecting non-inventoried type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -433,7 +433,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error adding new dunnage type",
+                "Error adding new non-inventoried type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -555,7 +555,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error updating dunnage type",
+                "Error updating non-inventoried type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -586,7 +586,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
-                Title = "Delete Dunnage Type",
+                Title = "Delete Non-Inventoried Type",
                 Content = BuildTypeDeleteWarning(type.TypeName, impact),
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
@@ -623,7 +623,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error deleting dunnage type",
+                "Error deleting non-inventoried type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -657,7 +657,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         var dialog = new ContentDialog
         {
             XamlRoot = xamlRoot,
-            Title = "Update Saved Dunnage Rows",
+            Title = "Update Saved Non-Inventoried Labels Rows",
             Content = warningMessage,
             PrimaryButtonText = "Continue",
             CloseButtonText = "Cancel",
@@ -698,7 +698,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
         }
 
         var changeSummary = string.Join(" and ", changedValues);
-        return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {changeSummary}?";
+        return $"This edit will also change all pre-existing Non-Inventoried Labels current label data and history rows that use this saved value. Continue updating the {changeSummary}?";
     }
 
     /// <summary>
@@ -874,7 +874,7 @@ public partial class ViewModel_dunnage_typeselection : ViewModel_Shared_Base, IR
             ? "No parts, label data, or history entries reference this type."
             : $"This will also permanently delete its {string.Join(", ", parts)}.";
 
-        return $"Are you sure you want to delete '{typeName}'? This action cannot be undone.\n\n{impactSummary}\n\nAll existing label data and history entries that contain this dunnage type or its parts will be removed as well.";
+        return $"Are you sure you want to delete '{typeName}'? This action cannot be undone.\n\n{impactSummary}\n\nAll existing label data and history entries that contain this non-inventoried type or its parts will be removed as well.";
     }
 
     private void UpdatePaginationProperties()

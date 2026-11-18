@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -5,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -23,7 +25,13 @@ public sealed partial class View_Dunnage_QuantityEntryView : UserControl
         _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
+        CurrentPartSummaryCard.ImageTapped += OnCurrentPartImageTapped;
         _focusService.AttachFocusOnVisibility(this, NumberOfLoadsNumberBox);
+    }
+
+    private void OnCurrentPartImageTapped(object? sender, EventArgs e)
+    {
+        Helper_UI_ImageLightbox.Show(ViewModel.CurrentVisualAbsolutePath);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

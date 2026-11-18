@@ -23,7 +23,7 @@ public partial class ViewModel_Reprint_Dunnage : ViewModel_Reprint_ModuleBase
     protected override string ColumnOptionsSettingsKey =>
         ReprintSettingsKeys.UserPreferences.DunnageColumns;
 
-    protected override string ModuleDisplayName => "Dunnage";
+    protected override string ModuleDisplayName => "Non-Inventoried Labels";
 
     public ViewModel_Reprint_Dunnage(
         IService_Reprint_Dunnage reprintService,

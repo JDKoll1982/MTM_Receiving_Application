@@ -789,7 +789,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         try
         {
             IsBusy = true;
-            StatusMessage = "Loading dunnage types...";
+            StatusMessage = "Loading non-inventoried types...";
 
             var typesResult = await _dunnageService.GetAllTypesAsync();
             if (!typesResult.IsSuccess || typesResult.Data == null)
@@ -817,7 +817,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             if (availableTypes.Count == 0)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "No dunnage types with available parts were found.",
+                    "No non-inventoried types with available parts were found.",
                     Enum_ErrorSeverity.Info,
                     null,
                     true
@@ -834,8 +834,8 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
             var selection = await ShowFuzzyPickerAsync(
                 options,
-                "Select Dunnage Type",
-                "Choose a dunnage type for this row."
+                "Select Non-Inventoried Type",
+                "Choose a non-inventoried type for this row."
             );
 
             if (selection is null)
@@ -862,7 +862,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error selecting dunnage type",
+                "Error selecting non-inventoried type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -885,7 +885,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         if (!load.TypeId.HasValue || load.TypeId.Value <= 0)
         {
             await _errorHandler.HandleErrorAsync(
-                "Select a dunnage type before choosing a part ID.",
+                "Select a non-inventoried type before choosing a part ID.",
                 Enum_ErrorSeverity.Info,
                 null,
                 true
@@ -909,7 +909,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             if (availableParts.Count == 0)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "No part IDs are available for the selected dunnage type.",
+                    "No part IDs are available for the selected non-inventoried type.",
                     Enum_ErrorSeverity.Info,
                     null,
                     true
@@ -928,7 +928,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
             var selection = await ShowFuzzyPickerAsync(
                 options,
-                "Select Dunnage Part ID",
+                "Select Non-Inventoried Part ID",
                 $"Choose a part ID for type {load.TypeName}."
             );
 
@@ -946,7 +946,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error selecting dunnage part ID",
+                "Error selecting non-inventoried part ID",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -993,7 +993,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             if (availableLocations.Count == 0)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "No matching Dunnage locations were found in Infor Visual warehouse 002.",
+                    "No matching Non-Inventoried Labels locations were found in Infor Visual warehouse 002.",
                     Enum_ErrorSeverity.Info,
                     null,
                     true
@@ -1003,7 +1003,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
 
             var selection = await ShowFuzzyPickerAsync(
                 availableLocations,
-                "Select Dunnage Location",
+                "Select Non-Inventoried Labels Location",
                 "Choose a location from Infor Visual warehouse 002.",
                 async searchTerm =>
                 {
@@ -1095,7 +1095,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             }
 
             _logger.LogInfo(
-                $"Saving {editedLoads.Count} edited and {removedLoadCount} removed Dunnage load(s) from source {_currentLoadSource}",
+                $"Saving {editedLoads.Count} edited and {removedLoadCount} removed non-inventoried label load(s) from source {_currentLoadSource}",
                 "EditMode"
             );
 
@@ -1119,7 +1119,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
                     remainingLoads
                 ),
                 _ => Model_Dao_Result_Factory.Failure(
-                    "No Dunnage Edit Mode data source is currently loaded."
+                    "No Non-Inventoried Labels Edit Mode data source is currently loaded."
                 ),
             };
 
@@ -1133,7 +1133,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             StatusMessage =
                 $"Successfully saved {editedLoads.Count} updated and {removedLoadCount} removed load(s)";
             _logger.LogInfo(
-                $"Saved {editedLoads.Count} updated and {removedLoadCount} removed Dunnage load(s)",
+                $"Saved {editedLoads.Count} updated and {removedLoadCount} removed non-inventoried label load(s)",
                 "EditMode"
             );
             await ShowSaveCompletedAsync(editedLoads.Count, removedLoadCount);

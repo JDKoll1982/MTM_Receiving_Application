@@ -600,7 +600,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             {
                 Title = "Save In Progress",
                 Content =
-                    "Please wait for the current Dunnage save to finish before leaving this module.",
+                    "Please wait for the current Non-Inventoried Labels save to finish before leaving this module.",
                 CloseButtonText = "OK",
                 XamlRoot = XamlRoot,
             };
@@ -620,10 +620,10 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
         var prompt = new ContentDialog
         {
-            Title = "Leave Dunnage?",
+            Title = "Leave Non-Inventoried Labels?",
             Content =
-                $"Leaving Dunnage for {destinationName} will clear the current entry and reset the on-screen fields. Continue?",
-            PrimaryButtonText = "Leave Dunnage",
+                $"Leaving Non-Inventoried Labels for {destinationName} will clear the current entry and reset the on-screen fields. Continue?",
+            PrimaryButtonText = "Leave Non-Inventoried Labels",
             CloseButtonText = "Stay Here",
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot,

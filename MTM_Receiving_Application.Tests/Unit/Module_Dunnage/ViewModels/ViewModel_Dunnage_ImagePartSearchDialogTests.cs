@@ -92,7 +92,108 @@ public sealed class ViewModel_Dunnage_ImagePartSearchDialogTests
     }
 
     [Fact]
-    public async Task FilterText_ShouldFilterDisplayedParts_ByPartTypeOrLocation()
+    public async Task FilterText_ShouldMatchUserDefinedVariablesAndSavedQuantityType()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetAllPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new()
+                        {
+                            PartId = "PART-100",
+                            DunnageTypeName = "Bags",
+                            QuantityType = "Each",
+                            Udc1 = "Blue",
+                            Udc2 = "12 x 18",
+                            ImagePath = "Images/part100.png",
+                        },
+                        new()
+                        {
+                            PartId = "PART-200",
+                            DunnageTypeName = "Shrink Wrap",
+                            QuantityType = "Roll",
+                            Udc1 = "Clear",
+                            ImagePath = "Images/part200.png",
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+        await viewModel.LoadPartsCommand.ExecuteAsync(null);
+
+        viewModel.FilterText = "12 x 18";
+        viewModel.DisplayedParts.Should().ContainSingle(part => part.PartId == "PART-100");
+
+        viewModel.FilterText = "roll";
+        viewModel.DisplayedParts.Should().ContainSingle(part => part.PartId == "PART-200");
+
+        viewModel.FilterText = "clear";
+        viewModel.DisplayedParts.Should().ContainSingle(part => part.PartId == "PART-200");
+    }
+
+    [Fact]
+    public async Task FilterText_ShouldMatchInventoryTypeAndAdditionalNotes()
+    {
+        var dunnageService = new Mock<IService_MySQL_Dunnage>();
+        dunnageService
+            .Setup(service => service.GetAllPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_DunnagePart>
+                    {
+                        new()
+                        {
+                            PartId = "PART-100",
+                            DunnageTypeName = "Bags",
+                            ImagePath = "Images/part100.png",
+                        },
+                        new()
+                        {
+                            PartId = "PART-200",
+                            DunnageTypeName = "Bins",
+                            ImagePath = "Images/part200.png",
+                        },
+                    }
+                )
+            );
+        dunnageService
+            .Setup(service => service.GetAllInventoriedPartsAsync())
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_InventoriedDunnage>
+                    {
+                        new()
+                        {
+                            PartId = "PART-100",
+                            InventoryMethod = "Not Inventoried",
+                            Notes = "Kept near dock door",
+                        },
+                        new()
+                        {
+                            PartId = "PART-200",
+                            InventoryMethod = "Inventoried",
+                            Notes = "Cycle count weekly",
+                        },
+                    }
+                )
+            );
+
+        var viewModel = CreateViewModel(dunnageService: dunnageService);
+        await viewModel.LoadPartsCommand.ExecuteAsync(null);
+
+        viewModel.FilterText = "not inventoried";
+        viewModel.DisplayedParts.Should().ContainSingle(part => part.PartId == "PART-100");
+
+        viewModel.FilterText = "cycle count";
+        viewModel.DisplayedParts.Should().ContainSingle(part => part.PartId == "PART-200");
+    }
+
+    [Fact]
+    public async Task FilterText_ShouldStillFilterByPartTypeOrLocation()
     {
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
         dunnageService
@@ -291,6 +392,11 @@ public sealed class ViewModel_Dunnage_ImagePartSearchDialogTests
             dunnageService
                 .Setup(service => service.GetAllPartsAsync())
                 .ReturnsAsync(Model_Dao_Result_Factory.Success(new List<Model_DunnagePart>()));
+            dunnageService
+                .Setup(service => service.GetAllInventoriedPartsAsync())
+                .ReturnsAsync(
+                    Model_Dao_Result_Factory.Success(new List<Model_InventoriedDunnage>())
+                );
         }
 
         workflow ??= new Mock<IService_DunnageWorkflow>();

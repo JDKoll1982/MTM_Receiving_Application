@@ -186,7 +186,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         $"Failed to insert dunnage type '{type.TypeName}': name already in use"
                     );
                     return Model_Dao_Result_Factory.Failure(
-                        $"The dunnage type name '{type.TypeName}' is already in use."
+                        $"The non-inventoried type name '{type.TypeName}' is already in use."
                     );
                 }
 
@@ -255,7 +255,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         $"Failed to update dunnage type ID {type.Id}: name already in use for '{type.TypeName}'"
                     );
                     return Model_Dao_Result_Factory.Failure(
-                        $"The dunnage type name '{type.TypeName}' is already in use."
+                        $"The non-inventoried type name '{type.TypeName}' is already in use."
                     );
                 }
 
@@ -527,7 +527,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 )
                 {
                     return Model_Dao_Result_Factory.Failure(
-                        $"A dunnage part with Part ID '{part.PartId}' already exists."
+                        $"A non-inventoried part with Part ID '{part.PartId}' already exists."
                     );
                 }
 
@@ -672,7 +672,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 )
                 {
                     return Model_Dao_Result_Factory.Failure(
-                        $"A dunnage part with Part ID '{part.PartId}' already exists."
+                        $"A non-inventoried part with Part ID '{part.PartId}' already exists."
                     );
                 }
 
@@ -811,7 +811,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 if (part.TypeId == newTypeId)
                 {
                     return Model_Dao_Result_Factory.Failure<string>(
-                        "The part already belongs to that dunnage type."
+                        "The part already belongs to that non-inventoried type."
                     );
                 }
 
@@ -819,7 +819,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 if (!targetTypeResult.IsSuccess || targetTypeResult.Data is null)
                 {
                     return Model_Dao_Result_Factory.Failure<string>(
-                        targetTypeResult.ErrorMessage ?? "Target dunnage type not found."
+                        targetTypeResult.ErrorMessage ?? "Target non-inventoried type not found."
                     );
                 }
 

@@ -39,7 +39,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
     {
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
-        Title = "Dunnage UI/UX";
+        Title = "Non-Inventoried Labels UI/UX";
         _ = LoadAsync();
     }
 
@@ -69,12 +69,12 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
                 DunnageSettingsKeys.UiUx.DefaultVisualSource,
                 DefaultVisualSource
             );
-            ShowStatus("Dunnage UI/UX settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels UI/UX settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage UI/UX settings.",
+                "Failed to save Non-Inventoried Labels UI/UX settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -90,7 +90,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
     private async Task ResetAsync()
     {
         await LoadAsync();
-        ShowStatus("Dunnage UI/UX settings reset to current defaults.", InfoBarSeverity.Success);
+        ShowStatus("Non-Inventoried Labels UI/UX settings reset to current defaults.", InfoBarSeverity.Success);
     }
 
     private async Task LoadAsync()
@@ -131,7 +131,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UiUx : ViewModel_Shared_B
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to load Dunnage UI/UX settings.",
+                "Failed to load Non-Inventoried Labels UI/UX settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

@@ -42,7 +42,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
         _settingsCore = settingsCore ?? throw new ArgumentNullException(nameof(settingsCore));
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
-        Title = "Dunnage Image Presentation";
+        Title = "Non-Inventoried Labels Image Presentation";
         _ = LoadAsync();
     }
 
@@ -68,12 +68,12 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
                 DunnageSettingsKeys.UiUx.DefaultVisualSource,
                 DefaultVisualSource
             );
-            ShowStatus("Dunnage image presentation settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels image presentation settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage image presentation settings.",
+                "Failed to save Non-Inventoried Labels image presentation settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -112,12 +112,12 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
                 null
             );
             await LoadAsync();
-            ShowStatus("Dunnage image presentation settings reset.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels image presentation settings reset.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset Dunnage image presentation settings.",
+                "Failed to reset Non-Inventoried Labels image presentation settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -159,7 +159,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImagePresentation : ViewM
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to load Dunnage image presentation settings.",
+                "Failed to load Non-Inventoried Labels image presentation settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

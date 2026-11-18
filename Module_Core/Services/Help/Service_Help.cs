@@ -330,7 +330,7 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.ModeSelection",
                 Title = "Select Entry Mode",
                 Content =
-                    "Choose how you want to enter dunnage receiving data:\n\n"
+                    "Choose how you want to enter non-inventoried label receiving data:\n\n"
                     + "• Guided Wizard - Step-by-step process for single transactions. Best for occasional entries or when you need guidance.\n\n"
                     + "• Manual Entry - Bulk grid entry for multiple transactions. Ideal for processing many items at once.\n\n"
                     + "• Edit Mode - Review and edit historical data. Use to correct past entries or view receiving history.",
@@ -351,9 +351,9 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Dunnage.TypeSelection",
-                Title = "Select Dunnage Type",
+                Title = "Select Non-Inventoried Type",
                 Content =
-                    "Choose the type of dunnage material you are receiving:\n\n"
+                    "Choose the type of non-inventoried material you are receiving:\n\n"
                     + "• Each type has specific specifications and requirements\n"
                     + "• Use the search function to quickly find types\n"
                     + "• Navigate with pagination controls or quick access buttons\n\n"
@@ -372,8 +372,8 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.PartSelection",
                 Title = "Select Part/Specification",
                 Content =
-                    "Select the specific part or specification for the dunnage type:\n\n"
-                    + "• Parts are organized by dunnage type\n"
+                    "Select the specific part or specification for the non-inventoried type:\n\n"
+                    + "• Parts are organized by non-inventoried type\n"
                     + "• Use filters to find specific parts quickly\n"
                     + "• Parts marked with inventory status are tracked in the inventory system\n\n"
                     + "**Inventory Status:**\n"
@@ -394,7 +394,7 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.QuantityEntry",
                 Title = "Enter Quantity",
                 Content =
-                    "Specify the quantity of dunnage items received:\n\n"
+                    "Specify the quantity of non-inventoried items received:\n\n"
                     + "• Enter whole numbers only\n"
                     + "• The system will generate individual labels for each item\n"
                     + "• You can adjust the quantity later if needed\n\n"
@@ -414,16 +414,16 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.DetailsEntry",
                 Title = "Enter Additional Details",
                 Content =
-                    "Provide additional information for the dunnage receiving:\n\n"
+                    "Provide additional information for the non-inventoried label receiving:\n\n"
                     + "**PO Number (Optional):**\n"
                     + "• Enter the purchase order number if applicable\n"
                     + "• Format: Any alphanumeric format accepted\n\n"
                     + "**Location (Required):**\n"
-                    + "• Specify where the dunnage is stored\n"
+                    + "• Specify where the non-inventoried material is stored\n"
                     + "• Use standard warehouse location codes\n"
                     + "• Example: A-12-B, DOCK-2, etc.\n\n"
                     + "**Specifications:**\n"
-                    + "• Additional spec fields may appear based on the dunnage type\n"
+                    + "• Additional spec fields may appear based on the non-inventoried type\n"
                     + "• Required fields are marked with an asterisk (*)\n"
                     + "• Values must be within specified min/max ranges",
                 Category = "Dunnage Workflow",
@@ -466,7 +466,7 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.ManualEntry",
                 Title = "Manual Entry Mode",
                 Content =
-                    "Bulk entry mode for processing multiple dunnage items:\n\n"
+                    "Bulk entry mode for processing multiple non-inventoried items:\n\n"
                     + "**Features:**\n"
                     + "• Add multiple rows at once (up to 100)\n"
                     + "• Auto-fill from last entry for the same part\n"
@@ -491,7 +491,7 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.EditMode",
                 Title = "Edit Historical Data",
                 Content =
-                    "Review and edit past dunnage receiving entries:\n\n"
+                    "Review and edit past non-inventoried label receiving entries:\n\n"
                     + "**Data Sources:**\n"
                     + "• Session Memory - Unsaved work from current session\n"
                     + "• Recent Labels - From most recent saved label dataset\n"
@@ -881,7 +881,7 @@ public class Service_Help : IService_Help
                 Content =
                     "Utilities for shipping and receiving operations.\n\n"
                     + "• Choose a tool from the selection screen\n"
-                    + "• Tools include Outside Service History, Material Availability Board, PO Line Spec Search, Dunnage Book, Welded Coils, Receiving Analytics, and Delivery Schedule",
+                    + "• Tools include Outside Service History, Material Availability Board, PO Line Spec Search, Non-Inventoried Book, Welded Coils, Receiving Analytics, and Delivery Schedule",
                 Category = "ShipRec Tools",
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "Tools",
@@ -955,7 +955,7 @@ public class Service_Help : IService_Help
                     + "• Outside Service History\n"
                     + "• Material Availability Board\n"
                     + "• PO Line Spec Search\n"
-                    + "• Dunnage Book\n"
+                    + "• Non-Inventoried Book\n"
                     + "• Welded Coils\n"
                     + "• Receiving Analytics\n"
                     + "• Delivery Schedule",
@@ -1026,9 +1026,9 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "ShipRecTools.DunnageBook",
-                Title = "Dunnage Book",
+                Title = "Non-Inventoried Book",
                 Content =
-                    "Generate the dunnage book report for the selected criteria.\n\n"
+                    "Generate the non-inventoried book report for the selected criteria.\n\n"
                     + "• Configure the book (dates, types, parts)\n"
                     + "• Preview the generated pages\n"
                     + "• Print or save as PDF",
@@ -1163,7 +1163,7 @@ public class Service_Help : IService_Help
                 Title = "Non-PO Reference",
                 Content =
                     "No PO number was entered, so a reference reason is requested.\n\n"
-                    + "• Enter a short reason (e.g. Stock Replenishment, Return Dunnage, Internal Use)\n"
+                    + "• Enter a short reason (e.g. Stock Replenishment, Return Non-Inventoried Labels, Internal Use)\n"
                     + "• Stored with the load and shown on the review page\n"
                     + "• Pick a saved entry to reuse it, or remove one with the trash icon\n"
                     + "• Save for next time keeps the reference for later",
@@ -1181,7 +1181,7 @@ public class Service_Help : IService_Help
                 Key = "Dunnage.EditModeColumnChooser",
                 Title = "Choose Visible Columns",
                 Content =
-                    "Choose which columns appear in Dunnage Edit Mode.\n\n"
+                    "Choose which columns appear in Non-Inventoried Labels Edit Mode.\n\n"
                     + "• Fields are grouped so the list is easy to scan\n"
                     + "• Use Select All / Clear All / Reset to adjust quickly\n"
                     + "• Apply saves your visibility choices; Cancel keeps the current layout\n"
@@ -1512,9 +1512,9 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "ShipRec.DunnageBookPreview",
-                Title = "Dunnage Book Preview",
+                Title = "Non-Inventoried Book Preview",
                 Content =
-                    "Preview the dunnage book report before output.\n\n"
+                    "Preview the non-inventoried book report before output.\n\n"
                     + "• Review the generated pages\n"
                     + "• Print / Save as PDF writes the report",
                 Category = "ShipRec Tools",
@@ -1532,9 +1532,9 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Admin.Types",
-                Title = "Manage Dunnage Types",
+                Title = "Manage Non-Inventoried Types",
                 Content =
-                    "Create, edit, and delete dunnage types:\n\n"
+                    "Create, edit, and delete non-inventoried types:\n\n"
                     + "**Creating Types:**\n"
                     + "• Choose a descriptive, unique name\n"
                     + "• Select an appropriate icon for visual identification\n"
@@ -1562,11 +1562,11 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Admin.Parts",
-                Title = "Manage Dunnage Parts",
+                Title = "Manage Non-Inventoried Parts",
                 Content =
-                    "Create and manage dunnage part specifications:\n\n"
+                    "Create and manage non-inventoried part specifications:\n\n"
                     + "**Part Information:**\n"
-                    + "• Part must be associated with a dunnage type\n"
+                    + "• Part must be associated with a non-inventoried type\n"
                     + "• Enter dimensions and specifications as required\n"
                     + "• Add descriptive notes for identification\n\n"
                     + "**Inventory Management:**\n"
@@ -1575,7 +1575,7 @@ public class Service_Help : IService_Help
                     + "• Track current stock levels\n\n"
                     + "**Search & Filtering:**\n"
                     + "• Search by part name or description\n"
-                    + "• Filter by dunnage type\n"
+                    + "• Filter by non-inventoried type\n"
                     + "• Sort by any column\n\n"
                     + "Parts can be created during receiving using Quick Add feature.",
                 Category = "Admin",
@@ -1704,7 +1704,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.SortForPrinting",
-                Content = "Sort by Part ID â†’ PO â†’ Type",
+                Content = "Sort by Part ID → PO → Type",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1740,7 +1740,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.CreateType",
-                Content = "Create a new dunnage type",
+                Content = "Create a new non-inventoried type",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1774,7 +1774,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.CreatePart",
-                Content = "Create a new dunnage part",
+                Content = "Create a new non-inventoried part",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1916,7 +1916,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.HelpDunnageTypes",
-                Content = "Click for help about dunnage types",
+                Content = "Click for help about non-inventoried types",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1924,7 +1924,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Field.TypeName",
-                Content = "Enter a unique descriptive name for this dunnage type",
+                Content = "Enter a unique descriptive name for this non-inventoried type",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -2379,7 +2379,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tip.Dunnage.TypeSelection",
-                Content = "Choose a dunnage type from the available options below.",
+                Content = "Choose a non-inventoried type from the available options below.",
                 HelpType = Enum_HelpType.Tip,
                 Icon = "Lightbulb",
             }
@@ -2390,7 +2390,7 @@ public class Service_Help : IService_Help
             {
                 Key = "Tip.Dunnage.DetailsEntry",
                 Content =
-                    "Provide additional information such as PO number and location for this dunnage receiving.",
+                    "Provide additional information such as PO number and location for this non-inventoried label receiving.",
                 HelpType = Enum_HelpType.Tip,
                 Icon = "Lightbulb",
             }
@@ -2438,7 +2438,7 @@ public class Service_Help : IService_Help
             {
                 Key = "InfoBar.InventoryWarning",
                 Content =
-                    "This part is not in the inventoried dunnage list. Add it to inventory for better tracking.",
+                    "This part is not in the non-inventoried list. Add it to inventory for better tracking.",
                 HelpType = Enum_HelpType.Warning,
                 Severity = Enum_HelpSeverity.Warning,
             }

@@ -152,7 +152,7 @@
                             Padding="20"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
-                            AutomationProperties.Name="Reprint Dunnage labels"
+                            AutomationProperties.Name="Reprint non-inventoried labels"
                             Background="{StaticResource DunnageAccentBrush}"
                             Command="{x:Bind ViewModel.SelectDunnageCommand}"
                             Style="{StaticResource ReprintModeCardButtonStyle}">
@@ -167,13 +167,13 @@
                                     FontSize="18"
                                     FontWeight="SemiBold"
                                     Foreground="White"
-                                    Text="Dunnage"
+                                    Text="Non-Inventoried Labels"
                                     TextAlignment="Center" />
                                 <TextBlock
                                     FontSize="12"
                                     Foreground="White"
                                     Opacity="0.9"
-                                    Text="Dunnage labels"
+                                    Text="Label and part management"
                                     TextAlignment="Center"
                                     TextWrapping="WrapWholeWords" />
                             </StackPanel>

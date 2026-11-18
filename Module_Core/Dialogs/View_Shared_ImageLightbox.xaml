@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Core.Dialogs.View_Shared_ImageLightbox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsTabStop="True"
+    PreviewKeyDown="OnPreviewKeyDown"
+    UseSystemFocusVisuals="False">
+    <Grid
+        x:Name="ScrimGrid"
+        Background="#CC000000"
+        Tapped="OnScrimTapped">
+        <Grid x:Name="ImageContainer" Margin="48">
+            <Image
+                x:Name="LightboxImage"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Stretch="Uniform"
+                Tapped="OnImageTapped" />
+        </Grid>
+    </Grid>
+</UserControl>

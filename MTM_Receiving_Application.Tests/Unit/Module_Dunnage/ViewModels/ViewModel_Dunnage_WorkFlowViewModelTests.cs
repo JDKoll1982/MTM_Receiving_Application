@@ -41,7 +41,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
 
         viewModel.IsImagePartSearchVisible.Should().BeTrue();
         viewModel.IsModeSelectionVisible.Should().BeFalse();
-        viewModel.CurrentHeaderTitle.Should().Be("Dunnage - Search Parts by Image");
+        viewModel.CurrentHeaderTitle.Should().Be("Non-Inventoried Labels - Search Parts by Image");
         viewModel.CurrentHeaderContextTitle.Should().BeNull();
     }
 
@@ -70,7 +70,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         );
 
         viewModel.IsPartSelectionVisible.Should().BeTrue();
-        viewModel.CurrentHeaderTitle.Should().Be("Dunnage - Select Part");
+        viewModel.CurrentHeaderTitle.Should().Be("Non-Inventoried Labels - Select Part");
         viewModel.CurrentHeaderContextTitle.Should().Be("Select Part - Bags");
         viewModel
             .CurrentHeaderContextSubtitle.Should()

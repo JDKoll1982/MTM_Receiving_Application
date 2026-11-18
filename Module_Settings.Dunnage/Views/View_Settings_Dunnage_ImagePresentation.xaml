@@ -16,9 +16,9 @@
                     CornerRadius="8">
                     <StackPanel Spacing="16">
 
-                        <ToggleSwitch Header="Enable Dunnage type images" IsOn="{x:Bind ViewModel.EnableTypeImages, Mode=TwoWay}" />
+                        <ToggleSwitch Header="Enable Non-Inventoried type images" IsOn="{x:Bind ViewModel.EnableTypeImages, Mode=TwoWay}" />
 
-                        <ToggleSwitch Header="Enable Dunnage part images" IsOn="{x:Bind ViewModel.EnablePartImages, Mode=TwoWay}" />
+                        <ToggleSwitch Header="Enable Non-Inventoried part images" IsOn="{x:Bind ViewModel.EnablePartImages, Mode=TwoWay}" />
 
                         <NumberBox
                             Header="Application Default Thumbnail Size"
@@ -36,7 +36,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Control whether Dunnage images render at all, how large they appear by default across the app, and which visual source wins when both a part and type image exist."
+                            Text="Control whether Non-Inventoried Labels images render at all, how large they appear by default across the app, and which visual source wins when both a part and type image exist."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>

@@ -198,7 +198,7 @@ public sealed class Service_DunnageWorkflowTests
         result.IsSuccess.Should().BeFalse();
         result
             .ErrorMessage.Should()
-            .Be("Only Admin or Developer users can clear all dunnage label rows.");
+            .Be("Only Admin or Developer users can clear all non-inventoried label rows.");
         dunnageService.Verify(
             db => db.ClearLabelDataAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()),
             Times.Never

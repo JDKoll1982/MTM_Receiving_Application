@@ -833,14 +833,14 @@ public partial class Model_ReportingPreviewModuleCard : ObservableObject
             nameof(Model_ReportRow.PartNumber) => "Multiple Part Numbers",
             nameof(Model_ReportRow.DisplayPartOrDunnage)
                 when sourceModule.Equals("Dunnage", StringComparison.OrdinalIgnoreCase) =>
-                "Multiple Part / Dunnage Values",
+                "Multiple Part / Non-Inventoried Values",
             nameof(Model_ReportRow.DisplayPartOrDunnage) => "Multiple Parts",
             nameof(Model_ReportRow.PartDescription) => "Multiple Part Descriptions",
             nameof(Model_ReportRow.HeatLotNumber) => "Multiple Lots",
             nameof(Model_ReportRow.EmployeeNumber) => "Multiple Employees",
             nameof(Model_ReportRow.CreatedByUsername) or nameof(Model_ReportRow.UserId) =>
                 "Multiple Users",
-            nameof(Model_ReportRow.DunnageType) => "Multiple Dunnage Types",
+            nameof(Model_ReportRow.DunnageType) => "Multiple Non-Inventoried Types",
             nameof(Model_ReportRow.SpecsCombined) => "Multiple Specs",
             nameof(Model_ReportRow.ShipmentNumber) => "Multiple Shipments",
             nameof(Model_ReportRow.ReceiverNumber) => "Multiple Receivers",

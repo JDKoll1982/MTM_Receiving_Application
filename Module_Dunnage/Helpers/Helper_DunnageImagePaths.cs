@@ -98,7 +98,7 @@ public static class Helper_DunnageImagePaths
         return GetAbsolutePath(relativeImagePath);
     }
 
-    public static ImageSource? CreateImageSource(string? relativeImagePath)
+    public static ImageSource? CreateImageSource(string? relativeImagePath, int? decodePixelWidth = null)
     {
         var absolutePath = GetDisplayAbsolutePath(relativeImagePath);
         if (string.IsNullOrWhiteSpace(absolutePath) || File.Exists(absolutePath) is false)
@@ -106,6 +106,14 @@ public static class Helper_DunnageImagePaths
             return null;
         }
 
-        return new BitmapImage(new Uri(absolutePath));
+        var image = new BitmapImage();
+        if (decodePixelWidth.HasValue && decodePixelWidth.Value > 0)
+        {
+            // Decode straight to thumbnail size so large photos never sit in memory at full resolution.
+            image.DecodePixelWidth = decodePixelWidth.Value;
+        }
+
+        image.UriSource = new Uri(absolutePath);
+        return image;
     }
 }

@@ -65,7 +65,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
         _inforVisualService =
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
-        Title = "Dunnage User Preferences";
+        Title = "Non-Inventoried Labels User Preferences";
 
         _ = LoadSettingsAsync();
     }
@@ -102,7 +102,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
             if (!result.IsSuccess)
             {
                 ShowStatus(
-                    result.ErrorMessage ?? "Failed to save the default Dunnage location.",
+                    result.ErrorMessage ?? "Failed to save the default Non-Inventoried Labels location.",
                     InfoBarSeverity.Error
                 );
                 return;
@@ -119,7 +119,7 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
             {
                 ShowStatus(
                     imageLocationResult.ErrorMessage
-                        ?? "Failed to save the shared Dunnage image folder.",
+                        ?? "Failed to save the shared Non-Inventoried Labels image folder.",
                     InfoBarSeverity.Error
                 );
                 return;
@@ -138,12 +138,12 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
 
             await _imageStorage.RefreshConfiguredRootFolderAsync();
 
-            ShowStatus("Dunnage settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage settings.",
+                "Failed to save Non-Inventoried Labels settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -171,19 +171,19 @@ public sealed partial class ViewModel_Settings_Dunnage_UserPreferences : ViewMod
             if (!result.IsSuccess)
             {
                 ShowStatus(
-                    result.ErrorMessage ?? "Failed to reset the default Dunnage location.",
+                    result.ErrorMessage ?? "Failed to reset the default Non-Inventoried Labels location.",
                     InfoBarSeverity.Error
                 );
                 return;
             }
 
             await LoadSettingsAsync();
-            ShowStatus("Default Dunnage location reset.", InfoBarSeverity.Success);
+            ShowStatus("Default Non-Inventoried Labels location reset.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset the default Dunnage location.",
+                "Failed to reset the default Non-Inventoried Labels location.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

@@ -7,8 +7,8 @@
     <Grid Padding="24">
         <StackPanel Spacing="12">
             <controls:View_SettingsPlaceholderControl
-                TitleText="Dunnage Permissions"
-                DescriptionText="Placeholder UI for role-based access for Dunnage settings."
+                TitleText="Non-Inventoried Labels Permissions"
+                DescriptionText="Placeholder UI for role-based access for Non-Inventoried Labels settings."
             />
 
             <Expander Header="Notes (what belongs here)" IsExpanded="True">

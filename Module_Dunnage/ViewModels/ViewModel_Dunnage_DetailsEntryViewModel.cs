@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -32,6 +34,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     private const string SettingsCategory = "Dunnage";
     private const string WarehouseCode = "002";
     private const string FallbackDefaultLocation = "RECV";
+    private const int ThumbnailDecodeWidth = 192;
 
     private readonly IService_DunnageWorkflow _workflowService;
     private readonly IService_Help _helpService;
@@ -153,6 +156,44 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     [ObservableProperty]
     private string _inventoryMethod = "Adjust In";
 
+    [ObservableProperty]
+    private string _currentTypeName = string.Empty;
+
+    [ObservableProperty]
+    private string _currentPartId = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentHomeLocationDisplay))]
+    private string _currentHomeLocation = string.Empty;
+
+    [ObservableProperty]
+    private string _currentQuantityType = "Quantity";
+
+    [ObservableProperty]
+    private int _currentLoadCount;
+
+    [ObservableProperty]
+    private string _currentTotal = "0";
+
+    [ObservableProperty]
+    private ImageSource? _currentVisualSource;
+
+    /// <summary>
+    /// Gets a value indicating whether the part or type carries an image to show in the summary card.
+    /// </summary>
+    public bool HasCurrentVisual => CurrentVisualSource is not null;
+
+    /// <summary>
+    /// Gets the absolute path of the summary image, used when the user opens the full image.
+    /// </summary>
+    public string? CurrentVisualAbsolutePath { get; private set; }
+
+    /// <summary>
+    /// Gets the saved home location, or a plain fallback when the part has none.
+    /// </summary>
+    public string CurrentHomeLocationDisplay =>
+        string.IsNullOrWhiteSpace(CurrentHomeLocation) ? "Not set" : CurrentHomeLocation;
+
     public bool CanProceedToNextStep =>
         IsBusy is false
         && string.IsNullOrWhiteSpace(Location) is false
@@ -161,6 +202,39 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
     #endregion
 
     #region Initialization
+
+    /// <summary>
+    /// Refreshes the summary card with the type, part, location, quantity type, and visual of the
+    /// non-inventoried part currently being processed, plus the running load totals.
+    /// </summary>
+    private void RefreshCurrentPartSummary()
+    {
+        var session = _workflowService.CurrentSession;
+        var selectedPart = session.SelectedPart;
+
+        CurrentTypeName = session.SelectedTypeName ?? string.Empty;
+        CurrentPartId = selectedPart?.PartId ?? string.Empty;
+        CurrentHomeLocation = selectedPart?.HomeLocation ?? string.Empty;
+        CurrentQuantityType = string.IsNullOrWhiteSpace(selectedPart?.QuantityType)
+            ? "Quantity"
+            : selectedPart!.QuantityType;
+
+        var visualPath =
+            string.IsNullOrWhiteSpace(selectedPart?.ImagePath)
+                ? session.SelectedType?.ImagePath
+                : selectedPart.ImagePath;
+
+        CurrentVisualSource = Helper_DunnageImagePaths.CreateImageSource(
+            visualPath,
+            ThumbnailDecodeWidth
+        );
+        CurrentVisualAbsolutePath = Helper_DunnageImagePaths.GetDisplayAbsolutePath(visualPath);
+
+        var loadQuantities = session.LoadQuantities;
+        CurrentLoadCount = loadQuantities.Count;
+        CurrentTotal = loadQuantities.Sum(quantity => quantity)
+            .ToString("N0", CultureInfo.CurrentCulture);
+    }
 
     /// <summary>
     /// Load spec inputs for the selected part's type
@@ -172,6 +246,8 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
             IsBusy = true;
             GoNextCommand.NotifyCanExecuteChanged();
             StatusMessage = "Loading part details...";
+
+            RefreshCurrentPartSummary();
 
             await InitializeStepStateAsync();
 
@@ -758,7 +834,7 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
         catch (Exception ex)
         {
             _logger.LogWarning(
-                $"Failed to load default Dunnage location. Falling back to {FallbackDefaultLocation}. Error: {ex.Message}",
+                $"Failed to load default Non-Inventoried Labels location. Falling back to {FallbackDefaultLocation}. Error: {ex.Message}",
                 "DetailsEntry"
             );
         }

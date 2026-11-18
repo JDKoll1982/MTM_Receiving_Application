@@ -41,7 +41,7 @@ public sealed partial class View_Settings_Dunnage_UserPreferences : Page
         {
             var dialog = new Dialog_FuzzySearchPicker(
                 suggestionsResult.Data,
-                "Select Default Dunnage Location",
+                "Select Default Non-Inventoried Labels Location",
                 $"No exact match was found for '{ViewModel.DefaultLocation?.Trim()}'. Select a matching location."
             )
             {

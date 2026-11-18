@@ -120,7 +120,7 @@
                     Content="Clear All Labels"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
-                    ToolTipService.ToolTip="Archive the active dunnage label queue to history and clear the queue"
+                    ToolTipService.ToolTip="Archive the active non-inventoried label queue to history and clear the queue"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <Button
@@ -165,7 +165,7 @@
                     Content="Clear All Labels"
                     Foreground="Red"
                     IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
-                    ToolTipService.ToolTip="Archive the active dunnage label queue to history and clear the queue"
+                    ToolTipService.ToolTip="Archive the active non-inventoried label queue to history and clear the queue"
                     Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
             </StackPanel>
 

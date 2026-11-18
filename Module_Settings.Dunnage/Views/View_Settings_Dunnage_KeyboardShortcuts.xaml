@@ -27,7 +27,7 @@
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Returns the user to the Dunnage mode selector."
+                                        Text="Returns the user to the Non-Inventoried Labels mode selector."
                                         TextWrapping="Wrap" />
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
@@ -68,7 +68,7 @@
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Clears active Dunnage label data and archives it to history."
+                                        Text="Clears active non-inventoried label data and archives it to history."
                                         TextWrapping="Wrap" />
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
@@ -109,7 +109,7 @@
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Advances the Dunnage workflow to the next step when the current step is valid."
+                                        Text="Advances the Non-Inventoried Labels workflow to the next step when the current step is valid."
                                         TextWrapping="Wrap" />
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
@@ -154,7 +154,7 @@
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Moves the Dunnage workflow back one step without changing data access rules."
+                                        Text="Moves the Non-Inventoried Labels workflow back one step without changing data access rules."
                                         TextWrapping="Wrap" />
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
@@ -199,7 +199,7 @@
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Opens the same contextual help action used by the Dunnage workflow help button."
+                                        Text="Opens the same contextual help action used by the Non-Inventoried Labels workflow help button."
                                         TextWrapping="Wrap" />
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>

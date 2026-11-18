@@ -58,7 +58,7 @@ public sealed partial class ViewModel_Settings_Dunnage_PersonalDefaults : ViewMo
             receivingValidation ?? throw new ArgumentNullException(nameof(receivingValidation));
         _inforVisualService =
             inforVisualService ?? throw new ArgumentNullException(nameof(inforVisualService));
-        Title = "Dunnage Personal Defaults";
+        Title = "Non-Inventoried Labels Personal Defaults";
 
         _ = LoadSettingsAsync();
     }
@@ -88,7 +88,7 @@ public sealed partial class ViewModel_Settings_Dunnage_PersonalDefaults : ViewMo
             if (!locationResult.IsSuccess)
             {
                 ShowStatus(
-                    locationResult.ErrorMessage ?? "Failed to save the default Dunnage location.",
+                    locationResult.ErrorMessage ?? "Failed to save the default Non-Inventoried Labels location.",
                     InfoBarSeverity.Error
                 );
                 return;
@@ -105,12 +105,12 @@ public sealed partial class ViewModel_Settings_Dunnage_PersonalDefaults : ViewMo
                 CurrentUserId
             );
 
-            ShowStatus("Dunnage personal defaults saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels personal defaults saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage personal defaults.",
+                "Failed to save Non-Inventoried Labels personal defaults.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -146,12 +146,12 @@ public sealed partial class ViewModel_Settings_Dunnage_PersonalDefaults : ViewMo
             );
 
             await LoadSettingsAsync();
-            ShowStatus("Dunnage personal defaults reset.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels personal defaults reset.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset Dunnage personal defaults.",
+                "Failed to reset Non-Inventoried Labels personal defaults.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

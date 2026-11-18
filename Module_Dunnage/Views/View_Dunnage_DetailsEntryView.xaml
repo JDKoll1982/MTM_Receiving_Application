@@ -5,6 +5,7 @@
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
     Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -31,6 +32,17 @@
         <!--  Details Form  -->
         <ScrollViewer Grid.Row="1" Style="{StaticResource SharedScrollViewerHorizontalAutoVerticalOffHiddenStyle}">
             <StackPanel Spacing="12">
+                <!--  Current part summary with the running Quantity Per Load total  -->
+                <views:View_Dunnage_Control_CurrentPartSummary
+                    x:Name="CurrentPartSummaryCard"
+                    CurrentTotal="{x:Bind ViewModel.CurrentTotal, Mode=OneWay}"
+                    HomeLocationDisplay="{x:Bind ViewModel.CurrentHomeLocationDisplay, Mode=OneWay}"
+                    LoadCount="{x:Bind ViewModel.CurrentLoadCount, Mode=OneWay}"
+                    PartId="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                    QuantityType="{x:Bind ViewModel.CurrentQuantityType, Mode=OneWay}"
+                    TypeName="{x:Bind ViewModel.CurrentTypeName, Mode=OneWay}"
+                    VisualSource="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" />
+
                 <!--  PO Number and Location Card  -->
                 <Border
                     Padding="16"
@@ -56,7 +68,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Leave blank for non-PO dunnage" />
+                                Text="Leave blank for non-PO non-inventoried labels" />
                         </StackPanel>
 
                         <!--  Location  -->
@@ -71,7 +83,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Where this dunnage is located" />
+                                Text="Where these non-inventoried labels are located" />
                         </StackPanel>
                     </Grid>
                 </Border>

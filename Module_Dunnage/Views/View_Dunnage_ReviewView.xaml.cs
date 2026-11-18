@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -48,6 +49,11 @@ public sealed partial class View_Dunnage_ReviewView : UserControl
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await ViewModel.LoadSessionLoadsAsync();
+    }
+
+    private void OnPhotoCardTapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        Helper_UI_ImageLightbox.Show(ViewModel.CurrentVisualAbsolutePath);
     }
 
     private void ReviewDataGrid_Sorting(object sender, DataGridColumnEventArgs e)

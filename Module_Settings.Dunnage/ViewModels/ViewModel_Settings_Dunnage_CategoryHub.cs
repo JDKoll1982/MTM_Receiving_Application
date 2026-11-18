@@ -16,7 +16,7 @@ public sealed partial class ViewModel_Settings_Dunnage_CategoryHub
     )
         : base(pagination, errorHandler, logger, notificationService)
     {
-        NavigationTitle = "Dunnage Settings";
+        NavigationTitle = "Non-Inventoried Labels Settings";
         CurrentStepTitle = NavigationTitle;
 
         SetSteps(

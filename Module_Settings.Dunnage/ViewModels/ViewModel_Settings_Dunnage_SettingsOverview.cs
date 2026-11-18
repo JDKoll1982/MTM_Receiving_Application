@@ -12,6 +12,6 @@ public sealed partial class ViewModel_Settings_Dunnage_SettingsOverview : ViewMo
     )
         : base(errorHandler, logger, notificationService)
     {
-        Title = "Dunnage Settings";
+        Title = "Non-Inventoried Labels Settings";
     }
 }

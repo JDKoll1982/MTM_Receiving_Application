@@ -135,6 +135,16 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     public ImageSource? CurrentVisualSource =>
         CurrentLoad?.PartImageSource ?? CurrentLoad?.TypeImageSource;
 
+    /// <summary>
+    /// Gets the absolute path of the visual shown in the review photo card.
+    /// </summary>
+    public string? CurrentVisualAbsolutePath =>
+        Helper_DunnageImagePaths.GetDisplayAbsolutePath(
+            string.IsNullOrWhiteSpace(CurrentLoad?.PartImagePath)
+                ? CurrentLoad?.TypeImagePath
+                : CurrentLoad?.PartImagePath
+        );
+
     #endregion
 
     #region Initialization
@@ -279,7 +289,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         if (!poResult.IsSuccess)
         {
             _logger.LogWarning(
-                $"Unable to load vendor information for Dunnage review PO {normalizedPoNumber}: {poResult.ErrorMessage}",
+                $"Unable to load vendor information for Non-Inventoried Labels review PO {normalizedPoNumber}: {poResult.ErrorMessage}",
                 "Review"
             );
             return;
@@ -410,7 +420,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
 
         var dialog = new ContentDialog
         {
-            Title = "Dunnage Saved",
+            Title = "Non-Inventoried Labels Saved",
             Content = $"Successfully saved {LoadCount} load(s). What would you like to do next?",
             PrimaryButtonText = "Start New Entry",
             SecondaryButtonText = "Mode Selection",

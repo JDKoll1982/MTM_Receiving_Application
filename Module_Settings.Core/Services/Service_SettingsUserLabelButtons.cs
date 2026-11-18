@@ -153,7 +153,7 @@ public class Service_SettingsUserLabelButtons : IService_SettingsUserLabelButton
             new()
             {
                 Id = "dunnage",
-                Label = "Dunnage",
+                Label = "Non-Inventoried Labels",
                 IconKey = "PackageVariantClosed",
                 Accent = Enum_MainWindowLabelButtonAccent.Blue,
                 IsEnabled = true,

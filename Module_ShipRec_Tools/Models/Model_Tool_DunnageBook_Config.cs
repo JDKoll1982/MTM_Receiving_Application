@@ -5,7 +5,7 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Models;
 /// </summary>
 public class Model_Tool_DunnageBook_Config
 {
-    public const string DefaultCoverTitle = "Dunnage Reference Book";
+    public const string DefaultCoverTitle = "Non-Inventoried Reference Book";
 
     /// <summary>
     /// Title shown on the cover page and in the running page footer.

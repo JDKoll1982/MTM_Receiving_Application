@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog
+    x:Class="MTM_Receiving_Application.Module_Dunnage.Views.View_Dunnage_Dialog_ImageCrop"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    Title="Crop Image"
+    Width="760"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnApplyCropClick"
+    PrimaryButtonText="Apply Crop">
+    <StackPanel Padding="8" Spacing="16">
+        <TextBlock
+            Style="{StaticResource BodyTextBlockStyle}"
+            Text="Drag the handles to choose the area to keep. The cropped image is saved at the full resolution of the selected area."
+            TextWrapping="Wrap" />
+
+        <Border
+            Height="360"
+            Padding="8"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <controls:ImageCropper
+                x:Name="CropperControl"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                CropShape="Rectangular"
+                ThumbPlacement="All" />
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <RadioButton
+                x:Name="FreeAspectRadioButton"
+                Checked="OnAspectRatioChanged"
+                Content="Free"
+                GroupName="CropAspectRatio"
+                IsChecked="True" />
+            <RadioButton
+                x:Name="SquareAspectRadioButton"
+                Checked="OnAspectRatioChanged"
+                Content="Square (1:1)"
+                GroupName="CropAspectRatio" />
+            <RadioButton
+                x:Name="LandscapeAspectRadioButton"
+                Checked="OnAspectRatioChanged"
+                Content="Landscape (4:3)"
+                GroupName="CropAspectRatio" />
+            <RadioButton
+                x:Name="WideAspectRadioButton"
+                Checked="OnAspectRatioChanged"
+                Content="Wide (16:9)"
+                GroupName="CropAspectRatio" />
+            <Button Click="OnResetCropClick" Content="Reset" />
+        </StackPanel>
+
+        <TextBlock
+            x:Name="CropStatusTextBlock"
+            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            TextWrapping="Wrap"
+            Visibility="Collapsed" />
+    </StackPanel>
+</ContentDialog>

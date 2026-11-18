@@ -34,7 +34,7 @@ public partial class ViewModel_Dunnage_PartInfoModal : ViewModel_Shared_Base
     }
 
     [ObservableProperty]
-    private string _heading = "Dunnage Part Details";
+    private string _heading = "Non-Inventoried Part Details";
 
     [ObservableProperty]
     private string _partId = string.Empty;

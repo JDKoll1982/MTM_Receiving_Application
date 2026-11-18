@@ -20,7 +20,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Choose the shared folder that stores Dunnage images for the whole application. The folder must already exist when you save these settings."
+                                Text="Choose the shared folder that stores Non-Inventoried Labels images for the whole application. The folder must already exist when you save these settings."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -57,7 +57,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Set the maximum image file size that Dunnage image imports should accept before the file is normalized into app-managed storage."
+                                Text="Set the maximum image file size that Non-Inventoried Labels image imports should accept before the file is normalized into app-managed storage."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 

@@ -27,7 +27,7 @@
                     CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Dunnage Label" />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Non-Inventoried Label" />
                             <Grid ColumnSpacing="12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -36,7 +36,7 @@
                                 <TextBox
                                     Grid.Column="0"
                                     IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
-                                    PlaceholderText="Select the Dunnage .lbl file"
+                                    PlaceholderText="Select the Non-Inventoried Labels .lbl file"
                                     Text="{x:Bind ViewModel.DunnageLabelPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button
                                     Grid.Column="1"

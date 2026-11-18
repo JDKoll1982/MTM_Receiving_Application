@@ -7,8 +7,8 @@
     <Grid Padding="24">
         <StackPanel Spacing="12">
             <controls:View_SettingsPlaceholderControl
-                TitleText="Dunnage Settings"
-                DescriptionText="Placeholder overview for Dunnage module settings (derived from Module_Dunnage SETTABLE_OBJECTS report)."
+                TitleText="Non-Inventoried Labels Settings"
+                DescriptionText="Placeholder overview for Non-Inventoried Labels module settings (derived from the module SETTABLE_OBJECTS report)."
             />
 
             <Expander Header="Notes (what belongs here)" IsExpanded="True">

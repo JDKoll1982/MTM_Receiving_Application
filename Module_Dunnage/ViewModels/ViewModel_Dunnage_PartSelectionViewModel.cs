@@ -201,6 +201,18 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         ?? SelectedTypeImageSource;
 
     /// <summary>
+    /// Absolute path of the visual shown in Part Details, used when the user opens the full image.
+    /// </summary>
+    public string? SelectedPartVisualAbsolutePath =>
+        Helper_DunnageImagePaths.GetDisplayAbsolutePath(
+            string.IsNullOrWhiteSpace(SelectedPart?.ImagePath)
+                ? string.IsNullOrWhiteSpace(SelectedPart?.DunnageTypeImagePath)
+                    ? SelectedTypeImagePath
+                    : SelectedPart.DunnageTypeImagePath
+                : SelectedPart.ImagePath
+        );
+
+    /// <summary>
     /// True when the selected part is on the no-label list, so the details panel can say why no label will
     /// be queued for it.
     /// </summary>
@@ -980,7 +992,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error adding new dunnage part",
+                "Error adding new non-inventoried part",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -1171,7 +1183,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error editing dunnage part",
+                "Error editing non-inventoried part",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -1210,7 +1222,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             if (availableTypes.Count == 0)
             {
                 await _errorHandler.HandleErrorAsync(
-                    "No other dunnage types are available to move this part to.",
+                    "No other non-inventoried types are available to move this part to.",
                     Enum_ErrorSeverity.Info,
                     null,
                     true
@@ -1298,7 +1310,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error changing dunnage part type",
+                "Error changing non-inventoried part type",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -1355,7 +1367,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         var dialog = new ContentDialog
         {
             XamlRoot = xamlRoot,
-            Title = "Change Dunnage Type",
+            Title = "Change Non-Inventoried Type",
             Content = message,
             PrimaryButtonText = "Move Part",
             CloseButtonText = "Cancel",
@@ -1436,7 +1448,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         var dialog = new ContentDialog
         {
             XamlRoot = xamlRoot,
-            Title = "Update Saved Dunnage Rows",
+            Title = "Update Saved Non-Inventoried Labels Rows",
             Content = warningMessage,
             PrimaryButtonText = "Continue",
             CloseButtonText = "Cancel",
@@ -1530,7 +1542,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             return null;
         }
 
-        return $"This edit will also change all pre-existing Dunnage current label data and history rows that use this saved value. Continue updating the {string.Join(" and ", changedValues)}?";
+        return $"This edit will also change all pre-existing Non-Inventoried Labels current label data and history rows that use this saved value. Continue updating the {string.Join(" and ", changedValues)}?";
     }
 
     /// <summary>Builds the part delete-confirmation warning with affected row counts.</summary>
@@ -1629,7 +1641,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
             var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
             {
                 XamlRoot = App.MainWindow?.Content?.XamlRoot,
-                Title = "Delete Dunnage Part",
+                Title = "Delete Non-Inventoried Part",
                 Content = BuildPartDeleteWarning(part.PartId, impact),
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
@@ -1669,7 +1681,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Error deleting dunnage part",
+                "Error deleting non-inventoried part",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -1719,7 +1731,7 @@ public partial class ViewModel_Dunnage_PartSelection : ViewModel_Shared_Base, IR
         if (templateOptions.Count == 0)
         {
             await _errorHandler.HandleErrorAsync(
-                "No saved specs were found for this dunnage type.",
+                "No saved specs were found for this non-inventoried type.",
                 Enum_ErrorSeverity.Info,
                 null,
                 true

@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Dialogs;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
@@ -17,7 +18,13 @@ public sealed partial class View_Dunnage_DetailsEntryView : UserControl
         _focusService = App.GetService<IService_Focus>();
         InitializeComponent();
 
+        CurrentPartSummaryCard.ImageTapped += OnCurrentPartImageTapped;
         _focusService.AttachFocusOnVisibility(this, PoNumberTextBox);
+    }
+
+    private void OnCurrentPartImageTapped(object? sender, System.EventArgs e)
+    {
+        Helper_UI_ImageLightbox.Show(ViewModel.CurrentVisualAbsolutePath);
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)

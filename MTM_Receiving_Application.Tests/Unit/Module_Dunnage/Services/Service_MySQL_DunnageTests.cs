@@ -621,7 +621,7 @@ public sealed class Service_MySQL_DunnageTests
         var result = await service.InsertPartWithInventoryAsync(part, "Not Inventoried");
 
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be("A dunnage part with Part ID 'PART-300' already exists.");
+        result.ErrorMessage.Should().Be("A non-inventoried part with Part ID 'PART-300' already exists.");
         daoPart.Verify(
             dao =>
                 dao.InsertWithInventoryAsync(

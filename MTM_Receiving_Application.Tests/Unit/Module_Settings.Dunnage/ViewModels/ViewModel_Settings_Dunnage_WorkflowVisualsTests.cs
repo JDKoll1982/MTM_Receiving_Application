@@ -82,7 +82,7 @@ public sealed class ViewModel_Settings_Dunnage_WorkflowVisualsTests
                 ),
             Times.Once
         );
-        viewModel.StatusMessage.Should().Be("Dunnage workflow visual settings saved.");
+        viewModel.StatusMessage.Should().Be("Non-Inventoried Labels workflow visual settings saved.");
     }
 
     [Fact]

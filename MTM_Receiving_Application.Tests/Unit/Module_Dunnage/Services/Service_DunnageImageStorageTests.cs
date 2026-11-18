@@ -90,6 +90,59 @@ public sealed class Service_DunnageImageStorageTests : IDisposable
     }
 
     [Fact]
+    public void CreateTempWorkingCopyPath_ShouldKeepSourceExtension_WhenInsideTempFolder()
+    {
+        var localCacheRoot = Path.Combine(Path.GetTempPath(), $"dunnage-cache-{Guid.NewGuid():N}");
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
+
+        try
+        {
+            var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
+
+            var firstPath = service.CreateTempWorkingCopyPath(@"Parts/Pallet-100.jpg");
+            var secondPath = service.CreateTempWorkingCopyPath(@"Parts/Pallet-100.jpg");
+
+            firstPath.Should().EndWith(".jpg");
+            secondPath.Should().EndWith(".jpg");
+            firstPath.Should().NotBe(secondPath);
+            Path.GetDirectoryName(firstPath)
+                .Should()
+                .Be(Path.Combine(localCacheRoot, "Temp"));
+            Directory.Exists(Path.GetDirectoryName(firstPath)).Should().BeTrue();
+        }
+        finally
+        {
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void CreateTempWorkingCopyPath_ShouldFallBackToPng_WhenSourceExtensionIsUnsupported()
+    {
+        var localCacheRoot = Path.Combine(Path.GetTempPath(), $"dunnage-cache-{Guid.NewGuid():N}");
+        Helper_DunnageImagePaths.SetLocalCacheRootFolder(localCacheRoot);
+
+        try
+        {
+            var service = new Service_DunnageImageStorage(CreateSettingsCoreFacade().Object);
+
+            var path = service.CreateTempWorkingCopyPath(@"Parts/Pallet-100.bmp");
+
+            path.Should().EndWith(".png");
+        }
+        finally
+        {
+            if (Directory.Exists(localCacheRoot))
+            {
+                Directory.Delete(localCacheRoot, true);
+            }
+        }
+    }
+
+    [Fact]
     public async Task GetConfiguredRootFolderAsync_ShouldReturnConfiguredFolder_WhenSettingExists()
     {
         var configuredFolder = Path.Combine(Path.GetTempPath(), $"dunnage-root-{Guid.NewGuid():N}");

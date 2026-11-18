@@ -26,6 +26,13 @@ public interface IService_DunnageImageStorage
 
     Task<Model_Dao_Result<string>> CreateRotatedWorkingCopyAsync(string imagePath);
 
+    /// <summary>
+    /// Reserves a unique path inside the local temp working folder, keeping the supported
+    /// extension of the supplied image. Callers write edited image content to this path so the
+    /// original photo is never modified.
+    /// </summary>
+    string CreateTempWorkingCopyPath(string? sourceImagePath);
+
     Task<Model_Dao_Result> DeleteImageAsync(string? relativeImagePath);
 
     string? GetAbsolutePath(string? relativeImagePath);

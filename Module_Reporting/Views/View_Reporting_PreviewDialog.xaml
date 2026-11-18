@@ -374,7 +374,7 @@
                     <PivotItem
                         x:Name="DunnagePreviewPivotItem"
                         x:Load="{x:Bind ViewModel.HasDunnageIncludedPreviewModuleCard, Mode=OneWay}"
-                        Header="Dunnage">
+                        Header="Non-Inventoried Labels">
                         <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource PreviewModuleCardTemplate}" />
                     </PivotItem>
                     <PivotItem
@@ -503,7 +503,7 @@
                                     <PivotItem
                                         x:Name="DunnageOptionsPivotItem"
                                         x:Load="{x:Bind ViewModel.HasDunnagePreviewModuleCard, Mode=OneWay}"
-                                        Header="Dunnage">
+                                        Header="Non-Inventoried Labels">
                                         <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource OptionsModuleTemplate}" />
                                     </PivotItem>
                                     <PivotItem

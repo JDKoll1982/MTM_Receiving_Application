@@ -150,7 +150,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                             return new Model_WorkflowStepResult
                             {
                                 IsSuccess = false,
-                                ErrorMessage = "Please select a dunnage type.",
+                                ErrorMessage = "Please select a non-inventoried type.",
                             };
                         }
 
@@ -387,7 +387,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 if (!clearAllRows && employeeNumber <= 0)
                 {
                     return Model_Dao_Result_Factory.Failure<int>(
-                        "A valid 4-digit employee number is required to clear your dunnage label rows."
+                        "A valid 4-digit employee number is required to clear your non-inventoried label rows."
                     );
                 }
 
@@ -398,7 +398,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                     {
                         return Model_Dao_Result_Factory.Failure<int>(
                             authorizationResult.ErrorMessage
-                                ?? "Only Admin or Developer users can clear all dunnage label rows."
+                                ?? "Only Admin or Developer users can clear all non-inventoried label rows."
                         );
                     }
                 }
@@ -446,7 +446,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             if (employeeNumber <= 0)
             {
                 return Model_Dao_Result_Factory.Failure(
-                    "Only Admin or Developer users can clear all dunnage label rows."
+                    "Only Admin or Developer users can clear all non-inventoried label rows."
                 );
             }
 
@@ -462,7 +462,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             return _userPrivileges.HasAnyRole("Admin", "Developer")
                 ? Model_Dao_Result_Factory.Success()
                 : Model_Dao_Result_Factory.Failure(
-                    "Only Admin or Developer users can clear all dunnage label rows."
+                    "Only Admin or Developer users can clear all non-inventoried label rows."
                 );
         }
 

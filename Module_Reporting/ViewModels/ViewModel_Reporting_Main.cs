@@ -607,7 +607,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         {
             yield return new SelectedModuleRequest(
                 "Dunnage",
-                "Detailed dunnage activity captured for the selected date range.",
+                "Detailed non-inventoried labels activity captured for the selected date range.",
                 () =>
                     _reportingService.GetDunnageHistoryAsync(
                         (StartDate ?? DateTimeOffset.Now.AddDays(-7)).DateTime,
@@ -785,7 +785,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PONumber), "PO Number", 140d));
         candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.POLineNumber), "PO Line #", 110d));
         candidateColumns.Add(
-            CreateColumn(nameof(Model_ReportRow.DisplayPartOrDunnage), "Part / Dunnage", 220d, true)
+            CreateColumn(nameof(Model_ReportRow.DisplayPartOrDunnage), "Part / Non-Inventoried Labels", 220d, true)
         );
         candidateColumns.Add(
             CreateColumn(nameof(Model_ReportRow.PartNumber), "Part Number", 170d, true)
@@ -794,7 +794,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             CreateColumn(nameof(Model_ReportRow.PartDescription), "Part Description", 240d, true)
         );
         candidateColumns.Add(
-            CreateColumn(nameof(Model_ReportRow.DunnageType), "Dunnage Type", 180d, true)
+            CreateColumn(nameof(Model_ReportRow.DunnageType), "Non-Inventoried Type", 180d, true)
         );
         candidateColumns.Add(
             CreateColumn(nameof(Model_ReportRow.SpecsCombined), "Specs Combined", 260d, true)

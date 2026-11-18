@@ -104,9 +104,8 @@
                     <!--  Details Card  -->
                     <Border
                         Grid.Column="0"
-                        MaxWidth="820"
                         Padding="20"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Stretch"
                         VerticalAlignment="Top"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -227,6 +226,8 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
+                        Tapped="OnPhotoCardTapped"
+                        ToolTipService.ToolTip="Click to view the full image"
                         Visibility="{x:Bind ViewModel.HasCurrentVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Spacing="8">
                             <Border

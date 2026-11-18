@@ -151,7 +151,7 @@
 
                                 <StackPanel Grid.Column="1" Spacing="4">
                                     <CheckBox
-                                        Content="Dunnage"
+                                        Content="Non-Inventoried Labels"
                                         IsChecked="{x:Bind ViewModel.IsDunnageChecked, Mode=TwoWay}"
                                         IsEnabled="{x:Bind ViewModel.IsDunnageEnabled, Mode=OneWay}" />
                                     <TextBlock

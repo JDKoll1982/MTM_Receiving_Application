@@ -40,7 +40,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImageAssets : ViewModel_S
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
         _imageStorage = imageStorage ?? throw new ArgumentNullException(nameof(imageStorage));
-        Title = "Dunnage Image Assets";
+        Title = "Non-Inventoried Labels Image Assets";
 
         _ = LoadAsync();
     }
@@ -78,7 +78,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImageAssets : ViewModel_S
             {
                 ShowStatus(
                     imageLocationResult.ErrorMessage
-                        ?? "Failed to save the shared Dunnage image folder.",
+                        ?? "Failed to save the shared Non-Inventoried Labels image folder.",
                     InfoBarSeverity.Error
                 );
                 return;
@@ -90,12 +90,12 @@ public sealed partial class ViewModel_Settings_Dunnage_ImageAssets : ViewModel_S
             );
 
             await _imageStorage.RefreshConfiguredRootFolderAsync();
-            ShowStatus("Dunnage image asset settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels image asset settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage image asset settings.",
+                "Failed to save Non-Inventoried Labels image asset settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -126,12 +126,12 @@ public sealed partial class ViewModel_Settings_Dunnage_ImageAssets : ViewModel_S
             );
 
             await LoadAsync();
-            ShowStatus("Dunnage image asset settings reset.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels image asset settings reset.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset Dunnage image asset settings.",
+                "Failed to reset Non-Inventoried Labels image asset settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -192,7 +192,7 @@ public sealed partial class ViewModel_Settings_Dunnage_ImageAssets : ViewModel_S
             return true;
         }
 
-        message = "The shared Dunnage image folder must point to an existing directory.";
+        message = "The shared Non-Inventoried Labels image folder must point to an existing directory.";
         return false;
     }
 }

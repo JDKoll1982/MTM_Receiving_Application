@@ -27,7 +27,7 @@
                 Margin="0,0,260,0"
                 VerticalAlignment="Center"
                 Style="{StaticResource BodyTextBlockStyle}"
-                Text="Choose which columns appear in Dunnage Edit Mode. Fields are grouped so the list is easier to scan and updated automatically from the live grid columns."
+                Text="Choose which columns appear in Non-Inventoried Labels Edit Mode. Fields are grouped so the list is easier to scan and updated automatically from the live grid columns."
                 TextWrapping="Wrap" />
 
             <StackPanel

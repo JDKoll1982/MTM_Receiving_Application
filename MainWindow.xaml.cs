@@ -66,6 +66,12 @@ namespace MTM_Receiving_Application
         private string? _settingsReturnRouteTag;
         private Type? _currentSettingsPageType;
 
+        /// <summary>
+        /// Gets the full-window overlay host that modal surfaces, such as the image lightbox,
+        /// mount themselves into so they cover the whole window.
+        /// </summary>
+        public ContentControl ModalOverlayHost => ModalOverlayHostControl;
+
         private enum SearchDestinationKind
         {
             FrameRoute,
@@ -1091,14 +1097,14 @@ namespace MTM_Receiving_Application
                 ),
                 CreateFrameDestination(
                     "DunnageLabelPage",
-                    "Dunnage Labels",
-                    "Guided and manual dunnage workflow",
+                    "Non-Inventoried Labels",
+                    "Guided and manual non-inventoried labels workflow",
                     "dunnage",
-                    "dunnage labels",
-                    "dunnage workflow",
-                    "dunnage mode selection",
-                    "guided dunnage",
-                    "manual dunnage"
+                    "non-inventoried labels",
+                    "non-inventoried labels workflow",
+                    "non-inventoried labels mode selection",
+                    "guided non-inventoried labels",
+                    "manual non-inventoried labels"
                 ),
                 // MODULE_OUTSIDESERVICE_DISABLED: Search destination intentionally removed while the module is offline.
                 CreateFrameDestination(
@@ -1295,58 +1301,58 @@ namespace MTM_Receiving_Application
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub),
-                    "Dunnage Settings",
-                    "Dunnage settings categories",
-                    "dunnage settings",
-                    "dunnage categories",
-                    "dunnage navigation"
+                    "Non-Inventoried Labels Settings",
+                    "Non-Inventoried Labels settings categories",
+                    "non-inventoried labels settings",
+                    "non-inventoried labels categories",
+                    "non-inventoried labels navigation"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_PersonalDefaults),
-                    "Dunnage Personal Defaults",
-                    "User-specific default location and personal image preferences for Dunnage",
-                    "dunnage personal defaults",
-                    "dunnage preferences"
+                    "Non-Inventoried Labels Personal Defaults",
+                    "User-specific default location and personal image preferences for Non-Inventoried Labels",
+                    "non-inventoried labels personal defaults",
+                    "non-inventoried labels preferences"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImageAssets),
-                    "Dunnage Image Assets",
-                    "Shared Dunnage image folder and file size limits",
-                    "dunnage image assets",
-                    "dunnage image folder",
-                    "dunnage image settings"
+                    "Non-Inventoried Labels Image Assets",
+                    "Shared Non-Inventoried Labels image folder and file size limits",
+                    "non-inventoried labels image assets",
+                    "non-inventoried labels image folder",
+                    "non-inventoried labels image settings"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation),
-                    "Dunnage Image Presentation",
-                    "Application-wide Dunnage image display settings",
-                    "dunnage image presentation",
-                    "dunnage display settings",
-                    "dunnage ui"
+                    "Non-Inventoried Labels Image Presentation",
+                    "Application-wide Non-Inventoried Labels image display settings",
+                    "non-inventoried labels image presentation",
+                    "non-inventoried labels display settings",
+                    "non-inventoried labels ui"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals),
-                    "Dunnage Workflow Visuals",
-                    "Image behavior during the Dunnage workflow",
-                    "dunnage workflow visuals",
-                    "dunnage workflow image settings",
-                    "dunnage workflow"
+                    "Non-Inventoried Labels Workflow Visuals",
+                    "Image behavior during the Non-Inventoried Labels workflow",
+                    "non-inventoried labels workflow visuals",
+                    "non-inventoried labels workflow image settings",
+                    "non-inventoried labels workflow"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_KeyboardShortcuts),
-                    "Dunnage Keyboard Shortcuts",
-                    "Configure the Dunnage workflow shortcuts and the simple navigation toggle",
-                    "dunnage shortcuts",
-                    "dunnage keyboard shortcuts",
-                    "keyboard shortcuts dunnage"
+                    "Non-Inventoried Labels Keyboard Shortcuts",
+                    "Configure the Non-Inventoried Labels workflow shortcuts and the simple navigation toggle",
+                    "non-inventoried labels shortcuts",
+                    "non-inventoried labels keyboard shortcuts",
+                    "keyboard shortcuts non-inventoried labels"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths),
-                    "Dunnage Label Files",
-                    "Configure the LabelView template path used for Dunnage labels",
-                    "dunnage label paths",
-                    "dunnage label files",
-                    "dunnage labelview paths"
+                    "Non-Inventoried Label Files",
+                    "Configure the LabelView template path used for non-inventoried labels",
+                    "non-inventoried label paths",
+                    "non-inventoried label files",
+                    "non-inventoried labelview paths"
                 ),
                 CreateSettingsDestination(
                     typeof(Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub),
@@ -1460,7 +1466,7 @@ namespace MTM_Receiving_Application
                 CreateCommandDestination(
                     "/dunnage",
                     "/dunnage",
-                    "Show dunnage-related destinations",
+                    "Show non-inventoried destinations",
                     "dunnage"
                 ),
                 CreateCommandDestination(
@@ -2140,7 +2146,7 @@ namespace MTM_Receiving_Application
                 CreateNavigationItem("Core Settings", "CoreSettingsHub", "\uE713"),
                 new NavigationViewItemSeparator(),
                 CreateNavigationItem("Receiving Navigation", "ReceivingSettingsHub", "\uE74C"),
-                CreateNavigationItem("Dunnage Navigation", "DunnageSettingsHub", "\uE7B8"),
+                CreateNavigationItem("Non-Inventoried Labels Navigation", "DunnageSettingsHub", "\uE7B8"),
                 CreateNavigationItem("Reporting Navigation", "ReportingSettingsHub", "\uE9F9"),
                 CreateNavigationItem("Volvo Navigation", "VolvoSettingsHub", "\uE7C1"),
             ];

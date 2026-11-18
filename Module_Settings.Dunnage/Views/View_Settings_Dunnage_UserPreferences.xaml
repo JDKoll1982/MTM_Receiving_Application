@@ -17,11 +17,11 @@
                     CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Default Dunnage Location" />
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Default Non-Inventoried Labels Location" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="This location is applied automatically when the Dunnage details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
+                                Text="This location is applied automatically when the Non-Inventoried Labels details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -53,7 +53,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="Preferred thumbnail sizing and image priority stay user-specific. The default image folder is shared across the application so every user sees the same Dunnage image source."
+                                Text="Preferred thumbnail sizing and image priority stay user-specific. The default image folder is shared across the application so every user sees the same Non-Inventoried Labels image source."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -95,7 +95,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Choose the shared folder that stores Dunnage images for the whole application. The folder must already exist when you save these settings."
+                            Text="Choose the shared folder that stores Non-Inventoried Labels images for the whole application. The folder must already exist when you save these settings."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>

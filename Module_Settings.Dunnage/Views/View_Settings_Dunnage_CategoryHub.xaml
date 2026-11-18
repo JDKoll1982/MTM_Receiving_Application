@@ -52,7 +52,7 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set your default Dunnage location, thumbnail size, and part image preference."
+                        Text="Set your default Non-Inventoried Labels location, thumbnail size, and part image preference."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -84,7 +84,7 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Choose the shared Dunnage image folder and the max import file size."
+                        Text="Choose the shared Non-Inventoried Labels image folder and the max import file size."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -116,7 +116,7 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Choose which Dunnage visuals appear and how image sources are prioritized."
+                        Text="Choose which Non-Inventoried Labels visuals appear and how image sources are prioritized."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -180,7 +180,7 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set Dunnage shortcuts for mode select, label clear, navigation, help, and Ctrl+T."
+                        Text="Set Non-Inventoried Labels shortcuts for mode select, label clear, navigation, help, and Ctrl+T."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>

@@ -2,15 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
+using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
@@ -25,6 +28,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     private readonly IService_Dispatcher _dispatcher;
     private readonly IService_Help _helpService;
     private readonly IService_ViewModelRegistry _viewModelRegistry;
+    private const int ThumbnailDecodeWidth = 192;
     private bool _isSynchronizingLoads;
 
     public ViewModel_Dunnage_QuantityEntry(
@@ -80,6 +84,45 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
     [NotifyPropertyChangedFor(nameof(IsValid))]
     private string _validationMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _currentTypeName = string.Empty;
+
+    [ObservableProperty]
+    private string _currentPartId = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentHomeLocationDisplay))]
+    private string _currentHomeLocation = string.Empty;
+
+    [ObservableProperty]
+    private string _currentQuantityType = "Quantity";
+
+    [ObservableProperty]
+    private int _currentLoadCount;
+
+    [ObservableProperty]
+    private string _currentTotal = "0";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCurrentVisual))]
+    private ImageSource? _currentVisualSource;
+
+    /// <summary>
+    /// Gets a value indicating whether the part or type carries an image to show in the summary card.
+    /// </summary>
+    public bool HasCurrentVisual => CurrentVisualSource is not null;
+
+    /// <summary>
+    /// Gets the absolute path of the summary image, used when the user opens the full image.
+    /// </summary>
+    public string? CurrentVisualAbsolutePath { get; private set; }
+
+    /// <summary>
+    /// Gets the saved home location, or a plain fallback when the part has none.
+    /// </summary>
+    public string CurrentHomeLocationDisplay =>
+        string.IsNullOrWhiteSpace(CurrentHomeLocation) ? "Not set" : CurrentHomeLocation;
+
     public bool IsValid =>
         NumberOfLoads > 0 && Loads.Count > 0 && Loads.All(load => load.Quantity > 0);
 
@@ -89,6 +132,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
         {
             NumberOfLoads = _workflowService.NumberOfLoads;
             RebuildLoadEditors();
+            RefreshCurrentPartSummary();
 
             var selectedTypeName = _workflowService.CurrentSession.SelectedTypeName ?? string.Empty;
             var selectedPartName =
@@ -103,6 +147,44 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
         {
             _logger.LogError($"Error loading context data: {ex.Message}", ex, "QuantityEntry");
         }
+    }
+
+    /// <summary>
+    /// Refreshes the summary card with the type, part, location, quantity type, and visual of the
+    /// dunnage currently being processed.
+    /// </summary>
+    private void RefreshCurrentPartSummary()
+    {
+        var session = _workflowService.CurrentSession;
+        var selectedPart = session.SelectedPart;
+
+        CurrentTypeName = session.SelectedTypeName ?? string.Empty;
+        CurrentPartId = selectedPart?.PartId ?? string.Empty;
+        CurrentHomeLocation = selectedPart?.HomeLocation ?? string.Empty;
+        CurrentQuantityType = string.IsNullOrWhiteSpace(selectedPart?.QuantityType)
+            ? "Quantity"
+            : selectedPart!.QuantityType;
+
+        var visualPath =
+            string.IsNullOrWhiteSpace(selectedPart?.ImagePath)
+                ? session.SelectedType?.ImagePath
+                : selectedPart.ImagePath;
+
+        CurrentVisualSource = Helper_DunnageImagePaths.CreateImageSource(
+            visualPath,
+            ThumbnailDecodeWidth
+        );
+        CurrentVisualAbsolutePath = Helper_DunnageImagePaths.GetDisplayAbsolutePath(visualPath);
+    }
+
+    /// <summary>
+    /// Recalculates the load count and the running total of every Quantity Per Load value, the
+    /// same way the receiving weight/quantity step keeps its running total.
+    /// </summary>
+    private void UpdateLoadTotals()
+    {
+        CurrentLoadCount = Loads.Count;
+        CurrentTotal = Loads.Sum(load => load.Quantity).ToString("N0", CultureInfo.CurrentCulture);
     }
 
     partial void OnQuantityChanged(int value)
@@ -240,6 +322,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
         }
 
         ValidateQuantity();
+        UpdateLoadTotals();
         GoNextCommand.NotifyCanExecuteChanged();
     }
 
@@ -256,6 +339,8 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
         {
             load.PropertyChanged += Load_PropertyChanged;
         }
+
+        UpdateLoadTotals();
     }
 
     private void ValidateQuantity()
@@ -298,7 +383,7 @@ public partial class ViewModel_Dunnage_QuantityEntry : ViewModel_Shared_Base, IR
             _workflowService.CurrentSession.NumberOfLoads = NumberOfLoads;
 
             _logger.LogInfo(
-                $"Prepared {NumberOfLoads} dunnage load(s) for the current part",
+                $"Prepared {NumberOfLoads} non-inventoried label load(s) for the current part",
                 "QuantityEntry"
             );
 

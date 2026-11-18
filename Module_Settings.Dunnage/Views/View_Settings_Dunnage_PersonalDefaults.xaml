@@ -16,11 +16,11 @@
                     CornerRadius="8">
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="4">
-                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Default Dunnage Location" />
+                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Default Non-Inventoried Labels Location" />
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="This location is applied automatically when the Dunnage details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
+                                Text="This location is applied automatically when the Non-Inventoried Labels details step is left blank. The value must match a valid Infor Visual location in warehouse 002."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
@@ -51,7 +51,7 @@
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource BodyTextBlockStyle}"
-                                Text="These settings stay user-specific. Use them to tune how large Dunnage visuals appear for you and whether part images should win when both part and type images exist."
+                                Text="These settings stay user-specific. Use them to tune how large Non-Inventoried Labels visuals appear for you and whether part images should win when both part and type images exist."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 

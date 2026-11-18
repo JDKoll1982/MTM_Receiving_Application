@@ -12,6 +12,6 @@ public sealed partial class ViewModel_Settings_Dunnage_Permissions : ViewModel_S
     )
         : base(errorHandler, logger, notificationService)
     {
-        Title = "Dunnage Permissions";
+        Title = "Non-Inventoried Labels Permissions";
     }
 }

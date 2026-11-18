@@ -7,8 +7,8 @@
     <Grid Padding="24">
         <StackPanel Spacing="12">
             <controls:View_SettingsPlaceholderControl
-                TitleText="Dunnage Audit"
-                DescriptionText="Placeholder UI for viewing audit history of Dunnage settings changes."
+                TitleText="Non-Inventoried Labels Audit"
+                DescriptionText="Placeholder UI for viewing audit history of Non-Inventoried Labels settings changes."
             />
 
             <Expander Header="Notes (what belongs here)" IsExpanded="True">

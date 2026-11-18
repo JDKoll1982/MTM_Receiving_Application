@@ -306,31 +306,31 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
             // Dunnage Settings Pages
             "View_Settings_Dunnage_PersonalDefaults" => (
                 "Personal Defaults",
-                "Manage your default Dunnage location, preferred thumbnail size, and image preference order."
+                "Manage your default Non-Inventoried Labels location, preferred thumbnail size, and image preference order."
             ),
             "View_Settings_Dunnage_ImageAssets" => (
                 "Image Assets",
-                "Configure the shared Dunnage image folder and the file size limit used for image imports."
+                "Configure the shared Non-Inventoried Labels image folder and the file size limit used for image imports."
             ),
             "View_Settings_Dunnage_ImagePresentation" => (
                 "Image Presentation",
-                "Control the global Dunnage image display options and visual source priority."
+                "Control the global Non-Inventoried Labels image display options and visual source priority."
             ),
             "View_Settings_Dunnage_WorkflowVisuals" => (
                 "Workflow Visuals",
-                "Control when Dunnage images appear during the workflow and how missing images should fall back."
+                "Control when Non-Inventoried Labels images appear during the workflow and how missing images should fall back."
             ),
             "View_Settings_Dunnage_KeyboardShortcuts" => (
                 "Keyboard Shortcuts",
-                "Configure the Dunnage workflow shortcuts and the simple navigation toggle."
+                "Configure the Non-Inventoried Labels workflow shortcuts and the simple navigation toggle."
             ),
             "View_Settings_Dunnage_LabelPaths" => (
                 "Label Files",
-                "Configure the LabelView template path used for Dunnage labels."
+                "Configure the LabelView template path used for non-inventoried labels."
             ),
             "View_Settings_Dunnage_CategoryHub" => (
-                "Dunnage Settings",
-                "Manage Dunnage settings by category."
+                "Non-Inventoried Labels Settings",
+                "Manage Non-Inventoried Labels settings by category."
             ),
 
             // Reporting Settings Pages
@@ -731,7 +731,7 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                     _serviceProvider.GetRequiredService<Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub>();
                 _currentNestedSettingsPageType =
                     typeof(Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub);
-                SetHeader("Dunnage Settings", "Manage Dunnage settings by category.");
+                SetHeader("Non-Inventoried Labels Settings", "Manage Non-Inventoried Labels settings by category.");
                 UpdateHeaderActions();
                 return true;
             case "ReportingSettingsHub":

@@ -27,7 +27,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Inspect the stored part metadata, inventory settings, and spec values for this Dunnage part."
+                            Text="Inspect the stored part metadata, inventory settings, and spec values for this non-inventoried part."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
@@ -91,7 +91,7 @@
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     Spacing="4">
-                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Dunnage Type" />
+                                    <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="Non-Inventoried Type" />
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.DunnageTypeName}" />
                                 </StackPanel>
                                 <StackPanel

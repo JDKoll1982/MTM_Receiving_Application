@@ -121,7 +121,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextSubtitle))]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextImageSource))]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextIconKind))]
-    private string _currentStepTitle = "Dunnage - Mode Selection";
+    private string _currentStepTitle = "Non-Inventoried Labels - Mode Selection";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanNavigate))]
@@ -260,39 +260,39 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         {
             case Enum_DunnageWorkflowStep.ModeSelection:
                 IsModeSelectionVisible = true;
-                CurrentStepTitle = "Dunnage - Mode Selection";
+                CurrentStepTitle = "Non-Inventoried Labels - Mode Selection";
                 break;
             case Enum_DunnageWorkflowStep.TypeSelection:
                 IsTypeSelectionVisible = true;
-                CurrentStepTitle = "Dunnage - Select Type";
+                CurrentStepTitle = "Non-Inventoried Labels - Select Type";
                 break;
             case Enum_DunnageWorkflowStep.PartSelection:
                 IsPartSelectionVisible = true;
-                CurrentStepTitle = "Dunnage - Select Part";
+                CurrentStepTitle = "Non-Inventoried Labels - Select Part";
                 break;
             case Enum_DunnageWorkflowStep.QuantityEntry:
                 IsQuantityEntryVisible = true;
-                CurrentStepTitle = "Dunnage - Enter Loads";
+                CurrentStepTitle = "Non-Inventoried Labels - Enter Loads";
                 break;
             case Enum_DunnageWorkflowStep.DetailsEntry:
                 IsDetailsEntryVisible = true;
-                CurrentStepTitle = "Dunnage - Enter Details";
+                CurrentStepTitle = "Non-Inventoried Labels - Enter Details";
                 break;
             case Enum_DunnageWorkflowStep.Review:
                 IsReviewVisible = true;
-                CurrentStepTitle = "Dunnage - Review & Save";
+                CurrentStepTitle = "Non-Inventoried Labels - Review & Save";
                 break;
             case Enum_DunnageWorkflowStep.ManualEntry:
                 IsManualEntryVisible = true;
-                CurrentStepTitle = "Dunnage - Manual Entry";
+                CurrentStepTitle = "Non-Inventoried Labels - Manual Entry";
                 break;
             case Enum_DunnageWorkflowStep.EditMode:
                 IsEditModeVisible = true;
-                CurrentStepTitle = "Dunnage - Edit Mode";
+                CurrentStepTitle = "Non-Inventoried Labels - Edit Mode";
                 break;
             case Enum_DunnageWorkflowStep.ImagePartSearch:
                 IsImagePartSearchVisible = true;
-                CurrentStepTitle = "Dunnage - Search Parts by Image";
+                CurrentStepTitle = "Non-Inventoried Labels - Search Parts by Image";
                 break;
         }
 
@@ -336,7 +336,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         catch (Exception ex)
         {
             _logger.LogError(
-                $"Failed to refresh dunnage label-data availability: {ex.Message}",
+                $"Failed to refresh non-inventoried label-data availability: {ex.Message}",
                 ex
             );
             CanClearLabelData = false;
@@ -403,7 +403,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     [RelayCommand]
     private async Task OpenDunnageLabelAsync()
     {
-        await OpenLabelAsync(DunnageSettingsKeys.Labels.DunnageLabelPath, "Dunnage Label");
+        await OpenLabelAsync(DunnageSettingsKeys.Labels.DunnageLabelPath, "Non-Inventoried Label");
     }
 
     [RelayCommand]
@@ -423,7 +423,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 {
                     Title = "Change Mode?",
                     Content =
-                        "Changing mode will clear the current Dunnage entry. This cannot be undone. Continue?",
+                        "Changing mode will clear the current Non-Inventoried Labels entry. This cannot be undone. Continue?",
                     PrimaryButtonText = "Change Mode",
                     CloseButtonText = "Stay Here",
                     DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,

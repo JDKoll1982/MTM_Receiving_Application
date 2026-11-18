@@ -381,7 +381,7 @@ public partial class ViewModel_Dunnage_ModeSelection : ViewModel_Shared_Base
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                $"Failed to set default dunnage mode: {ex.Message}",
+                $"Failed to set default non-inventoried labels mode: {ex.Message}",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

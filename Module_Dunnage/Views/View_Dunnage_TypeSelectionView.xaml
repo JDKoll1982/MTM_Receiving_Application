@@ -162,7 +162,7 @@
                     HorizontalAlignment="Left"
                     ItemsSource="{x:Bind ViewModel.SortOptions, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedSortOption, Mode=TwoWay}"
-                    ToolTipService.ToolTip="Sort the available dunnage types." />
+                    ToolTipService.ToolTip="Sort the available non-inventoried types." />
             </StackPanel>
 
             <Grid Grid.Column="1">

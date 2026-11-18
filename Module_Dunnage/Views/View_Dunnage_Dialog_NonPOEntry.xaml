@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
-    Title="No PO Number — Non-PO Dunnage"
+    Title="No PO Number — Non-PO Non-Inventoried Labels"
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     PrimaryButtonClick="OnConfirmClick"
@@ -39,7 +39,7 @@
             x:Name="ReferenceTextBox"
             Header="Reference / Reason"
             MaxLength="100"
-            PlaceholderText="e.g. Stock Replenishment, Return Dunnage, Internal Use"
+            PlaceholderText="e.g. Stock Replenishment, Return Non-Inventoried Labels, Internal Use"
             TextChanged="OnReferenceTextChanged" />
 
         <!--  Saved entries list  -->

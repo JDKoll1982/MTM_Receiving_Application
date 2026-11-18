@@ -110,9 +110,9 @@ public class Service_ShipRecTools_Navigation : IService_ShipRecTools_Navigation
             new Model_ToolDefinition
             {
                 ToolKey = "DunnageBook",
-                Title = "Dunnage Book",
+                Title = "Non-Inventoried Book",
                 Description =
-                    "Select dunnage parts and generate a printable 8.5 x 11 book with a cover page and table of contents.",
+                    "Select non-inventoried parts and generate a printable 8.5 x 11 book with a cover page and table of contents.",
                 IconGlyph = "\uE736",
                 Category = Enum_ToolCategory.Utilities,
                 IsAvailable = true,

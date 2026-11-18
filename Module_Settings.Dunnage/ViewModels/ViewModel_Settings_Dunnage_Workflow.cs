@@ -36,7 +36,7 @@ public sealed partial class ViewModel_Settings_Dunnage_Workflow : ViewModel_Shar
     {
         _dunnageSettings =
             dunnageSettings ?? throw new ArgumentNullException(nameof(dunnageSettings));
-        Title = "Dunnage Workflow";
+        Title = "Non-Inventoried Labels Workflow";
         _ = LoadAsync();
     }
 
@@ -62,12 +62,12 @@ public sealed partial class ViewModel_Settings_Dunnage_Workflow : ViewModel_Shar
                 DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing,
                 FallbackToTypeImageWhenPartMissing.ToString()
             );
-            ShowStatus("Dunnage workflow settings saved.", InfoBarSeverity.Success);
+            ShowStatus("Non-Inventoried Labels workflow settings saved.", InfoBarSeverity.Success);
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage workflow settings.",
+                "Failed to save Non-Inventoried Labels workflow settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true
@@ -83,7 +83,7 @@ public sealed partial class ViewModel_Settings_Dunnage_Workflow : ViewModel_Shar
     private async Task ResetAsync()
     {
         await LoadAsync();
-        ShowStatus("Dunnage workflow settings reset to current defaults.", InfoBarSeverity.Success);
+        ShowStatus("Non-Inventoried Labels workflow settings reset to current defaults.", InfoBarSeverity.Success);
     }
 
     private async Task LoadAsync()
@@ -106,7 +106,7 @@ public sealed partial class ViewModel_Settings_Dunnage_Workflow : ViewModel_Shar
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to load Dunnage workflow settings.",
+                "Failed to load Non-Inventoried Labels workflow settings.",
                 Enum_ErrorSeverity.Error,
                 ex,
                 true

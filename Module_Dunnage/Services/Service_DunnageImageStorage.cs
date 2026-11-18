@@ -190,13 +190,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                 );
             }
 
-            var tempDirectory = Path.Combine(
-                Helper_DunnageImagePaths.LocalCacheRootFolder,
-                TempFolderName
-            );
-            Directory.CreateDirectory(tempDirectory);
-
-            targetFilePath = Path.Combine(tempDirectory, $"{Guid.NewGuid():N}{extension}");
+            targetFilePath = CreateTempWorkingCopyPath(absolutePath);
 
             await using var sourceStream = File.Open(
                 absolutePath,
@@ -217,7 +211,7 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                 decoder.BitmapPixelFormat,
                 BitmapAlphaMode.Premultiplied,
                 transform,
-                ExifOrientationMode.IgnoreExifOrientation,
+                ExifOrientationMode.RespectExifOrientation,
                 ColorManagementMode.DoNotColorManage
             );
 
@@ -228,8 +222,8 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
             encoder.SetPixelData(
                 decoder.BitmapPixelFormat,
                 BitmapAlphaMode.Premultiplied,
-                decoder.PixelHeight,
-                decoder.PixelWidth,
+                decoder.OrientedPixelHeight,
+                decoder.OrientedPixelWidth,
                 decoder.DpiX,
                 decoder.DpiY,
                 pixelData.DetachPixelData()
@@ -321,6 +315,23 @@ public class Service_DunnageImageStorage : IService_DunnageImageStorage
                 ex
             );
         }
+    }
+
+    public string CreateTempWorkingCopyPath(string? sourceImagePath)
+    {
+        var extension = Path.GetExtension(sourceImagePath ?? string.Empty);
+        if (IsSupportedExtension(extension) is false)
+        {
+            extension = ".png";
+        }
+
+        var tempDirectory = Path.Combine(
+            Helper_DunnageImagePaths.LocalCacheRootFolder,
+            TempFolderName
+        );
+        Directory.CreateDirectory(tempDirectory);
+
+        return Path.Combine(tempDirectory, $"{Guid.NewGuid():N}{extension}");
     }
 
     public Task<Model_Dao_Result> DeleteImageAsync(string? relativeImagePath)

@@ -52,7 +52,7 @@
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Step-by-step workflow for dunnage receiving with validation at each stage."
+                        Text="Step-by-step workflow for non-inventoried label receiving with validation at each stage."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -84,7 +84,7 @@
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Load historical dunnage records for editing and correction."
+                        Text="Load historical non-inventoried label records for editing and correction."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -115,7 +115,7 @@
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Search Dunnage Parts by Image."
+                        Text="Search Non-Inventoried Parts by Image."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>

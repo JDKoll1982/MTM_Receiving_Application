@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Dunnage.Models"
+    xmlns:views="using:MTM_Receiving_Application.Module_Dunnage.Views"
     Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -17,6 +18,17 @@
         <!--  Quantity Input  -->
         <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
             <StackPanel Spacing="12">
+                <!--  Current part summary with the running Quantity Per Load total  -->
+                <views:View_Dunnage_Control_CurrentPartSummary
+                    x:Name="CurrentPartSummaryCard"
+                    CurrentTotal="{x:Bind ViewModel.CurrentTotal, Mode=OneWay}"
+                    HomeLocationDisplay="{x:Bind ViewModel.CurrentHomeLocationDisplay, Mode=OneWay}"
+                    LoadCount="{x:Bind ViewModel.CurrentLoadCount, Mode=OneWay}"
+                    PartId="{x:Bind ViewModel.CurrentPartId, Mode=OneWay}"
+                    QuantityType="{x:Bind ViewModel.CurrentQuantityType, Mode=OneWay}"
+                    TypeName="{x:Bind ViewModel.CurrentTypeName, Mode=OneWay}"
+                    VisualSource="{x:Bind ViewModel.CurrentVisualSource, Mode=OneWay}" />
+
                 <Border
                     Padding="16"
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -42,7 +54,7 @@
                         <TextBlock
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Choose how many separate dunnage loads to generate for this part."
+                            Text="Choose how many separate non-inventoried label loads to generate for this part."
                             TextWrapping="Wrap" />
 
                         <TextBlock

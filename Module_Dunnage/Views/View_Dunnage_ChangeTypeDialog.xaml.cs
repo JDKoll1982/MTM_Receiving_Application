@@ -118,7 +118,7 @@ public sealed partial class View_Dunnage_ChangeTypeDialog : ContentDialog
             var targetType = TypesComboBox.SelectedItem as Model_DunnageType;
             if (targetType is null)
             {
-                ReconcileTextBlock.Text = "Select the dunnage type to move this part to.";
+                ReconcileTextBlock.Text = "Select the non-inventoried type to move this part to.";
                 return;
             }
 
@@ -315,7 +315,7 @@ public sealed partial class View_Dunnage_ChangeTypeDialog : ContentDialog
         if (targetType is null || targetType.Id == _part.TypeId)
         {
             args.Cancel = true;
-            ShowError("Choose a dunnage type different from the part's current type.");
+            ShowError("Choose a non-inventoried type different from the part's current type.");
             return;
         }
 

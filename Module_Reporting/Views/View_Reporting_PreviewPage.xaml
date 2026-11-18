@@ -588,7 +588,7 @@
                                         </TabViewItem>
 
                                         <TabViewItem
-                                            Header="Dunnage"
+                                            Header="Non-Inventoried Labels"
                                             IsClosable="False"
                                             Visibility="{x:Bind ViewModel.HasDunnagePreviewModuleCard, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <ContentControl Content="{x:Bind ViewModel.DunnagePreviewModuleCard, Mode=OneWay}" ContentTemplate="{StaticResource OptionsModuleTemplate}" />

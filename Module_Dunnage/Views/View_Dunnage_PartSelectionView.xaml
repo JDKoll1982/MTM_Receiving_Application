@@ -228,9 +228,11 @@
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
+                                Tapped="OnSelectedPartImageTapped"
+                                ToolTipService.ToolTip="Click to view the full image"
                                 Visibility="{x:Bind ViewModel.HasSelectedPartVisual, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Image Source="{x:Bind ViewModel.SelectedPartVisualSource, Mode=OneWay}"
-                                   Stretch="Uniform"/>
+                                   Stretch="UniformToFill"/>
                         </Border>
 
                         <TextBlock Grid.Row="0"
@@ -385,7 +387,7 @@
                 <Button
                     Grid.Column="4"
                     Command="{x:Bind ViewModel.ChangePartTypeCommand}"
-                    ToolTipService.ToolTip="Move the selected part to a different dunnage type"
+                    ToolTipService.ToolTip="Move the selected part to a different non-inventoried type"
                     Visibility="{x:Bind ViewModel.CanManageDefinitions, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal"
                                 Spacing="8">

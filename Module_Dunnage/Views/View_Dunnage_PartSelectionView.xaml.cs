@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -27,6 +28,14 @@ public sealed partial class View_Dunnage_PartSelectionView : UserControl
         InitializeComponent();
 
         _focusService.AttachFocusOnVisibility(this, PartNumberComboBox);
+    }
+
+    private void OnSelectedPartImageTapped(
+        object sender,
+        Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e
+    )
+    {
+        Helper_UI_ImageLightbox.Show(ViewModel.SelectedPartVisualAbsolutePath);
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)

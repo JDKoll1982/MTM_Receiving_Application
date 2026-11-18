@@ -47,7 +47,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Style="{StaticResource HelpButtonStyle}"
-                ToolTipService.ToolTip="Click for help about dunnage types">
+                ToolTipService.ToolTip="Click for help about non-inventoried types">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <FontIcon
                         FontSize="14"
@@ -68,7 +68,7 @@
                                 <TextBlock
                                     Foreground="{StaticResource DunnageAccentBrush}"
                                     Style="{StaticResource SubtitleTextBlockStyle}"
-                                    Text="Dunnage Types" />
+                                    Text="Non-Inventoried Types" />
                                 <Border
                                     Width="60"
                                     Height="2"
@@ -165,7 +165,7 @@
                             MaxLength="100"
                             PlaceholderText="e.g., Pallet, Crate, Blocking"
                             Text="{x:Bind ViewModel.TypeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ToolTipService.ToolTip="Enter a unique descriptive name for this dunnage type" />
+                            ToolTipService.ToolTip="Enter a unique descriptive name for this non-inventoried type" />
                         <TextBlock
                             Foreground="{ThemeResource SystemFillColorCriticalBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
@@ -251,7 +251,7 @@
                                 Grid.Row="1"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 Style="{StaticResource CaptionTextBlockStyle}"
-                                Text="Upload a PNG or JPG image to represent this dunnage type."
+                                Text="Upload a PNG or JPG image to represent this non-inventoried type."
                                 TextWrapping="Wrap" />
                             <Grid
                                 Grid.Row="2"
@@ -275,8 +275,10 @@
                                     Tapped="OnOpenImageFolderTapped"
                                     ToolTipService.ToolTip="Open containing folder in File Explorer">
                                     <Image
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
                                         Source="{x:Bind ViewModel.SelectedImageSource, Mode=OneWay}"
-                                        Stretch="Uniform"
+                                        Stretch="UniformToFill"
                                         Visibility="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 </Border>
 
@@ -297,6 +299,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*" />
@@ -306,7 +309,7 @@
                                         <Button
                                             Grid.Row="0"
                                             Grid.Column="0"
-                                            Grid.ColumnSpan="2"
+                                            Grid.ColumnSpan="3"
                                             HorizontalAlignment="Stretch"
                                             Click="OnChooseImageClick"
                                             Content="Choose Image (PNG/JPG)" />
@@ -315,13 +318,21 @@
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             HorizontalAlignment="Stretch"
+                                            Click="OnCropImageClick"
+                                            Content="Crop Image"
+                                            IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
+
+                                        <Button
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Stretch"
                                             Click="OnRotateImageClick"
                                             Content="Rotate 90°"
                                             IsEnabled="{x:Bind ViewModel.HasSelectedImage, Mode=OneWay}" />
 
                                         <Button
                                             Grid.Row="1"
-                                            Grid.Column="1"
+                                            Grid.Column="2"
                                             HorizontalAlignment="Stretch"
                                             Click="OnClearImageClick"
                                             Content="Clear" />
@@ -352,7 +363,7 @@
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Define custom fields to capture specific data for this dunnage type" />
+                        Text="Define custom fields to capture specific data for this non-inventoried type" />
                 </StackPanel>
 
                 <!--  Add Spec Form — interior scrolls when options expand  -->

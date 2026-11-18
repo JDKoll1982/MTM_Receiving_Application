@@ -197,6 +197,26 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
         ViewModel.SelectedImagePath = result.Data;
     }
 
+    private async void OnCropImageClick(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.SelectedImagePath))
+        {
+            return;
+        }
+
+        var croppedPath = await View_Dunnage_Dialog_ImageCrop.ShowAsync(
+            ViewModel.SelectedImagePath,
+            XamlRoot
+        );
+
+        if (string.IsNullOrWhiteSpace(croppedPath))
+        {
+            return;
+        }
+
+        ViewModel.SelectedImagePath = croppedPath;
+    }
+
     private void OnRemoveChoiceClick(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { DataContext: string choice })

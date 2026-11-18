@@ -366,7 +366,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem
                     Margin="0,0,0,4"
-                    Content="Dunnage Labels"
+                    Content="Non-Inventoried Labels"
                     Tag="DunnageLabelPage">
 
                     <NavigationViewItem.Icon>
@@ -504,5 +504,14 @@
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch" />
         </NavigationView>
+
+        <!--  Full-window overlay host for modal surfaces such as the image lightbox  -->
+        <ContentControl
+            x:Name="ModalOverlayHostControl"
+            Grid.RowSpan="2"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            IsTabStop="False"
+            Visibility="Collapsed" />
     </Grid>
 </Window>

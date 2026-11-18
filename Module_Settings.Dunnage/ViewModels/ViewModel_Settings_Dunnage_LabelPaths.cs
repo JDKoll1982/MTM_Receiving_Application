@@ -33,7 +33,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
             userLabelSettings ?? throw new ArgumentNullException(nameof(userLabelSettings));
         _labelViewLauncher =
             labelViewLauncher ?? throw new ArgumentNullException(nameof(labelViewLauncher));
-        Title = "Dunnage Label Paths";
+        Title = "Non-Inventoried Label Paths";
         _ = LoadSettingsAsync();
     }
 
@@ -58,7 +58,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
             return;
         }
 
-        if (!ValidateLabelPath(DunnageLabelPath, "Dunnage Label"))
+        if (!ValidateLabelPath(DunnageLabelPath, "Non-Inventoried Label"))
         {
             return;
         }
@@ -67,7 +67,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
         {
             IsBusy = true;
             await _userLabelSettings.SaveDunnageLabelPathAsync(DunnageLabelPath ?? string.Empty);
-            StatusMessage = "Dunnage label path saved.";
+            StatusMessage = "non-inventoried label path saved.";
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
                 nameof(SaveAsync),
                 nameof(ViewModel_Settings_Dunnage_LabelPaths)
             );
-            StatusMessage = "Failed to save Dunnage label path.";
+            StatusMessage = "Failed to save non-inventoried label path.";
         }
         finally
         {
@@ -91,7 +91,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
         {
             IsBusy = true;
             DunnageLabelPath = await _userLabelSettings.GetDunnageLabelPathAsync();
-            StatusMessage = "Dunnage label path loaded.";
+            StatusMessage = "non-inventoried label path loaded.";
         }
         catch (Exception ex)
         {
@@ -101,7 +101,7 @@ public partial class ViewModel_Settings_Dunnage_LabelPaths : ViewModel_Shared_Ba
                 nameof(LoadSettingsAsync),
                 nameof(ViewModel_Settings_Dunnage_LabelPaths)
             );
-            StatusMessage = "Failed to load Dunnage label path.";
+            StatusMessage = "Failed to load non-inventoried label path.";
         }
         finally
         {

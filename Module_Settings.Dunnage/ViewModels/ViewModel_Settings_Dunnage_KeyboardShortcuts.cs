@@ -60,7 +60,7 @@ public sealed partial class ViewModel_Settings_Dunnage_KeyboardShortcuts : ViewM
     {
         _dunnageShortcuts =
             dunnageShortcuts ?? throw new ArgumentNullException(nameof(dunnageShortcuts));
-        Title = "Dunnage Keyboard Shortcuts";
+        Title = "Non-Inventoried Labels Keyboard Shortcuts";
         _ = LoadShortcutsAsync();
     }
 
@@ -128,12 +128,12 @@ public sealed partial class ViewModel_Settings_Dunnage_KeyboardShortcuts : ViewM
         {
             IsBusy = true;
             await _dunnageShortcuts.SaveShortcutsAsync(CreateShortcutModel());
-            ShowStatus("Dunnage keyboard shortcuts saved.");
+            ShowStatus("Non-Inventoried Labels keyboard shortcuts saved.");
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to save Dunnage keyboard shortcuts.",
+                "Failed to save Non-Inventoried Labels keyboard shortcuts.",
                 Enum_ErrorSeverity.Error,
                 ex
             );
@@ -153,12 +153,12 @@ public sealed partial class ViewModel_Settings_Dunnage_KeyboardShortcuts : ViewM
             var defaults = Model_Settings_DunnageShortcuts.CreateDefault();
             await _dunnageShortcuts.SaveShortcutsAsync(defaults);
             ApplyShortcutModel(defaults);
-            ShowStatus("Dunnage keyboard shortcuts reset to defaults.");
+            ShowStatus("Non-Inventoried Labels keyboard shortcuts reset to defaults.");
         }
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to reset Dunnage keyboard shortcuts.",
+                "Failed to reset Non-Inventoried Labels keyboard shortcuts.",
                 Enum_ErrorSeverity.Error,
                 ex
             );
@@ -180,7 +180,7 @@ public sealed partial class ViewModel_Settings_Dunnage_KeyboardShortcuts : ViewM
         catch (Exception ex)
         {
             await _errorHandler.HandleErrorAsync(
-                "Failed to load Dunnage keyboard shortcuts.",
+                "Failed to load Non-Inventoried Labels keyboard shortcuts.",
                 Enum_ErrorSeverity.Warning,
                 ex,
                 false
