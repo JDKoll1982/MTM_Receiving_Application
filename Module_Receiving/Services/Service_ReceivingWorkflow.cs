@@ -8,8 +8,10 @@ using MTM_Receiving_Application.Module_Core.Helpers.Events;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
+using MTM_Receiving_Application.Module_Core.Models.Systems;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Models;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Receiving.Services
 {
@@ -36,6 +38,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_UserSessionManager _userSessionManager;
         private readonly IService_UserPrivileges _userPrivileges;
+        private readonly IService_UserPreferences _userPreferences;
         private readonly List<Model_ReceivingLoad> _currentBatchLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
@@ -63,7 +66,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             _statusMessageRaised.Raise(this, message);
         }
 
-        private Enum_ReceivingWorkflowStep _currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+        private Enum_ReceivingWorkflowStep _currentStep = Enum_ReceivingWorkflowStep.POEntry;
         public Enum_ReceivingWorkflowStep CurrentStep
         {
             get => _currentStep;
@@ -110,7 +113,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IService_LoggingUtility logger,
             IService_ViewModelRegistry viewModelRegistry,
             IService_UserSessionManager userSessionManager,
-            IService_UserPrivileges userPrivileges
+            IService_UserPrivileges userPrivileges,
+            IService_UserPreferences userPreferences
         )
         {
             _sessionManager =
@@ -134,6 +138,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 userSessionManager ?? throw new ArgumentNullException(nameof(userSessionManager));
             _userPrivileges =
                 userPrivileges ?? throw new ArgumentNullException(nameof(userPrivileges));
+            _userPreferences =
+                userPreferences ?? throw new ArgumentNullException(nameof(userPreferences));
         }
 
         public async Task<bool> StartWorkflowAsync()
@@ -162,76 +168,57 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentPart = null;
             IsPoPartListLoaded = false;
 
-            // Check if user has a default receiving mode set
-            var currentUserId = currentUser?.EmployeeNumber;
+            // Resolve the opening step from the signed-in user's stored default mode.
+            // Guided is the fallback: a missing, empty, or unrecognised value opens the guided
+            // walk and is written back so the next launch opens the same way.
+            var storedMode = currentUser?.DefaultReceivingMode?.Trim().ToLowerInvariant();
 
-            if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultReceivingMode))
+            switch (storedMode)
             {
-                // Skip mode selection and go directly to the default mode
-                switch (currentUser.DefaultReceivingMode.ToLower())
-                {
-                    case "guided":
-                        CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
-                        _logger.LogInfo("Starting in Guided mode (default)");
-                        break;
-                    case "manual":
-                        CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
-                        _logger.LogInfo("Starting in Manual Entry mode (default)");
-                        break;
-                    case "edit":
-                        CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
-                        RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-                        _logger.LogInfo("Starting in Edit mode (default)");
-                        break;
-                    default:
-                        // Invalid default, show mode selection
-                        CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
-                        _logger.LogInfo("Invalid default mode, showing mode selection");
-                        break;
-                }
-            }
-            else
-            {
-                var configuredDefaultMode = (
-                    await _receivingSettings.GetStringAsync(
-                        MTM_Receiving_Application
-                            .Module_Receiving
-                            .Settings
-                            .ReceivingSettingsKeys
-                            .BusinessRules
-                            .DefaultModeOnStartup,
-                        currentUserId
-                    )
-                ).Trim();
-                var normalizedDefaultMode = configuredDefaultMode.ToLowerInvariant();
-
-                if (normalizedDefaultMode == "guided")
-                {
-                    CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
-                    _logger.LogInfo("Starting in Guided mode (settings default)");
-                }
-                else if (
-                    normalizedDefaultMode == "manualentry"
-                    || normalizedDefaultMode == "manual"
-                )
-                {
+                case "manual":
                     CurrentStep = Enum_ReceivingWorkflowStep.ManualEntry;
-                    _logger.LogInfo("Starting in Manual Entry mode (settings default)");
-                }
-                else if (normalizedDefaultMode == "editmode" || normalizedDefaultMode == "edit")
-                {
+                    _logger.LogInfo("Starting in Manual Entry mode (default)");
+                    break;
+                case "edit":
                     CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
                     RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
-                    _logger.LogInfo("Starting in Edit mode (settings default)");
-                }
-                else
-                {
-                    CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
-                    _logger.LogInfo("No default mode set, showing mode selection");
-                }
+                    _logger.LogInfo("Starting in Edit mode (default)");
+                    break;
+                case "guided":
+                    CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
+                    _logger.LogInfo("Starting in Guided mode (default)");
+                    break;
+                default:
+                    CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
+                    _logger.LogInfo(
+                        "No recognised default mode; opening Guided and storing it back"
+                    );
+                    await PersistGuidedDefaultAsync(currentUser);
+                    break;
             }
 
             return false; // New session
+        }
+
+        private async Task PersistGuidedDefaultAsync(Model_User? currentUser)
+        {
+            if (
+                currentUser == null
+                || string.IsNullOrWhiteSpace(currentUser.WindowsUsername)
+            )
+            {
+                return;
+            }
+
+            var result = await _userPreferences.UpdateDefaultReceivingModeAsync(
+                currentUser.WindowsUsername,
+                "guided"
+            );
+
+            if (result.IsSuccess)
+            {
+                currentUser.DefaultReceivingMode = "guided";
+            }
         }
 
         public async Task<Model_ReceivingWorkflowStepResult> AdvanceToNextStepAsync()
@@ -241,10 +228,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
             switch (CurrentStep)
             {
-                case Enum_ReceivingWorkflowStep.ModeSelection:
-                    // Transition handled by GoToStep
-                    return Model_ReceivingWorkflowStepResult.SuccessResult(CurrentStep);
-
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     // Manual entry has already checked every row, so the next page is the review
                     // rather than a save the clerk cannot see. Validation happens on save; check for
@@ -636,23 +619,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             );
         }
 
-        public async Task AddCurrentPartToSessionAsync()
-        {
-            // Commit current batch
-            _currentBatchLoads.Clear();
-
-            // Reset for next part
-            CurrentPONumber = null;
-            CurrentPart = null;
-            IsPoPartListLoaded = false;
-            IsNonPOItem = false;
-            NumberOfLoads = 1;
-            CurrentLocation = string.Empty;
-            RequestedEditDataSource = Enum_DataSourceType.Memory;
-            _partSelectionSkipped = false;
-
-            CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
-        }
 
         public void ClearUIInputs()
         {
@@ -857,7 +823,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 User = _userSessionManager.CurrentSession?.User,
             };
             NumberOfLoads = 1;
-            CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+            CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
             CurrentPONumber = null;
             CurrentPart = null;
             IsPoPartListLoaded = false;

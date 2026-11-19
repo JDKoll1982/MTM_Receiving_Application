@@ -264,7 +264,6 @@ public static class ModuleServicesExtensions
 
         // ViewModels (Transient - Per-view instances with state)
         services.AddTransient<ViewModel_Receiving_Workflow>();
-        services.AddTransient<ViewModel_Receiving_ModeSelection>();
         services.AddTransient<ViewModel_Receiving_LabelOverlay>();
         services.AddTransient<ViewModel_Receiving_ManualEntry>();
         services.AddTransient<ViewModel_Receiving_EditMode>();
@@ -278,7 +277,6 @@ public static class ModuleServicesExtensions
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Receiving.Views.View_Receiving_Workflow>();
-        services.AddTransient<Module_Receiving.Views.View_Receiving_ModeSelection>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_ManualEntry>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_EditMode>();
         services.AddTransient<Module_Receiving.Views.View_Receiving_POEntry>();
@@ -638,6 +636,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<ViewModel_Shared_SharedTerminalLogin>();
         services.AddTransient<ViewModel_Shared_NewUserSetup>();
         services.AddTransient<ViewModel_Shared_HelpDialog>();
+        services.AddTransient<ViewModel_Shared_ShellActionBar>();
 
         // Shared Views
         // MainWindow (Singleton - Only one main window instance)

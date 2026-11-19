@@ -11,11 +11,13 @@ using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
+using MTM_Receiving_Application.Module_Core.Models.UI;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Helpers;
 using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Receiving.Views;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using InfoBarSeverity = MTM_Receiving_Application.Module_Core.Models.Enums.InfoBarSeverity;
@@ -25,7 +27,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
     public partial class ViewModel_Receiving_Workflow
         : ViewModel_Shared_Base,
             IViewModel_HeaderTitleProvider,
-            IViewModel_HeaderStepBarProvider
+            IViewModel_HeaderStepBarProvider,
+            IViewModel_ShellActionProvider
     {
         private readonly IService_ReceivingWorkflow _workflowService;
         private readonly IService_Help _helpService;
@@ -33,18 +36,18 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private readonly IService_ReceivingSettings _receivingSettings;
         private readonly IService_ViewModelRegistry _viewModelRegistry;
         private readonly IService_Tool_LotMarking _lotMarking;
+        private readonly IService_UserPreferences _userPreferencesService;
+        private readonly IService_UserSessionManager _sessionManager;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CurrentHeaderTitle))]
         [NotifyPropertyChangedFor(nameof(CurrentHeaderContextSubtitle))]
-        private string _currentStepTitle = "Receiving - Mode Selection";
+        private string _currentStepTitle = "Receiving";
 
         public string CurrentHeaderTitle => CurrentStepTitle;
         public string? CurrentHeaderContextSubtitle =>
             _workflowService.CurrentStep switch
             {
-                Enum_ReceivingWorkflowStep.ModeSelection =>
-                    "Choose how you want to enter Receiving data: guided workflow, manual entry, or edit mode.",
                 Enum_ReceivingWorkflowStep.POEntry =>
                     "Enter a PO number or switch to the non-PO flow before loading parts.",
                 Enum_ReceivingWorkflowStep.PartSelection =>
@@ -66,7 +69,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 Enum_ReceivingWorkflowStep.Saving =>
                     "Saving labels, queue files, and receiving records now.",
                 Enum_ReceivingWorkflowStep.Complete =>
-                    "Receiving save work is complete. Start a new entry or return to mode selection.",
+                    "Receiving save work is complete. Start a new entry when you are ready.",
                 _ => null,
             };
 
@@ -77,12 +80,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             _logger.LogInfo($"CurrentStepTitle changed to: {value}");
         }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
-        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
-        private bool _isModeSelectionVisible;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
@@ -178,7 +175,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         public bool IsNextButtonEnabled
         {
             get => _isNextButtonEnabled;
-            private set => SetProperty(ref _isNextButtonEnabled, value);
+            private set
+            {
+                if (SetProperty(ref _isNextButtonEnabled, value))
+                {
+                    RefreshShellActions();
+                }
+            }
         }
 
         public bool ShowWorkflowBackButton =>
@@ -248,10 +251,31 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _workflowNextText = "Next";
 
         [ObservableProperty]
-        private string _workflowModeSelectionText = "Mode Selection";
+        private string _workflowResetLabelDataText = "Clear Label Data";
 
         [ObservableProperty]
-        private string _workflowResetLabelDataText = "Clear Label Data";
+        private string _shellGuidedText = "Guided";
+
+        [ObservableProperty]
+        private string _shellManualText = "Manual";
+
+        [ObservableProperty]
+        private string _shellEditText = "Edit";
+
+        [ObservableProperty]
+        private string _shellOverlayText = "Overlay";
+
+        [ObservableProperty]
+        private string _shellGuidedDefaultTooltipText = "make Guided my default";
+
+        [ObservableProperty]
+        private string _shellManualDefaultTooltipText = "make Manual my default";
+
+        [ObservableProperty]
+        private string _shellEditDefaultTooltipText = "make Edit my default";
+
+        [ObservableProperty]
+        private string _shellDefaultBadgeText = "Default";
 
         [ObservableProperty]
         private bool _canClearLabelData;
@@ -315,6 +339,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IService_ReceivingSettings receivingSettings,
             IService_ViewModelRegistry viewModelRegistry,
             IService_Tool_LotMarking lotMarking,
+            IService_UserPreferences userPreferencesService,
+            IService_UserSessionManager sessionManager,
             IService_Notification notificationService
         )
             : base(errorHandler, logger, notificationService)
@@ -327,6 +353,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _receivingSettings = receivingSettings;
             _viewModelRegistry = viewModelRegistry;
             _lotMarking = lotMarking ?? throw new ArgumentNullException(nameof(lotMarking));
+            _userPreferencesService =
+                userPreferencesService
+                ?? throw new ArgumentNullException(nameof(userPreferencesService));
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _viewModelRegistry.Register(this);
             _workflowService.StepChanged += OnWorkflowStepChanged;
             _workflowService.StatusMessageRaised += (_, message) => ShowStatus(message);
@@ -372,11 +402,32 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 WorkflowNextText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.WorkflowNext
                 );
-                WorkflowModeSelectionText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.WorkflowModeSelection
-                );
                 WorkflowResetLabelDataText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.WorkflowResetLabelData
+                );
+                ShellGuidedText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellGuided
+                );
+                ShellManualText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellManual
+                );
+                ShellEditText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellEdit
+                );
+                ShellOverlayText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellOverlay
+                );
+                ShellGuidedDefaultTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellGuidedDefaultTooltip
+                );
+                ShellManualDefaultTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellManualDefaultTooltip
+                );
+                ShellEditDefaultTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellEditDefaultTooltip
+                );
+                ShellDefaultBadgeText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellDefault
                 );
 
                 CompletionSuccessTitleText = await _receivingSettings.GetStringAsync(
@@ -424,6 +475,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                         CurrentStepTitle = title;
                     }
                 });
+
+                RefreshShellActions();
             }
             catch
             {
@@ -457,7 +510,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             UpdateStartNewEntryTarget(_workflowService.CurrentStep);
 
             // Hide all steps
-            IsModeSelectionVisible = false;
             IsManualEntryVisible = false;
             IsEditModeVisible = false;
             IsPOEntryVisible = false;
@@ -473,10 +525,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             // Show current step and set title (using hardcoded defaults like Dunnage does)
             switch (_workflowService.CurrentStep)
             {
-                case Enum_ReceivingWorkflowStep.ModeSelection:
-                    IsModeSelectionVisible = true;
-                    CurrentStepTitle = "Receiving - Mode Selection";
-                    break;
                 case Enum_ReceivingWorkflowStep.ManualEntry:
                     IsManualEntryVisible = true;
                     CurrentStepTitle = "Receiving - Manual Entry";
@@ -521,10 +569,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     IsCompleteVisible = true;
                     CurrentStepTitle = "Receiving - Complete";
                     break;
-                default:
-                    IsModeSelectionVisible = true;
-                    CurrentStepTitle = "Receiving - Mode Selection";
-                    break;
             }
 
             // Help content relies on WinUI factories and can be unavailable in unit-test contexts.
@@ -548,6 +592,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             UpdateNextButtonEnabled();
             RefreshHeaderStepBar();
+            RefreshShellActions();
             _ = RefreshClearLabelDataAvailabilityAsync();
         }
 
@@ -604,21 +649,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         /// <summary>
         /// Mirrors the workflow Back button visibility so the Back shortcut cannot rewind from
-        /// steps that do not offer the button, such as Saving, Complete, or Mode Selection.
+        /// steps that do not offer the button, such as Saving or Complete.
         /// </summary>
         private bool CanGoToPreviousStep() => ShowWorkflowBackButton;
-
-        /// <summary>
-        /// Mirrors the Mode Selection button visibility so the shortcut cannot leave a step that
-        /// does not offer the button.
-        /// </summary>
-        private bool CanReturnToModeSelection() => !IsModeSelectionVisible;
 
         private void NotifyWorkflowCommandStates()
         {
             NextStepCommand.NotifyCanExecuteChanged();
             PreviousStepCommand.NotifyCanExecuteChanged();
-            ReturnToModeSelectionCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand(CanExecute = nameof(CanGoToNextStep))]
@@ -1011,69 +1049,466 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 Enum_ErrorSeverity.Warning
             );
         }
-
-        [RelayCommand(CanExecute = nameof(CanReturnToModeSelection))]
-        private async Task ReturnToModeSelectionAsync()
-        {
-            var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot == null)
-            {
-                _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync(
-                    await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog
-                    ),
-                    Enum_ErrorSeverity.Error
-                );
-                return;
-            }
-
-            var dialog = new ContentDialog
-            {
-                Title = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle
-                ),
-                Content = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent
-                ),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm
-                ),
-                CloseButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel
-                ),
-                DefaultButton = ContentDialogButton.Close,
-                XamlRoot = xamlRoot,
-            };
-
-            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                dialog,
-                xamlRoot
-            );
-
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                // Reset workflow and return to mode selection
-                await _workflowService.ResetWorkflowAsync();
-                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
-                ShowStatus(
-                    await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Workflow.StatusWorkflowCleared
-                    ),
-                    InfoBarSeverity.Informational
-                );
-            }
-        }
-
         /// <summary>
         /// Shows contextual help for current workflow step
         /// </summary>
         [RelayCommand]
         private async Task ShowHelpAsync()
         {
-            await _helpService.ShowHelpAsync("Receiving.Workflow");
+            // Help topics are keyed per step (Receiving.POEntry, Receiving.Review, ...); there is no
+            // single "Receiving.Workflow" topic, so ask for the step the operator is actually on.
+            await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
         }
+
+        #region Shell action bar
+
+        private Model_ShellActionBarState _shellActions = Model_ShellActionBarState.Empty;
+        private ViewModel_Receiving_ManualEntry? _manualEntryViewModel;
+        private ViewModel_Receiving_EditMode? _editModeViewModel;
+        private ViewModel_Receiving_Review? _reviewViewModel;
+        private EventHandler? _editModeSaveCanExecuteChangedHandler;
+
+        /// <summary>
+        /// Gets the snapshot the shared shell action bar renders.
+        /// </summary>
+        public Model_ShellActionBarState ShellActions
+        {
+            get => _shellActions;
+            private set
+            {
+                if (ReferenceEquals(_shellActions, value))
+                {
+                    return;
+                }
+
+                _shellActions = value;
+                OnPropertyChanged(nameof(ShellActions));
+            }
+        }
+
+        /// <summary>
+        /// Set by the view's code-behind so the Overlay control can open the label overlay window
+        /// without this view model taking a dependency on UI types.
+        /// </summary>
+        public Func<Task>? RequestOpenLabelOverlayWindow { get; set; }
+
+        /// <summary>
+        /// Hands the hosted mode view models over so their save verbs can occupy the shell's Back
+        /// and Next slots, since only the page can see them.
+        /// </summary>
+        /// <param name="manualEntry">The hosted Manual Entry view model.</param>
+        /// <param name="editMode">The hosted Edit Mode view model.</param>
+        /// <param name="review">The hosted Review and Save view model.</param>
+        public void AttachShellActionHosts(
+            ViewModel_Receiving_ManualEntry manualEntry,
+            ViewModel_Receiving_EditMode editMode,
+            ViewModel_Receiving_Review review
+        )
+        {
+            if (_editModeViewModel is not null && _editModeSaveCanExecuteChangedHandler is not null)
+            {
+                _editModeViewModel.SaveCommand.CanExecuteChanged -=
+                    _editModeSaveCanExecuteChangedHandler;
+            }
+
+            _manualEntryViewModel = manualEntry;
+            _editModeViewModel = editMode;
+            _reviewViewModel = review;
+
+            // Edit Mode only allows saving once its grid has rows, and it announces that change
+            // long after the step arrived, so the Next slot has to be re-read when it does.
+            _editModeSaveCanExecuteChangedHandler = (_, _) =>
+                _dispatcherService.TryEnqueue(RefreshShellActions);
+            _editModeViewModel.SaveCommand.CanExecuteChanged += _editModeSaveCanExecuteChangedHandler;
+
+            RefreshShellActions();
+        }
+
+        /// <summary>
+        /// Persists the signed-in user's default receiving mode. Ticking a default checkbox is the
+        /// only caller, so this never changes the active page.
+        /// </summary>
+        /// <param name="storedModeValue">guided, manual, edit, or null to clear the default.</param>
+        public void SetDefaultMode(string? storedModeValue) =>
+            _ = SetDefaultModeAsync(storedModeValue);
+
+        [RelayCommand]
+        private async Task EnterGuidedModeAsync()
+        {
+            if (IsGuidedWalkStep(_workflowService.CurrentStep))
+            {
+                // Already in the guided walk: pressing Guided must not restart it.
+                return;
+            }
+
+            if (await ConfirmModeChangeAsync())
+            {
+                await _workflowService.ResetWorkflowAsync();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+            }
+        }
+
+        [RelayCommand]
+        private async Task EnterManualModeAsync()
+        {
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ManualEntry)
+            {
+                return;
+            }
+
+            if (await ConfirmModeChangeAsync())
+            {
+                await _workflowService.ResetWorkflowAsync();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ManualEntry);
+            }
+        }
+
+        [RelayCommand]
+        private async Task EnterEditModeAsync()
+        {
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.EditMode)
+            {
+                return;
+            }
+
+            if (await ConfirmModeChangeAsync())
+            {
+                await _workflowService.ResetWorkflowAsync();
+                _workflowService.RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.EditMode);
+            }
+        }
+
+        private static bool IsGuidedWalkStep(Enum_ReceivingWorkflowStep step) =>
+            Array.Exists(GuidedTrail, entry => entry.Step == step);
+
+        [RelayCommand]
+        private async Task OpenLabelOverlayWindowAsync()
+        {
+            if (RequestOpenLabelOverlayWindow is null)
+            {
+                return;
+            }
+
+            await RequestOpenLabelOverlayWindow();
+        }
+
+        partial void OnCanClearLabelDataChanged(bool value) => RefreshShellActions();
+
+        private void RefreshShellActions() => ShellActions = BuildShellActions();
+
+        private Model_ShellActionBarState BuildShellActions()
+        {
+            var step = _workflowService.CurrentStep;
+            var showsActions = step != Enum_ReceivingWorkflowStep.Saving;
+
+            return new Model_ShellActionBarState
+            {
+                IsVisible = showsActions,
+                ShowModeGroup = showsActions,
+                Guided = CreateModeAction(
+                    "guided",
+                    ShellGuidedText,
+                    ShellGuidedDefaultTooltipText,
+                    EnterGuidedModeCommand,
+                    canBeDefault: true,
+                    ShellDefaultBadgeText
+                ),
+                Manual = CreateModeAction(
+                    "manual",
+                    ShellManualText,
+                    ShellManualDefaultTooltipText,
+                    EnterManualModeCommand,
+                    canBeDefault: true,
+                    ShellDefaultBadgeText
+                ),
+                Edit = CreateModeAction(
+                    "edit",
+                    ShellEditText,
+                    ShellEditDefaultTooltipText,
+                    EnterEditModeCommand,
+                    canBeDefault: true,
+                    ShellDefaultBadgeText
+                ),
+                Overlay = CreateModeAction(
+                    "overlay",
+                    ShellOverlayText,
+                    ShellOverlayText,
+                    OpenLabelOverlayWindowCommand,
+                    canBeDefault: false,
+                    string.Empty
+                ),
+                Back = BuildBackSlot(step),
+                Next = BuildNextSlot(),
+                ClearLabelData = CreateSlot(
+                    showsActions,
+                    CanClearLabelData,
+                    WorkflowResetLabelDataText,
+                    WorkflowResetLabelDataText,
+                    ResetLabelDataCommand
+                ),
+                Help = CreateSlot(
+                    showsActions,
+                    true,
+                    WorkflowHelpText,
+                    WorkflowHelpText,
+                    ShowHelpCommand
+                ),
+                IsGuidedDefault = CurrentDefaultMode == "guided",
+                IsManualDefault = CurrentDefaultMode == "manual",
+                IsEditDefault = CurrentDefaultMode == "edit",
+            };
+        }
+
+        private Model_ShellActionSlot BuildBackSlot(Enum_ReceivingWorkflowStep step)
+        {
+            if (step == Enum_ReceivingWorkflowStep.Complete)
+            {
+                return CreateSlot(
+                    true,
+                    true,
+                    CompletionStartNewEntryText,
+                    CompletionStartNewEntryText,
+                    StartNewEntryCommand
+                );
+            }
+
+            if (!ShowWorkflowBackButton)
+            {
+                return Model_ShellActionSlot.Hidden;
+            }
+
+            return CreateSlot(true, true, WorkflowBackText, WorkflowBackText, PreviousStepCommand);
+        }
+
+        private Model_ShellActionSlot BuildNextSlot()
+        {
+            if (ShowWorkflowNextButton)
+            {
+                return CreateSlot(
+                    true,
+                    IsNextButtonEnabled,
+                    WorkflowNextText,
+                    WorkflowNextText,
+                    NextStepCommand,
+                    showDividerAfter: true
+                );
+            }
+
+            return BuildHostedSaveSlot();
+        }
+
+        /// <summary>
+        /// Puts a mode page's own save verb where Next normally sits, so the page stops drawing it.
+        /// </summary>
+        private Model_ShellActionSlot BuildHostedSaveSlot()
+        {
+            if (_manualEntryViewModel is not null && IsManualEntryVisible)
+            {
+                return CreateSlot(
+                    true,
+                    _manualEntryViewModel.SaveCommand.CanExecute(null),
+                    _manualEntryViewModel.ManualEntrySaveAndFinishText,
+                    _manualEntryViewModel.ManualEntrySaveAndFinishText,
+                    _manualEntryViewModel.SaveCommand,
+                    showDividerAfter: true
+                );
+            }
+
+            if (_editModeViewModel is not null && IsEditModeVisible)
+            {
+                return CreateSlot(
+                    true,
+                    _editModeViewModel.SaveCommand.CanExecute(null),
+                    _editModeViewModel.EditModeSaveAndFinishText,
+                    _editModeViewModel.EditModeSaveAndFinishText,
+                    _editModeViewModel.SaveCommand,
+                    showDividerAfter: true
+                );
+            }
+
+            if (_reviewViewModel is not null && IsReviewVisible)
+            {
+                return CreateSlot(
+                    true,
+                    _reviewViewModel.SaveCommand.CanExecute(null),
+                    _reviewViewModel.ReviewSaveToDatabaseText,
+                    _reviewViewModel.ReviewSaveToDatabaseText,
+                    _reviewViewModel.SaveCommand,
+                    showDividerAfter: true
+                );
+            }
+
+            return Model_ShellActionSlot.Hidden;
+        }
+
+        private static Model_ShellActionSlot CreateSlot(
+            bool isVisible,
+            bool isEnabled,
+            string label,
+            string tooltip,
+            System.Windows.Input.ICommand? command,
+            bool showDividerAfter = false
+        ) =>
+            new()
+            {
+                IsVisible = isVisible,
+                IsEnabled = isEnabled,
+                Label = label,
+                Tooltip = tooltip,
+                AccessibilityName = label,
+                Command = command,
+                ShowDividerAfter = showDividerAfter,
+            };
+
+        private static Model_ShellModeAction CreateModeAction(
+            string mode,
+            string label,
+            string defaultTooltip,
+            System.Windows.Input.ICommand? command,
+            bool canBeDefault,
+            string defaultBadge
+        ) =>
+            new()
+            {
+                Mode = mode,
+                Label = label,
+                Tooltip = label,
+                AccessibilityName = label,
+                Command = command,
+                CanBeDefault = canBeDefault,
+                DefaultBadge = canBeDefault ? defaultBadge : string.Empty,
+                DefaultTooltip = defaultTooltip,
+                ShowDividerAfter = canBeDefault,
+            };
+
+        private string? CurrentDefaultMode =>
+            _sessionManager.CurrentSession?.User?.DefaultReceivingMode;
+
+        private async Task SetDefaultModeAsync(string? storedModeValue)
+        {
+            try
+            {
+                var currentUser = _sessionManager.CurrentSession?.User;
+                if (currentUser is null)
+                {
+                    return;
+                }
+
+                var mode = NormalizeDefaultMode(storedModeValue);
+                var result = await _userPreferencesService.UpdateDefaultReceivingModeAsync(
+                    currentUser.WindowsUsername,
+                    mode
+                );
+
+                if (result.IsSuccess)
+                {
+                    currentUser.DefaultReceivingMode = mode;
+                    RefreshShellActions();
+                }
+                else
+                {
+                    await _errorHandler.ShowErrorDialogAsync(
+                        "Save Error",
+                        result.ErrorMessage,
+                        Enum_ErrorSeverity.Error
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandleException(
+                    ex,
+                    Enum_ErrorSeverity.Error,
+                    nameof(SetDefaultModeAsync),
+                    nameof(ViewModel_Receiving_Workflow)
+                );
+            }
+        }
+
+        private static string? NormalizeDefaultMode(string? storedModeValue) =>
+            storedModeValue?.Trim().ToLowerInvariant() switch
+            {
+                "guided" => "guided",
+                "manual" => "manual",
+                "edit" => "edit",
+                _ => null,
+            };
+
+        /// <summary>
+        /// Asks before a mode change discards data that has not been saved yet.
+        /// </summary>
+        private async Task<bool> ConfirmModeChangeAsync()
+        {
+            var shouldConfirm = await _receivingSettings.GetBoolAsync(
+                ReceivingSettingsKeys.BusinessRules.ConfirmModeChange,
+                _sessionManager.CurrentSession?.User?.EmployeeNumber
+            );
+
+            if (!shouldConfirm || !HasUnsavedData())
+            {
+                return true;
+            }
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                _logger.LogWarning("XamlRoot is null, proceeding without confirmation");
+                return true;
+            }
+
+            try
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle
+                    ),
+                    Content = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent
+                    ),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue
+                    ),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel
+                    ),
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = xamlRoot,
+                };
+
+                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                    dialog,
+                    xamlRoot
+                );
+
+                var result = await dialog.ShowAsync();
+                return result == ContentDialogResult.Primary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error showing mode-change confirmation: {ex.Message}", ex);
+                return true;
+            }
+        }
+
+        private bool HasUnsavedData()
+        {
+            if (_workflowService.CurrentSession is null)
+            {
+                return false;
+            }
+
+            if (_workflowService.CurrentSession.Loads?.Count > 0)
+            {
+                return true;
+            }
+
+            return !string.IsNullOrEmpty(_workflowService.CurrentSession.PoNumber)
+                || _workflowService.CurrentPart is not null;
+        }
+
+        #endregion
 
         #region Help Content Helpers
 

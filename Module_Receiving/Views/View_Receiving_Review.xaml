@@ -45,7 +45,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!--  Content Section with View Toggle  -->
@@ -449,6 +448,7 @@
                     <AppBarSeparator />
 
                     <AppBarButton
+                        x:Name="SwitchToTableViewButton"
                         AutomationProperties.Name="{x:Bind ViewModel.ReviewSwitchToTableAccessibilityName, Mode=OneWay}"
                         Command="{x:Bind ViewModel.SwitchToTableViewCommand}"
                         Icon="ViewAll"
@@ -608,39 +608,5 @@
             </InfoBar>
         </dev:GlowingBorder>
 
-        <!--  Action Buttons  -->
-        <Grid
-            Grid.Row="2"
-            ColumnSpacing="12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <Button
-                Grid.Column="1"
-                AutomationProperties.Name="{x:Bind ViewModel.ReviewAddAnotherAccessibilityName, Mode=OneWay}"
-                Command="{x:Bind ViewModel.AddAnotherPartCommand}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.AddAnother'), Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="16" Glyph="&#xE710;" />
-                    <TextBlock Text="{x:Bind ViewModel.ReviewAddAnotherText, Mode=OneWay}" />
-                </StackPanel>
-            </Button>
-
-            <Button
-                x:Name="SaveToDatabaseButton"
-                Grid.Column="2"
-                AutomationProperties.Name="{x:Bind ViewModel.ReviewSaveToDatabaseAccessibilityName, Mode=OneWay}"
-                Command="{x:Bind ViewModel.SaveCommand}"
-                Style="{StaticResource AccentButtonStyle}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndGenerate'), Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon FontSize="16" Glyph="&#xE74E;" />
-                    <TextBlock Text="{x:Bind ViewModel.ReviewSaveToDatabaseText, Mode=OneWay}" />
-                </StackPanel>
-            </Button>
-        </Grid>
     </Grid>
 </UserControl>

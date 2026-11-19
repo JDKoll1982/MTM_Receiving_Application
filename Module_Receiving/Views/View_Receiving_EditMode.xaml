@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_EditMode"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -32,7 +32,7 @@
             <RowDefinition Height="*" />
             <!--  Row 2: data grid  -->
             <RowDefinition Height="Auto" />
-            <!--  Row 3: footer (pagination + save)  -->
+            <!--  Row 3: footer (pagination and filters only; saving happens in the shell action bar)  -->
         </Grid.RowDefinitions>
 
         <!--  ============================================================ Row 0: Ribbon toolbar  -->
@@ -715,11 +715,10 @@
                 Stretch="UniformToFill" />
         </Grid>
 
-        <!--  ============================================================ Row 3: Footer (Pagination + Save)  -->
+        <!--  ============================================================ Row 3: Footer (Pagination)  -->
         <Grid Grid.Row="3" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -789,18 +788,6 @@
                     MinWidth="70"
                     ItemsSource="{x:Bind ViewModel.PageSizeOptions}"
                     SelectedItem="{x:Bind ViewModel.SelectedPageSize, Mode=TwoWay}" />
-            </StackPanel>
-
-            <!--  Save button  -->
-            <StackPanel
-                Grid.Column="2"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button
-                    Command="{x:Bind ViewModel.SaveCommand}"
-                    Content="{x:Bind ViewModel.EditModeSaveAndFinishText, Mode=OneWay}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}" />
             </StackPanel>
         </Grid>
 

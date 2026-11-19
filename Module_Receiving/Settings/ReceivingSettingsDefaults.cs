@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.Module_Receiving.Settings;
 
@@ -14,24 +14,21 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Labels.ReceivingLabelPath] = string.Empty,
             [ReceivingSettingsKeys.Labels.MiniReceivingLabelPath] = string.Empty,
 
-            // Mode selection
-            [ReceivingSettingsKeys.UiText.ModeSelectionGuidedTitle] = "Guided Wizard",
-            [ReceivingSettingsKeys.UiText.ModeSelectionGuidedDescription] =
-                "Step-by-step process for standard receiving workflow.",
-            [ReceivingSettingsKeys.UiText.ModeSelectionManualTitle] = "Manual Entry",
-            [ReceivingSettingsKeys.UiText.ModeSelectionManualDescription] =
-                "Customizable grid for bulk data entry and editing.",
-            [ReceivingSettingsKeys.UiText.ModeSelectionEditTitle] = "Edit Mode",
-            [ReceivingSettingsKeys.UiText.ModeSelectionEditDescription] =
-                "Edit existing loads without adding new ones.",
-            [ReceivingSettingsKeys.UiText.ModeSelectionSetDefault] = "Set as default mode",
-
             // Workflow shell
             [ReceivingSettingsKeys.UiText.WorkflowHelp] = "Help",
             [ReceivingSettingsKeys.UiText.WorkflowBack] = "Back",
             [ReceivingSettingsKeys.UiText.WorkflowNext] = "Next",
-            [ReceivingSettingsKeys.UiText.WorkflowModeSelection] = "Mode Selection",
             [ReceivingSettingsKeys.UiText.WorkflowResetLabelData] = "Clear Label Data",
+
+            // Shell action bar
+            [ReceivingSettingsKeys.UiText.ShellGuided] = "Guided",
+            [ReceivingSettingsKeys.UiText.ShellManual] = "Manual",
+            [ReceivingSettingsKeys.UiText.ShellEdit] = "Edit",
+            [ReceivingSettingsKeys.UiText.ShellOverlay] = "Overlay",
+            [ReceivingSettingsKeys.UiText.ShellGuidedDefaultTooltip] = "make Guided my default",
+            [ReceivingSettingsKeys.UiText.ShellManualDefaultTooltip] = "make Manual my default",
+            [ReceivingSettingsKeys.UiText.ShellEditDefaultTooltip] = "make Edit my default",
+            [ReceivingSettingsKeys.UiText.ShellDefault] = "Default",
 
             // Completion
             [ReceivingSettingsKeys.UiText.CompletionSuccessTitle] = "Success!",
@@ -168,7 +165,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.ReviewNextLabel] = "Next",
             [ReceivingSettingsKeys.UiText.ReviewTableViewLabel] = "Table View",
             [ReceivingSettingsKeys.UiText.ReviewSingleViewLabel] = "Single View",
-            [ReceivingSettingsKeys.UiText.ReviewAddAnother] = "Add Another Part/PO",
             [ReceivingSettingsKeys.UiText.ReviewSaveToDatabase] = "Save to Database",
             [ReceivingSettingsKeys.UiText.ReviewColumnLoadNumber] = "Load #",
             [ReceivingSettingsKeys.UiText.ReviewColumnPoNumber] = "PO Number",
@@ -180,7 +176,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.ReviewColumnPkgType] = "Pkg Type",
 
             // Workflow step titles
-            [ReceivingSettingsKeys.Workflow.StepTitleModeSelection] = "Receiving - Mode Selection",
             [ReceivingSettingsKeys.Workflow.StepTitleManualEntry] = "Receiving - Manual Entry",
             [ReceivingSettingsKeys.Workflow.StepTitleEditMode] = "Receiving - Edit Mode",
             [ReceivingSettingsKeys.Workflow.StepTitlePoEntry] = "Receiving - Enter PO Number",
@@ -217,28 +212,16 @@ public static class ReceivingSettingsDefaults
                 "Label data cleared successfully. Rows were archived to history.",
             [ReceivingSettingsKeys.Workflow.StatusLabelDataClearedFailed] =
                 "Failed to clear label data to history.",
-            [ReceivingSettingsKeys.Workflow.StatusWorkflowCleared] =
-                "Workflow cleared. Please select a mode.",
 
             // Dialogs
-            [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle] = "Confirm Mode Selection",
+            [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionTitle] = "Change Mode?",
             [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContent] =
                 "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
             [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue] = "Continue",
             [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel] = "Cancel",
-            [ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle] = "Change Mode?",
-            [ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent] =
-                "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
-            [ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm] = "Yes, Change Mode",
-            [ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel] = "Cancel",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle] = "Add Multiple Rows",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd] = "Add",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel] = "Cancel",
-            [ReceivingSettingsKeys.Dialogs.ReviewAddAnotherTitle] = "Add Another Part/PO",
-            [ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContent] =
-                "Current form data will be cleared to start a new entry. Your reviewed loads are preserved. Continue?",
-            [ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContinue] = "Continue",
-            [ReceivingSettingsKeys.Dialogs.ReviewAddAnotherCancel] = "Cancel",
 
             // Messages (templates)
             [ReceivingSettingsKeys.Messages.ErrorUnableToDisplayDialog] =
@@ -263,9 +246,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Messages.InfoNonPoItem] = "Non-PO Item",
 
             // Accessibility
-            [ReceivingSettingsKeys.Accessibility.ModeSelectionGuidedButton] = "Guided Wizard Mode",
-            [ReceivingSettingsKeys.Accessibility.ModeSelectionManualButton] = "Manual Entry Mode",
-            [ReceivingSettingsKeys.Accessibility.ModeSelectionEditButton] = "Edit Mode",
             [ReceivingSettingsKeys.Accessibility.PoEntryPONumber] = "Purchase Order Number",
             [ReceivingSettingsKeys.Accessibility.PoEntryLoadPo] = "Load Purchase Order",
             [ReceivingSettingsKeys.Accessibility.PoEntryPartId] = "Part Identifier",
@@ -282,7 +262,6 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Accessibility.ReviewSwitchToTable] = "Switch to Table View",
             [ReceivingSettingsKeys.Accessibility.ReviewSwitchToSingle] = "Switch to Single View",
             [ReceivingSettingsKeys.Accessibility.ReviewEntriesTable] = "Receiving Entries Table",
-            [ReceivingSettingsKeys.Accessibility.ReviewAddAnother] = "Add Another Part or PO",
             [ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase] = "Save to Database",
 
             // Defaults for non-UI settings
@@ -303,7 +282,7 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.Validation.MaxQuantity] = "999999",
 
             // Business Rules defaults
-            [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "ModeSelection",
+            [ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup] = "Guided",
 
             // User Preferences defaults
             [ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson] =

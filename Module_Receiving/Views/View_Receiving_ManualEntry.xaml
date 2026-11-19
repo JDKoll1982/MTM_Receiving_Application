@@ -337,20 +337,5 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <!--  Navigation  -->
-        <StackPanel
-            Grid.Row="2"
-            Margin="0,12,0,0"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal"
-            Spacing="12"
-        >
-            <Button
-                Command="{x:Bind ViewModel.SaveCommand}"
-                Content="{x:Bind ViewModel.ManualEntrySaveAndFinishText, Mode=OneWay}"
-                Style="{StaticResource AccentButtonStyle}"
-                ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveAndFinish'), Mode=OneWay}"
-            />
-        </StackPanel>
     </Grid>
 </UserControl>

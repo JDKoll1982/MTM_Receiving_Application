@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.ViewModels;
@@ -28,7 +29,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
     public async Task StepChanged_ShouldRefreshClearLabelDataAvailability()
     {
         var workflow = CreateWorkflowMock();
-        Enum_ReceivingWorkflowStep currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+        Enum_ReceivingWorkflowStep currentStep = Enum_ReceivingWorkflowStep.ManualEntry;
         var hasActiveLabelData = true;
 
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
@@ -52,7 +53,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
     public async Task StepChanged_ShouldExposeHeaderContextSubtitle()
     {
         var workflow = CreateWorkflowMock();
-        Enum_ReceivingWorkflowStep currentStep = Enum_ReceivingWorkflowStep.ModeSelection;
+        Enum_ReceivingWorkflowStep currentStep = Enum_ReceivingWorkflowStep.ManualEntry;
 
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
 
@@ -142,7 +143,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
     }
 
     [Fact]
-    public async Task PreviousStepCommand_ShouldNotExecute_OnModeSelectionStep()
+    public async Task PreviousStepCommand_ShouldNotExecute_OnTheCompleteStep()
     {
         var workflow = CreateWorkflowMock();
 
@@ -220,7 +221,7 @@ public sealed class ViewModel_Receiving_WorkflowTests
         var workflow = new Mock<IService_ReceivingWorkflow>();
         workflow
             .SetupGet(service => service.CurrentStep)
-            .Returns(Enum_ReceivingWorkflowStep.ModeSelection);
+            .Returns(Enum_ReceivingWorkflowStep.POEntry);
         workflow.Setup(service => service.StartWorkflowAsync()).ReturnsAsync(true);
         workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(false);
 
@@ -287,6 +288,8 @@ public sealed class ViewModel_Receiving_WorkflowTests
             receivingSettings.Object,
             registry.Object,
             lotMarking.Object,
+            new Mock<IService_UserPreferences>().Object,
+            new Mock<IService_UserSessionManager>().Object,
             new Mock<IService_Notification>().Object
         );
     }

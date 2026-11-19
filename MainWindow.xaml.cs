@@ -37,6 +37,12 @@ namespace MTM_Receiving_Application
     public sealed partial class MainWindow : Window, ISettingsNavigationHost
     {
         public ViewModel_Shared_MainWindow ViewModel { get; }
+
+        /// <summary>
+        /// Gets the projection the shared shell action bar binds to.
+        /// </summary>
+        public ViewModel_Shared_ShellActionBar ShellActionBar { get; }
+
         private readonly IService_UserSessionManager _sessionManager;
         private readonly IService_LoggingUtility _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -153,6 +159,7 @@ namespace MTM_Receiving_Application
 
         public MainWindow(
             ViewModel_Shared_MainWindow viewModel,
+            ViewModel_Shared_ShellActionBar shellActionBar,
             IService_UserSessionManager sessionManager,
             IService_LoggingUtility logger,
             IServiceProvider serviceProvider,
@@ -164,6 +171,8 @@ namespace MTM_Receiving_Application
         {
             InitializeComponent();
             ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ShellActionBar =
+                shellActionBar ?? throw new ArgumentNullException(nameof(shellActionBar));
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
@@ -328,6 +337,68 @@ namespace MTM_Receiving_Application
             }
         }
 
+        /// <summary>
+        /// Runs a mode button: a plain click enters that mode, and Ctrl+click remembers it as the
+        /// signed-in user's default without changing the page.
+        /// </summary>
+        private void ShellModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement { Tag: string mode })
+            {
+                return;
+            }
+
+            if (IsControlKeyDown())
+            {
+                SetShellDefaultMode(mode);
+                return;
+            }
+
+            EnterShellMode(mode);
+        }
+
+        private void EnterShellMode(string mode)
+        {
+            System.Windows.Input.ICommand? command = mode switch
+            {
+                "guided" => ShellActionBar.Guided.Command,
+                "manual" => ShellActionBar.Manual.Command,
+                "edit" => ShellActionBar.Edit.Command,
+                _ => null,
+            };
+
+            if (command?.CanExecute(null) == true)
+            {
+                command.Execute(null);
+            }
+        }
+
+        private void SetShellDefaultMode(string mode)
+        {
+            switch (mode)
+            {
+                case "guided":
+                    ShellActionBar.IsGuidedDefault = true;
+                    break;
+                case "manual":
+                    ShellActionBar.IsManualDefault = true;
+                    break;
+                case "edit":
+                    ShellActionBar.IsEditDefault = true;
+                    break;
+            }
+        }
+
+        private static bool IsControlKeyDown()
+        {
+            var state = InputKeyboardSource.GetKeyStateForCurrentThread(
+                Windows.System.VirtualKey.Control
+            );
+
+            return (state & Windows.UI.Core.CoreVirtualKeyStates.Down)
+                == Windows.UI.Core.CoreVirtualKeyStates.Down;
+        }
+
         private void UpdateHeaderBackButton()
         {
             if (HeaderBackButton is null)
@@ -335,9 +406,9 @@ namespace MTM_Receiving_Application
                 return;
             }
 
-            HeaderBackButton.Visibility = _headerBackNavigation.IsBackButtonVisible
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            // Back is offered by the shared action strip only. The header slot stays wired so
+            // re-enabling it later is a visibility change rather than new plumbing.
+            HeaderBackButton.Visibility = Visibility.Collapsed;
             ToolTipService.SetToolTip(HeaderBackButton, _headerBackNavigation.BackButtonToolTip);
         }
 
@@ -1090,7 +1161,7 @@ namespace MTM_Receiving_Application
                     "receiving",
                     "receiving labels",
                     "receiving workflow",
-                    "receiving mode selection",
+                    "receiving modes",
                     "guided receiving",
                     "manual receiving",
                     "edit receiving"
@@ -2281,6 +2352,8 @@ namespace MTM_Receiving_Application
             _currentStepBarProvider = null;
             _currentStepBarPropertyChangedHandler = null;
 
+            ShellActionBar.Detach();
+
             if (HeaderStepBar is not null)
             {
                 HeaderStepBar.Visibility = Visibility.Collapsed;
@@ -2558,6 +2631,7 @@ namespace MTM_Receiving_Application
 
             ApplyHeaderAccent(content?.GetType());
             TrackHeaderStepBar(content);
+            TrackShellActions(content);
 
             var headerProvider = ResolveHeaderProvider(content);
             if (headerProvider != null)
@@ -2628,6 +2702,49 @@ namespace MTM_Receiving_Application
 
             var viewModelProperty = content.GetType().GetProperty("ViewModel");
             return viewModelProperty?.GetValue(content) as IViewModel_HeaderStepBarProvider;
+        }
+
+        /// <summary>
+        /// Finds the page's shell-action provider, using the same lookup order as the title
+        /// provider so a page that supplies one supplies all of them.
+        /// </summary>
+        private static IViewModel_ShellActionProvider? ResolveShellActionProvider(object? content)
+        {
+            if (content is null)
+            {
+                return null;
+            }
+
+            if (content is IViewModel_ShellActionProvider directProvider)
+            {
+                return directProvider;
+            }
+
+            if (
+                content is FrameworkElement frameworkElement
+                && frameworkElement.DataContext is IViewModel_ShellActionProvider dataContextProvider
+            )
+            {
+                return dataContextProvider;
+            }
+
+            var viewModelProperty = content.GetType().GetProperty("ViewModel");
+            return viewModelProperty?.GetValue(content) as IViewModel_ShellActionProvider;
+        }
+
+        /// <summary>
+        /// Points the shell action bar at the page that just became active. A page without a
+        /// provider leaves the bar collapsed, so the content takes the full remaining height.
+        /// </summary>
+        private void TrackShellActions(object? content)
+        {
+            var provider = ResolveShellActionProvider(content);
+            if (provider is null)
+            {
+                return;
+            }
+
+            ShellActionBar.Attach(provider);
         }
 
         /// <summary>

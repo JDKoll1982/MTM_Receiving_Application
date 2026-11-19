@@ -145,7 +145,6 @@ public class Service_Help : IService_Help
     {
         var key = step switch
         {
-            Enum_ReceivingWorkflowStep.ModeSelection => "Receiving.ModeSelection",
             Enum_ReceivingWorkflowStep.POEntry => "Receiving.POEntry",
             Enum_ReceivingWorkflowStep.PartSelection => "Receiving.PartSelection",
             Enum_ReceivingWorkflowStep.LoadEntry => "Receiving.LoadEntry",
@@ -157,7 +156,7 @@ public class Service_Help : IService_Help
             Enum_ReceivingWorkflowStep.EditMode => "Receiving.EditMode",
             Enum_ReceivingWorkflowStep.Saving => "Receiving.Saving",
             Enum_ReceivingWorkflowStep.Complete => "Receiving.Complete",
-            _ => "Receiving.ModeSelection",
+            _ => "Receiving.POEntry",
         };
 
         await ShowHelpAsync(key);
@@ -245,7 +244,6 @@ public class Service_Help : IService_Help
     {
         var key = step switch
         {
-            Enum_ReceivingWorkflowStep.ModeSelection => "Receiving.ModeSelection",
             Enum_ReceivingWorkflowStep.ManualEntry => "Receiving.ManualEntry",
             Enum_ReceivingWorkflowStep.EditMode => "Receiving.EditMode",
             Enum_ReceivingWorkflowStep.POEntry => "Receiving.POEntry",
@@ -518,24 +516,6 @@ public class Service_Help : IService_Help
         AddHelpContent(
             new Model_HelpContent
             {
-                Key = "Receiving.ModeSelection",
-                Title = "Select Entry Mode",
-                Content =
-                    "Choose how you want to enter material receiving data:\n\n"
-                    + "• Guided Wizard - Step-by-step process with PO integration\n"
-                    + "• Manual Entry - Bulk grid entry for multiple line items\n"
-                    + "• Edit Mode - Review and modify historical receiving data",
-                Category = "Receiving Workflow",
-                HelpType = Enum_HelpType.Info,
-                Icon = "ViewDashboard",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.POEntry", "Receiving.ManualEntry" },
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
                 Key = "Receiving.POEntry",
                 Title = "Enter Purchase Order",
                 Content =
@@ -636,7 +616,7 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "CheckCircle",
                 Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
+                RelatedKeys = new List<string>(),
             }
         );
 
@@ -712,7 +692,7 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "Table",
                 Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
+                RelatedKeys = new List<string>(),
             }
         );
 
@@ -731,7 +711,7 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "PencilBox",
                 Severity = Enum_HelpSeverity.Warning,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection" },
+                RelatedKeys = new List<string>(),
             }
         );
 
@@ -769,14 +749,13 @@ public class Service_Help : IService_Help
                     + "• Database - permanent record stored\n\n"
                     + "**Next steps:**\n"
                     + "• Start New Entry - begin another receiving transaction\n"
-                    + "• Mode Selection - return to choose a different entry mode\n"
                     + "• Reprint labels later from Edit Mode\n\n"
                     + "If any step shows a failure, review the error message and contact your supervisor.",
                 Category = "Receiving Workflow",
                 HelpType = Enum_HelpType.Info,
                 Icon = "CheckCircle",
                 Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Receiving.ModeSelection", "Receiving.Review" },
+                RelatedKeys = new List<string> { "Receiving.Review" },
             }
         );
 
@@ -1623,12 +1602,12 @@ public class Service_Help : IService_Help
             }
         );
 
-        // Mode selection quick access
+        // Mode entry quick access
         AddHelpContent(
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.QuickGuidedWizard",
-                Content = "Skip mode selection and go directly to Guided Wizard",
+                Content = "Enter Guided mode directly",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1636,7 +1615,7 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.QuickManualEntry",
-                Content = "Skip mode selection and go directly to Manual Entry",
+                Content = "Enter Manual Entry directly",
                 HelpType = Enum_HelpType.Tip,
             }
         );
@@ -1644,20 +1623,12 @@ public class Service_Help : IService_Help
             new Model_HelpContent
             {
                 Key = "Tooltip.Button.QuickEditMode",
-                Content = "Skip mode selection and go directly to Edit Mode",
+                Content = "Enter Edit Mode directly",
                 HelpType = Enum_HelpType.Tip,
             }
         );
 
         // Workflow actions
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Tooltip.Button.ReturnToModeSelection",
-                Content = "Return to mode selection (clears current work)",
-                HelpType = Enum_HelpType.Tip,
-            }
-        );
         AddHelpContent(
             new Model_HelpContent
             {
@@ -2028,14 +1999,6 @@ public class Service_Help : IService_Help
         );
 
         // Workflow View
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Tooltip.Button.ModeSelection",
-                Content = "Return to mode selection (clears current work)",
-                HelpType = Enum_HelpType.Tip,
-            }
-        );
         AddHelpContent(
             new Model_HelpContent
             {

@@ -61,11 +61,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         }
 
         /// <summary>
-        /// Moves focus to the Save to Database button whenever guided mode re-enters this step.
+        /// Moves focus to the first navigation control whenever guided mode re-enters this step.
         /// </summary>
         public bool FocusForAccess()
         {
-            return _focusService.TrySetFocus(SaveToDatabaseButton);
+            return _focusService.TrySetFocus(SwitchToTableViewButton);
         }
 
         private void View_Receiving_Review_Loaded(object sender, RoutedEventArgs e)

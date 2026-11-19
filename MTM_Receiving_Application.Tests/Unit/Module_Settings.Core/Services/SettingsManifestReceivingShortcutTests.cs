@@ -37,7 +37,10 @@ public sealed class SettingsManifestReceivingShortcutTests
             .Select(setting => setting.GetProperty("key").GetString())
             .ToArray();
 
-        keys.Should().Contain("Receiving.Shortcuts.ModeSelection");
+        keys.Should().NotContain(
+            "Receiving.Shortcuts.ModeSelection",
+            "the deleted mode-selection picker had no shortcut left behind"
+        );
         keys.Should().Contain("Receiving.Shortcuts.ClearLabelData");
         keys.Should().Contain("Receiving.Shortcuts.NextStep");
         keys.Should().Contain("Receiving.Shortcuts.BackStep");

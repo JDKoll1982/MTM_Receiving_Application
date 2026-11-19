@@ -1,0 +1,1699 @@
+{
+  "workflow": "companion",
+  "specName": "Persistent Shell Action Bar for Page Navigation",
+  "branch": "005-shell-action-bar",
+  "currentStep": "converge",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T17:50:09.642Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T17:51:56.308Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T18:04:13.604Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T18:10:31.063Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:23:22.401Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T18:23:42.104Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:44.738Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:44.739Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:44.742Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:44.742Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:44.742Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:45.092Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:24:45.475Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:25:08.335Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:30:59.956Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:30:59.957Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:30:59.958Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.788Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.789Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.790Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.790Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.791Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.792Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.793Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.793Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:13.794Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:14.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:14.492Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:37:14.492Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.241Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.241Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.242Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.594Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.595Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.595Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.596Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.596Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.598Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.599Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.599Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:49.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.449Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.450Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.451Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.451Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.452Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:54.822Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:55.169Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:55.169Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:55.170Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:55.171Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:55.171Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:59.426Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:59.426Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:59.427Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:59.801Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T18:59:59.801Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:00.160Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:00.161Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:00.161Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:05.256Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:05.645Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:06.103Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:00:06.190Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T19:16:59.672Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T19:21:24.851Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:24:34.486Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T19:24:34.487Z"
+    }
+  ],
+  "telemetryInstanceId": "bc631857-ff2c-47cb-b461-aa0b8f9fe4e8",
+  "request": "Move page navigation out of the Receiving workflow pages into a persistent bottom action bar on the main window, and delete the Receiving mode-selection page.\n\nCONTEXT\nThis is the MTM Receiving Application: WinUI 3 / .NET 10 desktop, MVVM (View -> ViewModel -> Service -> DAO -> Database), x:Bind only, CommunityToolkit.Mvvm, MySQL via stored procedures, Infor Visual SQL Server read-only. Read .github/copilot-instructions.md and the architecture instructions before planning.\n\nTODAY\n- MainWindow.xaml hosts the page content in a single Frame (ContentFrame) inside the NavigationView; the header bar (HeaderBarBorder, HeaderBackButton, HeaderStepBar, UserMenuButton) lives in NavigationView.Header and the label-shortcut footer (PrimaryLabelButtonsPanel) lives in the left pane's footer menu items. The shell already resolves a page's header title through IViewModel_HeaderTitleProvider and its step bar through IViewModel_HeaderStepBarProvider (see MainWindow.UpdateHeader / TrackHeaderStepBar); the action bar should follow that same resolve-and-track pattern.\n- Each guided Receiving page draws its own navigation row inside Module_Receiving/Views/View_Receiving_Workflow.xaml (ReceivingWorkflowNavigationGrid): \"Mode Selection\", \"Clear Label Data\", Back (PreviousStepCommand), Next (NextStepCommand), and a Help icon.\n- Module_Receiving/Views/View_Receiving_ModeSelection.xaml is the page that picks Guided / Manual / Edit / Overlay and lets the user tick a default. The per-user default is already stored via IService_UserPreferences.UpdateDefaultReceivingModeAsync (\"guided\" | \"manual\" | \"edit\").\n\nGOAL\nAdd a shell action bar on the right-hand side of the main window, below the page content, so every page's navigation sits in the same place instead of inside the page. The action bar is shell-owned and must not reference any module's ViewModel types directly.\n\nPLACEMENT (confirmed)\n- The action bar belongs to the right side of the UI, directly under the page content. It does not replace, merge with, or move the label-shortcut footer (PrimaryLabelButtonsPanel); that footer stays where it is, in the left navigation pane.\n- The two surfaces never compete for the same space: label files on the left, page navigation on the right.\n- The action bar is sized to its content (Auto height) and collapses entirely - the content frame then expands to the full remaining height - when the active page supplies no actions.\n- At compact widths the action bar wraps/scrolls horizontally instead of hiding buttons, so Back, Next, and Clear Label Data are never pushed out of reach.\n\nACTION BAR LAYOUT\nLeft-justified group (entry-mode buttons, shown for Receiving pages only):\n1) \"Guided\" -> enter guided mode. A checkbox with no text (tooltip: make Guided my default) sits after it. Divider.\n2) \"Manual\" -> enter manual mode. Checkbox with no text. Divider.\n3) \"Edit\" -> enter edit mode. Checkbox with no text. Divider.\n4) \"Overlay\" -> opens the label overlay window (View_Receiving_LabelOverlayWindow).\n\nMode-button rules (confirmed):\n- The four mode buttons and their default checkboxes are hidden on every non-Receiving page. Nothing replaces them there - the left group is simply absent, and the bar shrinks to whatever the right group needs (and disappears when that is empty too).\n- The three default checkboxes are mutually exclusive, like a radio group: ticking one clears the other two. Unticking the last remaining one is allowed and leaves no stored default, which falls back to Guided on the next launch.\n\nRight-justified group:\n5) \"Back\" - back arrow, returns to the previous page/step when the current page supports going back.\n6) \"Next\" - advances when the current page supports it and its validation passes; disabled otherwise.\n   Divider.\n7) \"Clear Label Data\" - trash-can icon, clears the current user's label data (existing ResetLabelDataAsync / CanClearLabelData rules), red text.\n8) \"Help\" - help for the current page (existing ShowHelpAsync).\n\nPER-PAGE AVAILABILITY (Receiving; numbers refer to the list above)\n- Enter PO Number: 1,2,3,4,6,7,8 (no Back)\n- Select Part: 1,2,3,4,5,6,7,8\n- Enter Load Information: 1,2,3,4,5,6,7,8\n- Enter Weight & Quantity: 1,2,3,4,5,6,7,8\n- Enter Heat & Lot: 1,2,3,4,5,6,7,8\n- Enter Package Type: 1,2,3,4,5,6,7,8\n- Manual Entry: 1,2,3,4,7,8, plus \"Save & Finish\" in the position Next normally occupies.\n- Edit Mode: 1,2,3,4,7,8, plus \"Save & Finish\" in the position Next normally occupies.\n- Review & Save: 1,2,3,4,5,7,8, plus \"Save to Database\" in the position Next normally occupies. Remove the \"Add another Part/PO\" button - it is never used.\n- Result (Complete or Failed): 1,2,3,4,7,8, plus \"Start New Entry\" in the position Back normally occupies. Overlay (4) is included on the Result page. Remove the \"Mode Selection\" button.\n- Any non-Receiving page: no mode buttons, no Receiving-only actions. The bar shows only what that page's own contract offers, and disappears when it offers nothing.\n\nMOVED VS REMOVED - NO DUPLICATES (confirmed)\nEvery action the bar owns must be deleted from the page that used to draw it, so no control appears twice and no command is bound in two places.\n\n- View_Receiving_Workflow.xaml: delete the whole in-page navigation row (ReceivingWorkflowNavigationGrid), including \"Mode Selection\", \"Clear Label Data\", Back, Next, and Help.\n- View_Receiving_ManualEntry.xaml: delete the right-aligned navigation StackPanel that holds the \"Save & Finish\" button. Saving happens only from the bar.\n- View_Receiving_EditMode.xaml: delete the \"Save & Finish\" button from the pager row (the Per page / paging controls stay). Saving happens only from the bar.\n- Review & Save: delete \"Add another Part/PO\"; \"Save to Database\" moves to the bar's Next slot.\n- Result (Complete or Failed): delete \"Mode Selection\"; \"Start New Entry\" moves to the bar's Back slot.\n- Whatever stays on a page (Add Row, Add Multiple Rows, Remove Row, Auto Fill, file/paging/filter controls in Edit Mode) is not duplicated in the bar, and the bar never re-implements a page's command - it invokes the same command the page used.\n\nREQUIREMENTS\n- Delete Module_Receiving mode selection: the View and ViewModel, the ModeSelection workflow step, ReturnToModeSelectionCommand, its step-bar entry, and every \"Mode Selection\" button. Entering Receiving goes straight to the user's default mode. When no default is stored, Guided is assumed and also written back as the stored default, so Receiving never opens with \"nothing selected\".\n- Clear Label Data appears on Manual Entry and Edit Mode as well as the guided walk, following the existing ResetLabelDataAsync / CanClearLabelData rules.\n- Hide the shell header back button for now: HeaderBackButton stays collapsed on every page and no code path makes it visible, so Back exists only in the action bar. Leave IService_HeaderBackNavigation wired so re-enabling it later is a visibility change, not a re-plumb.\n- The four mode buttons replace that page: clicking one enters that mode immediately (same behaviour the mode page performed). The checkbox beside a button is a separate control that only persists the per-user default; it must not navigate, and ticking one clears the other two.\n- Shell must stay module-agnostic: define a contract (for example IViewModel_ShellActionProvider or an IService_ShellActions resolved by MainWindow) that a page's ViewModel implements or supplies so the shell can decide which of the eight buttons are visible and enabled for the current page, without MainWindow referencing Module_Receiving types. Register anything new in Infrastructure/DependencyInjection, not App.xaml.cs.\n- Enable/disable rules must match today's behaviour, at minimum: Next disabled until the PO's part list is loaded on the PO step (IService_ReceivingWorkflow.IsPoPartListLoaded) and until a part is chosen on the part step; Back hidden where the step does not support it.\n- Existing keyboard shortcuts (Ctrl+Left / Ctrl+Right for Back/Next, plus any others in View_Receiving_Workflow) must keep working and must respect the same visible/enabled rules as the buttons.\n- Remove the old in-page navigation row from View_Receiving_Workflow.xaml; keep the receipt header card and step content untouched.\n- Manual Entry and Edit Mode keep their editing toolbars (Add Row, Add Multiple Rows, Remove Row, Auto Fill, file/paging/filter controls) but lose their \"Save & Finish\" button to the bar's Next slot, with no duplicate left behind.\n- Nothing that moves to the bar may remain on its page: no button, no command binding, no keyboard shortcut path that bypasses the bar's visible/enabled rules.\n- All UI text that users can edit today must stay in settings (ReceivingSettingsKeys / IService_ReceivingSettings), including button labels and tooltips.\n- No business logic in code-behind; Views bind to ViewModels with x:Bind.\n\nCONFIRMED CLARIFICATIONS\n\n1) No default mode\n- Question: which page counts as \"no default mode\" now that mode selection is gone?\n- Answer: Guided is the default. If the user has no stored default, Receiving opens in Guided and that choice is persisted as the default.\n\n2) Mode buttons on non-Receiving pages\n- Question: hidden, disabled, or replaced by each module's own actions?\n- Answer: hidden. The mode group is not shown for other modules, and the action bar disappears / shrinks to auto size while another module is active.\n\n3) Label-button footer vs the new action bar\n- Question: replace the PrimaryLabelButtonsPanel footer, or sit in its own row?\n- Answer: neither replaces the other. The label-shortcut footer stays in the left navigation pane, and the new action bar lives on the right side of the UI under the page content.\n\n4) Default checkboxes\n- Question: mutually exclusive (radio-like)?\n- Answer: yes. Ticking one clears the others.\n\n5) Clear Label Data outside the guided walk\n- Question: shown on Manual Entry and Edit Mode?\n- Answer: yes. Those Receiving pages get Clear Label Data too.\n\n6) Overlay on the Result page\n- Question: does the Overlay button belong on Result?\n- Answer: yes. Result includes the Overlay button.\n\n7) Shell header back button\n- Question: keep Back available through HeaderBackButton as well, or header title/step bar only?\n- Answer: remove the shell header back button - hide it for now. Back is offered only by the action bar.\n\n8) Manual Entry and Edit Mode actions\n- Question: what do those two Receiving modes get, and what happens to their Save button?\n- Answer: buttons 1-4, 7 and 8, plus \"Save & Finish\" in the position Next would occupy. The Save & Finish button is removed from Manual Entry and from Edit Mode so it exists only in the action bar.\n\nACCEPTANCE CRITERIA\n- Every Receiving page shows the same action bar position, with exactly the buttons listed in the matrix for that page.\n- A user with no stored default opens Receiving in Guided mode, and Guided is persisted as their default at that point.\n- The Receiving entry point opens the default mode with no mode-selection page anywhere in navigation, settings, or help.\n- Ticking a mode's checkbox persists the default for that user and survives an app restart; it is reflected the next time Receiving opens.\n- Only one default can be set at a time: ticking a second checkbox clears the first, and the stored value is a single mode.\n- Clear Label Data is offered on Manual Entry and Edit Mode as well as on every guided-walk page, and follows the existing CanClearLabelData rules.\n- Manual Entry and Edit Mode offer \"Save & Finish\" in the bar's Next slot, and neither page still shows a Save & Finish button of its own.\n- No action appears twice: the old workflow navigation row, the Manual Entry Save & Finish, the Edit Mode Save & Finish, \"Add another Part/PO\", and \"Mode Selection\" are all gone from their pages.\n- The Result page includes the Overlay button.\n- Non-Receiving pages show no mode buttons; the action bar shrinks to auto size or disappears, and the page content then takes the full remaining height.\n- The label-shortcut footer stays in the left navigation pane and is not merged into the action bar at any window width.\n- HeaderBackButton is never visible on any page; the only Back control is the action bar's Back button.\n- Next is disabled in the exact cases it is disabled today, with the same messages/validation.\n- Review & Save offers \"Save to Database\" where Next normally sits; Result offers \"Start New Entry\" where Back normally sits; \"Add another Part/PO\" and \"Mode Selection\" buttons are gone.\n- No module type is referenced from MainWindow for these actions; the shell depends only on the new contract.\n- Build clean and the existing test suite green; add focused tests for the contract's visibility/enabled decisions per page.",
+  "expectations": [
+    "Dunnage's own mode-selection screens are out of scope and unchanged",
+    "The label overlay window contents are unchanged; only its trigger moves",
+    "The header step bar is unchanged; only the header back control is hidden",
+    "No new keyboard shortcuts are introduced",
+    "The guided walk receipt header card and step content remain unchanged apart from the nav row removal"
+  ],
+  "context": [
+    "area: MainWindow shell â€” ContentFrame page host, NavigationView header (HeaderBarBorder, HeaderBackButton, HeaderStepBar, UserMenuButton), left-pane label footer (PrimaryLabelButtonsPanel)",
+    "area: Module_Receiving/Views â€” View_Receiving_Workflow (ReceivingWorkflowNavigationGrid), View_Receiving_ModeSelection (to delete), ManualEntry, EditMode, Review & Save, Result",
+    "area: Module_Receiving/ViewModels and Services â€” workflow view model commands (PreviousStepCommand, NextStepCommand, ResetLabelDataAsync, CanClearLabelData, ShowHelpAsync), IService_ReceivingWorkflow, Service_ReceivingShortcuts, IService_UserPreferences",
+    "area: Module_Receiving/Settings â€” ReceivingSettingsKeys and ReceivingSettingsDefaults hold the editable labels and tooltips",
+    "area: Module_Core/Services/Help â€” Service_Help owns per-page help topics",
+    "area: Infrastructure/DependencyInjection â€” ModuleServicesExtensions is the registration point for new shell contracts",
+    "area: MTM_Receiving_Application.Tests/Unit/Module_Receiving â€” existing view-model and service test folders where contract tests belong",
+    "constraint: MVVM flow View -> ViewModel -> Service -> DAO; no business logic in code-behind",
+    "constraint: x:Bind only, no runtime Binding",
+    "constraint: shell stays module-agnostic; no Module_Receiving types in MainWindow",
+    "constraint: new registrations go in Infrastructure/DependencyInjection, never App.xaml.cs",
+    "constraint: the strip reuses existing commands and services instead of re-implementing page behaviour"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "One shared action strip beneath page content on the side opposite the navigation pane",
+      "tasks": [
+        "T008",
+        "T010",
+        "T012"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldOfferBackNextClearLabelDataAndHelpInOrder_WhenStepIsPartSelection"
+      ]
+    },
+    "FR-002": {
+      "title": "The strip never replaces, merges with, or moves the left-pane label-shortcut footer",
+      "tasks": [
+        "T010",
+        "T055"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::Attach_ShouldReportCollapsed_WhenTheProviderOffersNoActions"
+      ]
+    },
+    "FR-003": {
+      "title": "The strip sizes to content and collapses so page content fills the remaining height",
+      "tasks": [
+        "T006",
+        "T008",
+        "T053"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::Attach_ShouldReportCollapsed_WhenTheProviderOffersNoActions"
+      ]
+    },
+    "FR-004": {
+      "title": "At compact widths the strip wraps or scrolls instead of hiding actions",
+      "tasks": [
+        "T010"
+      ],
+      "assumes": "the strip's horizontal ScrollViewer; a compact-width render was not exercised"
+    },
+    "FR-005": {
+      "title": "Left group offers Guided, Manual, Edit, Overlay with dividers and is absent on non-Receiving pages",
+      "tasks": [
+        "T002",
+        "T018",
+        "T021",
+        "T054"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldOfferGuidedManualEditOverlayInThatOrder_WhenThePageIsReceiving"
+      ]
+    },
+    "FR-006": {
+      "title": "Each of Guided, Manual, Edit carries an unlabelled tooltipped default checkbox that only persists",
+      "tasks": [
+        "T003",
+        "T004",
+        "T005",
+        "T021",
+        "T037"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellDefaultModeTests::SetDefaultMode_ShouldStoreManualOnly_WhenManualIsTicked"
+      ]
+    },
+    "FR-007": {
+      "title": "At most one default stored; ticking one clears the others; unticking the last leaves none",
+      "tasks": [
+        "T021",
+        "T037",
+        "T038",
+        "T039",
+        "T040"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellDefaultModeTests::ShellActions_ShouldTickEditAlone_WhenManualWasTheStoredDefaultAndEditIsTicked"
+      ]
+    },
+    "FR-008": {
+      "title": "Right group order is Back, Next, divider, Clear Label Data, Help",
+      "tasks": [
+        "T001",
+        "T012"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldOfferBackNextClearLabelDataAndHelpInOrder_WhenStepIsPartSelection"
+      ]
+    },
+    "FR-009": {
+      "title": "Back shown only where going back is supported; Next disabled until the page's conditions are met",
+      "tasks": [
+        "T013",
+        "T014",
+        "T019"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldOmitBack_WhenStepIsEnterPoNumber"
+      ]
+    },
+    "FR-010": {
+      "title": "Clear Label Data uses existing rules and appears on every guided page, Manual Entry, and Edit Mode",
+      "tasks": [
+        "T015",
+        "T016",
+        "T021"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldDisableClearLabelData_WhenTheUserHasNoActiveLabelData"
+      ]
+    },
+    "FR-011": {
+      "title": "Help opens help for the current page",
+      "tasks": [
+        "T017",
+        "T021"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldCarryTheExistingShowHelpCommand_WhenHelpIsInvoked"
+      ]
+    },
+    "FR-012": {
+      "title": "Each page shows exactly the actions in the per-page matrix",
+      "tasks": [
+        "T012",
+        "T020",
+        "T021",
+        "T045",
+        "T047"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellPrimaryActionTests::ShellActions_ShouldOfferNoRowToolbarActions_WhenStepIsManualEntryOrEditMode"
+      ]
+    },
+    "FR-013": {
+      "title": "Receiving opens directly in the stored default mode with no mode-selection page anywhere",
+      "tasks": [
+        "T005",
+        "T024",
+        "T025",
+        "T028",
+        "T030",
+        "T031",
+        "T032",
+        "T033",
+        "T034",
+        "T035",
+        "T036"
+      ],
+      "tests": [
+        "Service_ReceivingWorkflowStartModeTests::StartWorkflowAsync_ShouldOpenManualEntry_WhenTheStoredDefaultIsManual"
+      ]
+    },
+    "FR-014": {
+      "title": "With no stored default Receiving opens in Guided and stores Guided",
+      "tasks": [
+        "T026",
+        "T027",
+        "T035"
+      ],
+      "tests": [
+        "Service_ReceivingWorkflowStartModeTests::StartWorkflowAsync_ShouldOpenPoEntryAndStoreGuided_WhenNoDefaultIsStored"
+      ]
+    },
+    "FR-015": {
+      "title": "Pressing a mode control enters that mode immediately",
+      "tasks": [
+        "T018",
+        "T021"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldOfferGuidedManualEditOverlayInThatOrder_WhenThePageIsReceiving"
+      ]
+    },
+    "FR-016": {
+      "title": "Every action the strip owns is removed from the page that drew it, with no duplicates",
+      "tasks": [
+        "T021",
+        "T022",
+        "T023",
+        "T048",
+        "T049",
+        "T050"
+      ],
+      "assumes": "verified by searching the Receiving views for the removed navigation row and save buttons; no automated check reads XAML element absence"
+    },
+    "FR-017": {
+      "title": "A shell-owned contract decides visibility and enablement without naming module types",
+      "tasks": [
+        "T007",
+        "T008",
+        "T011",
+        "T021"
+      ],
+      "assumes": "the shell resolves only IViewModel_ShellActionProvider and MainWindow names no module view-model type; the resolver itself is not unit tested"
+    },
+    "FR-018": {
+      "title": "Review and Save offers Save to Database in the Next slot and drops Add another Part/PO",
+      "tasks": [
+        "T021",
+        "T045",
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellPrimaryActionTests::ShellActions_ShouldPutSaveToDatabaseInTheNextSlotAndOfferNoAddAnother_WhenStepIsReview"
+      ]
+    },
+    "FR-019": {
+      "title": "Result offers Start New Entry in the Back slot and includes Overlay",
+      "tasks": [
+        "T021",
+        "T022",
+        "T046"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellPrimaryActionTests::ShellActions_ShouldPutStartNewEntryInTheBackSlotAndKeepOverlay_WhenStepIsComplete"
+      ]
+    },
+    "FR-020": {
+      "title": "Manual Entry and Edit Mode offer Save & Finish in the Next slot and keep no save button of their own",
+      "tasks": [
+        "T021",
+        "T043",
+        "T044",
+        "T048",
+        "T049"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellPrimaryActionTests::ShellActions_ShouldPutSaveAndFinishInTheNextSlot_WhenStepIsManualEntry"
+      ]
+    },
+    "FR-021": {
+      "title": "The shell header back control stays hidden; Back is offered only by the strip",
+      "tasks": [
+        "T011"
+      ],
+      "assumes": "HeaderBackButton is forced collapsed in UpdateHeaderBackButton; that is view code with no unit test"
+    },
+    "FR-022": {
+      "title": "Back and Next keyboard shortcuts follow the same visible and enabled rules as the strip",
+      "tasks": [
+        "T019",
+        "T023"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::NextSlot_ShouldMatchNextStepCommandCanExecute_WhenThePoPartListHasNotLoaded"
+      ]
+    },
+    "FR-023": {
+      "title": "Editing toolbars and paging, file, and filter controls stay on their pages",
+      "tasks": [
+        "T047",
+        "T049"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellPrimaryActionTests::ShellActions_ShouldOfferNoRowToolbarActions_WhenStepIsManualEntryOrEditMode"
+      ]
+    },
+    "FR-024": {
+      "title": "The strip invokes existing page actions rather than re-implementing them",
+      "tasks": [
+        "T017",
+        "T021"
+      ],
+      "tests": [
+        "ViewModel_Receiving_ShellActionTests::ShellActions_ShouldCarryTheExistingShowHelpCommand_WhenHelpIsInvoked"
+      ]
+    },
+    "FR-025": {
+      "title": "Labels and tooltips remain configurable through the Receiving settings keys",
+      "tasks": [
+        "T003",
+        "T004",
+        "T005",
+        "T021"
+      ],
+      "assumes": "labels and tooltips load from ReceivingSettingsKeys through IService_ReceivingSettings; no test asserts the settings round-trip"
+    },
+    "FR-026": {
+      "title": "The guided walk header card and step content are otherwise unchanged",
+      "tasks": [
+        "T022"
+      ],
+      "assumes": "the guided walk header card and step content were left untouched; verified by reading the diff"
+    },
+    "FR-027": {
+      "title": "No business logic in code-behind; views use compiled bindings only",
+      "tasks": [
+        "T011",
+        "T023"
+      ],
+      "assumes": "no business logic was added to code-behind; the strip binds with x:Bind and the shell only resolves, attaches and detaches"
+    },
+    "FR-028": {
+      "title": "Non-Receiving pages keep their behaviour apart from having no mode controls",
+      "tasks": [
+        "T053",
+        "T054",
+        "T055"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::Attach_ShouldHideTheModeGroup_WhenTheSnapshotReportsNoReceivingModes"
+      ]
+    }
+  },
+  "classification": {
+    "projectedFiles": 30,
+    "projectedTasks": 26,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "intent": "Move Receiving page navigation into one persistent shell action strip and delete the Receiving mode-selection page",
+  "size": "oversized",
+  "unattended": true,
+  "decisions": [
+    {
+      "decision": "Add IViewModel_ShellActionProvider to Module_Core/Contracts/ViewModels and resolve it with the same three-step lookup as the header providers",
+      "why": "The header already proves page-supplied resolve-and-track for two capabilities, so the shell gains no new mechanism and Core stays free of module types",
+      "rejected": "A singleton IService_ShellActions the shell resolves, which would need a push channel from every page and separate active-page tracking",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "ViewModel_Receiving_Workflow implements the contract; step view models do not",
+      "why": "The workflow page is the only object in ContentFrame.Content - the guided steps, Manual Entry, Edit Mode and Review are user controls hosted inside it, so the shell lookup can only reach the workflow view model",
+      "rejected": "Per-page providers found by walking the visual tree to the active host, which is fragile and spreads the matrix over a dozen classes",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "The workflow page hands its hosted Manual Entry, Edit Mode and Review view models to the workflow view model at construction",
+      "why": "Those view models are transient DI instances already injected into the hosted views, so re-resolving returns different objects; the page is the only holder of the right instances",
+      "rejected": "IService_ViewModelRegistry lookup, because Review does not register itself and the lookup would silently return nothing",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Render the bar through a shell-owned ViewModel_Shared_ShellActionBar projection bound with x:Bind, instead of setting control properties from code behind",
+      "why": "x:Bind needs a compile-time type and the resolved provider's type is only known at run time; three two-way checkboxes would otherwise need event handlers and setter logic in MainWindow",
+      "rejected": "Imperative control updates like UpdateHeaderStepBar, which suits a four-property step bar but not eight buttons and three checkboxes",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Mode entry orchestration stays in ViewModel_Receiving_Workflow; default persistence goes through IService_UserPreferences.UpdateDefaultReceivingModeAsync",
+      "why": "Confirm, reset and GoToStep is view orchestration plus one service call, and the unsaved-data confirmation dialog already lives on that view model",
+      "rejected": "A new IService_ReceivingWorkflow.EnterModeAsync, which would either duplicate the dialog or drag dialog code into a service",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "StartWorkflowAsync resolves the stored default, falls back to guided and writes guided back; DefaultModeOnStartup stops deciding the landing mode",
+      "why": "The deleted step removes every destination that setting could name, and a second resolver pointing at a deleted page is exactly the blank-page edge case the spec calls out",
+      "rejected": "Deleting the DefaultModeOnStartup key outright, which is a wider change than the feature needs",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "The Overlay button reuses the existing RequestOpenLabelOverlay hook set by View_Receiving_Workflow",
+      "why": "The overlay window and its contents stay exactly where they are, which is what the spec asks, and the hook still fires because Manual Entry and Edit Mode are hosted in that page",
+      "rejected": "A new shell-level window launcher contract, which would move window construction out of Receiving for no behavioural gain",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Delete the mode-selection keyboard shortcut with the page: key, default, settings row, model property, ReturnToModeSelectionCommand and CanReturnToModeSelection",
+      "why": "Its only destination no longer exists, and the spec forbids a shortcut path that reaches nothing or bypasses the bar's rules",
+      "rejected": "Rebinding it to open the mode group, which is always visible on Receiving pages and would invent a shortcut the spec did not ask for",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Suppress HeaderBackButton in MainWindow.UpdateHeaderBackButton and leave IService_HeaderBackNavigation wired",
+      "why": "That method is the single place the control's visibility is set, so one guard hides it everywhere and re-enabling later is deleting the guard",
+      "rejected": "Making Service_HeaderBackNavigation never report visible, which changes a shared service contract and makes re-enabling a service edit",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Keep keyboard parity by leaving the page KeyDown handler in place and gating it on the same CanExecute members the bar reads",
+      "why": "The gates already mirror the buttons, and the handler is registered with handledEventsToo so it still sees keys while a hosted step control has focus",
+      "rejected": "Moving the handler into MainWindow, which would need the shell to know Receiving shortcut keys and commands",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "Test the per-page matrix as xUnit view-model tests on ViewModel_Receiving_ShellActionTests with mocked workflow services",
+      "why": "The matrix is the acceptance surface and is pure view-model state over mocked services, which the repository testing rules classify as a unit test",
+      "rejected": "Asserting through the shell projection, which would test plumbing rather than the Receiving decision",
+      "by": "agent",
+      "at": "2026-11-19T18:11:57.220Z"
+    },
+    {
+      "decision": "The strip expresses per-control visibility through a static x:Bind function (Helper_Visibility.FromBool) instead of a converter resource or x:Load",
+      "why": "A Window root cannot host a converter lookup root or x:Load FindName calls; both failed to compile in MainWindow.xaml",
+      "rejected": "moving the strip into its own UserControl, and exposing Visibility-typed mirror properties on the projection",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "ViewModel_Shared_ShellActionBar is registered in ModuleServicesExtensions beside the other Module_Shared view models",
+      "why": "that is where every Module_Shared registration already lives, and FR-017 asks for the composition root, not a specific file",
+      "rejected": "adding it to CoreServiceExtensions as the task line named",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "The projection's three default-checkbox flags are bool? rather than bool",
+      "why": "CheckBox.IsChecked is bool?, and x:Bind cannot convert back from bool? to bool on a TwoWay binding",
+      "rejected": "a two-way bool converter, which does not exist in this project",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "Pressing a mode control changes only the active mode for the session; only the default checkbox persists a default",
+      "why": "the spec separates the two controls and records this as an assumption",
+      "rejected": "persisting the default on every mode-button press",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "The Receiving.Dialogs.ConfirmModeSelection.* keys were kept and re-worded to Change Mode? instead of being deleted",
+      "why": "ConfirmModeChangeAsync still shows that dialog when a mode change would discard unsaved data, and the wording requirement only forbids the Mode Selection copy",
+      "rejected": "deleting the keys and folding the confirmation into the existing ConfirmChangeMode dialog",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "The mode-selection settings keys, defaults and manifest rows were removed with Phase 4 rather than Phase 1",
+      "why": "deleting them in Phase 1 would have stopped the picker page compiling until Phase 4 deleted it, so every phase boundary stayed green",
+      "rejected": "removing the settings surface first and leaving the tree broken across two phases",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "The Complete step no longer pushes keyboard focus at the page, because its Start New Entry button now lives in the shell strip",
+      "why": "the named button was deleted with the page's completion panel, and the strip's Start New Entry is a normal tab stop",
+      "rejected": "leaving a focus call aimed at a control that no longer exists",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "Service_ReceivingWorkflow takes IService_UserPreferences as a required constructor argument",
+      "why": "the Guided fallback has to be written back through that service when no default is stored",
+      "rejected": "resolving the service inside the method, which would hide the dependency",
+      "by": "agent",
+      "at": "2026-11-19T19:00:25.379Z"
+    },
+    {
+      "decision": "The shell Next slot re-reads the hosted Edit Mode save gate whenever the command's CanExecuteChanged fires",
+      "why": "the review found Edit Mode announces that it can save long after the step arrives, and the bound snapshot would otherwise stay disabled forever, leaving no save path because the page's own button is gone",
+      "rejected": "leaving the snapshot to the step-change refresh only",
+      "by": "agent",
+      "at": "2026-11-19T19:15:21.477Z"
+    },
+    {
+      "decision": "Deleted the settings keys, defaults and manifest rows that the removed commands orphaned: Change Mode dialog, Add Another Part/PO text and dialog, its accessibility name, and the workflow-cleared status",
+      "why": "they still appeared as editable settings with no effect",
+      "rejected": "keeping them as harmless placeholders",
+      "by": "agent",
+      "at": "2026-11-19T19:15:21.477Z"
+    },
+    {
+      "decision": "Left the Default Mode on Startup setting in place after checking the review's claim that it had become dead",
+      "why": "both settings pages already push the chosen mode through IService_UserPreferences.UpdateDefaultReceivingModeAsync on save and reset, so the control still sets the same stored default the workflow now reads",
+      "rejected": "removing the control from two settings pages on the strength of the review alone",
+      "by": "agent",
+      "at": "2026-11-19T19:15:21.477Z"
+    },
+    {
+      "decision": "Removed AddCurrentPartToSessionAsync from the service and its interface declaration, and dropped MainWindow's unused shell provider field",
+      "why": "the deleted Add another Part/PO command was their only caller and no code read the field",
+      "rejected": "leaving them for a later cleanup",
+      "by": "agent",
+      "at": "2026-11-19T19:15:21.477Z"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Planned a shell-owned action bar fed by a new core provider contract implemented on the Receiving workflow view model, with mode-selection deleted and every page's own navigation removed",
+      "key_finding": "View_Receiving_Workflow is the only ContentFrame content object - every Receiving step is a hosted user control - so the shell can only ever resolve the workflow view model, and the whole per-page matrix has to live there"
+    },
+    "tasks": {
+      "summary": "58 tasks in 8 phases: setup types and settings text, foundational shell mechanism, US1 strip matrix and page cleanup, US2 picker teardown and startup mode, US3 default persistence proof and overlay guard, US4 page verb removal, US5 non-Receiving proof, polish"
+    },
+    "specify": {
+      "summary": "Moved every Receiving page's navigation into one shell action strip with guided, manual, edit and overlay entries plus remembered defaults, and deleted the Receiving mode-selection page, step, shortcut, help topic and settings surface"
+    }
+  },
+  "approach": "Add IViewModel_ShellActionProvider plus a Model_ShellActionBarState snapshot in Module_Core, project it into Module_Shared for x:Bind, and resolve/attach it from MainWindow beside the existing header sync. Module_Receiving implements it on the workflow view model so every visibility and enablement decision stays in the module. Pages lose the controls the bar now owns, and Receiving startup resolves the stored default mode, falling back to guided and writing it back.",
+  "planBlocks": [
+    "calls",
+    "code",
+    "states",
+    "screens"
+  ],
+  "planBlocksPicked": [
+    "calls",
+    "code",
+    "states",
+    "screens"
+  ],
+  "verified": [
+    {
+      "what": "plan blocks check out",
+      "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/005-shell-action-bar --strict",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 0.0,
+      "result": "[plan-check] plan.md: 2 call paths, 9 lines, 2 screens, 13 parts, 3 code blocks, 2 state blocks (10 states). Every cited file and line checks out."
+    },
+    {
+      "what": "Only ViewModel_Receiving_Workflow implements IViewModel_ShellActionProvider, so no non-Receiving page can render the mode group or any Receiving action",
+      "result": "confirmed by searching every module, infrastructure and root source file for the contract"
+    },
+    {
+      "what": "No Receiving view still draws the old navigation row, a Save to Database button, an Add another Part/PO button, or its own Save and Finish button",
+      "result": "confirmed by searching every Receiving .xaml and .cs for the removed element names"
+    },
+    {
+      "what": "The user-visible string Mode Selection is gone from Receiving settings, help text and navigation search; only Dunnage's own separate mode-selection feature still uses it",
+      "result": "confirmed by searching .cs/.xaml/.json and rewriting the confirm-mode dialog, the three quick-access help tips and the search alias"
+    },
+    {
+      "what": "solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 40.6,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:40.37",
+      "commit": "ba1ff2f8",
+      "tree": "389aa128d4920b8fa4875f0cb38b401a88c7c4b8"
+    },
+    {
+      "what": "full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 49.0,
+      "result": "  Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.Types_GetDeleteImpact_ShouldCountPartsQueueAndHistoryRows [1 ms] ·   Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.NoLabelParts_Set_ShouldAddAndRemoveTheFlag [1 ms] · Passed!  - Failed:     0, Passed:  1423, Skipped:   264, Total:  1687, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "ba1ff2f8",
+      "tree": "389aa128d4920b8fa4875f0cb38b401a88c7c4b8"
+    }
+  ],
+  "currentTask": null,
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added shell slot and mode records plus the seven Receiving.UiText.Shell keys, defaults, and manifest rows",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionSlot.cs",
+        "Module_Core/Models/UI/Model_ShellModeAction.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ],
+      "wave": "T001-T005"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Added shell slot and mode records plus the seven Receiving.UiText.Shell keys, defaults, and manifest rows",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionSlot.cs",
+        "Module_Core/Models/UI/Model_ShellModeAction.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ],
+      "wave": "T001-T005"
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added shell slot and mode records plus the seven Receiving.UiText.Shell keys, defaults, and manifest rows",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionSlot.cs",
+        "Module_Core/Models/UI/Model_ShellModeAction.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ],
+      "wave": "T001-T005"
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added shell slot and mode records plus the seven Receiving.UiText.Shell keys, defaults, and manifest rows",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionSlot.cs",
+        "Module_Core/Models/UI/Model_ShellModeAction.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ],
+      "wave": "T001-T005"
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added shell slot and mode records plus the seven Receiving.UiText.Shell keys, defaults, and manifest rows",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionSlot.cs",
+        "Module_Core/Models/UI/Model_ShellModeAction.cs",
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs",
+        "Module_Settings.Core/Defaults/settings.manifest.json"
+      ],
+      "wave": "T001-T005"
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added the Model_ShellActionBarState snapshot with named mode positions and the three default flags",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionBarState.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added IViewModel_ShellActionProvider with the snapshot property and SetDefaultMode",
+      "files": [
+        "Module_Core/Contracts/ViewModels/IViewModel_ShellActionProvider.cs"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added the ViewModel_Shared_ShellActionBar projection with Attach/Detach, snapshot mirroring, and checkbox-to-SetDefaultMode forwarding",
+      "files": [
+        "Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Registered the shell projection, added the two-row ContentFrame layout with the action strip, and wired resolve/attach/detach while keeping the header back button collapsed",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+        "MainWindow.xaml",
+        "MainWindow.xaml.cs",
+        "Module_Core/Helpers/UI/Helper_Visibility.cs"
+      ],
+      "wave": "T009-T011"
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Registered the shell projection, added the two-row ContentFrame layout with the action strip, and wired resolve/attach/detach while keeping the header back button collapsed",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+        "MainWindow.xaml",
+        "MainWindow.xaml.cs",
+        "Module_Core/Helpers/UI/Helper_Visibility.cs"
+      ],
+      "wave": "T009-T011"
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Registered the shell projection, added the two-row ContentFrame layout with the action strip, and wired resolve/attach/detach while keeping the header back button collapsed",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs",
+        "MainWindow.xaml",
+        "MainWindow.xaml.cs",
+        "Module_Core/Helpers/UI/Helper_Visibility.cs"
+      ],
+      "wave": "T009-T011"
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Added shell-action tests covering slot order, absent Back, Next gating, Clear Label Data gating, Help command, mode order, and the Saving step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T012-T020"
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Implemented IViewModel_ShellActionProvider on the workflow view model with the per-page matrix, mode entry commands, default persistence, and removal of the mode-selection members",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Deleted the in-page navigation row, mode-selection host and completion buttons, and rewired the page to hand its hosted view models and overlay window to the provider",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
+      ],
+      "wave": "T022-T023"
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Deleted the in-page navigation row, mode-selection host and completion buttons, and rewired the page to hand its hosted view models and overlay window to the provider",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
+      ],
+      "wave": "T022-T023"
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Added startup-mode tests proving stored manual, stored edit, no default, and unrecognised values resolve to the right opening step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStartModeTests.cs"
+      ],
+      "wave": "T024-T027"
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Added startup-mode tests proving stored manual, stored edit, no default, and unrecognised values resolve to the right opening step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStartModeTests.cs"
+      ],
+      "wave": "T024-T027"
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Added startup-mode tests proving stored manual, stored edit, no default, and unrecognised values resolve to the right opening step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStartModeTests.cs"
+      ],
+      "wave": "T024-T027"
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Added startup-mode tests proving stored manual, stored edit, no default, and unrecognised values resolve to the right opening step",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStartModeTests.cs"
+      ],
+      "wave": "T024-T027"
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Deleted the mode-selection page, view model, tests, registrations, help topic, settings options and shortcut, and resolved the opening step from the stored default with a Guided fallback written back",
+      "files": [
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Core/Services/Help/Service_Help.cs",
+        "Module_Core/Helpers/UI/Helper_WorkflowHelpContentGenerator.cs"
+      ],
+      "wave": "T028-T035"
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Deleted the ModeSelection enum member once no file named it",
+      "files": [
+        "Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Added default-mode tests for storing one mode, clearing the last one, writing for the signed-in user only, and Overlay leaving the default alone",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T037-T041"
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Added default-mode tests for storing one mode, clearing the last one, writing for the signed-in user only, and Overlay leaving the default alone",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T037-T041"
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Added default-mode tests for storing one mode, clearing the last one, writing for the signed-in user only, and Overlay leaving the default alone",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T037-T041"
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Added default-mode tests for storing one mode, clearing the last one, writing for the signed-in user only, and Overlay leaving the default alone",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T037-T041"
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Added default-mode tests for storing one mode, clearing the last one, writing for the signed-in user only, and Overlay leaving the default alone",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T037-T041"
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Made the label overlay window reuse itself instead of opening a second one when Overlay is pressed twice",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_LabelOverlayWindow.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Added primary-action tests for Save and Finish in the Next slot, Save to Database, Start New Entry in the Back slot, and no duplicated row toolbar actions",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T043-T047"
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Added primary-action tests for Save and Finish in the Next slot, Save to Database, Start New Entry in the Back slot, and no duplicated row toolbar actions",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T043-T047"
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Added primary-action tests for Save and Finish in the Next slot, Save to Database, Start New Entry in the Back slot, and no duplicated row toolbar actions",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T043-T047"
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "Added primary-action tests for Save and Finish in the Next slot, Save to Database, Start New Entry in the Back slot, and no duplicated row toolbar actions",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T043-T047"
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Added primary-action tests for Save and Finish in the Next slot, Save to Database, Start New Entry in the Back slot, and no duplicated row toolbar actions",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T043-T047"
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Removed the Save and Finish panels from Manual Entry and Edit Mode and the Save to Database and Add another Part/PO buttons from Review",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Views/View_Receiving_Review.xaml"
+      ],
+      "wave": "T048-T050"
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Removed the Save and Finish panels from Manual Entry and Edit Mode and the Save to Database and Add another Part/PO buttons from Review",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Views/View_Receiving_Review.xaml"
+      ],
+      "wave": "T048-T050"
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Removed the Save and Finish panels from Manual Entry and Edit Mode and the Save to Database and Add another Part/PO buttons from Review",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_ManualEntry.xaml",
+        "Module_Receiving/Views/View_Receiving_EditMode.xaml",
+        "Module_Receiving/Views/View_Receiving_Review.xaml"
+      ],
+      "wave": "T048-T050"
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Repointed Review focus at a surviving control and deleted AddAnotherPartCommand with its text and accessibility name",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs"
+      ],
+      "wave": "T051-T052"
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "Repointed Review focus at a surviving control and deleted AddAnotherPartCommand with its text and accessibility name",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Review.xaml.cs",
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Review.cs"
+      ],
+      "wave": "T051-T052"
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Added projection tests proving Detach collapses and clears every slot, the mode group hides without Receiving modes, and a provider offering nothing collapses the bar",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs"
+      ],
+      "wave": "T053-T055"
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "Added projection tests proving Detach collapses and clears every slot, the mode group hides without Receiving modes, and a provider offering nothing collapses the bar",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs"
+      ],
+      "wave": "T053-T055"
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "Added projection tests proving Detach collapses and clears every slot, the mode group hides without Receiving modes, and a provider offering nothing collapses the bar",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs"
+      ],
+      "wave": "T053-T055"
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "Recorded the shared action bar and the deleted mode-selection page in the changelog",
+      "files": [
+        "CHANGELOG.md"
+      ]
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "Solution build clean and the full suite green at 1421 passed, 0 failed, 264 skipped",
+      "files": [
+        "MTM_Receiving_Application.slnx"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "Confirmed by search that only the Receiving workflow implements the shell provider, so no other module can show mode controls, and that no Receiving view still draws a navigation row",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Made each mode control a no-op when its mode is already active, and gated the Clear Label Data and Help shortcuts on the same snapshot state the strip renders",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T059-T060"
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Made each mode control a no-op when its mode is already active, and gated the Clear Label Data and Help shortcuts on the same snapshot state the strip renders",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs"
+      ],
+      "wave": "T059-T060"
+    }
+  },
+  "concerns": [
+    {
+      "note": "No running-window pass was possible here: the strip was never exercised in the live app, so its layout, its wrapping at compact widths, and the switch from per-control visibility to the static function binding are unverified visually. Run the app once and walk the guided sequence, Manual Entry, Edit Mode, Review and Result before shipping.",
+      "step": "implement"
+    },
+    {
+      "note": "The Complete step no longer sets keyboard focus on the page itself; focus falls to the window root and the next tab stop is the strip's Start New Entry button.",
+      "step": "implement"
+    },
+    {
+      "note": "The phase 4 and phase 6 workers changed startup resolution and page buttons in parallel; both reported green builds independently and the combined tree was rebuilt and re-tested afterwards, but the merge was never reviewed line by line.",
+      "step": "implement"
+    },
+    {
+      "note": "The review's review depth came out high because the working tree also holds unrelated pre-existing edits; the feature itself was reviewed once, carefully, and every finding was either fixed or checked and rejected with a reason.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Closed all 58 tasks after a clean build and a green 1421-test run",
+  "risk": {
+    "tier": "high",
+    "computed": "high",
+    "reasons": [
+      "touches Database/InforVisualScripts/Queries/23_SearchPurchaseOrderLineSpecs_WeightedRanking_StatusFiltered.sql, Database/InforVisualScripts/Queries/25_SearchPurchaseOrderLineSpecs_TokenizedPartial_StatusFiltered.sql, Database/InforVisualScripts/Queries/27_SearchPurchaseOrderLineSpecs_ExactPhrase_StatusFiltered.sql and 1 more"
+    ]
+  },
+  "convergeStartedAt": "2026-11-19T19:26:17.740Z",
+  "convergePasses": [
+    {
+      "startedAt": "2026-11-19T19:16:59.915Z",
+      "by": "extension",
+      "finishedAt": "2026-11-19T19:21:24.941Z",
+      "added": [
+        "T059",
+        "T060"
+      ]
+    },
+    {
+      "startedAt": "2026-11-19T19:26:17.866Z",
+      "by": "extension",
+      "finishedAt": "2026-11-19T19:29:54.080Z",
+      "added": [],
+      "completed": true
+    }
+  ]
+}

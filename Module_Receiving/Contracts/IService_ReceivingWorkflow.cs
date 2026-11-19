@@ -131,11 +131,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public Model_ReceivingWorkflowStepResult GoToStep(Enum_ReceivingWorkflowStep step);
 
         /// <summary>
-        /// Adds current loads to session and resets for next part entry.
-        /// </summary>
-        public Task AddCurrentPartToSessionAsync();
-
-        /// <summary>
         /// Saves all loads in session to CSV and database.
         /// </summary>
         /// <param name="messageProgress">Progress reporter for status messages</param>

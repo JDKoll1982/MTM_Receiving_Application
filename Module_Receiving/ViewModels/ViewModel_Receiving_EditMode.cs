@@ -2399,59 +2399,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             && !IsBusy;
 
         /// <summary>
-        /// Returns to the mode selection screen after confirmation.
-        /// </summary>
-        [RelayCommand]
-        private async Task ReturnToModeSelectionAsync()
-        {
-            var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot == null)
-            {
-                _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync(
-                    "Unable to display dialog",
-                    Enum_ErrorSeverity.Error
-                );
-                return;
-            }
-
-            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
-            {
-                Title = "Change Mode?",
-                Content =
-                    "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
-                PrimaryButtonText = "Yes, Change Mode",
-                CloseButtonText = "Cancel",
-                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot,
-            };
-
-            var result = await dialog.ShowAsync().AsTask();
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-            {
-                try
-                {
-                    _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
-                    await _workflowService.ResetWorkflowAsync();
-                    _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ModeSelection);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Failed to reset workflow: {ex.Message}");
-                    await _errorHandler.HandleErrorAsync(
-                        "Failed to return to mode selection",
-                        Enum_ErrorSeverity.Error,
-                        ex
-                    );
-                }
-            }
-            else
-            {
-                _logger.LogInfo("User cancelled return to mode selection");
-            }
-        }
-
-        /// <summary>
         /// Validates the list of loads before saving.
         /// </summary>
         /// <param name="loadsToValidate">The loads to validate.</param>

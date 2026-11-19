@@ -41,10 +41,6 @@ public class Service_ReceivingShortcuts : IService_ReceivingShortcuts
 
         try
         {
-            shortcuts.ModeSelectionShortcut = await LoadBindingAsync(
-                ReceivingSettingsKeys.Shortcuts.ModeSelection,
-                shortcuts.ModeSelectionShortcut
-            );
             shortcuts.ClearLabelDataShortcut = await LoadBindingAsync(
                 ReceivingSettingsKeys.Shortcuts.ClearLabelData,
                 shortcuts.ClearLabelDataShortcut
@@ -82,10 +78,6 @@ public class Service_ReceivingShortcuts : IService_ReceivingShortcuts
     {
         ArgumentNullException.ThrowIfNull(shortcuts);
 
-        await SaveBindingAsync(
-            ReceivingSettingsKeys.Shortcuts.ModeSelection,
-            shortcuts.ModeSelectionShortcut
-        );
         await SaveBindingAsync(
             ReceivingSettingsKeys.Shortcuts.ClearLabelData,
             shortcuts.ClearLabelDataShortcut

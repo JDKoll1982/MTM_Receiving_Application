@@ -5,6 +5,7 @@ using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
 using MTM_Receiving_Application.Module_Receiving.Services;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Receiving.Services;
 
@@ -190,7 +191,8 @@ public sealed class Service_ReceivingWorkflowStepSkipTests
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_UserSessionManager>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
     }
 }

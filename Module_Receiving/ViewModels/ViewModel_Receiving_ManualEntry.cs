@@ -1014,69 +1014,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             return result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary;
         }
 
-        [RelayCommand]
-        private async Task ReturnToModeSelectionAsync()
-        {
-            var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot == null)
-            {
-                _logger.LogError("Cannot show dialog: XamlRoot is null");
-                await _errorHandler.HandleErrorAsync(
-                    "Unable to display dialog",
-                    Enum_ErrorSeverity.Error
-                );
-                return;
-            }
-
-            var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
-            {
-                Title = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeTitle
-                ),
-                Content = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeContent
-                ),
-                PrimaryButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeConfirm
-                ),
-                CloseButtonText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Dialogs.ConfirmChangeModeCancel
-                ),
-                DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                XamlRoot = xamlRoot,
-            };
-
-            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                dialog,
-                xamlRoot
-            );
-
-            var result = await dialog.ShowAsync().AsTask();
-            if (result == Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-            {
-                try
-                {
-                    _logger.LogInfo("User confirmed return to mode selection, resetting workflow");
-                    // ResetWorkflowAsync already sets CurrentStep = ModeSelection and fires StepChanged.
-                    // Calling GoToStep afterwards would be redundant and could cause double-navigation.
-                    await _workflowService.ResetWorkflowAsync();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Failed to reset workflow: {ex.Message}");
-                    await _errorHandler.HandleErrorAsync(
-                        "Failed to return to mode selection",
-                        Enum_ErrorSeverity.Error,
-                        ex
-                    );
-                }
-            }
-            else
-            {
-                _logger.LogInfo("User cancelled return to mode selection");
-            }
-        }
-
         /// <summary>
         /// Shows contextual help for manual entry
         /// </summary>

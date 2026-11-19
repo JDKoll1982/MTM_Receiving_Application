@@ -5,7 +5,6 @@
     /// </summary>
     public enum Enum_ReceivingWorkflowStep
     {
-        ModeSelection = 0,
         ManualEntry = 1,
         EditMode = 2,
         POEntry = 3,

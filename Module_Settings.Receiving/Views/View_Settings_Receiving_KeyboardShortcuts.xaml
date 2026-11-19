@@ -23,47 +23,6 @@
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 CornerRadius="6">
                                 <StackPanel Spacing="12">
-                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Mode Selection" />
-                                    <TextBlock
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource CaptionTextBlockStyle}"
-                                        Text="Returns the user to the workflow mode selector."
-                                        TextWrapping="Wrap" />
-                                    <Grid ColumnSpacing="12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="220" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox
-                                            Grid.Column="0"
-                                            DisplayMemberPath="DisplayName"
-                                            Header="Key"
-                                            ItemsSource="{x:Bind ViewModel.AvailableKeys, Mode=OneWay}"
-                                            SelectedValue="{x:Bind ViewModel.ModeSelectionShortcut.Key, Mode=TwoWay}"
-                                            SelectedValuePath="Value" />
-                                        <CheckBox
-                                            Grid.Column="1"
-                                            Content="Ctrl"
-                                            IsChecked="{x:Bind ViewModel.ModeSelectionShortcut.IsCtrlEnabled, Mode=TwoWay}" />
-                                        <CheckBox
-                                            Grid.Column="2"
-                                            Content="Shift"
-                                            IsChecked="{x:Bind ViewModel.ModeSelectionShortcut.IsShiftEnabled, Mode=TwoWay}" />
-                                        <CheckBox
-                                            Grid.Column="3"
-                                            Content="Alt"
-                                            IsChecked="{x:Bind ViewModel.ModeSelectionShortcut.IsAltEnabled, Mode=TwoWay}" />
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <Border
-                                Padding="16"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                CornerRadius="6">
-                                <StackPanel Spacing="12">
                                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Clear Label Data" />
                                     <TextBlock
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"

@@ -11,7 +11,6 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
         {
             return step switch
             {
-                Enum_ReceivingWorkflowStep.ModeSelection => CreateModeSelectionHelp(),
                 Enum_ReceivingWorkflowStep.ManualEntry => CreateManualEntryHelp(),
                 Enum_ReceivingWorkflowStep.POEntry => CreatePOEntryHelp(),
                 Enum_ReceivingWorkflowStep.LoadEntry => CreateLoadEntryHelp(),
@@ -21,25 +20,6 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.UI
                 Enum_ReceivingWorkflowStep.Review => CreateReviewHelp(),
                 _ => CreateDefaultHelp(),
             };
-        }
-
-        private static UIElement CreateModeSelectionHelp()
-        {
-            return CreateHelpPanel(
-                "Entry Mode Selection",
-                "Choose how you want to enter receiving data.",
-                new (string header, string content)[]
-                {
-                    (
-                        "Guided Wizard",
-                        "Step-by-step process for standard receiving. Ideal for one PO or part at a time. Validates data at each step. Best for beginners or infrequent users."
-                    ),
-                    (
-                        "Manual Entry",
-                        "Grid-based bulk data entry. Enter multiple loads at once. Best for experienced users. Faster for large shipments."
-                    ),
-                }
-            );
         }
 
         private static UIElement CreateManualEntryHelp()

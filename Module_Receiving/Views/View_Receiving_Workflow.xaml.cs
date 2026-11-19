@@ -47,6 +47,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
         private Model_Settings_ReceivingShortcuts _shortcutSettings =
             Model_Settings_ReceivingShortcuts.CreateDefault();
         private bool _isSimpleNavigationToggleActive;
+        private View_Receiving_LabelOverlayWindow? _openLabelOverlayWindow;
         private int _pendingFocusAttempts;
         private bool _isFocusAttemptScheduled;
 
@@ -57,7 +58,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             IService_Help helpService,
             IService_ReceivingShortcuts receivingShortcuts,
             IService_Focus focusService,
-            View_Receiving_ModeSelection modeSelectionView,
             View_Receiving_ManualEntry manualEntryView,
             View_Receiving_EditMode editModeView,
             View_Receiving_POEntry poEntryView,
@@ -75,7 +75,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             ArgumentNullException.ThrowIfNull(helpService);
             ArgumentNullException.ThrowIfNull(receivingShortcuts);
             ArgumentNullException.ThrowIfNull(focusService);
-            ArgumentNullException.ThrowIfNull(modeSelectionView);
             ArgumentNullException.ThrowIfNull(manualEntryView);
             ArgumentNullException.ThrowIfNull(editModeView);
             ArgumentNullException.ThrowIfNull(poEntryView);
@@ -95,8 +94,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             this.InitializeComponent();
             AddHandler(KeyDownEvent, new KeyEventHandler(WorkflowPage_KeyDown), true);
             ViewModel.RequestOpenLabelOverlay = ShowLabelOverlayAsync;
+            ViewModel.RequestOpenLabelOverlayWindow = ShowLabelOverlayWindowAsync;
 
-            ModeSelectionHost.Content = modeSelectionView;
             ManualEntryHost.Content = manualEntryView;
             EditModeHost.Content = editModeView;
             POEntryHost.Content = poEntryView;
@@ -106,6 +105,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             HeatLotHost.Content = heatLotView;
             PackageTypeHost.Content = packageTypeView;
             ReviewHost.Content = reviewView;
+            ViewModel.AttachShellActionHosts(
+                manualEntryView.ViewModel,
+                editModeView.ViewModel,
+                reviewView.ViewModel
+            );
             RegisterGuidedStepFocusHooks();
 
             Loaded += View_Receiving_Workflow_Loaded;
@@ -271,9 +275,6 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 Enum_ReceivingWorkflowStep.HeatLotEntry => TryFocusHostedStep(HeatLotHost),
                 Enum_ReceivingWorkflowStep.PackageTypeEntry => TryFocusHostedStep(PackageTypeHost),
                 Enum_ReceivingWorkflowStep.Review => TryFocusHostedStep(ReviewHost),
-                Enum_ReceivingWorkflowStep.Complete => _focusService.TrySetFocus(
-                    CompletionStartNewEntryButton
-                ),
                 _ => true,
             };
         }
@@ -285,23 +286,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 && view.FocusForAccess();
         }
 
-        private async void HelpButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            if (_helpService == null || _workflowService == null)
-            {
-                return;
-            }
-
-            await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
-        }
-
         public async Task RefreshSettingsDependentStateAsync()
         {
-            if (ModeSelectionHost.Content is View_Receiving_ModeSelection modeSelectionView)
-            {
-                await modeSelectionView.ViewModel.RefreshDefaultModeIndicatorsAsync();
-            }
-
             await LoadShortcutsAsync();
         }
 
@@ -354,10 +340,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private bool HasUnsavedData()
         {
-            if (
-                _workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ModeSelection
-                || _workflowService.CurrentStep == Enum_ReceivingWorkflowStep.POEntry
-            )
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.POEntry)
             {
                 return false;
             }
@@ -413,6 +396,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return;
             }
 
+            if (_openLabelOverlayWindow is not null)
+            {
+                // Overlay pressed while one is already open: reuse it instead of stacking a second.
+                _openLabelOverlayWindow.Activate();
+                return;
+            }
+
             var overlayViewModel = App.GetService<ViewModel_Receiving_LabelOverlay>();
             overlayViewModel.RequestPreselection(lots);
 
@@ -421,8 +411,23 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 WinRT.Interop.WindowNative.GetWindowHandle(owner)
             );
 
-            await window.ShowModalAsync();
+            _openLabelOverlayWindow = window;
+            try
+            {
+                await window.ShowModalAsync();
+            }
+            finally
+            {
+                _openLabelOverlayWindow = null;
+            }
         }
+
+        /// <summary>
+        /// Opens the label overlay with nothing preselected, which is what the shell action bar's
+        /// Overlay control does.
+        /// </summary>
+        private Task ShowLabelOverlayWindowAsync() =>
+            ShowLabelOverlayAsync(Array.Empty<(string PartId, string HeatLotNumber)>());
 
         private void WorkflowPage_KeyDown(object sender, KeyRoutedEventArgs e)
         {
@@ -435,8 +440,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
 
             if (
-                TryHandleModeSelectionShortcut(e)
-                || TryHandleClearLabelDataShortcut(e)
+                TryHandleClearLabelDataShortcut(e)
                 || TryHandleStepNavigationShortcut(e)
                 || TryHandleHelpShortcut(e)
                 || TryHandleSimpleNavigationToggleShortcut(e)
@@ -446,17 +450,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             }
         }
 
-        private bool TryHandleModeSelectionShortcut(KeyRoutedEventArgs e)
-        {
-            return IsShortcutMatch(e, _shortcutSettings.ModeSelectionShortcut)
-                && TryExecuteCommand(ViewModel.ReturnToModeSelectionCommand);
-        }
-
         private bool TryHandleClearLabelDataShortcut(KeyRoutedEventArgs e)
         {
+            var clearSlot = ViewModel.ShellActions.ClearLabelData;
+
             if (
                 !IsShortcutMatch(e, _shortcutSettings.ClearLabelDataShortcut)
-                || !ViewModel.CanClearLabelData
+                || !clearSlot.IsVisible
+                || !clearSlot.IsEnabled
             )
             {
                 return false;
@@ -487,13 +488,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
 
         private bool TryHandleHelpShortcut(KeyRoutedEventArgs e)
         {
-            if (!IsShortcutMatch(e, _shortcutSettings.HelpShortcut))
+            if (
+                !IsShortcutMatch(e, _shortcutSettings.HelpShortcut)
+                || !ViewModel.ShellActions.Help.IsVisible
+            )
             {
                 return false;
             }
 
-            HelpButton_Click(this, new RoutedEventArgs());
-            return true;
+            // Same command the strip's Help control runs, so the two can never disagree.
+            return TryExecuteCommand(ViewModel.ShowHelpCommand);
         }
 
         private bool TryHandleSimpleNavigationToggleShortcut(KeyRoutedEventArgs e)
@@ -545,22 +549,5 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
             command.Execute(parameter);
             return true;
         }
-
-        private void OnResetLabelDataClick(object sender, RoutedEventArgs e)
-        {
-            _ = sender;
-            _ = e;
-
-            var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-            bool clearAllRows =
-                (shiftState & Windows.UI.Core.CoreVirtualKeyStates.Down)
-                == Windows.UI.Core.CoreVirtualKeyStates.Down;
-
-            if (ViewModel.ResetLabelDataCommand.CanExecute(clearAllRows))
-            {
-                ViewModel.ResetLabelDataCommand.Execute(clearAllRows);
-            }
-        }
-
     }
 }

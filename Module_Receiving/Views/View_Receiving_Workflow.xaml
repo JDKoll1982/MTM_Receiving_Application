@@ -22,39 +22,22 @@
                 <VisualState x:Name="ReceivingCompactState">
                     <VisualState.Setters>
                         <Setter Target="ReceivingWorkflowContentGrid.Margin" Value="10,10,10,10" />
-                        <Setter Target="ReceivingWorkflowNavigationGrid.Margin" Value="12" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="ReceivingWideState">
                     <VisualState.Setters>
                         <Setter Target="ReceivingWorkflowContentGrid.Margin" Value="20,16,20,20" />
-                        <Setter Target="ReceivingWorkflowNavigationGrid.Margin" Value="28" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
         <!--  Content Area  -->
         <Grid
             x:Name="ReceivingWorkflowContentGrid"
-            Grid.Row="0"
             Margin="16,12,16,16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-            <!--  Mode Selection View  -->
-            <ContentControl
-                x:Name="ModeSelectionHost"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch"
-                Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
             <!--  Manual Entry View  -->
             <ContentControl
                 x:Name="ManualEntryHost"
@@ -280,104 +263,6 @@
                         Visibility="{x:Bind ViewModel.LastSaveResult.DatabaseSuccess, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
                 </StackPanel>
 
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="12">
-                    <Button
-                        x:Name="CompletionStartNewEntryButton"
-                        Command="{x:Bind ViewModel.StartNewEntryCommand}"
-                        Content="{x:Bind ViewModel.CompletionStartNewEntryText, Mode=OneWay}"
-                        Style="{StaticResource AccentButtonStyle}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StartNew'), Mode=OneWay}" />
-                    <Button
-                        Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                        Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}" />
-                </StackPanel>
-            </StackPanel>
-        </Grid>
-
-        <!--  Navigation Buttons  -->
-        <Grid
-            x:Name="ReceivingWorkflowNavigationGrid"
-            Grid.Row="1"
-            Margin="24">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!--  Left-aligned buttons  -->
-            <StackPanel
-                Grid.Column="0"
-                HorizontalAlignment="Left"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Click="OnResetLabelDataClick"
-                    Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
-                    Foreground="Red"
-                    IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <Button
-                    Background="Transparent"
-                    BorderBrush="{StaticResource ReceivingAccentBrush}"
-                    Command="{x:Bind ViewModel.ReturnToModeSelectionCommand}"
-                    Content="{x:Bind ViewModel.WorkflowModeSelectionText, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-                <Button
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Click="OnResetLabelDataClick"
-                    Content="{x:Bind ViewModel.WorkflowResetLabelDataText, Mode=OneWay}"
-                    Foreground="Red"
-                    IsEnabled="{x:Bind ViewModel.CanClearLabelData, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.ResetLabelData'), Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.IsModeSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
-            </StackPanel>
-
-            <!--  Right-aligned utility buttons  -->
-            <StackPanel
-                Grid.Column="2"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Spacing="8">
-                <Button
-                    Click="HelpButton_Click"
-                    Style="{StaticResource WindowChromeStyle}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.StepHelp'), Mode=OneWay}">
-                    <FontIcon FontSize="16" Glyph="&#xE946;" />
-                </Button>
-            </StackPanel>
-
-            <!--  Center navigation buttons  -->
-            <StackPanel
-                Grid.Column="1"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="12"
-                Visibility="{x:Bind ViewModel.ShowWorkflowNavigationButtons, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Button Command="{x:Bind ViewModel.PreviousStepCommand}" Visibility="{x:Bind ViewModel.ShowWorkflowBackButton, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon Glyph="&#xE760;" />
-                        <TextBlock Text="{x:Bind ViewModel.WorkflowBackText, Mode=OneWay}" />
-                    </StackPanel>
-                </Button>
-                <Button
-                    Command="{x:Bind ViewModel.NextStepCommand}"
-                    IsEnabled="{x:Bind ViewModel.IsNextButtonEnabled, Mode=OneWay}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Visibility="{x:Bind ViewModel.ShowWorkflowNextButton, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock Text="{x:Bind ViewModel.WorkflowNextText, Mode=OneWay}" />
-                        <FontIcon Glyph="&#xE761;" />
-                    </StackPanel>
-                </Button>
             </StackPanel>
         </Grid>
     </Grid>

@@ -6,6 +6,7 @@
     xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dev="using:DevWinUI"
+    xmlns:helpers="using:MTM_Receiving_Application.Module_Core.Helpers.UI"
     xmlns:local="using:MTM_Receiving_Application"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="MainWindowRoot"
@@ -499,10 +500,285 @@
                 <NavigationViewItemSeparator />
             </NavigationView.FooterMenuItems>
 
-            <Frame
-                x:Name="ContentFrame"
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Frame
+                    x:Name="ContentFrame"
+                    Grid.Row="0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch" />
+
+                <!--
+                    Shared page-navigation strip. It sits under the page content on the side
+                    opposite the navigation pane, so Back, Next, Clear Label Data and Help land in
+                    the same place on every page. It collapses entirely when the active page
+                    supplies no actions, leaving the content the full remaining height.
+                -->
+                <Border
+                    x:Name="ShellActionBarHost"
+                    Grid.Row="1"
+                    Padding="16,6"
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,0,0"
+                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsVisible), Mode=OneWay}">
+                    <ScrollViewer
+                        x:Name="ShellActionBarScroller"
+                        HorizontalScrollBarVisibility="Auto"
+                        HorizontalScrollMode="Auto"
+                        VerticalScrollBarVisibility="Disabled"
+                        VerticalScrollMode="Disabled">
+                        <!--
+                            Three columns: the entry-mode group takes the left star, the Back and
+                            Next pair sits centred in the auto column, and Clear Label Data plus Help
+                            take the right star. MinWidth keeps the star columns distributing across
+                            the full width while the scroller can still reach actions on a narrow
+                            window.
+                        -->
+                        <Grid
+                            MinWidth="{x:Bind ShellActionBarScroller.ActualWidth, Mode=OneWay}"
+                            ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid
+                                x:Name="ShellModeGroupPanel"
+                                Grid.Column="0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                ColumnSpacing="4"
+                                Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ShowModeGroup), Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--
+                                    Each entry is a two-row grid: the button on top, and the Default
+                                    badge underneath. The badge keeps its slot when it is hidden so
+                                    every button stays on the same baseline.
+                                -->
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellGuidedButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.Guided.AccessibilityName, Mode=OneWay}"
+                                        Click="ShellModeButton_Click"
+                                        Content="{x:Bind ShellActionBar.Guided.Label, Mode=OneWay}"
+                                        Tag="guided"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Guided.DefaultTooltip, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.Guided.DefaultBadge, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Guided.DefaultTooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsGuidedDefault), Mode=OneWay}" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="ShellGuidedDivider"
+                                    Grid.Column="1"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,6,4,0"
+                                    VerticalAlignment="Top"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Guided.ShowDividerAfter), Mode=OneWay}" />
+
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellManualButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.Manual.AccessibilityName, Mode=OneWay}"
+                                        Click="ShellModeButton_Click"
+                                        Content="{x:Bind ShellActionBar.Manual.Label, Mode=OneWay}"
+                                        Tag="manual"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Manual.DefaultTooltip, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.Manual.DefaultBadge, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Manual.DefaultTooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsManualDefault), Mode=OneWay}" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="ShellManualDivider"
+                                    Grid.Column="3"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,6,4,0"
+                                    VerticalAlignment="Top"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Manual.ShowDividerAfter), Mode=OneWay}" />
+
+                                <Grid Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellEditButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.Edit.AccessibilityName, Mode=OneWay}"
+                                        Click="ShellModeButton_Click"
+                                        Content="{x:Bind ShellActionBar.Edit.Label, Mode=OneWay}"
+                                        Tag="edit"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Edit.DefaultTooltip, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.Edit.DefaultBadge, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Edit.DefaultTooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsEditDefault), Mode=OneWay}" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="ShellEditDivider"
+                                    Grid.Column="5"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,6,4,0"
+                                    VerticalAlignment="Top"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Edit.ShowDividerAfter), Mode=OneWay}" />
+
+                                <Grid Grid.Column="6">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellOverlayButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.Overlay.AccessibilityName, Mode=OneWay}"
+                                        Command="{x:Bind ShellActionBar.Overlay.Command, Mode=OneWay}"
+                                        Content="{x:Bind ShellActionBar.Overlay.Label, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Overlay.Tooltip, Mode=OneWay}" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.Overlay.DefaultBadge, Mode=OneWay}"
+                                        Visibility="Collapsed" />
+                                </Grid>
+                            </Grid>
+
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                ColumnSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button
+                                    x:Name="ShellBackButton"
+                                    Grid.Column="0"
+                                    AutomationProperties.Name="{x:Bind ShellActionBar.Back.AccessibilityName, Mode=OneWay}"
+                                    Command="{x:Bind ShellActionBar.Back.Command, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ShellActionBar.Back.IsEnabled, Mode=OneWay}"
+                                    ToolTipService.ToolTip="{x:Bind ShellActionBar.Back.Tooltip, Mode=OneWay}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Back.IsVisible), Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="12" Glyph="&#xE72B;" />
+                                        <TextBlock Text="{x:Bind ShellActionBar.Back.Label, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button
+                                    x:Name="ShellNextButton"
+                                    Grid.Column="1"
+                                    AutomationProperties.Name="{x:Bind ShellActionBar.Next.AccessibilityName, Mode=OneWay}"
+                                    Command="{x:Bind ShellActionBar.Next.Command, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ShellActionBar.Next.IsEnabled, Mode=OneWay}"
+                                    ToolTipService.ToolTip="{x:Bind ShellActionBar.Next.Tooltip, Mode=OneWay}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.IsVisible), Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{x:Bind ShellActionBar.Next.Label, Mode=OneWay}" />
+                                        <FontIcon FontSize="12" Glyph="&#xE72A;" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Border
+                                    x:Name="ShellNextDivider"
+                                    Grid.Column="2"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,0"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.ShowDividerAfter), Mode=OneWay}" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                ColumnSpacing="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button
+                                    x:Name="ShellClearLabelDataButton"
+                                    Grid.Column="0"
+                                    AutomationProperties.Name="{x:Bind ShellActionBar.ClearLabelData.AccessibilityName, Mode=OneWay}"
+                                    Command="{x:Bind ShellActionBar.ClearLabelData.Command, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ShellActionBar.ClearLabelData.IsEnabled, Mode=OneWay}"
+                                    ToolTipService.ToolTip="{x:Bind ShellActionBar.ClearLabelData.Tooltip, Mode=OneWay}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ClearLabelData.IsVisible), Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="12" Glyph="&#xE74D;" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                            Text="{x:Bind ShellActionBar.ClearLabelData.Label, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button
+                                    x:Name="ShellHelpButton"
+                                    Grid.Column="1"
+                                    AutomationProperties.Name="{x:Bind ShellActionBar.Help.AccessibilityName, Mode=OneWay}"
+                                    Command="{x:Bind ShellActionBar.Help.Command, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ShellActionBar.Help.IsEnabled, Mode=OneWay}"
+                                    ToolTipService.ToolTip="{x:Bind ShellActionBar.Help.Tooltip, Mode=OneWay}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Help.IsVisible), Mode=OneWay}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon FontSize="12" Glyph="&#xE897;" />
+                                        <TextBlock Text="{x:Bind ShellActionBar.Help.Label, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
         </NavigationView>
 
         <!--  Full-window overlay host for modal surfaces such as the image lightbox  -->

@@ -40,7 +40,6 @@ public sealed partial class ViewModel_Settings_Receiving_WorkflowDefaults : View
 
     public IReadOnlyList<ReceivingWorkflowDefaultOption> DefaultModeOptions { get; } =
     [
-        new("Mode Selection", nameof(Enum_ReceivingWorkflowStep.ModeSelection)),
         new("Guided Wizard", "Guided"),
         new("Manual Entry", nameof(Enum_ReceivingWorkflowStep.ManualEntry)),
         new("Edit Mode", nameof(Enum_ReceivingWorkflowStep.EditMode)),
@@ -164,8 +163,10 @@ public sealed partial class ViewModel_Settings_Receiving_WorkflowDefaults : View
         try
         {
             MockDataToggleVisibility = await DetermineMockDataToggleVisibilityAsync();
-            DefaultModeOnStartup = await GetStringSettingAsync(
-                ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup
+            DefaultModeOnStartup = NormaliseDefaultModeOnStartup(
+                await GetStringSettingAsync(
+                    ReceivingSettingsKeys.BusinessRules.DefaultModeOnStartup
+                )
             );
             ConfirmModeChange = await GetBoolSettingAsync(
                 ReceivingSettingsKeys.BusinessRules.ConfirmModeChange,
@@ -248,6 +249,17 @@ public sealed partial class ViewModel_Settings_Receiving_WorkflowDefaults : View
         }
 
         return string.Empty;
+    }
+
+    private static string NormaliseDefaultModeOnStartup(string value)
+    {
+        return string.Equals(
+                value.Trim(),
+                "ModeSelection",
+                StringComparison.OrdinalIgnoreCase
+            )
+            ? "Guided"
+            : value;
     }
 
     private async Task SaveSettingAsync(string key, string value)

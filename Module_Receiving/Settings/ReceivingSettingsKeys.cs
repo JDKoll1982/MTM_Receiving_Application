@@ -1,4 +1,4 @@
-namespace MTM_Receiving_Application.Module_Receiving.Settings;
+﻿namespace MTM_Receiving_Application.Module_Receiving.Settings;
 
 /// <summary>
 /// Central key definitions for all Module_Receiving settings and UI text.
@@ -20,22 +20,19 @@ public static class ReceivingSettingsKeys
 
     public static class UiText
     {
-        public const string ModeSelectionGuidedTitle = "Receiving.UiText.ModeSelection.GuidedTitle";
-        public const string ModeSelectionGuidedDescription =
-            "Receiving.UiText.ModeSelection.GuidedDescription";
-        public const string ModeSelectionManualTitle = "Receiving.UiText.ModeSelection.ManualTitle";
-        public const string ModeSelectionManualDescription =
-            "Receiving.UiText.ModeSelection.ManualDescription";
-        public const string ModeSelectionEditTitle = "Receiving.UiText.ModeSelection.EditTitle";
-        public const string ModeSelectionEditDescription =
-            "Receiving.UiText.ModeSelection.EditDescription";
-        public const string ModeSelectionSetDefault = "Receiving.UiText.ModeSelection.SetDefault";
-
         public const string WorkflowHelp = "Receiving.UiText.Workflow.Help";
         public const string WorkflowBack = "Receiving.UiText.Workflow.Back";
         public const string WorkflowNext = "Receiving.UiText.Workflow.Next";
-        public const string WorkflowModeSelection = "Receiving.UiText.Workflow.ModeSelection";
         public const string WorkflowResetLabelData = "Receiving.UiText.Workflow.ResetXls";
+
+        public const string ShellGuided = "Receiving.UiText.Shell.Guided";
+        public const string ShellManual = "Receiving.UiText.Shell.Manual";
+        public const string ShellEdit = "Receiving.UiText.Shell.Edit";
+        public const string ShellOverlay = "Receiving.UiText.Shell.Overlay";
+        public const string ShellGuidedDefaultTooltip = "Receiving.UiText.Shell.GuidedDefaultTooltip";
+        public const string ShellManualDefaultTooltip = "Receiving.UiText.Shell.ManualDefaultTooltip";
+        public const string ShellEditDefaultTooltip = "Receiving.UiText.Shell.EditDefaultTooltip";
+        public const string ShellDefault = "Receiving.UiText.Shell.Default";
 
         public const string CompletionSuccessTitle = "Receiving.UiText.Completion.SuccessTitle";
         public const string CompletionFailureTitle = "Receiving.UiText.Completion.FailureTitle";
@@ -181,7 +178,6 @@ public static class ReceivingSettingsKeys
         public const string ReviewNextLabel = "Receiving.UiText.Review.NextLabel";
         public const string ReviewTableViewLabel = "Receiving.UiText.Review.TableViewLabel";
         public const string ReviewSingleViewLabel = "Receiving.UiText.Review.SingleViewLabel";
-        public const string ReviewAddAnother = "Receiving.UiText.Review.AddAnother";
         public const string ReviewSaveToDatabase = "Receiving.UiText.Review.SaveToDatabase";
 
         public const string ReviewColumnLoadNumber = "Receiving.UiText.Review.Column.LoadNumber";
@@ -197,7 +193,6 @@ public static class ReceivingSettingsKeys
 
     public static class Workflow
     {
-        public const string StepTitleModeSelection = "Receiving.Workflow.StepTitle.ModeSelection";
         public const string StepTitleManualEntry = "Receiving.Workflow.StepTitle.ManualEntry";
         public const string StepTitleEditMode = "Receiving.Workflow.StepTitle.EditMode";
         public const string StepTitlePoEntry = "Receiving.Workflow.StepTitle.PoEntry";
@@ -234,7 +229,6 @@ public static class ReceivingSettingsKeys
             "Receiving.Workflow.Status.XlsDeletedSuccess";
         public const string StatusLabelDataClearedFailed =
             "Receiving.Workflow.Status.XlsDeletedFailed";
-        public const string StatusWorkflowCleared = "Receiving.Workflow.Status.WorkflowCleared";
     }
 
     public static class Dialogs
@@ -248,12 +242,6 @@ public static class ReceivingSettingsKeys
         public const string ConfirmModeSelectionCancel =
             "Receiving.Dialogs.ConfirmModeSelection.Cancel";
 
-        public const string ConfirmChangeModeTitle = "Receiving.Dialogs.ConfirmChangeMode.Title";
-        public const string ConfirmChangeModeContent =
-            "Receiving.Dialogs.ConfirmChangeMode.Content";
-        public const string ConfirmChangeModeConfirm =
-            "Receiving.Dialogs.ConfirmChangeMode.Confirm";
-        public const string ConfirmChangeModeCancel = "Receiving.Dialogs.ConfirmChangeMode.Cancel";
 
         public const string ManualEntryAddMultipleTitle =
             "Receiving.Dialogs.ManualEntry.AddMultiple.Title";
@@ -262,11 +250,6 @@ public static class ReceivingSettingsKeys
         public const string ManualEntryAddMultipleCancel =
             "Receiving.Dialogs.ManualEntry.AddMultiple.Cancel";
 
-        public const string ReviewAddAnotherTitle = "Receiving.Dialogs.Review.AddAnother.Title";
-        public const string ReviewAddAnotherContent = "Receiving.Dialogs.Review.AddAnother.Content";
-        public const string ReviewAddAnotherContinue =
-            "Receiving.Dialogs.Review.AddAnother.Continue";
-        public const string ReviewAddAnotherCancel = "Receiving.Dialogs.Review.AddAnother.Cancel";
     }
 
     public static class Messages
@@ -292,13 +275,6 @@ public static class ReceivingSettingsKeys
 
     public static class Accessibility
     {
-        public const string ModeSelectionGuidedButton =
-            "Receiving.Accessibility.ModeSelection.GuidedButton";
-        public const string ModeSelectionManualButton =
-            "Receiving.Accessibility.ModeSelection.ManualButton";
-        public const string ModeSelectionEditButton =
-            "Receiving.Accessibility.ModeSelection.EditButton";
-
         public const string PoEntryPONumber = "Receiving.Accessibility.PoEntry.PONumber";
         public const string PoEntryLoadPo = "Receiving.Accessibility.PoEntry.LoadPo";
         public const string PoEntryPartId = "Receiving.Accessibility.PoEntry.PartId";
@@ -320,7 +296,6 @@ public static class ReceivingSettingsKeys
         public const string ReviewSwitchToTable = "Receiving.Accessibility.Review.SwitchToTable";
         public const string ReviewSwitchToSingle = "Receiving.Accessibility.Review.SwitchToSingle";
         public const string ReviewEntriesTable = "Receiving.Accessibility.Review.EntriesTable";
-        public const string ReviewAddAnother = "Receiving.Accessibility.Review.AddAnother";
         public const string ReviewSaveToDatabase = "Receiving.Accessibility.Review.SaveToDatabase";
     }
 
@@ -357,7 +332,6 @@ public static class ReceivingSettingsKeys
 
     public static class Shortcuts
     {
-        public const string ModeSelection = "Receiving.Shortcuts.ModeSelection";
         public const string ClearLabelData = "Receiving.Shortcuts.ClearLabelData";
         public const string NextStep = "Receiving.Shortcuts.NextStep";
         public const string BackStep = "Receiving.Shortcuts.BackStep";

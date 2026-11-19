@@ -24,9 +24,6 @@ public sealed partial class ViewModel_Settings_Receiving_KeyboardShortcuts : Vie
     private bool _isPersistingToggle;
 
     [ObservableProperty]
-    private Model_KeyboardShortcutBinding _modeSelectionShortcut = new();
-
-    [ObservableProperty]
     private Model_KeyboardShortcutBinding _clearLabelDataShortcut = new();
 
     [ObservableProperty]
@@ -66,14 +63,6 @@ public sealed partial class ViewModel_Settings_Receiving_KeyboardShortcuts : Vie
 
     public IReadOnlyList<Model_Settings_KeyValueOption> AvailableKeys { get; } =
         Helper_Settings_KeyboardShortcutOptions.CommonKeys;
-
-    partial void OnModeSelectionShortcutChanged(
-        Model_KeyboardShortcutBinding? oldValue,
-        Model_KeyboardShortcutBinding newValue
-    )
-    {
-        ReplaceBindingSubscription(oldValue, newValue);
-    }
 
     partial void OnClearLabelDataShortcutChanged(
         Model_KeyboardShortcutBinding? oldValue,
@@ -196,7 +185,6 @@ public sealed partial class ViewModel_Settings_Receiving_KeyboardShortcuts : Vie
     private Model_Settings_ReceivingShortcuts CreateShortcutModel() =>
         new()
         {
-            ModeSelectionShortcut = ModeSelectionShortcut.Clone(),
             ClearLabelDataShortcut = ClearLabelDataShortcut.Clone(),
             NextStepShortcut = NextStepShortcut.Clone(),
             BackStepShortcut = BackStepShortcut.Clone(),
@@ -234,7 +222,6 @@ public sealed partial class ViewModel_Settings_Receiving_KeyboardShortcuts : Vie
     private void ApplyShortcutModel(Model_Settings_ReceivingShortcuts shortcuts)
     {
         _isLoading = true;
-        ModeSelectionShortcut = shortcuts.ModeSelectionShortcut.Clone();
         ClearLabelDataShortcut = shortcuts.ClearLabelDataShortcut.Clone();
         NextStepShortcut = shortcuts.NextStepShortcut.Clone();
         BackStepShortcut = shortcuts.BackStepShortcut.Clone();

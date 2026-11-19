@@ -7,6 +7,32 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### Page navigation now lives in one shared action bar, and the mode-selection page is gone (2026-11-19)
+
+- **What changed:** every page's navigation sits in one strip under the page content on the right-hand side of the
+  window, so **Back**, **Next**, **Clear Label Data** and **Help** no longer move around from page to page. A page
+  that offers no actions leaves the strip collapsed, and the page then uses the full height.
+- **The four modes are buttons now:** **Guided**, **Manual**, **Edit** and **Overlay** sit on the left of the strip
+  with dividers. Pressing one enters that mode immediately. The unlabelled checkbox beside Guided, Manual and Edit
+  remembers that mode as the default; ticking one clears the other two, and unticking the last one leaves no default.
+- **Receiving opens straight into a mode:** the mode-selection page, its view model, its workflow step, its shortcut,
+  its help topic and its settings options are removed. A user with no stored default opens **Guided**, and Guided is
+  stored as their default at that point.
+- **Page verbs land in the expected slot:** **Save & Finish** on Manual Entry and Edit Mode, **Save to Database** on
+  Review and Save, and **Start New Entry** on the Result page occupy the Next or Back slot. None of those pages draws
+  its own copy any more, and the unused **Add another Part/PO** button is gone.
+- **The header back arrow is hidden:** **Back** is offered only by the strip. The header back service stays wired, so
+  re-enabling the arrow later is a visibility change rather than new plumbing.
+- **Non-Receiving pages are untouched:** they show no mode buttons, and they gain the strip only if their own page
+  supplies actions.
+- **Files:** `Module_Core/Contracts/ViewModels/IViewModel_ShellActionProvider.cs`,
+  `Module_Core/Models/UI/Model_ShellActionBarState.cs`, `Model_ShellActionSlot.cs`, `Model_ShellModeAction.cs`,
+  `Module_Core/Helpers/UI/Helper_Visibility.cs`, `Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs`,
+  `MainWindow.xaml` (+ `.xaml.cs`), `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/Views/View_Receiving_Workflow.xaml` (+ `.xaml.cs`),
+  `Module_Receiving/Settings/ReceivingSettingsKeys.cs`, `ReceivingSettingsDefaults.cs`,
+  `Module_Settings.Core/Defaults/settings.manifest.json`, `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
+
 #### Double-clicking a part on the Select Part page takes you straight to the next step (2026-11-19)
 
 - **What changed:** a double-click on a part row chooses that part and moves the walk on to the load step, so the

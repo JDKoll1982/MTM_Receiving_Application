@@ -7,9 +7,6 @@ namespace MTM_Receiving_Application.Module_Settings.Receiving.Models;
 /// </summary>
 public sealed class Model_Settings_ReceivingShortcuts
 {
-    public Model_KeyboardShortcutBinding ModeSelectionShortcut { get; set; } =
-        new() { Key = "M", IsCtrlEnabled = true };
-
     public Model_KeyboardShortcutBinding ClearLabelDataShortcut { get; set; } =
         new()
         {
@@ -42,7 +39,6 @@ public sealed class Model_Settings_ReceivingShortcuts
     public Model_Settings_ReceivingShortcuts Clone() =>
         new()
         {
-            ModeSelectionShortcut = ModeSelectionShortcut.Clone(),
             ClearLabelDataShortcut = ClearLabelDataShortcut.Clone(),
             NextStepShortcut = NextStepShortcut.Clone(),
             BackStepShortcut = BackStepShortcut.Clone(),

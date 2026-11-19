@@ -56,6 +56,13 @@ public sealed class View_Receiving_LabelOverlayWindow : ModalWindow
     /// <summary>Brings the window to the front and returns when it is closed.</summary>
     public Task ShowModalAsync()
     {
+        if (_showTaskCompletionSource is not null)
+        {
+            // Asked to show again while it is open: bring it to the front, do not stack a second.
+            Activate();
+            return _showTaskCompletionSource.Task;
+        }
+
         _showTaskCompletionSource = new TaskCompletionSource<bool>(
             TaskCreationOptions.RunContinuationsAsynchronously
         );

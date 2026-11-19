@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
@@ -136,9 +135,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _reviewSingleViewLabelText = "Single View";
 
         [ObservableProperty]
-        private string _reviewAddAnotherText = "Add Another Part/PO";
-
-        [ObservableProperty]
         private string _reviewSaveToDatabaseText = "Save to Database";
 
         [ObservableProperty]
@@ -189,9 +185,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _reviewEntriesTableAccessibilityName = "Receiving Entries Table";
-
-        [ObservableProperty]
-        private string _reviewAddAnotherAccessibilityName = "Add Another Part or PO";
 
         [ObservableProperty]
         private string _reviewSaveToDatabaseAccessibilityName = "Save to Database";
@@ -287,9 +280,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ReviewSingleViewLabelText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ReviewSingleViewLabel
                 );
-                ReviewAddAnotherText = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.UiText.ReviewAddAnother
-                );
                 ReviewSaveToDatabaseText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ReviewSaveToDatabase
                 );
@@ -333,9 +323,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 ReviewEntriesTableAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.ReviewEntriesTable
-                );
-                ReviewAddAnotherAccessibilityName = await _receivingSettings.GetStringAsync(
-                    ReceivingSettingsKeys.Accessibility.ReviewAddAnother
                 );
                 ReviewSaveToDatabaseAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.ReviewSaveToDatabase
@@ -590,122 +577,6 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             IsSingleView = true;
             OnPropertyChanged(nameof(IsTableView));
-        }
-
-        [RelayCommand]
-        private async Task AddAnotherPartAsync()
-        {
-            _logger.LogInfo("User requested to add another part/PO");
-
-            try
-            {
-                // Show confirmation dialog to prevent accidental data loss
-                if (!await ConfirmAddAnotherAsync())
-                {
-                    _logger.LogInfo("User cancelled add another part/PO");
-                    return;
-                }
-
-                // Clear transient workflow data FIRST (before navigation)
-                ClearTransientWorkflowData();
-
-                // Preserve current session loads
-                await _workflowService.AddCurrentPartToSessionAsync();
-
-                // Navigate to PO Entry to start new part/PO entry
-                // Note: AddCurrentPartToSessionAsync already sets CurrentStep to POEntry
-                // so this is redundant, but explicit for clarity
-                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
-
-                _logger.LogInfo("Navigated to PO Entry for new part, workflow data cleared");
-            }
-            catch (Exception ex)
-            {
-                IsBusy = false;
-                _logger.LogError($"Error in AddAnotherPartAsync: {ex.Message}", ex);
-                await _errorHandler.HandleErrorAsync(
-                    "Failed to prepare for new part entry",
-                    Enum_ErrorSeverity.Medium,
-                    ex,
-                    true
-                );
-            }
-        }
-
-        /// <summary>
-        /// Shows confirmation dialog before clearing data for new entry
-        /// </summary>
-        private async Task<bool> ConfirmAddAnotherAsync()
-        {
-            try
-            {
-                var xamlRoot = _windowService.GetXamlRoot();
-                if (xamlRoot == null)
-                {
-                    _logger.LogWarning("XamlRoot is null, proceeding without confirmation");
-                    return true;
-                }
-
-                var dialog = new ContentDialog
-                {
-                    Title = await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Dialogs.ReviewAddAnotherTitle
-                    ),
-                    Content = await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContent
-                    ),
-                    PrimaryButtonText = await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Dialogs.ReviewAddAnotherContinue
-                    ),
-                    CloseButtonText = await _receivingSettings.GetStringAsync(
-                        ReceivingSettingsKeys.Dialogs.ReviewAddAnotherCancel
-                    ),
-                    DefaultButton = ContentDialogButton.Primary,
-                    XamlRoot = xamlRoot,
-                };
-
-                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                    dialog,
-                    xamlRoot
-                );
-
-                var result = await dialog.ShowAsync();
-                return result == ContentDialogResult.Primary;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error showing confirmation dialog: {ex.Message}", ex);
-                return true; // Proceed if dialog fails
-            }
-        }
-
-        /// <summary>
-        /// Clears transient workflow data from intermediate steps (not the session loads)
-        /// This prevents data duplication when adding another part
-        /// </summary>
-        private void ClearTransientWorkflowData()
-        {
-            try
-            {
-                // Clear the current session properties that hold form data
-                // but preserve the Loads collection (already saved loads)
-                var session = _workflowService.CurrentSession;
-                if (session != null)
-                {
-                    // Clear PO-related properties if they exist in session
-                    session.PoNumber = null;
-                    session.IsNonPO = false;
-                }
-
-                // Clear UI inputs in connected ViewModels
-                _workflowService.ClearUIInputs();
-
-                _logger.LogInfo("Transient workflow data and UI inputs cleared for new entry");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error clearing transient workflow data: {ex.Message}", ex);
-            }
         }
 
         [RelayCommand]

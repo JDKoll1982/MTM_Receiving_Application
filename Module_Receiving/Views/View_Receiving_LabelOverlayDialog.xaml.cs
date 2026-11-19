@@ -7,7 +7,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Views;
 
 /// <summary>
 /// The label overlay mode's screen: choose the printer and the tags, check where the marking lands, then
-/// print. Hosted in its own modal window from the receiving mode selection.
+/// print. Hosted in its own modal window, opened from the Receiving action bar.
 /// </summary>
 public sealed partial class View_Receiving_LabelOverlayDialog : Page
 {
