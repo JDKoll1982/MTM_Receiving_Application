@@ -38,9 +38,11 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     private Model_ShellModeAction _overlay = Model_ShellModeAction.Hidden;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDividerAfterBack))]
     private Model_ShellActionSlot _back = Model_ShellActionSlot.Hidden;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDividerAfterBack))]
     private Model_ShellActionSlot _next = Model_ShellActionSlot.Hidden;
 
     [ObservableProperty]
@@ -57,6 +59,12 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
 
     [ObservableProperty]
     private bool? _isEditDefault;
+
+    /// <summary>
+    /// Gets a value indicating whether the divider between Back and Next is shown. Without both
+    /// buttons there is nothing to separate.
+    /// </summary>
+    public bool ShowDividerAfterBack => Back.IsVisible && Next.IsVisible;
 
     /// <summary>
     /// Starts following a page's provider and shows its first snapshot.

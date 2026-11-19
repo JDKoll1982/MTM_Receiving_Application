@@ -1031,7 +1031,7 @@
     }
   ],
   "currentStep": "converge",
-  "status": "implemented",
+  "status": "completed",
   "last_action": "Fixed the accessibility and layout defects from the second review, then rebuilt and re-ran the suite",
   "telemetryInstanceId": "323619d8-584a-4fbf-a252-c2eb7bc21930",
   "request": "as 004-reconciliation-refactor",
@@ -2940,7 +2940,7 @@
       "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter FullyQualifiedName~Module_Reconciliation",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 35.0,
+      "durationSeconds": 35,
       "result": "Test run for C:\\Users\\johnk\\Source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 106 ms - MTM_Receiving_Application.Tests.dll (net10.0)",
       "commit": "b416f212",
       "tree": "0822e400046ca0fae91616eac0620c0028519f60"

@@ -702,7 +702,6 @@
                                     Grid.Column="0"
                                     AutomationProperties.Name="{x:Bind ShellActionBar.Back.AccessibilityName, Mode=OneWay}"
                                     Command="{x:Bind ShellActionBar.Back.Command, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ShellActionBar.Back.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Back.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Back.IsVisible), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -711,12 +710,20 @@
                                     </StackPanel>
                                 </Button>
 
+                                <Border
+                                    x:Name="ShellBackNextDivider"
+                                    Grid.Column="1"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,0"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ShowDividerAfterBack), Mode=OneWay}" />
+
                                 <Button
                                     x:Name="ShellNextButton"
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     AutomationProperties.Name="{x:Bind ShellActionBar.Next.AccessibilityName, Mode=OneWay}"
                                     Command="{x:Bind ShellActionBar.Next.Command, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ShellActionBar.Next.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Next.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.IsVisible), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -724,15 +731,6 @@
                                         <FontIcon FontSize="12" Glyph="&#xE72A;" />
                                     </StackPanel>
                                 </Button>
-
-                                <Border
-                                    x:Name="ShellNextDivider"
-                                    Grid.Column="2"
-                                    Width="1"
-                                    Height="20"
-                                    Margin="4,0"
-                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
-                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.ShowDividerAfter), Mode=OneWay}" />
                             </Grid>
 
                             <Grid
@@ -766,7 +764,6 @@
                                     Grid.Column="1"
                                     AutomationProperties.Name="{x:Bind ShellActionBar.Help.AccessibilityName, Mode=OneWay}"
                                     Command="{x:Bind ShellActionBar.Help.Command, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ShellActionBar.Help.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Help.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Help.IsVisible), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">

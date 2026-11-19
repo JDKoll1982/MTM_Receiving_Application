@@ -1,0 +1,21 @@
+{
+  "workflow": "speckit",
+  "specName": "shell action bar",
+  "branch": "005-shell-action-bar",
+  "planBlocks": [
+    "calls",
+    "code",
+    "states",
+    "screens"
+  ],
+  "planBlocksPicked": [
+    "calls",
+    "code",
+    "states",
+    "screens"
+  ],
+  "currentStep": "specify",
+  "status": "draft",
+  "history": [],
+  "telemetryInstanceId": "871fc7d0-fb43-4375-814e-486c749c464e"
+}
