@@ -107,6 +107,15 @@ public static class ReceivingSettingsKeys
         public const string EditModeSortAscending = "Receiving.UiText.EditMode.SortAscending";
         public const string EditModePageSize = "Receiving.UiText.EditMode.PageSize";
 
+        // Select Part page: sort key, sort direction, and filters (persisted per user)
+        public const string PartSelectionSortColumn = "Receiving.UiText.PartSelection.SortColumn";
+        public const string PartSelectionSortAscending =
+            "Receiving.UiText.PartSelection.SortAscending";
+        public const string PartSelectionOnHandOnly = "Receiving.UiText.PartSelection.OnHandOnly";
+        public const string PartSelectionQualityHoldOnly =
+            "Receiving.UiText.PartSelection.QualityHoldOnly";
+        public const string PartSelectionLocation = "Receiving.UiText.PartSelection.Location";
+
         public const string PoEntryPurchaseOrderNumber =
             "Receiving.UiText.PoEntry.PurchaseOrderNumber";
         public const string PoEntryStatusLabel = "Receiving.UiText.PoEntry.StatusLabel";

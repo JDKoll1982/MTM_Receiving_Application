@@ -7,6 +7,45 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### Double-clicking a part on the Select Part page takes you straight to the next step (2026-11-19)
+
+- **What changed:** a double-click on a part row chooses that part and moves the walk on to the load step, so the
+  page can be worked without reaching for **Next**. A single click still just highlights the row, so a clerk scanning
+  a long list can still look before committing.
+- **Quality hold is respected:** the advance waits for the quality-hold conversation the selection starts. If the
+  hold is not acknowledged the part is dropped - on this page as well as on the PO page, which used to leave the row
+  looking chosen - and the walk stays put.
+- **No double advance:** a second click on the same row while the move is in flight is ignored.
+- **Only rows:** a double-click on a header, the scrollbar, or empty space below the list does nothing.
+- **Files:** `Module_Receiving/Views/View_Receiving_PartSelection.xaml` (+ `.xaml.cs`),
+  `Module_Receiving/ViewModels/ViewModel_Receiving_PartSelection.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_PartSelectionTests.cs`
+
+#### Select Part page sorts and filters the part list, and remembers what you picked (2026-11-19)
+
+- **What changed:** the part list now opens newest line receive date first, every column header sorts it on click,
+  and a filter button sits where the "N parts" count used to be.
+- **The sort:** a new **Recv Date** column shows when each part was **last actually received** - the ERP's
+  `PURC_ORDER_LINE.LAST_RECEIVED_DATE`, taken as the latest receipt across the lines that carry the part on this PO.
+  It is not the PO's expected date: a line received today reads today, and a line that has never been received reads
+  blank and sorts to the bottom.
+- **The filters:** on-hand stock only, quality hold only, and a single location. The button turns accent-colored with a
+  count of the filters in use, and **Reset filters** clears them without touching the sort.
+- **Saved per user:** the sort column, the sort direction, and all three filters are stored as user-scoped Receiving
+  settings, so the next receipt opens the way the last one was left.
+- **The count is gone:** "N parts" no longer appears on the page; the filter button takes its place beside the clear
+  (X) button.
+- **Files:** `Module_Receiving/Views/View_Receiving_PartSelection.xaml` (+ `.xaml.cs`),
+  `Module_Receiving/ViewModels/ViewModel_Receiving_PartSelection.cs`,
+  `Module_Receiving/Settings/ReceivingSettingsKeys.cs`, `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`,
+  `Module_Settings.Core/Defaults/settings.manifest.json`, `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`,
+  `Module_Core/Models/InforVisual/Model_InforVisualPOUniquePart.cs`,
+  `Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs`,
+  `Module_Core/Services/Database/Service_InforVisualConnect.cs`,
+  `Database/InforVisualScripts/Queries/28_GetPOUniquePartsWithOnHand.sql`, `docs/features/receiving/index.html`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_PartSelectionTests.cs`
+
 #### The Label Overlay window says what it is doing while print setup loads and print jobs go out (2026-11-17)
 
 - **What changed:** the window now puts a modal progress card over itself whenever something slow is running, so the
@@ -106,7 +145,77 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/ViewModels/ViewModel_Tool_ReceivingAnalyticsTopDaysTests.cs` (new),
   `MTM_Receiving_Application.Tests/Integration/Database/StoredProcedures/ReceivingAnalyticsAppStoredProcedureTests.cs`
 
+### Changed
+
+#### PO Line Spec Search: the PO status filter is now checkboxes, so several statuses can be searched at once (2026-11-19)
+
+- **What changed:** the options dialog's **PO Status Filter** dropdown became four checkboxes - Firmed, Released, Closed,
+  Cancelled/Void. Tick any number of them to search those statuses together; tick all of them (or none) to search every
+  status, which is what the old "All" choice did.
+- **Why:** the dropdown allowed exactly one status, so finding a spec that sat on both a released and a firmed PO meant
+  two searches and comparing the results by hand.
+- **How it reaches the query:** the selection is stored as a comma-separated list, so the existing saved setting keeps
+  working (an old saved value like `Released` still resolves, and a legacy `All` simply means "no filter"). The three
+  status-filtered spec queries now compare the PO status against a comma-separated code list with `CHARINDEX` instead of
+  a single `@PoStatusCode`, so they still run on older SQL Server compatibility levels.
+- **Result filtering** on the page understands the list too, and the status line reads `Firmed, Released` rather than a
+  single name.
+- **Files:** `Module_ShipRec_Tools/Dialogs/Dialog_POLineSpecSearchOptions.xaml` (+ `.xaml.cs`),
+  `Module_ShipRec_Tools/Models/Model_Tool_POLineSpecSearchOptions.cs`,
+  `Module_ShipRec_Tools/ViewModels/ViewModel_Tool_POLineSpecSearch.cs`,
+  `Module_ShipRec_Tools/Services/Service_Tool_POLineSpecSearch.cs`,
+  `Module_Core/Contracts/Services/IService_InforVisual.cs`,
+  `Module_Core/Services/Database/Service_InforVisualConnect.cs`,
+  `Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs`,
+  `Database/InforVisualScripts/Queries/23_SearchPurchaseOrderLineSpecs_WeightedRanking_StatusFiltered.sql`,
+  `Database/InforVisualScripts/Queries/25_SearchPurchaseOrderLineSpecs_TokenizedPartial_StatusFiltered.sql`,
+  `Database/InforVisualScripts/Queries/27_SearchPurchaseOrderLineSpecs_ExactPhrase_StatusFiltered.sql`,
+  `MTM_Receiving_Application.Tests/Unit/Module_ShipRec_Tools/Services/Service_Tool_POLineSpecSearchStatusFilterTests.cs` (new)
+
 ### Fixed
+
+#### Recv Date on the Select Part page shows when the line was actually received (2026-11-19)
+
+- **What changed:** the **Recv Date** column (and the default sort that uses it) now reads
+  `PURC_ORDER_LINE.LAST_RECEIVED_DATE` - when the line was last actually received - instead of the PO's expected
+  receive date. A line received today reads today.
+- **What it looked like:** `62 079 30` on PO-071746 line 11 was received today (receiver 159888), but the page showed
+  `11/20/2026` because it was displaying the line's desired receive date from the PO.
+- **Never received:** a line with no receipt has no last-received date, so the cell is blank and the row sorts to the
+  bottom rather than borrowing the PO's expected date.
+- **Files:** `Database/InforVisualScripts/Queries/28_GetPOUniquePartsWithOnHand.sql`,
+  `Module_Core/Models/InforVisual/Model_InforVisualPOUniquePart.cs`,
+  `Module_Core/Models/InforVisual/Model_InforVisualPart.cs`,
+  `Module_Core/Data/InforVisual/Dao_InforVisualConnection.cs`,
+  `Module_Core/Services/Database/Service_InforVisualConnect.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_PartSelection.cs`,
+  `Module_Receiving/Views/View_Receiving_PartSelection.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_PartSelectionTests.cs`
+
+#### The Select Part page can no longer open with no parts to choose from (2026-11-19)
+
+- **What changed:** the PO step now refuses to walk to the part page until the PO's part list has actually been
+  retrieved, and its **Next** button stays disabled until then. Before, a PO number that merely *looked* valid was
+  enough: the number was pushed into the workflow the moment it was typed, so **Next** could be pressed before (or
+  after a failed) lookup and land on a part page showing a PO badge over an empty grid.
+- **What the clerk sees now:** type or scan the PO and the page loads it as usual - the walk still moves on by itself
+  once the parts arrive. If the lookup fails, loading the PO again is the only way forward, which is what keeps the
+  next page from being empty.
+- **Also fixed:** a page reached that way (or a second Receiving visit in the same session) said *"Load the PO number
+  first"* even though the PO was in. The message now says the parts for that PO have not been loaded and points back
+  to the PO step. The part page also re-resolves the PO page each time it rebuilds instead of relying on one capture
+  made when it was constructed, so a replaced PO page cannot leave it permanently empty.
+- **Stale state:** starting a workflow now clears the PO number, part, and part-list flag left on the singleton
+  workflow service by the previous visit; a fresh page no longer shows a PO badge for a PO it never loaded.
+- **Files:** `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/Contracts/IService_ReceivingWorkflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_PartSelection.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowStepSkipTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/Services/Service_ReceivingWorkflowMockDataTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_WorkflowTests.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_PartSelectionTests.cs`
 
 #### Remaining on PO no longer reads 0 on the part card (2026-11-17)
 

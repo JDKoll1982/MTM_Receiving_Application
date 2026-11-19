@@ -205,14 +205,26 @@ public partial class ViewModel_Tool_POLineSpecSearch : ViewModel_Shared_Base
     {
         IEnumerable<Model_Tool_POLineSpecSearchResult> query = _allResults;
 
-        if (string.IsNullOrWhiteSpace(_options.PoStatusFilter) is false)
+        var selectedStatuses = Model_Tool_POLineSpecSearchOptions.ParsePoStatusFilters(
+            _options.PoStatusFilter
+        );
+
+        // Nothing ticked means the clerk wants every status, which is the same as ticking them all.
+        if (selectedStatuses.Count > 0)
         {
-            var normalizedStatus = _options.PoStatusFilter.Trim();
-            query = query.Where(row => MatchesPoStatusFilter(row.PoStatus, normalizedStatus));
+            query = query.Where(row => MatchesAnyPoStatusFilter(row.PoStatus, selectedStatuses));
         }
 
         query = query.Take(_options.VisibleLines);
         ReplaceResults(query.ToList());
+    }
+
+    private static bool MatchesAnyPoStatusFilter(
+        string rowPoStatus,
+        IReadOnlyList<string> selectedFilters
+    )
+    {
+        return selectedFilters.Any(selectedFilter => MatchesPoStatusFilter(rowPoStatus, selectedFilter));
     }
 
     private static bool MatchesPoStatusFilter(string rowPoStatus, string selectedFilter)
@@ -292,13 +304,23 @@ public partial class ViewModel_Tool_POLineSpecSearch : ViewModel_Shared_Base
             )
             : Model_Tool_POLineSpecSearchOptions.DefaultSearchMode;
 
-        normalized.PoStatusFilter = normalized.PoStatusFilter?.Trim() ?? string.Empty;
+        normalized.PoStatusFilter = Model_Tool_POLineSpecSearchOptions.BuildPoStatusFilter(
+            Model_Tool_POLineSpecSearchOptions.ParsePoStatusFilters(normalized.PoStatusFilter)
+        );
         return normalized;
     }
 
     private static string GetPoStatusDisplay(Model_Tool_POLineSpecSearchOptions options)
     {
-        return string.IsNullOrWhiteSpace(options.PoStatusFilter) ? "All" : options.PoStatusFilter;
+        if (options.IsEveryPoStatusSelected)
+        {
+            return "All";
+        }
+
+        return string.Join(
+            ", ",
+            Model_Tool_POLineSpecSearchOptions.ParsePoStatusFilters(options.PoStatusFilter)
+        );
     }
 
     private void ReplaceResults(IEnumerable<Model_Tool_POLineSpecSearchResult> rows)

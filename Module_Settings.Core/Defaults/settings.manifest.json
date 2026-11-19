@@ -3017,6 +3017,61 @@
       "validationRules": "Int"
     },
     {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PartSelection.SortColumn",
+      "displayName": "Select Part - Sort Column",
+      "defaultValue": "RecvDate",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PartSelection.SortAscending",
+      "displayName": "Select Part - Sort Ascending",
+      "defaultValue": "false",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PartSelection.OnHandOnly",
+      "displayName": "Select Part - On Hand Only Filter",
+      "defaultValue": "false",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PartSelection.QualityHoldOnly",
+      "displayName": "Select Part - Quality Hold Only Filter",
+      "defaultValue": "false",
+      "dataType": "Bool",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "Bool"
+    },
+    {
+      "category": "Receiving",
+      "key": "Receiving.UiText.PartSelection.Location",
+      "displayName": "Select Part - Location Filter",
+      "defaultValue": "",
+      "dataType": "String",
+      "scope": "User",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
       "category": "Reporting",
       "key": "Reporting.Preview.RowDisplayMode",
       "displayName": "Reporting Preview - Row Display Mode",

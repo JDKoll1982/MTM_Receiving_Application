@@ -72,18 +72,39 @@ public sealed class ViewModel_Receiving_WorkflowTests
     public async Task NextStepCommand_ShouldExecuteOnThePoPage_WhenNoPartIsChosenYet()
     {
         // The part is chosen on the page after the PO, so the PO page must be free to move on
-        // without one.
+        // without one - once its part list has actually been loaded.
         var workflow = CreateWorkflowMock();
         workflow
             .SetupGet(service => service.CurrentStep)
             .Returns(Enum_ReceivingWorkflowStep.POEntry);
         workflow.SetupGet(service => service.CurrentPart).Returns((Model_InforVisualPart?)null);
+        workflow.SetupGet(service => service.CurrentPONumber).Returns("PO-066868");
+        workflow.SetupGet(service => service.IsPoPartListLoaded).Returns(true);
 
         var viewModel = CreateViewModel(workflow);
         await Task.Delay(25);
         RaiseStepChanged(workflow);
 
         viewModel.NextStepCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task NextStepCommand_ShouldNotExecuteOnThePoPage_UntilThePoPartListIsLoaded()
+    {
+        // A typed-in PO number alone leaves the part page with nothing to choose from, so the walk
+        // must not be able to reach it.
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.POEntry);
+        workflow.SetupGet(service => service.CurrentPONumber).Returns("PO-066868");
+        workflow.SetupGet(service => service.IsPoPartListLoaded).Returns(false);
+
+        var viewModel = CreateViewModel(workflow);
+        await Task.Delay(25);
+        RaiseStepChanged(workflow);
+
+        viewModel.NextStepCommand.CanExecute(null).Should().BeFalse();
     }
 
     [Fact]

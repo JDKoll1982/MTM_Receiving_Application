@@ -43,14 +43,47 @@
                 <TextBlock
                     Grid.Row="1"
                     Grid.Column="0"
-                    VerticalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,6,0,0"
                     Style="{StaticResource BodyStrongTextBlockStyle}"
                     Text="PO Status Filter:" />
-                <ComboBox
-                    x:Name="PoStatusFilterComboBox"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Width="220" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4">
+                    <Grid ColumnSpacing="14" RowSpacing="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox
+                            x:Name="PoStatusFirmed"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Content="Firmed" />
+                        <CheckBox
+                            x:Name="PoStatusReleased"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Content="Released" />
+                        <CheckBox
+                            x:Name="PoStatusClosed"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Content="Closed" />
+                        <CheckBox
+                            x:Name="PoStatusCancelled"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Content="Cancelled/Void" />
+                    </Grid>
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Tick any number of statuses. Leave them all clear to search every status."
+                        TextWrapping="Wrap" />
+                </StackPanel>
 
                 <TextBlock
                     Grid.Row="2"

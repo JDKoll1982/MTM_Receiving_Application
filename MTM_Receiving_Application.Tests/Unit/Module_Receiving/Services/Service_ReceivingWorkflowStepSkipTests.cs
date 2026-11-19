@@ -83,6 +83,7 @@ public sealed class Service_ReceivingWorkflowStepSkipTests
         var service = CreateService(out _);
         service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
         service.CurrentPONumber = "PO-500001";
+        service.IsPoPartListLoaded = true;
         service.CurrentPart = new Model_InforVisualPart { PartID = "MMC0000850" };
 
         await service.AdvanceToNextStepAsync();
@@ -116,6 +117,55 @@ public sealed class Service_ReceivingWorkflowStepSkipTests
             .Be(
                 Enum_ReceivingWorkflowStep.POEntry,
                 "the second PO was skipped too, so Back still belongs on the PO step"
+            );
+    }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldRefuseThePartPage_WhenThePoWasOnlyTypedIn()
+    {
+        var service = CreateService(out _);
+        service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+        service.CurrentPONumber = "PO-073026";
+
+        var result = await service.AdvanceToNextStepAsync();
+
+        result.Success.Should().BeFalse();
+        result
+            .ValidationErrors.Should()
+            .ContainMatch("*Load the PO first*", "the part page would open with no parts to choose");
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.POEntry);
+    }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldOpenThePartPage_WhenThePoProducedAPartList()
+    {
+        var service = CreateService(out _);
+        service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+        service.CurrentPONumber = "PO-073026";
+        service.IsPoPartListLoaded = true;
+
+        var result = await service.AdvanceToNextStepAsync();
+
+        result.Success.Should().BeTrue();
+        service.CurrentStep.Should().Be(Enum_ReceivingWorkflowStep.PartSelection);
+    }
+
+    [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldNotNeedAPartList_WhenTheItemIsNonPo()
+    {
+        var service = CreateService(out _);
+        service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+        service.IsNonPOItem = true;
+        service.CurrentPart = new Model_InforVisualPart { PartID = "MMC0000850" };
+
+        var result = await service.AdvanceToNextStepAsync();
+
+        result.Success.Should().BeTrue();
+        service
+            .CurrentStep.Should()
+            .Be(
+                Enum_ReceivingWorkflowStep.LoadEntry,
+                "a non-PO receipt types its part on the PO page and has no part step"
             );
     }
 

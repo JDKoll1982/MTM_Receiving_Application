@@ -1,12 +1,16 @@
 /*
-Tokenized-partial PO line spec search with required PO status filter.
+Tokenized-partial PO line spec search with a required PO status filter.
+
+The status filter is a comma-separated list of codes (for example 'F,R'), so more than one
+status can be searched at once. The list is compared with CHARINDEX rather than IN so the
+query keeps working on older SQL Server compatibility levels.
 
 Parameters expected from C#:
   @SearchTerm          NVARCHAR(200)
   @SearchLike          NVARCHAR(260)
   @NormalizedWildcard  NVARCHAR(260)
   @FirstTokenLike      NVARCHAR(260)
-  @PoStatusCode        NVARCHAR(10)
+  @PoStatusCodes       NVARCHAR(40)  comma-separated status codes (F, R, C, V)
   @MaxResults          INT
 */
 
@@ -72,7 +76,7 @@ SELECT TOP (@MaxResults)
     END AS SqlMatchWeight
 FROM CandidateSpecs
 WHERE
-    PoStatus = @PoStatusCode
+    CHARINDEX(',' + PoStatus + ',', ',' + @PoStatusCodes + ',') > 0
     AND (
         SpecSearchText LIKE @NormalizedWildcard
         OR SupplementalText LIKE @NormalizedWildcard

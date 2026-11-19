@@ -559,6 +559,7 @@ public sealed class Service_ReceivingWorkflowMockDataTests
         await service.StartWorkflowAsync();
         service.IsNonPOItem = false;
         service.CurrentPONumber = "PO-066868";
+        service.IsPoPartListLoaded = true;
         service.CurrentPart = null;
         service.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
 

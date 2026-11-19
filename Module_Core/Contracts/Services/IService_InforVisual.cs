@@ -132,14 +132,17 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         /// <param name="searchTerm">Free-text search term.</param>
         /// <param name="maxResults">Maximum candidate rows to return before tool-side ranking.</param>
         /// <param name="searchMode">Search mode label (Exact Phrase, Tokenized Partial, Weighted Ranking).</param>
-        /// <param name="poStatusCodeFilter">Optional single status code filter (for example R/F/C/V).</param>
+        /// <param name="poStatusCodeFilters">
+        /// Optional comma-separated PO status codes to include (for example "F,R"). Empty searches
+        /// every status.
+        /// </param>
         public Task<
             Model_Dao_Result<List<Model_InforVisualPOLineSpecSearchRow>>
         > SearchPurchaseOrderLineSpecsAsync(
             string searchTerm,
             int maxResults = 250,
             string searchMode = "Weighted Ranking",
-            string poStatusCodeFilter = ""
+            string poStatusCodeFilters = ""
         );
 
         /// <summary>

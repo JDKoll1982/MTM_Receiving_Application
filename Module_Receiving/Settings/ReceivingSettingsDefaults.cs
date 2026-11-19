@@ -94,6 +94,13 @@ public static class ReceivingSettingsDefaults
             [ReceivingSettingsKeys.UiText.EditModeSortAscending] = "true",
             [ReceivingSettingsKeys.UiText.EditModePageSize] = "20",
 
+            // Select Part page: newest line receive date first, nothing filtered out
+            [ReceivingSettingsKeys.UiText.PartSelectionSortColumn] = "RecvDate",
+            [ReceivingSettingsKeys.UiText.PartSelectionSortAscending] = "false",
+            [ReceivingSettingsKeys.UiText.PartSelectionOnHandOnly] = "false",
+            [ReceivingSettingsKeys.UiText.PartSelectionQualityHoldOnly] = "false",
+            [ReceivingSettingsKeys.UiText.PartSelectionLocation] = "",
+
             // PO entry
             [ReceivingSettingsKeys.UiText.PoEntryPurchaseOrderNumber] = "Purchase Order Number",
             [ReceivingSettingsKeys.UiText.PoEntryStatusLabel] = "Status:",

@@ -80,6 +80,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         }
         public Model_ReceivingSession CurrentSession { get; private set; } = new();
         public string? CurrentPONumber { get; set; }
+        public bool IsPoPartListLoaded { get; set; }
         public Model_InforVisualPart? CurrentPart { get; set; }
         public bool IsNonPOItem { get; set; }
         public int NumberOfLoads { get; set; } = 1;
@@ -153,6 +154,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;
+
+            // A previous visit left its PO, part, and part list behind on this singleton service.
+            // The page that would show them is brand new and empty, so keeping them only ever
+            // produced a PO badge over an empty part list.
+            CurrentPONumber = null;
+            CurrentPart = null;
+            IsPoPartListLoaded = false;
 
             // Check if user has a default receiving mode set
             var currentUserId = currentUser?.EmployeeNumber;
@@ -263,6 +271,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     if (string.IsNullOrEmpty(CurrentPONumber) && !IsNonPOItem)
                     {
                         validationErrors.Add("PO Number is required.");
+                        return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
+                    }
+
+                    // The part page chooses from the parts this PO actually returned, so a typed-in
+                    // number is not enough: the lookup has to have produced the list first.
+                    if (!IsNonPOItem && !IsPoPartListLoaded)
+                    {
+                        validationErrors.Add(
+                            "Load the PO first - the part list has not been retrieved yet."
+                        );
                         return Model_ReceivingWorkflowStepResult.ErrorResult(validationErrors);
                     }
 
@@ -626,6 +644,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             // Reset for next part
             CurrentPONumber = null;
             CurrentPart = null;
+            IsPoPartListLoaded = false;
             IsNonPOItem = false;
             NumberOfLoads = 1;
             CurrentLocation = string.Empty;
@@ -841,6 +860,7 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentStep = Enum_ReceivingWorkflowStep.ModeSelection;
             CurrentPONumber = null;
             CurrentPart = null;
+            IsPoPartListLoaded = false;
             IsNonPOItem = false;
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;

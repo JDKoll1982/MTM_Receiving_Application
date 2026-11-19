@@ -569,9 +569,25 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         private void UpdateNextButtonEnabled()
         {
-            // The PO page only needs its number, because the part is chosen on the next page. The
-            // part page is the one that cannot move on without a part.
-            IsNextButtonEnabled = !IsPartSelectionVisible || _workflowService.CurrentPart is not null;
+            // The part page lists the parts of the PO that was actually loaded, so the PO step can
+            // only move on once that load produced a list - a typed-in number alone leaves the next
+            // page empty. The part page is the one that cannot move on without a part.
+            if (IsPartSelectionVisible)
+            {
+                IsNextButtonEnabled = _workflowService.CurrentPart is not null;
+            }
+            else if (IsPOEntryVisible)
+            {
+                IsNextButtonEnabled = _workflowService.IsNonPOItem
+                    ? _workflowService.CurrentPart is not null
+                    : _workflowService.IsPoPartListLoaded
+                        && !string.IsNullOrWhiteSpace(_workflowService.CurrentPONumber);
+            }
+            else
+            {
+                IsNextButtonEnabled = true;
+            }
+
             NotifyWorkflowCommandStates();
         }
 

@@ -573,8 +573,8 @@ public class Service_InforVisualConnect : IService_InforVisual
                 RemainingQuantity = Convert.ToInt32(
                     Math.Round(row.RemainingQty, MidpointRounding.AwayFromZero)
                 ),
-                Location = row.Location,
-            }),
+                LastReceivedDate = row.LastReceivedDate,
+                Location = row.Location,            }),
         };
     }
 
@@ -636,6 +636,8 @@ public class Service_InforVisualConnect : IService_InforVisual
                 // Same rule as the real query: every line carrying this part contributes its
                 // ordered-minus-received quantity.
                 RemainingQuantity = group.Sum(part => part.RemainingQuantity),
+                // Same rule as the real query: the latest receipt across the lines for this part.
+                LastReceivedDate = group.Max(part => part.LastReceivedDate),
                 Location = string.Empty,
             })
             .ToList();
@@ -886,7 +888,7 @@ public class Service_InforVisualConnect : IService_InforVisual
         string searchTerm,
         int maxResults = 250,
         string searchMode = "Weighted Ranking",
-        string poStatusCodeFilter = ""
+        string poStatusCodeFilters = ""
     )
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
@@ -924,7 +926,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             firstTokenLike,
             safeMaxResults,
             searchMode,
-            poStatusCodeFilter
+            poStatusCodeFilters
         );
     }
 
@@ -1657,7 +1659,7 @@ public class Service_InforVisualConnect : IService_InforVisual
             DefaultLocationId = source.DefaultLocationId,
             RemainingQuantity = source.RemainingQuantity,
             DueDate = source.DueDate,
-            RequiresQualityHold = source.RequiresQualityHold,
+            LastReceivedDate = source.LastReceivedDate,            RequiresQualityHold = source.RequiresQualityHold,
             QualityHoldRestrictionType = source.QualityHoldRestrictionType,
         };
     }

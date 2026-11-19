@@ -83,12 +83,65 @@
                         <FontIcon Glyph="&#xE711;" />
                     </Button>
 
-                    <TextBlock
+                    <Button
+                        x:Name="PartFilterButton"
                         Grid.Column="3"
-                        VerticalAlignment="Center"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{ThemeResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.PartsCountText, Mode=OneWay}" />
+                        Padding="10,4"
+                        VerticalAlignment="Stretch"
+                        AutomationProperties.Name="Filter the parts list"
+                        ToolTipService.ToolTip="Filter the parts list">
+                        <Grid>
+                            <FontIcon
+                                FontSize="16"
+                                Glyph="&#xE71C;"
+                                Visibility="{x:Bind ViewModel.HasActiveFilters, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Inverse'}" />
+                            <FontIcon
+                                FontSize="16"
+                                Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                Glyph="&#xE71C;"
+                                Visibility="{x:Bind ViewModel.HasActiveFilters, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Border
+                                MinWidth="14"
+                                Height="14"
+                                Margin="0,-8,-8,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                CornerRadius="7"
+                                Visibility="{x:Bind ViewModel.HasActiveFilters, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="9"
+                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                    Text="{x:Bind ViewModel.ActiveFilterCount, Mode=OneWay}" />
+                            </Border>
+                        </Grid>
+                        <Button.Flyout>
+                            <Flyout Placement="BottomEdgeAlignedRight">
+                                <StackPanel MinWidth="260" Spacing="12">
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="Filter parts" />
+                                    <ToggleSwitch
+                                        Header="Only parts with on-hand stock"
+                                        IsOn="{x:Bind ViewModel.OnHandOnly, Mode=TwoWay}" />
+                                    <ToggleSwitch
+                                        Header="Only parts on quality hold"
+                                        IsOn="{x:Bind ViewModel.QualityHoldOnly, Mode=TwoWay}" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.Name="Filter by location"
+                                        Header="Location"
+                                        ItemsSource="{x:Bind ViewModel.AvailableLocations, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedLocation, Mode=TwoWay}" />
+                                    <Button
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.Name="Clear every part filter"
+                                        Command="{x:Bind ViewModel.ResetFiltersCommand}"
+                                        Content="Reset filters" />
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </Grid>
             </StackPanel>
         </Border>
@@ -105,14 +158,21 @@
                     x:Name="PartsGrid"
                     AutoGenerateColumns="False"
                     AutomationProperties.Name="Parts on this purchase order"
+                    CanUserSortColumns="True"
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="Column"
                     IsReadOnly="True"
                     ItemsSource="{x:Bind ViewModel.Parts, Mode=OneWay}"
                     SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
-                    SelectionMode="Single">
+                    SelectionMode="Single"
+                    Sorting="PartsGrid_Sorting"
+                    DoubleTapped="PartsGrid_DoubleTapped">
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTemplateColumn Width="2*" Header="Part ID" IsReadOnly="True">
+                        <controls:DataGridTemplateColumn
+                            Width="2*"
+                            Header="Part ID"
+                            IsReadOnly="True"
+                            Tag="PartID">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock
@@ -125,15 +185,23 @@
                         <controls:DataGridTextColumn
                             Width="4*"
                             Binding="{Binding Description}"
-                            Header="Description" />
+                            Header="Description"
+                            Tag="Description" />
+                        <controls:DataGridTextColumn
+                            Width="Auto"
+                            Binding="{Binding LastReceivedDateDisplay}"
+                            Header="Recv Date"
+                            Tag="RecvDate" />
                         <controls:DataGridTextColumn
                             Width="*"
                             Binding="{Binding OnHandQtyDisplay}"
-                            Header="On Hand" />
+                            Header="On Hand"
+                            Tag="OnHand" />
                         <controls:DataGridTextColumn
                             Width="*"
                             Binding="{Binding Location}"
-                            Header="Location" />
+                            Header="Location"
+                            Tag="Location" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Border>

@@ -393,8 +393,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             SelectedPart = onlyPart;
 
-            var isPartUsable = await AwaitPendingQualityHoldCheckAsync();
-            if (!isPartUsable || SelectedPart is null)
+            if (!await IsSelectedPartUsableAsync())
             {
                 return;
             }
@@ -408,10 +407,22 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService.SkipPartSelection();
         }
 
-        private async Task<bool> AwaitPendingQualityHoldCheckAsync()
+        /// <summary>
+        /// Waits for the quality-hold conversation that choosing a part may have started, and reports
+        /// whether the part survived it.
+        /// </summary>
+        /// <remarks>
+        /// A part that needs a quality hold and is not acknowledged is cleared here rather than left
+        /// chosen, so anything that acts on the selection - the chosen part itself, or the part page
+        /// moving on after a double-click - has to ask this first.
+        /// </remarks>
+        /// <returns>True when a part is still chosen and nothing is blocking it.</returns>
+        public async Task<bool> IsSelectedPartUsableAsync()
         {
             var pendingCheck = _pendingQualityHoldCheck;
-            return pendingCheck is null || await pendingCheck;
+            var isUsable = pendingCheck is null || await pendingCheck;
+
+            return isUsable && SelectedPart is not null;
         }
 
         [RelayCommand]
@@ -611,8 +622,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return;
             }
 
-            var isPartUsable = await AwaitPendingQualityHoldCheckAsync();
-            if (!isPartUsable || SelectedPart is null)
+            if (!await IsSelectedPartUsableAsync())
             {
                 return;
             }
@@ -679,11 +689,19 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 : selectedPart?.PartID ?? SelectedPart?.PartID;
 
             Parts = new ObservableCollection<Model_InforVisualPart>(parts);
+
+            // The part page shows exactly this list, so the workflow can only move there while the
+            // list is non-empty. Keeping the flag beside the assignment means it can never disagree
+            // with what the page would display.
+            _workflowService.IsPoPartListLoaded = Parts.Count > 0;
+
             SelectedPart = string.IsNullOrWhiteSpace(selectedPartId)
                 ? null
                 : Parts.FirstOrDefault(part =>
                     string.Equals(part.PartID, selectedPartId, StringComparison.OrdinalIgnoreCase)
                 );
+
+            NotifyWorkflowNextButtonStateChanged();
         }
 
         partial void OnPoNumberChanged(string value)
@@ -693,6 +711,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             )
             {
                 _lastLoadedPoNumber = null;
+
+                // The list still belongs to the previous PO, so the part page must not be opened on
+                // it: the clerk has to load this PO first.
+                _workflowService.IsPoPartListLoaded = false;
+                NotifyWorkflowNextButtonStateChanged();
             }
 
             if (string.IsNullOrWhiteSpace(value))
@@ -715,6 +738,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService.CurrentPONumber = validatedPoNumber;
             IsLoadPOEnabled = true;
             PoValidationMessage = string.Empty;
+            NotifyWorkflowNextButtonStateChanged();
         }
 
         private static bool TryNormalizePoNumber(

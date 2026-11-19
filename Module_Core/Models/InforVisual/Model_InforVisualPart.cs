@@ -37,6 +37,21 @@ namespace MTM_Receiving_Application.Module_Core.Models.InforVisual
         public DateTime? DueDate { get; set; }
 
         /// <summary>
+        /// When this part was last actually received (the ERP's per-line receipt date, latest across
+        /// the PO's lines for this part), or null when it has not been received yet. This is the date
+        /// the part page shows and sorts on; it is kept separate from <see cref="DueDate"/> so the
+        /// PO workflow's due-date rules stay exactly as they were.
+        /// </summary>
+        public DateTime? LastReceivedDate { get; set; }
+
+        /// <summary>
+        /// The last received date as it reads on the part page, or blank when the part has not been
+        /// received yet.
+        /// </summary>
+        public string LastReceivedDateDisplay =>
+            LastReceivedDate.HasValue ? LastReceivedDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+
+        /// <summary>
         /// Gets or sets whether this part requires a quality hold acknowledgment.
         /// </summary>
         public bool RequiresQualityHold { get; set; }

@@ -44,6 +44,12 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public string? CurrentPONumber { get; set; }
 
         /// <summary>
+        /// True once the PO loaded on the PO step has produced its part list. The part page shows
+        /// that list, so the walk must not move there until the list exists.
+        /// </summary>
+        public bool IsPoPartListLoaded { get; set; }
+
+        /// <summary>
         /// Gets or sets the current part being processed.
         /// </summary>
         public Model_InforVisualPart? CurrentPart { get; set; }

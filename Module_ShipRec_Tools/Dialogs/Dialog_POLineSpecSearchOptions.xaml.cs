@@ -14,6 +14,7 @@ namespace MTM_Receiving_Application.Module_ShipRec_Tools.Dialogs;
 public sealed partial class Dialog_POLineSpecSearchOptions : ContentDialog
 {
     private readonly Dictionary<string, CheckBox> _columnCheckboxes;
+    private readonly Dictionary<string, CheckBox> _poStatusCheckboxes;
 
     public Model_Tool_POLineSpecSearchOptions SelectedOptions { get; private set; }
 
@@ -62,20 +63,27 @@ public sealed partial class Dialog_POLineSpecSearchOptions : ContentDialog
                 )
                 : Model_Tool_POLineSpecSearchOptions.DefaultSearchMode;
 
-        PoStatusFilterComboBox.ItemsSource =
-            Model_Tool_POLineSpecSearchOptions.PoStatusFilterOptions;
-        var normalizedPoStatus = string.IsNullOrWhiteSpace(SelectedOptions.PoStatusFilter)
-            ? "All"
-            : SelectedOptions.PoStatusFilter.Trim();
-        PoStatusFilterComboBox.SelectedItem =
-            Model_Tool_POLineSpecSearchOptions.PoStatusFilterOptions.Contains(
-                normalizedPoStatus,
+        // PO status filters are ticks, not a single choice, so the stored value is mapped onto the
+        // four boxes and rebuilt from them on Apply.
+        _poStatusCheckboxes = new Dictionary<string, CheckBox>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Firmed"] = PoStatusFirmed,
+            ["Released"] = PoStatusReleased,
+            ["Closed"] = PoStatusClosed,
+            ["Cancelled/Void"] = PoStatusCancelled,
+        };
+
+        var selectedPoStatuses = Model_Tool_POLineSpecSearchOptions.ParsePoStatusFilters(
+            SelectedOptions.PoStatusFilter
+        );
+
+        foreach (var entry in _poStatusCheckboxes)
+        {
+            entry.Value.IsChecked = selectedPoStatuses.Contains(
+                entry.Key,
                 StringComparer.OrdinalIgnoreCase
-            )
-                ? Model_Tool_POLineSpecSearchOptions.PoStatusFilterOptions.First(option =>
-                    string.Equals(option, normalizedPoStatus, StringComparison.OrdinalIgnoreCase)
-                )
-                : "All";
+            );
+        }
 
         foreach (var entry in _columnCheckboxes)
         {
@@ -104,20 +112,19 @@ public sealed partial class Dialog_POLineSpecSearchOptions : ContentDialog
         }
 
         var visibleLines = VisibleLinesComboBox.SelectedItem as int?;
-        var selectedPoStatus = PoStatusFilterComboBox.SelectedItem?.ToString()?.Trim() ?? "All";
+        var selectedPoStatuses = _poStatusCheckboxes
+            .Where(static pair => pair.Value.IsChecked == true)
+            .Select(static pair => pair.Key);
         var selectedSearchMode =
             SearchModeComboBox.SelectedItem?.ToString()?.Trim()
             ?? Model_Tool_POLineSpecSearchOptions.DefaultSearchMode;
         SelectedOptions = new Model_Tool_POLineSpecSearchOptions
         {
             SearchMode = selectedSearchMode,
-            PoStatusFilter = string.Equals(
-                selectedPoStatus,
-                "All",
-                StringComparison.OrdinalIgnoreCase
-            )
-                ? string.Empty
-                : selectedPoStatus,
+            // No tick means every status, which is stored as an empty filter.
+            PoStatusFilter = Model_Tool_POLineSpecSearchOptions.BuildPoStatusFilter(
+                selectedPoStatuses
+            ),
             VisibleLines = visibleLines ?? Model_Tool_POLineSpecSearchOptions.DefaultVisibleLines,
             VisibleColumnKeys = selectedKeys,
         };

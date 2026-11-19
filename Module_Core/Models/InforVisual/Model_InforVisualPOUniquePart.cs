@@ -51,4 +51,11 @@ public partial class Model_InforVisualPOUniquePart : ObservableObject
 
     [ObservableProperty]
     private string _location = string.Empty;
+
+    /// <summary>
+    /// When this part was last actually received, taken as the latest receipt across the PO lines
+    /// that carry it. Null when no line on the PO has been received yet.
+    /// </summary>
+    [ObservableProperty]
+    private DateTime? _lastReceivedDate;
 }

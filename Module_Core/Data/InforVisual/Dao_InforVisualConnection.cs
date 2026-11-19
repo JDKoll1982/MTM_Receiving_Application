@@ -191,6 +191,7 @@ public class Dao_InforVisualConnection
                         PartDescription = reader["PartDescription"].ToString() ?? string.Empty,
                         OnHandQty = Math.Round(Convert.ToDecimal(reader["OnHandQty"]), 2),
                         RemainingQty = Math.Round(Convert.ToDecimal(reader["RemainingQty"]), 2),
+                        LastReceivedDate = reader["LastReceivedDate"] as DateTime?,
                         Location = reader["Location"].ToString() ?? string.Empty,
                     }
                 );
@@ -694,15 +695,15 @@ public class Dao_InforVisualConnection
         string firstTokenLike,
         int maxResults = 250,
         string searchMode = "Weighted Ranking",
-        string poStatusCodeFilter = ""
+        string poStatusCodeFilters = ""
     )
     {
         try
         {
-            var hasStatusFilter = string.IsNullOrWhiteSpace(poStatusCodeFilter) is false;
+            var hasStatusFilter = string.IsNullOrWhiteSpace(poStatusCodeFilters) is false;
             var selectedQueryFile = ResolvePoLineSpecSearchQueryFile(searchMode, hasStatusFilter);
             _logger?.LogInfo(
-                $"Searching PO line specs for term '{normalizedSearchTerm}' (max {maxResults}) with script '{selectedQueryFile}'"
+                $"Searching PO line specs for term '{normalizedSearchTerm}' (max {maxResults}) with script '{selectedQueryFile}' and status codes '{poStatusCodeFilters}'"
             );
 
             var query = Helper_SqlQueryLoader.LoadAndPrepareQuery(selectedQueryFile);
@@ -719,10 +720,10 @@ public class Dao_InforVisualConnection
             command.Parameters.Add("@FirstTokenLike", SqlDbType.NVarChar, 260).Value =
                 firstTokenLike;
             command.Parameters.Add("@MaxResults", SqlDbType.Int).Value = maxResults;
-            command.Parameters.Add("@PoStatusCode", SqlDbType.NVarChar, 10).Value =
-                string.IsNullOrWhiteSpace(poStatusCodeFilter)
+            command.Parameters.Add("@PoStatusCodes", SqlDbType.NVarChar, 40).Value =
+                string.IsNullOrWhiteSpace(poStatusCodeFilters)
                     ? DBNull.Value
-                    : poStatusCodeFilter.Trim().ToUpperInvariant();
+                    : poStatusCodeFilters.Trim().ToUpperInvariant();
 
             var rows = new List<Model_InforVisualPOLineSpecSearchRow>();
             await using var reader = await command.ExecuteReaderAsync();

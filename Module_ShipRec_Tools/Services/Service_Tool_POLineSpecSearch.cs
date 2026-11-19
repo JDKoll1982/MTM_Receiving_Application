@@ -56,7 +56,7 @@ public class Service_Tool_POLineSpecSearch : IService_Tool_POLineSpecSearch
 
         var safeMaxResults = Math.Clamp(maxResults, 1, 500);
         var normalizedMode = NormalizeSearchMode(options.SearchMode);
-        var statusCodeFilter = MapPoStatusFilterToCode(options.PoStatusFilter);
+        var statusCodeFilter = MapPoStatusFiltersToCodes(options.PoStatusFilter);
         _logger.LogInfo(
             $"Searching PO line specs for '{normalizedTerm}' with max results {safeMaxResults}, mode '{normalizedMode}', status '{statusCodeFilter}'"
         );
@@ -225,6 +225,41 @@ public class Service_Tool_POLineSpecSearch : IService_Tool_POLineSpecSearch
             "CANCELLED/VOID" or "CANCELLED" or "CANCELED" or "VOID" or "V" => "V",
             _ => string.Empty,
         };
+    }
+
+    /// <summary>
+    /// Turns the stored status selection into the comma-separated codes the query expects.
+    /// </summary>
+    /// <param name="poStatusFilters">The stored selection ("Firmed,Released", or empty for all).</param>
+    /// <returns>Codes such as "F,R", or empty when every status is wanted.</returns>
+    /// <remarks>
+    /// The statuses are matched case-insensitively against the option names, so a selection saved
+    /// before this filter became a set ("Released") still resolves to its code.
+    /// </remarks>
+    private static string MapPoStatusFiltersToCodes(string poStatusFilters)
+    {
+        if (string.IsNullOrWhiteSpace(poStatusFilters))
+        {
+            return string.Empty;
+        }
+
+        var codes = new List<string>();
+
+        foreach (
+            var part in poStatusFilters.Split(
+                ',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+            )
+        )
+        {
+            var code = MapPoStatusFilterToCode(part);
+            if (code.Length > 0 && !codes.Contains(code))
+            {
+                codes.Add(code);
+            }
+        }
+
+        return string.Join(',', codes);
     }
 
     private static string BuildExcerpt(string specText, IReadOnlyList<string> tokens)
