@@ -504,6 +504,26 @@ public static class ModuleServicesExtensions
         // Database Config: per-PC MySQL target selection for testing
         services.AddSingleton<IService_DatabaseTargetManager, Service_DatabaseTargetManager>();
 
+        // Receiving welded part numbers (shares settings_weldedcoils with the Extra Tools tool)
+        services.AddSingleton(_ => new Module_Settings.Receiving.Data.Dao_Settings_ReceivingWeldedParts(
+            mySqlConnectionString
+        ));
+        services.AddSingleton<
+            Module_Settings.Receiving.Contracts.IService_Settings_ReceivingWeldedParts
+        >(sp =>
+        {
+            var dao = sp.GetRequiredService<
+                Module_Settings.Receiving.Data.Dao_Settings_ReceivingWeldedParts
+            >();
+            var inforVisual = sp.GetRequiredService<IService_InforVisual>();
+            var logger = sp.GetRequiredService<IService_LoggingUtility>();
+            return new Module_Settings.Receiving.Services.Service_Settings_ReceivingWeldedParts(
+                dao,
+                inforVisual,
+                logger
+            );
+        });
+
         // Settings ViewModels (Transient - Per-settings-page instances)
         RegisterSettingsViewModels(services);
 
@@ -543,6 +563,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_VendorVariables>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WeldedParts>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_PersonalDefaults>();
@@ -601,6 +622,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WorkflowDefaults>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WeldedParts>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();

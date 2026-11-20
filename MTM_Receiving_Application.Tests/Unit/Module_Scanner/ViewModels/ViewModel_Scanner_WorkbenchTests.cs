@@ -102,7 +102,7 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         var viewModel = CreateWorkbenchViewModel();
 
         viewModel.InventoryWindowClosedMessage.Should()
-            .Be("Inventory Transactions window is closed - Open it to enable this button.");
+            .Be("Inventory Transactions window is closed!");
     }
 
     [Fact]

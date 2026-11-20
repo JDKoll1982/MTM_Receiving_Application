@@ -463,8 +463,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Views
                 return false;
             }
 
-            // The Clear Label Data button always clears the active rows, never the full history.
-            return TryExecuteCommand(ViewModel.ResetLabelDataCommand, false);
+            // Shift asks for the wider clear, matching the modifier the retired in-page button took.
+            var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
+            var clearAllRows =
+                (shiftState & Windows.UI.Core.CoreVirtualKeyStates.Down)
+                == Windows.UI.Core.CoreVirtualKeyStates.Down;
+
+            return TryExecuteCommand(
+                clearAllRows ? ViewModel.ResetLabelDataAllCommand : ViewModel.ResetLabelDataCommand
+            );
         }
 
         private bool TryHandleStepNavigationShortcut(KeyRoutedEventArgs e)

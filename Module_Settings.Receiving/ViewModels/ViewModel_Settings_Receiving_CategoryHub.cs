@@ -43,6 +43,10 @@ public sealed partial class ViewModel_Settings_Receiving_CategoryHub
             new Model_SettingsNavigationStep(
                 "Custom Vendor Variables",
                 typeof(Views.View_Settings_Receiving_VendorVariables)
+            ),
+            new Model_SettingsNavigationStep(
+                "Welded Part Numbers",
+                typeof(Views.View_Settings_Receiving_WeldedParts)
             )
         );
     }

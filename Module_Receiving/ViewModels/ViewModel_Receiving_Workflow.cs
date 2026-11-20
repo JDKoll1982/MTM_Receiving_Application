@@ -922,8 +922,17 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             _workflowService.GoToStep(_startNewEntryStep);
         }
 
+        // The strip binds this command with no parameter, and a command that takes a value type
+        // reports CanExecute(null) as false, which would leave the button disabled forever. Keeping
+        // a parameterless command is what lets the strip enable it from CanClearLabelData alone.
         [RelayCommand]
-        private async Task ResetLabelDataAsync(bool clearAllRows = false)
+        private Task ResetLabelDataAsync() => ResetLabelDataCoreAsync(clearAllRows: false);
+
+        /// <summary>Clears the active label data and the archive queue as well.</summary>
+        [RelayCommand]
+        private Task ResetLabelDataAllAsync() => ResetLabelDataCoreAsync(clearAllRows: true);
+
+        private async Task ResetLabelDataCoreAsync(bool clearAllRows)
         {
             var xamlRoot = _windowService.GetXamlRoot();
             if (xamlRoot == null)
@@ -1063,6 +1072,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         #region Shell action bar
 
         private Model_ShellActionBarState _shellActions = Model_ShellActionBarState.Empty;
+        private string _activeMode = "guided";
         private ViewModel_Receiving_ManualEntry? _manualEntryViewModel;
         private ViewModel_Receiving_EditMode? _editModeViewModel;
         private ViewModel_Receiving_Review? _reviewViewModel;
@@ -1201,6 +1211,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         {
             var step = _workflowService.CurrentStep;
             var showsActions = step != Enum_ReceivingWorkflowStep.Saving;
+            var activeMode = ResolveActiveMode(step);
 
             return new Model_ShellActionBarState
             {
@@ -1212,7 +1223,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShellGuidedDefaultTooltipText,
                     EnterGuidedModeCommand,
                     canBeDefault: true,
-                    ShellDefaultBadgeText
+                    ShellDefaultBadgeText,
+                    activeMode == "guided"
                 ),
                 Manual = CreateModeAction(
                     "manual",
@@ -1220,7 +1232,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShellManualDefaultTooltipText,
                     EnterManualModeCommand,
                     canBeDefault: true,
-                    ShellDefaultBadgeText
+                    ShellDefaultBadgeText,
+                    activeMode == "manual"
                 ),
                 Edit = CreateModeAction(
                     "edit",
@@ -1228,7 +1241,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShellEditDefaultTooltipText,
                     EnterEditModeCommand,
                     canBeDefault: true,
-                    ShellDefaultBadgeText
+                    ShellDefaultBadgeText,
+                    activeMode == "edit"
                 ),
                 Overlay = CreateModeAction(
                     "overlay",
@@ -1236,7 +1250,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShellOverlayText,
                     OpenLabelOverlayWindowCommand,
                     canBeDefault: false,
-                    string.Empty
+                    string.Empty,
+                    isActive: false
                 ),
                 Back = BuildBackSlot(step),
                 Next = BuildNextSlot(),
@@ -1278,7 +1293,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 return Model_ShellActionSlot.Hidden;
             }
 
-            return CreateSlot(true, true, WorkflowBackText, WorkflowBackText, PreviousStepCommand);
+            return CreateSlot(
+                true,
+                true,
+                WorkflowBackText,
+                WorkflowBackText,
+                PreviousStepCommand,
+                kind: Enum_ShellActionKind.Back
+            );
         }
 
         private Model_ShellActionSlot BuildNextSlot()
@@ -1290,8 +1312,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     IsNextButtonEnabled,
                     WorkflowNextText,
                     WorkflowNextText,
-                    NextStepCommand,
-                    showDividerAfter: true
+                    NextStepCommand
                 );
             }
 
@@ -1311,7 +1332,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _manualEntryViewModel.ManualEntrySaveAndFinishText,
                     _manualEntryViewModel.ManualEntrySaveAndFinishText,
                     _manualEntryViewModel.SaveCommand,
-                    showDividerAfter: true
+                    kind: Enum_ShellActionKind.Save
                 );
             }
 
@@ -1323,7 +1344,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _editModeViewModel.EditModeSaveAndFinishText,
                     _editModeViewModel.EditModeSaveAndFinishText,
                     _editModeViewModel.SaveCommand,
-                    showDividerAfter: true
+                    kind: Enum_ShellActionKind.Save
                 );
             }
 
@@ -1335,7 +1356,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     _reviewViewModel.ReviewSaveToDatabaseText,
                     _reviewViewModel.ReviewSaveToDatabaseText,
                     _reviewViewModel.SaveCommand,
-                    showDividerAfter: true
+                    kind: Enum_ShellActionKind.Save
                 );
             }
 
@@ -1348,7 +1369,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             string label,
             string tooltip,
             System.Windows.Input.ICommand? command,
-            bool showDividerAfter = false
+            bool showDividerAfter = false,
+            Enum_ShellActionKind kind = Enum_ShellActionKind.Plain
         ) =>
             new()
             {
@@ -1359,6 +1381,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 AccessibilityName = label,
                 Command = command,
                 ShowDividerAfter = showDividerAfter,
+                Kind = kind,
             };
 
         private static Model_ShellModeAction CreateModeAction(
@@ -1367,7 +1390,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             string defaultTooltip,
             System.Windows.Input.ICommand? command,
             bool canBeDefault,
-            string defaultBadge
+            string defaultBadge,
+            bool isActive
         ) =>
             new()
             {
@@ -1380,10 +1404,33 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 DefaultBadge = canBeDefault ? defaultBadge : string.Empty,
                 DefaultTooltip = defaultTooltip,
                 ShowDividerAfter = canBeDefault,
+                IsActive = isActive,
             };
 
         private string? CurrentDefaultMode =>
             _sessionManager.CurrentSession?.User?.DefaultReceivingMode;
+
+        /// <summary>
+        /// Works out which mode the operator is in right now, so the bar can mark it. Saving and the
+        /// Result page keep the door they came through, because neither names a mode of its own.
+        /// </summary>
+        private string ResolveActiveMode(Enum_ReceivingWorkflowStep step)
+        {
+            if (step == Enum_ReceivingWorkflowStep.ManualEntry)
+            {
+                _activeMode = "manual";
+            }
+            else if (step == Enum_ReceivingWorkflowStep.EditMode)
+            {
+                _activeMode = "edit";
+            }
+            else if (IsGuidedWalkStep(step))
+            {
+                _activeMode = "guided";
+            }
+
+            return _activeMode;
+        }
 
         private async Task SetDefaultModeAsync(string? storedModeValue)
         {

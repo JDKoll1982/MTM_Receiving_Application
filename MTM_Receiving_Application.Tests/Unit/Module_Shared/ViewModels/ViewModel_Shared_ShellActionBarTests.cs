@@ -85,6 +85,7 @@ public sealed class ViewModel_Shared_ShellActionBarTests
                 CanBeDefault = true,
                 DefaultTooltip = "make Guided my default",
                 ShowDividerAfter = true,
+                IsActive = true,
             },
             Manual = new Model_ShellModeAction
             {

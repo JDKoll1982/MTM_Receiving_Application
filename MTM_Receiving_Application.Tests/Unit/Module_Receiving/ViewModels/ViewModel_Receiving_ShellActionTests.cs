@@ -34,10 +34,52 @@ public sealed class ViewModel_Receiving_ShellActionTests
         shell.Help.IsVisible.Should().BeTrue();
         shell
             .Next.ShowDividerAfter.Should()
-            .BeTrue("the divider sits between Next and Clear Label Data");
+            .BeFalse("the only divider in the centre group sits before Next, never after the last action");
         shell.Next.Command.Should().BeSameAs(viewModel.NextStepCommand);
         shell.Back.Command.Should().BeSameAs(viewModel.PreviousStepCommand);
         shell.ClearLabelData.Command.Should().BeSameAs(viewModel.ResetLabelDataCommand);
+    }
+
+    [Fact]
+    public async Task ClearLabelDataSlot_ShouldBeEnabledAndExecutable_WhenActiveLabelDataExists()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
+        workflow
+            .SetupGet(service => service.CurrentPart)
+            .Returns(new Model_InforVisualPart { PartID = "TEST-PART" });
+        workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(true);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        var slot = viewModel.ShellActions.ClearLabelData;
+        slot.IsEnabled.Should().BeTrue();
+        slot.Command.Should().NotBeNull();
+        slot
+            .Command!.CanExecute(null)
+            .Should()
+            .BeTrue(
+                "the strip binds the command with no parameter, so a command that takes a value type would report CanExecute(null) as false and leave the button disabled"
+            );
+    }
+
+    [Fact]
+    public async Task ClearLabelDataSlot_ShouldBeDisabled_WhenNoActiveLabelDataExists()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
+        workflow
+            .SetupGet(service => service.CurrentPart)
+            .Returns(new Model_InforVisualPart { PartID = "TEST-PART" });
+        workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(false);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel.ShellActions.ClearLabelData.IsEnabled.Should().BeFalse();
     }
 
     [Fact]
@@ -241,6 +283,67 @@ public sealed class ViewModel_Receiving_ShellActionTests
         await Task.Delay(25);
 
         workflow.Verify(service => service.ResetWorkflowAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task ShellActions_ShouldMarkManualAsTheActiveMode_WhenManualEntryIsOpen()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.ManualEntry);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel.ShellActions.Manual.IsActive.Should().BeTrue();
+        viewModel.ShellActions.Guided.IsActive.Should().BeFalse();
+        viewModel.ShellActions.Edit.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ShellActions_ShouldMarkGuidedAsTheActiveMode_WhenAWalkStepIsOpen()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.HeatLotEntry);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel.ShellActions.Guided.IsActive.Should().BeTrue();
+        viewModel.ShellActions.Manual.IsActive.Should().BeFalse();
+        viewModel.ShellActions.Edit.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ShellActions_ShouldMarkTheBackSlotAsBack_WhenTheStepCanGoBack()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.LoadEntry);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel.ShellActions.Back.Kind.Should().Be(Enum_ShellActionKind.Back);
+    }
+
+    [Fact]
+    public async Task ShellActions_ShouldLeaveTheBackSlotNeutral_WhenStartNewEntryOccupiesIt()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.Complete);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel
+            .ShellActions.Back.Kind.Should()
+            .Be(
+                Enum_ShellActionKind.Plain,
+                "Start New Entry is not a way out, so it must not read as one"
+            );
     }
 
     private static async Task<ViewModel_Receiving_Workflow> CreateViewModelAsync(

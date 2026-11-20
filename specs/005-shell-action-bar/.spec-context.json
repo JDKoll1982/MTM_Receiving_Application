@@ -547,6 +547,165 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-19T19:24:34.487Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:04:11.159Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T072",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T073",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T079",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T074",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T075",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T076",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T077",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T078",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T19:44:26.715Z"
     }
   ],
   "telemetryInstanceId": "bc631857-ff2c-47cb-b461-aa0b8f9fe4e8",
@@ -876,6 +1035,97 @@
       "tests": [
         "ViewModel_Shared_ShellActionBarTests::Attach_ShouldHideTheModeGroup_WhenTheSnapshotReportsNoReceivingModes"
       ]
+    },
+    "FR-029": {
+      "title": "Back and the save verbs are coloured from the theme's danger and success brushes",
+      "tasks": [
+        "T061",
+        "T062",
+        "T063",
+        "T064"
+      ]
+    },
+    "FR-030": {
+      "title": "Clear Label Data and Help are drawn as icons alone and keep their tooltip and screen-reader name",
+      "tasks": [
+        "T061",
+        "T064"
+      ]
+    },
+    "FR-031": {
+      "title": "The mode in force carries green text and a green border, including on Review and Save and Result",
+      "tasks": [
+        "T061",
+        "T063",
+        "T066"
+      ]
+    },
+    "FR-032": {
+      "title": "A divider appears between Back and Next only when both are shown, and never after the last action",
+      "tasks": [
+        "T065"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::ShowDividerAfterBack_ShouldRequireBothBackAndNext"
+      ]
+    },
+    "FR-033": {
+      "title": "Ctrl+clicking a mode button stores the default, marked by the Default badge under that button",
+      "tasks": [
+        "T067"
+      ]
+    },
+    "FR-034": {
+      "title": "Each settings hub card opens the page named on it, resolved by title rather than position",
+      "tasks": [
+        "T068"
+      ]
+    },
+    "FR-035": {
+      "title": "The hub offers no card for a settings page that does not exist",
+      "tasks": [
+        "T069"
+      ]
+    },
+    "FR-036": {
+      "title": "The hub offers a Welded Part Numbers page that lists, adds and removes welded parts",
+      "tasks": [
+        "T073",
+        "T079"
+      ]
+    },
+    "FR-037": {
+      "title": "Welded parts are stored through the same list and stored procedures as Extra Tools, Welded Coils",
+      "tasks": [
+        "T070"
+      ]
+    },
+    "FR-038": {
+      "title": "A welded part is trimmed, upper-cased, held to 11 characters, and confirmed in the part master",
+      "tasks": [
+        "T071"
+      ],
+      "tests": [
+        "Service_Settings_ReceivingWeldedPartsTests::AddAsync_ShouldTrimAndUppercasePartId",
+        "Service_Settings_ReceivingWeldedPartsTests::AddAsync_ShouldReturnFailure_WhenTooLong",
+        "Service_Settings_ReceivingWeldedPartsTests::AddAsync_ShouldReturnFailure_WhenPartNotInPartMaster"
+      ]
+    },
+    "FR-039": {
+      "title": "Welded part rows are add-or-remove only",
+      "tasks": [
+        "T072"
+      ]
+    },
+    "FR-040": {
+      "title": "A blank, over-length, duplicate or unknown welded part is refused and not stored",
+      "tasks": [
+        "T071",
+        "T072"
+      ],
+      "tests": [
+        "Service_Settings_ReceivingWeldedPartsTests::AddAsync_ShouldReturnFailure_WhenEmpty"
+      ]
     }
   },
   "classification": {
@@ -884,7 +1134,7 @@
     "scopeSignal": "none",
     "verdict": "oversized"
   },
-  "intent": "Move Receiving page navigation into one persistent shell action strip and delete the Receiving mode-selection page",
+  "intent": "Move Receiving page navigation into one persistent shell action strip, delete the Receiving mode-selection page, and fold in the strip's visual language plus the Receiving settings hub repair and welded part numbers page",
   "size": "oversized",
   "unattended": true,
   "decisions": [
@@ -1081,7 +1331,7 @@
       "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/005-shell-action-bar --strict",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 0.0,
+      "durationSeconds": 0,
       "result": "[plan-check] plan.md: 2 call paths, 9 lines, 2 screens, 13 parts, 3 code blocks, 2 state blocks (10 states). Every cited file and line checks out."
     },
     {
@@ -1111,7 +1361,7 @@
       "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj",
       "source": "derived",
       "exitCode": 0,
-      "durationSeconds": 49.0,
+      "durationSeconds": 49,
       "result": "  Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.Types_GetDeleteImpact_ShouldCountPartsQueueAndHistoryRows [1 ms] ·   Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.NoLabelParts_Set_ShouldAddAndRemoveTheFlag [1 ms] · Passed!  - Failed:     0, Passed:  1423, Skipped:   264, Total:  1687, Duration: 1 s - MTM_Receiving_Application.Tests.dll (net10.0)",
       "commit": "ba1ff2f8",
       "tree": "389aa128d4920b8fa4875f0cb38b401a88c7c4b8"
@@ -1677,7 +1927,7 @@
       "touches Database/InforVisualScripts/Queries/23_SearchPurchaseOrderLineSpecs_WeightedRanking_StatusFiltered.sql, Database/InforVisualScripts/Queries/25_SearchPurchaseOrderLineSpecs_TokenizedPartial_StatusFiltered.sql, Database/InforVisualScripts/Queries/27_SearchPurchaseOrderLineSpecs_ExactPhrase_StatusFiltered.sql and 1 more"
     ]
   },
-  "convergeStartedAt": "2026-11-19T19:26:17.740Z",
+  "convergeStartedAt": "2026-11-20T19:46:25.386Z",
   "convergePasses": [
     {
       "startedAt": "2026-11-19T19:16:59.915Z",
@@ -1692,6 +1942,13 @@
       "startedAt": "2026-11-19T19:26:17.866Z",
       "by": "extension",
       "finishedAt": "2026-11-19T19:29:54.080Z",
+      "added": [],
+      "completed": true
+    },
+    {
+      "startedAt": "2026-11-20T19:46:25.547Z",
+      "by": "extension",
+      "finishedAt": "2026-11-20T19:50:58.561Z",
       "added": [],
       "completed": true
     }

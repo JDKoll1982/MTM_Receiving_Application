@@ -43,8 +43,11 @@ public sealed class ViewModel_Receiving_ShellPrimaryActionTests
         viewModel.ShellActions.Next.Command.Should().BeSameAs(manualEntry.SaveCommand);
         viewModel.ShellActions.Next.Label.Should().Be("TEST-SAVE-AND-FINISH");
         viewModel
+            .ShellActions.Next.Kind.Should()
+            .Be(Enum_ShellActionKind.Save, "a save reads as the primary action");
+        viewModel
             .ShellActions.Next.ShowDividerAfter.Should()
-            .BeTrue("the hosted save verb keeps the divider before Clear Label Data");
+            .BeFalse("the hosted save verb is the last action in the centre group, so no divider follows it");
     }
 
     [Fact]
@@ -73,6 +76,7 @@ public sealed class ViewModel_Receiving_ShellPrimaryActionTests
         viewModel.ShellActions.Next.IsVisible.Should().BeTrue();
         viewModel.ShellActions.Next.Command.Should().BeSameAs(editMode.SaveCommand);
         viewModel.ShellActions.Next.Label.Should().Be("TEST-SAVE-AND-FINISH-EDIT");
+        viewModel.ShellActions.Next.Kind.Should().Be(Enum_ShellActionKind.Save);
         viewModel
             .ShellActions.Back.IsVisible.Should()
             .BeFalse("Edit Mode is a hosted mode page and cannot go back");
@@ -106,6 +110,7 @@ public sealed class ViewModel_Receiving_ShellPrimaryActionTests
         shell.Next.Command.Should().BeSameAs(review.SaveCommand);
         shell.Next.Label.Should().Be("TEST-SAVE-TO-DATABASE");
         shell.Next.Label.Should().NotBe("Add Another Part/PO");
+        shell.Next.Kind.Should().Be(Enum_ShellActionKind.Save);
         shell.Back.IsVisible.Should().BeTrue("Review keeps the guided Back verb");
     }
 
@@ -128,6 +133,9 @@ public sealed class ViewModel_Receiving_ShellPrimaryActionTests
         shell.Back.Command.Should().BeSameAs(viewModel.StartNewEntryCommand);
         shell.Back.Label.Should().Be("TEST-START-NEW-ENTRY");
         shell.Next.IsVisible.Should().BeFalse("the finish page has no primary save verb");
+        shell
+            .Back.Kind.Should()
+            .Be(Enum_ShellActionKind.Plain, "Start New Entry is not a way out");
         shell.ShowModeGroup.Should().BeTrue();
         shell.Overlay.Command.Should().BeSameAs(viewModel.OpenLabelOverlayWindowCommand);
     }

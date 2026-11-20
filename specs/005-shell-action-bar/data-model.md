@@ -3,15 +3,19 @@
 **Feature**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md) | **Research**: [research.md](research.md)
 **Created**: 2026-11-19
 
-This feature introduces no database tables, no DAOs, and no stored procedures. Everything it adds or
-reshapes is in-memory presentation state. The one persistent value it touches already exists: the per-user
-default receiving mode stored through `IService_UserPreferences` and surfaced on the session user as
-`DefaultReceivingMode`.
+This feature introduces no database tables, no DAOs, and no stored procedures for the action bar itself. The
+one persistent value the bar touches already exists: the per-user default receiving mode stored through
+`IService_UserPreferences` and surfaced on the session user as `DefaultReceivingMode`.
+
+US8, appended afterwards, does add data access. It introduces no table and no procedure either: the welded
+part list is the `settings_weldedcoils` table that Extra Tools already maintains, reached through
+`sp_Settings_WeldedCoils_GetAll`, `_Insert` and `_Delete`. It adds one entity, one DAO, and one service.
 
 Types split across three modules exactly as the plan's Structure Decision states: the contract and the
 state snapshot live in `Module_Core` beside the two header provider contracts, the shell projection lives
 in `Module_Shared`, and the only implementation lives in `Module_Receiving`. No Receiving type crosses into
-`Module_Core` or `Module_Shared`; the contract speaks only in booleans, strings, and `ICommand`.
+`Module_Core` or `Module_Shared`; the contract speaks only in booleans, strings, and `ICommand`. The welded
+part entity lives in `Module_Settings.Receiving` because the page that owns it lives there.
 
 ## Entity Overview
 
@@ -24,6 +28,10 @@ ViewModel_Shared_ShellActionBar              Module_Shared projection the bar bi
 ViewModel_Receiving_Workflow                 Module_Receiving implementation; owns the per-page matrix
         -> Enum_ReceivingWorkflowStep        reshaped: ModeSelection member deleted
         -> DefaultReceivingMode (session user)  reshaped: single stored value, guided | manual | edit | null
+
+Model_Settings_ReceivingWeldedPart           Module_Settings.Receiving entity for US8
+        -> Dao_Settings_ReceivingWeldedParts sp_Settings_WeldedCoils_GetAll, _Insert, _Delete
+        -> Service_Settings_ReceivingWeldedParts  normalise, 11-character limit, part-master check
 ```
 
 ## IViewModel_ShellActionProvider
@@ -267,14 +275,14 @@ Saving        save in flight                       -> no actions offered, bar co
 ```
 
 ## Reused Types
-
 `Module_Core` gains only a presentation contract (`IViewModel_ShellActionProvider`) and a plain state
 model (`Model_ShellActionBarState` and its slot and mode records). `Module_Shared` gains the projection.
 From existing types the feature reuses `IService_UserPreferences.UpdateDefaultReceivingModeAsync`,
 `IService_ReceivingWorkflow.IsPoPartListLoaded`, the `ReceivingSettingsKeys` surface through
 `IService_ReceivingSettings`, the existing `IService_ErrorHandler` and `IService_Help`, and the
 `PreviousStepCommand` / `NextStepCommand` / `ResetLabelDataAsync` / `CanClearLabelData` / `ShowHelpAsync`
-actions already on `ViewModel_Receiving_Workflow`. No new enum, DAO, or stored procedure is added.
+actions already on `ViewModel_Receiving_Workflow`. No new enum is added for the bar's state; `Enum_ShellActionKind`
+is a plain colour kind on a slot.
 
 Seven settings keys are added under `Receiving.UiText.Shell`, because no existing key carries the bar's
 wording: the four mode labels default to `Guided`, `Manual`, `Edit`, and `Overlay` (the existing
@@ -283,3 +291,47 @@ button), and three tooltips default to `make Guided my default`, `make Manual my
 `make Edit my default`. The bar reuses the existing `WorkflowBack`, `WorkflowNext`,
 `WorkflowResetLabelData`, `WorkflowHelp`, `ManualEntrySaveAndFinish`, `EditModeSaveAndFinish`,
 `ReviewSaveToDatabase`, and `CompletionStartNewEntry` keys for the other positions.
+
+## Model_Settings_ReceivingWeldedPart
+
+The one row of the welded part list. It is deliberately two fields: the list is a set of part numbers, so a
+row has nothing else to say.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `Id` | `int` | the stored row id, from `settings_weldedcoils.id` |
+| `PartId` | `string` | upper-case part number, at most 11 characters |
+
+**Invariants**
+
+- `PartId` is stored trimmed and upper-cased, so two rows cannot differ only by case or padding.
+- `PartId` is at most 11 characters, the column width, and is refused before the procedure runs when it is
+  longer.
+- `PartId` exists in the Infor Visual part master, checked through `IService_InforVisual.PartExistsAsync`
+  which is read only.
+- A row is never edited in place. It is added or removed.
+
+**Storage**
+
+```text
+settings_weldedcoils            shared with Extra Tools, Welded Coils; unique key on partid
+sp_Settings_WeldedCoils_GetAll  every row, ordered by part
+sp_Settings_WeldedCoils_Insert  @p_partid in, @p_new_id out
+sp_Settings_WeldedCoils_Delete  @p_id in
+```
+
+No table, column or procedure is created by this feature. The page writes the same list Extra Tools writes,
+which is what makes SC-013 true without a refresh path of its own.
+
+## Service_Settings_ReceivingWeldedParts
+
+The page's one dependency, and the only place the rules sit.
+
+| Member | Returns | Rule |
+| --- | --- | --- |
+| `GetAllAsync` | `Model_Dao_Result<List<Model_Settings_ReceivingWeldedPart>>` | passes the DAO result through |
+| `AddAsync(string partId)` | `Model_Dao_Result<int>` | normalises, enforces the length, checks the part master, then inserts |
+| `DeleteAsync(int id)` | `Model_Dao_Result` | passes the DAO result through |
+
+A failure from `AddAsync` carries a message the page shows as is, so a refused part never becomes a stored
+row.

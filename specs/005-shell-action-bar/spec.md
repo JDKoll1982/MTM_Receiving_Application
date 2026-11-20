@@ -154,6 +154,84 @@ that pages offering no actions show no strip and full-height content.
    window is resized to any width, **Then** that footer stays in the navigation pane and is never
    merged into the strip.
 
+---
+
+### User Story 6 - The strip says what each action does, and marks the mode I am in (Priority: P2)
+
+An operator scanning the strip should not have to read every label to tell a way out from the
+primary action, or to see which mode they are working in. Back reads as a way out, a save reads as
+the primary action, Clear Label Data and Help are recognised by their icons, and the mode in force is
+marked.
+
+**Why this priority**: It shortens the time spent finding the right control on a strip that never
+changes position, and it stops a reversal being confused with a save.
+
+**Independent Test**: Open a guided step and confirm Back reads as a way out, open Manual Entry and
+confirm its save reads as the primary action, confirm Clear Label Data shows a trash icon alone and
+Help an icon alone, and confirm the mode in force is marked in both light and dark themes.
+
+**Acceptance Scenarios**:
+
+1. **Given** a Receiving page whose Back slot is filled, **When** the strip is shown, **Then** Back
+   and its arrow are drawn in the theme's danger colour.
+2. **Given** Manual Entry, Edit Mode or Review and Save, **When** the strip is shown, **Then** the
+   verb in the Next slot is drawn in the theme's success colour.
+3. **Given** the guided walk on a light theme and again on a dark theme, **When** the strip is shown,
+   **Then** both colours stay readable and neither is hard-coded.
+4. **Given** Clear Label Data and Help are offered, **When** the strip is shown, **Then** each shows
+   an icon alone, keeps its tooltip, and keeps its screen-reader name.
+5. **Given** the operator is working in Manual Entry, **When** the strip is shown, **Then** Manual
+   carries success-green text and a success-green border while Guided and Edit carry neither.
+6. **Given** Back is hidden, or Next is hidden, **When** the strip is shown, **Then** no divider is
+   drawn between them.
+7. **Given** the operator holds Ctrl and presses Manual, **When** the press completes, **Then**
+   Manual becomes their stored default, the Default badge moves under Manual, and all four mode
+   buttons stay on one row.
+
+---
+
+### User Story 7 - Receiving settings opens the page I click (Priority: P3)
+
+Every card on the Receiving settings hub opens the page it names. A card that opens a different page,
+or nothing at all, makes the whole hub untrustworthy.
+
+**Why this priority**: The hub is the only way into Receiving settings, so a wrong or dead card costs
+the operator the page they came for.
+
+**Independent Test**: Open Receiving settings and click each card in turn, then confirm each opens the
+page named on it.
+
+**Acceptance Scenarios**:
+
+1. **Given** the Receiving settings hub, **When** any card is clicked, **Then** the page named on
+   that card opens.
+2. **Given** a settings page that does not exist, **When** the hub is shown, **Then** no card offers
+   it.
+
+---
+
+### User Story 8 - The welded part list sits with the other Receiving settings (Priority: P3)
+
+The part numbers whose coil needs its inner diameter welded are the ones Receiving treats differently
+at the press cradle. That list now has a page under Receiving settings, instead of living only in
+Extra Tools.
+
+**Why this priority**: The list is Receiving configuration, so it belongs where Receiving work is
+configured. Leaving it in Extra Tools hides it from the people who maintain it.
+
+**Independent Test**: Add one part number on Welded Part Numbers and confirm it appears both there and
+in Extra Tools, Welded Coils.
+
+**Acceptance Scenarios**:
+
+1. **Given** Welded Part Numbers is open, **When** a part number is added, **Then** it is listed
+   there and in Extra Tools, Welded Coils.
+2. **Given** a part number that is blank, longer than 11 characters, already listed, or absent from
+   the part master, **When** it is added, **Then** it is refused with a message and nothing is
+   stored.
+3. **Given** a row is on the list, **When** the operator removes it, **Then** it is gone from both
+   pages.
+
 ### Edge Cases
 
 - A user unticking the only ticked default leaves no stored default; the next open must resolve to
@@ -175,6 +253,13 @@ that pages offering no actions show no strip and full-height content.
   keyboard shortcut cannot reach an action the strip has hidden or disabled.
 - Restarting the application while it was last left on a page that no longer exists must land on a
   valid page.
+- Ctrl+clicking the mode already in force must still store it as the default; pressing the same
+  button without Ctrl must not store one.
+- Review and Save and Result must keep the arrival mode marked without naming a mode of their own.
+- The welded part list must refuse a part that is already on it rather than storing a duplicate.
+- The welded part list must refuse an add when the part master cannot be reached, and say so, rather
+  than storing the part unverified.
+- A settings card must not silently do nothing when the page it names cannot be resolved.
 
 ## Requirements *(mandatory)*
 
@@ -253,6 +338,33 @@ that pages offering no actions show no strip and full-height content.
   compiled bindings only.
 - **FR-028**: Pages outside Receiving MUST keep their current behaviour apart from receiving no mode
   controls and gaining a strip only when they offer actions.
+- **FR-029**: Back and its icon MUST be drawn in the theme's danger colour, and whichever save verb
+  fills the Next slot MUST be drawn in the theme's success colour. Both colours MUST come from the
+  theme dictionaries rather than hard-coded values.
+- **FR-030**: Clear Label Data MUST be drawn as an icon alone in the danger colour, and Help as an
+  icon alone. Both MUST keep their tooltip and their screen-reader name.
+- **FR-031**: The mode in force MUST be marked in the mode group with success-green text and a
+  success-green border, and the modes not in force MUST carry neither. On Review and Save and on
+  Result the mode the operator arrived through MUST stay marked.
+- **FR-032**: A divider MUST be drawn between Back and Next only when both are shown, and MUST NOT be
+  drawn after the last shown action of any group. This supersedes the trailing divider in FR-008.
+- **FR-033**: Ctrl+clicking Guided, Manual, or Edit MUST store that mode as the user's default
+  without changing the page. The default MUST be marked by the word Default centred under that
+  mode's button, and all four mode buttons MUST keep their row alignment with no leftover space from
+  a removed control. This supersedes the checkbox in FR-006 and FR-007.
+- **FR-034**: Each card on the Receiving settings hub MUST open the page named on it, resolved by
+  that name rather than by its position in the list.
+- **FR-035**: The hub MUST NOT offer a card for a settings page that does not exist.
+- **FR-036**: The hub MUST offer a Welded Part Numbers page that lists, adds, and removes the part
+  numbers whose coil needs its inner diameter welded.
+- **FR-037**: That page MUST read and write the same stored list as Extra Tools, Welded Coils,
+  through the existing stored procedures, so the two pages never show different lists.
+- **FR-038**: A part number MUST be trimmed and upper-cased, MUST be at most 11 characters, and MUST
+  be confirmed in the Infor Visual part master before it is stored.
+- **FR-039**: Welded part rows MUST be add-or-remove only; an existing row MUST NOT be edited in
+  place.
+- **FR-040**: A blank, over-length, already listed, or unknown part number MUST be refused with a
+  message and MUST NOT be stored.
 
 ### Key Entities
 
@@ -284,6 +396,17 @@ that pages offering no actions show no strip and full-height content.
 - **SC-007**: A spot check of one page in each non-Receiving module finds zero mode controls.
 - **SC-008**: Zero user-facing labels or tooltips introduced by this change are hard-coded where the
   Receiving settings already make them configurable.
+- **SC-009**: Every action in the strip is identifiable without reading its label: Back reads as a
+  way out, a save as the primary action, and Clear Label Data and Help as icons alone. Zero action
+  colours are hard-coded outside the theme dictionaries.
+- **SC-010**: Zero dividers appear with nothing to their right, in every combination of shown
+  actions on every Receiving page.
+- **SC-011**: Ctrl+clicking a mode button stores that mode as the default in one gesture, and at no
+  point is more than one default stored. This replaces the checkbox path measured by SC-004.
+- **SC-012**: Clicking each of the seven Receiving settings cards opens the page named on that card,
+  seven out of seven.
+- **SC-013**: A part number added on Welded Part Numbers appears in Extra Tools, Welded Coils without
+  restarting the application.
 
 ## Assumptions
 
@@ -299,6 +422,18 @@ that pages offering no actions show no strip and full-height content.
 - The existing Receiving settings keys already cover the labels and tooltips the strip needs.
 - A page that offers no actions is a valid state, not an error.
 - Keyboard shortcuts are the ones that exist today for Back and Next; no new shortcuts are added.
+- The two action colours come from the theme dictionaries, declared for both light and dark, rather
+  than being set per control.
+- Icon-only Clear Label Data and Help keep their text in the tooltip and the automation name, so the
+  settings keys that hold that text still have a home.
+- The welded part list is one list shared with Extra Tools, Welded Coils; this page adds no second
+  copy.
+- Ctrl+click replaces the checkbox because the four mode buttons had to sit as one condensed row; the
+  tooltip wording for setting a default is unchanged.
+- The Welded Part Numbers page is recorded here as its own story (US8) even though it could have been
+  its own spec. It is included so the branch and the record agree.
+- Work already present in the branch is recorded with its real ids and marked complete rather than
+  re-dispatched.
 
 ## Verbatim Constraints
 
@@ -335,3 +470,11 @@ Shell and page elements the work must respect:
 - Dependency-injection registration location: `Infrastructure/DependencyInjection`, never
   `App.xaml.cs`.
 - Keyboard shortcuts that must keep working: `Ctrl+Left`, `Ctrl+Right`.
+- Badge that marks the stored default: `Default`.
+- Theme resources that carry the two action colours: `ShellSuccessBrush`, `ShellDangerBrush`.
+- Shared welded list: table `settings_weldedcoils`; procedures `sp_Settings_WeldedCoils_GetAll`,
+  `sp_Settings_WeldedCoils_Insert`, `sp_Settings_WeldedCoils_Delete`.
+- Settings card whose name must match its registered step title: `Welded Part Numbers`.
+- Scanner message as written: `Inventory Transactions window is closed!`.
+- Toolkit guide source and its print edition: `SpecKit_Companion_Verified_Field_Guide.md`,
+  `SpecKit_Companion_Verified_Field_Guide.pdf`.

@@ -5,7 +5,71 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Fixed
+
+#### Clear Label Data is enabled again when label data is active (2026-11-20)
+
+- **What was wrong:** the strip's Clear Label Data control was disabled on every page, so it could only be
+  reached by its keyboard shortcut. Its command took a value-typed parameter while the strip binds it with no
+  parameter, and a command whose parameter type is a value type reports `CanExecute(null)` as false. The page
+  that used to draw the button called it with `Click`, so the gate never appeared.
+- **What changed:** the command the strip binds now takes no parameter, and the enabled state comes from
+  `CanClearLabelData` alone, as it did before the strip existed. Clearing the archive queue as well, which
+  used to need Shift held on the old button, now has its own command and is reached with Shift on the same
+  shortcut.
+- **Also fixed:** the centre group no longer reports a divider after Next, so the model matches what the strip
+  draws and the spec requires.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/Views/View_Receiving_Workflow.xaml.cs`
+
+#### Receiving settings cards open the page they name (2026-11-20)
+
+- **What was wrong:** each card on the Receiving settings hub opened its page by position, and the hub carried a
+  stale **Reconciliation** card with no settings page behind it. Every card from that point on was shifted by one,
+  so **Keyboard Shortcuts** opened **Custom Vendor Variables** and **Custom Vendor Variables**, the last card,
+  pointed past the end of the list and did nothing at all.
+- **What changed:** a card now names the step it opens, so it always lands on its own page however the list grows or
+  shrinks. The stale **Reconciliation** card is removed because this module has no Reconciliation settings page.
+- **Files:** `Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml` (+ `.xaml.cs`)
+
+### Changed
+
+#### The shell action bar is colour-coded and marks the mode you are in (2026-11-20)
+
+- **Saves read green:** whichever verb the Next slot carries - **Save & Finish** on Manual Entry and Edit Mode,
+  **Save to Database** on Review and Save - is drawn in the theme's success green, so the primary action is
+  recognisable at a glance.
+- **Back reads red:** the **Back** button and its arrow use the theme's danger red. The Result page's **Start New
+  Entry**, which sits in the same slot, stays neutral because it is not a way out.
+- **Icons only where the icon says it:** **Clear Label Data** is now just a red trash can, and **Help** is a
+  question-mark circle, both without text. Their tooltips and screen-reader names are unchanged.
+- **The active mode is marked:** the mode you are working in - Guided, Manual, or Edit - draws its label in the
+  success green with a green border, so the bar shows where you are as well as where you can go.
+- **Both colours come from the theme dictionaries** (`ShellSuccessBrush` and `ShellDangerBrush` in
+  `ModuleAccentBrushes.xaml`), so they stay readable in light and dark mode instead of being hard-coded.
+- **Files:** `Module_Core/Helpers/UI/Helper_ShellBrush.cs`, `Module_Core/Models/Enums/Enum_ShellActionKind.cs`,
+  `Module_Core/Models/UI/Model_ShellActionSlot.cs`, `Model_ShellModeAction.cs`,
+  `Module_Core/Themes/ModuleAccentBrushes.xaml`, `Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`, `MainWindow.xaml`
+
 ### Added
+
+#### Receiving Settings has a Welded Part Numbers page (2026-11-20)
+
+- **What was new:** the list of part numbers whose coil needs its inner diameter welded before it goes on the press
+  cradle is now maintained from **Settings → Receiving → Welded Part Numbers**, so it no longer hides inside Extra
+  Tools. The hub gains a seventh card for it.
+- **Same list, same table:** the page reads and writes `settings_weldedcoils` through the existing
+  `sp_Settings_WeldedCoils_GetAll`, `_Insert` and `_Delete` procedures, so a change made here shows up in
+  **Extra Tools → Welded Coils** and the other way round. All MySQL writes still go through stored procedures.
+- **Checks before a row is saved:** the part number is trimmed and upper-cased, held to the 11-character column
+  limit, and checked against the Infor Visual part master, which stays read-only. Rows are add-or-remove only.
+- **Files:** `Module_Settings.Receiving/Models/Model_Settings_ReceivingWeldedPart.cs`,
+  `Data/Dao_Settings_ReceivingWeldedParts.cs`, `Contracts/IService_Settings_ReceivingWeldedParts.cs`,
+  `Services/Service_Settings_ReceivingWeldedParts.cs`, `ViewModels/ViewModel_Settings_Receiving_WeldedParts.cs`,
+  `Views/View_Settings_Receiving_WeldedParts.xaml` (+ `.xaml.cs`),
+  `ViewModels/ViewModel_Settings_Receiving_CategoryHub.cs`, `Views/View_Settings_Receiving_CategoryHub.xaml`,
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
 
 #### Page navigation now lives in one shared action bar, and the mode-selection page is gone (2026-11-19)
 

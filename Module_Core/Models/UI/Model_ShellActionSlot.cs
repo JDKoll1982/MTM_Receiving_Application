@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using MTM_Receiving_Application.Module_Core.Models.Enums;
 
 namespace MTM_Receiving_Application.Module_Core.Models.UI;
 
@@ -42,6 +43,12 @@ public sealed class Model_ShellActionSlot
     /// Gets the command the page already used for this action. The bar never supplies its own.
     /// </summary>
     public ICommand? Command { get; init; }
+
+    /// <summary>
+    /// Gets what this position is for, so the bar can colour it: a Back position reads as a way
+    /// out and a Save position as the primary action.
+    /// </summary>
+    public Enum_ShellActionKind Kind { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether a divider follows this position.

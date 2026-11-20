@@ -10,6 +10,8 @@ and the per-page action matrix, not an implementation sketch.
   from the active page, the snapshot it returns, and the single default-mode method it exposes.
 - [per-page-action-matrix.md](per-page-action-matrix.md): the per-page UI contract listing exactly
   which actions each Receiving page offers and which verb occupies the Back or Next slot.
+- [welded-parts-service.md](welded-parts-service.md): the welded part list's one interface, the rules the
+  service owns, and the three existing procedures the DAO calls. This is the whole of US8's surface.
 
 ## Pinned Identifiers
 
@@ -34,3 +36,7 @@ re-cased, pluralised, or paraphrased.
 | Settings surface | `ReceivingSettingsKeys`, `IService_ReceivingSettings` | every label and tooltip |
 | Registration location | `Infrastructure/DependencyInjection`, never `App.xaml.cs` | dependency injection |
 | Keyboard shortcuts | `Ctrl+Left`, `Ctrl+Right` | Back and Next parity |
+| Badge that marks the stored default | `Default` | mode group badge |
+| Action colours | `ShellSuccessBrush`, `ShellDangerBrush` | save and back colouring |
+| Shared welded list | `settings_weldedcoils`, `sp_Settings_WeldedCoils_GetAll`, `sp_Settings_WeldedCoils_Insert`, `sp_Settings_WeldedCoils_Delete` | welded parts service |
+| Settings card that must match its step title | `Welded Part Numbers` | hub card resolution |

@@ -300,7 +300,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
 
     /// <summary>Message shown beside the Send button while the Infor Visual window is closed.</summary>
     public string InventoryWindowClosedMessage =>
-        "Inventory Transactions window is closed - Open it to enable this button.";
+        "Inventory Transactions window is closed!";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsInventoryWindowClosed))]

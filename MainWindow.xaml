@@ -578,10 +578,15 @@
                                         x:Name="ShellGuidedButton"
                                         Grid.Row="0"
                                         AutomationProperties.Name="{x:Bind ShellActionBar.Guided.AccessibilityName, Mode=OneWay}"
+                                        BorderBrush="{x:Bind helpers:Helper_ShellBrush.ModeBorder(ShellActionBar.Guided.IsActive), Mode=OneWay}"
+                                        BorderThickness="1"
                                         Click="ShellModeButton_Click"
-                                        Content="{x:Bind ShellActionBar.Guided.Label, Mode=OneWay}"
                                         Tag="guided"
-                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Guided.DefaultTooltip, Mode=OneWay}" />
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Guided.DefaultTooltip, Mode=OneWay}">
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ModeText(ShellActionBar.Guided.IsActive), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.Guided.Label, Mode=OneWay}" />
+                                    </Button>
                                     <TextBlock
                                         Grid.Row="1"
                                         HorizontalAlignment="Center"
@@ -610,10 +615,15 @@
                                         x:Name="ShellManualButton"
                                         Grid.Row="0"
                                         AutomationProperties.Name="{x:Bind ShellActionBar.Manual.AccessibilityName, Mode=OneWay}"
+                                        BorderBrush="{x:Bind helpers:Helper_ShellBrush.ModeBorder(ShellActionBar.Manual.IsActive), Mode=OneWay}"
+                                        BorderThickness="1"
                                         Click="ShellModeButton_Click"
-                                        Content="{x:Bind ShellActionBar.Manual.Label, Mode=OneWay}"
                                         Tag="manual"
-                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Manual.DefaultTooltip, Mode=OneWay}" />
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Manual.DefaultTooltip, Mode=OneWay}">
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ModeText(ShellActionBar.Manual.IsActive), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.Manual.Label, Mode=OneWay}" />
+                                    </Button>
                                     <TextBlock
                                         Grid.Row="1"
                                         HorizontalAlignment="Center"
@@ -642,10 +652,15 @@
                                         x:Name="ShellEditButton"
                                         Grid.Row="0"
                                         AutomationProperties.Name="{x:Bind ShellActionBar.Edit.AccessibilityName, Mode=OneWay}"
+                                        BorderBrush="{x:Bind helpers:Helper_ShellBrush.ModeBorder(ShellActionBar.Edit.IsActive), Mode=OneWay}"
+                                        BorderThickness="1"
                                         Click="ShellModeButton_Click"
-                                        Content="{x:Bind ShellActionBar.Edit.Label, Mode=OneWay}"
                                         Tag="edit"
-                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Edit.DefaultTooltip, Mode=OneWay}" />
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Edit.DefaultTooltip, Mode=OneWay}">
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ModeText(ShellActionBar.Edit.IsActive), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.Edit.Label, Mode=OneWay}" />
+                                    </Button>
                                     <TextBlock
                                         Grid.Row="1"
                                         HorizontalAlignment="Center"
@@ -697,18 +712,23 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <Button
-                                    x:Name="ShellBackButton"
-                                    Grid.Column="0"
-                                    AutomationProperties.Name="{x:Bind ShellActionBar.Back.AccessibilityName, Mode=OneWay}"
-                                    Command="{x:Bind ShellActionBar.Back.Command, Mode=OneWay}"
-                                    ToolTipService.ToolTip="{x:Bind ShellActionBar.Back.Tooltip, Mode=OneWay}"
-                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Back.IsVisible), Mode=OneWay}">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontSize="12" Glyph="&#xE72B;" />
-                                        <TextBlock Text="{x:Bind ShellActionBar.Back.Label, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Button>
+                                    <Button
+                                        x:Name="ShellBackButton"
+                                        Grid.Column="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.Back.AccessibilityName, Mode=OneWay}"
+                                        Command="{x:Bind ShellActionBar.Back.Command, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.Back.Tooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Back.IsVisible), Mode=OneWay}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon
+                                                FontSize="12"
+                                                Foreground="{x:Bind helpers:Helper_ShellBrush.ForActionKind(ShellActionBar.Back.Kind), Mode=OneWay}"
+                                                Glyph="&#xE72B;" />
+                                            <TextBlock
+                                                Foreground="{x:Bind helpers:Helper_ShellBrush.ForActionKind(ShellActionBar.Back.Kind), Mode=OneWay}"
+                                                Text="{x:Bind ShellActionBar.Back.Label, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </Button>
 
                                 <Border
                                     x:Name="ShellBackNextDivider"
@@ -727,8 +747,13 @@
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Next.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.IsVisible), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="{x:Bind ShellActionBar.Next.Label, Mode=OneWay}" />
-                                        <FontIcon FontSize="12" Glyph="&#xE72A;" />
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ForActionKind(ShellActionBar.Next.Kind), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.Next.Label, Mode=OneWay}" />
+                                        <FontIcon
+                                            FontSize="12"
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ForActionKind(ShellActionBar.Next.Kind), Mode=OneWay}"
+                                            Glyph="&#xE72A;" />
                                     </StackPanel>
                                 </Button>
                             </Grid>
@@ -751,12 +776,10 @@
                                     IsEnabled="{x:Bind ShellActionBar.ClearLabelData.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.ClearLabelData.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ClearLabelData.IsVisible), Mode=OneWay}">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontSize="12" Glyph="&#xE74D;" />
-                                        <TextBlock
-                                            Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                            Text="{x:Bind ShellActionBar.ClearLabelData.Label, Mode=OneWay}" />
-                                    </StackPanel>
+                                    <FontIcon
+                                        FontSize="14"
+                                        Foreground="{ThemeResource ShellDangerBrush}"
+                                        Glyph="&#xE74D;" />
                                 </Button>
 
                                 <Button
@@ -766,10 +789,7 @@
                                     Command="{x:Bind ShellActionBar.Help.Command, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Help.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Help.IsVisible), Mode=OneWay}">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <FontIcon FontSize="12" Glyph="&#xE897;" />
-                                        <TextBlock Text="{x:Bind ShellActionBar.Help.Label, Mode=OneWay}" />
-                                    </StackPanel>
+                                    <FontIcon FontSize="14" Glyph="&#xE9CE;" />
                                 </Button>
                             </Grid>
                         </Grid>

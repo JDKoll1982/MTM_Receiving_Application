@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Receiving.Views.View_Settings_Receiving_WeldedParts"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:models="using:MTM_Receiving_Application.Module_Settings.Receiving.Models">
+    <Page.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <!--  Add a part  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="Welded Part Numbers" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="Parts whose coil needs its inner diameter welded before it goes on the press cradle. This is the same list the Welded Coils tool in Extra Tools maintains."
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox
+                                Grid.Column="0"
+                                Header="Part Number"
+                                KeyDown="AddPartBox_KeyDown"
+                                MaxLength="11"
+                                PlaceholderText="e.g. 21-28841"
+                                Text="{x:Bind ViewModel.NewPartId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="1"
+                                Height="32"
+                                Margin="0,28,0,0"
+                                Command="{x:Bind ViewModel.AddPartCommand}"
+                                Content="Add Part"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!--  Current list  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                Text="Welded Parts" />
+
+                            <TextBox
+                                Grid.Column="1"
+                                MinWidth="220"
+                                PlaceholderText="Search part numbers..."
+                                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Button
+                                Grid.Column="2"
+                                Command="{x:Bind ViewModel.DeleteSelectedCommand}"
+                                Content="Remove Selected" />
+                        </Grid>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ViewModel.TotalCountText, Mode=OneWay}" />
+
+                            <ProgressRing
+                                Grid.Column="1"
+                                Width="18"
+                                Height="18"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                        </Grid>
+
+                        <Grid>
+                            <ListView
+                                MaxHeight="420"
+                                ItemsSource="{x:Bind ViewModel.FilteredParts, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedPart, Mode=TwoWay}"
+                                SelectionMode="Single">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Model_Settings_ReceivingWeldedPart">
+                                        <Grid
+                                            Padding="8,4"
+                                            ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                FontWeight="SemiBold"
+                                                Text="{x:Bind PartId}" />
+                                            <Button
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                AutomationProperties.Name="Remove part"
+                                                Click="RemoveRowButton_Click"
+                                                Content="Remove"
+                                                Tag="{x:Bind}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                IsHitTestVisible="False"
+                                Text="{x:Bind ViewModel.EmptyStateText, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.IsFilteredEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

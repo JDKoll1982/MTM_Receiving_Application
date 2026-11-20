@@ -37,6 +37,12 @@ public sealed class Model_ShellModeAction
     public ICommand? Command { get; init; }
 
     /// <summary>
+    /// Gets a value indicating whether this is the mode the operator is working in right now, so
+    /// the bar can mark it.
+    /// </summary>
+    public bool IsActive { get; init; }
+
+    /// <summary>
     /// Gets a value indicating whether the default badge sits under this control. True only for
     /// guided, manual, and edit; Overlay cannot be a default mode.
     /// </summary>
