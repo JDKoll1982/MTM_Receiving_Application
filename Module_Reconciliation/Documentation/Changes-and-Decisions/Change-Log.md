@@ -1,6 +1,48 @@
 # Change Log
 
-Last Updated: 2026-11-17
+Last Updated: 2026-11-20
+
+## 2026-11-20 — Each part-and-date group folds shut, and its header states its own row count
+
+**What changed**
+
+- A group header is now a button: the chevron folds that part's lines away and back, and the header stays in place with its `Rows:` count, so a busy day can be narrowed to the parts still being worked without a filter.
+- The grid no longer uses a grouped source. `ViewModel_ReconciliationMain` lists a group's header followed by its lines in one flat `GridRows` collection, and leaves the lines out while the group is folded. `GroupedFindings` still holds every group with all of its lines, so the count and the existing grouping behaviour are unchanged.
+- The header is now one row of four columns — chevron, part-and-date, divider, then a right-aligned `Rows:` and the count — instead of the two TextBlocks that shared a single cell and drew the count over the date on a long part number.
+- Selecting a header puts the selection back on the line it was on, because a header is not something the detail pane can show.
+
+**Why**
+
+A day with one part per group and nine lines each is mostly headers once the operator is working through a single part. Collapsing is the plainest way to get from a wall of lines to the group being worked, and the header had to stop overlapping its own count before it could carry a control.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.slnx` — 0 warnings, 0 errors.
+- Full suite: 1,439 passing, 264 skipped, 0 failed (was 1,437 passing).
+- Reconciliation unit tests: 107 passing (was 105). `AGroupShouldKeepItsRowsListedUntilItsHeaderIsClickedShut` pins the fold, the preserved row count and the unfold; `SelectingAGroupHeaderShouldLeaveTheSelectedLineAlone` pins the selection bridge.
+
+**Not verified**
+
+The header and row templates are compiled but no test renders the page, so the fold is covered only by the view-model tests, the build, and a visual check.
+
+## 2026-11-20 — A group header states its row count without covering its date
+
+**What changed**
+
+- The grid's group header is now one row of three columns instead of two overlapping TextBlocks: the part-and-date key in an auto column, a 1px divider in the next auto column, and the remainder taken by a right-aligned `Rows:` label and the group's count. The count previously shared the key's single cell, so on a wide key such as `900073 008100 · 11/20/2026` it drew over the date and read as a stray pair of digits.
+
+**Why**
+
+The header's whole job is to say which part and day the group belongs to and how many lines it holds. Drawing both in one cell made the count unreadable exactly when the group mattered most — a long part number — and left the operator reading a number behind the date.
+
+**Verification**
+
+- `dotnet build MTM_Receiving_Application.slnx` — 0 warnings, 0 errors.
+- Full suite: 1,437 passing, 264 skipped, 0 failed.
+
+**Not verified**
+
+The header is a compiled template with no rendering test, so the layout itself is covered only by the build and a visual check on the page.
 
 ## 2026-11-17 — The page states the day, the run id, the session tally, and a skipped or disagreeing day
 

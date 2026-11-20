@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:MTM_Receiving_Application.Module_Reconciliation.Models"
+    xmlns:views="using:MTM_Receiving_Application.Module_Reconciliation.Views"
     Background="Transparent"
     KeyDown="OnPageKeyDown"
     Loaded="OnLoaded"
@@ -15,10 +16,94 @@
     <Page.Resources>
         <converters:Converter_ReconciliationOutcomeBrush x:Key="OutcomeBrushConverter" />
         <converters:Converter_ReconciliationOutcomeText x:Key="OutcomeTextConverter" />
-        <CollectionViewSource
-            x:Name="GroupedFindingsSource"
-            IsSourceGrouped="True"
-            Source="{x:Bind ViewModel.GroupedFindings, Mode=OneWay}" />
+
+        <!--  A part-and-date group header: folds the group open or shut, then states its row count.  -->
+        <DataTemplate x:Key="GridGroupHeaderTemplate" x:DataType="models:Model_ReconciliationFindingGroup">
+            <Button
+                Margin="0,10,0,2"
+                Padding="4,2"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                AutomationProperties.Name="{x:Bind ToggleAutomationName, Mode=OneWay}"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{x:Bind ToggleCommand, Mode=OneWay}"
+                CommandParameter="{x:Bind Key, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ToggleAutomationName, Mode=OneWay}">
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        Grid.Column="0"
+                        FontSize="10"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Glyph="{x:Bind ToggleGlyph, Mode=OneWay}" />
+                    <TextBlock
+                        Grid.Column="1"
+                        FontWeight="SemiBold"
+                        Text="{x:Bind Key, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+                    <Border
+                        Grid.Column="2"
+                        Width="1"
+                        Height="14"
+                        VerticalAlignment="Center"
+                        Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    <StackPanel
+                        Grid.Column="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="Rows:" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind Count, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </DataTemplate>
+
+        <!--  One receiving line, in the three columns the captions above the grid name.  -->
+        <DataTemplate x:Key="GridFindingTemplate" x:DataType="models:Model_ReconciliationFinding">
+            <Grid
+                Padding="8,6,8,6"
+                Background="{x:Bind Outcome, Converter={StaticResource OutcomeBrushConverter}, Mode=OneWay}"
+                ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    FontFamily="Consolas"
+                    Text="{x:Bind Row.PartId, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis" />
+                <TextBlock
+                    Grid.Column="1"
+                    Text="{x:Bind Row.PurchaseOrderNumber, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis" />
+                <TextBlock
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    Text="{x:Bind Row.Quantity, Mode=OneWay}"
+                    TextAlignment="Right" />
+            </Grid>
+        </DataTemplate>
+
+        <views:Selector_ReconciliationGridRow
+            x:Key="GridRowTemplateSelector"
+            FindingTemplate="{StaticResource GridFindingTemplate}"
+            GroupHeaderTemplate="{StaticResource GridGroupHeaderTemplate}" />
 
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -284,56 +369,10 @@
                 <ListView
                     Grid.Row="1"
                     AutomationProperties.Name="Receiving lines for the working day"
-                    ItemsSource="{x:Bind GroupedFindingsSource.View, Mode=OneWay}"
-                    SelectedItem="{x:Bind ViewModel.SelectedFinding, Mode=TwoWay}"
-                    SelectionMode="Single">
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate x:DataType="models:Model_ReconciliationFindingGroup">
-                                    <Grid Margin="0,12,0,4">
-                                        <TextBlock
-                                            FontWeight="SemiBold"
-                                            Text="{x:Bind Key, Mode=OneWay}" />
-                                        <TextBlock
-                                            HorizontalAlignment="Right"
-                                            FontSize="12"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="{x:Bind Count, Mode=OneWay}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Model_ReconciliationFinding">
-                            <Grid
-                                Padding="8,6,8,6"
-                                Background="{x:Bind Outcome, Converter={StaticResource OutcomeBrushConverter}, Mode=OneWay}"
-                                ColumnSpacing="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="1*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    FontFamily="Consolas"
-                                    Text="{x:Bind Row.PartId, Mode=OneWay}"
-                                    TextTrimming="CharacterEllipsis" />
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Text="{x:Bind Row.PurchaseOrderNumber, Mode=OneWay}"
-                                    TextTrimming="CharacterEllipsis" />
-                                <TextBlock
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Right"
-                                    Text="{x:Bind Row.Quantity, Mode=OneWay}"
-                                    TextAlignment="Right" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    ItemTemplateSelector="{StaticResource GridRowTemplateSelector}"
+                    ItemsSource="{x:Bind ViewModel.GridRows, Mode=OneWay}"
+                    SelectedItem="{x:Bind ViewModel.SelectedGridRow, Mode=TwoWay}"
+                    SelectionMode="Single" />
             </Grid>
 
             <!--  Detail pane: labelled fields, grouped, with the action at the bottom  -->

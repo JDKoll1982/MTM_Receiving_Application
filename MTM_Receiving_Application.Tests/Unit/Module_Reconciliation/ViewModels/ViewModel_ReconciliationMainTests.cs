@@ -294,6 +294,74 @@ public sealed class ViewModel_ReconciliationMainTests
     }
 
     [Fact]
+    public async Task AGroupShouldKeepItsRowsListedUntilItsHeaderIsClickedShut()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        StubDay(
+            viewModel,
+            Day(
+                Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated),
+                Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.NotEnough),
+                Finding("MMC0002000", "PO-066914", Enum_ReconciliationOutcome.Updated)
+            )
+        );
+
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.GroupedFindings.Should().HaveCount(2);
+
+        Model_ReconciliationFindingGroup first = viewModel.GroupedFindings[0];
+        first.Should().HaveCount(2, "a group holds its own lines whether or not it is folded");
+        viewModel.GridRows.Should().HaveCount(5, "two headers plus the three lines they hold");
+
+        viewModel.ToggleGroupCommand.Execute(first.Key);
+
+        viewModel
+            .GroupedFindings[0]
+            .Should()
+            .HaveCount(2, "the row count stays readable while the group is folded shut");
+        viewModel
+            .GroupedFindings[0]
+            .IsCollapsed.Should()
+            .BeTrue("the header the grid lists is the same group, folded");
+        viewModel.GridRows.Should().HaveCount(3, "the folded group lists its header and no lines");
+        viewModel
+            .GridRows[0]
+            .Should()
+            .BeSameAs(
+                viewModel.GroupedFindings[0],
+                "the folded group still lists its header first"
+            );
+
+        viewModel.ToggleGroupCommand.Execute(viewModel.GroupedFindings[0].Key);
+
+        viewModel.GroupedFindings[0].IsCollapsed.Should().BeFalse();
+        viewModel.GridRows.Should().HaveCount(5, "unfolding lists the group's lines again");
+    }
+
+    [Fact]
+    public async Task SelectingAGroupHeaderShouldLeaveTheSelectedLineAlone()
+    {
+        ViewModel_ReconciliationMain viewModel = Build();
+        StubDay(
+            viewModel,
+            Day(Finding("MMC0001000", "PO-066868", Enum_ReconciliationOutcome.Updated))
+        );
+
+        await viewModel.LoadSelectedDateAsync();
+
+        viewModel.SelectedFinding = viewModel.VisibleFindings[0];
+        Model_ReconciliationFinding selected = viewModel.SelectedFinding!;
+        Model_ReconciliationFindingGroup header = viewModel.GroupedFindings[0];
+
+        viewModel.SelectedGridRow = header;
+
+        viewModel
+            .SelectedFinding.Should()
+            .BeSameAs(selected, "a group header is not a line the detail pane can show");
+    }
+
+    [Fact]
     public async Task OutcomeSelectorShouldDriveTheFilterAndClearBackToEveryVisibleOutcome()
     {
         ViewModel_ReconciliationMain viewModel = Build();

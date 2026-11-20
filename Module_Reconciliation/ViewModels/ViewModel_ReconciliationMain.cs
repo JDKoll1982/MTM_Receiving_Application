@@ -152,6 +152,58 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     public ObservableCollection<Model_ReconciliationFindingGroup> GroupedFindings { get; } = [];
 
     /// <summary>
+    /// The grid's rows as one flat list: each group's header followed by that group's
+    /// lines, unless the group is folded shut. A grouped source cannot be collapsed,
+    /// so the header and its rows are listed together and the fold is expressed by
+    /// leaving the lines out.
+    /// </summary>
+    public ObservableCollection<object> GridRows { get; } = [];
+
+    /// <summary>The group keys the operator has folded shut.</summary>
+    private readonly HashSet<string> _collapsedGroupKeys = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Folds one group open or shut and relists the grid. The group keeps its own
+    /// lines either way, so its row count stays readable while it is closed.
+    /// </summary>
+    /// <param name="groupKey">The part-and-date key of the group to toggle.</param>
+    [RelayCommand]
+    private void ToggleGroup(string? groupKey)
+    {
+        if (string.IsNullOrWhiteSpace(groupKey))
+        {
+            return;
+        }
+
+        if (_collapsedGroupKeys.Add(groupKey) is false)
+        {
+            _collapsedGroupKeys.Remove(groupKey);
+        }
+
+        RebuildGroups();
+    }
+
+    /// <summary>
+    /// The grid's selected row, which is either a line or a group header. Selecting a
+    /// header only folds nothing in: the selection is put back on the line it was on,
+    /// because a header is not something the detail pane can show.
+    /// </summary>
+    public object? SelectedGridRow
+    {
+        get => SelectedFinding;
+        set
+        {
+            if (value is Model_ReconciliationFinding finding)
+            {
+                SelectedFinding = finding;
+                return;
+            }
+
+            OnPropertyChanged(nameof(SelectedGridRow));
+        }
+    }
+
+    /// <summary>
     /// The working day as the date picker understands it. The offset must be the
     /// machine's local offset: a UTC offset moves a midnight date into the previous
     /// day west of Greenwich, so the picker would show the wrong day and every change
@@ -364,6 +416,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
     private void RebuildGroups()
     {
         GroupedFindings.Clear();
+        GridRows.Clear();
 
         foreach (
             IGrouping<string, Model_ReconciliationFinding> group in VisibleFindings.GroupBy(
@@ -373,7 +426,11 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
             )
         )
         {
-            var findingGroup = new Model_ReconciliationFindingGroup(group.Key);
+            bool isCollapsed = _collapsedGroupKeys.Contains(group.Key);
+            var findingGroup = new Model_ReconciliationFindingGroup(group.Key, isCollapsed)
+            {
+                ToggleCommand = ToggleGroupCommand,
+            };
 
             foreach (Model_ReconciliationFinding finding in group)
             {
@@ -381,6 +438,17 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
             }
 
             GroupedFindings.Add(findingGroup);
+            GridRows.Add(findingGroup);
+
+            if (isCollapsed)
+            {
+                continue;
+            }
+
+            foreach (Model_ReconciliationFinding finding in findingGroup)
+            {
+                GridRows.Add(finding);
+            }
         }
     }
 
@@ -492,6 +560,7 @@ public partial class ViewModel_ReconciliationMain : ViewModel_Shared_Base
         DestinationField = value?.ProposedLocation ?? string.Empty;
         OnPropertyChanged(nameof(HasSelectedFinding));
         OnPropertyChanged(nameof(HasNoSelectedFinding));
+        OnPropertyChanged(nameof(SelectedGridRow));
         UpdateProgress();
     }
 
