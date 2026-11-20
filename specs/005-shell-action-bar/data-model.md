@@ -104,6 +104,7 @@ tooltip, and command.
 | `Tooltip` | `string` | from `ReceivingSettingsKeys` |
 | `AccessibilityName` | `string` | automation and screen-reader text |
 | `Command` | `ICommand` | the existing command the page already used (FR-024) |
+| `ShiftCommand` | `ICommand?` | the wider variant run when the control is activated with Shift held; null when the position has no wider form |
 | `ShowDividerAfter` | `bool` | puts the divider in the right place without a second collection |
 
 **Rules**
@@ -114,6 +115,9 @@ tooltip, and command.
 - Back is removed by setting `IsVisible` false, never by disabling (US1-2, FR-009).
 - Clear Label Data is disabled when `CanClearLabelData` is false; there is no failure path when nothing
   is clearable (Edge Cases).
+- Clear Label Data carries `ResetLabelDataCommand` as its `Command` and `ResetLabelDataAllCommand` as its
+  `ShiftCommand`, so the two strengths of the button it replaced survive on the strip itself and not only
+  on the keyboard shortcut (FR-041).
 - Every user-visible `Label` and `Tooltip` comes through `IService_ReceivingSettings` from
   `ReceivingSettingsKeys`, so nothing the user reads is hard-coded in the shell (FR-025, SC-008).
 

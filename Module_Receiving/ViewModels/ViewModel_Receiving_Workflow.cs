@@ -1260,7 +1260,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     CanClearLabelData,
                     WorkflowResetLabelDataText,
                     WorkflowResetLabelDataText,
-                    ResetLabelDataCommand
+                    ResetLabelDataCommand,
+                    shiftCommand: ResetLabelDataAllCommand
                 ),
                 Help = CreateSlot(
                     showsActions,
@@ -1370,7 +1371,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             string tooltip,
             System.Windows.Input.ICommand? command,
             bool showDividerAfter = false,
-            Enum_ShellActionKind kind = Enum_ShellActionKind.Plain
+            Enum_ShellActionKind kind = Enum_ShellActionKind.Plain,
+            System.Windows.Input.ICommand? shiftCommand = null
         ) =>
             new()
             {
@@ -1380,6 +1382,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 Tooltip = tooltip,
                 AccessibilityName = label,
                 Command = command,
+                ShiftCommand = shiftCommand,
                 ShowDividerAfter = showDividerAfter,
                 Kind = kind,
             };

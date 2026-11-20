@@ -45,6 +45,12 @@ public sealed class Model_ShellActionSlot
     public ICommand? Command { get; init; }
 
     /// <summary>
+    /// Gets the wider variant of this action, run when the control is clicked with Shift held.
+    /// Null when the position has no wider form.
+    /// </summary>
+    public ICommand? ShiftCommand { get; init; }
+
+    /// <summary>
     /// Gets what this position is for, so the bar can colour it: a Back position reads as a way
     /// out and a Save position as the primary action.
     /// </summary>

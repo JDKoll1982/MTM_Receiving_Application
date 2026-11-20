@@ -365,6 +365,10 @@ in Extra Tools, Welded Coils.
   place.
 - **FR-040**: A blank, over-length, already listed, or unknown part number MUST be refused with a
   message and MUST NOT be stored.
+- **FR-041**: Clear Label Data MUST keep the two strengths it had on the button it replaced: a plain
+  activation clears the signed-in user's own rows, and an activation with Shift held clears every
+  receiving label row and moves it to history, still restricted to Admin and Developer users. The
+  strip MUST carry the wider variant on the same control rather than on the keyboard shortcut alone.
 
 ### Key Entities
 

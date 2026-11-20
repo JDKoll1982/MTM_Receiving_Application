@@ -7,6 +7,19 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Fixed
 
+#### Shift+click on Clear Label Data clears every row again (2026-11-20)
+
+- **What was wrong:** the strip's red trash can only ever cleared the signed-in user's own rows. The old in-page
+  button read the Shift key itself, so Shift+click also cleared the whole table and moved it to history; when the
+  strip took over the button, the click went straight to the plain command and the Shift path was left on the
+  keyboard shortcut only.
+- **What changed:** a strip position can now carry a wider variant of its action, and the trash can runs it when
+  Shift is held on click. Clear Label Data supplies the clear-all command, which archives every row to history and
+  stays restricted to Admin and Developer users exactly as before. With no Shift, the click clears the operator's
+  own rows as it already did.
+- **Files:** `MainWindow.xaml` (+ `.xaml.cs`), `Module_Core/Models/UI/Model_ShellActionSlot.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`
+
 #### Clear Label Data is enabled again when label data is active (2026-11-20)
 
 - **What was wrong:** the strip's Clear Label Data control was disabled on every page, so it could only be
@@ -15,8 +28,8 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   that used to draw the button called it with `Click`, so the gate never appeared.
 - **What changed:** the command the strip binds now takes no parameter, and the enabled state comes from
   `CanClearLabelData` alone, as it did before the strip existed. Clearing the archive queue as well, which
-  used to need Shift held on the old button, now has its own command and is reached with Shift on the same
-  shortcut.
+  used to need Shift held on the old button, now has its own command and is reached with Shift on the shortcut
+  or on the trash can itself.
 - **Also fixed:** the centre group no longer reports a divider after Next, so the model matches what the strip
   draws and the spec requires.
 - **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,

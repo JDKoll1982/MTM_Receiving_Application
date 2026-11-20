@@ -439,3 +439,11 @@ is gone from both.
   still resolving by position.
 - Phase 12 covers two items that are not Receiving features: a scanner message and a toolkit document. They
   are recorded here so the branch and the spec agree, not because they belong to the strip.
+
+## Phase 13: Convergence
+
+- [x] **T080** [US1] Carry the wider Clear Label Data action on the control itself: give a strip position an
+  optional shift variant, supply `ResetLabelDataAllCommand` on the Clear Label Data slot, and run the variant
+  when the trash can is activated with Shift held, so clearing every row and moving it to history is reachable
+  from the button and not only from the shortcut (FR-041, partial) · `Module_Core/Models/UI/Model_ShellActionSlot.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`, `MainWindow.xaml`, `MainWindow.xaml.cs`

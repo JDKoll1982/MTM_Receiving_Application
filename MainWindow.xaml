@@ -772,7 +772,7 @@
                                     x:Name="ShellClearLabelDataButton"
                                     Grid.Column="0"
                                     AutomationProperties.Name="{x:Bind ShellActionBar.ClearLabelData.AccessibilityName, Mode=OneWay}"
-                                    Command="{x:Bind ShellActionBar.ClearLabelData.Command, Mode=OneWay}"
+                                    Click="ShellClearLabelDataButton_Click"
                                     IsEnabled="{x:Bind ShellActionBar.ClearLabelData.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.ClearLabelData.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ClearLabelData.IsVisible), Mode=OneWay}">

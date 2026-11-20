@@ -389,14 +389,31 @@ namespace MTM_Receiving_Application
             }
         }
 
-        private static bool IsControlKeyDown()
+        private static bool IsControlKeyDown() => IsKeyDown(Windows.System.VirtualKey.Control);
+
+        private static bool IsShiftKeyDown() => IsKeyDown(Windows.System.VirtualKey.Shift);
+
+        private static bool IsKeyDown(Windows.System.VirtualKey key)
         {
-            var state = InputKeyboardSource.GetKeyStateForCurrentThread(
-                Windows.System.VirtualKey.Control
-            );
+            var state = InputKeyboardSource.GetKeyStateForCurrentThread(key);
 
             return (state & Windows.UI.Core.CoreVirtualKeyStates.Down)
                 == Windows.UI.Core.CoreVirtualKeyStates.Down;
+        }
+
+        /// <summary>
+        /// Runs Clear Label Data: a plain click clears the signed-in user's own rows, and Shift+click
+        /// clears every row, matching the in-page button the strip replaced.
+        /// </summary>
+        private void ShellClearLabelDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            var slot = ShellActionBar.ClearLabelData;
+            var command = IsShiftKeyDown() ? slot.ShiftCommand ?? slot.Command : slot.Command;
+
+            if (command?.CanExecute(null) == true)
+            {
+                command.Execute(null);
+            }
         }
 
         private void UpdateHeaderBackButton()

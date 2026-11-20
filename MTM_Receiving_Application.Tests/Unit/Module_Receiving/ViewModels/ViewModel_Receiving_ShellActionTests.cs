@@ -83,6 +83,28 @@ public sealed class ViewModel_Receiving_ShellActionTests
     }
 
     [Fact]
+    public async Task ClearLabelDataSlot_ShouldCarryTheClearAllCommand_ForAShiftClick()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.PartSelection);
+        workflow
+            .SetupGet(service => service.CurrentPart)
+            .Returns(new Model_InforVisualPart { PartID = "TEST-PART" });
+        workflow.Setup(service => service.HasActiveLabelDataAsync()).ReturnsAsync(true);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        var slot = viewModel.ShellActions.ClearLabelData;
+        slot.ShiftCommand.Should().BeSameAs(viewModel.ResetLabelDataAllCommand);
+        slot
+            .ShiftCommand!.CanExecute(null)
+            .Should()
+            .BeTrue("the strip invokes the shift variant with no parameter, as it does the plain one");
+    }
+
+    [Fact]
     public async Task ShellActions_ShouldOmitBack_WhenStepIsEnterPoNumber()
     {
         var workflow = CreateWorkflowMock();

@@ -50,7 +50,7 @@ three settable booleans the shell projection owns; the setter is the only path a
 | `Overlay` | visible, enabled, label `Overlay`, command that opens `View_Receiving_LabelOverlayWindow` |
 | `Back` | visible and enabled flags, label `Back`, command that invokes `PreviousStepCommand`, or the page-specific verb that occupies the Back slot |
 | `Next` | visible and enabled flags, label `Next`, command that invokes `NextStepCommand`, or the page-specific verb that occupies the Next slot |
-| `Clear Label Data` | visible and enabled flags, label `Clear Label Data`, command gated by `CanClearLabelData` that calls `ResetLabelDataAsync` |
+| `Clear Label Data` | visible and enabled flags, label `Clear Label Data`, command gated by `CanClearLabelData` that calls `ResetLabelDataAsync`, plus a shift variant that calls `ResetLabelDataAsync` for every row (FR-041) |
 | `Help` | visible and enabled flags, label `Help`, command that calls `ShowHelpAsync` |
 
 The three default checkboxes are mutually exclusive: ticking one clears the other two, and unticking
@@ -92,6 +92,10 @@ Each new key needs all three of: the constant in `ReceivingSettingsKeys`, the en
 - The strip invokes existing actions rather than re-implementing them: `PreviousStepCommand`,
   `NextStepCommand`, `ResetLabelDataAsync` gated by `CanClearLabelData`, and `ShowHelpAsync`
   (FR-024).
+- A position may carry a `ShiftCommand`, and `MainWindow` runs it when the control is activated with
+  Shift held, falling back to the plain `Command` when the position declares none. Only Clear Label
+  Data uses it, so the wider clear the retired in-page button offered stays on the button itself as
+  well as on its shortcut (FR-041).
 - Back is shown only on pages that support going back, and Next is disabled until the page's own
   conditions are met, including `IService_ReceivingWorkflow.IsPoPartListLoaded` on the PO step
   (FR-009).

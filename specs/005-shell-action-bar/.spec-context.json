@@ -1298,6 +1298,13 @@
       "rejected": "leaving them for a later cleanup",
       "by": "agent",
       "at": "2026-11-19T19:15:21.477Z"
+    },
+    {
+      "decision": "A strip position may carry a ShiftCommand, and the trash can runs it when Shift is held on click",
+      "why": "The retired in-page button read the Shift key itself, so the strip lost the wider clear when it took over the button and the behavior survived only on the keyboard shortcut",
+      "rejected": "Reading the Shift key inside the view model, which would put input state in a view model, and letting the shell name the clear-all action, which would leak a Receiving decision into MainWindow",
+      "by": "agent",
+      "at": "2026-11-20T20:17:48.966Z"
     }
   ],
   "step_summaries": {
