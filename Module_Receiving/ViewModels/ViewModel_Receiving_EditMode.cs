@@ -73,18 +73,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// <summary>All column definitions, in order. Driven by column-chooser dialog.</summary>
         public ObservableCollection<Model_EditModeColumn> ColumnSettings { get; } = new();
 
-        /// <summary>Options shown in the "Search by" ComboBox.</summary>
+        /// <summary>
+        /// Options shown in the "Search by" ComboBox: every column the row is read from the
+        /// database with, including the ones the grid does not show.
+        /// </summary>
         public ObservableCollection<string> SearchByOptions { get; } =
-            new()
-            {
-                "All Fields",
-                "Part ID",
-                "PO Number",
-                "Heat/Lot",
-                "Employee #",
-                "Part Description",
-                "Vendor",
-            };
+            new(Helper_ReceivingLoadSearch.ColumnKeys);
 
         public ObservableCollection<Enum_PackageType> PackageTypes { get; } =
             new(Enum.GetValues<Enum_PackageType>());
@@ -104,7 +98,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _searchText = string.Empty;
 
         [ObservableProperty]
-        private string _searchByColumnKey = "All Fields";
+        private string _searchByColumnKey = Helper_ReceivingLoadSearch.AllFieldsKey;
 
         partial void OnSearchTextChanged(string value)
         {
@@ -413,7 +407,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectedLoad = null;
             CurrentDataSource = Enum_DataSourceType.Memory;
             SearchText = string.Empty;
-            SearchByColumnKey = "All Fields";
+            SearchByColumnKey = Helper_ReceivingLoadSearch.AllFieldsKey;
             ResultSummary = string.Empty;
             SortColumn = string.Empty;
             SortAscending = true;
@@ -1510,50 +1504,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                var term = SearchText.Trim();
-                result = SearchByColumnKey switch
-                {
-                    "Part ID" => result
-                        .Where(l => l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase))
-                        .ToList(),
-                    "PO Number" => result
-                        .Where(l =>
-                            (l.PoNumber ?? string.Empty).Contains(
-                                term,
-                                StringComparison.OrdinalIgnoreCase
-                            )
-                        )
-                        .ToList(),
-                    "Heat/Lot" => result
-                        .Where(l =>
-                            l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase)
-                        )
-                        .ToList(),
-                    "Employee #" => result
-                        .Where(l => l.EmployeeNumber.ToString().Contains(term))
-                        .ToList(),
-                    "Part Description" => result
-                        .Where(l =>
-                            l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase)
-                        )
-                        .ToList(),
-                    "Vendor" => result
-                        .Where(l => l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase))
-                        .ToList(),
-                    _ => result
-                        .Where(l =>
-                            l.PartID.Contains(term, StringComparison.OrdinalIgnoreCase)
-                            || (l.PoNumber ?? string.Empty).Contains(
-                                term,
-                                StringComparison.OrdinalIgnoreCase
-                            )
-                            || l.HeatLotNumber.Contains(term, StringComparison.OrdinalIgnoreCase)
-                            || l.EmployeeNumber.ToString().Contains(term)
-                            || l.PartDescription.Contains(term, StringComparison.OrdinalIgnoreCase)
-                            || l.PoVendor.Contains(term, StringComparison.OrdinalIgnoreCase)
-                        )
-                        .ToList(),
-                };
+                result = result
+                    .Where(l =>
+                        Helper_ReceivingLoadSearch.Matches(l, SearchByColumnKey, SearchText)
+                    )
+                    .ToList();
             }
 
             if (!string.IsNullOrEmpty(SortColumn))

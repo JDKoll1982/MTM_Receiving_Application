@@ -467,6 +467,13 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         }
     }
 
+    /// <summary>
+    /// The title the copied report carries. It names the day the report covers without the
+    /// "Preview" the on-screen header uses, because the paste is the report itself and the
+    /// word read as part of the report's own heading once it landed in an email or a document.
+    /// </summary>
+    public string ReportDocumentTitle => $"End of Day Report for {GetDateRangeText()}";
+
     private bool CanGenerateReports() => !IsBusy && GetSelectedModules().Any();
 
     [RelayCommand(CanExecute = nameof(CanCopyEmail))]
@@ -485,7 +492,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
             var formatResult = await _reportingService.FormatForEmailAsync(
                 IncludedPreviewModuleCards.ToList(),
-                PreviewSummaryTitle
+                ReportDocumentTitle
             );
 
             if (!formatResult.IsSuccess || formatResult.Data == null)

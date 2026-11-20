@@ -398,7 +398,7 @@
                 Padding="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Background="White"
+                Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="12">

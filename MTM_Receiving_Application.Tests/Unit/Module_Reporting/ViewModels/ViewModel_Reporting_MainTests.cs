@@ -13,6 +13,21 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Reporting.ViewModels;
 public sealed class ViewModel_Reporting_MainTests
 {
     [Fact]
+    public void TheCopiedReportTitle_ShouldNameTheDayWithoutCallingItselfAPreview()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.SelectedDateRangePreset = "Today";
+        string day = DateTimeOffset.Now.Date.ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+
+        viewModel
+            .ReportDocumentTitle.Should()
+            .Be($"End of Day Report for {day}", "the paste is the report itself, not a preview of one");
+        viewModel
+            .ReportDocumentTitle.Should()
+            .NotContain("Preview", "the word read as part of the report's own heading once pasted");
+    }
+
+    [Fact]
     public void SelectingYesterdayPreset_ShouldSetBothDatesToYesterday()
     {
         var viewModel = CreateViewModel();

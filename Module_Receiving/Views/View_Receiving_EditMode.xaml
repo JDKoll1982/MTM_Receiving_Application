@@ -283,9 +283,10 @@
                 <!--  Group: Find (column picker)  -->
                 <StackPanel Grid.Column="8" Spacing="3">
                     <ComboBox
-                        MinWidth="110"
+                        MinWidth="180"
                         ItemsSource="{x:Bind ViewModel.SearchByOptions}"
-                        SelectedItem="{x:Bind ViewModel.SearchByColumnKey, Mode=TwoWay}" />
+                        SelectedItem="{x:Bind ViewModel.SearchByColumnKey, Mode=TwoWay}"
+                        ToolTipService.ToolTip="Which column the Find box searches; All Fields covers every column read from the database" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"

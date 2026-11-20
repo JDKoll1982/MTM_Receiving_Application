@@ -7,6 +7,28 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Fixed
 
+#### The copied report is titled as a report, not as a preview of one (2026-11-20)
+
+- **What was wrong:** the copy action handed the on-screen card header to the formatter, so the pasted document
+  began "End of Day Report Preview for 11/20/2026". Once it landed in an email the word read as part of the
+  report's own heading, which it never was.
+- **What changed:** the copied report now carries its own title, `End of Day Report for <day>` (or
+  `<start> - <end>` for a range), built from the same date-range text. The on-screen header keeps saying
+  "Preview" because that is what the unsaved report on the page is.
+- **Files:** `Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs`
+
+#### The Reporting options panel follows the theme instead of painting itself white (2026-11-20)
+
+- **What was wrong:** the Options panel on the Reporting preview page and in its preview dialog carried
+  `Background="White"`, while every label inside it draws with the theme's text brush. In dark mode that is
+  white text on a white panel, so the panel read as a blank white sheet with only the checkboxes and the one
+  accent-coloured heading visible.
+- **What changed:** the panel now uses `SolidBackgroundFillColorBaseBrush`, which is opaque and follows the
+  theme, so the panel is a light surface in light mode and a dark surface in dark mode and its text is
+  readable in both.
+- **Files:** `Module_Reporting/Views/View_Reporting_PreviewPage.xaml`,
+  `Module_Reporting/Views/View_Reporting_PreviewDialog.xaml`
+
 #### Shift+click on Clear Label Data clears every row again (2026-11-20)
 
 - **What was wrong:** the strip's red trash can only ever cleared the signed-in user's own rows. The old in-page
@@ -46,6 +68,20 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 - **Files:** `Module_Settings.Receiving/Views/View_Settings_Receiving_CategoryHub.xaml` (+ `.xaml.cs`)
 
 ### Changed
+
+#### Edit Mode's Find box searches every column the row is read from (2026-11-20)
+
+- **What changed:** the Find picker now offers every column a receiving row is loaded from the database with,
+  not only the columns the grid happens to show: part type, PO line, PO status, PO due date, quantity ordered,
+  unit of measure, heat shape and colour, saved location, remaining quantity, packages per load, weight per
+  package, package type, created at, user, quality-hold required and acknowledged, and the hold restriction, on
+  top of the six that were already there.
+- **All Fields widens with it:** the default option now searches every one of those columns, so a value the grid
+  never shows - the PO status, the user who saved the row - finds the row.
+- **Numbers and dates read as the clerk writes them:** decimal columns match both `10070` and `10070.00`, and a
+  date matches both `11/20/2026` and `2026-11-20`.
+- **Files:** `Module_Receiving/Helpers/Helper_ReceivingLoadSearch.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_EditMode.cs`, `Module_Receiving/Views/View_Receiving_EditMode.xaml`
 
 #### The shell action bar is colour-coded and marks the mode you are in (2026-11-20)
 
