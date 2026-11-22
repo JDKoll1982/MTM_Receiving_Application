@@ -607,3 +607,8 @@ trim_trailing_whitespace = false
 dotnet_diagnostic.RCS1163.severity = none
 dotnet_diagnostic.IDE0060.severity = none
 dotnet_diagnostic.CS0618.severity = none
+
+# MainWindow.Search.cs is a partial of the window's code-behind, so XAML event-handler
+# signatures keep the unused sender/args parameters for the same reason.
+[MainWindow.Search.cs]
+dotnet_diagnostic.RCS1163.severity = none

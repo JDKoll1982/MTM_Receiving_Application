@@ -71,9 +71,16 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         /// </summary>
         /// <param name="location">Location entered by the user.</param>
         /// <param name="warehouseCode">Warehouse code to validate against.</param>
+        /// <param name="treatVerificationFailureAsWarning">
+        /// When <see langword="true"/>, a check that cannot run at all (typically because Infor
+        /// Visual is unreachable) is reported as a warning that the caller may pass through,
+        /// instead of an error that blocks the caller. A location that is reached and simply not
+        /// found stays an error either way.
+        /// </param>
         public Task<Model_ReceivingValidationResult> ValidateLocationAsync(
             string? location,
-            string warehouseCode = "002"
+            string warehouseCode = "002",
+            bool treatVerificationFailureAsWarning = false
         );
 
         /// <summary>

@@ -242,7 +242,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
 
         public async Task<Model_ReceivingValidationResult> ValidateLocationAsync(
             string? location,
-            string warehouseCode = "002"
+            string warehouseCode = "002",
+            bool treatVerificationFailureAsWarning = false
         )
         {
             if (string.IsNullOrWhiteSpace(location))
@@ -276,9 +277,19 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             );
             if (!existsResult.IsSuccess)
             {
-                return Model_ReceivingValidationResult.Error(
-                    existsResult.ErrorMessage ?? "Unable to validate location in Infor Visual"
-                );
+                var verificationMessage =
+                    existsResult.ErrorMessage ?? "Unable to validate location in Infor Visual";
+
+                // The check could not run at all, so nothing was actually verified. Callers that
+                // must not stall on an unreachable Infor Visual pass this through as a warning.
+                if (treatVerificationFailureAsWarning)
+                {
+                    return Model_ReceivingValidationResult.Warning(
+                        $"Location '{normalizedLocation}' could not be verified against Infor Visual: {verificationMessage}"
+                    );
+                }
+
+                return Model_ReceivingValidationResult.Error(verificationMessage);
             }
 
             return existsResult.Data

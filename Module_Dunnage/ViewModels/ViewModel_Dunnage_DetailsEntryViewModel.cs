@@ -720,6 +720,15 @@ public partial class ViewModel_Dunnage_DetailsEntry : ViewModel_Shared_Base, IRe
                 return advanceResult;
             }
 
+            if (string.IsNullOrWhiteSpace(advanceResult.WarningMessage) is false)
+            {
+                StatusMessage = advanceResult.WarningMessage;
+                await _errorHandler.HandleErrorAsync(
+                    advanceResult.WarningMessage,
+                    Enum_ErrorSeverity.Warning
+                );
+            }
+
             _logger.LogInfo("Details saved, navigating to Review", "DetailsEntry");
             return advanceResult;
         }

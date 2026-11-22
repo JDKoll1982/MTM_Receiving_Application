@@ -17,6 +17,7 @@ using MTM_Receiving_Application.Module_Dunnage.Helpers;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.Settings;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Module_Dunnage.ViewModels;
 
@@ -32,6 +33,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private readonly IService_DunnageSettings _dunnageSettings;
     private readonly IService_LabelViewLauncher _labelViewLauncher;
     private readonly IService_Window _windowService;
+    private readonly IService_Dispatcher _dispatcherService;
+    private readonly IService_UserPreferences _userPreferencesService;
+    private readonly IService_Help _shellHelpService;
+    private readonly IService_UserSessionManager _sessionManager;
 
     public ViewModel_Dunnage_WorkFlowViewModel(
         IService_DunnageWorkflow workflowService,
@@ -40,7 +45,11 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Window windowService,
-        IService_Notification notificationService
+        IService_Notification notificationService,
+        IService_Dispatcher dispatcherService,
+        IService_UserPreferences userPreferencesService,
+        IService_Help helpService,
+        IService_UserSessionManager sessionManager
     )
         : base(errorHandler, logger, notificationService)
     {
@@ -48,6 +57,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         _dunnageSettings = dunnageSettings;
         _labelViewLauncher = labelViewLauncher;
         _windowService = windowService;
+        _dispatcherService = dispatcherService;
+        _userPreferencesService = userPreferencesService;
+        _shellHelpService = helpService;
+        _sessionManager = sessionManager;
         _workflowService.StepChanged += OnWorkflowStepChanged;
         _workflowService.NavigationLockChanged += OnNavigationLockChanged;
         _workflowService.CurrentSession.PropertyChanged += OnCurrentSessionPropertyChanged;
@@ -58,6 +71,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
 
         // Start the workflow - it will check for default mode and navigate accordingly
         _ = InitializeWorkflowAsync();
+        _ = InitializeShellTextAsync();
     }
 
     /// <summary>
@@ -89,9 +103,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     #region Step Visibility Properties
 
     [ObservableProperty]
-    private bool _isModeSelectionVisible;
-
-    [ObservableProperty]
     private bool _isTypeSelectionVisible;
 
     [ObservableProperty]
@@ -107,9 +118,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private bool _isReviewVisible;
 
     [ObservableProperty]
-    private bool _isManualEntryVisible;
-
-    [ObservableProperty]
     private bool _isEditModeVisible;
 
     [ObservableProperty]
@@ -121,7 +129,7 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextSubtitle))]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextImageSource))]
     [NotifyPropertyChangedFor(nameof(CurrentHeaderContextIconKind))]
-    private string _currentStepTitle = "Non-Inventoried Labels - Mode Selection";
+    private string _currentStepTitle = "Non-Inventoried Labels - Select Type";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanNavigate))]
@@ -183,8 +191,8 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
         GuidedWalk.Select(entry => entry.Label).ToArray();
 
     /// <summary>
-    /// The step the clerk is on, or -1 outside the walk (mode selection, manual entry, edit mode,
-    /// image search) so the header hides the bar rather than keeping a stale highlight.
+    /// The step the clerk is on, or -1 outside the walk (edit mode, image search) so the header
+    /// hides the bar rather than keeping a stale highlight.
     /// </summary>
     public int HeaderStepBarIndex =>
         Array.FindIndex(GuidedWalk, entry => entry.Step == _workflowService.CurrentStep);
@@ -245,23 +253,17 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private void OnWorkflowStepChanged(object? sender, EventArgs e)
     {
         // Hide all steps
-        IsModeSelectionVisible = false;
         IsTypeSelectionVisible = false;
         IsPartSelectionVisible = false;
         IsQuantityEntryVisible = false;
         IsDetailsEntryVisible = false;
         IsReviewVisible = false;
-        IsManualEntryVisible = false;
         IsEditModeVisible = false;
         IsImagePartSearchVisible = false;
 
         // Show current step
         switch (_workflowService.CurrentStep)
         {
-            case Enum_DunnageWorkflowStep.ModeSelection:
-                IsModeSelectionVisible = true;
-                CurrentStepTitle = "Non-Inventoried Labels - Mode Selection";
-                break;
             case Enum_DunnageWorkflowStep.TypeSelection:
                 IsTypeSelectionVisible = true;
                 CurrentStepTitle = "Non-Inventoried Labels - Select Type";
@@ -282,10 +284,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
                 IsReviewVisible = true;
                 CurrentStepTitle = "Non-Inventoried Labels - Review & Save";
                 break;
-            case Enum_DunnageWorkflowStep.ManualEntry:
-                IsManualEntryVisible = true;
-                CurrentStepTitle = "Non-Inventoried Labels - Manual Entry";
-                break;
             case Enum_DunnageWorkflowStep.EditMode:
                 IsEditModeVisible = true;
                 CurrentStepTitle = "Non-Inventoried Labels - Edit Mode";
@@ -298,12 +296,23 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
 
         NotifyHeaderContextChanged();
         NotifyHeaderStepBarChanged();
+        RefreshShellActions();
 
         _ = RefreshClearLabelDataAvailabilityAsync();
     }
 
     private void OnCurrentSessionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        // The Select Type page's Next slot depends on the session, so it re-reads the snapshot
+        // whenever the chosen type changes, not only while a part page is showing.
+        if (
+            string.IsNullOrEmpty(e.PropertyName)
+            || e.PropertyName == nameof(Model_DunnageSession.SelectedTypeId)
+        )
+        {
+            RefreshShellActions();
+        }
+
         if (!IsPartSelectionVisible)
         {
             return;
@@ -346,7 +355,10 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private void OnNavigationLockChanged(object? sender, EventArgs e)
     {
         IsNavigationLocked = _workflowService.IsNavigationLocked;
+        RefreshShellActions();
     }
+
+    partial void OnCanClearLabelDataChanged(bool value) => RefreshShellActions();
 
     [RelayCommand]
     private async Task ClearLabelDataAsync(bool clearAllRows = false)
@@ -404,47 +416,6 @@ public partial class ViewModel_Dunnage_WorkFlowViewModel
     private async Task OpenDunnageLabelAsync()
     {
         await OpenLabelAsync(DunnageSettingsKeys.Labels.DunnageLabelPath, "Non-Inventoried Label");
-    }
-
-    [RelayCommand]
-    private async Task ReturnToModeSelectionAsync()
-    {
-        if (_workflowService.IsNavigationLocked)
-        {
-            return;
-        }
-
-        if (_workflowService.HasUnsavedData())
-        {
-            var xamlRoot = _windowService.GetXamlRoot();
-            if (xamlRoot is not null)
-            {
-                var dialog = new Microsoft.UI.Xaml.Controls.ContentDialog
-                {
-                    Title = "Change Mode?",
-                    Content =
-                        "Changing mode will clear the current Non-Inventoried Labels entry. This cannot be undone. Continue?",
-                    PrimaryButtonText = "Change Mode",
-                    CloseButtonText = "Stay Here",
-                    DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
-                    XamlRoot = xamlRoot,
-                };
-
-                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                    dialog,
-                    xamlRoot
-                );
-
-                var result = await dialog.ShowAsync();
-                if (result != Microsoft.UI.Xaml.Controls.ContentDialogResult.Primary)
-                {
-                    return;
-                }
-            }
-        }
-
-        _workflowService.ClearSession();
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
     }
 
     private async Task OpenLabelAsync(string settingsKey, string labelName)

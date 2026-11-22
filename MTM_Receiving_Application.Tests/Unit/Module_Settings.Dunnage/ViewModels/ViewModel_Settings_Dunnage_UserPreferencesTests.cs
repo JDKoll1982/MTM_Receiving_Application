@@ -213,7 +213,11 @@ public sealed class ViewModel_Settings_Dunnage_UserPreferencesTests
         var receivingValidationMock = new Mock<IService_ReceivingValidation>();
         receivingValidationMock
             .Setup(service =>
-                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+                service.ValidateLocationAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()
+                )
             )
             .ReturnsAsync(Model_ReceivingValidationResult.Success());
 

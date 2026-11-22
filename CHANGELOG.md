@@ -5,6 +5,92 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ## Unreleased
 
+### Added
+
+#### Non-Inventoried Labels navigation lives in the shared shell strip (2026-11-21)
+
+- **What changed:** every Non-Inventoried Labels page now draws its Back, Next, Review, Save, Clear All Labels
+  and Help actions in the same strip that already served Receiving, along with its own three mode chips:
+  Guided, Edit and Image Search. The workflow page draws none of them itself, and its keyboard shortcuts run the
+  strip's own commands, so a shortcut cannot reach an action the strip has hidden or disabled.
+- **How it decides:** the workflow view model implements the shell action provider contract and holds the
+  seven-page matrix, so every visibility, enablement and unsaved-work decision stays inside this module. The
+  page hands it the hosted step view models it needs, because only the page can see them.
+- **New defaults:** the strip's words come from `Dunnage.UiText.*` settings keys, editable without a rebuild.
+  The save verb is `Save` everywhere now, replacing the `Save All` and `Save Changes` the two pages used to draw.
+- **Files:** `Module_Core/Models/UI/Model_ShellActionBarState.cs`, `Module_ShellModeAction.cs`,
+  `Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs`, `MainWindow.xaml` (+ `.xaml.cs`),
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs` (+ `.ShellActions.cs`),
+  `Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml` (+ `.xaml.cs`),
+  `Module_Dunnage/Settings/DunnageSettingsKeys.cs`, `DunnageSettingsDefaults.cs`,
+  `Module_Settings.Core/Defaults/settings.manifest.json`
+
+### Changed
+
+#### Non-Inventoried Labels opens straight into the operator's stored mode (2026-11-21)
+
+- **What changed:** opening the module lands on Guided, Edit or Image Search according to the signed-in user's
+  stored default. With nothing stored it opens Guided and records that choice, so the next launch needs no
+  second decision. A stored value this version no longer recognises is corrected to Guided in the same call.
+- **Also changed:** the Review and Edit Mode pages no longer draw their own save buttons, and the two settings
+  hubs resolve a card by the title it carries rather than by its position, so adding or reordering a card cannot
+  move another card's destination. The Non-Inventoried Labels hub gained the Label Files card its page deserved.
+- **Files:** `Module_Dunnage/Services/Service_DunnageWorkflow.cs`,
+  `Module_Dunnage/Views/View_Dunnage_ReviewView.xaml`, `View_Dunnage_EditModeView.xaml`,
+  `Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs`,
+  `Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml` (+ `.xaml.cs`)
+
+### Removed
+
+#### Manual mode and the mode-selection screen are gone from Non-Inventoried Labels (2026-11-21)
+
+- **What was removed:** the mode-selection screen and its view model, the manual entry screen and its view
+  model, both workflow steps, the shortcut that opened the picker, its settings row, its manifest entry, and the
+  help topics that described both screens. Nothing in navigation, settings, help or search names either one.
+- **Files:** `Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs`,
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_ModeSelectionViewModel.cs` (deleted),
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_ManualEntryViewModel.cs` (deleted),
+  `Module_Dunnage/Views/View_Dunnage_ModeSelectionView.xaml(.cs)` (deleted),
+  `Module_Dunnage/Views/View_Dunnage_ManualEntryView.xaml(.cs)` (deleted),
+  `Module_Dunnage/Services/Service_DunnageShortcuts.cs`,
+  `Module_Settings.Dunnage/Models/Model_Settings_DunnageShortcuts.cs`,
+  `Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_KeyboardShortcuts.cs`,
+  `Module_Settings.Dunnage/Views/View_Settings_Dunnage_KeyboardShortcuts.xaml`,
+  `Module_Core/Services/Help/Service_Help.cs`,
+  `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
+
+### Fixed
+
+#### Non-Inventoried Labels carries on when Infor Visual cannot be reached (2026-11-21)
+
+- **What was wrong:** the guided location check treated "the server did not answer" the same as "the location does
+  not exist", so with Infor Visual unreachable the Details step refused to advance and the operator could not
+  reach Review. The Edit Mode location picker failed the same way, dropping a blocking error dialog for something
+  the operator has no control over.
+- **What changed:** a check that cannot run is now reported as a warning and the walk continues, keeping the
+  entered location exactly as typed and telling the operator it went through unverified. A location that is
+  genuinely reached and not found still stops the step, so the guard itself is unchanged. The Edit Mode picker
+  warns and leaves the row's stored location untouched instead of failing the action.
+- **Unchanged:** Receiving keeps the strict behaviour, because its call site does not opt in. The shared DAO still
+  logs the failed connection at error level, which is the record that the server was down.
+- **Files:** `Module_Receiving/Contracts/IService_ReceivingValidation.cs`,
+  `Module_Receiving/Services/Service_ReceivingValidation.cs`, `Module_Receiving/Models/Model_WorkflowStepResult.cs`,
+  `Module_Dunnage/Services/Service_DunnageWorkflow.cs`,
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModel.cs`,
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.ShellActions.cs`,
+  `Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs`
+
+#### Search finds every page the navigation pane offers, and only pages that open (2026-11-21)
+
+- **What was wrong:** the Receiving Validator launcher was reachable from the navigation pane but missing from
+  search, three settings pages were offered in search but never registered with dependency injection and so
+  could not open, and search could open the Scanner page without the allow-list check navigation performs.
+- **What changed:** the navigation pane and the search box now open a page through one opener that carries the
+  scanner check and the leave confirmation, the scanner entry is filtered out of the results for a user the
+  policy refuses, the Receiving Validator is in the catalog, and the unregistered settings pages are registered.
+  The `non-inventoried labels mode selection` alias is retired with the screen it named.
+- **Files:** `MainWindow.Search.cs`, `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
+
 ### Fixed
 
 #### The copied report is titled as a report, not as a preview of one (2026-11-20)

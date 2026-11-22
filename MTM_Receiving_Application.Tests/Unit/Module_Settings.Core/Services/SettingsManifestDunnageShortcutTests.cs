@@ -37,7 +37,6 @@ public sealed class SettingsManifestDunnageShortcutTests
             .Select(setting => setting.GetProperty("key").GetString())
             .ToArray();
 
-        keys.Should().Contain("Dunnage.Shortcuts.ModeSelection");
         keys.Should().Contain("Dunnage.Shortcuts.ClearLabelData");
         keys.Should().Contain("Dunnage.Shortcuts.NextStep");
         keys.Should().Contain("Dunnage.Shortcuts.BackStep");

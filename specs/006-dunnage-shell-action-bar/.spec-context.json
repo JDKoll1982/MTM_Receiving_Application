@@ -1,0 +1,1964 @@
+{
+  "workflow": "companion",
+  "specName": "Shell Action Bar for Non-Inventoried Labels",
+  "branch": "master",
+  "currentStep": "implement",
+  "status": "implemented",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-22T00:38:38.828Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-22T00:40:02.482Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-22T00:41:30.960Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T00:47:06.881Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-22T00:49:29.087Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T00:58:16.513Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-22T00:58:48.541Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:02:08.705Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:02:08.706Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:02:11.474Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:03:27.101Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:03:27.102Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:03:32.729Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:07:34.731Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:07:34.731Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.565Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.565Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.566Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.566Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.567Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.567Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.567Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.568Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.568Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.568Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.569Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.569Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.569Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.570Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.570Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.571Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.571Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.571Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:48.572Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:51.542Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:51.543Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:54.305Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:16:54.305Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:19:44.955Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:19:44.956Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:19:44.956Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:19:49.003Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:21:38.890Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:21:39.061Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:22:02.691Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:22:22.986Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:22:37.266Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:23:18.864Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:23:46.099Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:24:00.455Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:24:18.251Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:24:36.118Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:31:31.842Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:33:40.255Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:33:40.255Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:33:40.256Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:36:46.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:36:46.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:36:50.117Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:36:50.118Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:36:54.191Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:37:53.486Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:26.796Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:26.796Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:30.590Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:30.591Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:34.516Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:41:38.399Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:49:18.458Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:49:18.459Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:49:18.460Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T065",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:49:18.460Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:49:21.666Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T067",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:51:24.082Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T069",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:51:27.945Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T070",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:51:31.522Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:53:13.403Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T01:53:13.503Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-22T02:17:21.598Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-22T02:25:02.237Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T071",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-22T02:29:27.227Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-11-22T03:02:43.073Z"
+    }
+  ],
+  "telemetryInstanceId": "c2c8715e-8ac3-4a05-a882-9884e9e8af41",
+  "request": "read through #attachment:005-shell-action-bar as i want to no do the same thing to Module_Dunnage.  ask your clarrification ?s before you begin",
+  "expectations": [
+    "Receiving strip behaviour is unchanged apart from repairing settings hub cards that open the wrong page",
+    "Manual mode removal applies to Non-Inventoried Labels only, not to Receiving",
+    "No new permission model; search reuses the access rules navigation already enforces",
+    "Modules outside Receiving and Non-Inventoried Labels gain no mode controls and no behaviour change beyond accurate search entries"
+  ],
+  "context": [
+    "area: specs/005-shell-action-bar (spec, plan, per-page matrix the Dunnage work mirrors)",
+    "area: MainWindow.xaml.cs shell action bar resolution, mode shortcuts, and the hand-maintained search destination list",
+    "area: Module_Dunnage workflow view, mode selection view model, workflow service, step enum, and settings keys",
+    "area: Module_Settings.Receiving and Module_Dunnage settings hubs (card to step resolution)",
+    "constraint: shared strip only, no second strip; mode group must carry the owning module's own modes",
+    "constraint: Non-Inventoried Labels keeps Guided, Edit, Image Search; manual mode deleted entirely",
+    "constraint: MySQL writes stay stored-procedure only and Infor Visual stays read-only",
+    "constraint: page behaviour stays behind view models; no business logic in code-behind"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "All Non-Inventoried Labels navigation renders in the one shared strip",
+      "tasks": [
+        "T009"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldBeVisibleWithItsActions_OnEveryOneOfTheSevenPages"
+      ]
+    },
+    "FR-002": {
+      "title": "Strip sizes to content and collapses when a page offers nothing",
+      "tasks": [
+        "T010"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::Attach_ShouldReportCollapsed_WhenTheProviderOffersNoActions; ViewModel_Dunnage_ShellActionTests::MainWindow_ShouldNameNoDunnageTypeForTheseActions"
+      ]
+    },
+    "FR-003": {
+      "title": "Strip wraps or scrolls at compact widths without hiding actions",
+      "tasks": [
+        "T011"
+      ]
+    },
+    "FR-004": {
+      "title": "Mode group offers Guided, Edit, Image Search for that module only",
+      "tasks": [
+        "T004",
+        "T007",
+        "T012"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldOfferExactlyGuidedEditAndImageSearchInThatOrder_WhenThePageIsNonInventoriedLabels"
+      ]
+    },
+    "FR-005": {
+      "title": "Mode group shows the owning module's modes and labels, never another module's",
+      "tasks": [
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T013"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldLeaveManualAndOverlayHidden_WhenThePageIsNonInventoriedLabels; ViewModel_Receiving_ShellActionTests::ShellActions_ShouldLeaveImageSearchHidden_WhenThePageIsReceiving"
+      ]
+    },
+    "FR-006": {
+      "title": "Pressing a mode enters it immediately without restarting the workflow",
+      "tasks": [
+        "T006",
+        "T008",
+        "T028",
+        "T047"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellDefaultModeTests::EnterMode_ShouldNotRestartTheWorkflow_WhenTheModeIsAlreadyInForce"
+      ]
+    },
+    "FR-007": {
+      "title": "Ctrl+press stores the mode as default and marks it Default",
+      "tasks": [
+        "T006",
+        "T048"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellDefaultModeTests::RememberModeAsDefault_ShouldStoreTheModeAndLeaveThePageAlone_WhenAModeChipIsPressedWithCtrl"
+      ]
+    },
+    "FR-008": {
+      "title": "At most one stored default; Ctrl+press replaces it",
+      "tasks": [
+        "T049"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellDefaultModeTests::ShellActions_ShouldTickExactlyOneDefault_WhenADifferentModeBecomesTheDefault"
+      ]
+    },
+    "FR-009": {
+      "title": "Absent default resolves to Guided and is stored on open",
+      "tasks": [
+        "T032",
+        "T035"
+      ],
+      "tests": [
+        "Service_DunnageWorkflowTests::StartWorkflowAsync_ShouldOpenTheGuidedEntryAndStoreGuided_WhenNoDefaultIsStored"
+      ]
+    },
+    "FR-010": {
+      "title": "Opening the module goes straight to the stored default mode",
+      "tasks": [
+        "T033",
+        "T035",
+        "T042"
+      ],
+      "tests": [
+        "Service_DunnageWorkflowTests::StartWorkflowAsync_ShouldOpenTheStoredMode_WhenTheDefaultIsGuidedEditOrImageSearch"
+      ]
+    },
+    "FR-011": {
+      "title": "Manual mode exists nowhere for Non-Inventoried Labels",
+      "tasks": [
+        "T001",
+        "T002",
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041",
+        "T042",
+        "T043",
+        "T044",
+        "T045",
+        "T046"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldLeaveManualAndOverlayHidden_WhenThePageIsNonInventoriedLabels; SearchDestinationCatalogTests::Catalog_ShouldOfferNoRetiredPageOrInnerStep_AndEverySettingsDestinationShouldResolve"
+      ]
+    },
+    "FR-012": {
+      "title": "A stored manual default resolves to Guided and is corrected",
+      "tasks": [
+        "T034",
+        "T035"
+      ],
+      "tests": [
+        "Service_DunnageWorkflowTests::StartWorkflowAsync_ShouldOpenTheGuidedEntryAndCorrectTheStoredValue_WhenTheDefaultIsManualOrUnrecognised"
+      ]
+    },
+    "FR-013": {
+      "title": "Right group order is Back, Next, divider, Clear All Labels, Help",
+      "tasks": [
+        "T014",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldOfferBackNextClearLabelDataAndHelpInThatOrder_WithTheDividerBetweenBackAndNextOnly_WhenBothAreShown"
+      ]
+    },
+    "FR-014": {
+      "title": "Back and Next appear only where supported and gate on page conditions",
+      "tasks": [
+        "T015",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldOmitBack_WhenThePageHasNoWayBack; ShellActions_ShouldDisableNext_UntilThePageConditionHolds"
+      ]
+    },
+    "FR-015": {
+      "title": "Clear All Labels archives under existing rules; Shift takes the wider clear",
+      "tasks": [
+        "T016",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ClearLabelDataSlot_ShouldCarryParameterlessCommands_ForAPlainAndAShiftActivation"
+      ]
+    },
+    "FR-016": {
+      "title": "Help opens help for the current page",
+      "tasks": [
+        "T017",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::HelpSlot_ShouldOpenHelpForTheCurrentStep_WhenInvoked"
+      ]
+    },
+    "FR-017": {
+      "title": "Each page offers exactly the matrix's actions and nothing else",
+      "tasks": [
+        "T005",
+        "T007",
+        "T018",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldMatchThePerPageMatrixActionForAction_OnAllSevenPages"
+      ]
+    },
+    "FR-018": {
+      "title": "Every moved action is removed from the page that drew it",
+      "tasks": [
+        "T030",
+        "T050",
+        "T052",
+        "T053",
+        "T054"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldMatchThePerPageMatrixActionForAction_OnAllSevenPages (read: no page draws a strip-owned control)"
+      ]
+    },
+    "FR-019": {
+      "title": "Editing toolbars stay on Edit Mode and are never duplicated in the strip",
+      "tasks": [
+        "T030",
+        "T051",
+        "T052",
+        "T053"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellPrimaryActionTests::ShellActions_ShouldNameNoEditingToolbarCommand_OnEditMode"
+      ]
+    },
+    "FR-020": {
+      "title": "Strip invokes existing actions rather than re-implementing them",
+      "tasks": [
+        "T019",
+        "T028"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::NextSlotAndReviewSlot_ShouldCarryTheCommandsTheHostedViewModelsAlreadyOwn"
+      ]
+    },
+    "FR-021": {
+      "title": "Keyboard shortcuts obey the same visible and enabled rules as the strip",
+      "tasks": [
+        "T020",
+        "T028",
+        "T031",
+        "T040"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::NavigationShortcuts_ShouldUseTheSameCommandsAsTheStrip_SoAHiddenOrDisabledActionCannotBeReached"
+      ]
+    },
+    "FR-022": {
+      "title": "Strip copy comes from settings with today's wording as defaults",
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T055"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellCopyTests::ShellActions_ShouldTakeEveryLabelAndTooltipFromItsSettingsKey_WithTheVerbatimDefaultWhenUnedited; ShellActions_ShouldShowTheNewWording_WithoutARebuild_WhenAKeyIsChanged"
+      ]
+    },
+    "FR-023": {
+      "title": "Back uses danger colour, save uses success colour, both theme-driven",
+      "tasks": [
+        "T021"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldMarkTheSaveVerbAsSave_AndBackAsBack"
+      ]
+    },
+    "FR-024": {
+      "title": "Clear All Labels and Help are icon-only with tooltip and screen-reader name",
+      "tasks": [
+        "T022"
+      ]
+    },
+    "FR-025": {
+      "title": "The mode in force is marked with success text and border",
+      "tasks": [
+        "T007",
+        "T023"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::ShellActions_ShouldMarkOnlyTheModeInForce_WithSuccessTextAndBorder"
+      ]
+    },
+    "FR-026": {
+      "title": "Shared shell learns actions only from the active page's own description",
+      "tasks": [
+        "T006",
+        "T008",
+        "T024"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::MainWindow_ShouldNameNoDunnageTypeForTheseActions"
+      ]
+    },
+    "FR-027": {
+      "title": "Leave confirmation protects unsaved work on mode and page changes",
+      "tasks": [
+        "T027",
+        "T028",
+        "T031"
+      ],
+      "tests": [
+        "ViewModel_Dunnage_ShellActionTests::EnterEditModeCommand_ShouldAskTheSameLeaveConfirmation_AndStayPut_WhenRefused"
+      ]
+    },
+    "FR-028": {
+      "title": "Non-Inventoried Labels hub cards open the page they name by name",
+      "tasks": [
+        "T041",
+        "T056",
+        "T058",
+        "T059",
+        "T060",
+        "T061"
+      ],
+      "tests": [
+        "ViewModel_Settings_Dunnage_CategoryHubTests::Steps_ShouldOfferSixTitlesIncludingLabelFiles_AndEachTitleShouldResolveThePageItNames"
+      ]
+    },
+    "FR-029": {
+      "title": "Receiving hub cards open the page they name by name",
+      "tasks": [
+        "T057"
+      ],
+      "assumes": "Receiving hub card tags were read against the step titles and view files; no test asserts it"
+    },
+    "FR-030": {
+      "title": "Search offers every page reachable from navigation and both hubs",
+      "tasks": [
+        "T041",
+        "T062",
+        "T066"
+      ],
+      "tests": [
+        "SearchDestinationCatalogTests::Catalog_ShouldNameEveryRouteInNavRoutes_ExceptTheDisabledModule"
+      ]
+    },
+    "FR-031": {
+      "title": "Search omits missing, switched-off, and mid-workflow pages",
+      "tasks": [
+        "T063",
+        "T066"
+      ],
+      "tests": [
+        "SearchDestinationCatalogTests::Catalog_ShouldOfferNoRetiredPageOrInnerStep_AndEverySettingsDestinationShouldResolve"
+      ]
+    },
+    "FR-032": {
+      "title": "Search applies the navigation permission check and refusal",
+      "tasks": [
+        "T064",
+        "T066"
+      ],
+      "tests": [
+        "SearchDestinationCatalogTests::OfferedResults_ShouldHideTheScannerEntry_WhenThePolicyRefusesTheUser_AndRestoreItWhenTheListChanges"
+      ]
+    },
+    "FR-033": {
+      "title": "Search results run the same leave confirmation as navigation",
+      "tasks": [
+        "T065",
+        "T066"
+      ],
+      "tests": [
+        "SearchDestinationCatalogTests::BothEntryPaths_ShouldUseTheOneOpenerThatCarriesTheScannerGateAndTheLeaveConfirmation"
+      ]
+    },
+    "FR-034": {
+      "title": "Page behaviour stays behind view models, code-behind is wiring only",
+      "tasks": [
+        "T025",
+        "T029",
+        "T031"
+      ],
+      "assumes": "The workflow page code-behind keeps only the host attach, the accelerators and the leave confirmation; checked by reading it"
+    },
+    "FR-035": {
+      "title": "Other modules keep current behaviour beyond earning a strip when they offer actions",
+      "tasks": [
+        "T026"
+      ],
+      "tests": [
+        "ViewModel_Shared_ShellActionBarTests::Attach_ShouldShowOnlyTheActionsThePageOffers_WhenThePageBelongsToNeitherModule"
+      ]
+    }
+  },
+  "classification": {
+    "projectedFiles": 26,
+    "projectedTasks": 34,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "intent": "Move Non-Inventoried Labels navigation into the existing shared shell action bar, delete its mode-selection screen and manual mode, and make settings cards and global search accurate app-wide.",
+  "size": "oversized",
+  "unattended": true,
+  "workingBranch": "006-dunnage-shell-action-bar",
+  "decisions": [
+    {
+      "decision": "Add a fourth entry-mode slot (ImageSearch plus IsImageSearchDefault) to the shell snapshot, the shared projection, and the strip XAML",
+      "why": "The spec forbids a second strip and requires the mode group to show the owning module own modes; one extra slot per layer delivers that and leaves the Receiving snapshot equivalent",
+      "rejected": "Replacing the fixed slots with an ordered collection and a repeater, which rewrites the strip and the 005 tests for two modules that need five slots between them",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Move Back, Next, Review, Save, and the mode-entry verbs into ViewModel_Dunnage_WorkFlowViewModel and hand it the hosted child view models through AttachShellActionHosts",
+      "why": "The shell can only reach provider commands, and the page conditions the strip must honour are only visible from the page",
+      "rejected": "Keeping the code-behind handlers and letting MainWindow call into the page, which the shell cannot see and which FR-026 and FR-034 forbid",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Select Type offers Next, enabled once a type is selected, and type cards keep auto-advancing",
+      "why": "The per-page matrix lists Next there and FR-014 requires it gated on a chosen type; after Back from Select Part the type is still selected so Next is the way forward again",
+      "rejected": "Omitting Next and deviating from FR-017, or stopping card auto-advance so Next is the only way forward, which costs every operator a click on every entry",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Back on Image Search returns to the guided step the operator came from, defaulting to Select Type when Image Search was the starting mode",
+      "why": "Image Search has no predecessor inside the walk, so a fixed destination is wrong in one of the two ways it can be reached",
+      "rejected": "Always returning to Select Type, which discards guided progress when the operator pressed Image Search mid-walk",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Strip copy comes from a new DunnageSettingsKeys.UiText group with today wording as defaults and one manifest entry each, and the save verb defaults to Save",
+      "why": "Mirrors the Receiving shell keys so both modules are maintained the same way and satisfies FR-022",
+      "rejected": "Resource files, which give a second inconsistent place to change operator text; the pinned Verbatim Constraint Save overrides the replaced Save All and Save Changes wording",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Delete manual mode outright: both enum members, both view models, both views, the ModeSelection shortcut key, the help topics, and the registrations, and correct a stored manual default to guided on open",
+      "why": "FR-011 says no step or screen may implement it and FR-012 asks for the stored value to be corrected",
+      "rejected": "Keeping the enum members and refusing navigation, which leaves a compiling route that every later switch must carry",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Keep the hand-maintained search catalog and fix what the audit found: one shared route opener carrying the scanner gate and leave confirmation, scanner entries filtered by the policy, ReconciliationLauncherPage added, and View_Settings_Dunnage_LabelPaths registered",
+      "why": "The requirements ask for completeness and accurate access rules, not a new mechanism, and the drift came from four specific omissions",
+      "rejected": "Generating the catalog by reflection, which replaces an auditable list with machinery that cannot express which pages are inner guided steps",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Resolve every Dunnage settings hub card by the exact step title in its Tag and add a Label Files card",
+      "why": "FR-028 requires resolution by name rather than position, and the Label Files page exists and was offered in search with no route from its hub",
+      "rejected": "Leaving Dunnage positional because it currently works, which leaves the two hubs maintained by two different rules",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Delete the mode-selection tests, re-point the workflow view model tests off the deleted neutral step, and add Dunnage shell action and default-mode test files beside the Receiving ones",
+      "why": "The deleted screen tests assert a screen that no longer exists and the workflow tests would not compile, while the new files mirror how Receiving is verified",
+      "rejected": "Extending the Receiving shell tests to cover Dunnage, which would need both modules fixture graphs in a file named for one of them",
+      "by": "agent",
+      "at": "2026-11-22T00:47:02.753Z"
+    },
+    {
+      "decision": "Keep NavigateToRouteTagAsync as the single opener and route the navigation pane through it",
+      "why": "one opener carrying the scanner gate and the leave confirmation, with no rename rippling into MainWindow.xaml.cs",
+      "rejected": "Adding a second OpenRouteAsync method and deleting the old name",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Filter offered search results through a static FilterOfferedResults(matches, isScannerAllowed)",
+      "why": "the allow-list only removes the scanner entry, so the list needs no change when it grows, and the rule stays testable without a window instance",
+      "rejected": "Filtering inside GetSearchMatches, which is static and cannot see the current policy state",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Move the navigation verbs and the details Review flow into the Dunnage workflow view model, with two small hooks the page assigns in its constructor",
+      "why": "the strip can only reach a provider command, and the page still owns the leave confirmation and the details text commit",
+      "rejected": "Keeping the handlers in code-behind and letting MainWindow reach into the page",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Give the Dunnage mode builder an explicit showDividerAfter parameter",
+      "why": "the Receiving helper sets ShowDividerAfter from canBeDefault, which copied verbatim draws a trailing divider after Image Search",
+      "rejected": "Reusing the Receiving helper unchanged",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Detach the strip when a page supplies no provider",
+      "why": "FR-002 and FR-035 require the strip to collapse so the page takes the full height; without the detach the previous page strip stayed on screen",
+      "rejected": "Leaving TrackShellActions to return early",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Register the Receiving and Volvo Label Files pages in dependency injection",
+      "why": "the catalog test showed search offered three settings pages that were never registered and so could not open",
+      "rejected": "Excluding them from the catalog assertion",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Trim the mode-selection shortcut assertions and service wiring in Phase 1",
+      "why": "deleting the settings key made the tree unbuildable otherwise; Phase 5 finished the removal",
+      "rejected": "Leaving the tree red between phases",
+      "by": "agent",
+      "at": "2026-11-22T01:53:37.978Z"
+    },
+    {
+      "decision": "Bind the strip buttons enabled state from the snapshot instead of relying on each command CanExecute",
+      "why": "the provider computes gates from hosted view models, so the snapshot is the one place that knows them",
+      "rejected": "Giving every slot command a CanExecute predicate and notifying it",
+      "by": "agent",
+      "at": "2026-11-22T02:14:44.709Z"
+    },
+    {
+      "decision": "Check settings page dependencies by reading each view model constructor against the registrations rather than building a service provider in the test",
+      "why": "the app host registers logging, IConfiguration and IHostEnvironment outside the module registration, and resolving pages would drag that whole composition into a unit test",
+      "rejected": "Resolving every settings view model from a hand-built provider",
+      "by": "agent",
+      "at": "2026-11-22T02:14:44.709Z"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Planned the Non-Inventoried Labels strip by extending the existing shell chain with one ImageSearch mode slot, moving the Dunnage verbs into its view model, deleting manual mode and the mode-selection screen, name-resolving both settings hubs, and repairing the search catalog access and completeness gaps",
+      "key_finding": "The strip already reaches any page that implements IViewModel_ShellActionProvider, so the feature is one extra mode slot in core plus a Dunnage provider; the harder half is that every Dunnage verb lives in view code-behind reaching through XAML element names, and the search path opens routes without the scanner gate that navigation applies"
+    },
+    "tasks": {
+      "summary": "70 tasks in 11 phases: the settings copy surface, a fourth mode slot through core and the strip, the Dunnage provider that fills it, the startup decision, the manual-mode deletion, then the P2 and P3 stories and Polish"
+    },
+    "implement": {
+      "summary": "Two independent reviews at the high tier ran; their three high-confidence findings (slot enabled state, unresolved Label Files services, Image Search return step) are all fixed and re-verified"
+    },
+    "converge": {
+      "summary": "Converge assessed the built spec against 35 functional requirements, 11 measurable outcomes, 33 acceptance scenarios and 11 edge cases; every area passed except FR-030/SC-008, so exactly one task (T071) was appended to close that gap.",
+      "key_finding": "FR-030/SC-008: View_Settings_Receiving_VendorVariables (Custom Vendor Variables) and View_Settings_Receiving_WeldedParts (Welded Part Numbers) are reachable from the Receiving settings hub but absent from the search catalog, and SearchDestinationCatalogTests cannot detect that class of gap.",
+      "checks": [
+        "35 functional requirements checked",
+        "11 measurable outcomes checked",
+        "33 acceptance scenarios checked",
+        "11 edge cases checked",
+        "8 plan decisions checked; the 18 recorded implement decisions left alone",
+        "7 constitution principles checked - no violation (Principle III remains the plan-recorded justified exception)"
+      ],
+      "appended": [
+        "New '## Phase 12: Convergence' section with exactly one task, T071: add a search destination for View_Settings_Receiving_VendorVariables (Custom Vendor Variables) and View_Settings_Receiving_WeldedParts (Welded Part Numbers), with aliases matching the card titles, and extend SearchDestinationCatalogTests to compare every card title on the Non-Inventoried Labels and Receiving hubs against the catalog (FR-030, SC-008)"
+      ],
+      "dismissed_concerns": [
+        "T069 code-level spot check: dismissed - no provider exists outside the two modules and TrackShellActions detaches on every navigation",
+        "No navigation-level test for the strip detach: dismissed - behaviour verified in MainWindow.TrackShellActions and ViewModel_Shared_ShellActionBar.Detach",
+        "Hard-coded save-complete and clear-confirmation dialog copy: dismissed - FR-022 is scoped to strip labels and tooltips, and the plan pins exactly seven Dunnage.UiText keys",
+        "Label Files DI registrations outside the named files: dismissed - recorded decision, required by FR-030/FR-031",
+        "FR-013 divider wording: dismissed - superseded by 005's FR-032 and encoded in T014; the code draws the divider between Back and Next"
+      ],
+      "next_action": "/speckit.implement to complete T071"
+    }
+  },
+  "approach": "Extend Model_ShellActionBarState and the shared projection with an ImageSearch slot and default flag, render a fourth chip in MainWindow, and implement IViewModel_ShellActionProvider on ViewModel_Dunnage_WorkFlowViewModel, whose verbs move out of the page code-behind and whose children arrive through AttachShellActionHosts. Delete ModeSelection and ManualEntry across enum, views, view models, shortcuts, help, and DI, with StartWorkflowAsync falling back to Guided and correcting a stored manual value. Then name-resolve both settings hubs and route search and the navigation pane through one opener that carries the scanner gate.",
+  "verified": [
+    {
+      "what": "plan blocks check out",
+      "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/006-dunnage-shell-action-bar --strict",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 0,
+      "result": "  WARNING plan.md:315  screen `dunnage-settings-hub` is not shown by any state: end the state it belongs to with `shows dunnage-settings-hub`, or leave it if it belongs to none (screen-not-shown) ·   WARNING plan.md:323  screen `receiving-settings-hub` is not shown by any state: end the state it belongs to with `shows receiving-settings-hub`, or leave it if it belongs to none (screen-not-shown) ·   0 error(s), 8 warning(s)"
+    },
+    {
+      "what": "solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx -v q --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 33.9,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:33.70",
+      "commit": "03ab3805",
+      "tree": "9f3df907c0e9d7a37b6293e784211ccec482f4b2"
+    },
+    {
+      "what": "test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo -v q",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 45.8,
+      "result": "Test run for C:\\Users\\johnk\\Source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:  1483, Skipped:   264, Total:  1747, Duration: 5 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "03ab3805",
+      "tree": "e41a6ee1b6ca8a415a032b0c2fc352192e50e87b"
+    },
+    {
+      "what": "FR-003: the strip sits in the auto-height row inside a horizontal scroller whose inner grid keeps a MinWidth of the scroller width, so every action stays reachable at compact widths",
+      "result": "Read MainWindow.xaml host, scroller and grid; no code change needed"
+    },
+    {
+      "what": "FR-023: the Back slot carries Kind Back, the save verb Kind Save, and Helper_ShellBrush resolves ShellDangerBrush, ShellSuccessBrush and TextFillColorPrimaryBrush from Application resources so both follow a theme switch",
+      "result": "Read the bindings and Helper_ShellBrush; asserted the kinds in tests"
+    },
+    {
+      "what": "FR-024: Clear All Labels and Help are icon-only and each keeps a non-empty AccessibilityName and tooltip from the snapshot",
+      "result": "Asserted in ViewModel_Dunnage_ShellActionTests"
+    },
+    {
+      "what": "FR-025: exactly one mode chip is active on each of the seven pages",
+      "result": "Asserted in ViewModel_Dunnage_ShellActionTests"
+    },
+    {
+      "what": "FR-033: a mode change, a page change and an entry into settings raise the same leave confirmation, because the mode commands call the page leave confirmation the navigation path already used",
+      "result": "Read both paths and asserted the mode command path with a refused confirmation"
+    },
+    {
+      "what": "FR-029: every Receiving hub card Tag equals the title of the step it opens and every target page exists",
+      "result": "Read the seven tags against the seven step titles and the seven view files"
+    },
+    {
+      "what": "SC-003: opening Non-Inventoried Labels now lands on the first guided step in one action instead of two",
+      "result": "StartWorkflowAsync goes straight to the guided entry and records Guided"
+    },
+    {
+      "what": "SC-004: the stored default is read on the next open and at most one mode flag is ticked",
+      "result": "Proved by the startup tests and the single-default test; a real process restart was not executed"
+    },
+    {
+      "what": "SC-005: zero ways left into manual mode, including controls, shortcuts, settings rows, help topics and search aliases",
+      "result": "Enum members, views, view models, shortcut, manifest row, settings card and help topics deleted; the search alias retired"
+    },
+    {
+      "what": "T054 named a FocusForAccess member on the Dunnage Review view that does not exist there",
+      "result": "No member to repoint; the task is a no-op and the page loads fine"
+    },
+    {
+      "what": "T069 spot check of Reconciliation, Reporting, Settings and Volvo pages",
+      "result": "Only Receiving and Non-Inventoried Labels implement the shell action provider, and a page without one now detaches the strip; the on-screen pass was not executed"
+    },
+    {
+      "what": "solution build after review fixes",
+      "command": "dotnet build MTM_Receiving_Application.slnx -v q --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 32.3,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:32.07",
+      "commit": "03ab3805",
+      "tree": "37165aaabc643b689a5456e7f0740bba6ab509af"
+    },
+    {
+      "what": "test suite after review fixes",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo -v q",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 43.9,
+      "result": "Test run for C:\\Users\\johnk\\Source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:  1483, Skipped:   264, Total:  1747, Duration: 5 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "03ab3805",
+      "tree": "4c5e17ff323d26c7ac32a0276346aca716670ed5"
+    },
+    {
+      "what": "High-depth review pass 1 (shell provider and strip): Back and Next never bound IsEnabled, so every page gate the provider expressed that way was invisible on screen while the accelerators honoured it",
+      "result": "Fixed: both buttons now bind IsEnabled from the snapshot, matching the Clear Label Data control"
+    },
+    {
+      "what": "High-depth review pass 2 (deletions and wiring): the three Label Files settings pages could not be activated because their IService_*UserLabelSettings services were never registered",
+      "result": "Fixed: all three services registered; the catalog test now checks each settings page view model dependency is registered"
+    },
+    {
+      "what": "Both review passes found that Back from Image Search returned to a page whose data the leave confirmation had just cleared",
+      "result": "Fixed: the return step falls back to the guided entry when the operator had unsaved work that the confirmation discarded"
+    },
+    {
+      "what": "final solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx -v q --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 23.3,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:23.07",
+      "commit": "03ab3805",
+      "tree": "df911f0a30451b4bfbd50c11e2942cd65cf54779"
+    },
+    {
+      "what": "final test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo -v q",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 43.5,
+      "result": "Test run for C:\\Users\\johnk\\Source\\repos\\MTM_Receiving_Application\\MTM_Receiving_Application.Tests\\bin\\x64\\Debug\\net10.0-windows10.0.22621.0\\MTM_Receiving_Application.Tests.dll (.NETCoreApp,Version=v10.0) · A total of 1 test files matched the specified pattern. · Passed!  - Failed:     0, Passed:  1483, Skipped:   264, Total:  1747, Duration: 5 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "03ab3805",
+      "tree": "f7a1871927001f369381f76231d71c7c3ea8b8bf"
+    },
+    {
+      "what": "Converge requirement sweep",
+      "result": "35 functional requirements, 11 measurable outcomes, 33 acceptance scenarios and 11 edge cases checked; one finding only (FR-030/SC-008)"
+    },
+    {
+      "what": "Converge decision stock",
+      "result": "8 plan decisions checked; 18 recorded implement decisions left alone"
+    },
+    {
+      "what": "Converge constitution check",
+      "result": "7 principles checked, no violation; Principle III stays the plan-recorded justified exception"
+    },
+    {
+      "what": "tasks.md after the converge append",
+      "result": "Phase 12 Convergence holds exactly one open task, T071; the 70 pre-existing tasks stay checked"
+    }
+  ],
+  "planBlocks": [
+    "calls",
+    "code",
+    "states",
+    "screens"
+  ],
+  "currentTask": null,
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Added the Dunnage UiText keys and deleted the mode-selection shortcut key and manifest row",
+      "files": [
+        "Module_Dunnage/Settings/DunnageSettingsKeys.cs; Module_Settings.Core/Defaults/settings.manifest.json; Module_Dunnage/Services/Service_DunnageShortcuts.cs; MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SettingsManifestDunnageShortcutTests.cs"
+      ],
+      "wave": "T001-T002"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Added the Dunnage UiText keys and deleted the mode-selection shortcut key and manifest row",
+      "files": [
+        "Module_Dunnage/Settings/DunnageSettingsKeys.cs; Module_Settings.Core/Defaults/settings.manifest.json; Module_Dunnage/Services/Service_DunnageShortcuts.cs; MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SettingsManifestDunnageShortcutTests.cs"
+      ],
+      "wave": "T001-T002"
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added the verbatim StringDefaults for every new Dunnage UiText key",
+      "files": [
+        "Module_Dunnage/Settings/DunnageSettingsDefaults.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added the ImageSearch slot, its default flag, and per-chip IsVisible so an unowned mode collapses",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionBarState.cs; Module_Core/Models/UI/Model_ShellModeAction.cs"
+      ],
+      "wave": "T004-T005"
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added the ImageSearch slot, its default flag, and per-chip IsVisible so an unowned mode collapses",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionBarState.cs; Module_Core/Models/UI/Model_ShellModeAction.cs"
+      ],
+      "wave": "T004-T005"
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Projected ImageSearch, its default flag and each chip's IsVisible, and moved the mode lookup into EnterMode and RememberModeAsDefault",
+      "files": [
+        "Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added the Image Search chip with a visibility binding on all five chips, routed the mode press through the projection, and moved the search and navigation path into MainWindow.Search.cs",
+      "files": [
+        "MainWindow.xaml; MainWindow.xaml.cs; MainWindow.Search.cs; .editorconfig"
+      ],
+      "wave": "T007-T008"
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added the Image Search chip with a visibility binding on all five chips, routed the mode press through the projection, and moved the search and navigation path into MainWindow.Search.cs",
+      "files": [
+        "MainWindow.xaml; MainWindow.xaml.cs; MainWindow.Search.cs; .editorconfig"
+      ],
+      "wave": "T007-T008"
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Wrote the per-page matrix, slot, mode, default, help and accelerator tests for both modules and validated the strip's host, brushes, screen-reader names and remaining code-behind",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Shared/ViewModels/ViewModel_Shared_ShellActionBarTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellActionTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModelTests.cs"
+      ],
+      "wave": "T009-T027"
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Created the workflow view model's shell-action partial: the seven-page matrix, mode commands, Back/Next/Review/Save slots, parameterless clear wrappers and settings-driven copy, naming no deleted step",
+      "files": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.ShellActions.cs; Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs"
+      ],
+      "wave": "T028-T029"
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Created the workflow view model's shell-action partial: the seven-page matrix, mode commands, Back/Next/Review/Save slots, parameterless clear wrappers and settings-driven copy, naming no deleted step",
+      "files": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.ShellActions.cs; Module_Dunnage/ViewModels/ViewModel_Dunnage_WorkFlowViewModel.cs"
+      ],
+      "wave": "T028-T029"
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Deleted the page's navigation row and its hosts, attached the child view models, and repointed the accelerators and part-card double-tap at the strip's own commands",
+      "files": [
+        "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml; Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs"
+      ],
+      "wave": "T030-T031"
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Deleted the page's navigation row and its hosts, attached the child view models, and repointed the accelerators and part-card double-tap at the strip's own commands",
+      "files": [
+        "Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml; Module_Dunnage/Views/View_Dunnage_WorkflowView.xaml.cs"
+      ],
+      "wave": "T030-T031"
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Proved the startup decision: Guided when nothing is stored, the stored mode when it is usable, and Guided plus a corrected stored value for a retired or unknown mode",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/Services/Service_DunnageWorkflowTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModelTests.cs"
+      ],
+      "wave": "T032-T034"
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Proved the startup decision: Guided when nothing is stored, the stored mode when it is usable, and Guided plus a corrected stored value for a retired or unknown mode",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/Services/Service_DunnageWorkflowTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModelTests.cs"
+      ],
+      "wave": "T032-T034"
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Proved the startup decision: Guided when nothing is stored, the stored mode when it is usable, and Guided plus a corrected stored value for a retired or unknown mode",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/Services/Service_DunnageWorkflowTests.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_DetailsEntryViewModelTests.cs"
+      ],
+      "wave": "T032-T034"
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Rewrote the startup decision to open a real page for every stored value, correct the stored value for absent and retired modes, and keep Select Type clearing the walk when entered from outside it",
+      "files": [
+        "Module_Dunnage/Services/Service_DunnageWorkflow.cs"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Deleted the picker, manual entry, its help topics, its shortcut, its registrations and its view-model members, and re-pointed the workflow tests",
+      "files": [
+        "Module_Dunnage/ViewModels; Module_Dunnage/Views; Module_Core/Services/Help/Service_Help.cs; Module_Settings.Dunnage; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage"
+      ],
+      "wave": "T037-T043"
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Deleted the two retired enum members and renumbered the survivors from zero",
+      "files": [
+        "Module_Dunnage/Enums/Enum_DunnageWorkflowStep.cs"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Pointed the review and edit mode returns at the guided entry and dropped the review's mode-selection command",
+      "files": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs; Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs"
+      ],
+      "wave": "T045-T046"
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "Pointed the review and edit mode returns at the guided entry and dropped the review's mode-selection command",
+      "files": [
+        "Module_Dunnage/ViewModels/ViewModel_Dunnage_ReviewViewModel.cs; Module_Dunnage/ViewModels/ViewModel_Dunnage_EditModeViewModel.cs"
+      ],
+      "wave": "T045-T046"
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Read the module, help and settings for any surviving offer of manual or mode selection; the only survivor is the search alias Phase 10 retires",
+      "files": [
+        "Module_Dunnage; Module_Settings.Dunnage; Module_Core/Services/Help/Service_Help.cs"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Proved a mode press inside the current mode does nothing, a Ctrl press stores the default without moving the page, and only one default is ever ticked",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T047-T049"
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Proved a mode press inside the current mode does nothing, a Ctrl press stores the default without moving the page, and only one default is ever ticked",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T047-T049"
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Proved a mode press inside the current mode does nothing, a Ctrl press stores the default without moving the page, and only one default is ever ticked",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellDefaultModeTests.cs"
+      ],
+      "wave": "T047-T049"
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Confirmed no page draws a strip-owned control or binds a command twice, and proved the Edit Mode snapshot names none of the editing toolbar commands",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T050-T051"
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Confirmed no page draws a strip-owned control or binds a command twice, and proved the Edit Mode snapshot names none of the editing toolbar commands",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellPrimaryActionTests.cs"
+      ],
+      "wave": "T050-T051"
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "Deleted the Save All and Save Changes buttons and the empty layout rows they left behind",
+      "files": [
+        "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml; Module_Dunnage/Views/View_Dunnage_EditModeView.xaml"
+      ],
+      "wave": "T052-T053"
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Deleted the Save All and Save Changes buttons and the empty layout rows they left behind",
+      "files": [
+        "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml; Module_Dunnage/Views/View_Dunnage_EditModeView.xaml"
+      ],
+      "wave": "T052-T053"
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "Checked the Review code-behind for FocusForAccess: the member does not exist there, so nothing named the deleted button and nothing needed repointing",
+      "files": [
+        "Module_Dunnage/Views/View_Dunnage_ReviewView.xaml.cs"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "Proved every strip label and tooltip comes from its Dunnage settings key, with the verbatim default when unedited and new wording with no rebuild when a key changes",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellCopyTests.cs"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "Proved the Dunnage hub offers six unique titles incl. Label Files resolving to real pages, and read the Receiving hub's seven tags against their step titles and pages",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHubTests.cs"
+      ],
+      "wave": "T056-T057"
+    },
+    "T057": {
+      "status": "DONE",
+      "did": "Proved the Dunnage hub offers six unique titles incl. Label Files resolving to real pages, and read the Receiving hub's seven tags against their step titles and pages",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHubTests.cs"
+      ],
+      "wave": "T056-T057"
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "Added the Label Files step to the hub and an OnStepClicked handler that resolves the step by the title the card carries",
+      "files": [
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs; Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml.cs"
+      ],
+      "wave": "T058-T059"
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "Added the Label Files step to the hub and an OnStepClicked handler that resolves the step by the title the card carries",
+      "files": [
+        "Module_Settings.Dunnage/ViewModels/ViewModel_Settings_Dunnage_CategoryHub.cs; Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml.cs"
+      ],
+      "wave": "T058-T059"
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Gave every hub card the exact step title as its Tag, pointed them all at OnStepClicked, and added the Label Files card in the spare position",
+      "files": [
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Deleted the six positional handlers and the index-based navigation, so no reordered card can move another card's destination",
+      "files": [
+        "Module_Settings.Dunnage/Views/View_Settings_Dunnage_CategoryHub.xaml.cs"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "Read the catalog and nav routes by reflection: every route is searchable, no retired alias or inner step is offered, every settings destination now resolves, and the scanner entry is filtered by the allow-list",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SearchDestinationCatalogTests.cs; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ],
+      "wave": "T062-T065"
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "Read the catalog and nav routes by reflection: every route is searchable, no retired alias or inner step is offered, every settings destination now resolves, and the scanner entry is filtered by the allow-list",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SearchDestinationCatalogTests.cs; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ],
+      "wave": "T062-T065"
+    },
+    "T064": {
+      "status": "DONE",
+      "did": "Read the catalog and nav routes by reflection: every route is searchable, no retired alias or inner step is offered, every settings destination now resolves, and the scanner entry is filtered by the allow-list",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SearchDestinationCatalogTests.cs; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ],
+      "wave": "T062-T065"
+    },
+    "T065": {
+      "status": "DONE",
+      "did": "Read the catalog and nav routes by reflection: every route is searchable, no retired alias or inner step is offered, every settings destination now resolves, and the scanner entry is filtered by the allow-list",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SearchDestinationCatalogTests.cs; Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ],
+      "wave": "T062-T065"
+    },
+    "T066": {
+      "status": "DONE",
+      "did": "Made the navigation pane and search box share one opener carrying the scanner gate and leave confirmation, filtered the scanner entry, added the Receiving Validator route, and retired the mode-selection alias",
+      "files": [
+        "MainWindow.Search.cs"
+      ]
+    },
+    "T067": {
+      "status": "DONE",
+      "did": "Recorded the strip, the deleted picker and manual mode, the startup decision, and the settings and search repairs in the change log",
+      "files": [
+        "CHANGELOG.md"
+      ]
+    },
+    "T069": {
+      "status": "DONE",
+      "did": "Checked Reconciliation, Reporting, Settings and Volvo supply no shell-action provider, and found plus fixed the strip staying on screen after leaving a module: a provider-less page now detaches it",
+      "files": [
+        "MainWindow.xaml.cs; MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs"
+      ]
+    },
+    "T070": {
+      "status": "DONE",
+      "did": "Recapped SC-003 (one action to the first guided step), SC-004 (the stored default is read back on the next open with one flag ticked) and SC-005 (no route, screen, shortcut or settings row reaches manual mode)"
+    },
+    "T068": {
+      "status": "DONE",
+      "did": "Ran the solution build (0 warnings, 0 errors) and the full suite (1483 passed, 264 skipped, 0 failed) as the Success Criteria gate"
+    },
+    "T071": {
+      "status": "DONE",
+      "did": "Added search destinations for Custom Vendor Variables and Welded Part Numbers and a hub-coverage catalog test",
+      "files": [
+        "MainWindow.Search.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings.Core/Services/SearchDestinationCatalogTests.cs"
+      ]
+    }
+  },
+  "concerns": [
+    {
+      "note": "The on-screen spot check of Reconciliation, Reporting, Settings and Volvo (T069) was a code-level confirmation only; no build of the app was launched in this run.",
+      "step": "implement"
+    },
+    {
+      "note": "T054 named a FocusForAccess member on the Dunnage Review view that does not exist; nothing needed repointing.",
+      "step": "implement"
+    },
+    {
+      "note": "The search audit found two settings pages offered but never registered (Receiving Label Files, Volvo Label Files); both are now registered, which is outside the files tasks.md named for the audit.",
+      "step": "implement"
+    },
+    {
+      "note": "Localizable copy for the strip is settings-driven, but the Review save-complete dialog and the Clear Label Data confirmation still carry their previous hard-coded wording.",
+      "step": "implement"
+    },
+    {
+      "note": "The review found the strip stayed on screen after leaving a module; that was fixed by detaching when a page supplies no provider, but no automated test can exercise the window navigation itself.",
+      "step": "implement"
+    }
+  ],
+  "last_action": "Converge closed with tasks_appended: T071 added for the FR-030/SC-008 search destinations; next /speckit.implement",
+  "risk": {
+    "tier": "high",
+    "computed": "high",
+    "reasons": [
+      "50 files changed"
+    ]
+  },
+  "convergeStartedAt": "2026-11-22T02:30:06.869Z",
+  "convergePasses": [
+    {
+      "startedAt": "2026-11-22T02:17:21.903Z",
+      "by": "extension",
+      "finishedAt": "2026-11-22T02:25:02.339Z",
+      "added": [
+        "T071"
+      ]
+    },
+    {
+      "startedAt": "2026-11-22T02:29:32.068Z",
+      "by": "extension",
+      "finishedAt": "2026-11-22T02:35:02.291Z",
+      "added": [],
+      "completed": true
+    }
+  ]
+}

@@ -464,11 +464,10 @@
                 Stretch="UniformToFill" />
         </Grid>
 
-        <!--  Footer: Pagination and Save  -->
+        <!--  Footer: Pagination  -->
         <Grid Grid.Row="2" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -531,18 +530,6 @@
                     MinWidth="70"
                     ItemsSource="{x:Bind ViewModel.PageSizeOptions}"
                     SelectedItem="{x:Bind ViewModel.SelectedPageSize, Mode=TwoWay}" />
-            </StackPanel>
-
-            <!--  Save Button  -->
-            <StackPanel
-                Grid.Column="2"
-                Orientation="Horizontal"
-                Spacing="12">
-                <Button
-                    Command="{x:Bind ViewModel.SaveAllCommand}"
-                    Content="Save Changes"
-                    Style="{StaticResource AccentButtonStyle}"
-                    ToolTipService.ToolTip="{x:Bind ViewModel.GetTooltip('Button.SaveChanges'), Mode=OneWay}" />
             </StackPanel>
         </Grid>
 

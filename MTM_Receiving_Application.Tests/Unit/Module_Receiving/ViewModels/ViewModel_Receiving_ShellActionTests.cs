@@ -368,6 +368,23 @@ public sealed class ViewModel_Receiving_ShellActionTests
             );
     }
 
+    [Fact]
+    public async Task ShellActions_ShouldLeaveImageSearchHidden_WhenThePageIsReceiving()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentStep)
+            .Returns(Enum_ReceivingWorkflowStep.POEntry);
+
+        var viewModel = await CreateViewModelAsync(workflow);
+
+        viewModel
+            .ShellActions.ImageSearch.IsVisible.Should()
+            .BeFalse("Image Search belongs to Non-Inventoried Labels, so Receiving leaves it hidden");
+        viewModel.ShellActions.IsImageSearchDefault.Should().BeFalse();
+        viewModel.ShellActions.ShowModeGroup.Should().BeTrue();
+    }
+
     private static async Task<ViewModel_Receiving_Workflow> CreateViewModelAsync(
         Mock<IService_ReceivingWorkflow> workflow
     )

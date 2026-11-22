@@ -1,7 +1,9 @@
-using System;
+﻿using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MTM_Receiving_Application.Module_Settings.Core.Models;
 using MTM_Receiving_Application.Module_Settings.Core.Views;
 using MTM_Receiving_Application.Module_Settings.Dunnage.ViewModels;
 
@@ -42,15 +44,30 @@ public sealed partial class View_Settings_Dunnage_CategoryHub : Page
         return Frame;
     }
 
-    private void NavigateToStepIndex(int index)
+    /// <summary>
+    /// Opens the settings page a card stands for. The card names its step, so a card can never land
+    /// on a different page just because one was added or removed above it.
+    /// </summary>
+    private void OnStepClicked(object sender, RoutedEventArgs e)
     {
-        if (index < 0 || index >= ViewModel.Steps.Count)
+        if (sender is not FrameworkElement { Tag: string stepTitle })
         {
             return;
         }
 
-        var step = ViewModel.Steps[index];
-        if (step.ViewType is null || NavigationFrameControl is null)
+        var step = ViewModel.Steps.FirstOrDefault(candidate =>
+            string.Equals(candidate.Title, stepTitle, StringComparison.Ordinal)
+        );
+
+        if (step is not null)
+        {
+            NavigateToStep(step);
+        }
+    }
+
+    private void NavigateToStep(Model_SettingsNavigationStep step)
+    {
+        if (NavigationFrameControl is null)
         {
             return;
         }
@@ -97,16 +114,4 @@ public sealed partial class View_Settings_Dunnage_CategoryHub : Page
             return null;
         }
     }
-
-    private void OnStep0Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(0);
-
-    private void OnStep1Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(1);
-
-    private void OnStep2Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(2);
-
-    private void OnStep3Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(3);
-
-    private void OnStep4Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(4);
-
-    private void OnStep5Clicked(object sender, RoutedEventArgs e) => NavigateToStepIndex(5);
 }

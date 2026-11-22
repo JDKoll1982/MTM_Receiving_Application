@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
@@ -39,12 +39,98 @@ public sealed class Service_DunnageWorkflowTests
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
             new Mock<IService_ReceivingValidation>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         await service.StartWorkflowAsync();
 
         service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.ImagePartSearch);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_ShouldOpenTheGuidedEntryAndStoreGuided_WhenNoDefaultIsStored()
+    {
+        var userPreferences = new Mock<IService_UserPreferences>();
+        userPreferences
+            .Setup(service =>
+                service.UpdateDefaultDunnageModeAsync(It.IsAny<string>(), It.IsAny<string?>())
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+        var service = CreateService(
+            sessionManager: CreateSessionManager(defaultDunnageMode: null).Object,
+            userPreferences: userPreferences.Object
+        );
+
+        await service.StartWorkflowAsync();
+
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.TypeSelection);
+        userPreferences.Verify(
+            preferences =>
+                preferences.UpdateDefaultDunnageModeAsync("test.user", "guided"),
+            Times.Once
+        );
+    }
+
+    [Theory]
+    [InlineData("guided", Enum_DunnageWorkflowStep.TypeSelection)]
+    [InlineData("edit", Enum_DunnageWorkflowStep.EditMode)]
+    [InlineData("image-search", Enum_DunnageWorkflowStep.ImagePartSearch)]
+    public async Task StartWorkflowAsync_ShouldOpenTheStoredMode_WhenTheDefaultIsGuidedEditOrImageSearch(
+        string storedMode,
+        Enum_DunnageWorkflowStep expectedStep
+    )
+    {
+        var userPreferences = new Mock<IService_UserPreferences>();
+        var service = CreateService(
+            sessionManager: CreateSessionManager(storedMode).Object,
+            userPreferences: userPreferences.Object
+        );
+
+        await service.StartWorkflowAsync();
+
+        service.CurrentStep.Should().Be(expectedStep);
+        userPreferences.Verify(
+            preferences =>
+                preferences.UpdateDefaultDunnageModeAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string?>()
+                ),
+            Times.Never,
+            "a stored mode this version understands is left exactly as it was"
+        );
+    }
+
+    [Theory]
+    [InlineData("manual")]
+    [InlineData("not-a-step")]
+    public async Task StartWorkflowAsync_ShouldOpenTheGuidedEntryAndCorrectTheStoredValue_WhenTheDefaultIsManualOrUnrecognised(
+        string storedMode
+    )
+    {
+        var userPreferences = new Mock<IService_UserPreferences>();
+        userPreferences
+            .Setup(service =>
+                service.UpdateDefaultDunnageModeAsync(It.IsAny<string>(), It.IsAny<string?>())
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+        var sessionManager = CreateSessionManager(storedMode);
+        var service = CreateService(
+            sessionManager: sessionManager.Object,
+            userPreferences: userPreferences.Object
+        );
+
+        await service.StartWorkflowAsync();
+
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.TypeSelection);
+        userPreferences.Verify(
+            preferences => preferences.UpdateDefaultDunnageModeAsync("test.user", "guided"),
+            Times.Once
+        );
+        var correctedMode = sessionManager.Object.CurrentSession?.User?.DefaultDunnageMode;
+        correctedMode
+            .Should()
+            .Be("guided", "the stored value is corrected in the same call that reads it");
     }
 
     [Fact]
@@ -161,6 +247,42 @@ public sealed class Service_DunnageWorkflowTests
     }
 
     [Fact]
+    public async Task AdvanceToNextStepAsync_ShouldAdvanceWithAWarning_WhenLocationCannotBeVerified()
+    {
+        var service = CreateService(
+            defaultLocation: "RECV",
+            locationValidationResult: Model_ReceivingValidationResult.Warning(
+                "Location 'RECV' could not be verified against Infor Visual: server not found"
+            )
+        );
+
+        service.CurrentSession.SelectedTypeId = 5;
+        service.CurrentSession.SelectedTypeName = "Pallet";
+        service.CurrentSession.SelectedType = new Model_DunnageType
+        {
+            Id = 5,
+            TypeName = "Pallet",
+            Icon = "PackageVariantClosed",
+        };
+        service.CurrentSession.SelectedPart = new Model_DunnagePart { PartId = "DUN-100" };
+        service.NumberOfLoads = 1;
+        service.CurrentSession.LoadQuantities.Add(10m);
+        service.CurrentSession.Location = "RECV";
+
+        service.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
+        await service.AdvanceToNextStepAsync();
+
+        var detailsStepResult = await service.AdvanceToNextStepAsync();
+
+        detailsStepResult.IsSuccess.Should().BeTrue("an unverifiable location must not block the walk");
+        detailsStepResult.WarningMessage.Should().Contain("could not be verified");
+        service.CurrentStep.Should().Be(Enum_DunnageWorkflowStep.Review);
+        service
+            .CurrentSession.Loads.Should()
+            .OnlyContain(load => load.Location == "RECV", "the entered location is kept as-is");
+    }
+
+    [Fact]
     public async Task ClearLabelDataAsync_WhenClearAllRequestedByNonAdmin_ShouldFail()
     {
         var dunnageService = new Mock<IService_MySQL_Dunnage>();
@@ -190,7 +312,8 @@ public sealed class Service_DunnageWorkflowTests
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
             new Mock<IService_ReceivingValidation>().Object,
-            userPrivileges.Object
+            userPrivileges.Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         var result = await service.ClearLabelDataAsync(clearAllRows: true);
@@ -207,7 +330,9 @@ public sealed class Service_DunnageWorkflowTests
 
     private static Service_DunnageWorkflow CreateService(
         string defaultLocation = "RECV",
-        Model_ReceivingValidationResult? locationValidationResult = null
+        Model_ReceivingValidationResult? locationValidationResult = null,
+        IService_UserSessionManager? sessionManager = null,
+        IService_UserPreferences? userPreferences = null
     )
     {
         var settingsCore = new Mock<IService_SettingsCoreFacade>();
@@ -230,19 +355,42 @@ public sealed class Service_DunnageWorkflowTests
         var receivingValidation = new Mock<IService_ReceivingValidation>();
         receivingValidation
             .Setup(service =>
-                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+                service.ValidateLocationAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()
+                )
             )
             .ReturnsAsync(locationValidationResult ?? Model_ReceivingValidationResult.Success());
 
         return new Service_DunnageWorkflow(
             new Mock<IService_MySQL_Dunnage>().Object,
-            new Mock<IService_UserSessionManager>().Object,
+            sessionManager ?? new Mock<IService_UserSessionManager>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
             receivingValidation.Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            userPreferences ?? new Mock<IService_UserPreferences>().Object
         );
+    }
+
+    private static Mock<IService_UserSessionManager> CreateSessionManager(string? defaultDunnageMode)
+    {
+        var sessionManager = new Mock<IService_UserSessionManager>();
+        sessionManager
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new MTM_Receiving_Application.Module_Core.Models.Systems.Model_UserSession(
+                    new MTM_Receiving_Application.Module_Core.Models.Systems.Model_User
+                    {
+                        WindowsUsername = "test.user",
+                        DefaultDunnageMode = defaultDunnageMode,
+                    }
+                )
+            );
+
+        return sessionManager;
     }
 }

@@ -43,6 +43,11 @@ public sealed class Model_ShellActionBarState
     public Model_ShellModeAction Overlay { get; init; } = Model_ShellModeAction.Hidden;
 
     /// <summary>
+    /// Gets the Image Search control. Non-Inventoried Labels only.
+    /// </summary>
+    public Model_ShellModeAction ImageSearch { get; init; } = Model_ShellModeAction.Hidden;
+
+    /// <summary>
     /// Gets the Back position, which may carry a page-specific verb instead.
     /// </summary>
     public Model_ShellActionSlot Back { get; init; } = Model_ShellActionSlot.Hidden;
@@ -76,6 +81,11 @@ public sealed class Model_ShellActionBarState
     /// Gets a value indicating whether Edit is the stored default.
     /// </summary>
     public bool IsEditDefault { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether Image Search is the stored default.
+    /// </summary>
+    public bool IsImageSearchDefault { get; init; }
 
     /// <summary>
     /// Gets the snapshot that offers nothing.

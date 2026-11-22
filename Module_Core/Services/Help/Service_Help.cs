@@ -126,16 +126,14 @@ public class Service_Help : IService_Help
     {
         var key = step switch
         {
-            Enum_DunnageWorkflowStep.ModeSelection => "Dunnage.ModeSelection",
             Enum_DunnageWorkflowStep.ImagePartSearch => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.TypeSelection => "Dunnage.TypeSelection",
             Enum_DunnageWorkflowStep.PartSelection => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.QuantityEntry => "Dunnage.QuantityEntry",
             Enum_DunnageWorkflowStep.DetailsEntry => "Dunnage.DetailsEntry",
             Enum_DunnageWorkflowStep.Review => "Dunnage.Review",
-            Enum_DunnageWorkflowStep.ManualEntry => "Dunnage.ManualEntry",
             Enum_DunnageWorkflowStep.EditMode => "Dunnage.EditMode",
-            _ => "Dunnage.ModeSelection",
+            _ => "Dunnage.TypeSelection",
         };
 
         await ShowHelpAsync(key);
@@ -224,14 +222,12 @@ public class Service_Help : IService_Help
     {
         var key = step switch
         {
-            Enum_DunnageWorkflowStep.ModeSelection => "Dunnage.ModeSelection",
             Enum_DunnageWorkflowStep.ImagePartSearch => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.TypeSelection => "Dunnage.TypeSelection",
             Enum_DunnageWorkflowStep.PartSelection => "Dunnage.PartSelection",
             Enum_DunnageWorkflowStep.QuantityEntry => "Dunnage.QuantityEntry",
             Enum_DunnageWorkflowStep.DetailsEntry => "Dunnage.DetailsEntry",
             Enum_DunnageWorkflowStep.Review => "Dunnage.Review",
-            Enum_DunnageWorkflowStep.ManualEntry => "Dunnage.ManualEntry",
             Enum_DunnageWorkflowStep.EditMode => "Dunnage.EditMode",
             _ => "",
         };
@@ -322,29 +318,6 @@ public class Service_Help : IService_Help
 
     private void InitializeDunnageHelp()
     {
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Dunnage.ModeSelection",
-                Title = "Select Entry Mode",
-                Content =
-                    "Choose how you want to enter non-inventoried label receiving data:\n\n"
-                    + "• Guided Wizard - Step-by-step process for single transactions. Best for occasional entries or when you need guidance.\n\n"
-                    + "• Manual Entry - Bulk grid entry for multiple transactions. Ideal for processing many items at once.\n\n"
-                    + "• Edit Mode - Review and edit historical data. Use to correct past entries or view receiving history.",
-                Category = "Dunnage Workflow",
-                HelpType = Enum_HelpType.Info,
-                Icon = "ViewDashboard",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string>
-                {
-                    "Dunnage.TypeSelection",
-                    "Dunnage.ManualEntry",
-                    "Dunnage.EditMode",
-                },
-            }
-        );
-
         AddHelpContent(
             new Model_HelpContent
             {
@@ -454,32 +427,7 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "CheckCircle",
                 Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Dunnage.ModeSelection" },
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Dunnage.ManualEntry",
-                Title = "Manual Entry Mode",
-                Content =
-                    "Bulk entry mode for processing multiple non-inventoried items:\n\n"
-                    + "**Features:**\n"
-                    + "• Add multiple rows at once (up to 100)\n"
-                    + "• Auto-fill from last entry for the same part\n"
-                    + "• Fill blank spaces with data from previous row\n"
-                    + "• Sort entries for optimal label printing\n\n"
-                    + "**Tips:**\n"
-                    + "• Use Tab key to move between cells quickly\n"
-                    + "• Copy/paste values between cells\n"
-                    + "• Use bulk operations to speed up data entry\n"
-                    + "• Sort by Part ID before saving for sequential label numbers",
-                Category = "Dunnage Workflow",
-                HelpType = Enum_HelpType.Tutorial,
-                Icon = "Table",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string> { "Dunnage.ModeSelection" },
+                RelatedKeys = new List<string> { "Dunnage.TypeSelection" },
             }
         );
 
@@ -506,7 +454,7 @@ public class Service_Help : IService_Help
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "PencilBox",
                 Severity = Enum_HelpSeverity.Warning,
-                RelatedKeys = new List<string> { "Dunnage.ModeSelection" },
+                RelatedKeys = new List<string> { "Dunnage.TypeSelection" },
             }
         );
     }
@@ -1168,24 +1116,6 @@ public class Service_Help : IService_Help
                 Category = "Dunnage",
                 HelpType = Enum_HelpType.Tutorial,
                 Icon = "ViewColumn",
-                Severity = Enum_HelpSeverity.Info,
-                RelatedKeys = new List<string>(),
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Dunnage.AddMultipleRows",
-                Title = "Add Multiple Rows",
-                Content =
-                    "Add several blank rows to Manual Entry at once.\n\n"
-                    + "• Enter the number of rows to add (1 or more)\n"
-                    + "• Click Add (primary button) to insert them\n"
-                    + "• Fill in each new row as usual",
-                Category = "Dunnage",
-                HelpType = Enum_HelpType.Info,
-                Icon = "TablePlus",
                 Severity = Enum_HelpSeverity.Info,
                 RelatedKeys = new List<string>(),
             }
@@ -2322,17 +2252,6 @@ public class Service_Help : IService_Help
                 Key = "Tip.Dunnage.PartSelection",
                 Content =
                     "Use the search function to quickly find parts. Parts with a green badge are tracked in inventory.",
-                HelpType = Enum_HelpType.Tip,
-                Icon = "Lightbulb",
-            }
-        );
-
-        AddHelpContent(
-            new Model_HelpContent
-            {
-                Key = "Tip.Dunnage.ManualEntry",
-                Content =
-                    "Use Tab key to navigate between cells quickly. Sort entries by Part ID before saving for sequential labels.",
                 HelpType = Enum_HelpType.Tip,
                 Icon = "Lightbulb",
             }

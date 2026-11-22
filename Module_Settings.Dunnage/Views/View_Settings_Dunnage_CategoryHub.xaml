@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="MTM_Receiving_Application.Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,6 +8,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!--
+            Every card carries the exact step title it opens, so a card can never land on another
+            card's page just because one was added or reordered above it.
+        -->
         <Grid
             Grid.Row="0"
             HorizontalAlignment="Stretch"
@@ -15,7 +19,6 @@
             ColumnSpacing="16"
             RowSpacing="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -37,7 +40,8 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep0Clicked"
+                Click="OnStepClicked"
+                Tag="Personal Defaults"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -69,7 +73,8 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep1Clicked"
+                Click="OnStepClicked"
+                Tag="Image Assets"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -101,7 +106,8 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep2Clicked"
+                Click="OnStepClicked"
+                Tag="Image Presentation"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -133,7 +139,8 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep3Clicked"
+                Click="OnStepClicked"
+                Tag="Workflow Visuals"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -165,7 +172,8 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                Click="OnStep4Clicked"
+                Click="OnStepClicked"
+                Tag="Keyboard Shortcuts"
                 CornerRadius="8">
                 <StackPanel Spacing="12">
                     <FontIcon
@@ -180,7 +188,40 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         MaxLines="3"
                         Style="{StaticResource BodyTextBlockStyle}"
-                        Text="Set Non-Inventoried Labels shortcuts for mode select, label clear, navigation, help, and Ctrl+T."
+                        Text="Set Non-Inventoried Labels shortcuts for label clear, navigation, help, and Ctrl+T."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                Width="320"
+                Height="180"
+                Padding="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStepClicked"
+                Tag="Label Files"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE8A5;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Label Files" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        MaxLines="3"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Choose the LabelView template path used for non-inventoried labels."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
                 </StackPanel>

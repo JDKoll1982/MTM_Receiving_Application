@@ -73,6 +73,69 @@ public sealed class ViewModel_Shared_ShellActionBarTests
             .BeFalse("the strip collapses so the label-shortcut footer keeps its own pane");
     }
 
+    [Fact]
+    public void Attach_ShouldShowOnlyTheActionsThePageOffers_WhenThePageBelongsToNeitherModule()
+    {
+        var bar = new ViewModel_Shared_ShellActionBar();
+        var provider = new ProviderStub(
+            new Model_ShellActionBarState
+            {
+                IsVisible = true,
+                ShowModeGroup = false,
+                Help = new Model_ShellActionSlot
+                {
+                    IsVisible = true,
+                    IsEnabled = true,
+                    Label = "Help",
+                    AccessibilityName = "Help",
+                },
+            }
+        );
+
+        bar.Attach(provider);
+
+        bar.IsVisible.Should().BeTrue();
+        bar.ShowModeGroup.Should().BeFalse();
+        bar.Guided.IsVisible.Should().BeFalse();
+        bar.Edit.IsVisible.Should().BeFalse();
+        bar.ImageSearch.IsVisible.Should().BeFalse();
+        bar.Back.IsVisible.Should().BeFalse();
+        bar.Next.IsVisible.Should().BeFalse();
+        bar.ClearLabelData.IsVisible.Should().BeFalse();
+        bar.Help.IsVisible.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Attach_ShouldProjectTheImageSearchChipAndItsDefaultMarker()
+    {
+        var bar = new ViewModel_Shared_ShellActionBar();
+        var provider = new ProviderStub(
+            new Model_ShellActionBarState
+            {
+                IsVisible = true,
+                ShowModeGroup = true,
+                ImageSearch = new Model_ShellModeAction
+                {
+                    Mode = "image-search",
+                    Label = "Image Search",
+                    CanBeDefault = true,
+                    IsVisible = true,
+                },
+                IsImageSearchDefault = true,
+            }
+        );
+
+        bar.Attach(provider);
+
+        bar.ImageSearch.Label.Should().Be("Image Search");
+        bar.ImageSearch.IsVisible.Should().BeTrue();
+        bar.IsImageSearchDefault.Should().BeTrue();
+
+        bar.Detach();
+        bar.ImageSearch.IsVisible.Should().BeFalse();
+        bar.IsImageSearchDefault.Should().BeFalse();
+    }
+
     private static Model_ShellActionBarState CreateReceivingSnapshot() =>
         new()
         {

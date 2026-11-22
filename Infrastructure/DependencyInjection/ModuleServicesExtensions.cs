@@ -321,18 +321,20 @@ public static class ModuleServicesExtensions
         services.AddTransient<IService_MySQL_Dunnage, Service_MySQL_Dunnage>();
         services.AddSingleton<IService_DunnageImageStorage, Service_DunnageImageStorage>();
         services.AddSingleton<IService_DunnageSettings, Service_DunnageSettings>();
+        services.AddSingleton<
+            Module_Dunnage.Contracts.IService_DunnageUserLabelSettings,
+            Module_Dunnage.Services.Service_DunnageUserLabelSettings
+        >();
         services.AddSingleton<IService_DunnageShortcuts, Service_DunnageShortcuts>();
         services.AddSingleton<IService_DunnageWorkflow, Service_DunnageWorkflow>();
 
         // ViewModels (Transient)
         services.AddTransient<ViewModel_Dunnage_WorkFlowViewModel>();
-        services.AddTransient<ViewModel_Dunnage_ModeSelection>();
         services.AddTransient<ViewModel_dunnage_typeselection>();
         services.AddTransient<ViewModel_Dunnage_PartSelection>();
         services.AddTransient<ViewModel_Dunnage_QuantityEntry>();
         services.AddTransient<ViewModel_Dunnage_DetailsEntry>();
         services.AddTransient<ViewModel_Dunnage_Review>();
-        services.AddTransient<ViewModel_Dunnage_ManualEntry>();
         services.AddTransient<ViewModel_Dunnage_EditMode>();
         services.AddTransient<ViewModel_Dunnage_QuickAddTypeDialog>();
         services.AddTransient<ViewModel_Dunnage_ImagePartSearchDialog>();
@@ -340,13 +342,11 @@ public static class ModuleServicesExtensions
 
         // Views (Transient - Per-navigation instances)
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_WorkflowView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_ModeSelectionView>();
         services.AddTransient<Module_Dunnage.Views.View_dunnage_typeselectionView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_PartSelectionView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_QuantityEntryView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_DetailsEntryView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_ReviewView>();
-        services.AddTransient<Module_Dunnage.Views.View_Dunnage_ManualEntryView>();
         services.AddTransient<Module_Dunnage.Views.View_Dunnage_EditModeView>();
 
         // Dialogs (Transient - Created on demand)
@@ -501,6 +501,16 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_SettingsUserLabelButtons, Service_SettingsUserLabelButtons>();
         services.AddSingleton<IService_SettingsUserDirectory, Service_SettingsUserDirectory>();
 
+        // Per-user LabelView template paths, used by each module's Label Files settings page
+        services.AddSingleton<
+            Module_Receiving.Contracts.IService_ReceivingUserLabelSettings,
+            Module_Receiving.Services.Service_ReceivingUserLabelSettings
+        >();
+        services.AddSingleton<
+            Module_Volvo.Contracts.IService_VolvoUserLabelSettings,
+            Module_Volvo.Services.Service_VolvoUserLabelSettings
+        >();
+
         // Database Config: per-PC MySQL target selection for testing
         services.AddSingleton<IService_DatabaseTargetManager, Service_DatabaseTargetManager>();
 
@@ -564,6 +574,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_VendorVariables>();
         services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_WeldedParts>();
+        services.AddTransient<Module_Settings.Receiving.ViewModels.ViewModel_Settings_Receiving_LabelPaths>();
 
         // Dunnage Settings Pages
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_PersonalDefaults>();
@@ -571,12 +582,14 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_WorkflowVisuals>();
         services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_KeyboardShortcuts>();
+        services.AddTransient<Module_Settings.Dunnage.ViewModels.ViewModel_Settings_Dunnage_LabelPaths>();
 
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
         // Volvo Settings Pages
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_PartCatalog>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
+        services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_LabelPaths>();
 
         // Settings Views (Transient - Per-view instances with constructor DI)
         RegisterSettingsViews(services);
@@ -613,6 +626,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_ImagePresentation>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_WorkflowVisuals>();
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_KeyboardShortcuts>();
+        services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_LabelPaths>();
 
         // Receiving Settings Views
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_CategoryHub>();
@@ -623,11 +637,13 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_KeyboardShortcuts>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_VendorVariables>();
         services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_WeldedParts>();
+        services.AddTransient<Module_Settings.Receiving.Views.View_Settings_Receiving_LabelPaths>();
 
         // Volvo Settings Views
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_PartCatalog>();
         services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_EmailRecipients>();
+        services.AddTransient<Module_Settings.Volvo.Views.View_Settings_Volvo_LabelPaths>();
     }
 
     /// <summary>

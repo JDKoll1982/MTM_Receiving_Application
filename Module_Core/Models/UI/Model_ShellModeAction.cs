@@ -44,7 +44,7 @@ public sealed class Model_ShellModeAction
 
     /// <summary>
     /// Gets a value indicating whether the default badge sits under this control. True only for
-    /// guided, manual, and edit; Overlay cannot be a default mode.
+    /// guided, manual, edit, and image search; Overlay cannot be a default mode.
     /// </summary>
     public bool CanBeDefault { get; init; }
 
@@ -65,7 +65,13 @@ public sealed class Model_ShellModeAction
     public bool ShowDividerAfter { get; init; }
 
     /// <summary>
+    /// Gets a value indicating whether this control is shown. False removes it, so a module that
+    /// does not own a mode collapses that chip instead of drawing an empty button.
+    /// </summary>
+    public bool IsVisible { get; init; } = true;
+
+    /// <summary>
     /// Gets a control that is not shown.
     /// </summary>
-    public static Model_ShellModeAction Hidden { get; } = new();
+    public static Model_ShellModeAction Hidden { get; } = new() { IsVisible = false };
 }

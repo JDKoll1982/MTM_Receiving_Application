@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -42,7 +42,11 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
         var receivingValidation = new Mock<IService_ReceivingValidation>();
         receivingValidation
             .Setup(service =>
-                service.ValidateLocationAsync(It.IsAny<string?>(), It.IsAny<string>())
+                service.ValidateLocationAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>()
+                )
             )
             .ReturnsAsync(Model_ReceivingValidationResult.Success());
 
@@ -72,7 +76,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
             receivingValidation.Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -172,7 +177,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
             new Mock<IService_ReceivingValidation>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -243,7 +249,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ViewModelRegistry>().Object,
             new Mock<IService_SettingsCoreFacade>().Object,
             new Mock<IService_ReceivingValidation>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -308,7 +315,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
             new Mock<IService_ReceivingValidation>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;
@@ -374,7 +382,8 @@ public sealed class ViewModel_Dunnage_DetailsEntryViewModelTests
             new Mock<IService_ViewModelRegistry>().Object,
             settingsCore.Object,
             new Mock<IService_ReceivingValidation>().Object,
-            new Mock<IService_UserPrivileges>().Object
+            new Mock<IService_UserPrivileges>().Object,
+            new Mock<IService_UserPreferences>().Object
         );
 
         workflowService.CurrentSession.SelectedTypeId = 5;

@@ -26,6 +26,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
         private readonly IService_SettingsCoreFacade _settingsCore;
         private readonly IService_ReceivingValidation _receivingValidation;
         private readonly IService_UserPrivileges _userPrivileges;
+        private readonly IService_UserPreferences _userPreferences;
         private readonly List<Model_DunnageLoad> _currentEntryLoads = new();
         private readonly WeakEventSource _stepChanged = new();
         private readonly WeakEventSource<string> _statusMessageRaised = new();
@@ -74,7 +75,8 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             IService_ViewModelRegistry viewModelRegistry,
             IService_SettingsCoreFacade settingsCore,
             IService_ReceivingValidation receivingValidation,
-            IService_UserPrivileges userPrivileges
+            IService_UserPrivileges userPrivileges,
+            IService_UserPreferences userPreferences
         )
         {
             _dunnageService = dunnageService;
@@ -85,6 +87,7 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             _settingsCore = settingsCore;
             _receivingValidation = receivingValidation;
             _userPrivileges = userPrivileges;
+            _userPreferences = userPreferences;
 
             _sessionManager.SessionTimedOut += OnSessionTimedOut;
         }
@@ -94,56 +97,75 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
             ClearSession();
         }
 
-        public Task<bool> StartWorkflowAsync()
+        /// <summary>
+        /// Opens the module in the operator's stored mode, or in the guided entry when nothing
+        /// usable is stored.
+        /// </summary>
+        /// <remarks>
+        /// A missing mode and a mode this version no longer has both open the guided entry, and the
+        /// stored value is corrected in the same call so the next launch needs no second decision.
+        /// </remarks>
+        public async Task<bool> StartWorkflowAsync()
         {
             ClearSession();
 
-            var currentUser = _sessionManager.CurrentSession?.User;
-            if (currentUser != null && !string.IsNullOrEmpty(currentUser.DefaultDunnageMode))
+            switch (_sessionManager.CurrentSession?.User?.DefaultDunnageMode?.Trim().ToLowerInvariant())
             {
-                switch (currentUser.DefaultDunnageMode.ToLower())
-                {
-                    case "guided":
-                        GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
-                        _statusMessageRaised.Raise(this, "Starting Guided Wizard mode");
-                        break;
-                    case "manual":
-                        GoToStep(Enum_DunnageWorkflowStep.ManualEntry);
-                        _statusMessageRaised.Raise(this, "Starting Manual Entry mode");
-                        break;
-                    case "edit":
-                        GoToStep(Enum_DunnageWorkflowStep.EditMode);
-                        _statusMessageRaised.Raise(this, "Starting Edit mode");
-                        break;
-                    case "image-search":
-                        GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch);
-                        _statusMessageRaised.Raise(this, "Starting Image Search mode");
-                        break;
-                    default:
-                        GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-                        _statusMessageRaised.Raise(this, "Workflow started");
-                        break;
-                }
+                case "guided":
+                    GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                    _statusMessageRaised.Raise(this, "Starting Guided Wizard mode");
+                    break;
+                case "edit":
+                    GoToStep(Enum_DunnageWorkflowStep.EditMode);
+                    _statusMessageRaised.Raise(this, "Starting Edit mode");
+                    break;
+                case "image-search":
+                    GoToStep(Enum_DunnageWorkflowStep.ImagePartSearch);
+                    _statusMessageRaised.Raise(this, "Starting Image Search mode");
+                    break;
+                default:
+                    GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
+                    _statusMessageRaised.Raise(this, "Starting Guided Wizard mode");
+                    await StoreGuidedDefaultAsync();
+                    break;
+            }
+
+            return true;
+        }
+
+        private async Task StoreGuidedDefaultAsync()
+        {
+            var user = _sessionManager.CurrentSession?.User;
+            if (user is null || string.IsNullOrWhiteSpace(user.WindowsUsername))
+            {
+                return;
+            }
+
+            var result = await _userPreferences.UpdateDefaultDunnageModeAsync(
+                user.WindowsUsername,
+                "guided"
+            );
+
+            if (result.IsSuccess)
+            {
+                user.DefaultDunnageMode = "guided";
             }
             else
             {
-                GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-                _statusMessageRaised.Raise(this, "Workflow started");
+                _logger.LogWarning(
+                    $"Unable to correct the stored Non-Inventoried Labels default mode: {result.ErrorMessage}"
+                );
             }
-
-            return Task.FromResult(true);
         }
 
         public async Task<Model_WorkflowStepResult> AdvanceToNextStepAsync()
         {
+            var warningMessage = string.Empty;
+
             try
             {
                 switch (CurrentStep)
                 {
-                    case Enum_DunnageWorkflowStep.ModeSelection:
-                        GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
-                        break;
-
                     case Enum_DunnageWorkflowStep.TypeSelection:
                         if (CurrentSession.SelectedTypeId <= 0)
                         {
@@ -210,6 +232,11 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                             };
                         }
 
+                        if (locationValidation.Severity == Enum_ValidationSeverity.Warning)
+                        {
+                            warningMessage = locationValidation.Message;
+                        }
+
                         ApplySessionDetailsToCurrentEntryLoads();
                         GoToStep(Enum_DunnageWorkflowStep.Review);
                         break;
@@ -222,7 +249,12 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                         };
                 }
 
-                return new Model_WorkflowStepResult { IsSuccess = true, TargetStep = CurrentStep };
+                return new Model_WorkflowStepResult
+                {
+                    IsSuccess = true,
+                    TargetStep = CurrentStep,
+                    WarningMessage = warningMessage,
+                };
             }
             catch (Exception ex)
             {
@@ -242,23 +274,23 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
 
         public void GoToStep(Enum_DunnageWorkflowStep step)
         {
-            if (
-                step == Enum_DunnageWorkflowStep.TypeSelection
-                && CurrentStep == Enum_DunnageWorkflowStep.Review
-            )
+            if (step == Enum_DunnageWorkflowStep.TypeSelection)
             {
-                _currentEntryLoads.Clear();
-            }
+                if (CurrentStep == Enum_DunnageWorkflowStep.Review)
+                {
+                    _currentEntryLoads.Clear();
+                }
 
-            if (
-                step == Enum_DunnageWorkflowStep.TypeSelection
-                && CurrentStep != Enum_DunnageWorkflowStep.ModeSelection
-                && CurrentStep != Enum_DunnageWorkflowStep.PartSelection
-                && CurrentStep != Enum_DunnageWorkflowStep.QuantityEntry
-                && CurrentStep != Enum_DunnageWorkflowStep.DetailsEntry
-            )
-            {
-                ClearSession();
+                // Going back one page keeps the walk's work; arriving from anywhere else - a mode
+                // chip, Image Search, or the end of a save - starts the walk clean.
+                if (
+                    CurrentStep != Enum_DunnageWorkflowStep.PartSelection
+                    && CurrentStep != Enum_DunnageWorkflowStep.QuantityEntry
+                    && CurrentStep != Enum_DunnageWorkflowStep.DetailsEntry
+                )
+                {
+                    ClearSession();
+                }
             }
 
             CurrentStep = step;
@@ -627,14 +659,24 @@ namespace MTM_Receiving_Application.Module_Dunnage.Services
                 return Model_ReceivingValidationResult.Error("Please enter a location.");
             }
 
-            var validation = await _receivingValidation.ValidateLocationAsync(resolvedLocation);
+            var validation = await _receivingValidation.ValidateLocationAsync(
+                resolvedLocation,
+                treatVerificationFailureAsWarning: true
+            );
             if (!validation.IsValid)
             {
                 return validation;
             }
 
+            if (validation.Severity == Enum_ValidationSeverity.Warning)
+            {
+                _logger.LogWarning(
+                    $"Non-Inventoried Labels location '{resolvedLocation}' was saved without Infor Visual verification: {validation.Message}"
+                );
+            }
+
             CurrentSession.Location = resolvedLocation.ToUpperInvariant();
-            return Model_ReceivingValidationResult.Success();
+            return validation;
         }
     }
 }

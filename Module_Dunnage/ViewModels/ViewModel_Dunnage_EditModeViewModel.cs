@@ -977,18 +977,28 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
                 5000
             );
 
-            if (!locationsResult.IsSuccess || locationsResult.Data == null)
+            if (!locationsResult.IsSuccess)
             {
-                await _errorHandler.HandleDaoErrorAsync(
-                    locationsResult,
-                    nameof(SelectLocationAsync),
-                    true
+                // Infor Visual being unreachable is not the operator's problem to solve mid-edit,
+                // so warn and leave the row's stored location untouched instead of blocking.
+                var reason = string.IsNullOrWhiteSpace(locationsResult.ErrorMessage)
+                    ? "Infor Visual could not be reached."
+                    : locationsResult.ErrorMessage;
+
+                _logger.LogWarning(
+                    $"Unable to load Non-Inventoried Labels locations from Infor Visual: {reason}",
+                    "EditMode"
+                );
+                StatusMessage = "Locations unavailable - Infor Visual could not be reached";
+                await _errorHandler.HandleErrorAsync(
+                    $"Locations could not be loaded from Infor Visual, so the saved location was left unchanged. {reason}",
+                    Enum_ErrorSeverity.Warning
                 );
                 return;
             }
 
-            var availableLocations = locationsResult
-                .Data.OrderBy(location => location.Label)
+            var availableLocations = (locationsResult.Data ?? [])
+                .OrderBy(location => location.Label)
                 .ToList();
             if (availableLocations.Count == 0)
             {
@@ -1160,7 +1170,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
     #region Navigation Commands
 
     [RelayCommand]
-    private async Task ReturnToModeSelectionAsync()
+    private async Task ReturnToGuidedEntryAsync()
     {
         var xamlRoot = _windowService.GetXamlRoot();
         if (xamlRoot == null)
@@ -1179,7 +1189,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         {
             Title = "Change Mode?",
             Content =
-                "Returning to mode selection will clear all current work in progress. This cannot be undone. Are you sure?",
+                "Returning to the guided entry will clear all current work in progress. This cannot be undone. Are you sure?",
             PrimaryButtonText = "Yes, Change Mode",
             CloseButtonText = "Cancel",
             DefaultButton = Microsoft.UI.Xaml.Controls.ContentDialogButton.Close,
@@ -1197,23 +1207,23 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
             try
             {
                 _logger.LogInfo(
-                    "User confirmed return to mode selection, clearing data",
+                    "User confirmed return to the guided entry, clearing data",
                     "EditMode"
                 );
                 FilteredLoads.Clear();
                 _allLoads.Clear();
                 _workflowService.ClearSession();
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+                _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
             }
             catch (Exception ex)
             {
                 _logger.LogError(
-                    $"Failed to return to mode selection: {ex.Message}",
+                    $"Failed to return to the guided entry: {ex.Message}",
                     ex,
                     "EditMode"
                 );
                 await _errorHandler.HandleErrorAsync(
-                    "Failed to return to mode selection",
+                    "Failed to return to the guided entry",
                     Enum_ErrorSeverity.Error,
                     ex,
                     true
@@ -1222,7 +1232,7 @@ public partial class ViewModel_Dunnage_EditMode : ViewModel_Shared_Base, IResett
         }
         else
         {
-            _logger.LogInfo("User cancelled return to mode selection", "EditMode");
+            _logger.LogInfo("User cancelled return to the guided entry", "EditMode");
         }
     }
 

@@ -26,6 +26,20 @@ public static class DunnageSettingsDefaults
             [DunnageSettingsKeys.Workflow.ShowPartImagesOnPartSelection] = "true",
             [DunnageSettingsKeys.Workflow.ShowImagesOnReview] = "true",
             [DunnageSettingsKeys.Workflow.FallbackToTypeImageWhenPartMissing] = "true",
+            [DunnageSettingsKeys.UiText.WorkflowBack] = "Back",
+            [DunnageSettingsKeys.UiText.WorkflowNext] = "Next",
+            [DunnageSettingsKeys.UiText.WorkflowHelp] = "Help",
+            [DunnageSettingsKeys.UiText.WorkflowClearAllLabels] = "Clear All Labels",
+            [DunnageSettingsKeys.UiText.WorkflowReview] = "Review",
+            [DunnageSettingsKeys.UiText.WorkflowSave] = "Save",
+            [DunnageSettingsKeys.UiText.ShellGuided] = "Guided",
+            [DunnageSettingsKeys.UiText.ShellEdit] = "Edit",
+            [DunnageSettingsKeys.UiText.ShellImageSearch] = "Image Search",
+            [DunnageSettingsKeys.UiText.ShellDefault] = "Default",
+            [DunnageSettingsKeys.UiText.ShellGuidedDefaultTooltip] = "make Guided my default",
+            [DunnageSettingsKeys.UiText.ShellEditDefaultTooltip] = "make Edit my default",
+            [DunnageSettingsKeys.UiText.ShellImageSearchDefaultTooltip] =
+                "make Image Search my default",
         };
 
     public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } =

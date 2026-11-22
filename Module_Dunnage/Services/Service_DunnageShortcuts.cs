@@ -40,10 +40,6 @@ public class Service_DunnageShortcuts : IService_DunnageShortcuts
 
         try
         {
-            shortcuts.ModeSelectionShortcut = await LoadBindingAsync(
-                DunnageSettingsKeys.Shortcuts.ModeSelection,
-                shortcuts.ModeSelectionShortcut
-            );
             shortcuts.ClearLabelDataShortcut = await LoadBindingAsync(
                 DunnageSettingsKeys.Shortcuts.ClearLabelData,
                 shortcuts.ClearLabelDataShortcut
@@ -80,10 +76,6 @@ public class Service_DunnageShortcuts : IService_DunnageShortcuts
     {
         ArgumentNullException.ThrowIfNull(shortcuts);
 
-        await SaveBindingAsync(
-            DunnageSettingsKeys.Shortcuts.ModeSelection,
-            shortcuts.ModeSelectionShortcut
-        );
         await SaveBindingAsync(
             DunnageSettingsKeys.Shortcuts.ClearLabelData,
             shortcuts.ClearLabelDataShortcut

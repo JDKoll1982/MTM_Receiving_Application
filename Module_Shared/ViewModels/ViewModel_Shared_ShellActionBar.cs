@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MTM_Receiving_Application.Module_Core.Contracts.ViewModels;
@@ -11,7 +12,7 @@ namespace MTM_Receiving_Application.Module_Shared.ViewModels;
 /// <remarks>
 /// The resolved provider's type is only known at run time, so the bar binds to this fixed
 /// surface while every value still comes from the page. The projection holds no domain logic: it
-/// copies the provider's snapshot and forwards the three default-checkbox ticks back through
+/// copies the provider's snapshot and forwards the default-chip ticks back through
 /// <see cref="IViewModel_ShellActionProvider.SetDefaultMode"/>.
 /// </remarks>
 public partial class ViewModel_Shared_ShellActionBar : ObservableObject
@@ -38,6 +39,9 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     private Model_ShellModeAction _overlay = Model_ShellModeAction.Hidden;
 
     [ObservableProperty]
+    private Model_ShellModeAction _imageSearch = Model_ShellModeAction.Hidden;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowDividerAfterBack))]
     private Model_ShellActionSlot _back = Model_ShellActionSlot.Hidden;
 
@@ -60,11 +64,57 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     [ObservableProperty]
     private bool? _isEditDefault;
 
+    [ObservableProperty]
+    private bool? _isImageSearchDefault;
+
     /// <summary>
     /// Gets a value indicating whether the divider between Back and Next is shown. Without both
     /// buttons there is nothing to separate.
     /// </summary>
     public bool ShowDividerAfterBack => Back.IsVisible && Next.IsVisible;
+
+    /// <summary>
+    /// Enters the mode a chip carries, so the shell needs no list of a module's modes.
+    /// </summary>
+    /// <param name="mode">The stored mode value the chip carries, such as guided or image-search.</param>
+    public void EnterMode(string mode)
+    {
+        var command = FindMode(mode)?.Command;
+
+        if (command?.CanExecute(null) == true)
+        {
+            command.Execute(null);
+        }
+    }
+
+    /// <summary>
+    /// Stores the mode a chip carries as the signed-in user's default without changing the page.
+    /// </summary>
+    /// <param name="mode">The stored mode value the chip carries, such as guided or image-search.</param>
+    public void RememberModeAsDefault(string mode)
+    {
+        if (FindMode(mode) is not { CanBeDefault: true })
+        {
+            return;
+        }
+
+        ApplyDefaultChange(true, mode);
+    }
+
+    private Model_ShellModeAction? FindMode(string mode)
+    {
+        foreach (
+            var chip in new[] { Guided, Manual, Edit, Overlay, ImageSearch }
+        )
+        {
+            if (chip.IsVisible && string.Equals(chip.Mode, mode, StringComparison.Ordinal))
+            {
+                return chip;
+            }
+        }
+
+        return null;
+    }
 
     /// <summary>
     /// Starts following a page's provider and shows its first snapshot.
@@ -100,6 +150,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             Manual = Model_ShellModeAction.Hidden;
             Edit = Model_ShellModeAction.Hidden;
             Overlay = Model_ShellModeAction.Hidden;
+            ImageSearch = Model_ShellModeAction.Hidden;
             Back = Model_ShellActionSlot.Hidden;
             Next = Model_ShellActionSlot.Hidden;
             ClearLabelData = Model_ShellActionSlot.Hidden;
@@ -107,6 +158,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             IsGuidedDefault = false;
             IsManualDefault = false;
             IsEditDefault = false;
+            IsImageSearchDefault = false;
         }
         finally
         {
@@ -119,6 +171,9 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     partial void OnIsManualDefaultChanged(bool? value) => ApplyDefaultChange(value == true, "manual");
 
     partial void OnIsEditDefaultChanged(bool? value) => ApplyDefaultChange(value == true, "edit");
+
+    partial void OnIsImageSearchDefaultChanged(bool? value) =>
+        ApplyDefaultChange(value == true, "image-search");
 
     private void ApplyDefaultChange(bool isTicked, string mode)
     {
@@ -154,6 +209,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             Manual = state.Manual;
             Edit = state.Edit;
             Overlay = state.Overlay;
+            ImageSearch = state.ImageSearch;
             Back = state.Back;
             Next = state.Next;
             ClearLabelData = state.ClearLabelData;
@@ -161,6 +217,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             IsGuidedDefault = state.IsGuidedDefault;
             IsManualDefault = state.IsManualDefault;
             IsEditDefault = state.IsEditDefault;
+            IsImageSearchDefault = state.IsImageSearchDefault;
 
             IsVisible = _provider is not null && state.IsVisible && HasAnyAction(state);
         }

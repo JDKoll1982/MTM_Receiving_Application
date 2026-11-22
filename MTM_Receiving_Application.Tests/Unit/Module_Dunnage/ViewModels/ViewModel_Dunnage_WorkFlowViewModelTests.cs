@@ -6,6 +6,7 @@ using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.Models;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
+using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Dunnage.ViewModels;
 
@@ -26,7 +27,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldShowImageSearchAndUpdateHeaderTitle()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.TypeSelection;
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
 
         var viewModel = CreateViewModel(workflow);
@@ -40,7 +41,6 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
         );
 
         viewModel.IsImagePartSearchVisible.Should().BeTrue();
-        viewModel.IsModeSelectionVisible.Should().BeFalse();
         viewModel.CurrentHeaderTitle.Should().Be("Non-Inventoried Labels - Search Parts by Image");
         viewModel.CurrentHeaderContextTitle.Should().BeNull();
     }
@@ -49,7 +49,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldExposePartSelectionHeaderContext()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.TypeSelection;
         var session = new Model_DunnageSession
         {
             SelectedTypeName = "Bags",
@@ -84,7 +84,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldExposeQuantityEntryHeaderContext()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.TypeSelection;
 
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
 
@@ -110,7 +110,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldExposeDetailsEntryHeaderContext()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.TypeSelection;
 
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
 
@@ -132,24 +132,6 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
                 "Enter the PO number, confirm the location, and review per-load details before saving."
             );
         viewModel.CurrentHeaderContextIconKind.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task ReturnToModeSelectionAsync_ShouldClearSessionAndNavigate_WhenNothingIsUnsaved()
-    {
-        var workflow = CreateWorkflowMock();
-        workflow.Setup(service => service.HasUnsavedData()).Returns(false);
-
-        var viewModel = CreateViewModel(workflow);
-        await Task.Delay(25);
-
-        await viewModel.ReturnToModeSelectionCommand.ExecuteAsync(null);
-
-        workflow.Verify(service => service.ClearSession(), Times.Once);
-        workflow.Verify(
-            service => service.GoToStep(Enum_DunnageWorkflowStep.ModeSelection),
-            Times.Once
-        );
     }
 
     [Fact]
@@ -189,7 +171,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldRefreshClearLabelDataAvailability()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ImagePartSearch;
         var hasActiveLabelData = true;
 
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
@@ -217,7 +199,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
     public async Task StepChanged_ShouldPointTheHeaderStepBarAtTheCurrentWalkStep()
     {
         var workflow = CreateWorkflowMock();
-        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ModeSelection;
+        Enum_DunnageWorkflowStep currentStep = Enum_DunnageWorkflowStep.ImagePartSearch;
         workflow.SetupGet(service => service.CurrentStep).Returns(() => currentStep);
 
         var viewModel = CreateViewModel(workflow);
@@ -225,7 +207,7 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
 
         viewModel
             .IsHeaderStepBarVisible.Should()
-            .BeFalse("mode selection is not part of the walk");
+            .BeFalse("image search is not part of the walk");
         viewModel.HeaderStepBarIndex.Should().Be(-1);
 
         currentStep = Enum_DunnageWorkflowStep.DetailsEntry;
@@ -290,7 +272,12 @@ public sealed class ViewModel_Dunnage_WorkFlowViewModelTests
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Window>().Object,
-            new Mock<IService_Notification>().Object
+            new Mock<IService_Notification>().Object,
+            new Mock<IService_Dispatcher>().Object,
+            new Mock<IService_UserPreferences>().Object,
+            new Mock<IService_Help>().Object,
+            new Mock<IService_UserSessionManager>().Object
         );
     }
 }
+

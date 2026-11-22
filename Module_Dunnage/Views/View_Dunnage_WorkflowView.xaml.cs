@@ -1,66 +1,63 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
-using MTM_Receiving_Application.Module_Core.Dialogs;
 using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Core.Models.Core;
+using MTM_Receiving_Application.Module_Core.Models.UI;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using MTM_Receiving_Application.Module_Dunnage.Enums;
 using MTM_Receiving_Application.Module_Dunnage.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Dunnage.Models;
 using Windows.Foundation;
-using Windows.System;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
 /// <summary>
 /// Main workflow view for Dunnage module.
-/// Coordinates wizard steps and manages workflow navigation.
 /// </summary>
+/// <remarks>
+/// The page hosts the step views and hands their view models to the workflow view model, which
+/// supplies every Back, Next, Review, Save, Clear All Labels, Help and mode action to the shared
+/// shell action bar. The navigation verbs live there, so this code-behind holds only that wiring,
+/// the keyboard accelerators, and the leave confirmation the page already owned.
+/// </remarks>
 public sealed partial class View_Dunnage_WorkflowView : Page
 {
     public ViewModel_Dunnage_WorkFlowViewModel ViewModel { get; }
 
     private readonly IService_DunnageWorkflow _workflowService;
-    private readonly IService_Help _helpService;
     private readonly IService_Focus _focusService;
     private readonly IService_DunnageShortcuts _dunnageShortcuts;
     private readonly List<KeyboardAccelerator> _registeredAccelerators = new();
     private Model_Settings_DunnageShortcuts _shortcutSettings =
         Model_Settings_DunnageShortcuts.CreateDefault();
     private bool _isSimpleNavigationToggleActive;
-    private bool _isNextNavigationInProgress;
 
     /// <summary>
     /// Initializes a new instance of the View_Dunnage_WorkflowView class.
     /// </summary>
     /// <param name="viewModel">The workflow view model.</param>
     /// <param name="workflowService">The dunnage workflow service.</param>
-    /// <param name="helpService">The help service.</param>
     /// <param name="focusService">The focus service.</param>
-    /// <param name="dunnageShortcuts"></param>
+    /// <param name="dunnageShortcuts">The dunnage shortcut service.</param>
     public View_Dunnage_WorkflowView(
         ViewModel_Dunnage_WorkFlowViewModel viewModel,
         IService_DunnageWorkflow workflowService,
-        IService_Help helpService,
         IService_Focus focusService,
         IService_DunnageShortcuts dunnageShortcuts
     )
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(workflowService);
-        ArgumentNullException.ThrowIfNull(helpService);
         ArgumentNullException.ThrowIfNull(focusService);
         ArgumentNullException.ThrowIfNull(dunnageShortcuts);
 
         ViewModel = viewModel;
         _workflowService = workflowService;
-        _helpService = helpService;
         _focusService = focusService;
         _dunnageShortcuts = dunnageShortcuts;
 
@@ -69,8 +66,16 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         DataContext = ViewModel;
         AddHandler(KeyDownEvent, new KeyEventHandler(WorkflowPage_KeyDown), true);
 
-        // Subscribe to workflow step changes
-        _workflowService.StepChanged += OnWorkflowStepChanged;
+        ViewModel.RequestCommitDetailsInputs = DetailsEntryView.CommitPendingInputs;
+        ViewModel.RequestConfirmLeaveModule = ConfirmLeaveModuleAsync;
+        ViewModel.AttachShellActionHosts(
+            PartSelectionView.ViewModel,
+            QuantityEntryView.ViewModel,
+            DetailsEntryView.ViewModel,
+            ReviewView.ViewModel,
+            EditModeView.ViewModel
+        );
+
         _focusService.AttachFocusOnVisibility(this);
         _ = LoadShortcutsAsync();
     }
@@ -83,7 +88,6 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         : this(
             App.GetService<ViewModel_Dunnage_WorkFlowViewModel>(),
             App.GetService<IService_DunnageWorkflow>(),
-            App.GetService<IService_Help>(),
             App.GetService<IService_Focus>(),
             App.GetService<IService_DunnageShortcuts>()
         ) { }
@@ -102,10 +106,6 @@ public sealed partial class View_Dunnage_WorkflowView : Page
 
         ClearKeyboardAccelerators();
 
-        RegisterAccelerator(
-            _shortcutSettings.ModeSelectionShortcut,
-            ModeSelectionAccelerator_Invoked
-        );
         RegisterAccelerator(
             _shortcutSettings.ClearLabelDataShortcut,
             ClearLabelDataAccelerator_Invoked
@@ -161,65 +161,22 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         _registeredAccelerators.Add(accelerator);
     }
 
-    private void OnWorkflowStepChanged(object? sender, EventArgs e)
-    {
-        // No need to update flyout content anymore - help dialog shows current step
-    }
-
-    private async void HelpButton_Click(object sender, RoutedEventArgs e)
-    {
-        // Show help dialog for current step
-        await ShowHelpForCurrentStepAsync();
-    }
-
-    private void ModeSelectionAccelerator_Invoked(
-        KeyboardAccelerator sender,
-        KeyboardAcceleratorInvokedEventArgs args
-    )
-    {
-        _ = sender;
-        InvokeModeSelectionAction();
-        args.Handled = true;
-    }
-
     private void ClearLabelDataAccelerator_Invoked(
         KeyboardAccelerator sender,
         KeyboardAcceleratorInvokedEventArgs args
     )
     {
         _ = sender;
-
-        if (ViewModel.ClearLabelDataCommand.CanExecute(false))
-        {
-            ViewModel.ClearLabelDataCommand.Execute(false);
-            args.Handled = true;
-        }
+        args.Handled = TryRunShellAction(ViewModel.ShellActions.ClearLabelData);
     }
 
-    private void OnClearLabelDataClick(object sender, RoutedEventArgs e)
-    {
-        _ = sender;
-        _ = e;
-
-        var shiftState = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift);
-        bool clearAllRows =
-            (shiftState & Windows.UI.Core.CoreVirtualKeyStates.Down)
-            == Windows.UI.Core.CoreVirtualKeyStates.Down;
-
-        if (ViewModel.ClearLabelDataCommand.CanExecute(clearAllRows))
-        {
-            ViewModel.ClearLabelDataCommand.Execute(clearAllRows);
-        }
-    }
-
-    private async void NextStepAccelerator_Invoked(
+    private void NextStepAccelerator_Invoked(
         KeyboardAccelerator sender,
         KeyboardAcceleratorInvokedEventArgs args
     )
     {
         _ = sender;
-        await TryInvokeNextActionAsync();
-        args.Handled = true;
+        args.Handled = TryRunShellAction(ViewModel.ShellActions.Next);
     }
 
     private void BackStepAccelerator_Invoked(
@@ -228,8 +185,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     )
     {
         _ = sender;
-        InvokeBackAction();
-        args.Handled = true;
+        args.Handled = TryRunShellAction(ViewModel.ShellActions.Back);
     }
 
     private void HelpAccelerator_Invoked(
@@ -238,8 +194,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     )
     {
         _ = sender;
-        HelpButton_Click(this, new RoutedEventArgs());
-        args.Handled = true;
+        args.Handled = TryRunShellAction(ViewModel.ShellActions.Help);
     }
 
     private void ToggleSimpleNavigationAccelerator_Invoked(
@@ -258,158 +213,16 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         args.Handled = true;
     }
 
-    private async System.Threading.Tasks.Task ShowHelpForCurrentStepAsync()
-    {
-        if (_helpService == null || _workflowService == null)
-        {
-            return;
-        }
-
-        await _helpService.ShowContextualHelpAsync(_workflowService.CurrentStep);
-    }
-
-    private async void OnNextClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        _ = sender;
-        _ = e;
-
-        await AdvanceToNextStepAsync();
-    }
-
     /// <summary>
-    /// Double-tapping a part card means the same thing as pressing Next, so it runs the same guarded
-    /// advance - including the validation message when the step is not finished.
+    /// Double-tapping a part card means the same thing as pressing Next, so it runs the strip's own
+    /// Next command and meets the same gate.
     /// </summary>
-    private async void OnPartCardActivated(object? sender, EventArgs e)
-    {
-        _ = sender;
-
-        await AdvanceToNextStepAsync();
-    }
-
-    private async Task AdvanceToNextStepAsync()
-    {
-        if (_isNextNavigationInProgress)
-        {
-            return;
-        }
-
-        _isNextNavigationInProgress = true;
-
-        try
-        {
-            var result = await _workflowService.AdvanceToNextStepAsync();
-
-            if (!result.IsSuccess)
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = "Finish This Step First",
-                    Content = result.ErrorMessage,
-                    CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot,
-                };
-                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                    dialog,
-                    this.XamlRoot
-                );
-                await dialog.ShowAsync();
-            }
-        }
-        finally
-        {
-            _isNextNavigationInProgress = false;
-        }
-    }
-
-    private async void OnSaveAndReviewClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void OnPartCardActivated(object? sender, EventArgs e)
     {
         _ = sender;
         _ = e;
 
-        if (_isNextNavigationInProgress)
-        {
-            return;
-        }
-
-        _isNextNavigationInProgress = true;
-
-        try
-        {
-            if (!await EnsureDetailsLocationResolvedAsync())
-            {
-                return;
-            }
-
-            // If no PO entered, give the user a chance to supply a non-PO reference
-            // before we advance. The dialog also persists commonly-used reasons.
-            if (string.IsNullOrWhiteSpace(_workflowService.CurrentSession.PONumber))
-            {
-                var nonPoDialog = new View_Dunnage_Dialog_NonPOEntry(
-                    _workflowService.CurrentSession.SelectedPart?.PartId
-                )
-                {
-                    XamlRoot = this.XamlRoot,
-                };
-                await nonPoDialog.ShowAsync();
-
-                if (nonPoDialog.Result is null)
-                {
-                    // User cancelled — remain on DetailsEntry so they can fill PO or reconsider
-                    return;
-                }
-
-                // Apply the chosen reference so AddCurrentLoadToSession picks it up
-                _workflowService.CurrentSession.PONumber = nonPoDialog.Result;
-
-                // Mirror back to the ViewModel so the PO Number TextBox shows the chosen reference.
-                // Without this the field stays visually empty even though the session has the value.
-                DetailsEntryView.ViewModel.PoNumber = nonPoDialog.Result;
-            }
-
-            var result = await DetailsEntryView.ViewModel.SaveAndAdvanceAsync();
-
-            if (!result.IsSuccess)
-            {
-                var errorDialog = new ContentDialog
-                {
-                    Title = "Finish This Step First",
-                    Content = result.ErrorMessage,
-                    CloseButtonText = "OK",
-                    XamlRoot = this.XamlRoot,
-                };
-                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                    errorDialog,
-                    this.XamlRoot
-                );
-                await errorDialog.ShowAsync();
-            }
-        }
-        finally
-        {
-            _isNextNavigationInProgress = false;
-        }
-    }
-
-    private void OnModeSelectionClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.IsManualEntryVisible)
-        {
-            if (ManualEntryView.ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
-            {
-                ManualEntryView.ViewModel.ReturnToModeSelectionCommand.Execute(null);
-            }
-
-            return;
-        }
-
-        if (ViewModel.IsEditModeVisible)
-        {
-            if (EditModeView.ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
-            {
-                EditModeView.ViewModel.ReturnToModeSelectionCommand.Execute(null);
-            }
-        }
+        TryRunShellAction(ViewModel.ShellActions.Next);
     }
 
     private void WorkflowPage_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -433,8 +246,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 )
             )
             {
-                _ = InvokeNextActionAsync();
-                e.Handled = true;
+                e.Handled = TryRunShellAction(ViewModel.ShellActions.Next);
                 return true;
             }
 
@@ -445,8 +257,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
                 )
             )
             {
-                InvokeBackAction();
-                e.Handled = true;
+                e.Handled = TryRunShellAction(ViewModel.ShellActions.Back);
                 return true;
             }
 
@@ -460,8 +271,7 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             )
         )
         {
-            _ = InvokeNextActionAsync();
-            e.Handled = true;
+            e.Handled = TryRunShellAction(ViewModel.ShellActions.Next);
             return true;
         }
 
@@ -472,124 +282,26 @@ public sealed partial class View_Dunnage_WorkflowView : Page
             )
         )
         {
-            InvokeBackAction();
-            e.Handled = true;
+            e.Handled = TryRunShellAction(ViewModel.ShellActions.Back);
             return true;
         }
 
         return false;
     }
 
-    private void InvokeModeSelectionAction()
+    /// <summary>
+    /// Runs a strip position through the command the strip itself binds, so a keyboard route can
+    /// never reach an action the strip has hidden or disabled.
+    /// </summary>
+    private static bool TryRunShellAction(Model_ShellActionSlot slot)
     {
-        if (ViewModel.IsManualEntryVisible || ViewModel.IsEditModeVisible)
+        if (!slot.IsVisible || !slot.IsEnabled || slot.Command?.CanExecute(null) != true)
         {
-            OnModeSelectionClick(this, new RoutedEventArgs());
-            return;
+            return false;
         }
 
-        if (ViewModel.ReturnToModeSelectionCommand.CanExecute(null))
-        {
-            ViewModel.ReturnToModeSelectionCommand.Execute(null);
-        }
-    }
-
-    private async Task InvokeNextActionAsync()
-    {
-        if (ViewModel.IsPartSelectionVisible || ViewModel.IsQuantityEntryVisible)
-        {
-            if (ViewModel.IsPartSelectionVisible && !PartSelectionView.ViewModel.IsPartSelected)
-            {
-                return;
-            }
-
-            if (ViewModel.IsQuantityEntryVisible && !QuantityEntryView.ViewModel.IsValid)
-            {
-                return;
-            }
-
-            OnNextClick(this, new RoutedEventArgs());
-            return;
-        }
-
-        if (ViewModel.IsDetailsEntryVisible)
-        {
-            if (!DetailsEntryView.ViewModel.CanProceedToNextStep)
-            {
-                return;
-            }
-
-            OnSaveAndReviewClick(this, new RoutedEventArgs());
-            return;
-        }
-
-        await Task.CompletedTask;
-    }
-
-    private async Task TryInvokeNextActionAsync()
-    {
-        if (_isNextNavigationInProgress)
-        {
-            return;
-        }
-
-        await InvokeNextActionAsync();
-    }
-
-    private void InvokeBackAction()
-    {
-        if (
-            ViewModel.IsPartSelectionVisible
-            || ViewModel.IsQuantityEntryVisible
-            || ViewModel.IsDetailsEntryVisible
-            || ViewModel.IsReviewVisible
-        )
-        {
-            OnBackClick(this, new RoutedEventArgs());
-        }
-    }
-
-    private async Task<bool> EnsureDetailsLocationResolvedAsync()
-    {
-        DetailsEntryView.CommitPendingInputs();
-
-        var validation = await DetailsEntryView.ViewModel.ValidateLocationAsync();
-        if (validation.IsValid)
-        {
-            return true;
-        }
-
-        if (string.IsNullOrWhiteSpace(DetailsEntryView.ViewModel.Location) is false)
-        {
-            var warningDialog = new ContentDialog
-            {
-                Title = "Location Not Verified",
-                Content =
-                    $"{validation.Message}\n\nThe entered location will still be saved as-is.",
-                CloseButtonText = "Continue",
-                XamlRoot = this.XamlRoot,
-            };
-            MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-                warningDialog,
-                this.XamlRoot
-            );
-            await warningDialog.ShowAsync();
-            return true;
-        }
-
-        var errorDialog = new ContentDialog
-        {
-            Title = "Finish This Step First",
-            Content = validation.Message,
-            CloseButtonText = "OK",
-            XamlRoot = this.XamlRoot,
-        };
-        MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
-            errorDialog,
-            this.XamlRoot
-        );
-        await errorDialog.ShowAsync();
-        return false;
+        slot.Command.Execute(null);
+        return true;
     }
 
     public async Task<bool> ConfirmLeaveModuleAsync(string destinationName)
@@ -647,17 +359,11 @@ public sealed partial class View_Dunnage_WorkflowView : Page
     private bool HasUnsavedData()
     {
         if (
-            _workflowService.CurrentStep == Enum_DunnageWorkflowStep.ModeSelection
-            || _workflowService.CurrentStep == Enum_DunnageWorkflowStep.TypeSelection
+            _workflowService.CurrentStep == Enum_DunnageWorkflowStep.TypeSelection
             || _workflowService.CurrentStep == Enum_DunnageWorkflowStep.ImagePartSearch
         )
         {
             return false;
-        }
-
-        if (ViewModel.IsManualEntryVisible)
-        {
-            return ManualEntryView.ViewModel.HasUnsavedData;
         }
 
         if (ViewModel.IsEditModeVisible)
@@ -666,32 +372,5 @@ public sealed partial class View_Dunnage_WorkflowView : Page
         }
 
         return _workflowService.HasUnsavedData();
-    }
-
-    private void OnBackClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        // Navigate back based on current step
-        switch (_workflowService.CurrentStep)
-        {
-            case Enum_DunnageWorkflowStep.ImagePartSearch:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-                break;
-            case Enum_DunnageWorkflowStep.PartSelection:
-                _workflowService.GoToStep(
-                    _workflowService.CurrentSession.IsPartSelectionFromImageSearch
-                        ? Enum_DunnageWorkflowStep.ImagePartSearch
-                        : Enum_DunnageWorkflowStep.TypeSelection
-                );
-                break;
-            case Enum_DunnageWorkflowStep.QuantityEntry:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.PartSelection);
-                break;
-            case Enum_DunnageWorkflowStep.DetailsEntry:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.QuantityEntry);
-                break;
-            case Enum_DunnageWorkflowStep.Review:
-                _workflowService.GoToStep(Enum_DunnageWorkflowStep.DetailsEntry);
-                break;
-        }
     }
 }

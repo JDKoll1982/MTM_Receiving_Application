@@ -562,14 +562,20 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <!--
                                     Each entry is a two-row grid: the button on top, and the Default
                                     badge underneath. The badge keeps its slot when it is hidden so
-                                    every button stays on the same baseline.
+                                    every button stays on the same baseline. A chip whose mode the
+                                    active module does not own collapses, so no empty button and no
+                                    stray divider is drawn for it.
                                 -->
-                                <Grid Grid.Column="0">
+                                <Grid
+                                    Grid.Column="0"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Guided.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="14" />
@@ -606,7 +612,9 @@
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Guided.ShowDividerAfter), Mode=OneWay}" />
 
-                                <Grid Grid.Column="2">
+                                <Grid
+                                    Grid.Column="2"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Manual.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="14" />
@@ -643,7 +651,9 @@
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Manual.ShowDividerAfter), Mode=OneWay}" />
 
-                                <Grid Grid.Column="4">
+                                <Grid
+                                    Grid.Column="4"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Edit.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="14" />
@@ -680,7 +690,48 @@
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Edit.ShowDividerAfter), Mode=OneWay}" />
 
-                                <Grid Grid.Column="6">
+                                <Grid
+                                    Grid.Column="6"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ImageSearch.IsVisible), Mode=OneWay}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellImageSearchButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.ImageSearch.AccessibilityName, Mode=OneWay}"
+                                        BorderBrush="{x:Bind helpers:Helper_ShellBrush.ModeBorder(ShellActionBar.ImageSearch.IsActive), Mode=OneWay}"
+                                        BorderThickness="1"
+                                        Click="ShellModeButton_Click"
+                                        Tag="image-search"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.ImageSearch.DefaultTooltip, Mode=OneWay}">
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ModeText(ShellActionBar.ImageSearch.IsActive), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.ImageSearch.Label, Mode=OneWay}" />
+                                    </Button>
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.ImageSearch.DefaultBadge, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.ImageSearch.DefaultTooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsImageSearchDefault), Mode=OneWay}" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="ShellImageSearchDivider"
+                                    Grid.Column="7"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="4,6,4,0"
+                                    VerticalAlignment="Top"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ImageSearch.ShowDividerAfter), Mode=OneWay}" />
+
+                                <Grid
+                                    Grid.Column="8"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Overlay.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="14" />
@@ -717,6 +768,7 @@
                                         Grid.Column="0"
                                         AutomationProperties.Name="{x:Bind ShellActionBar.Back.AccessibilityName, Mode=OneWay}"
                                         Command="{x:Bind ShellActionBar.Back.Command, Mode=OneWay}"
+                                        IsEnabled="{x:Bind ShellActionBar.Back.IsEnabled, Mode=OneWay}"
                                         ToolTipService.ToolTip="{x:Bind ShellActionBar.Back.Tooltip, Mode=OneWay}"
                                         Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Back.IsVisible), Mode=OneWay}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -744,6 +796,7 @@
                                     Grid.Column="2"
                                     AutomationProperties.Name="{x:Bind ShellActionBar.Next.AccessibilityName, Mode=OneWay}"
                                     Command="{x:Bind ShellActionBar.Next.Command, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ShellActionBar.Next.IsEnabled, Mode=OneWay}"
                                     ToolTipService.ToolTip="{x:Bind ShellActionBar.Next.Tooltip, Mode=OneWay}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Next.IsVisible), Mode=OneWay}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">

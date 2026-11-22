@@ -27,8 +27,6 @@ public sealed class Service_DunnageShortcutsTests
 
         var shortcuts = await service.GetShortcutsAsync();
 
-        shortcuts.ModeSelectionShortcut.Key.Should().Be("M");
-        shortcuts.ModeSelectionShortcut.IsCtrlEnabled.Should().BeTrue();
         shortcuts.NextStepShortcut.Key.Should().Be("Right");
         shortcuts.HelpShortcut.IsShiftEnabled.Should().BeTrue();
         shortcuts.IsToggleSimpleNavigationEnabled.Should().BeTrue();
@@ -52,11 +50,6 @@ public sealed class Service_DunnageShortcutsTests
         var service = CreateService(settingsCore.Object);
         var shortcuts = new Model_Settings_DunnageShortcuts
         {
-            ModeSelectionShortcut = new Model_KeyboardShortcutBinding
-            {
-                Key = "M",
-                IsCtrlEnabled = true,
-            },
             ClearLabelDataShortcut = new Model_KeyboardShortcutBinding
             {
                 Key = "C",

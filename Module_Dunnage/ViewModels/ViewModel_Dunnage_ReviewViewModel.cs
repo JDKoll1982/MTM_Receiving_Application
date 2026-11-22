@@ -385,13 +385,6 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         await _workflowService.StartWorkflowAsync();
     }
 
-    [RelayCommand]
-    private void ReturnToModeSelectionAfterSave()
-    {
-        _workflowService.ClearSession();
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
-    }
-
     /// <summary>
     /// Shows contextual help for review
     /// </summary>
@@ -406,7 +399,7 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
     {
         _logger.LogInfo("Cancelling review, clearing session", "Review");
         _workflowService.ClearSession();
-        _workflowService.GoToStep(Enum_DunnageWorkflowStep.ModeSelection);
+        _workflowService.GoToStep(Enum_DunnageWorkflowStep.TypeSelection);
     }
 
     private async Task ShowSaveCompleteDialogAsync()
@@ -421,9 +414,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
         var dialog = new ContentDialog
         {
             Title = "Non-Inventoried Labels Saved",
-            Content = $"Successfully saved {LoadCount} load(s). What would you like to do next?",
+            Content = $"Successfully saved {LoadCount} load(s).",
             PrimaryButtonText = "Start New Entry",
-            SecondaryButtonText = "Mode Selection",
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = xamlRoot,
         };
@@ -433,14 +425,8 @@ public partial class ViewModel_Dunnage_Review : ViewModel_Shared_Base, IResettab
             xamlRoot
         );
 
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            await StartNewEntryAsync();
-            return;
-        }
-
-        ReturnToModeSelectionAfterSave();
+        await dialog.ShowAsync();
+        await StartNewEntryAsync();
     }
 
     #endregion
