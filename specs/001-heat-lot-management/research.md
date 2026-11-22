@@ -1,6 +1,6 @@
 # Phase 0 Research: Heat / Lot Management
 
-**Feature**: `specs/001-heat-lot-management/heat-lot-management.spec.md`
+**Feature**: `specs/001-heat-lot-management/spec.md`
 **Created**: 2026-10-14
 
 Each entry records a genuine choice the codebase did not already settle, with the decision taken, why,

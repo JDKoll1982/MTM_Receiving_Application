@@ -2,7 +2,7 @@
 
 **Purpose**: Validate Companion specification completeness before planning
 **Created**: 2026-10-14
-**Feature**: [heat-lot-management.spec.md](../heat-lot-management.spec.md)
+**Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 

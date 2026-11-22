@@ -1,8 +1,8 @@
 # Data Model: Heat / Lot Management
 
-**Feature**: `specs/001-heat-lot-management/heat-lot-management.spec.md`
+**Feature**: `specs/001-heat-lot-management/spec.md`
 **Created**: 2026-10-14
-**Inputs**: `heat-lot-management.spec.md`, `plan.md`, `research.md`
+**Inputs**: `spec.md`, `plan.md`, `research.md`
 
 ## Scope
 
