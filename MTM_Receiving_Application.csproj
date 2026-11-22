@@ -88,9 +88,7 @@
     <None Remove="Database\SyncTool\build_exe.py" />
     <None Remove="Database\SyncTool\sync_reference_data.spec" />
     <!-- Standalone executable (built by build_exe.py); run with no Python installed. -->
-    <Content
-      Include="Database\SyncTool\dist\sync_reference_data.exe"
-      Condition="Exists('Database\SyncTool\dist\sync_reference_data.exe')">
+    <Content Include="Database\SyncTool\dist\sync_reference_data.exe" Condition="Exists('Database\SyncTool\dist\sync_reference_data.exe')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Database\SyncTool\sync_reference_data.exe</Link>
     </Content>
@@ -98,13 +96,8 @@
   <!-- Build the standalone SyncTool exe with the repo venv whenever the tool has
        changed. Skips gracefully (script+Python fallback) when PyInstaller is not
        installed or the venv is absent, so normal builds never fail on it. -->
-  <Target
-    Name="BuildSyncToolExe"
-    BeforeTargets="BeforeBuild"
-    Condition="'$(OS)' == 'Windows_NT' and Exists('$(MSBuildProjectDirectory)\.venv\Scripts\python.exe')">
-    <Exec
-      Command="&quot;$(MSBuildProjectDirectory)\.venv\Scripts\python.exe&quot; &quot;$(MSBuildProjectDirectory)\Database\SyncTool\build_exe.py&quot;"
-      WorkingDirectory="$(MSBuildProjectDirectory)" />
+  <Target Name="BuildSyncToolExe" BeforeTargets="BeforeBuild" Condition="'$(OS)' == 'Windows_NT' and Exists('$(MSBuildProjectDirectory)\.venv\Scripts\python.exe')">
+    <Exec Command="&quot;$(MSBuildProjectDirectory)\.venv\Scripts\python.exe&quot; &quot;$(MSBuildProjectDirectory)\Database\SyncTool\build_exe.py&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
   <ItemGroup>
     <Content Remove="docs\development\CopilotForms\**" />
@@ -268,17 +261,17 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="DevWinUI" Version="10.9.1" />
-    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.5" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.2.0" />
 
     <!-- CQRS Infrastructure -->
     <PackageReference Include="MediatR" Version="14.1.0" />
 
     <!-- Validation -->
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="FluentValidation" Version="12.2.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
 
     <!-- Structured Logging -->
-    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
@@ -286,18 +279,18 @@
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 
     <PackageReference Include="Material.Icons.WinUI3" Version="3.0.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.7.0" />
     <!-- The Windows App SDK meta-package pulls in its ML component, which ships ~40 MB of native
          runtime (onnxruntime, DirectML) that this app never calls. Excluding the component and the
          model-runtime package it depends on keeps both out of the build and publish output. Revisit
          the pinned versions when Microsoft.WindowsAppSDK is upgraded. -->
-    <PackageReference Include="Microsoft.WindowsAppSDK.ML" Version="2.1.74" ExcludeAssets="all" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Windows.AI.MachineLearning" Version="2.1.74" ExcludeAssets="all" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.ML" Version="2.7.0" ExcludeAssets="all" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Windows.AI.MachineLearning" Version="2.5.96" ExcludeAssets="all" PrivateAssets="all" />
     <PackageReference Include="MySql.Data" Version="9.7.0" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
