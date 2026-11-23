@@ -18,7 +18,7 @@ public sealed class Service_ScannerExecutionInventoryWindowTests
 {
     // Short connection timeout so nothing in this test waits on a real MySQL server.
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
 
     private static Service_ScannerExecution CreateService(Mock<IService_ScannerInputEngine> engine) =>
         new(

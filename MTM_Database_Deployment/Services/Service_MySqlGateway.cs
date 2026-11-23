@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 namespace MTM_Database_Deployment.Services;
 
 /// <summary>
-/// Connection resolution (preferred server, then localhost) and all MySQL access used by the tool.
+/// Connection resolution (preferred server, then 172.16.1.104) and all MySQL access used by the tool.
 /// </summary>
 public sealed class Service_MySqlGateway
 {

@@ -105,7 +105,7 @@ def resolve_login(
 
     # Interactive: prompt for whatever is not already supplied.
     if not host:
-        host = input("MySQL host [localhost]: ").strip() or "localhost"
+        host = input("MySQL host [172.16.1.104]: ").strip() or "172.16.1.104"
     if not user:
         user = input("MySQL user: ").strip()
     if not password:

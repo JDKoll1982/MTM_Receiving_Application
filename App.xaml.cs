@@ -72,7 +72,7 @@ public partial class App : Application
                 }
             )
             // Same server rule the deployment tool uses: keep the configured MySQL server when it
-            // answers, otherwise aim at the spare (localhost by default) so a PC that cannot see the
+            // answers, otherwise aim at the spare (172.16.1.104 by default) so a PC that cannot see the
             // shop server still starts instead of burning the connect timeout on every call.
             .ConfigureAppConfiguration(
                 (context, config) =>

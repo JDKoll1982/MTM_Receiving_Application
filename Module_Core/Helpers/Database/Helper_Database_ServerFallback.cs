@@ -9,7 +9,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
 
 /// <summary>
 /// Picks the MySQL server the app talks to at startup: the server in
-/// <c>ConnectionStrings:MySql</c> when it answers, otherwise the spare server (localhost by default).
+/// <c>ConnectionStrings:MySql</c> when it answers, otherwise the spare server (172.16.1.104 by default).
 /// </summary>
 /// <remarks>
 /// The deployment tool has always resolved its server this way, and the app now uses the same rule, so
@@ -20,7 +20,7 @@ namespace MTM_Receiving_Application.Module_Core.Helpers.Database;
 public static class Helper_Database_ServerFallback
 {
     /// <summary>
-    /// Configuration key that names the spare server. Optional; defaults to localhost.
+    /// Configuration key that names the spare server. Optional; defaults to 172.16.1.104.
     /// </summary>
     public const string FallbackServerConfigurationKey = "AppSettings:MySqlFallbackServer";
 

@@ -65,7 +65,7 @@ tools (`mysql`, `mysqldump`) on `PATH` for backup/copy/restore operations.
   require every value from the environment and fail fast if missing:
 
   ```powershell
-  $env:MTM_SYNC_HOST = "localhost"
+  $env:MTM_SYNC_HOST = "172.16.1.104"
   $env:MTM_SYNC_PORT = "3306"
   $env:MTM_SYNC_USER = "root"
   $env:MTM_SYNC_PASSWORD = "****"   # or MYSQL_PWD

@@ -53,7 +53,7 @@ Without that variable the database tests report as skipped and the tree-shape ch
 
 Startup resolves the MySQL server the same way the deployment tool does: the host in
 `ConnectionStrings:MySql` is probed first, and when it does not answer the app uses
-`AppSettings:MySqlFallbackServer` (localhost by default). The probe is a short TCP connect, so a PC
+`AppSettings:MySqlFallbackServer` (172.16.1.104 by default). The probe is a short TCP connect, so a PC
 that cannot see the shop server starts against its local copy instead of waiting out a connect
 timeout on every call. Nothing is retargeted when the configured server answers, and a wrong
 password still surfaces as a sign-in failure.

@@ -20,10 +20,10 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Reconciliation.Services;
 public sealed class Service_ReconciliationWriteServiceTests
 {
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;";
 
     private const string VisualConnectionString =
-        "Data Source=localhost;Initial Catalog=Test;Integrated Security=True;ApplicationIntent=ReadOnly;";
+        "Data Source=172.16.1.104;Initial Catalog=Test;Integrated Security=True;ApplicationIntent=ReadOnly;";
 
     private static readonly DateOnly WorkingDay = new(2026, 11, 12);
 

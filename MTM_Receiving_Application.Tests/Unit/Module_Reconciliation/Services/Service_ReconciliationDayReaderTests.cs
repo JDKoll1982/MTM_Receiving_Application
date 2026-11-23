@@ -19,7 +19,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Reconciliation.Services;
 public sealed class Service_ReconciliationDayReaderTests
 {
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;";
 
     private static readonly DateOnly WorkingDay = new(2026, 11, 12);
 

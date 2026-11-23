@@ -20,7 +20,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Reconciliation.Services;
 public sealed class Service_ReconciliationNonPurchaseOrderResolverTests
 {
     private const string VisualConnectionString =
-        "Data Source=localhost;Initial Catalog=Test;Integrated Security=True;ApplicationIntent=ReadOnly;";
+        "Data Source=172.16.1.104;Initial Catalog=Test;Integrated Security=True;ApplicationIntent=ReadOnly;";
 
     private static readonly DateOnly WorkingDay = new(2026, 11, 12);
 

@@ -18,7 +18,7 @@ namespace MTM_Receiving_Application.Tests.Unit.Module_Scanner.Contracts;
 public sealed class Service_ScannerContractsTests
 {
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
 
     [Fact]
     public async Task EnsureCurrentSessionAsync_ShouldFail_WhenOwnerUserIdMissing()

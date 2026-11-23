@@ -20,7 +20,7 @@ public sealed class Service_ScannerExecutionDialogWatcherTests
 {
     // Short connection timeout so nothing in this test waits on a real MySQL server.
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
 
     private const ushort VkReturn = 0x0D;
 

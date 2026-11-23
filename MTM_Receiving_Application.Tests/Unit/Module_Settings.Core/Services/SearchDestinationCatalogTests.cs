@@ -239,9 +239,9 @@ public sealed class SearchDestinationCatalogTests
                 new Dictionary<string, string?>
                 {
                     ["ConnectionStrings:MySql"] =
-                        "Server=localhost;Port=3306;Database=test;Uid=test;Pwd=test;",
+                        "Server=172.16.1.104;Port=3306;Database=test;Uid=test;Pwd=test;",
                     ["ConnectionStrings:InforVisual"] =
-                        "Server=localhost;Database=TEST;User Id=test;Password=test;ApplicationIntent=ReadOnly;TrustServerCertificate=True;",
+                        "Server=172.16.1.104;Database=TEST;User Id=test;Password=test;ApplicationIntent=ReadOnly;TrustServerCertificate=True;",
                 }
             )
             .Build();

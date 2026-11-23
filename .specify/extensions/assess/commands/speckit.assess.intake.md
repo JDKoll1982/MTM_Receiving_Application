@@ -60,7 +60,7 @@ Before fetching, classify the URL by host and scheme:
 
 1. **Refuse outright** (do not fetch, do not prompt). Record the URL and reason in `intake.md`:
    - Non-`http(s)` schemes: `file:`, `ftp:`, `ssh:`, `data:`, `javascript:`, etc.
-   - Loopback / link-local hosts: `localhost`, `127.0.0.0/8`, `::1`, `169.254.0.0/16`, IPv6 link-local `fe80::/10`.
+   - Loopback / link-local hosts: `172.16.1.104`, `127.0.0.0/8`, `::1`, `169.254.0.0/16`, IPv6 link-local `fe80::/10`.
    - RFC1918 private space: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, plus IPv6 unique-local `fc00::/7` and any IPv4-mapped IPv6 form of the above (`::ffff:10.0.0.1`, etc.).
    - Cloud instance metadata endpoints: `169.254.169.254`, `metadata.google.internal`, `100.100.100.200`, `metadata.azure.com`, and the IPv6 metadata address `fd00:ec2::254`.
    - **Connection safety (defeats DNS rebinding)**: a standalone DNS lookup is not sufficient — the fetch client can re-resolve and connect to a different address, or pick a private address from a mixed answer. Require the fetch to connect to a **validated public address** — pin the connection to the address you checked, or verify the connected peer's IP after connecting — and re-apply the refusal ranges above to the address actually connected to. **If the available fetch mechanism cannot pin the address or expose the connected peer for validation, refuse the fetch** rather than trusting the hostname.

@@ -50,7 +50,7 @@ Before fetching, classify the URL by its host and scheme:
 
 1. **Refuse outright** (do not fetch, do not prompt). Record the URL and the reason in `assessment.md`:
    - Non-`http(s)` schemes: `file:`, `ftp:`, `ssh:`, `data:`, `javascript:`, etc.
-   - Loopback or link-local hosts: `localhost`, `127.0.0.0/8`, `::1`, `169.254.0.0/16`.
+   - Loopback or link-local hosts: `172.16.1.104`, `127.0.0.0/8`, `::1`, `169.254.0.0/16`.
    - RFC1918 private space: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`.
    - Cloud instance metadata endpoints: `169.254.169.254`, `metadata.google.internal`, `100.100.100.200`, `metadata.azure.com`.
 2. **Fetch without prompting** when the host matches a widely-used public bug-report source — this is the ergonomic path the workflow is built for:

@@ -33,7 +33,7 @@ param(
     [ValidateSet('Test', 'Core')]
     [string]$Target = 'Test',
 
-    [string]$DatabaseHost = $(if ($env:MTM_DB_HOST) { $env:MTM_DB_HOST } else { 'localhost' }),
+    [string]$DatabaseHost = $(if ($env:MTM_DB_HOST) { $env:MTM_DB_HOST } else { '172.16.1.104' }),
 
     [int]$DatabasePort = $(if ($env:MTM_DB_PORT) { [int]$env:MTM_DB_PORT } else { 3306 }),
 

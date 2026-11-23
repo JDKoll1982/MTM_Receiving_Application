@@ -24,7 +24,7 @@ public sealed class WorkbenchInputLockoutTests
     // Short connection timeout so the best-effort item-result persistence fails fast and the
     // test never waits on a real MySQL server.
     private const string DummyConnectionString =
-        "Server=localhost;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
+        "Server=172.16.1.104;Database=test;Uid=test;Pwd=test;Connection Timeout=1;Default Command Timeout=1;";
 
     [Fact]
     public async Task InputsShouldToggleDisabled_WhileAutomationRuns_AndRestoreAfter()

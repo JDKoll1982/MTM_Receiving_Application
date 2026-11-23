@@ -2027,7 +2027,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     public async Task FormatBoardForPrintAsync_ShouldCountTodaysReceipts_WhenNoReceiptRangeIsSupplied()
     {
         var receiptsDao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>(
-            "Server=localhost;Database=test;"
+            "Server=172.16.1.104;Database=test;"
         );
         receiptsDao
             .Setup(dao => dao.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -2074,7 +2074,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
     public async Task FormatBoardForPrintAsync_ShouldCountReceiptsInsideTheSuppliedRange()
     {
         var receiptsDao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>(
-            "Server=localhost;Database=test;"
+            "Server=172.16.1.104;Database=test;"
         );
         receiptsDao
             .Setup(dao => dao.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -2508,7 +2508,7 @@ public sealed class Service_Tool_MaterialAvailabilityBoardTests
         bool shouldFail = false
     )
     {
-        var dao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>("Server=localhost;Database=test;");
+        var dao = new Mock<Dao_Tool_MaterialAvailabilityReceipts>("Server=172.16.1.104;Database=test;");
         dao.Setup(receipts =>
                 receipts.GetReceivedLabelCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>())
             )
