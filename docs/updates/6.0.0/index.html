@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Version 6.0.0 - MTM Receiving Application</title>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-brand">
+                <img class="hero-logo" src="../../../Assets/MTMLogo.jpg" alt="MTM Tool and Manufacturing logo" />
+                <div>
+                    <p class="eyebrow">MTM Receiving Application</p>
+                    <h1>Version 6.0.0</h1>
+                    <p class="hero-copy">This release adds a By Receiver mode that starts the guided receiving walk from the newest receipts already in Infor Visual, moves every page's Back, Next and Save buttons into one strip at the bottom of the window, and renames Dunnage to Non-Inventoried Labels while adding image cropping, sharper previews and a full-window image viewer. The Scanner can chain the next line after a save, Receiving Analytics gains a Record Days tab, the Receiving settings hub gains a Welded Part Numbers page, and manual mode has been removed from Non-Inventoried Labels.</p>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="badge">Version 6.0.0</span>
+                <span class="meta-text">Released November 23, 2026</span>
+                <div class="hero-actions">
+                    <button type="button" class="button button-primary" data-scroll-target="#highlights">View highlights</button>
+                    <button type="button" class="button button-secondary" id="toggle-details">Expand all details</button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content" class="content-grid">
+            <aside class="sidebar card">
+                <h2>On this page</h2>
+                <nav>
+                    <a href="#highlights">Highlights</a>
+                    <a href="#changes">What changed</a>
+                    <a href="#impact">Why it matters</a>
+                    <a href="#action">What you need to do</a>
+                    <a href="#support">Need help?</a>
+                </nav>
+                <button type="button" class="button button-secondary button-block" id="copy-version" data-copy-text="6.0.0">Copy version</button>
+                <p class="sidebar-note">Share this version number when reporting issues to your supervisor or the MTM IT support team.</p>
+            </aside>
+
+            <div class="main-column">
+                <section id="highlights" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Highlights</p>
+                        <h2>What is new in 6.0.0</h2>
+                    </div>
+                    <div class="highlight-grid">
+                        <article class="highlight-card accent-blue">
+                            <p class="highlight-title">Start a receipt from the receiver, not the purchase order</p>
+                            <p class="highlight-text">Receiving gains a <strong>By Receiver</strong> button between Guided and Manual. It lists the newest receipts already entered in Infor Visual with their receiver number, purchase order, line, part, vendor, location, and the received, ordered and remaining quantities. Choose a row and the walk carries on at <strong>Enter Loads</strong> with the location and remaining quantity already filled in, and <strong>Back</strong> returns you to your row.</p>
+                        </article>
+                        <article class="highlight-card accent-green">
+                            <p class="highlight-title">Every page keeps its buttons in the same strip</p>
+                            <p class="highlight-text">Receiving and Non-Inventoried Labels pages draw <strong>Back</strong>, <strong>Next</strong>, the save button and <strong>Help</strong> in one strip under the page content instead of inside each page. The mode buttons sit in the same strip: Ctrl+click a mode to make it your own default and a <strong>Default</strong> badge marks it for next time.</p>
+                        </article>
+                        <article class="highlight-card accent-gold">
+                            <p class="highlight-title">Non-Inventoried Labels, with better images and no manual mode</p>
+                            <p class="highlight-text">Dunnage is now called <strong>Non-Inventoried Labels</strong> in the app, settings, reports, reprint and help. Part and type images can be cropped with preset shapes, previews are sharper, and any image opens full window. The manual mode has been removed, so the module offers Guided, Edit and Image Search.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="changes" class="card section-block">
+                    <div class="section-heading split-heading">
+                        <div>
+                            <p class="section-label">What changed</p>
+                            <h2>Details of this release</h2>
+                        </div>
+                        <div class="filter-row" role="group" aria-label="Filter update details">
+                            <button type="button" class="filter-chip is-active" data-filter="all">All</button>
+                            <button type="button" class="filter-chip" data-filter="workflow">Workflow</button>
+                            <button type="button" class="filter-chip" data-filter="tools">Tools</button>
+                            <button type="button" class="filter-chip" data-filter="support">Support</button>
+                        </div>
+                    </div>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>By Receiver starts the guided walk from the newest receipts</summary>
+                        <p>Material is often entered into Infor Visual before the loads and labels are logged here. <strong>By Receiver</strong> means you no longer have to leave the application, look up the receiver, and come back with a purchase order number in your head.</p>
+                        <ul>
+                            <li>The list is ordered by the date the receipt came in, newest first, and never shows a receipt with no part number or no warehouse location.</li>
+                            <li>A receiver with several lines of the same part collapses to one row, and the remaining quantity never shows below zero.</li>
+                            <li>Type any part of a receiver number into the search box, and choose 25, 50, 100 or 200 rows per page.</li>
+                        </ul>
+                        <p>On <strong>Weight/Quantity</strong> the walk warns you when the loads you entered do not add up to the receiver amount, and offers <strong>Change Values</strong> or <strong>Continue</strong>. The Heat/Lot page keeps the vendor's own column for the part, and the walk remembers the vendor from the row you chose.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>One action strip carries the page buttons</summary>
+                        <p>The strip sits under the page content, so <strong>Back</strong>, <strong>Next</strong>, <strong>Help</strong> and the save button keep the same place on every page. Page-specific words still say what they do: <strong>Save &amp; Finish</strong> on Enter Loads and Edit Mode, <strong>Save to Database</strong> on Review, and <strong>Start New Entry</strong> on the result page.</p>
+                        <p>The Receiving mode-selection screen is gone. Receiving opens in your stored mode and falls back to Guided the first time, and the back arrow in the window header is hidden because <strong>Back</strong> lives in the strip. Shift+clicking <strong>Clear Label Data</strong> still clears every label row for users whose role allows it.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Non-Inventoried Labels drops manual mode</summary>
+                        <p>The module no longer offers manual entry: its button, its screen, its shortcut and its help topic are gone. The strip offers Guided, Edit and Image Search. If you previously saved Manual as your default, the module opens in Guided and remembers that instead.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Scanner Auto Mode chains the next line</summary>
+                        <p>A new <strong>Auto Mode</strong> switch sits in the Scanner footer after <strong>Send</strong> and is off until you turn it on; your choice is remembered. With Auto Mode on, the automation saves the line in Infor Visual for you and then waits for your answer to the usual "was it saved?" prompt.</p>
+                        <ul>
+                            <li><strong>Yes</strong> clears the line and sends the next one straight away.</li>
+                            <li><strong>No</strong> stops the run and turns Auto Mode off, so a failed save cannot repeat itself.</li>
+                            <li>Chaining stops with a plain explanation when there are no lines left, when the next line is not ready, or when the Infor Visual window has closed.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>Send waits for the Infor Visual window</summary>
+                        <p><strong>Send</strong> is greyed out while Infor Visual's Inventory Transfers window is closed, and a note beside the button says why. <strong>Remove Selected</strong> is unchanged and keeps working, because it only changes this list.</p>
+                    </details>
+
+                    <details class="change-item" data-category="workflow" open>
+                        <summary>A location check that cannot run no longer stops the walk</summary>
+                        <p>When Infor Visual cannot be reached, the guided walk continues to Review with the location you typed, instead of stopping the step. A location that is reached and not found still stops the step, and Receiving keeps its stricter behaviour so a bad location is never accepted.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Receiving Analytics gains a Record Days tab</summary>
+                        <p><strong>Receiving Analytics</strong> now has a <strong>Record Days</strong> tab. It shows <strong>Busiest Days</strong> split into <strong>Top Coil Days</strong>, <strong>Top Flat Stock Days</strong> and <strong>Top Other Item Days</strong>, with the labels counted for each day, so you can see which days to plan around and where the volume really sits.</p>
+                        <p>The old <strong>Trend vs Last Week</strong> card and the <strong>Compare Previous Period</strong> option were removed from the chart tab; the other totals, the date ranges and the export are unchanged.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Welded Part Numbers joins the Receiving settings hub</summary>
+                        <p>A new <strong>Welded Part Numbers</strong> page keeps the list of parts whose coil needs its inner diameter welded. Add a part, search the list, and remove a part you no longer run; the list is shared, so everyone sees the same part numbers.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Material Availability shows what each upcoming job takes and what is left</summary>
+                        <p>Every associated-part row on a Material Availability card now shows <strong>Material required</strong> for that job and <strong>Remaining after run</strong>, the projected on hand once the job has used its material. The balance turns red only when it goes negative.</p>
+                        <ul>
+                            <li>Rows are ordered by run date, oldest first, and each row is measured against what the previous row left behind.</li>
+                            <li>Material already staged to ship and non-conforming material are not counted as usable on hand.</li>
+                            <li>Jobs that have already finished leave both figures blank and do not reduce the balance.</li>
+                            <li>The printed and exported sheet carries the same two columns.</li>
+                        </ul>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Image tools on Non-Inventoried Labels</summary>
+                        <p>Part and type images gain a <strong>Crop</strong> button with free, square, 4:3 and 16:9 shapes; the saved image keeps its original size and the cropped version is used for previews and printing. Thumbnails fill their cards instead of being stretched, and clicking an image opens it full window, where a click outside or any key closes it again.</p>
+                        <p><strong>Search Parts by Image</strong> now searches every field on a part, including the user-defined columns, home location, quantity type, inventory type and additional notes, and its box reads <strong>Filter by anything</strong>. A current-part card with a running <strong>Quantity Per Load</strong> total sits beside the entry forms.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Select Part sorts, filters and opens on double-click</summary>
+                        <p>The <strong>Select Part</strong> page gains a <strong>Recv Date</strong> column, sorts when you click a column header, and filters by on-hand stock, quality hold or a single location. Your sort and filters are remembered for you. Double-clicking a part selects it and moves to the loads in one action, still respecting a quality hold; a single click only highlights.</p>
+                        <p><strong>PO Line Spec Search</strong> lets you tick more than one status, so Firmed, Released, Closed and Cancelled can be searched together instead of one at a time.</p>
+                    </details>
+
+                    <details class="change-item" data-category="tools" open>
+                        <summary>Edit Mode finds a row by any column</summary>
+                        <p>The Find box on <strong>Edit Mode</strong> now offers every column a receiving row carries, including part type, purchase order line and status, due date, ordered quantity, unit, heat shape and colour, location, remaining quantity, packages per load, weight per package, package type, who created the line, and the quality-hold fields. <strong>All Fields</strong> searches them all at once, numbers match with or without decimals, and dates match either way they are written.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>The Receiving Validator names the day, the run and the tally</summary>
+                        <p>The summary strip shows the day being reconciled and its run number, with a <strong>Copy</strong> action so you can paste the run number into a message. The line counter also carries the session tally, such as <strong>Line 3 of 12 · 2 accepted, 1 skipped</strong>. A day where every line was skipped now says it was skipped instead of claiming the lines already match, and material that disagrees with live on hand is stated plainly on the page.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Reporting fixes</summary>
+                        <p>The Options panel on the Reporting preview is readable in the dark theme instead of white on white. A copied End of Day report is titled as a report rather than as a preview.</p>
+                    </details>
+
+                    <details class="change-item" data-category="support" open>
+                        <summary>Search reaches the pages you actually use</summary>
+                        <p>The window search box now opens <strong>Receiving Validator</strong> and the two Receiving settings pages that were missing from it, and the entry for the retired mode-selection screen is gone.</p>
+                    </details>
+                </section>
+
+                <section id="impact" class="card section-block">
+                    <div class="section-heading">
+                        <p class="section-label">Why it matters</p>
+                        <h2>What this means on the floor</h2>
+                    </div>
+                    <div class="impact-list">
+                        <article>
+                            <h3>No purchase order number needed to start</h3>
+                            <p>When someone else has already entered the receipt, the pallet in front of you can be found by receiver, so you stop leaving the application to look one up and typing a number from memory.</p>
+                        </article>
+                        <article>
+                            <h3>The buttons are where you left them</h3>
+                            <p>One strip means <strong>Back</strong>, <strong>Next</strong> and save are in the same place on every page of both workflows, and the mode you use most can be set as your own default with one Ctrl+click.</p>
+                        </article>
+                        <article>
+                            <h3>Fewer dead ends</h3>
+                            <p><strong>Send</strong> tells you when Infor Visual is not open instead of failing quietly, a location check that cannot run no longer blocks the receipt, and Auto Mode stops itself the moment a save does not happen.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="action" class="card section-block action-panel">
+                    <div>
+                        <p class="section-label">What you need to do</p>
+                        <h2>Nothing to install or set up yourself</h2>
+                    </div>
+                    <p class="action-state success">No action is required from operators after this update.</p>
+                    <ul class="action-list">
+                        <li>Your saved settings and preferences are kept. A Non-Inventoried Labels default of Manual now opens Guided and is remembered that way.</li>
+                        <li>Manual mode is no longer available in Non-Inventoried Labels; use Guided, Edit or Image Search.</li>
+                        <li><strong>Back</strong> is offered by the strip at the bottom of the page; the arrow in the window header is hidden.</li>
+                        <li><strong>Auto Mode</strong> in the Scanner stays off until you turn it on in the Scanner footer, and the choice is remembered.</li>
+                        <li>The MTM IT support team deploys the new database reporting routine. There is nothing for you to run.</li>
+                    </ul>
+                </section>
+
+                <section id="support" class="card section-block support-panel">
+                    <div>
+                        <p class="section-label">Need help?</p>
+                        <h2>Reporting a problem</h2>
+                    </div>
+                    <p>If a receiver you know exists does not appear in <strong>By Receiver</strong>, a page shows no <strong>Back</strong> or <strong>Next</strong> button, a Non-Inventoried Labels screen asks for a mode you cannot find, <strong>Send</strong> stays greyed out with the Infor Visual window open, a cropped image or preview looks wrong, the Record Days tab shows no days when you know material came in, or the application will not start from the MTM Loader, contact your supervisor or the MTM IT support team and include the version number shown at the top of this page.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">Top</button>
+
+    <script src="../app.js"></script>
+</body>
+</html>
