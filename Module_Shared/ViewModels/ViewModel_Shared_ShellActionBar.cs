@@ -30,6 +30,9 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     private Model_ShellModeAction _guided = Model_ShellModeAction.Hidden;
 
     [ObservableProperty]
+    private Model_ShellModeAction _byReceiver = Model_ShellModeAction.Hidden;
+
+    [ObservableProperty]
     private Model_ShellModeAction _manual = Model_ShellModeAction.Hidden;
 
     [ObservableProperty]
@@ -57,6 +60,9 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
 
     [ObservableProperty]
     private bool? _isGuidedDefault;
+
+    [ObservableProperty]
+    private bool? _isByReceiverDefault;
 
     [ObservableProperty]
     private bool? _isManualDefault;
@@ -104,7 +110,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     private Model_ShellModeAction? FindMode(string mode)
     {
         foreach (
-            var chip in new[] { Guided, Manual, Edit, Overlay, ImageSearch }
+            var chip in new[] { Guided, ByReceiver, Manual, Edit, Overlay, ImageSearch }
         )
         {
             if (chip.IsVisible && string.Equals(chip.Mode, mode, StringComparison.Ordinal))
@@ -147,6 +153,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             IsVisible = false;
             ShowModeGroup = false;
             Guided = Model_ShellModeAction.Hidden;
+            ByReceiver = Model_ShellModeAction.Hidden;
             Manual = Model_ShellModeAction.Hidden;
             Edit = Model_ShellModeAction.Hidden;
             Overlay = Model_ShellModeAction.Hidden;
@@ -156,6 +163,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             ClearLabelData = Model_ShellActionSlot.Hidden;
             Help = Model_ShellActionSlot.Hidden;
             IsGuidedDefault = false;
+            IsByReceiverDefault = false;
             IsManualDefault = false;
             IsEditDefault = false;
             IsImageSearchDefault = false;
@@ -167,6 +175,9 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
     }
 
     partial void OnIsGuidedDefaultChanged(bool? value) => ApplyDefaultChange(value == true, "guided");
+
+    partial void OnIsByReceiverDefaultChanged(bool? value) =>
+        ApplyDefaultChange(value == true, "by-receiver");
 
     partial void OnIsManualDefaultChanged(bool? value) => ApplyDefaultChange(value == true, "manual");
 
@@ -206,6 +217,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
         {
             ShowModeGroup = state.ShowModeGroup;
             Guided = state.Guided;
+            ByReceiver = state.ByReceiver;
             Manual = state.Manual;
             Edit = state.Edit;
             Overlay = state.Overlay;
@@ -215,6 +227,7 @@ public partial class ViewModel_Shared_ShellActionBar : ObservableObject
             ClearLabelData = state.ClearLabelData;
             Help = state.Help;
             IsGuidedDefault = state.IsGuidedDefault;
+            IsByReceiverDefault = state.IsByReceiverDefault;
             IsManualDefault = state.IsManualDefault;
             IsEditDefault = state.IsEditDefault;
             IsImageSearchDefault = state.IsImageSearchDefault;

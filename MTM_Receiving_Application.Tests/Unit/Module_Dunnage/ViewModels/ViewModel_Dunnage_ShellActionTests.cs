@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -128,6 +130,42 @@ public sealed class ViewModel_Dunnage_ShellActionTests
         shell
             .ImageSearch.ShowDividerAfter.Should()
             .BeFalse("Image Search is the last chip, so a trailing divider would hang off the group");
+    }
+
+    [Fact]
+    public void MainWindowXaml_ShouldSpaceModeChipsFromTheDividerMargin_SoHiddenChipsLeaveNoGap()
+    {
+        // Dunnage hides By Receiver and Manual, so Guided and Edit are three empty columns apart.
+        // ColumnSpacing still inserts its gap between those empty columns, which pushed the Edit
+        // button 24px away from Guided instead of 8, so the chip rhythm broke.
+        var content = File.ReadAllText(
+            Path.Combine(FindRepositoryRoot(), "MainWindow.xaml")
+        );
+
+        var panelStart = content.IndexOf(
+            "x:Name=\"ShellModeGroupPanel\"",
+            StringComparison.Ordinal
+        );
+        panelStart.Should().BeGreaterThanOrEqualTo(0);
+
+        var panelHeaderStart = content.LastIndexOf('<', panelStart);
+        var panelDeclaration = content.Substring(
+            panelHeaderStart,
+            content.IndexOf('>', panelStart) - panelHeaderStart
+        );
+
+        panelDeclaration
+            .Should()
+            .NotContain(
+                "ColumnSpacing",
+                "spacing has to come from the dividers, or every collapsed chip adds a hidden gap"
+            );
+
+        content
+            .Split("Margin=\"8,6,8,0\"")
+            .Should()
+            .HaveCount(6, "the five mode dividers and no leftover 4px margin carry the gaps");
+        content.Should().NotContain("Margin=\"4,6,4,0\"");
     }
 
     [Fact]
@@ -632,6 +670,24 @@ public sealed class ViewModel_Dunnage_ShellActionTests
         bar.Attach(viewModel);
 
         return new Page(viewModel, bar, hosts);
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "MainWindow.xaml")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException(
+            $"Could not find MainWindow.xaml walking up from {AppContext.BaseDirectory}"
+        );
     }
 
     private static Mock<IService_DunnageWorkflow> CreateWorkflowMock(

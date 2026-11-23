@@ -547,14 +547,22 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
+                            <!--
+                                Spacing comes from each divider's own margin, never from ColumnSpacing.
+                                A collapsed chip leaves its column and its divider empty, but
+                                ColumnSpacing still inserts a gap between those empty columns, which
+                                pushed a module's visible chips apart by an extra 4px for every hidden
+                                chip in between.
+                            -->
                             <Grid
                                 x:Name="ShellModeGroupPanel"
                                 Grid.Column="0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                ColumnSpacing="4"
                                 Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ShowModeGroup), Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -607,13 +615,52 @@
                                     Grid.Column="1"
                                     Width="1"
                                     Height="20"
-                                    Margin="4,6,4,0"
+                                    Margin="8,6,8,0"
                                     VerticalAlignment="Top"
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Guided.ShowDividerAfter), Mode=OneWay}" />
 
                                 <Grid
                                     Grid.Column="2"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ByReceiver.IsVisible), Mode=OneWay}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        x:Name="ShellByReceiverButton"
+                                        Grid.Row="0"
+                                        AutomationProperties.Name="{x:Bind ShellActionBar.ByReceiver.AccessibilityName, Mode=OneWay}"
+                                        BorderBrush="{x:Bind helpers:Helper_ShellBrush.ModeBorder(ShellActionBar.ByReceiver.IsActive), Mode=OneWay}"
+                                        BorderThickness="1"
+                                        Click="ShellModeButton_Click"
+                                        Tag="by-receiver"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.ByReceiver.DefaultTooltip, Mode=OneWay}">
+                                        <TextBlock
+                                            Foreground="{x:Bind helpers:Helper_ShellBrush.ModeText(ShellActionBar.ByReceiver.IsActive), Mode=OneWay}"
+                                            Text="{x:Bind ShellActionBar.ByReceiver.Label, Mode=OneWay}" />
+                                    </Button>
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{x:Bind ShellActionBar.ByReceiver.DefaultBadge, Mode=OneWay}"
+                                        ToolTipService.ToolTip="{x:Bind ShellActionBar.ByReceiver.DefaultTooltip, Mode=OneWay}"
+                                        Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.IsByReceiverDefault), Mode=OneWay}" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="ShellByReceiverDivider"
+                                    Grid.Column="3"
+                                    Width="1"
+                                    Height="20"
+                                    Margin="8,6,8,0"
+                                    VerticalAlignment="Top"
+                                    Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                    Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ByReceiver.ShowDividerAfter), Mode=OneWay}" />
+
+                                <Grid
+                                    Grid.Column="4"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Manual.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -643,16 +690,16 @@
 
                                 <Border
                                     x:Name="ShellManualDivider"
-                                    Grid.Column="3"
+                                    Grid.Column="5"
                                     Width="1"
                                     Height="20"
-                                    Margin="4,6,4,0"
+                                    Margin="8,6,8,0"
                                     VerticalAlignment="Top"
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Manual.ShowDividerAfter), Mode=OneWay}" />
 
                                 <Grid
-                                    Grid.Column="4"
+                                    Grid.Column="6"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Edit.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -682,16 +729,16 @@
 
                                 <Border
                                     x:Name="ShellEditDivider"
-                                    Grid.Column="5"
+                                    Grid.Column="7"
                                     Width="1"
                                     Height="20"
-                                    Margin="4,6,4,0"
+                                    Margin="8,6,8,0"
                                     VerticalAlignment="Top"
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Edit.ShowDividerAfter), Mode=OneWay}" />
 
                                 <Grid
-                                    Grid.Column="6"
+                                    Grid.Column="8"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ImageSearch.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -721,16 +768,16 @@
 
                                 <Border
                                     x:Name="ShellImageSearchDivider"
-                                    Grid.Column="7"
+                                    Grid.Column="9"
                                     Width="1"
                                     Height="20"
-                                    Margin="4,6,4,0"
+                                    Margin="8,6,8,0"
                                     VerticalAlignment="Top"
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ImageSearch.ShowDividerAfter), Mode=OneWay}" />
 
                                 <Grid
-                                    Grid.Column="8"
+                                    Grid.Column="10"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.Overlay.IsVisible), Mode=OneWay}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -755,8 +802,7 @@
                             <Grid
                                 Grid.Column="1"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                ColumnSpacing="4">
+                                VerticalAlignment="Top">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -787,7 +833,7 @@
                                     Grid.Column="1"
                                     Width="1"
                                     Height="20"
-                                    Margin="4,0"
+                                    Margin="8,0"
                                     Background="{ThemeResource DividerStrokeColorDefaultBrush}"
                                     Visibility="{x:Bind helpers:Helper_Visibility.FromBool(ShellActionBar.ShowDividerAfterBack), Mode=OneWay}" />
 

@@ -16,5 +16,6 @@
         Review = 9,
         Saving = 10,
         Complete = 11,
+        ReceiverSelection = 12,
     }
 }

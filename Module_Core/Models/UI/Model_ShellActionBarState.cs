@@ -28,6 +28,11 @@ public sealed class Model_ShellActionBarState
     public Model_ShellModeAction Guided { get; init; } = Model_ShellModeAction.Hidden;
 
     /// <summary>
+    /// Gets the By Receiver control.
+    /// </summary>
+    public Model_ShellModeAction ByReceiver { get; init; } = Model_ShellModeAction.Hidden;
+
+    /// <summary>
     /// Gets the Manual control.
     /// </summary>
     public Model_ShellModeAction Manual { get; init; } = Model_ShellModeAction.Hidden;
@@ -71,6 +76,11 @@ public sealed class Model_ShellActionBarState
     /// Gets a value indicating whether Guided is the stored default.
     /// </summary>
     public bool IsGuidedDefault { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether By Receiver is the stored default.
+    /// </summary>
+    public bool IsByReceiverDefault { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether Manual is the stored default.

@@ -57851,5 +57851,82 @@
       "QuantitySent": 5600.0,
       "DispatchStatus": "Open"
     }
+  ],
+  "RecentReceivers": [
+    {
+      "ReceiverNumber": "RCV-100248",
+      "ReceivedDate": "2025-11-18T00:00:00",
+      "PONumber": "PO-033355",
+      "POLineNumber": "2",
+      "PartNumber": "MMF0005011",
+      "PartDescription": "Mock sheet steel for receiving validation",
+      "UnitOfMeasure": "EA",
+      "VendorName": "Skana Aluminum",
+      "Warehouse": "002",
+      "LocationReceivedTo": "T-02",
+      "QtyReceived": 250.0,
+      "QtyOrdered": 1000.0,
+      "QtyRemaining": 750.0
+    },
+    {
+      "ReceiverNumber": "RCV-100246",
+      "ReceivedDate": "2025-11-16T00:00:00",
+      "PONumber": "PO-033349",
+      "POLineNumber": "1",
+      "PartNumber": "MMF0005007",
+      "PartDescription": "Mock sheet steel for receiving validation",
+      "UnitOfMeasure": "EA",
+      "VendorName": "Skana Aluminum",
+      "Warehouse": "002",
+      "LocationReceivedTo": "",
+      "QtyReceived": 1200.0,
+      "QtyOrdered": 1308.0,
+      "QtyRemaining": 108.0
+    },
+    {
+      "ReceiverNumber": "RCV-100245",
+      "ReceivedDate": "2025-11-14T00:00:00",
+      "PONumber": "PO-033349",
+      "POLineNumber": "1",
+      "PartNumber": "MMF0005007",
+      "PartDescription": "Mock sheet steel for receiving validation",
+      "UnitOfMeasure": "EA",
+      "VendorName": "Skana Aluminum",
+      "Warehouse": "002",
+      "LocationReceivedTo": "T-00",
+      "QtyReceived": 100.0,
+      "QtyOrdered": 1308.0,
+      "QtyRemaining": 171.0
+    },
+    {
+      "ReceiverNumber": "RCV-100241",
+      "ReceivedDate": "2025-11-12T00:00:00",
+      "PONumber": "PO-033321",
+      "POLineNumber": "3",
+      "PartNumber": "MMC0000650",
+      "PartDescription": "Mock coil for receiving validation",
+      "UnitOfMeasure": "LB",
+      "VendorName": "Precision Plating Inc.",
+      "Warehouse": "002",
+      "LocationReceivedTo": "C-04",
+      "QtyReceived": 500.0,
+      "QtyOrdered": 500.0,
+      "QtyRemaining": 0.0
+    },
+    {
+      "ReceiverNumber": "RCV-100238",
+      "ReceivedDate": "2025-11-10T00:00:00",
+      "PONumber": "PO-033298",
+      "POLineNumber": "1",
+      "PartNumber": "MMC0000857",
+      "PartDescription": "Mock coil for receiving validation",
+      "UnitOfMeasure": "LB",
+      "VendorName": "Allied Metal Services",
+      "Warehouse": "002",
+      "LocationReceivedTo": "",
+      "QtyReceived": 200.0,
+      "QtyOrdered": 2000.0,
+      "QtyRemaining": 1800.0
+    }
   ]
 }

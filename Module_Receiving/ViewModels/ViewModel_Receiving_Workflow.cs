@@ -103,6 +103,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
         [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
+        private bool _isReceiverSelectionVisible;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowBackButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNextButton))]
+        [NotifyPropertyChangedFor(nameof(ShowWorkflowNavigationButtons))]
         private bool _isPartSelectionVisible;
 
         [ObservableProperty]
@@ -215,19 +221,37 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             (Enum_ReceivingWorkflowStep.Review, "Review"),
         ];
 
+        /// <summary>
+        /// The order of the walk when it started from a receiver row. The receiver list replaces the
+        /// PO and part doors, so the trail starts at Receivers and draws the same steps after it.
+        /// </summary>
+        private static readonly (Enum_ReceivingWorkflowStep Step, string Label)[] ByReceiverTrail =
+        [
+            (Enum_ReceivingWorkflowStep.ReceiverSelection, "Receivers"),
+            (Enum_ReceivingWorkflowStep.LoadEntry, "Loads"),
+            (Enum_ReceivingWorkflowStep.WeightQuantityEntry, "Weight/Qty"),
+            (Enum_ReceivingWorkflowStep.HeatLotEntry, "Heat/Lot"),
+            (Enum_ReceivingWorkflowStep.PackageTypeEntry, "Package"),
+            (Enum_ReceivingWorkflowStep.Review, "Review"),
+        ];
+
         /// <summary>True while the clerk is somewhere in the guided walk.</summary>
         public bool IsHeaderStepBarVisible => HeaderStepBarIndex >= 0;
 
+        /// <summary>The trail the current walk draws, by-receiver or guided.</summary>
+        private (Enum_ReceivingWorkflowStep Step, string Label)[] ActiveTrail =>
+            _workflowService.IsByReceiverFlow ? ByReceiverTrail : GuidedTrail;
+
         /// <summary>The walk's steps, in order, for the main-window header step bar.</summary>
         public IReadOnlyList<string> HeaderStepBarSteps =>
-            GuidedTrail.Select(entry => entry.Label).ToArray();
+            ActiveTrail.Select(entry => entry.Label).ToArray();
 
         /// <summary>
         /// The step the clerk is on, or -1 outside the walk so the header hides the bar rather than
         /// leaving a stale highlight behind.
         /// </summary>
         public int HeaderStepBarIndex =>
-            Array.FindIndex(GuidedTrail, entry => entry.Step == _workflowService.CurrentStep);
+            Array.FindIndex(ActiveTrail, entry => entry.Step == _workflowService.CurrentStep);
 
         /// <summary>
         /// Re-announces the step bar state after a step change, so the header re-reads the index and
@@ -257,6 +281,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _shellGuidedText = "Guided";
 
         [ObservableProperty]
+        private string _shellByReceiverText = "By Receiver";
+
+        [ObservableProperty]
         private string _shellManualText = "Manual";
 
         [ObservableProperty]
@@ -267,6 +294,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         [ObservableProperty]
         private string _shellGuidedDefaultTooltipText = "make Guided my default";
+
+        [ObservableProperty]
+        private string _shellByReceiverDefaultTooltipText = "make By Receiver my default";
 
         [ObservableProperty]
         private string _shellManualDefaultTooltipText = "make Manual my default";
@@ -408,6 +438,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 ShellGuidedText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ShellGuided
                 );
+                ShellByReceiverText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellByReceiver
+                );
                 ShellManualText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ShellManual
                 );
@@ -419,6 +452,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 );
                 ShellGuidedDefaultTooltipText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ShellGuidedDefaultTooltip
+                );
+                ShellByReceiverDefaultTooltipText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.UiText.ShellByReceiverDefaultTooltip
                 );
                 ShellManualDefaultTooltipText = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.UiText.ShellManualDefaultTooltip
@@ -513,6 +549,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             IsManualEntryVisible = false;
             IsEditModeVisible = false;
             IsPOEntryVisible = false;
+            IsReceiverSelectionVisible = false;
             IsPartSelectionVisible = false;
             IsLoadEntryVisible = false;
             IsWeightQuantityEntryVisible = false;
@@ -536,6 +573,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.POEntry:
                     IsPOEntryVisible = true;
                     CurrentStepTitle = "Receiving - Enter PO Number";
+                    break;
+                case Enum_ReceivingWorkflowStep.ReceiverSelection:
+                    IsReceiverSelectionVisible = true;
+                    CurrentStepTitle = "Receiving - By Receiver";
                     break;
                 case Enum_ReceivingWorkflowStep.PartSelection:
                     IsPartSelectionVisible = true;
@@ -667,6 +708,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 _logger.LogInfo("NextStepAsync command triggered.");
 
                 if (!await EnsureReceivingNonPoReferenceAsync())
+                {
+                    return;
+                }
+
+                if (!await ConfirmReceiverQuantityAsync())
                 {
                     return;
                 }
@@ -1145,9 +1191,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task EnterGuidedModeAsync()
         {
-            if (IsGuidedWalkStep(_workflowService.CurrentStep))
+            if (IsGuidedWalkStep(_workflowService.CurrentStep) && !_workflowService.IsByReceiverFlow)
             {
-                // Already in the guided walk: pressing Guided must not restart it.
+                // Already in the guided walk: pressing Guided must not restart it. A by-receiver
+                // walk shares the guided steps, so switching back must still open the PO door.
                 return;
             }
 
@@ -1155,6 +1202,21 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             {
                 await _workflowService.ResetWorkflowAsync();
                 _workflowService.GoToStep(Enum_ReceivingWorkflowStep.POEntry);
+            }
+        }
+
+        [RelayCommand]
+        private async Task EnterByReceiverModeAsync()
+        {
+            if (_workflowService.CurrentStep == Enum_ReceivingWorkflowStep.ReceiverSelection)
+            {
+                return;
+            }
+
+            if (await ConfirmModeChangeAsync())
+            {
+                await _workflowService.ResetWorkflowAsync();
+                _workflowService.GoToStep(Enum_ReceivingWorkflowStep.ReceiverSelection);
             }
         }
 
@@ -1226,6 +1288,15 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShellDefaultBadgeText,
                     activeMode == "guided"
                 ),
+                ByReceiver = CreateModeAction(
+                    "by-receiver",
+                    ShellByReceiverText,
+                    ShellByReceiverDefaultTooltipText,
+                    EnterByReceiverModeCommand,
+                    canBeDefault: true,
+                    ShellDefaultBadgeText,
+                    activeMode == "by-receiver"
+                ),
                 Manual = CreateModeAction(
                     "manual",
                     ShellManualText,
@@ -1271,6 +1342,7 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                     ShowHelpCommand
                 ),
                 IsGuidedDefault = CurrentDefaultMode == "guided",
+                IsByReceiverDefault = CurrentDefaultMode == "by-receiver",
                 IsManualDefault = CurrentDefaultMode == "manual",
                 IsEditDefault = CurrentDefaultMode == "edit",
             };
@@ -1419,7 +1491,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         /// </summary>
         private string ResolveActiveMode(Enum_ReceivingWorkflowStep step)
         {
-            if (step == Enum_ReceivingWorkflowStep.ManualEntry)
+            if (_workflowService.IsByReceiverFlow)
+            {
+                _activeMode = "by-receiver";
+            }
+            else if (step == Enum_ReceivingWorkflowStep.ManualEntry)
             {
                 _activeMode = "manual";
             }
@@ -1480,10 +1556,95 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             storedModeValue?.Trim().ToLowerInvariant() switch
             {
                 "guided" => "guided",
+                "by-receiver" => "by-receiver",
                 "manual" => "manual",
                 "edit" => "edit",
                 _ => null,
             };
+
+        /// <summary>
+        /// True when the loads entered so far do not add up to the quantity the chosen receiver
+        /// recorded, which is what the Next warning asks the operator about.
+        /// </summary>
+        public bool HasReceiverQuantityMismatch(out decimal currentTotal, out decimal receiverQty)
+        {
+            currentTotal = 0m;
+            receiverQty = 0m;
+
+            var receiver = _workflowService.SelectedReceiver;
+            var loads = _workflowService.CurrentSession?.Loads;
+
+            if (receiver is null || loads is null || loads.Count == 0)
+            {
+                return false;
+            }
+
+            currentTotal = loads.Sum(load => load.WeightQuantity);
+            receiverQty = receiver.QtyReceived;
+
+            return currentTotal != receiverQty;
+        }
+
+        /// <summary>
+        /// Warns when the loads do not total what the receiver recorded, and lets the operator go
+        /// back to the quantities or continue as entered.
+        /// </summary>
+        private async Task<bool> ConfirmReceiverQuantityAsync()
+        {
+            if (_workflowService.CurrentStep != Enum_ReceivingWorkflowStep.WeightQuantityEntry)
+            {
+                return true;
+            }
+
+            if (!HasReceiverQuantityMismatch(out var currentTotal, out var receiverQty))
+            {
+                return true;
+            }
+
+            var xamlRoot = _windowService.GetXamlRoot();
+            if (xamlRoot is null)
+            {
+                _logger.LogWarning(
+                    "XamlRoot is null, proceeding without the receiver quantity warning"
+                );
+                return true;
+            }
+
+            try
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchTitle
+                    ),
+                    Content = await _receivingSettings.FormatAsync(
+                        ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchContent,
+                        currentTotal,
+                        receiverQty
+                    ),
+                    PrimaryButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchContinue
+                    ),
+                    CloseButtonText = await _receivingSettings.GetStringAsync(
+                        ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchChangeValues
+                    ),
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = xamlRoot,
+                };
+
+                MTM_Receiving_Application.Module_Core.Helpers.Helper_UI_ContentDialogTheme.ApplyTheme(
+                    dialog,
+                    xamlRoot
+                );
+
+                return await dialog.ShowAsync() == ContentDialogResult.Primary;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error showing the receiver quantity warning: {ex.Message}", ex);
+                return true;
+            }
+        }
 
         /// <summary>
         /// Asks before a mode change discards data that has not been saved yet.

@@ -1,4 +1,4 @@
-﻿namespace MTM_Receiving_Application.Module_Receiving.Settings;
+namespace MTM_Receiving_Application.Module_Receiving.Settings;
 
 /// <summary>
 /// Central key definitions for all Module_Receiving settings and UI text.
@@ -33,6 +33,9 @@ public static class ReceivingSettingsKeys
         public const string ShellManualDefaultTooltip = "Receiving.UiText.Shell.ManualDefaultTooltip";
         public const string ShellEditDefaultTooltip = "Receiving.UiText.Shell.EditDefaultTooltip";
         public const string ShellDefault = "Receiving.UiText.Shell.Default";
+        public const string ShellByReceiver = "Receiving.UiText.Shell.ByReceiver";
+        public const string ShellByReceiverDefaultTooltip =
+            "Receiving.UiText.Shell.ByReceiverDefaultTooltip";
 
         public const string CompletionSuccessTitle = "Receiving.UiText.Completion.SuccessTitle";
         public const string CompletionFailureTitle = "Receiving.UiText.Completion.FailureTitle";
@@ -191,6 +194,48 @@ public static class ReceivingSettingsKeys
         public const string ReviewColumnPkgType = "Receiving.UiText.Review.Column.PkgType";
     }
 
+    public static class ReceiverSelection
+    {
+        public const string ScreenTitle = "Receiving.UiText.ReceiverSelection.ScreenTitle";
+        public const string SearchPlaceholder =
+            "Receiving.UiText.ReceiverSelection.SearchPlaceholder";
+        public const string RowsPerPage = "Receiving.UiText.ReceiverSelection.RowsPerPage";
+        public const string RowsPerPage25 = "Receiving.UiText.ReceiverSelection.RowsPerPage.25";
+        public const string RowsPerPage50 = "Receiving.UiText.ReceiverSelection.RowsPerPage.50";
+        public const string RowsPerPage100 = "Receiving.UiText.ReceiverSelection.RowsPerPage.100";
+        public const string RowsPerPage200 = "Receiving.UiText.ReceiverSelection.RowsPerPage.200";
+        public const string DefaultPageSize =
+            "Receiving.UiText.ReceiverSelection.DefaultPageSize";
+        public const string Refresh = "Receiving.UiText.ReceiverSelection.Refresh";
+        public const string PreviousPage = "Receiving.UiText.ReceiverSelection.PreviousPage";
+        public const string NextPage = "Receiving.UiText.ReceiverSelection.NextPage";
+        public const string PageIndicator = "Receiving.UiText.ReceiverSelection.PageIndicator";
+        public const string EmptyMessage = "Receiving.UiText.ReceiverSelection.EmptyMessage";
+        public const string FailureMessage = "Receiving.UiText.ReceiverSelection.FailureMessage";
+        public const string Retry = "Receiving.UiText.ReceiverSelection.Retry";
+        public const string QtyRemainingOnLineLabel =
+            "Receiving.UiText.ReceiverSelection.QtyRemainingOnLine";
+
+        public const string ColumnReceiverNumber =
+            "Receiving.UiText.ReceiverSelection.Column.ReceiverNumber";
+        public const string ColumnPoNumber =
+            "Receiving.UiText.ReceiverSelection.Column.PoNumber";
+        public const string ColumnLineNumber =
+            "Receiving.UiText.ReceiverSelection.Column.LineNumber";
+        public const string ColumnPartNumber =
+            "Receiving.UiText.ReceiverSelection.Column.PartNumber";
+        public const string ColumnVendor =
+            "Receiving.UiText.ReceiverSelection.Column.Vendor";
+        public const string ColumnLocationReceivedTo =
+            "Receiving.UiText.ReceiverSelection.Column.LocationReceivedTo";
+        public const string ColumnQtyReceived =
+            "Receiving.UiText.ReceiverSelection.Column.QtyReceived";
+        public const string ColumnQtyOrdered =
+            "Receiving.UiText.ReceiverSelection.Column.QtyOrdered";
+        public const string ColumnQtyRemaining =
+            "Receiving.UiText.ReceiverSelection.Column.QtyRemaining";
+    }
+
     public static class Workflow
     {
         public const string StepTitleManualEntry = "Receiving.Workflow.StepTitle.ManualEntry";
@@ -204,6 +249,8 @@ public static class ReceivingSettingsKeys
         public const string StepTitleReviewAndSave = "Receiving.Workflow.StepTitle.ReviewAndSave";
         public const string StepTitleSaving = "Receiving.Workflow.StepTitle.Saving";
         public const string StepTitleComplete = "Receiving.Workflow.StepTitle.Complete";
+        public const string StepTitleReceiverSelection =
+            "Receiving.Workflow.StepTitle.ReceiverSelection";
 
         public const string SaveProgressInitializing =
             "Receiving.Workflow.SaveProgress.Initializing";
@@ -241,6 +288,21 @@ public static class ReceivingSettingsKeys
             "Receiving.Dialogs.ConfirmModeSelection.Continue";
         public const string ConfirmModeSelectionCancel =
             "Receiving.Dialogs.ConfirmModeSelection.Cancel";
+
+        public const string ReceiverQtyMismatchTitle =
+            "Receiving.Dialogs.ReceiverQtyMismatch.Title";
+
+        /// <summary>
+        /// Content template taking the total entered and the quantity the receiver recorded, in that order.
+        /// </summary>
+        public const string ReceiverQtyMismatchContent =
+            "Receiving.Dialogs.ReceiverQtyMismatch.Content";
+
+        public const string ReceiverQtyMismatchChangeValues =
+            "Receiving.Dialogs.ReceiverQtyMismatch.ChangeValues";
+
+        public const string ReceiverQtyMismatchContinue =
+            "Receiving.Dialogs.ReceiverQtyMismatch.Continue";
 
 
         public const string ManualEntryAddMultipleTitle =
@@ -297,6 +359,12 @@ public static class ReceivingSettingsKeys
         public const string ReviewSwitchToSingle = "Receiving.Accessibility.Review.SwitchToSingle";
         public const string ReviewEntriesTable = "Receiving.Accessibility.Review.EntriesTable";
         public const string ReviewSaveToDatabase = "Receiving.Accessibility.Review.SaveToDatabase";
+        public const string ReceiverSelectionSearch =
+            "Receiving.Accessibility.ReceiverSelection.Search";
+        public const string ReceiverSelectionRowsPerPage =
+            "Receiving.Accessibility.ReceiverSelection.RowsPerPage";
+        public const string ReceiverSelectionList =
+            "Receiving.Accessibility.ReceiverSelection.List";
     }
 
     public static class Validation

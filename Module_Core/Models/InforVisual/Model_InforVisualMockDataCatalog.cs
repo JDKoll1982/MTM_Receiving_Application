@@ -21,5 +21,7 @@ public class Model_InforVisualMockDataCatalog
 
     public List<Model_OutsideServiceHistory> OutsideServiceHistory { get; set; } = [];
 
+    public List<Model_InforVisualReceiverRow> RecentReceivers { get; set; } = [];
+
     public List<Model_InforVisualMockCustomer> Customers { get; set; } = [];
 }

@@ -5,6 +5,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.ViewModels;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -209,6 +210,86 @@ public sealed class ViewModel_Receiving_WorkflowTests
         viewModel
             .HeaderStepBarIndex.Should()
             .Be(-1);
+    }
+
+    [Fact]
+    public void HasReceiverQuantityMismatch_ShouldReportTheTotals_WhenTheLoadsDifferFromTheReceiver()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.SelectedReceiver)
+            .Returns(
+                new Model_InforVisualReceiverRow { ReceiverNumber = "TEST-RCV-001", QtyReceived = 120m }
+            );
+        workflow
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_ReceivingSession
+                {
+                    Loads = new List<Model_ReceivingLoad>
+                    {
+                        new() { WeightQuantity = 50m },
+                        new() { WeightQuantity = 60m },
+                    },
+                }
+            );
+
+        var viewModel = CreateViewModel(workflow);
+
+        var differs = viewModel.HasReceiverQuantityMismatch(
+            out var currentTotal,
+            out var receiverQty
+        );
+
+        differs.Should().BeTrue("110 does not match the 120 the receiver recorded");
+        currentTotal.Should().Be(110m);
+        receiverQty.Should().Be(120m);
+    }
+
+    [Fact]
+    public void HasReceiverQuantityMismatch_ShouldBeFalse_WhenTheLoadsMatchTheReceiver()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.SelectedReceiver)
+            .Returns(new Model_InforVisualReceiverRow { QtyReceived = 110.5m });
+        workflow
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_ReceivingSession
+                {
+                    Loads = new List<Model_ReceivingLoad>
+                    {
+                        new() { WeightQuantity = 100m },
+                        new() { WeightQuantity = 10.5m },
+                    },
+                }
+            );
+
+        var viewModel = CreateViewModel(workflow);
+
+        viewModel.HasReceiverQuantityMismatch(out _, out _).Should().BeFalse();
+    }
+
+    [Fact]
+    public void HasReceiverQuantityMismatch_ShouldBeFalse_WhenTheWalkDidNotStartFromAReceiver()
+    {
+        var workflow = CreateWorkflowMock();
+        workflow
+            .SetupGet(service => service.CurrentSession)
+            .Returns(
+                new Model_ReceivingSession
+                {
+                    Loads = new List<Model_ReceivingLoad> { new() { WeightQuantity = 10m } },
+                }
+            );
+
+        var viewModel = CreateViewModel(workflow);
+
+        viewModel
+            .HasReceiverQuantityMismatch(out _, out _)
+            .Should()
+            .BeFalse("a guided walk has no receiver quantity to compare against");
     }
 
     private static void RaiseStepChanged(Mock<IService_ReceivingWorkflow> workflow)

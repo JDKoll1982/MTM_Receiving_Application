@@ -98,6 +98,27 @@ namespace MTM_Receiving_Application.Module_Receiving.Contracts
         public bool IsManualEntryFlow { get; }
 
         /// <summary>
+        /// True while the walk was opened from the By Receiver mode, so its first screen is the
+        /// receiver list and Back from Load Entry returns there.
+        /// </summary>
+        public bool IsByReceiverFlow { get; }
+
+        /// <summary>
+        /// The receiver row the walk was started from, or null when it was not started from a row.
+        /// </summary>
+        public Model_InforVisualReceiverRow? SelectedReceiver { get; set; }
+
+        /// <summary>
+        /// Identifies the chosen row for the list highlight as receiver|part|line.
+        /// </summary>
+        public string? SelectedReceiverKey { get; }
+
+        /// <summary>
+        /// The chosen row's remaining quantity on its PO line, shown read-only on Load Entry.
+        /// </summary>
+        public decimal CurrentReceiverRemainingQty { get; }
+
+        /// <summary>
         /// Starts a new receiving workflow session.
         /// Always starts fresh and discards any stale persisted draft session.
         /// </summary>

@@ -41,8 +41,9 @@
         <p class="sidebar-label">On this page</p>
         <ul class="sidebar-nav">
             <li><a href="#overview">Overview</a></li>
-            <li><a href="#modes">The Three Modes</a></li>
+            <li><a href="#modes">The Four Modes</a></li>
             <li><a href="#guided-wizard">Guided Wizard</a></li>
+            <li><a href="#by-receiver">By Receiver</a></li>
             <li><a href="#manual-entry">Manual Entry</a></li>
             <li><a href="#edit-mode">Edit Mode</a></li>
             <li><a href="#set-default">Setting a Default Mode</a></li>
@@ -125,9 +126,9 @@
             </div>
         </section>
 
-        <!-- -------- The Three Modes -------- -->
+        <!-- -------- The Four Modes -------- -->
         <section id="modes" class="content-section">
-            <h2>The Three Modes</h2>
+            <h2>The Four Modes</h2>
             <p>Each mode is designed for a specific type of receiving work:</p>
 
             <div class="mode-card-grid">
@@ -137,6 +138,15 @@
                     <div class="mode-card-desc">
                         Step-by-step walk-through — best for standard daily receiving.
                         The app prompts you at every stage.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-card-icon">📦</div>
+                    <div class="mode-card-name">By Receiver</div>
+                    <div class="mode-card-desc">
+                        The same guided walk, but it starts from the most recent receipts in Infor
+                        Visual instead of a PO number. Pick the receiver line in front of you and
+                        the walk continues from there.
                     </div>
                 </div>
                 <div class="mode-card">
@@ -162,6 +172,8 @@
                 <div class="callout-body">
                     <strong>Not sure which to use?</strong> Start with <strong>Guided Wizard</strong>.
                     It walks you through every field and won't let you skip a required step.
+                    Use <strong>By Receiver</strong> when the material is already recorded against a
+                    receiver and you do not have the PO number to hand.
                 </div>
             </div>
         </section>
@@ -212,6 +224,78 @@
             <p>
                 <a href="guided-wizard-po-entry.html">→ See the PO Entry step-by-step walkthrough</a>
             </p>
+        </section>
+
+        <!-- -------- By Receiver -------- -->
+        <section id="by-receiver" class="content-section">
+            <h2>By Receiver</h2>
+            <p>
+                By Receiver runs the same guided walk as the Guided Wizard, but it does not ask for a
+                PO number first. Instead it opens on a list of the most recent receipts already
+                recorded in Infor Visual, so you can start from the pallet in front of you.
+            </p>
+
+            <h3>The receiver list</h3>
+            <p>Each row is one receiver and part, and the columns read left to right as:</p>
+            <ul>
+                <li><strong>Receiver Number</strong> and <strong>PO #</strong> — what the receipt belongs to</li>
+                <li><strong>Line #</strong> and <strong>Part Number</strong> — the line you are receiving</li>
+                <li><strong>Vendor</strong> and <strong>Location Received to</strong> — where it came from and where it went</li>
+                <li><strong>Qty Received</strong>, <strong>Qty Ordered</strong> and <strong>Qty Remaining on Line</strong></li>
+            </ul>
+            <p>
+                The list shows only receipts where inventory was actually added, never a receiver
+                that has been removed from Infor Visual, and it always reads newest first. A receiver
+                with several lines for the same part appears once, with the quantities added together.
+            </p>
+
+            <h3>Finding one receiver</h3>
+            <p>
+                Type any part of a receiver number into the search box above the list and the rows
+                narrow as you type. Clear the box to bring the whole list back. If nothing matches, the
+                list says so rather than showing an error.
+            </p>
+
+            <h3>Rows per page</h3>
+            <p>
+                The <strong>Rows per page</strong> control offers 25, 50, 100 and 200 rows and starts on 50.
+                Use <strong>Previous page</strong> and <strong>Next page</strong> beside the page indicator to
+                move through the filtered list. When everything fits on one page, the pager stays visible
+                but is greyed out.
+            </p>
+
+            <h3>Starting the walk</h3>
+            <p>
+                Click the row you want. The walk continues at <strong>Load Entry</strong>, with the
+                location and the quantity remaining on that line already filled in, and everything
+                after that works exactly like the Guided Wizard. Press <strong>Back</strong> from Load
+                Entry and you return to the list with your row still highlighted.
+            </p>
+            <p>
+                Press <strong>Refresh</strong> to read the source again without leaving the mode, which
+                is how a receiver entered while the app was open shows up.
+            </p>
+
+            <h3>Quantities on the walk</h3>
+            <p>
+                A single load starts at the quantity the receiver recorded, so the
+                <strong>Weight/Quantity</strong> page already shows it and you only confirm it. With
+                more than one load the fields start empty and you enter each one.
+            </p>
+            <p>
+                Pressing <strong>Next</strong> on the Weight/Quantity page compares the total of your
+                loads with the quantity on the receiver. When the two differ the app asks first:
+                <strong>Change Values</strong> leaves you on the page to correct the numbers, and
+                <strong>Continue</strong> accepts what you entered and moves on.
+            </p>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    If the list cannot reach Infor Visual it shows a readable message and a
+                    <strong>Retry</strong> button. Nothing is written to Infor Visual from this screen.
+                </div>
+            </div>
         </section>
 
         <!-- -------- Manual Entry -------- -->

@@ -342,5 +342,15 @@ namespace MTM_Receiving_Application.Module_Core.Contracts.Services
         public Task<
             Model_Dao_Result<List<Model_InforVisualReceivingCoveragePoint>>
         > GetReceivingAnalyticsCoverageByPartAsync(Model_InforVisualReceivingAnalyticsFilter filter);
+
+        /// <summary>
+        /// Returns recent inventory receipts from Infor Visual, one row per receiver and part,
+        /// ordered newest received date first. Read-only: no writes are issued against Infor Visual.
+        /// </summary>
+        /// <param name="maxRows">Maximum number of rows to return (default 1000).</param>
+        /// <returns>Result containing the recent receiver rows.</returns>
+        public Task<Model_Dao_Result<List<Model_InforVisualReceiverRow>>> GetRecentReceiversAsync(
+            int maxRows = 1000
+        );
     }
 }

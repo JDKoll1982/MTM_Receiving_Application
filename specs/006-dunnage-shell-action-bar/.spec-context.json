@@ -3,7 +3,7 @@
   "specName": "Shell Action Bar for Non-Inventoried Labels",
   "branch": "master",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -649,6 +649,13 @@
       "kind": "complete",
       "by": "user",
       "at": "2026-11-22T03:02:43.073Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-23T13:39:02.341Z"
     }
   ],
   "telemetryInstanceId": "c2c8715e-8ac3-4a05-a882-9884e9e8af41",

@@ -101,6 +101,28 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
         /// </summary>
         public bool IsManualEntryFlow { get; private set; }
 
+        /// <summary>
+        /// True while the walk was opened from the By Receiver mode, so the receiver list is its
+        /// first screen and Back returns there. Cleared when Guided, Manual, or Edit opens the walk.
+        /// </summary>
+        public bool IsByReceiverFlow { get; private set; }
+
+        /// <summary>
+        /// The receiver row the walk was started from, or null when it was not started from a row.
+        /// </summary>
+        public Model_InforVisualReceiverRow? SelectedReceiver { get; set; }
+
+        /// <summary>
+        /// Identifies the chosen row for the list highlight as receiver|part|line, so the transient
+        /// list view model can restore the selection on the way back.
+        /// </summary>
+        public string? SelectedReceiverKey => SelectedReceiver?.SelectionKey;
+
+        /// <summary>
+        /// The chosen row's remaining quantity on its PO line, shown read-only on Load Entry.
+        /// </summary>
+        public decimal CurrentReceiverRemainingQty => SelectedReceiver?.QtyRemaining ?? 0m;
+
         public Service_ReceivingWorkflow(
             IService_SessionManager sessionManager,
             IService_ReceivingLabelData labelDataService,
@@ -167,6 +189,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             CurrentPONumber = null;
             CurrentPart = null;
             IsPoPartListLoaded = false;
+            IsByReceiverFlow = false;
+            SelectedReceiver = null;
 
             // Resolve the opening step from the signed-in user's stored default mode.
             // Guided is the fallback: a missing, empty, or unrecognised value opens the guided
@@ -183,6 +207,11 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     CurrentStep = Enum_ReceivingWorkflowStep.EditMode;
                     RequestedEditDataSource = Enum_DataSourceType.CurrentLabels;
                     _logger.LogInfo("Starting in Edit mode (default)");
+                    break;
+                case "by-receiver":
+                    CurrentStep = Enum_ReceivingWorkflowStep.ReceiverSelection;
+                    IsByReceiverFlow = true;
+                    _logger.LogInfo("Starting in By Receiver mode (default)");
                     break;
                 case "guided":
                     CurrentStep = Enum_ReceivingWorkflowStep.POEntry;
@@ -537,6 +566,13 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                 CurrentSession.Loads.Add(load);
                 _currentBatchLoads.Add(load);
             }
+
+            // A single load starts at the quantity the receiver recorded, so the operator confirms
+            // it on the Weight/Quantity page instead of retyping it from the receiver document.
+            if (NumberOfLoads == 1 && SelectedReceiver is not null && _currentBatchLoads.Count == 1)
+            {
+                _currentBatchLoads[0].WeightQuantity = SelectedReceiver.QtyReceived;
+            }
         }
 
         public Model_ReceivingWorkflowStepResult GoToPreviousStep()
@@ -544,6 +580,15 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             switch (CurrentStep)
             {
                 case Enum_ReceivingWorkflowStep.LoadEntry:
+                    if (IsByReceiverFlow)
+                    {
+                        // The walk never visited the part page, so Back returns to the list the
+                        // operator picked the row on.
+                        _partSelectionSkipped = false;
+                        CurrentStep = Enum_ReceivingWorkflowStep.ReceiverSelection;
+                        break;
+                    }
+
                     // Back returns to the part page only when the walk actually visited it.
                     CurrentStep =
                         IsNonPOItem || _partSelectionSkipped
@@ -600,6 +645,14 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
                     or Enum_ReceivingWorkflowStep.EditMode
             )
             {
+                IsManualEntryFlow = false;
+                IsByReceiverFlow = false;
+            }
+
+            // The By Receiver list is its own door into the walk, so entering it records the mode.
+            if (step is Enum_ReceivingWorkflowStep.ReceiverSelection)
+            {
+                IsByReceiverFlow = true;
                 IsManualEntryFlow = false;
             }
 
@@ -830,6 +883,8 @@ namespace MTM_Receiving_Application.Module_Receiving.Services
             IsNonPOItem = false;
             CurrentLocation = string.Empty;
             RequestedEditDataSource = Enum_DataSourceType.Memory;
+            IsByReceiverFlow = false;
+            SelectedReceiver = null;
             _currentBatchLoads.Clear();
 
             _viewModelRegistry.ClearAllInputs();

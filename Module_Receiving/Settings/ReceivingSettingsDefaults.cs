@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace MTM_Receiving_Application.Module_Receiving.Settings;
 
@@ -219,6 +219,11 @@ public static class ReceivingSettingsDefaults
                 "Selecting a new mode will reset all unsaved data in the current workflow. Do you want to continue?",
             [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionContinue] = "Continue",
             [ReceivingSettingsKeys.Dialogs.ConfirmModeSelectionCancel] = "Cancel",
+            [ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchTitle] = "Quantity Does Not Match",
+            [ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchContent] =
+                "The loads total {0} but the receiver shows {1}. Change the values, or continue as entered.",
+            [ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchChangeValues] = "Change Values",
+            [ReceivingSettingsKeys.Dialogs.ReceiverQtyMismatchContinue] = "Continue",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleTitle] = "Add Multiple Rows",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleAdd] = "Add",
             [ReceivingSettingsKeys.Dialogs.ManualEntryAddMultipleCancel] = "Cancel",
@@ -287,6 +292,48 @@ public static class ReceivingSettingsDefaults
             // User Preferences defaults
             [ReceivingSettingsKeys.UserPreferences.VendorVariableMappingsJson] =
                 "[{\"VendorName\":\"Skana\",\"VariableName\":\"DM #\"}]",
+
+            // Receiver selection
+            [ReceivingSettingsKeys.ReceiverSelection.ScreenTitle] = "Receiving - By Receiver",
+            [ReceivingSettingsKeys.ReceiverSelection.SearchPlaceholder] = "Search by receiver number",
+            [ReceivingSettingsKeys.ReceiverSelection.RowsPerPage] = "Rows per page",
+            [ReceivingSettingsKeys.ReceiverSelection.RowsPerPage25] = "25",
+            [ReceivingSettingsKeys.ReceiverSelection.RowsPerPage50] = "50",
+            [ReceivingSettingsKeys.ReceiverSelection.RowsPerPage100] = "100",
+            [ReceivingSettingsKeys.ReceiverSelection.RowsPerPage200] = "200",
+            [ReceivingSettingsKeys.ReceiverSelection.Refresh] = "Refresh",
+            [ReceivingSettingsKeys.ReceiverSelection.PreviousPage] = "Previous page",
+            [ReceivingSettingsKeys.ReceiverSelection.NextPage] = "Next page",
+            [ReceivingSettingsKeys.ReceiverSelection.PageIndicator] = "Page {0} of {1}",
+            [ReceivingSettingsKeys.ReceiverSelection.EmptyMessage] = "No receiver matched the search.",
+            [ReceivingSettingsKeys.ReceiverSelection.FailureMessage] =
+                "The recent receivers could not be loaded.",
+            [ReceivingSettingsKeys.ReceiverSelection.Retry] = "Retry",
+            [ReceivingSettingsKeys.ReceiverSelection.QtyRemainingOnLineLabel] =
+                "Qty Remaining on Line",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnReceiverNumber] = "Receiver Number",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnPoNumber] = "PO #",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnLineNumber] = "Line #",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnPartNumber] = "Part Number",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnVendor] = "Vendor",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnLocationReceivedTo] =
+                "Location Received to",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnQtyReceived] = "Qty Received",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnQtyOrdered] = "Qty Ordered",
+            [ReceivingSettingsKeys.ReceiverSelection.ColumnQtyRemaining] =
+                "Qty Remaining on Line",
+
+            [ReceivingSettingsKeys.Workflow.StepTitleReceiverSelection] =
+                "Receiving - By Receiver",
+
+            [ReceivingSettingsKeys.UiText.ShellByReceiver] = "By Receiver",
+            [ReceivingSettingsKeys.UiText.ShellByReceiverDefaultTooltip] =
+                "make By Receiver my default",
+
+            [ReceivingSettingsKeys.Accessibility.ReceiverSelectionSearch] =
+                "Receiver number search",
+            [ReceivingSettingsKeys.Accessibility.ReceiverSelectionRowsPerPage] = "Rows per page",
+            [ReceivingSettingsKeys.Accessibility.ReceiverSelectionList] = "Recent receivers",
         };
 
     public static IReadOnlyDictionary<string, bool> BoolDefaults { get; } =
@@ -332,5 +379,8 @@ public static class ReceivingSettingsDefaults
             // Integrations
             [ReceivingSettingsKeys.Integrations.ErpConnectionTimeout] = 30,
             [ReceivingSettingsKeys.Integrations.MaxSyncRetries] = 3,
+
+            // Receiver selection
+            [ReceivingSettingsKeys.ReceiverSelection.DefaultPageSize] = 50,
         };
 }

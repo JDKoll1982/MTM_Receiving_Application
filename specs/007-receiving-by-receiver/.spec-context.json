@@ -1,0 +1,1320 @@
+{
+  "workflow": "companion",
+  "specName": "Receiving \"By Receiver\" Mode",
+  "branch": "master",
+  "currentStep": "converge",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-23T13:31:49.960Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-23T13:32:40.480Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-23T13:35:28.490Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-23T13:40:57.976Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-23T13:43:53.632Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T13:49:39.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-23T13:50:02.876Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T13:57:09.343Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T13:57:13.982Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T13:58:47.901Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T13:58:48.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:01:07.249Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:01:07.518Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:02:52.185Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:02:52.186Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:04:11.070Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:07:23.594Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:07:27.875Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:08:17.176Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:07.954Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:08.226Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:08.497Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:08.762Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:09.055Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:09.323Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:09.593Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:09.864Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:10.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:10.412Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:10.690Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:10.957Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:11.224Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:11.490Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:11.759Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:29:12.030Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:35:56.084Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:35:56.445Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.749Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.750Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.751Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.751Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.752Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:00.753Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:05.232Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:05.593Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:09.309Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:36:09.310Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:37:11.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:37:11.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:39:39.560Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T14:39:39.661Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-23T15:04:20.797Z"
+    },
+    {
+      "step": "converge",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-23T15:09:23.889Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T15:12:04.848Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-23T15:12:04.848Z"
+    }
+  ],
+  "telemetryInstanceId": "251f2f21-af92-4384-9c0a-242d6dc35608",
+  "request": "i want to create a new mode for Module_Receiving called \"By Receiver\"  This will share the same guided workflow as \"Guided\" but instead of entering a PO number the user will get a table of the last # of receivers entered into visual, showing 1) Receiver Number, 2) PO #, 3) Line #, 4) Part Number, 5) Vendor, 6) Location Received to, 7) Qty Received, 8) Qty Ordered, 9) Qty Remaining on Line.  They should also be able to enter a Receiver number into a search box and have the list filter to that Receiver.  Once a line on the table is selected take all the required information that the following guided steps require and pass them forward.  The table of receivers should always be ordered by date received in, never show receivers that do not contain part numbers, only contain receivers where inventory is being added, never removed from the system.  ask ?s",
+  "expectations": [
+    "No behavior change to Manual or Edit receiving modes",
+    "Guided mode keeps its PO entry path exactly as it is",
+    "No MySQL schema, table, or stored procedure changes",
+    "No writes of any kind against Infor Visual",
+    "No new receiving table column for the receiver number"
+  ],
+  "context": [
+    "area: Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs (mode chips, GuidedTrail, ResolveActiveMode, BuildShellActions)",
+    "area: Module_Receiving/Services/Service_ReceivingWorkflow.cs (StartWorkflowAsync switch, CurrentPONumber/CurrentPart/CurrentLocation state)",
+    "area: Module_Receiving/ViewModels/ViewModel_Receiving_POEntry.cs (PO entry step that the new mode replaces)",
+    "area: Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs (resume point, pre-filled location and quantity)",
+    "area: Module_Core/Models/UI/Model_ShellActionBarState.cs plus Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs plus MainWindow.xaml (mode chip rendering)",
+    "area: Module_Core/Models/Systems/Model_User.cs DefaultReceivingMode and Module_Settings.Receiving workflow defaults (mode option list)",
+    "area: MTMFG Infor Visual RECEIVER, RECEIVER_LINE, PURC_ORDER_LINE, PURCHASE_ORDER, VENDOR columns verified live",
+    "constraint: Infor Visual SQL Server stays read only",
+    "constraint: MVVM flow View to ViewModel to Service to DAO, no ViewModel to DAO calls",
+    "constraint: x:Bind in XAML, DevWinUI 10.9.1 is already referenced for pager and step bar",
+    "constraint: existing guided steps and save path stay unchanged"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "By Receiver mode control sits between Guided and Manual",
+      "tasks": [
+        "T013",
+        "T022",
+        "T024",
+        "T025",
+        "T026"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellByReceiverTests.cs"
+      ]
+    },
+    "FR-002": {
+      "title": "Mode shows the receiver list in place of the Enter PO screen",
+      "tasks": [
+        "T014",
+        "T022",
+        "T027"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverEntryTests.cs"
+      ]
+    },
+    "FR-003": {
+      "title": "Nine columns in the stated order",
+      "tasks": [
+        "T015",
+        "T004",
+        "T011"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/Views/View_Receiving_ReceiverSelectionColumnsTests.cs"
+      ]
+    },
+    "FR-004": {
+      "title": "Ordered by received date newest first, then receiver number descending",
+      "tasks": [
+        "T031",
+        "T003",
+        "T007"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs"
+      ]
+    },
+    "FR-005": {
+      "title": "Exclude lines with no part number",
+      "tasks": [
+        "T032",
+        "T003"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs"
+      ]
+    },
+    "FR-006": {
+      "title": "Only receipts that add inventory, warehouse and location named",
+      "tasks": [
+        "T033",
+        "T003"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs"
+      ]
+    },
+    "FR-007": {
+      "title": "Exclude receivers marked for removal or purge",
+      "tasks": [
+        "T034",
+        "T003"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs"
+      ]
+    },
+    "FR-008": {
+      "title": "One row per receiver and part, qty received summed",
+      "tasks": [
+        "T035",
+        "T003"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs"
+      ]
+    },
+    "FR-009": {
+      "title": "Search box filters by receiver number contains match and clears back",
+      "tasks": [
+        "T029",
+        "T010"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSearchTests.cs"
+      ]
+    },
+    "FR-010": {
+      "title": "Paged list with page-size control and pager",
+      "tasks": [
+        "T037",
+        "T010",
+        "T011",
+        "T004"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverPagingTests.cs"
+      ]
+    },
+    "FR-011": {
+      "title": "Selected row carries nine values into workflow state",
+      "tasks": [
+        "T016",
+        "T008",
+        "T010"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelectionCarryTests.cs"
+      ]
+    },
+    "FR-012": {
+      "title": "Resume at Load Entry with location and remaining qty pre-filled",
+      "tasks": [
+        "T017",
+        "T008",
+        "T023",
+        "T028"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntryByReceiverTests.cs"
+      ]
+    },
+    "FR-013": {
+      "title": "Remaining qty is ordered minus total received, floored at zero",
+      "tasks": [
+        "T036",
+        "T003"
+      ],
+      "tests": [
+        "Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ]
+    },
+    "FR-014": {
+      "title": "Back from Load Entry returns to the list with the row highlighted",
+      "tasks": [
+        "T018",
+        "T008",
+        "T022",
+        "T010"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverBackTests.cs"
+      ]
+    },
+    "FR-015": {
+      "title": "By Receiver selectable as stored default receiving mode",
+      "tasks": [
+        "T038",
+        "T008",
+        "T039",
+        "T040"
+      ],
+      "tests": [
+        "Unit/Module_Settings/Receiving/ViewModels/ViewModel_Settings_Receiving_ByReceiverDefaultTests.cs"
+      ]
+    },
+    "FR-016": {
+      "title": "No writes against Infor Visual",
+      "tasks": [
+        "T019",
+        "T007"
+      ],
+      "tests": [
+        "Unit/Module_Core/Data/Dao_InforVisualReceiverTests.cs"
+      ]
+    },
+    "FR-017": {
+      "title": "List reloads on mode entry and can be refreshed in place",
+      "tasks": [
+        "T020",
+        "T010",
+        "T022"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverRefreshTests.cs"
+      ]
+    },
+    "FR-018": {
+      "title": "Source-system failure reported readably with retry",
+      "tasks": [
+        "T021",
+        "T010",
+        "T011"
+      ],
+      "tests": [
+        "Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverFailureTests.cs"
+      ]
+    }
+  },
+  "classification": {
+    "projectedFiles": 12,
+    "projectedTasks": 18,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "intent": "Add a By Receiver receiving mode that starts the guided walk from a recent-receivers table instead of a PO number",
+  "size": "normal",
+  "unattended": true,
+  "workingBranch": "007-receiving-by-receiver",
+  "planBlocks": [
+    "calls",
+    "states",
+    "screens"
+  ],
+  "planBlocksPicked": [
+    "calls",
+    "states",
+    "screens"
+  ],
+  "verified": [
+    {
+      "what": "plan blocks check out",
+      "command": "python3 .specify/extensions/companion/scripts/check_plan.py --feature-dir specs/007-receiving-by-receiver --strict",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 0.1,
+      "result": "[plan-check] plan.md: 3 call paths, 16 lines, 2 screens, 17 parts, 1 state block (6 states). Every cited file and line checks out."
+    },
+    {
+      "what": "Solution build",
+      "command": "dotnet build MTM_Receiving_Application.slnx -v q --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 42.1,
+      "result": "    0 Warning(s) ·     0 Error(s) · Time Elapsed 00:00:41.88",
+      "commit": "e54593b6",
+      "tree": "499c4a2f9a1766e90cd9934617fae5c1cf9b9da2"
+    },
+    {
+      "what": "Full test suite",
+      "command": "dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --nologo",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 52.8,
+      "result": "  Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.Types_GetDeleteImpact_ShouldCountPartsQueueAndHistoryRows [1 ms] ·   Skipped MTM_Receiving_Application.Tests.Integration.Database.StoredProcedureCoverage.DunnageStoredProcedureTests.NoLabelParts_Set_ShouldAddAndRemoveTheFlag [1 ms] · Passed!  - Failed:     0, Passed:  1519, Skipped:   274, Total:  1793, Duration: 2 s - MTM_Receiving_Application.Tests.dll (net10.0)",
+      "commit": "e54593b6",
+      "tree": "499c4a2f9a1766e90cd9934617fae5c1cf9b9da2"
+    },
+    {
+      "what": "Format pass on the new files",
+      "command": "dotnet format whitespace MTM_Receiving_Application.slnx --verify-no-changes --include Module_Core/Data/InforVisual/Dao_InforVisualReceiver.cs Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml.cs MTM_Receiving_Application.Tests/Integration/InforVisual MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels MTM_Receiving_Application.Tests/Unit/Module_Core/Data MTM_Receiving_Application.Tests/Unit/Module_Settings/Receiving/ViewModels/ViewModel_Settings_Receiving_ByReceiverDefaultTests.cs",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 6.8,
+      "result": "Warnings were encountered while loading the workspace. Set the verbosity option to the 'diagnostic' level to log warnings.",
+      "commit": "e54593b6",
+      "tree": "a5486f05c890e9d388904a12dd33d5904f41590f"
+    },
+    {
+      "what": "Zero writes reach Infor Visual",
+      "result": "The DAO constructor rejects any connection string whose ApplicationIntent is not ReadOnly, and 35_GetRecentReceivers.sql contains no INSERT, UPDATE, DELETE, MERGE or EXEC. Dao_InforVisualReceiverTests asserts both halves."
+    },
+    {
+      "what": "Mode control order",
+      "result": "MainWindow.xaml places ShellByReceiverButton between ShellGuidedButton and ShellManualButton, and the shell snapshot offers a chip labelled exactly By Receiver. ViewModel_Receiving_ShellByReceiverTests asserts both."
+    },
+    {
+      "what": "The list never leaves the mode on refresh or retry",
+      "result": "Refresh and Retry call the same read path and never call GoToStep; ViewModel_Receiving_ByReceiverRefreshTests and ByReceiverFailureTests assert it."
+    }
+  ],
+  "concerns": [
+    {
+      "note": "The receiver list searches and pages in memory over a 1000-row window; move the search term and a page parameter into the query when that window stops covering the operators history."
+    },
+    {
+      "note": "Load Entry shows the remaining quantity read-only because the guided walk has no quantity input at that step; revisit if the walk ever captures quantity before Weight/Qty."
+    },
+    {
+      "note": "The six live-source checks (FR-004, FR-005, FR-006, FR-007, FR-008, FR-013) skip unless MTM_INFORVISUAL_TEST_CONNECTION is set, so those behaviours are unproven in this run; they compiled and skip cleanly.",
+      "step": "implement"
+    },
+    {
+      "note": "simplified: one 1000-row window is read and the search and page slice run over it in memory; move the search term and a page parameter into the query when the window stops covering the operator's history.",
+      "step": "implement"
+    },
+    {
+      "note": "SC-002 and SC-003 are timings on shop-floor hardware and were not measured; no timing harness exists in this repository.",
+      "step": "implement"
+    },
+    {
+      "note": "{\"note\": \"A by-receiver walk builds the Load Entry part from the receiver row, which now carries the part description and the purchase unit of measure but not the part master quality-hold flag; outside mock mode the MMFSR and MMCSR naming rule still flags those parts, and mock mode does not.\", \"step\": \"implement\"}\n{\"decision\": \"Group the receipt lines per receiver and part and take every line detail from the first PO line found\", \"why\": \"FR-008 requires one row per receiver and part, and grouping on warehouse or location split a part across rows\", \"rejected\": \"Grouping by every displayed column, which let a part received into two locations appear twice\"}"
+    },
+    {
+      "note": "A by-receiver walk builds the Load Entry part from the receiver row, which now carries the part description and the purchase unit of measure but not the part master quality-hold flag; outside mock mode the MMFSR and MMCSR naming rule still flags those parts, and mock mode does not.",
+      "step": "implement"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "The receiver list is a new workflow step, ReceiverSelection = 12, hosted like PO Entry",
+      "why": "Back from Load Entry routes by step, and the visibility switch, back-button rule and header bar all read steps",
+      "rejected": "a flag on POEntry that swaps its content",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "The entry mode is recorded on Service_ReceivingWorkflow as IsByReceiverFlow",
+      "why": "after a row is chosen the step is LoadEntry, which IsGuidedWalkStep already claims for Guided, so both chips would light up",
+      "rejected": "deriving the mode from a non-empty receiver number",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "New Model_InforVisualReceiverRow with decimal quantities",
+      "why": "Model_InforVisualPart.RemainingQuantity is an int and has nowhere to put vendor, date or receiver number",
+      "rejected": "extending Model_InforVisualPart with receiver fields",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "One SQL query performs the joins, grouping, filters and remaining clamp",
+      "why": "every exclusion in the spec is a source-side rule and the search must never re-surface an excluded row",
+      "rejected": "reading raw lines and grouping in C#",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "The query reads a 1000-row window; the view model searches and pages over it",
+      "why": "the request asks for the last number of receivers, so a window is the requirement, and filtering 1000 rows stays inside the one-second budget",
+      "rejected": "passing the search term into SQL on every keystroke",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "Receivers with no RECEIVED_DATE are excluded",
+      "why": "the list is ordered by received date and the receiving-analytics query already requires a received date",
+      "rejected": "sorting null dates last",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "New Dao_InforVisualReceiver carrying the ApplicationIntent=ReadOnly guard",
+      "why": "follows the one-DAO-per-surface split and keeps the guard in the constructor",
+      "rejected": "adding the query to the 92 KB Dao_InforVisualConnection",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "Load Entry shows Qty Remaining on Line read-only",
+      "why": "Load Entry captures only location and load count, and adding a quantity input would change the walks validation and save path",
+      "rejected": "seeding NumberOfLoads from the remaining quantity",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "dev:PagerControl with page sizes 25, 50, 100, 200 opening on 50",
+      "why": "spec assumptions pin the counts and the default",
+      "rejected": "matching Edit Mode page sizes of 20, 50, 100, 200",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "The selected row key lives on the workflow service",
+      "why": "view models are transient, so the rebuilt list cannot remember its own selection",
+      "rejected": "keeping the list view model alive across steps",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "Stored default token is by-receiver, recognised in StartWorkflowAsync, NormalizeDefaultMode and both settings view models",
+      "why": "an unrecognised stored value is rewritten to guided, so a missing normaliser silently undoes the choice",
+      "rejected": "storing byreceiver",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "The header step bar is built for the walk that was entered",
+      "why": "leaving Enter PO as step one would tell the operator they skipped a screen they never had",
+      "rejected": "hiding the step bar in by-receiver mode",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "The mock-data path returns sample receivers",
+      "why": "a method that returns empty under the existing development toggle would make the mode look broken",
+      "rejected": "no mock branch",
+      "by": "agent",
+      "at": "2026-11-23T13:43:18.101Z"
+    },
+    {
+      "decision": "Append ReceiverSelection = 12 and host it like POEntry",
+      "why": "Back from Load Entry routes by step, and the visibility switch and header bar already read a step",
+      "rejected": "A flag on POEntry that swapped its content, which every step predicate would then have to consult",
+      "by": "agent",
+      "at": "2026-11-23T14:42:01.400Z"
+    },
+    {
+      "decision": "Record the entry mode on the service as IsByReceiverFlow",
+      "why": "After a row is chosen the step is LoadEntry, which IsGuidedWalkStep already claims for Guided",
+      "rejected": "Deriving the mode from a non-empty receiver number, which couples mode identity to data a later step could clear",
+      "by": "agent",
+      "at": "2026-11-23T14:42:01.400Z"
+    },
+    {
+      "decision": "Rank with ROW_NUMBER inside a CTE and take TOP (@MaxRows) from the rank",
+      "why": "TOP over a grouped query with an outer ORDER BY returns an arbitrary window, and the requirement is the newest rows",
+      "rejected": "SELECT TOP (@MaxRows) with the ORDER BY on the outer query, which does not bound the window to the newest",
+      "by": "agent",
+      "at": "2026-11-23T14:42:01.400Z"
+    },
+    {
+      "decision": "Restore the row highlight from SelectedReceiverKey on the workflow service",
+      "why": "The list view model is transient, so it cannot remember its own selection across a step change",
+      "rejected": "Keeping the list view model alive across steps, which breaks transient registration",
+      "by": "agent",
+      "at": "2026-11-23T14:42:01.400Z"
+    },
+    {
+      "decision": "Use Xvfb. none. Covered by the row above.",
+      "by": "agent",
+      "at": "2026-11-23T14:42:01.400Z"
+    },
+    {
+      "decision": "Group the receipt lines per receiver and part and take every line detail from the first PO line found",
+      "why": "FR-008 requires one row per receiver and part, and grouping on warehouse or location split a part across rows",
+      "rejected": "Grouping by every displayed column, which let a part received into two locations appear twice",
+      "by": "agent",
+      "at": "2026-11-23T15:01:56.184Z"
+    }
+  ],
+  "step_summaries": {
+    "plan": {
+      "summary": "Plan and design artifacts written for a By Receiver mode built on a new ReceiverSelection step, one read-only MTMFG query and a fifth shell chip",
+      "key_finding": "The receiving walk derives its active mode from the step, so a by-receiver walk looks like Guided once it reaches Load Entry unless the entry mode is recorded on the service."
+    },
+    "tasks": {
+      "summary": "43 tasks in 8 phases: shared list surface built in Phase 2, US1 carries the mode and the walk, US2 and US4 add their tests, US3 adds six source-rule integration tests, US5 the settings lists"
+    },
+    "specify": {
+      "summary": "Shipped the By Receiver mode: a read-only Infor Visual receiver query behind a guarded DAO, a searched and paged list view model and view, the workflow state that carries a chosen row into Load Entry with Back returning to the highlighted row, the fifth shell chip, and the stored by-receiver default."
+    }
+  },
+  "approach": "Add ReceiverSelection to the workflow step enum, read recent inventory receipts from one new read-only Infor Visual query behind a new DAO, show them in a paged searchable list view model hosted like PO Entry, and carry the chosen row into the existing walk at Load Entry.",
+  "currentTask": null,
+  "task_summaries": {
+    "T002": {
+      "status": "DONE",
+      "did": "Created read-only Model_InforVisualReceiverRow row model with receiver/part/line selection key",
+      "files": [
+        "Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Declared GetRecentReceiversAsync(int maxRows = 1000) with read-only doc comment",
+      "files": [
+        "Module_Core/Contracts/Services/IService_InforVisual.cs"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added read-only 35_GetRecentReceivers.sql returning one row per receiver and part with received/ordered/remaining quantities, bounded by @MaxRows.",
+      "files": [
+        "Database/InforVisualScripts/Queries/35_GetRecentReceivers.sql"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Added RecentReceivers sample set to the mock data catalog model and its JSON defaults.",
+      "files": [
+        "Module_Core/Models/InforVisual/Model_InforVisualMockDataCatalog.cs",
+        "Module_Settings.Core/Defaults/inforvisual-mock-data.json"
+      ]
+    },
+    "T001": {
+      "status": "DONE",
+      "did": "Appended ReceiverSelection = 12 to the receiving workflow step enum",
+      "files": [
+        "Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added receiver-list settings keys and defaults including verbatim headers and page size 50",
+      "files": [
+        "Module_Receiving/Settings/ReceivingSettingsKeys.cs",
+        "Module_Receiving/Settings/ReceivingSettingsDefaults.cs"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Added the read-only receiver DAO and the workflow service receiver state",
+      "files": [
+        "Module_Core/Data/InforVisual/Dao_InforVisualReceiver.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs"
+      ],
+      "wave": "T007-T008"
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added the read-only receiver DAO and the workflow service receiver state",
+      "files": [
+        "Module_Core/Data/InforVisual/Dao_InforVisualReceiver.cs",
+        "Module_Receiving/Services/Service_ReceivingWorkflow.cs",
+        "Module_Receiving/Contracts/IService_ReceivingWorkflow.cs"
+      ],
+      "wave": "T007-T008"
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Wired the recent-receivers pass-through and mock branch into the Infor Visual service",
+      "files": [
+        "Module_Core/Services/Database/Service_InforVisualConnect.cs",
+        "Infrastructure/DependencyInjection/CoreServiceExtensions.cs"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Built the receiver list view model with search, paging, load, failure and selection",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Drew the receiver list screen with the nine columns, search, page size, pager and empty and failure surfaces",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml",
+        "Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml.cs"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Registered the receiver list view model and view as transient",
+      "files": [
+        "Infrastructure/DependencyInjection/ModuleServicesExtensions.cs"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Added By Receiver shell chip snapshot and MainWindow placement test",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ShellByReceiverTests.cs"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Added By Receiver entry tests covering reset, visibility and guided fallback",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverEntryTests.cs"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Added receiver list column header and settings defaults contract test",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Views/View_Receiving_ReceiverSelectionColumnsTests.cs"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added row carry into workflow state test",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelectionCarryTests.cs"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added Load Entry remaining quantity prefill and visibility tests",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntryByReceiverTests.cs"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Added back routing tests for by-receiver and guided walks",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverBackTests.cs"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Added DAO read-only guard and SQL read-only query tests",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Core/Data/Dao_InforVisualReceiverTests.cs"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "Added enter and refresh source read tests",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverRefreshTests.cs"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Added failure and retry recovery tests",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ByReceiverFailureTests.cs"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Hosted ReceiverSelection, added By Receiver chip, active-mode rule and by-receiver trail",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Exposed QtyRemainingOnLine readout on Load Entry",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Added ByReceiver chip and IsByReceiverDefault to the shell snapshot",
+      "files": [
+        "Module_Core/Models/UI/Model_ShellActionBarState.cs"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Drew the By Receiver chip between Guided and Manual with divider and default badge",
+      "files": [
+        "MainWindow.xaml"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Mirrored ByReceiver and IsByReceiverDefault on the shared shell view model",
+      "files": [
+        "Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Hosted the receiver list beside POEntry and wired its focus hook",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml",
+        "Module_Receiving/Views/View_Receiving_Workflow.xaml.cs"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Drew the read-only Qty Remaining on Line readout on Load Entry",
+      "files": [
+        "Module_Receiving/Views/View_Receiving_LoadEntry.xaml"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Proved the contains search, page-one reset, empty message and filtered pager count",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSearchTests.cs"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Added the shared read-only Infor Visual receiver harness that skips when unconfigured",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/InforVisualReceiverTestConnection.cs"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Proved ordering, part presence, inventory gate, purge exclusion, per-part merge and the non-negative remaining clamp against the live source",
+      "files": [
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverOrderingTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverPartNumberTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverInventoryTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemovalTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverMergeTests.cs",
+        "MTM_Receiving_Application.Tests/Integration/InforVisual/Dao_InforVisualReceiverRemainingTests.cs"
+      ],
+      "wave": "T031-T036"
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Proved the page sizes, page-one redisplay, pager movement and the carried row from a later page",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverPagingTests.cs"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Proved By Receiver is offered as the default and opens the list on startup",
+      "files": [
+        "MTM_Receiving_Application.Tests/Unit/Module_Settings/Receiving/ViewModels/ViewModel_Settings_Receiving_ByReceiverDefaultTests.cs"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Offered By Receiver in both default-mode lists and mapped the token into the stored default",
+      "files": [
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_WorkflowDefaults.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs"
+      ],
+      "wave": "T039-T040"
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Offered By Receiver in both default-mode lists and mapped the token into the stored default",
+      "files": [
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_WorkflowDefaults.cs",
+        "Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_BusinessRules.cs"
+      ],
+      "wave": "T039-T040"
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Recorded the new mode in the changelog and added it to the two Receiving help pages",
+      "files": [
+        "CHANGELOG.md",
+        "docs/help/receiving/mode-selection.html",
+        "docs/help/receiving/guided-wizard-po-entry.html"
+      ],
+      "wave": "T041-T042"
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Recorded the new mode in the changelog and added it to the two Receiving help pages",
+      "files": [
+        "CHANGELOG.md",
+        "docs/help/receiving/mode-selection.html",
+        "docs/help/receiving/guided-wizard-po-entry.html"
+      ],
+      "wave": "T041-T042"
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Validated the solution build, the full test suite and the format pass against the Success Criteria",
+      "files": [
+        "CHANGELOG.md",
+        "docs/help/receiving/mode-selection.html",
+        "docs/help/receiving/guided-wizard-po-entry.html"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Back now opens the page holding the selected receiver row, and a warehouse-only receipt shows the warehouse alone",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs",
+        "Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverPagingTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Views/View_Receiving_ReceiverSelectionColumnsTests.cs"
+      ],
+      "wave": "T044-T045"
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Back now opens the page holding the selected receiver row, and a warehouse-only receipt shows the warehouse alone",
+      "files": [
+        "Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs",
+        "Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs",
+        "Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverPagingTests.cs",
+        "MTM_Receiving_Application.Tests/Unit/Module_Receiving/Views/View_Receiving_ReceiverSelectionColumnsTests.cs"
+      ],
+      "wave": "T044-T045"
+    }
+  },
+  "last_action": "Closed T043 after the solution build, the full test suite and the format pass all returned exit 0.",
+  "risk": {
+    "tier": "high",
+    "computed": "high",
+    "reasons": [
+      "touches Database/InforVisualScripts/Queries/35_GetRecentReceivers.sql"
+    ]
+  },
+  "convergeStartedAt": "2026-11-23T15:12:20.889Z",
+  "convergePasses": [
+    {
+      "startedAt": "2026-11-23T15:04:21.043Z",
+      "by": "extension",
+      "finishedAt": "2026-11-23T15:09:23.985Z",
+      "added": [
+        "T044",
+        "T045"
+      ]
+    },
+    {
+      "startedAt": "2026-11-23T15:12:21.133Z",
+      "by": "extension",
+      "finishedAt": "2026-11-23T15:14:52.506Z",
+      "added": [],
+      "completed": true
+    }
+  ]
+}

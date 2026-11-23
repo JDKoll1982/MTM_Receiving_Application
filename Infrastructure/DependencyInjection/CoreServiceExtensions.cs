@@ -213,6 +213,13 @@ public static class CoreServiceExtensions
             return new Dao_InforVisualPart(inforVisualConnectionString, logger);
         });
 
+        // Infor Visual Receiver DAO (Singleton - Stateless read-only data access)
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetService<IService_LoggingUtility>();
+            return new Dao_InforVisualReceiver(inforVisualConnectionString, logger);
+        });
+
         services.AddSingleton<IService_InforVisualMockDataCatalog>(sp =>
         {
             var logger = sp.GetService<IService_LoggingUtility>();
@@ -227,7 +234,8 @@ public static class CoreServiceExtensions
             var appSettings = sp.GetRequiredService<IService_AppSettings>();
             var logger = sp.GetService<IService_LoggingUtility>();
             var mockCatalog = sp.GetRequiredService<IService_InforVisualMockDataCatalog>();
-            return new Service_InforVisualConnect(dao, appSettings, logger, mockCatalog);
+            var receiverDao = sp.GetService<Dao_InforVisualReceiver>();
+            return new Service_InforVisualConnect(dao, appSettings, logger, mockCatalog, receiverDao);
         });
     }
 }

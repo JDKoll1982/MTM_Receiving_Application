@@ -7,6 +7,73 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Added
 
+#### A single by-receiver load starts at the receiver quantity, and Next warns when the total differs (2026-11-23)
+
+- **What changed:** after Load Entry, a by-receiver walk with exactly one load seeds that load with the
+  quantity the receiver recorded, so the **Weight/Quantity** page opens on the right number instead of an
+  empty field. With more than one load nothing is seeded and every field starts empty.
+- **Second change:** pressing **Next** on the Weight/Quantity page now compares the total of the loads with
+  the receiver quantity. When they differ a dialog offers **Change Values**, which leaves the operator on the
+  page to correct the numbers, or **Continue**, which accepts what was entered and advances.
+- **Why it matters:** the operator no longer retypes a number already on the receiver document, and a total
+  that disagrees with the receiver is caught at the step where it can still be fixed rather than surfacing as
+  a shortage later.
+- **Scope:** the warning only applies to a by-receiver walk, because only that walk has a receiver quantity to
+  compare against. Guided walks keep their existing behaviour in both places.
+- **New settings keys:** `Receiving.Dialogs.ReceiverQtyMismatch.Title`, `.Content` (a template taking the
+  entered total then the receiver quantity), `.ChangeValues` and `.Continue`.
+- **Files:** `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/Settings/ReceivingSettingsKeys.cs`,
+  `Module_Receiving/Settings/ReceivingSettingsDefaults.cs`,
+  `docs/help/receiving/mode-selection.html`.
+
+#### Receiving gains a By Receiver mode that starts the guided walk from a recent receipt (2026-11-23)
+
+- **What changed:** a fourth Receiving mode, **By Receiver**, sits between Guided and Manual. It runs the
+  same guided walk but opens on a list of the most recent inventory receipts read from Infor Visual instead
+  of the Enter PO screen. The operator searches by receiver number, picks a page size, pages through the
+  filtered result, and selects the row that matches the pallet in front of them.
+- **What the list shows:** one row per receiver and part with Receiver Number, PO #, Line #, Part Number,
+  Vendor, Location Received to, Qty Received, Qty Ordered and Qty Remaining on Line, newest received date
+  first. A receiver with several lines for one part collapses to a single row whose quantity received is the
+  sum of those lines, and a remaining quantity is never shown below zero.
+- **Why it matters:** it removes the only hard prerequisite of the guided walk, which was knowing the PO
+  number. The chosen row carries its receiver number, PO number, line number, part number, vendor, location
+  and quantities into the workflow, and the walk resumes at Load Entry with the location pre-filled and the
+  remaining quantity shown read-only. Back from Load Entry returns to the list with the row still highlighted.
+- **How it decides:** the source query is a single read-only SELECT over RECEIVER, RECEIVER_LINE,
+  PURC_ORDER_LINE, PURCHASE_ORDER and VENDOR, bounded to the newest 1000 rows. It excludes receipts with no
+  received date, no part number, no warehouse, or a purge marker, so the search can never re-surface a row the
+  rules exclude. Nothing is ever written to Infor Visual: the dedicated DAO rejects any connection string whose
+  ApplicationIntent is not ReadOnly.
+- **New settings keys:** `Receiving.UiText.ReceiverSelection.*` (screen title, search placeholder, rows per
+  page and its 25/50/100/200 counts, refresh, pager wording, page indicator, empty and failure copy, retry, the
+  nine column headers), `Receiving.UiText.Shell.ByReceiver` and its default tooltip,
+  `Receiving.Accessibility.ReceiverSelection.*`, `Receiving.Workflow.StepTitle.ReceiverSelection`, and the
+  `Receiving.UiText.ReceiverSelection.DefaultPageSize` int default of 50. The stored default token is
+  `by-receiver`, offered in both Receiving settings mode lists.
+- **Files:** `Module_Core/Models/Enums/Enum_ReceivingWorkflowStep.cs`,
+  `Module_Core/Models/InforVisual/Model_InforVisualReceiverRow.cs`,
+  `Module_Core/Models/InforVisual/Model_InforVisualMockDataCatalog.cs`,
+  `Module_Core/Models/UI/Model_ShellActionBarState.cs`, `Module_Core/Contracts/Services/IService_InforVisual.cs`,
+  `Module_Core/Data/InforVisual/Dao_InforVisualReceiver.cs`,
+  `Module_Core/Services/Database/Service_InforVisualConnect.cs`,
+  `Database/InforVisualScripts/Queries/35_GetRecentReceivers.sql`,
+  `Module_Settings.Core/Defaults/inforvisual-mock-data.json`,
+  `Module_Receiving/Contracts/IService_ReceivingWorkflow.cs`, `Module_Receiving/Services/Service_ReceivingWorkflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_LoadEntry.cs`,
+  `Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs`,
+  `Module_Receiving/Views/View_Receiving_Workflow.xaml` (+ `.xaml.cs`),
+  `Module_Receiving/Views/View_Receiving_LoadEntry.xaml`,
+  `Module_Receiving/Views/View_Receiving_ReceiverSelection.xaml` (+ `.xaml.cs`),
+  `Module_Receiving/Settings/ReceivingSettingsKeys.cs`, `ReceivingSettingsDefaults.cs`,
+  `Module_Shared/ViewModels/ViewModel_Shared_ShellActionBar.cs`, `MainWindow.xaml`,
+  `Module_Settings.Receiving/ViewModels/ViewModel_Settings_Receiving_WorkflowDefaults.cs`,
+  `ViewModel_Settings_Receiving_BusinessRules.cs`,
+  `Infrastructure/DependencyInjection/CoreServiceExtensions.cs`, `ModuleServicesExtensions.cs`
+
 #### Non-Inventoried Labels navigation lives in the shared shell strip (2026-11-21)
 
 - **What changed:** every Non-Inventoried Labels page now draws its Back, Next, Review, Save, Clear All Labels
@@ -60,6 +127,33 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
   `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
 
 ### Fixed
+
+#### The action strip spaces its mode chips evenly when a module hides some of them (2026-11-23)
+
+- **What was wrong:** the mode group relied on `ColumnSpacing` for the gaps between chips. Infor Visual
+  Label Data shows only Guided, Edit and Image Search, so By Receiver and Manual collapse — but
+  `ColumnSpacing` still inserts its 4px between every empty column. The Edit chip therefore sat 34px from
+  Guided and 19px from Image Search, which read as the Edit button being off centre.
+- **What changed:** the gaps now come from each divider's own 8px margin instead of `ColumnSpacing`, so a
+  hidden chip leaves no gap behind. Every module keeps the same 17px rhythm it had when nothing was hidden,
+  and the Back/Next pair no longer drifts 4px right on the first step, where Back is absent.
+- **Why it matters:** the strip is the one place the operator expects to be identical on every page, and a
+  chip that shifts with the module makes the mode controls harder to hit.
+- **Files:** `MainWindow.xaml`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Dunnage/ViewModels/ViewModel_Dunnage_ShellActionTests.cs`.
+
+#### Heat/Lot keeps the vendor's custom variable column on a by-receiver walk (2026-11-23)
+
+- **What was wrong:** the Heat/Lot page decides whether to draw the vendor's custom variable column (such as
+  `DM #`) by looking the vendor up from `CurrentPOVendor`. The guided walk fills that from the PO header, but
+  picking a row in the By Receiver list never set it, so the column silently collapsed for that walk.
+- **What changed:** selecting a receiver row now carries the row's vendor name into `CurrentPOVendor`, so the
+  lookup runs and the column appears exactly as in guided mode. The vendor also flows into the generated loads
+  and the XLSX export for by-receiver walks.
+- **Why it matters:** without the column the operator could not enter the vendor variable that the label and the
+  saved record expect, which would have produced incomplete records from the new mode.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelection.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_ReceiverSelectionCarryTests.cs`.
 
 #### Non-Inventoried Labels carries on when Infor Visual cannot be reached (2026-11-21)
 

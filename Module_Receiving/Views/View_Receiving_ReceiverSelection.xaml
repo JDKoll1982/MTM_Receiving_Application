@@ -1,0 +1,334 @@
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Receiving.Views.View_Receiving_ReceiverSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTM_Receiving_Application.Module_Core.Models.InforVisual"
+    x:Name="ReceiverSelectionRoot"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:Converter_BooleanToVisibility x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid
+        x:Name="ReceiverSelectionGrid"
+        Padding="24,0,24,0"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        RowSpacing="10">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ReceivingReceiverSelectionAdaptiveStates">
+                <VisualState x:Name="ReceivingDefaultState" />
+                <VisualState x:Name="ReceivingCompactState">
+                    <VisualState.Setters>
+                        <Setter Target="ReceiverSelectionGrid.Padding" Value="10,0,10,0" />
+                        <Setter Target="ReceiverSelectionGrid.RowSpacing" Value="6" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ReceivingWideState">
+                    <VisualState.Setters>
+                        <Setter Target="ReceiverSelectionGrid.Padding" Value="20,0,20,0" />
+                        <Setter Target="ReceiverSelectionGrid.RowSpacing" Value="10" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header controls: search, rows per page, refresh  -->
+        <Grid
+            Grid.Row="0"
+            Margin="0,4,0,0"
+            ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                x:Name="ReceiverSearchTextBox"
+                Grid.Column="0"
+                MinWidth="260"
+                HorizontalAlignment="Stretch"
+                AutomationProperties.Name="{x:Bind ViewModel.SearchAccessibilityName, Mode=OneWay}"
+                PlaceholderText="{x:Bind ViewModel.SearchPlaceholderText, Mode=OneWay}"
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal"
+                Spacing="8">
+                <ComboBox
+                    MinWidth="90"
+                    AutomationProperties.Name="{x:Bind ViewModel.RowsPerPageAccessibilityName, Mode=OneWay}"
+                    ItemsSource="{x:Bind ViewModel.PageSizes}"
+                    SelectedItem="{x:Bind ViewModel.PageSize, Mode=TwoWay}"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.RowsPerPageText, Mode=OneWay}" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.RowsPerPageText, Mode=OneWay}" />
+            </StackPanel>
+
+            <Button
+                Grid.Column="2"
+                AutomationProperties.Name="{x:Bind ViewModel.RefreshText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.RefreshCommand}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.RefreshText, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontSize="14" Glyph="&#xE72C;" />
+                    <TextBlock Text="{x:Bind ViewModel.RefreshText, Mode=OneWay}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!--  Progress for the read in flight  -->
+        <ProgressBar
+            Grid.Row="0"
+            Margin="0,0,0,-6"
+            VerticalAlignment="Bottom"
+            IsIndeterminate="True"
+            Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Column headers, in the order the contract pins  -->
+        <Grid
+            Grid.Row="1"
+            Padding="12,6"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            ColumnSpacing="8"
+            CornerRadius="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="1.2*" />
+                <ColumnDefinition Width="0.6*" />
+                <ColumnDefinition Width="1.2*" />
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="1.4*" />
+                <ColumnDefinition Width="0.9*" />
+                <ColumnDefinition Width="0.9*" />
+                <ColumnDefinition Width="1.1*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                x:Name="HeaderReceiverNumber"
+                Grid.Column="0"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnReceiverNumberText, Mode=OneWay}" />
+            <TextBlock
+                x:Name="HeaderPoNumber"
+                Grid.Column="1"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnPoNumberText, Mode=OneWay}" />
+            <TextBlock
+                x:Name="HeaderLineNumber"
+                Grid.Column="2"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnLineNumberText, Mode=OneWay}" />
+            <TextBlock
+                x:Name="HeaderPartNumber"
+                Grid.Column="3"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnPartNumberText, Mode=OneWay}" />
+            <TextBlock
+                x:Name="HeaderVendor"
+                Grid.Column="4"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnVendorText, Mode=OneWay}"
+                TextTrimming="CharacterEllipsis" />
+            <TextBlock
+                x:Name="HeaderLocationReceivedTo"
+                Grid.Column="5"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnLocationReceivedToText, Mode=OneWay}" />
+            <TextBlock
+                x:Name="HeaderQtyReceived"
+                Grid.Column="6"
+                HorizontalAlignment="Right"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnQtyReceivedText, Mode=OneWay}"
+                TextAlignment="Right" />
+            <TextBlock
+                x:Name="HeaderQtyOrdered"
+                Grid.Column="7"
+                HorizontalAlignment="Right"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnQtyOrderedText, Mode=OneWay}"
+                TextAlignment="Right" />
+            <TextBlock
+                x:Name="HeaderQtyRemaining"
+                Grid.Column="8"
+                HorizontalAlignment="Right"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.ColumnQtyRemainingText, Mode=OneWay}"
+                TextAlignment="Right" />
+        </Grid>
+
+        <!--  The page of rows  -->
+        <ListView
+            x:Name="ReceiverList"
+            Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            AutomationProperties.Name="{x:Bind ViewModel.ListAccessibilityName, Mode=OneWay}"
+            IsItemClickEnabled="True"
+            ItemClick="ReceiverList_ItemClick"
+            ItemsSource="{x:Bind ViewModel.Rows, Mode=OneWay}"
+            SelectedItem="{x:Bind ViewModel.SelectedRow, Mode=TwoWay}"
+            SelectionMode="Single">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="MinHeight" Value="36" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:Model_InforVisualReceiverRow">
+                    <Grid
+                        Padding="12,4"
+                        ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.4*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="0.6*" />
+                            <ColumnDefinition Width="1.2*" />
+                            <ColumnDefinition Width="1.4*" />
+                            <ColumnDefinition Width="1.4*" />
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind ReceiverNumber}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind PONumber}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind POLineNumber}" />
+                        <TextBlock
+                            Grid.Column="3"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind PartNumber}" />
+                        <TextBlock
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind VendorName}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Grid.Column="5"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind LocationReceivedToDisplay}" />
+                        <TextBlock
+                            Grid.Column="6"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind QtyReceivedDisplay}"
+                            TextAlignment="Right" />
+                        <TextBlock
+                            Grid.Column="7"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind QtyOrderedDisplay}"
+                            TextAlignment="Right" />
+                        <TextBlock
+                            Grid.Column="8"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Text="{x:Bind QtyRemainingDisplay}"
+                            TextAlignment="Right" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!--  Pager: present whenever the list is, inactive when everything fits on one page  -->
+        <Grid
+            Grid.Row="3"
+            Margin="0,6,0,0"
+            ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="ReceiverPreviousPageButton"
+                Grid.Column="0"
+                AutomationProperties.Name="{x:Bind ViewModel.PreviousPageText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.GoToPreviousPageCommand}"
+                IsEnabled="{x:Bind ViewModel.CanGoPreviousPage, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.PreviousPageText, Mode=OneWay}">
+                <FontIcon FontSize="14" Glyph="&#xE76B;" />
+            </Button>
+
+            <TextBlock
+                x:Name="ReceiverPageIndicator"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="{x:Bind ViewModel.PageIndicator, Mode=OneWay}" />
+
+            <Button
+                x:Name="ReceiverNextPageButton"
+                Grid.Column="2"
+                AutomationProperties.Name="{x:Bind ViewModel.NextPageText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.GoToNextPageCommand}"
+                IsEnabled="{x:Bind ViewModel.CanGoNextPage, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.NextPageText, Mode=OneWay}">
+                <FontIcon FontSize="14" Glyph="&#xE76C;" />
+            </Button>
+        </Grid>
+
+        <!--  Empty state: the search matched nothing, which is not an error  -->
+        <TextBlock
+            x:Name="ReceiverEmptyMessage"
+            Grid.Row="4"
+            Margin="0,8,0,0"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Style="{StaticResource BodyTextBlockStyle}"
+            Text="{x:Bind ViewModel.EmptyMessageText, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!--  Failure state: a readable message beside a Retry that reads again  -->
+        <StackPanel
+            x:Name="ReceiverFailurePanel"
+            Grid.Row="5"
+            Margin="0,8,0,0"
+            Orientation="Horizontal"
+            Spacing="12"
+            Visibility="{x:Bind ViewModel.IsFailed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock
+                VerticalAlignment="Center"
+                Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                TextWrapping="Wrap" />
+            <Button
+                AutomationProperties.Name="{x:Bind ViewModel.RetryText, Mode=OneWay}"
+                Command="{x:Bind ViewModel.RetryCommand}"
+                Content="{x:Bind ViewModel.RetryText, Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

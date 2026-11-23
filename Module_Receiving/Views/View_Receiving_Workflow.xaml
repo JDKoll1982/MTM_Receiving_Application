@@ -65,6 +65,14 @@
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
                 Visibility="{x:Bind ViewModel.IsPOEntryVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <!--  Receiver Selection View  -->
+            <ContentControl
+                x:Name="ReceiverSelectionHost"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Visibility="{x:Bind ViewModel.IsReceiverSelectionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <!--  Part Selection View  -->
             <ContentControl
                 x:Name="PartSelectionHost"

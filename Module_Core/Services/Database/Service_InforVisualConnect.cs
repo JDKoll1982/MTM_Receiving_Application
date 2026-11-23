@@ -17,6 +17,7 @@ namespace MTM_Receiving_Application.Module_Core.Services.Database;
 public class Service_InforVisualConnect : IService_InforVisual
 {
     private readonly Dao_InforVisualConnection _dao;
+    private readonly Dao_InforVisualReceiver? _receiverDao;
     private readonly IService_AppSettings _appSettings;
     private readonly IService_LoggingUtility? _logger;
     private readonly IService_InforVisualMockDataCatalog _mockDataCatalog;
@@ -27,13 +28,15 @@ public class Service_InforVisualConnect : IService_InforVisual
         Dao_InforVisualConnection dao,
         IService_AppSettings appSettings,
         IService_LoggingUtility? logger = null,
-        IService_InforVisualMockDataCatalog? mockDataCatalog = null
+        IService_InforVisualMockDataCatalog? mockDataCatalog = null,
+        Dao_InforVisualReceiver? receiverDao = null
     )
     {
         _dao = dao ?? throw new ArgumentNullException(nameof(dao));
         _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         _logger = logger;
         _mockDataCatalog = mockDataCatalog ?? new Service_InforVisualMockDataCatalog(logger);
+        _receiverDao = receiverDao;
     }
 
     #region Connection Testing
@@ -1762,6 +1765,41 @@ public class Service_InforVisualConnect : IService_InforVisual
         }
 
         return await _dao.GetReceivingAnalyticsCoverageByPartAsync(filter);
+    }
+
+    /// <inheritdoc />
+    public async Task<Model_Dao_Result<List<Model_InforVisualReceiverRow>>> GetRecentReceiversAsync(
+        int maxRows = 1000
+    )
+    {
+        if (maxRows < 1)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualReceiverRow>>(
+                "The row limit must be at least 1."
+            );
+        }
+
+        if (UseMockData)
+        {
+            _logger?.LogInfo("[MOCK DATA MODE] Returning mock recent receivers.");
+
+            var sampleReceivers =
+                _mockDataCatalog.GetCatalog()?.RecentReceivers
+                ?? new List<Model_InforVisualReceiverRow>();
+
+            return Model_Dao_Result_Factory.Success(
+                sampleReceivers.Take(maxRows).ToList()
+            );
+        }
+
+        if (_receiverDao is null)
+        {
+            return Model_Dao_Result_Factory.Failure<List<Model_InforVisualReceiverRow>>(
+                "The Infor Visual receiver query is not configured."
+            );
+        }
+
+        return await _receiverDao.GetRecentReceiversAsync(maxRows);
     }
 
     private static List<Model_InforVisualDeliveryScheduleLine> CreateMockDeliveryScheduleLines(

@@ -59,11 +59,12 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <!--  Receipt marking: hidden when no line on the receipt is marked  -->
                     <StackPanel
-                        Grid.Row="3"
+                        Grid.Row="4"
                         Grid.ColumnSpan="2"
                         Orientation="Horizontal"
                         Spacing="6"
@@ -186,6 +187,25 @@
                             ValidationCompleted="LocationLookupControl_ValidationCompleted"
                             WarehouseCode="002" />
                     </Grid>
+
+                    <StackPanel
+                        x:Name="QtyRemainingOnLineReadout"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="2"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        Visibility="{x:Bind ViewModel.ShowQtyRemainingOnLine, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind ViewModel.QtyRemainingOnLineLabelText, Mode=OneWay}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.QtyRemainingOnLineDisplay, Mode=OneWay}" />
+                    </StackPanel>
                 </Grid>
             </Border>
 

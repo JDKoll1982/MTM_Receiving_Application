@@ -48,6 +48,13 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _location = string.Empty;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(QtyRemainingOnLineDisplay))]
+        private decimal _qtyRemainingOnLine;
+
+        [ObservableProperty]
+        private bool _showQtyRemainingOnLine;
+
+        [ObservableProperty]
         private bool _isMockLocationMode;
 
         [ObservableProperty]
@@ -77,6 +84,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         private string _loadEntryLocationInstructionText =
             "Leave blank to save as Nothing Entered.";
 
+        [ObservableProperty]
+        private string _qtyRemainingOnLineLabelText = "Qty Remaining on Line";
+
         // Accessibility Properties
         [ObservableProperty]
         private string _numberOfLoadsAccessibilityName = "Number of Labels";
@@ -89,6 +99,12 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
 
         /// <summary>True when a PO number exists, which drives the PO segment's visibility.</summary>
         public bool HasPoNumber => !string.IsNullOrWhiteSpace(CurrentPoNumber);
+
+        /// <summary>
+        /// The remaining quantity as the readout shows it: up to two decimal places, trailing zeros
+        /// trimmed. A display only, never an input.
+        /// </summary>
+        public string QtyRemainingOnLineDisplay => QtyRemainingOnLine.ToString("0.##");
 
         public ViewModel_Receiving_LoadEntry(
             IService_ReceivingWorkflow workflowService,
@@ -137,6 +153,9 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 NumberOfLoadsAccessibilityName = await _receivingSettings.GetStringAsync(
                     ReceivingSettingsKeys.Accessibility.LoadEntryNumberOfLoads
                 );
+                QtyRemainingOnLineLabelText = await _receivingSettings.GetStringAsync(
+                    ReceivingSettingsKeys.ReceiverSelection.QtyRemainingOnLineLabel
+                );
                 _logger.LogInfo("Load Entry UI text loaded from settings successfully");
             }
             catch (Exception ex)
@@ -155,6 +174,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
             SelectedPartDescription = string.Empty;
             CurrentPoNumber = string.Empty;
             Location = string.Empty;
+            QtyRemainingOnLine = 0m;
+            ShowQtyRemainingOnLine = false;
             RecommendedLocations = new ObservableCollection<Model_ReceivingRecommendedLocation>();
             RecommendedLocationsMessage =
                 "Current stock recommendations appear after a guided part is selected.";
@@ -178,6 +199,8 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 }
 
                 Location = _workflowService.CurrentLocation;
+                QtyRemainingOnLine = _workflowService.CurrentReceiverRemainingQty;
+                ShowQtyRemainingOnLine = _workflowService.IsByReceiverFlow;
                 RefreshReceiptLotMarkings(_workflowService.CurrentSession?.Loads);
                 _ = RefreshRecommendedLocationsAsync();
             }

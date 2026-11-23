@@ -41,6 +41,7 @@ public sealed partial class ViewModel_Settings_Receiving_WorkflowDefaults : View
     public IReadOnlyList<ReceivingWorkflowDefaultOption> DefaultModeOptions { get; } =
     [
         new("Guided Wizard", "Guided"),
+        new("By Receiver", "by-receiver"),
         new("Manual Entry", nameof(Enum_ReceivingWorkflowStep.ManualEntry)),
         new("Edit Mode", nameof(Enum_ReceivingWorkflowStep.EditMode)),
     ];
@@ -299,6 +300,7 @@ public sealed partial class ViewModel_Settings_Receiving_WorkflowDefaults : View
             nameof(Enum_ReceivingWorkflowStep.ManualEntry) or "Manual" => "manual",
             nameof(Enum_ReceivingWorkflowStep.EditMode) or "Edit" => "edit",
             "Guided" => "guided",
+            "by-receiver" or "ByReceiver" or "By Receiver" => "by-receiver",
             _ => null,
         };
 
