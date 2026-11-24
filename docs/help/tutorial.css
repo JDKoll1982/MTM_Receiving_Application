@@ -130,6 +130,37 @@ body {
 }
 
 /* ----------------------------------------------------------
+   Video walkthrough frame
+   ---------------------------------------------------------- */
+.video-frame {
+    margin: 20px 0 10px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    background: #000;
+    display: block;
+}
+.video-frame video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.video-caption {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+.video-download {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+}
+
+/* ----------------------------------------------------------
    Inline screenshot (narrow / callout)
    ---------------------------------------------------------- */
 .screenshot-inline {

@@ -863,7 +863,8 @@ public class Service_Help : IService_Help
                     "Scanner workbench, history, and settings.\n\n"
                     + "• Workbench - run scanner send/sweep operations\n"
                     + "• History - review past scan results\n"
-                    + "• Settings - configure scanner behavior",
+                    + "• Settings - configure scanner behavior\n"
+                    + "• Help Center > Scanner > The Workbench > Watch the Walkthrough plays a 1:35 captioned video of a whole location being moved",
                 Category = "Scanner",
                 HelpType = Enum_HelpType.Info,
                 Icon = "ScanHelper",

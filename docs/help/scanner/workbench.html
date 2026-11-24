@@ -44,6 +44,7 @@
     <nav class="sidebar" aria-label="On this page">
         <p class="sidebar-label">On this page</p>
         <ul class="sidebar-nav">
+            <li><a href="#video">Video Walkthrough</a></li>
             <li><a href="#layout">Screen Layout</a></li>
             <li><a href="#part-mode">Search by Part</a></li>
             <li><a href="#location-mode">Search by Location</a></li>
@@ -103,23 +104,73 @@
             </p>
         </div>
 
+        <!-- -------- Video walkthrough -------- -->
+        <section id="video" class="content-section">
+            <h2>Watch the Walkthrough</h2>
+            <p>
+                One location cleared end to end in a minute and a half. The steps are captioned on
+                screen, so you can watch it with the sound off.
+            </p>
+
+            <div class="video-frame">
+                <video controls preload="metadata" playsinline width="1920" height="1080">
+                    <source src="../../features/receiving/scanner-feature/walkthrough/Scanner_Entire_Location.mp4" type="video/mp4" />
+                    Your browser cannot play this video.
+                </video>
+            </div>
+            <span class="video-caption">Moving every part out of RECV — 1:35, captions on screen</span>
+            <a class="video-download"
+               href="../../features/receiving/scanner-feature/walkthrough/Scanner_Entire_Location.mp4"
+               download>Download the walkthrough (MP4)</a>
+
+            <p>What it shows, in order:</p>
+            <ol>
+                <li>
+                    Switch <strong>Search By</strong> to <strong>Location</strong>, type
+                    <strong>RECV</strong>, and press <strong>Enter</strong>.
+                </li>
+                <li>
+                    In the <em>Parts at RECV</em> picker, tick the parts and choose
+                    <strong>Use Selected</strong> — one line is created for each part.
+                </li>
+                <li>
+                    Type a destination in every <strong>To</strong> box. Scanner formats it into an
+                    Infor Visual location ID and the line turns green.
+                </li>
+                <li>
+                    With the Inventory Transactions window open, send each line, save it with
+                    <strong>Alt+S</strong>, and answer <strong>Yes</strong> to the save prompt until
+                    the list is empty.
+                </li>
+            </ol>
+        </section>
+
         <!-- -------- Layout -------- -->
         <section id="layout" class="content-section">
             <h2>Screen Layout</h2>
-            <p>The Workbench has three regions, top to bottom.</p>
+            <p>The Workbench is the same five regions every time you open it.</p>
 
             <ol>
                 <li>
-                    <strong>Entry bar</strong> — where you look up a part or a location. It changes
-                    depending on whether you are searching by part or by location.
+                    <strong>Page header</strong> — says <em>Scanner – Workbench</em> and shows the
+                    signed-in user on the right.
                 </li>
                 <li>
-                    <strong>Current list</strong> — the table of lines you are working on. Each
-                    line is one transfer.
+                    <strong>Page buttons</strong> — <strong>Workbench</strong>,
+                    <strong>History</strong>, and <strong>Settings</strong>. The current page is the
+                    one filled in blue. Your list is kept while you look at the other two.
                 </li>
                 <li>
-                    <strong>Action bar</strong> — the buttons along the bottom for checking,
-                    sending, clearing, and exporting.
+                    <strong>Search By</strong> — the switch beside those buttons. Left is
+                    <strong>Part</strong>, right is <strong>Location</strong>.
+                </li>
+                <li>
+                    <strong>Entry box</strong> — where you look up a part or a location. Its label
+                    and placeholder change with the switch above.
+                </li>
+                <li>
+                    <strong>Current list</strong> — one line per transfer, with a footer of action
+                    buttons underneath.
                 </li>
             </ol>
 
@@ -130,14 +181,14 @@
                 seconds, or you can dismiss it with the ✕ on the right.
             </p>
 
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Main.png"
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Part.png"
                class="screenshot-wrap"
-               data-caption="The Workbench with a current list loaded"
+               data-caption="The Workbench with an empty list, annotated"
                aria-label="Click to enlarge: Workbench with a current list">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Main.png"
-                     alt="Scanner Workbench showing the entry bar, the table of lines, and the bottom action bar" />
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Part.png"
+                     alt="Annotated Scanner Workbench: page header, page buttons and Search By, the entry box, the current list columns, and the action bar" />
             </a>
-            <span class="screenshot-caption">Entry bar (top) · current list (middle) · action bar (bottom)</span>
+            <span class="screenshot-caption">Page buttons and Search By (2–3) · entry box (4) · current list (5) · action bar (6)</span>
         </section>
 
         <!-- -------- Part mode -------- -->
@@ -155,9 +206,20 @@
                 <div class="tut-step-body">
                     <h4>Make sure the toggle says “Part”</h4>
                     <p>
-                        The <strong>Search By</strong> switch in the bottom-right corner should read
-                        <strong>Part</strong>. The text box is then labelled
-                        <em>Part</em> and reads <em>Enter part number</em>.
+                        The <strong>Search By</strong> switch beside the page buttons should read
+                        <strong>Part</strong>. The entry box is then labelled <em>Part</em> and
+                        reads <em>Enter part number</em>. The <strong>Single location</strong>
+                        switch only appears in Location mode, so it is hidden here.
+                    </p>
+
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Part-Entry.png"
+               class="screenshot-wrap"
+               data-caption="Part mode — page buttons (1), Search By (2), Part label (3), entry box (4)"
+               aria-label="Click to enlarge: Part mode — page buttons (1), Search By (2), Part label (3), entry box (4)">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Part-Entry.png" alt="Close-up of the Scanner page buttons, the Search By switch set to Part, and the Part entry box" />
+            </a>
+            <span class="screenshot-caption">Part mode — page buttons (1), Search By (2), Part label (3), entry box (4)</span>
+                    <p>
                     </p>
                 </div>
             </div>
@@ -234,11 +296,11 @@
                         appears to its left.
                     </p>
 
-                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationMode.png"
+                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Location.png"
                        class="screenshot-wrap"
                        data-caption="Location mode — the lookup box relabels and the range switch appears"
                        aria-label="Click to enlarge: Location mode">
-                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationMode.png"
+                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Location.png"
                              alt="Scanner Workbench with Search By set to Location and a Location range switch visible" />
                     </a>
                     <span class="screenshot-caption">Location mode — “Single location” is the default</span>
@@ -295,16 +357,7 @@
                         The single lookup box is replaced by two boxes:
                         <strong>Start location</strong> and <strong>Stop location</strong>.
                     </p>
-
-                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange.png"
-                       class="screenshot-wrap"
-                       data-caption="Range inputs — Start location and Stop location"
-                       aria-label="Click to enlarge: range inputs">
-                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange.png"
-                             alt="Scanner Workbench showing Start location and Stop location boxes with a Load Range button" />
-                    </a>
-                    <span class="screenshot-caption">Start and Stop boxes, with the <strong>Load Range</strong> button on the right</span>
-                </div>
+</div>
             </div>
 
             <div class="tut-step">
@@ -333,16 +386,7 @@
                         which shelf each part is on. <strong>Select All</strong> covers every card.
                         Choose <strong>Use Selected</strong> when you are done.
                     </p>
-
-                    <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange-Picker.png"
-                       class="screenshot-wrap"
-                       data-caption="Range picker — one card per location, with on-hand quantity and transaction count"
-                       aria-label="Click to enlarge: range picker">
-                        <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-LocationRange-Picker.png"
-                             alt="Range picker window showing one card per location listing parts, on-hand quantity and transaction count" />
-                    </a>
-                    <span class="screenshot-caption">One card per location — tick the parts you want, then <strong>Use Selected</strong></span>
-                </div>
+</div>
             </div>
 
             <div class="callout callout-info">
@@ -382,11 +426,11 @@
                 </table>
             </div>
 
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-List.png"
                class="screenshot-wrap"
                data-caption="A fresh list — destinations still blank, so every status is “Enter destination”"
                aria-label="Click to enlarge: current list with rows">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-WithRows.png"
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-List.png"
                      alt="Scanner current list with six lines; the To column is empty and each status icon is grey" />
             </a>
             <span class="screenshot-caption">A new list — Scanner confirms how many lines were added</span>
@@ -432,16 +476,7 @@
                 Click the status icon on any line to open a short explanation of exactly what that
                 line is waiting for.
             </p>
-
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-RowStatus.png"
-               class="screenshot-wrap"
-               data-caption="Clicking a status icon explains what the line needs"
-               aria-label="Click to enlarge: line status dialog">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-RowStatus.png"
-                     alt="Line status dialog explaining that the line is not validated and needs a destination" />
-            </a>
-            <span class="screenshot-caption">The <strong>Line status</strong> dialog — click any status icon to open it</span>
-        </section>
+</section>
 
         <!-- -------- Editing -------- -->
         <section id="editing" class="content-section">
@@ -555,6 +590,15 @@
                 The buttons along the bottom of the Workbench, left to right:
             </p>
 
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ActionBar.png"
+               class="screenshot-wrap"
+               data-caption="Action bar — list actions (1), Auto and its notice (2), line tools (3)"
+               aria-label="Click to enlarge: Action bar — list actions (1), Auto and its notice (2), line tools (3)">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ActionBar.png" alt="Scanner action bar showing the check-all and send buttons, the Auto switch with the amber Inventory Transactions window notice, the clear/open/export/manage buttons, and Remove Selected" />
+            </a>
+            <span class="screenshot-caption">Action bar — list actions (1), Auto and its notice (2), line tools (3)</span>
+
+
             <div class="db-table-wrap">
                 <table class="db-table">
                     <thead>
@@ -565,12 +609,13 @@
                     </thead>
                     <tbody>
                         <tr><td><strong>Check all</strong></td><td>Re-checks every line that is not already green, so the statuses are up to date. Nothing is sent.</td></tr>
-                        <tr><td><strong>Send</strong> (blue)</td><td>Sends the selected line to Infor Visual. It stays greyed out while the Infor Visual Inventory Transfers window is closed, and a note beside it says so.</td></tr>
+                        <tr><td><strong>Send</strong> (blue)</td><td>Sends the selected line to Infor Visual. Two things have to be true first: a line is selected and green, and the Inventory Transfers window is open. While that window is closed the button is grey and an amber note beside it reads <em>“Inventory Transactions window is closed!”</em></td></tr>
+                        <tr><td><strong>Auto</strong></td><td>Auto Mode. When it is on, Scanner also presses the save shortcut (Alt+S) in Infor Visual, and answering <em>Yes</em> to the save prompt sends the next line straight away.</td></tr>
                         <tr><td><strong>Clear list</strong></td><td>Empties the current list. Use this when you are starting a new batch.</td></tr>
                         <tr><td><strong>Open inventory</strong></td><td>Brings Infor Visual forward and opens its Inventory Transfers window, so you can work in it directly.</td></tr>
                         <tr><td><strong>Export</strong></td><td>Writes the current list out to a file.</td></tr>
                         <tr><td><strong>Manage items</strong></td><td>Opens a window for editing the whole list at once — see below.</td></tr>
-                        <tr><td><strong>Search By</strong></td><td>Switches between Part and Location lookup.</td></tr>
+                        
                         <tr><td><strong>Remove Selected</strong></td><td>Deletes the selected line from the list. This never touches Infor Visual, so it works whether or not that window is open.</td></tr>
                         <tr><td><strong>Help</strong></td><td>Opens a short reminder of what this screen does.</td></tr>
                     </tbody>
@@ -587,6 +632,30 @@
                     the transfer: the screen checks for it when it loads and every five seconds
                     after, and the note beside the button tells you why it is unavailable.
                     <strong>Remove Selected</strong> only changes this list, so it keeps working.
+                </div>
+            </div>
+
+            <h3>Auto Mode</h3>
+            <p>
+                <strong>Auto</strong> is off by default, because it is the one setting that lets
+                Scanner press a key that writes in Infor Visual. With it on:
+            </p>
+
+            <ol>
+                <li><strong>Send</strong> fills the Inventory Transfers form for the selected line.</li>
+                <li>Scanner presses <strong>Alt+S</strong> to save it.</li>
+                <li>The footer asks <em>“Was the transaction saved in Infor Visual?”</em> — press
+                    <strong>Yes</strong> if the record saved, <strong>No</strong> if it did not.</li>
+                <li><strong>Yes</strong> clears the line and sends the next one. <strong>No</strong>
+                    stops Auto Mode and keeps the line so you can retry.</li>
+            </ol>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon" aria-hidden="true">⚠️</span>
+                <div class="callout-body">
+                    Auto Mode turns itself off and says why when there is nothing safe left to send —
+                    for example <em>“Auto Mode stopped: no lines left to send.”</em> or
+                    <em>“Auto Mode stopped: the next line needs fixing before it can be sent.”</em>
                 </div>
             </div>
 
@@ -620,16 +689,7 @@
                     </tbody>
                 </table>
             </div>
-
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ManageItems.png"
-               class="screenshot-wrap"
-               data-caption="Manage items — edit, reorder, duplicate, or delete lines, then Apply"
-               aria-label="Click to enlarge: Manage items dialog">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-ManageItems.png"
-                     alt="Manage items window listing the current lines with Add Item, Duplicate, Move Up, Move Down and Delete buttons" />
-            </a>
-            <span class="screenshot-caption">Manage items — reorder or fix several lines before sending</span>
-        </section>
+</section>
 
         <!-- -------- Dialogs -------- -->
         <section id="dialogs" class="content-section">
@@ -704,16 +764,7 @@
             <p>
                 A short reminder of what the Scanner module does. Nothing here changes your list.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-HelpDialog.png"
-               class="screenshot-wrap"
-               data-caption="The Scanner help dialog"
-               aria-label="Click to enlarge: Scanner help dialog">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-HelpDialog.png"
-                     alt="Scanner help dialog describing the workbench, history and settings" />
-            </a>
-            <span class="screenshot-caption">Help — press the ? button in the bottom-right corner to open it</span>
-
-            <h3>Part not found, or no stock</h3>
+<h3>Part not found, or no stock</h3>
             <p>
                 Scanner reports part problems in the coloured message strip under the page title,
                 not in a pop-up window. You will see
@@ -722,44 +773,34 @@
                 the part exists but has no stock anywhere. The strip clears itself after a few
                 seconds.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartNoStock.png"
-               class="screenshot-wrap"
-               data-caption="A part problem reported in the message strip"
-               aria-label="Click to enlarge: part message strip">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartNoStock.png"
-                     alt="Red message strip under the page title reporting that the part number does not have any quantity in-house" />
-            </a>
-            <span class="screenshot-caption">Part problems appear in the message strip and clear themselves</span>
-
-            <h3>Stock locations for a part</h3>
+<h3>Stock locations for a part</h3>
             <p>
                 After a successful part lookup, this window lists every location that holds the
                 part, with the quantity on hand. Tick the source location you are moving from,
                 adjust <strong>Qty</strong> if needed, then choose <strong>Use Selected</strong>.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-StockLocationPicker.png"
-               class="screenshot-wrap"
-               data-caption="Stock locations for a part"
-               aria-label="Click to enlarge: stock location picker">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-StockLocationPicker.png"
-                     alt="Stock location picker listing each location holding the part with its on-hand quantity" />
-            </a>
-            <span class="screenshot-caption">Stock locations — choose the source location and quantity</span>
-
-            <h3>Parts at a location</h3>
+<h3>Parts at a location</h3>
             <p>
                 The location-mode equivalent: every part currently held at the location you
                 searched, with its quantity. Use <strong>Select All</strong> to take the whole
                 shelf, then <strong>Use Selected</strong>.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartsAtLocation.png"
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Picker.png"
                class="screenshot-wrap"
                data-caption="Parts held at a single location"
                aria-label="Click to enlarge: parts at location picker">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-PartsAtLocation.png"
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Picker.png"
                      alt="Picker listing every part held at the searched location with its quantity on hand" />
             </a>
             <span class="screenshot-caption">Parts at a location — one row per part, with Select All available</span>
+            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Picker-Checked.png"
+               class="screenshot-wrap"
+               data-caption="First part ticked (1) and Use Selected ready (2)"
+               aria-label="Click to enlarge: First part ticked (1) and Use Selected ready (2)">
+                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-Picker-Checked.png" alt="Parts at V-E0-02 with the first part checked and the Use Selected button highlighted" />
+            </a>
+            <span class="screenshot-caption">First part ticked (1) and Use Selected ready (2)</span>
+
 
             <h3>Add duplicate lines?</h3>
             <p>
@@ -767,30 +808,12 @@
                 already have. Choose <strong>Add Anyway</strong> only if you really do want two
                 identical lines; otherwise choose <strong>Cancel</strong>.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-DuplicateLines.png"
-               class="screenshot-wrap"
-               data-caption="Add duplicate lines? confirmation"
-               aria-label="Click to enlarge: duplicate lines confirmation">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-DuplicateLines.png"
-                     alt="Confirmation dialog asking whether to add duplicate lines, with Add Anyway and Cancel buttons" />
-            </a>
-            <span class="screenshot-caption">Duplicate warning — only add the lines again if you mean to</span>
-
-            <h3>Fix the issues before sending</h3>
+<h3>Fix the issues before sending</h3>
             <p>
                 Pressing Send on a line that is not green does not send anything. Instead
                 Scanner explains exactly what the line is missing.
             </p>
-            <a href="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-FixIssues.png"
-               class="screenshot-wrap"
-               data-caption="Fix the issues before sending"
-               aria-label="Click to enlarge: fix issues dialog">
-                <img src="../../Tutorial_Images/Module_Scanner/View_Scanner_Workbench/View_Scanner_Workbench-FixIssues.png"
-                     alt="Dialog titled Fix the issues before sending, explaining that the line needs a destination" />
-            </a>
-            <span class="screenshot-caption">Sending an unfinished line explains what is missing</span>
-
-            <div class="callout callout-info">
+<div class="callout callout-info">
                 <span class="callout-icon" aria-hidden="true">ℹ️</span>
                 <div class="callout-body">
                     <strong>You can back out of any of these.</strong>

@@ -105,3 +105,6 @@ artifacts/
 # SpecKit Companion append buffer, folded into .spec-context.json by --materialize.
 specs/**/.spec-context.events.jsonl
 
+
+# Scanner voiceover build scratch
+docs/features/receiving/scanner-feature/walkthrough/.tts-build/
