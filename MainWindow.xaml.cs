@@ -69,6 +69,11 @@ namespace MTM_Receiving_Application
         private System.ComponentModel.PropertyChangedEventHandler? _currentPropertyChangedHandler;
         private IViewModel_HeaderStepBarProvider? _currentStepBarProvider;
         private System.ComponentModel.PropertyChangedEventHandler? _currentStepBarPropertyChangedHandler;
+
+        // Bumped whenever the step bar is cleared or re-bound. UpdateHeaderStepBar hops to the
+        // dispatcher, so a queued update from the page we just left could otherwise re-show its
+        // steps on the new page (the Receiving walk leaking onto Scanner).
+        private int _headerStepBarGeneration;
         private string? _settingsReturnRouteTag;
         private Type? _currentSettingsPageType;
 
@@ -1232,6 +1237,9 @@ namespace MTM_Receiving_Application
             _currentStepBarProvider = null;
             _currentStepBarPropertyChangedHandler = null;
 
+            // Invalidate any step-bar update still queued from the page we are leaving.
+            _headerStepBarGeneration++;
+
             ShellActionBar.Detach();
 
             if (HeaderStepBar is not null)
@@ -1639,6 +1647,13 @@ namespace MTM_Receiving_Application
             var provider = ResolveStepBarProvider(content);
             if (provider is null)
             {
+                // The destination page has no walk of its own, so clear what the previous page left.
+                _headerStepBarGeneration++;
+                if (HeaderStepBar is not null)
+                {
+                    HeaderStepBar.Visibility = Visibility.Collapsed;
+                }
+
                 return;
             }
 
@@ -1664,9 +1679,10 @@ namespace MTM_Receiving_Application
 
         private void UpdateHeaderStepBar(IViewModel_HeaderStepBarProvider provider)
         {
+            var generation = _headerStepBarGeneration;
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (HeaderStepBar is null)
+                if (HeaderStepBar is null || generation != _headerStepBarGeneration)
                 {
                     return;
                 }
