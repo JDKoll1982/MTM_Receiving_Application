@@ -269,6 +269,7 @@
     <!-- Validation -->
     <PackageReference Include="FluentValidation" Version="12.2.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.1" />
 
     <!-- Structured Logging -->
     <PackageReference Include="Serilog" Version="4.4.0" />

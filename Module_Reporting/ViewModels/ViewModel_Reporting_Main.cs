@@ -14,6 +14,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
+using MTM_Receiving_Application.Module_Reporting.Helpers;
 using MTM_Receiving_Application.Module_Reporting.Models;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
@@ -31,12 +32,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_ReportingRecipientSettings _recipientSettings;
     private readonly IService_ReportingSettings _reportingSettings;
+    private readonly IService_ReportingPdf _reportingPdf;
     private bool _isSynchronizingModuleSelections;
     private bool _isApplyingDateRangePreset;
     private bool _suppressDateRangeReset;
     private bool _isApplyingSavedPreviewSettings;
-    private Dictionary<string, Model_ReportingPreviewModuleSettings> _savedModuleSettings =
-        new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, Model_ReportingPreviewModuleSettings> _savedModuleSettings = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     public event EventHandler? PreviewRequested;
 
@@ -279,6 +282,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IService_ReportingClipboard reportingClipboard,
         IService_ReportingRecipientSettings recipientSettings,
         IService_ReportingSettings reportingSettings,
+        IService_ReportingPdf reportingPdf,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -293,6 +297,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
         _reportingSettings =
             reportingSettings ?? throw new ArgumentNullException(nameof(reportingSettings));
+        _reportingPdf = reportingPdf ?? throw new ArgumentNullException(nameof(reportingPdf));
         Title = "End of Day Reports";
         ResetAvailabilityState();
 
@@ -528,6 +533,81 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     }
 
     private bool CanCopyEmail() => IncludedPreviewModuleCards.Count > 0 && !IsBusy;
+
+    /// <summary>
+    /// Suggested file name for the PDF copy of the report.
+    /// </summary>
+    public string ReportPdfSuggestedFileName =>
+        Helper_ReportingPdfFileName.BuildFileName(ReportDocumentTitle);
+
+    /// <summary>
+    /// Writes the included report modules to <paramref name="filePath"/> as a PDF that the user
+    /// can keep, print, or attach to an email manually.
+    /// </summary>
+    public async Task<Model_Dao_Result<string>> SaveReportPdfAsync(string filePath)
+    {
+        if (IsBusy)
+        {
+            return Model_Dao_Result_Factory.Failure<string>("A report action is already running.");
+        }
+
+        try
+        {
+            IsBusy = true;
+            NotifyActionCommands();
+            ShowStatus("Creating report PDF...", InfoBarSeverity.Informational);
+
+            var pdfResult = await _reportingPdf.CreateReportPdfAsync(
+                IncludedPreviewModuleCards.ToList(),
+                ReportDocumentTitle,
+                DateTime.Now,
+                Environment.UserName,
+                filePath
+            );
+
+            if (!pdfResult.IsSuccess || string.IsNullOrWhiteSpace(pdfResult.Data))
+            {
+                ShowStatus(
+                    pdfResult.ErrorMessage ?? "Failed to create the report PDF.",
+                    InfoBarSeverity.Error
+                );
+                return pdfResult;
+            }
+
+            ShowStatus($"Report saved to {pdfResult.Data}", InfoBarSeverity.Success);
+            return pdfResult;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error saving report PDF: {ex.Message}", ex);
+            ShowStatus("Error saving report PDF", InfoBarSeverity.Error);
+
+            return Model_Dao_Result_Factory.Failure<string>(
+                $"Failed to save the report PDF: {ex.Message}",
+                ex
+            );
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyActionCommands();
+        }
+    }
+
+    /// <summary>
+    /// Reports a PDF save failure raised outside the ViewModel, such as by the file picker.
+    /// </summary>
+    public async Task ReportPdfSaveFailureAsync(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+
+        await _logger.LogErrorAsync(
+            $"Error preparing the report PDF save: {exception.Message}",
+            exception,
+            nameof(ViewModel_Reporting_Main)
+        );
+        ShowStatus($"Could not save the report PDF: {exception.Message}", InfoBarSeverity.Error);
+    }
 
     [RelayCommand(CanExecute = nameof(CanCopyToRecipients))]
     private async Task CopyToRecipientsAsync()
@@ -792,7 +872,12 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.PONumber), "PO Number", 140d));
         candidateColumns.Add(CreateColumn(nameof(Model_ReportRow.POLineNumber), "PO Line #", 110d));
         candidateColumns.Add(
-            CreateColumn(nameof(Model_ReportRow.DisplayPartOrDunnage), "Part / Non-Inventoried Labels", 220d, true)
+            CreateColumn(
+                nameof(Model_ReportRow.DisplayPartOrDunnage),
+                "Part / Non-Inventoried Labels",
+                220d,
+                true
+            )
         );
         candidateColumns.Add(
             CreateColumn(nameof(Model_ReportRow.PartNumber), "Part Number", 170d, true)
@@ -1086,10 +1171,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
 
         if (
             e.PropertyName
-                is nameof(Model_ReportingPreviewModuleCard.IsIncluded)
-                    or nameof(Model_ReportingPreviewModuleCard.SelectedSortOptionKey)
-                    or nameof(Model_ReportingPreviewModuleCard.SelectedSortDirection)
-                    or nameof(Model_ReportingPreviewModuleCard.DetailTableWidth)
+            is nameof(Model_ReportingPreviewModuleCard.IsIncluded)
+                or nameof(Model_ReportingPreviewModuleCard.SelectedSortOptionKey)
+                or nameof(Model_ReportingPreviewModuleCard.SelectedSortDirection)
+                or nameof(Model_ReportingPreviewModuleCard.DetailTableWidth)
         )
         {
             _ = PersistPreviewSettingsAsync();
@@ -1500,10 +1585,11 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         {
             var settings = await _reportingSettings.GetPreviewSettingsAsync();
 
-            _savedModuleSettings = settings.ModuleSettings ?? new Dictionary<
-                string,
-                Model_ReportingPreviewModuleSettings
-            >(StringComparer.OrdinalIgnoreCase);
+            _savedModuleSettings =
+                settings.ModuleSettings
+                ?? new Dictionary<string, Model_ReportingPreviewModuleSettings>(
+                    StringComparer.OrdinalIgnoreCase
+                );
 
             _isApplyingSavedPreviewSettings = true;
             SelectedRowDisplayMode = settings.RowDisplayMode;

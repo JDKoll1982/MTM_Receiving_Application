@@ -452,6 +452,7 @@ public static class ModuleServicesExtensions
         });
         services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
         services.AddSingleton<IService_ReportingSettings, Service_ReportingSettings>();
+        services.AddSingleton<IService_ReportingPdf, Service_ReportingPdf>();
         services.AddSingleton<
             IService_ReportingRecipientSettings,
             Service_ReportingRecipientSettings

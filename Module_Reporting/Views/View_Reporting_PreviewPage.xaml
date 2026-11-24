@@ -345,6 +345,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <!--  Removed the redundant inner StackPanel  -->
@@ -374,7 +375,12 @@
                         Grid.Column="4"
                         VerticalAlignment="Center"
                         Command="{x:Bind ViewModel.CopyEmailFormatCommand}"
-                        Content="Copy Report Summary"
+                        Content="Copy Report Summary" />
+                    <Button
+                        Grid.Column="5"
+                        VerticalAlignment="Center"
+                        Click="OnSaveReportPdfClick"
+                        Content="Save PDF"
                         Style="{StaticResource AccentButtonStyle}" />
                 </Grid>
 

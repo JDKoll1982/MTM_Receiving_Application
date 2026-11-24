@@ -21,7 +21,10 @@ public sealed class ViewModel_Reporting_MainTests
 
         viewModel
             .ReportDocumentTitle.Should()
-            .Be($"End of Day Report for {day}", "the paste is the report itself, not a preview of one");
+            .Be(
+                $"End of Day Report for {day}",
+                "the paste is the report itself, not a preview of one"
+            );
         viewModel
             .ReportDocumentTitle.Should()
             .NotContain("Preview", "the word read as part of the report's own heading once pasted");
@@ -259,10 +262,9 @@ public sealed class ViewModel_Reporting_MainTests
         var settingsService = new StubReportingSettingsService(
             new Model_ReportingPreviewSettings
             {
-                ModuleSettings = new Dictionary<
-                    string,
-                    Model_ReportingPreviewModuleSettings
-                >(StringComparer.OrdinalIgnoreCase)
+                ModuleSettings = new Dictionary<string, Model_ReportingPreviewModuleSettings>(
+                    StringComparer.OrdinalIgnoreCase
+                )
                 {
                     ["Receiving"] = new() { IsIncluded = false },
                 },
@@ -328,6 +330,7 @@ public sealed class ViewModel_Reporting_MainTests
             new Mock<IService_ReportingClipboard>().Object,
             new Mock<IService_ReportingRecipientSettings>().Object,
             reportingSettings ?? new Mock<IService_ReportingSettings>().Object,
+            new Mock<IService_ReportingPdf>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object

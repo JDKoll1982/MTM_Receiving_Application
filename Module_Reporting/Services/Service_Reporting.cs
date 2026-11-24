@@ -13,6 +13,7 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Data;
+using MTM_Receiving_Application.Module_Reporting.Helpers;
 using MTM_Receiving_Application.Module_Reporting.Models;
 
 namespace MTM_Receiving_Application.Module_Reporting.Services;
@@ -21,12 +22,6 @@ public class Service_Reporting : IService_Reporting
 {
     private const string CardBackground = "#FFFFFF";
     private const string CardBorder = "#D0DAE5";
-    private const string SummaryAccentBackground = "#0B6157";
-    private const string SummaryAccentForeground = "#FFFFFF";
-    private const string DunnageAccentBackground = "#8A5E00";
-    private const string DunnageAccentForeground = "#FFFFFF";
-    private const string DetailAccentBackground = "#1E4F7A";
-    private const string DetailAccentForeground = "#FFFFFF";
 
     private readonly Dao_Reporting _dao;
     private readonly IService_LoggingUtility _logger;
@@ -903,13 +898,7 @@ public class Service_Reporting : IService_Reporting
         string moduleName
     )
     {
-        return moduleName switch
-        {
-            "Receiving" => (SummaryAccentBackground, SummaryAccentForeground),
-            "Dunnage" => (DunnageAccentBackground, DunnageAccentForeground),
-            "Volvo" => (DetailAccentBackground, DetailAccentForeground),
-            _ => ("#4A5568", "#FFFFFF"),
-        };
+        return Helper_ReportingModuleAccent.GetAccent(moduleName);
     }
 
     private static string GetDateRangeText(string title)
