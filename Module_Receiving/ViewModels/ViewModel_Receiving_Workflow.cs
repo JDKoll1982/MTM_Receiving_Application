@@ -964,8 +964,14 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
         [RelayCommand]
         private async Task StartNewEntryAsync()
         {
+            // The reset clears the flow flag and announces its own step, which overwrites the
+            // remembered starting point, so the door the clerk just came through is read first.
+            var targetStep = _workflowService.IsByReceiverFlow
+                ? Enum_ReceivingWorkflowStep.ReceiverSelection
+                : _startNewEntryStep;
+
             await _workflowService.ResetWorkflowAsync();
-            _workflowService.GoToStep(_startNewEntryStep);
+            _workflowService.GoToStep(targetStep);
         }
 
         // The strip binds this command with no parameter, and a command that takes a value type
@@ -1739,6 +1745,10 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.EditMode:
                     _startNewEntryStep = Enum_ReceivingWorkflowStep.EditMode;
                     break;
+                case Enum_ReceivingWorkflowStep.ReceiverSelection:
+                    _startNewEntryStep = Enum_ReceivingWorkflowStep.ReceiverSelection;
+                    break;
+
                 case Enum_ReceivingWorkflowStep.Review:
                     // Review keeps whatever door the clerk came in through, so a manual receipt
                     // starts over in the grid rather than in the guided walk.
@@ -1750,7 +1760,11 @@ namespace MTM_Receiving_Application.Module_Receiving.ViewModels
                 case Enum_ReceivingWorkflowStep.WeightQuantityEntry:
                 case Enum_ReceivingWorkflowStep.HeatLotEntry:
                 case Enum_ReceivingWorkflowStep.PackageTypeEntry:
-                    _startNewEntryStep = Enum_ReceivingWorkflowStep.POEntry;
+                    // A by-receiver walk shares these steps with the guided walk, so the flow flag
+                    // decides which door the next receipt opens on.
+                    _startNewEntryStep = _workflowService.IsByReceiverFlow
+                        ? Enum_ReceivingWorkflowStep.ReceiverSelection
+                        : Enum_ReceivingWorkflowStep.POEntry;
                     break;
             }
         }

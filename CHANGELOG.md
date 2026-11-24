@@ -128,6 +128,20 @@ Categories follow Keep a Changelog conventions: Added, Changed, Fixed, Removed, 
 
 ### Fixed
 
+#### Start New Entry reopens the mode the receipt was finished in (2026-11-24)
+
+- **What was wrong:** finishing a by-receiver receipt and pressing **Start New Entry** on the finish page sent
+  the operator to the Guided walk at Enter PO. The finish page remembered its starting point from the step name,
+  and a by-receiver walk shares the Loads, Weight/Qty, Heat/Lot and Package steps with the guided walk, so those
+  steps read as guided. The reset that Start New Entry performs also cleared the by-receiver flag and announced
+  the PO step before the remembered step was used, so even a remembered receiver step was overwritten.
+- **What changed:** the remembered starting point now follows the by-receiver flag instead of the step name, and
+  Start New Entry reads it before the reset clears it.
+- **Why it matters:** an operator working through a stack of pallets from recent receivers stays in By Receiver
+  instead of being dropped onto a PO form they have no number for.
+- **Files:** `Module_Receiving/ViewModels/ViewModel_Receiving_Workflow.cs`,
+  `MTM_Receiving_Application.Tests/Unit/Module_Receiving/ViewModels/ViewModel_Receiving_StartNewEntryModeTests.cs`.
+
 #### The action strip spaces its mode chips evenly when a module hides some of them (2026-11-23)
 
 - **What was wrong:** the mode group relied on `ColumnSpacing` for the gaps between chips. Infor Visual
