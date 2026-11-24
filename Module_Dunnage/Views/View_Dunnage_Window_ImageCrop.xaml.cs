@@ -1,14 +1,16 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using MTM_Receiving_Application.Module_Core.Helpers;
+using MTM_Receiving_Application.Module_Core.Helpers.UI;
 using MTM_Receiving_Application.Module_Dunnage.Contracts;
 using Windows.Graphics.Imaging;
+using WinRT.Interop;
 
 namespace MTM_Receiving_Application.Module_Dunnage.Views;
 
@@ -16,51 +18,97 @@ namespace MTM_Receiving_Application.Module_Dunnage.Views;
 /// Lets the user choose the part of an image to keep. The cropped result is written to a temp
 /// working copy so the original photo is never modified.
 /// </summary>
-public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
+/// <remarks>
+/// This is a Window rather than a ContentDialog because every caller is already an open
+/// ContentDialog, and WinUI allows only one open ContentDialog per XamlRoot.
+/// </remarks>
+public sealed partial class View_Dunnage_Window_ImageCrop : Window
 {
+    private const int WindowWidth = 900;
+    private const int WindowHeight = 720;
+
+    private const int GWLP_HWNDPARENT = -8;
+
     private readonly IService_DunnageImageStorage _imageStorage;
     private readonly string _sourceImagePath;
+    private readonly UIElement? _ownerElement;
+    private readonly TaskCompletionSource<bool> _contentLoadedSource = new();
+    private readonly TaskCompletionSource<string?> _resultSource = new();
 
-    /// <summary>
-    /// Gets the temp working copy path holding the cropped image after a successful apply.
-    /// </summary>
-    public string? CroppedImagePath { get; private set; }
+    private bool _isSaving;
+    private string? _croppedImagePath;
 
-    public View_Dunnage_Dialog_ImageCrop(string sourceImagePath)
+    public View_Dunnage_Window_ImageCrop(string sourceImagePath, FrameworkElement? owner)
     {
         _sourceImagePath = sourceImagePath;
+        _ownerElement = owner as UIElement;
         _imageStorage = App.GetService<IService_DunnageImageStorage>();
 
         InitializeComponent();
-        Helper_UI_ContentDialogTheme.ApplyTheme(this);
+        ApplyOwnerTheme();
+
+        this.ApplySharedIcon();
+        this.SetWindowSize(WindowWidth, WindowHeight);
+        this.SetFixedSize();
+        this.CenterOnScreen();
+
+        RootGrid.Loaded += OnRootGridLoaded;
+        Closed += OnWindowClosed;
     }
 
     /// <summary>
-    /// Shows the crop dialog for the supplied image and returns the temp working copy path of the
+    /// Shows the crop window for the supplied image and returns the temp working copy path of the
     /// cropped result, or null when the user cancels or the image cannot be loaded.
     /// </summary>
-    public static async Task<string?> ShowAsync(string? imagePath, XamlRoot? xamlRoot)
+    public static async Task<string?> ShowAsync(string? imagePath, FrameworkElement? owner)
     {
-        if (string.IsNullOrWhiteSpace(imagePath) || xamlRoot is null)
+        if (string.IsNullOrWhiteSpace(imagePath))
         {
             return null;
         }
 
-        var dialog = new View_Dunnage_Dialog_ImageCrop(imagePath) { XamlRoot = xamlRoot };
-
-        if (await dialog.LoadSourceImageAsync() is false)
+        View_Dunnage_Window_ImageCrop window;
+        try
         {
-            dialog.IsPrimaryButtonEnabled = false;
+            window = new View_Dunnage_Window_ImageCrop(imagePath, owner);
+        }
+        catch
+        {
+            return null;
         }
 
-        var result = await dialog.ShowAsync();
-        return result == ContentDialogResult.Primary ? dialog.CroppedImagePath : null;
+        return await window.ShowWindowAsync();
     }
 
-    /// <summary>
-    /// Loads the configured image into the cropper at its full pixel size.
-    /// </summary>
-    public async Task<bool> LoadSourceImageAsync()
+    private async Task<string?> ShowWindowAsync()
+    {
+        if (_ownerElement is not null)
+        {
+            _ownerElement.IsHitTestVisible = false;
+        }
+
+        try
+        {
+            Activate();
+            KeepAboveOwnerWindow();
+
+            if (await _contentLoadedSource.Task is false)
+            {
+                return null;
+            }
+
+            await LoadSourceImageAsync();
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Unable to open the crop window: {ex.Message}");
+            Close();
+        }
+
+        return await _resultSource.Task;
+    }
+
+    private async Task LoadSourceImageAsync()
     {
         try
         {
@@ -68,16 +116,16 @@ public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
             if (absolutePath is null || File.Exists(absolutePath) is false)
             {
                 ShowStatus("The selected image file was not found.");
-                return false;
+                ApplyButton.IsEnabled = false;
+                return;
             }
 
             CropperControl.Source = await CreateFullSizeBitmapAsync(absolutePath);
-            return true;
         }
         catch (Exception ex)
         {
             ShowStatus($"Unable to load the image: {ex.Message}");
-            return false;
+            ApplyButton.IsEnabled = false;
         }
     }
 
@@ -112,16 +160,21 @@ public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
         return bitmap;
     }
 
-    private async void OnApplyCropClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void OnApplyClick(object sender, RoutedEventArgs e)
     {
+        if (_isSaving)
+        {
+            return;
+        }
+
         if (CropperControl.Source is null)
         {
-            args.Cancel = true;
             ShowStatus("Choose an image before cropping.");
             return;
         }
 
-        var deferral = args.GetDeferral();
+        _isSaving = true;
+        ApplyButton.IsEnabled = false;
 
         try
         {
@@ -146,23 +199,28 @@ public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
 
             if (new FileInfo(targetPath).Length == 0)
             {
-                args.Cancel = true;
                 TryDeleteFile(targetPath);
                 ShowStatus("The crop area is too small to save.");
                 return;
             }
 
-            CroppedImagePath = targetPath;
+            _croppedImagePath = targetPath;
+            Close();
         }
         catch (Exception ex)
         {
-            args.Cancel = true;
             ShowStatus($"Unable to crop the image: {ex.Message}");
         }
         finally
         {
-            deferral.Complete();
+            _isSaving = false;
+            ApplyButton.IsEnabled = true;
         }
+    }
+
+    private void OnCancelClick(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 
     private void OnAspectRatioChanged(object sender, RoutedEventArgs e)
@@ -187,6 +245,49 @@ public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
     {
         CropperControl.Reset();
         ShowStatus(null);
+    }
+
+    private void OnRootGridLoaded(object sender, RoutedEventArgs e)
+    {
+        RootGrid.Loaded -= OnRootGridLoaded;
+        _contentLoadedSource.TrySetResult(true);
+    }
+
+    private void OnWindowClosed(object sender, WindowEventArgs args)
+    {
+        RootGrid.Loaded -= OnRootGridLoaded;
+        _contentLoadedSource.TrySetResult(false);
+
+        if (_ownerElement is not null)
+        {
+            _ownerElement.IsHitTestVisible = true;
+        }
+
+        _resultSource.TrySetResult(_croppedImagePath);
+    }
+
+    private void ApplyOwnerTheme()
+    {
+        if (App.MainWindow?.Content is FrameworkElement mainContent)
+        {
+            RootGrid.RequestedTheme = mainContent.RequestedTheme;
+        }
+    }
+
+    /// <summary>
+    /// Makes this window an owned window of the main window so it stays above the dialog that
+    /// opened it instead of dropping behind the parent window.
+    /// </summary>
+    private void KeepAboveOwnerWindow()
+    {
+        if (App.MainWindow is null)
+        {
+            return;
+        }
+
+        var ownerHandle = WindowNative.GetWindowHandle(App.MainWindow);
+        var windowHandle = WindowNative.GetWindowHandle(this);
+        SetWindowLongPtr(windowHandle, GWLP_HWNDPARENT, ownerHandle);
     }
 
     private static BitmapFileFormat ResolveFileFormat(string imagePath)
@@ -231,4 +332,21 @@ public sealed partial class View_Dunnage_Dialog_ImageCrop : ContentDialog
             // A leftover temp file is harmless; the temp folder is excluded from image sync.
         }
     }
+
+    private static IntPtr SetWindowLongPtr(IntPtr windowHandle, int index, IntPtr value)
+    {
+        return IntPtr.Size == 8
+            ? SetWindowLongPtr64(windowHandle, index, value)
+            : SetWindowLong32(windowHandle, index, value.ToInt32());
+    }
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    private static extern IntPtr SetWindowLongPtr64(
+        IntPtr windowHandle,
+        int index,
+        IntPtr value
+    );
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
+    private static extern IntPtr SetWindowLong32(IntPtr windowHandle, int index, int value);
 }

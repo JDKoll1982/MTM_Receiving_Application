@@ -204,9 +204,9 @@ public sealed partial class View_Dunnage_QuickAddTypeDialog : ContentDialog
             return;
         }
 
-        var croppedPath = await View_Dunnage_Dialog_ImageCrop.ShowAsync(
+        var croppedPath = await View_Dunnage_Window_ImageCrop.ShowAsync(
             ViewModel.SelectedImagePath,
-            XamlRoot
+            this
         );
 
         if (string.IsNullOrWhiteSpace(croppedPath))

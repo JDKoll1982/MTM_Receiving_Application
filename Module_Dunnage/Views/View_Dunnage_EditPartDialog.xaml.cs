@@ -700,10 +700,7 @@ public sealed partial class View_Dunnage_EditPartDialog : ContentDialog
 
     private async void CropImageButton_Click(object sender, RoutedEventArgs e)
     {
-        var croppedPath = await View_Dunnage_Dialog_ImageCrop.ShowAsync(
-            SelectedImagePath,
-            XamlRoot
-        );
+        var croppedPath = await View_Dunnage_Window_ImageCrop.ShowAsync(SelectedImagePath, this);
 
         if (string.IsNullOrWhiteSpace(croppedPath))
         {
