@@ -21,7 +21,9 @@ using MTM_Receiving_Application.Module_Receiving.Models;
 using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
+using MTM_Receiving_Application.Module_Shared.Views.Controls;
 
 namespace MTM_Receiving_Application.Module_Scanner.Views;
 
@@ -74,18 +76,6 @@ public sealed partial class View_Scanner_Workbench : Page
         if (sender is FrameworkElement { Tag: Model_ScannerBatchItem item })
         {
             await ShowRowStatusDialogAsync(item);
-        }
-    }
-
-    /// <summary>Opens the add-lines flyout when the SplitButton is clicked.</summary>
-    private void AddLinesSplitButton_Click(
-        SplitButton sender,
-        SplitButtonClickEventArgs args
-    )
-    {
-        if (sender.Flyout is Flyout flyout && !flyout.IsOpen)
-        {
-            flyout.ShowAt(sender);
         }
     }
 
@@ -883,7 +873,7 @@ public sealed partial class View_Scanner_Workbench : Page
         };
         Grid.SetColumn(onHandText, 2);
 
-        var quantityBox = new TextBox
+        var quantityBox = new Control_Shared_MathQuantityTextBox
         {
             Text = row.Quantity,
             MinWidth = 0,
@@ -970,7 +960,11 @@ public sealed partial class View_Scanner_Workbench : Page
             quantity = 0m;
         }
 
-        return FormatDecimal(Math.Clamp(quantity, 0m, onHand));
+        // Quantities are whole numbers, so the default lands on the whole part of the on-hand
+        // figure and can never exceed it.
+        return Helper_SharedMathExpression.ToInputText(
+            decimal.Floor(Math.Clamp(quantity, 0m, onHand))
+        );
     }
 
     /// <summary>
@@ -988,9 +982,12 @@ public sealed partial class View_Scanner_Workbench : Page
 
         foreach (var row in checkedRows)
         {
-            if (!TryParseDecimalOnly(row.Quantity, out var quantity))
+            if (
+                !TryParseDecimalOnly(row.Quantity, out var quantity)
+                || decimal.Truncate(quantity) != quantity
+            )
             {
-                return $"Quantity for {row.DisplayValue} must be a number (decimals only, e.g. 10 or 2.5).";
+                return $"Quantity for {row.DisplayValue} must be a whole number (e.g. 10).";
             }
 
             if (quantity <= 0)
@@ -1193,21 +1190,76 @@ public sealed partial class View_Scanner_Workbench : Page
 
         var item = ViewModel.SessionItems[rowIndex];
         var container = SessionItemsListView.ContainerFromIndex(rowIndex) as ListViewItem;
-        var target = FindCellTextBox(container, cellTag);
 
-        if (target is null)
+        if (TryFocusCell(container, cellTag))
         {
-            // Container not realized yet (virtualization) -> bring it into view and retry.
-            SessionItemsListView.ScrollIntoView(item);
-            container = SessionItemsListView.ContainerFromIndex(rowIndex) as ListViewItem;
-            target = FindCellTextBox(container, cellTag);
+            return;
         }
 
-        if (target is not null)
+        // Container not realized yet (virtualization) -> bring it into view and retry.
+        SessionItemsListView.ScrollIntoView(item);
+        container = SessionItemsListView.ContainerFromIndex(rowIndex) as ListViewItem;
+        TryFocusCell(container, cellTag);
+    }
+
+    /// <summary>
+    /// Focuses the requested cell. Destination cells are plain textboxes, while the quantity cell
+    /// is the shared math quantity control, so both shapes are handled here.
+    /// </summary>
+    private static bool TryFocusCell(DependencyObject? container, string cellTag)
+    {
+        var textBox = FindCellTextBox(container, cellTag);
+        if (textBox is not null)
         {
-            target.Focus(FocusState.Programmatic);
-            target.SelectAll();
+            textBox.Focus(FocusState.Programmatic);
+            textBox.SelectAll();
+            return true;
         }
+
+        var quantityBox = FindCellQuantityBox(container, cellTag);
+        if (quantityBox is not null)
+        {
+            quantityBox.FocusInputAndSelectAll();
+            return true;
+        }
+
+        return false;
+    }
+
+    private static Control_Shared_MathQuantityTextBox? FindCellQuantityBox(
+        DependencyObject? root,
+        string cellTag
+    )
+    {
+        if (root is null)
+        {
+            return null;
+        }
+
+        if (
+            root
+                is Control_Shared_MathQuantityTextBox quantityBox
+                && string.Equals(
+                    quantityBox.Tag?.ToString(),
+                    cellTag,
+                    StringComparison.Ordinal
+                )
+        )
+        {
+            return quantityBox;
+        }
+
+        var count = VisualTreeHelper.GetChildrenCount(root);
+        for (var index = 0; index < count; index++)
+        {
+            var found = FindCellQuantityBox(VisualTreeHelper.GetChild(root, index), cellTag);
+            if (found is not null)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
     private static TextBox? FindCellTextBox(DependencyObject? root, string cellTag)
@@ -1362,35 +1414,38 @@ public sealed partial class View_Scanner_Workbench : Page
         await ViewModel.ValidateSessionItemAsync(item);
     }
 
-    /// <summary>Blocks non-numeric or negative quantities while typing in the table row.</summary>
-    private void SessionItemQtyTextBox_BeforeTextChanging(
-        TextBox sender,
-        TextBoxBeforeTextChangingEventArgs args
-    )
+    /// <summary>
+    /// Table-row quantity edit. The quantity box has already reduced any typed math to its
+    /// whole-number answer, so the row is re-validated with that value.
+    /// </summary>
+    private async void SessionItemQtyBox_ValueCommitted(object sender, EventArgs e)
     {
-        if (args is null || args.NewText.Length == 0)
+        if (sender is not FrameworkElement { DataContext: Model_ScannerBatchItem item })
         {
             return;
         }
 
-        // Decimals only: reject commas (thousands separators) and exponent forms so entries
-        // like "1,5" cannot be misread, and reject negatives while typing.
-        if (!TryParseDecimalOnly(args.NewText, out var value) || value < 0)
+        if (sender is Control_Shared_MathQuantityTextBox quantityBox)
         {
-            args.Cancel = true;
+            item.PayloadQuantity = quantityBox.Text;
         }
+
+        await ViewModel.ValidateSessionItemAsync(item);
     }
 
-    /// <summary>Table-row quantity edit: commits the typed value and re-validates the row.</summary>
-    private async void SessionItemQtyTextBox_LostFocus(object sender, RoutedEventArgs e)
+    /// <summary>Enter or Tab in the quantity cell continues on the next row's destination cell.</summary>
+    private void SessionItemQtyBox_NavigationRequested(object sender, EventArgs e)
     {
-        if (sender is not TextBox qtyBox || qtyBox.DataContext is not Model_ScannerBatchItem item)
+        if (sender is not FrameworkElement { DataContext: Model_ScannerBatchItem item })
         {
             return;
         }
 
-        item.PayloadQuantity = qtyBox.Text;
-        await ViewModel.ValidateSessionItemAsync(item);
+        var rowIndex = ViewModel.SessionItems.IndexOf(item);
+        if (rowIndex >= 0)
+        {
+            MoveFocusToCell(rowIndex + 1, "ToCell");
+        }
     }
 
     /// <summary>Local row type for the stock/part picker modal.</summary>

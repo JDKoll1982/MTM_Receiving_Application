@@ -155,6 +155,8 @@
                     <TextBlock Grid.Column="3" Text="To" />
                     <TextBlock Grid.Column="4" Text="Qty" />
                     <TextBlock Grid.Column="5" Text="Status" VerticalAlignment="Center" />
+                    <!--  Spacer keeps the star columns aligned with the row's add-lines button  -->
+                    <Border Grid.Column="6" Width="30" />
                 </Grid>
                 <ListView
                     x:Name="SessionItemsListView"
@@ -182,6 +184,7 @@
                                 <TextBlock Grid.Column="2" Text="{x:Bind PayloadFromLocation}" VerticalAlignment="Center" />
                                 <TextBox
                                     Grid.Column="3"
+                                    MinWidth="0"
                                     Tag="ToCell"
                                     AutomationProperties.AutomationId="ScannerRowToBox"
                                     PlaceholderText="To"
@@ -189,18 +192,18 @@
                                     LostFocus="SessionItemToTextBox_LostFocus"
                                     KeyDown="SessionItemTextBox_KeyDown"
                                     VerticalAlignment="Center" />
-                                <TextBox
+                                <sharedControls:Control_Shared_MathQuantityTextBox
                                     Grid.Column="4"
                                     Tag="QtyCell"
-                                    AutomationProperties.AutomationId="ScannerRowQtyBox"
+                                    VerticalAlignment="Center"
+                                    InputAutomationId="ScannerRowQtyBox"
+                                    NavigationRequested="SessionItemQtyBox_NavigationRequested"
                                     PlaceholderText="Qty"
                                     Text="{x:Bind PayloadQuantity, Mode=TwoWay}"
-                                    BeforeTextChanging="SessionItemQtyTextBox_BeforeTextChanging"
-                                    LostFocus="SessionItemQtyTextBox_LostFocus"
-                                    KeyDown="SessionItemTextBox_KeyDown"
-                                    VerticalAlignment="Center" />
+                                    ValueCommitted="SessionItemQtyBox_ValueCommitted" />
 
-                                <!--  Status - colored icon opens the explainer modal  -->
+                                <!--  Status - colored icon opens the explainer modal. OneWay so the
+                                      icon re-checks itself after the To / Qty validation runs.  -->
                                 <Button
                                     Grid.Column="5"
                                     Width="30"
@@ -211,27 +214,27 @@
                                     AutomationProperties.AutomationId="ScannerRowStatusButton"
                                     Click="StatusIconButton_Click"
                                     Tag="{x:Bind}"
-                                    ToolTipService.ToolTip="{x:Bind StatusText}">
+                                    ToolTipService.ToolTip="{x:Bind StatusText, Mode=OneWay}">
                                     <FontIcon
                                         FontSize="16"
-                                        Foreground="{x:Bind StatusIsValid, Converter={StaticResource ValidationStatusToBrushConverter}}"
+                                        Foreground="{x:Bind StatusIsValid, Mode=OneWay, Converter={StaticResource ValidationStatusToBrushConverter}}"
                                         Glyph="&#xE946;" />
                                 </Button>
 
-                                <!--  Add-lines split button  -->
-                                <SplitButton
+                                <!--  Add-lines button. A plain button (not a split button) so the
+                                      30px action column cannot overflow the row.  -->
+                                <Button
                                     Grid.Column="6"
                                     Width="30"
                                     Height="30"
-                                    Margin="2,0,0,0"
+                                    Padding="0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     AutomationProperties.AutomationId="ScannerRowAddLinesButton"
-                                    Click="AddLinesSplitButton_Click"
                                     Tag="{x:Bind}"
                                     ToolTipService.ToolTip="Add lines of this part">
                                     <FontIcon FontSize="14" Glyph="&#xE710;" />
-                                    <SplitButton.Flyout>
+                                    <Button.Flyout>
                                         <Flyout>
                                             <StackPanel MinWidth="220" Padding="6" Spacing="10">
                                                 <TextBlock
@@ -251,8 +254,8 @@
                                                     Style="{StaticResource ScannerPrimaryActionButtonStyle}" />
                                             </StackPanel>
                                         </Flyout>
-                                    </SplitButton.Flyout>
-                                </SplitButton>
+                                    </Button.Flyout>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>

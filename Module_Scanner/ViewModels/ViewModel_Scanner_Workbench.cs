@@ -22,6 +22,7 @@ using MTM_Receiving_Application.Module_Scanner.Settings;
 using MTM_Receiving_Application.Module_Scanner.Views;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 
 namespace MTM_Receiving_Application.Module_Scanner.ViewModels;
@@ -1078,7 +1079,7 @@ public partial class ViewModel_Scanner_Workbench : ViewModel_Shared_Base
         // Quantity-too-high guard using the on-hand captured from the stock-location modal.
         if (
             item.MaxQuantity is decimal maxQuantity
-            && decimal.TryParse(item.PayloadQuantity, NumberStyles.Any, CultureInfo.InvariantCulture, out var quantity)
+            && Helper_SharedMathExpression.TryParseQuantityText(item.PayloadQuantity, out var quantity)
             && quantity > maxQuantity
         )
         {

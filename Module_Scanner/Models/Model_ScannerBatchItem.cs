@@ -1,5 +1,6 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 
 namespace MTM_Receiving_Application.Module_Scanner.Models;
 
@@ -116,7 +117,7 @@ public sealed partial class Model_ScannerBatchItem : ObservableObject
 	{
 		// Derive the most common issues straight from the row data so the Status column states
 		// the actual problem even after the app reloads rows (ValidationMessage is not persisted).
-		if (decimal.TryParse(PayloadQuantity, out var quantity))
+		if (Helper_SharedMathExpression.TryParseQuantityText(PayloadQuantity, out var quantity))
 		{
 			if (MaxQuantity is decimal maxQuantity && quantity > maxQuantity)
 			{

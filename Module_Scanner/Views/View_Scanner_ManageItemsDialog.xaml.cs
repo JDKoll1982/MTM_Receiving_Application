@@ -99,9 +99,13 @@ public sealed partial class View_Scanner_ManageItemsDialog : ContentDialog
                 return $"Row {item.SequenceNumber} is missing a source (From) location. Enter one or delete the row before applying.";
             }
 
-            if (!TryParseDecimalOnly(item.PayloadQuantity, out var quantity) || quantity <= 0)
+            if (
+                !TryParseDecimalOnly(item.PayloadQuantity, out var quantity)
+                || quantity <= 0
+                || decimal.Truncate(quantity) != quantity
+            )
             {
-                return $"Row {item.SequenceNumber} has an invalid quantity. Use a number greater than zero (decimals only).";
+                return $"Row {item.SequenceNumber} has an invalid quantity. Use a whole number greater than zero (e.g. 10).";
             }
         }
 

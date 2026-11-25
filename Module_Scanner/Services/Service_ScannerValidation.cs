@@ -10,6 +10,7 @@ using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Scanner.Contracts;
 using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_Shared.Services.Lookup;
 
@@ -146,7 +147,7 @@ public sealed class Service_ScannerValidation : IService_ScannerValidation
 			)));
 		}
 
-		if (!decimal.TryParse(request.Quantity, out var quantity) || quantity <= 0)
+		if (!Helper_SharedMathExpression.TryParseQuantityText(request.Quantity, out var quantity) || quantity <= 0)
 		{
 			return Task.FromResult(Model_Dao_Result_Factory.Success(InvalidResult(
 				request,

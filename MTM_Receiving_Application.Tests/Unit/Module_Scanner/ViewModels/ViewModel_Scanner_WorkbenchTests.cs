@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using FluentAssertions;
@@ -10,6 +11,7 @@ using MTM_Receiving_Application.Module_Scanner.Models;
 using MTM_Receiving_Application.Module_Scanner.ViewModels;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Enums;
+using MTM_Receiving_Application.Module_Shared.Helpers;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_Settings.Core.Interfaces;
 
@@ -390,6 +392,175 @@ public sealed class ViewModel_Scanner_WorkbenchTests
         item.ValidationState.Should().Be(Enum_ScannerValidationState.Invalid);
         item.StatusText.Should().Be("! Qty too High");
         item.StatusIsValid.Should().BeFalse();
+        viewModel.IsSendEnabled.Should().BeFalse();
+    }
+
+    // ── Shared math quantity box: the committed answer is what gets validated ────
+
+    [Theory]
+    [InlineData("12*4", "48")]
+    [InlineData("10/4", "3")]
+    public async Task ValidateSessionItemAsync_ShouldValidateTheCommittedAnswer_WhenQuantityWasTypedAsMath(
+        string typedExpression,
+        string expectedCommittedQuantity
+    )
+    {
+        // The shared quantity box reduces the typed math to a whole-number answer before the row
+        // is validated, so the value the workflow sees is the answer, not the expression.
+        Helper_SharedMathExpression
+            .TryEvaluateWholeNumber(typedExpression, out var answer, out _)
+            .Should()
+            .BeTrue();
+        Helper_SharedMathExpression.ToInputText(answer).Should().Be(expectedCommittedQuantity);
+
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var item = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "V-A0-01",
+            PayloadQuantity = expectedCommittedQuantity,
+        };
+        session.Items.Add(item);
+
+        Model_ScannerItemValidationRequest? capturedRequest = null;
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Callback<Model_ScannerItemValidationRequest, CancellationToken>(
+                (request, _) => capturedRequest = request
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerItemValidationResult
+                    {
+                        State = Enum_ScannerValidationState.Valid,
+                        CanonicalToLocation = "V-A0-01",
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [item];
+        viewModel.SelectedSessionItem = item;
+
+        await viewModel.ValidateSessionItemAsync(item);
+
+        capturedRequest.Should().NotBeNull();
+        capturedRequest!.Quantity.Should().Be(expectedCommittedQuantity);
+        item.ValidationState.Should().Be(Enum_ScannerValidationState.Valid);
+    }
+
+    // ── Status button re-checks itself after the To / Qty cell validation runs ────
+
+    [Fact]
+    public async Task ValidateSessionItemAsync_ShouldRaiseStatusBindings_SoTheRowIconReChecks()
+    {
+        // The Status button binds StatusIsValid (icon color) and StatusText (tooltip) one-way, so
+        // the row must notify after To / Qty validation for the icon to re-render.
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var item = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "V-A0-01",
+            PayloadQuantity = "25",
+        };
+        session.Items.Add(item);
+
+        var raised = new List<string>();
+        ((INotifyPropertyChanged)item).PropertyChanged += (_, args) =>
+            raised.Add(args.PropertyName ?? string.Empty);
+
+        var validation = new Mock<IService_ScannerValidation>();
+        validation
+            .Setup(service =>
+                service.ValidateNewItemAsync(
+                    It.IsAny<Model_ScannerItemValidationRequest>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new Model_ScannerItemValidationResult
+                    {
+                        State = Enum_ScannerValidationState.Valid,
+                        CanonicalToLocation = "V-A0-01",
+                    }
+                )
+            );
+
+        var viewModel = CreateWorkbenchViewModel(SetupUpsertWorkflow(session).Object, validation.Object);
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [item];
+        viewModel.SelectedSessionItem = item;
+        item.ValidationState.Should().Be(Enum_ScannerValidationState.NotValidated);
+
+        await viewModel.ValidateSessionItemAsync(item);
+
+        raised.Should().Contain(nameof(Model_ScannerBatchItem.StatusIsValid));
+        raised.Should().Contain(nameof(Model_ScannerBatchItem.StatusText));
+        item.StatusIsValid.Should().BeTrue();
+        item.StatusText.Should().Be("✅ Ready!");
+    }
+
+    [Fact]
+    public async Task ValidateSessionItemAsync_ShouldRaiseStatusBindings_WhenTheRowGetsWorse()
+    {
+        // The reverse direction matters just as much: a row that was valid and becomes invalid
+        // must repaint the icon red instead of leaving it green.
+        var session = new Model_ScannerBatchSession { SessionId = Guid.NewGuid() };
+        var item = new Model_ScannerBatchItem
+        {
+            ItemId = Guid.NewGuid(),
+            SessionId = session.SessionId,
+            SequenceNumber = 1,
+            PayloadPartId = "MMCCS00740",
+            PayloadFromWarehouse = "002",
+            PayloadFromLocation = "V-A1-01",
+            PayloadToWarehouse = "002",
+            PayloadToLocation = "V-A0-01",
+            PayloadQuantity = "25",
+            MaxQuantity = 25m,
+            ValidationState = Enum_ScannerValidationState.Valid,
+        };
+        session.Items.Add(item);
+
+        var raised = new List<string>();
+        ((INotifyPropertyChanged)item).PropertyChanged += (_, args) =>
+            raised.Add(args.PropertyName ?? string.Empty);
+
+        var viewModel = CreateWorkbenchViewModel(
+            SetupUpsertWorkflow(session).Object,
+            new Mock<IService_ScannerValidation>().Object
+        );
+        viewModel.CurrentSession = session;
+        viewModel.SessionItems = [item];
+        viewModel.SelectedSessionItem = item;
+
+        // Editing the quantity above the on-hand amount is the Qty-cell validation path.
+        item.PayloadQuantity = "30";
+        await viewModel.ValidateSessionItemAsync(item);
+
+        raised.Should().Contain(nameof(Model_ScannerBatchItem.StatusIsValid));
+        item.StatusIsValid.Should().BeFalse();
+        item.StatusText.Should().Be("! Qty too High");
         viewModel.IsSendEnabled.Should().BeFalse();
     }
 

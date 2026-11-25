@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:MTM_Receiving_Application.Module_Scanner.Models"
+    xmlns:sharedControls="using:MTM_Receiving_Application.Module_Shared.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Manage Items"
@@ -103,7 +104,12 @@
                                     LostFocus="LocationTextBox_LostFocus"
                                     Tag="To"
                                     Text="{x:Bind PayloadToLocation, Mode=TwoWay}" />
-                                <TextBox Grid.Row="0" Grid.Column="6" Header="Qty" Text="{x:Bind PayloadQuantity, Mode=TwoWay}" />
+                                <sharedControls:Control_Shared_MathQuantityTextBox
+                                    Grid.Row="0"
+                                    Grid.Column="6"
+                                    Header="Qty"
+                                    PlaceholderText="Qty"
+                                    Text="{x:Bind PayloadQuantity, Mode=TwoWay}" />
                                 <TextBlock Grid.Row="0" Grid.Column="7" VerticalAlignment="Center" Text="{x:Bind ValidationState}" />
 
                                 <TextBox

@@ -105,6 +105,36 @@ public sealed class Service_ScannerContractsTests
         result.Data.Message.Should().Be("Quantity must be a positive number.");
     }
 
+    [Theory]
+    [InlineData("12*4")]
+    [InlineData("5+")]
+    public async Task ValidateNewItemAsync_ShouldReturnInvalid_WhenQuantityIsStillAnUnresolvedExpression(
+        string typedQuantity
+    )
+    {
+        var service = new Service_ScannerValidation(new Mock<IService_InforVisual>().Object);
+
+        var result = await service.ValidateNewItemAsync(new Model_ScannerItemValidationRequest
+        {
+            SessionId = Guid.NewGuid(),
+            ItemId = Guid.NewGuid(),
+            PartId = "MMCCS00740",
+            FromWarehouse = "002",
+            FromLocation = "A-01",
+            ToWarehouse = "002",
+            ToLocation = "B-01",
+            Quantity = typedQuantity,
+        });
+
+        // The shared quantity box reduces typed math to the answer before the row is validated,
+        // so an expression reaching the service means the operator never committed it. "5+" is
+        // the dangerous case: a plain decimal parse would read it as 5 and move 5 units.
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.State.Should().Be(Enum_ScannerValidationState.Invalid);
+        result.Data.Message.Should().Be("Quantity must be a positive number.");
+    }
+
     [Fact]
     public async Task ValidateNewItemAsync_ShouldReturnInvalid_WhenPartIdMissing()
     {
