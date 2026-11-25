@@ -395,4 +395,20 @@
   <ItemGroup>
     <PRIResource Remove="Scripts\**" />
   </ItemGroup>
+  <!--
+    Runs only during non-Visual-Studio design-time builds, right after the Windows App SDK injects the
+    generated XAML compile items. That injection globs $(IntermediateOutputPath)** recursively, so it
+    also re-adds the RID-specific copies under win-x64\, which redeclare Program, the x:Name fields, and
+    InitializeComponent for every page. The C# language server then reports tens of thousands of
+    CS0102 / CS0121 / CS0229 errors that a normal build never produces.
+  -->
+  <Target Name="RemoveRidDuplicateGeneratedXamlCompileItems"
+          AfterTargets="IncludeGeneratedXamlCompileItemsForDesignTime">
+    <ItemGroup>
+      <_RidIntermediateSegment Include="$(RuntimeIdentifier)" Condition="'$(RuntimeIdentifier)' != ''" />
+      <_RidIntermediateSegment Include="$(RuntimeIdentifiers)" Condition="'$(RuntimeIdentifiers)' != ''" />
+      <Compile Remove="$(IntermediateOutputPath)%(_RidIntermediateSegment.Identity)\**\*.g.cs" />
+      <Compile Remove="$(IntermediateOutputPath)%(_RidIntermediateSegment.Identity)\**\*.g.i.cs" />
+    </ItemGroup>
+  </Target>
 </Project>
