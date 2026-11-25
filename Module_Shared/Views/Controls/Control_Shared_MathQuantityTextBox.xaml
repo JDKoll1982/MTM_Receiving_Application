@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="MTM_Receiving_Application.Module_Shared.Views.Controls.Control_Shared_MathQuantityTextBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="Root">
+
+    <StackPanel Spacing="4">
+        <TextBlock
+            x:Name="HeaderTextBlock"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="{x:Bind Header, Mode=OneWay}"
+            Visibility="Collapsed" />
+
+        <Grid ColumnSpacing="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                x:Name="InputTextBox"
+                Grid.Column="0"
+                MinWidth="0"
+                VerticalAlignment="Center"
+                BeforeTextChanging="InputTextBox_BeforeTextChanging"
+                GotFocus="InputTextBox_GotFocus"
+                KeyDown="InputTextBox_KeyDown"
+                LostFocus="InputTextBox_LostFocus"
+                PlaceholderText="{x:Bind PlaceholderText, Mode=OneWay}"
+                Text="{x:Bind Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextChanged="InputTextBox_TextChanged" />
+
+            <FontIcon
+                x:Name="StateIcon"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                FontSize="14"
+                Visibility="Collapsed" />
+        </Grid>
+    </StackPanel>
+</UserControl>
