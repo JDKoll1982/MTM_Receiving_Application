@@ -7,35 +7,68 @@
         Padding="24"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch">
-        <Button
-            Width="320"
-            Height="180"
-            Padding="20"
+        <StackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            Click="OnStep0Clicked"
-            CornerRadius="8">
-            <StackPanel Spacing="12">
-                <FontIcon
-                    HorizontalAlignment="Center"
-                    FontSize="40"
-                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
-                    Glyph="&#xE715;" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource SubtitleTextBlockStyle}"
-                    Text="Email Recipients" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{StaticResource BodyTextBlockStyle}"
-                    Text="Manage the saved To and CC recipients used by the Reporting preview surface."
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" />
-            </StackPanel>
-        </Button>
+            Orientation="Horizontal"
+            Spacing="20">
+            <Button
+                Width="320"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep0Clicked"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        HorizontalAlignment="Center"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE8A5;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Report PDF Output" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Choose the folder Save PDF writes the end-of-day report into."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Width="320"
+                Height="180"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Click="OnStep1Clicked"
+                CornerRadius="8">
+                <StackPanel Spacing="12">
+                    <FontIcon
+                        HorizontalAlignment="Center"
+                        FontSize="40"
+                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                        Glyph="&#xE715;" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        Text="Email Recipients" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Manage the saved To and CC recipients used by the Reporting preview surface."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>

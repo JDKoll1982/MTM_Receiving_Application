@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="MTM_Receiving_Application.Module_Settings.Reporting.Views.View_Settings_Reporting_PdfOutput"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:MTM_Receiving_Application.Module_Core.Converters">
+    <Page.Resources>
+        <converters:Converter_InverseBool x:Key="InverseBoolConverter" />
+    </Page.Resources>
+
+    <ScrollViewer Style="{StaticResource SharedScrollViewerVerticalAutoHorizontalOffHiddenStyle}">
+        <Grid Padding="24">
+            <StackPanel
+                Width="960"
+                HorizontalAlignment="Center"
+                Spacing="20">
+                <InfoBar
+                    IsClosable="False"
+                    IsOpen="True"
+                    Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                    Severity="Informational" />
+
+                <!--  Destination folder  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Report PDF folder" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Text="Where the preview's Save PDF button writes the report. A local folder or a network share both work."
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                MinWidth="0"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                                PlaceholderText="e.g. \\server\share\RECEIVING\EoD Reports"
+                                Text="{x:Bind ViewModel.PdfSaveFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{x:Bind ViewModel.OpenFolderCommand}"
+                                Content="Open folder"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                            <Button
+                                Grid.Column="2"
+                                Command="{x:Bind ViewModel.UseDefaultFolderCommand}"
+                                Content="Use default"
+                                IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" />
+                        </Grid>
+
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            TextWrapping="WrapWholeWords">
+                            <Run Text="Default:" />
+                            <Run Text="{x:Bind ViewModel.DefaultFolder}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!--  How Save PDF behaves  -->
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="What Save PDF does" />
+                        <TextBlock
+                            TextWrapping="WrapWholeWords"
+                            Text="One click writes the report into the folder above using the report's own file name, then opens that folder with the new PDF selected." />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            TextWrapping="WrapWholeWords"
+                            Text="The folder is created automatically when it is missing. If the share cannot be reached, the report is not saved and the error names the path to check." />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button
+                        Command="{x:Bind ViewModel.SaveCommand}"
+                        Content="Save"
+                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

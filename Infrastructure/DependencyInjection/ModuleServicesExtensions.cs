@@ -453,6 +453,7 @@ public static class ModuleServicesExtensions
         services.AddSingleton<IService_ReportingClipboard, Service_ReportingClipboard>();
         services.AddSingleton<IService_ReportingSettings, Service_ReportingSettings>();
         services.AddSingleton<IService_ReportingPdf, Service_ReportingPdf>();
+        services.AddSingleton<IService_ReportingOutput, Service_ReportingOutput>();
         services.AddSingleton<
             IService_ReportingRecipientSettings,
             Service_ReportingRecipientSettings
@@ -567,6 +568,7 @@ public static class ModuleServicesExtensions
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_EmailRecipients>();
+        services.AddTransient<Module_Settings.Reporting.ViewModels.ViewModel_Settings_Reporting_PdfOutput>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
 
         // Receiving Settings Pages
@@ -589,6 +591,7 @@ public static class ModuleServicesExtensions
 
         // Reporting Settings Pages
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_PdfOutput>();
         // Volvo Settings Pages
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_PartCatalog>();
         services.AddTransient<Module_Settings.Volvo.ViewModels.ViewModel_Settings_Volvo_EmailRecipients>();
@@ -621,6 +624,7 @@ public static class ModuleServicesExtensions
         // Reporting Settings Views
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_NavigationHub>();
         services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_EmailRecipients>();
+        services.AddTransient<Module_Settings.Reporting.Views.View_Settings_Reporting_PdfOutput>();
 
         // Dunnage Settings Views
         services.AddTransient<Module_Settings.Dunnage.Views.View_Settings_Dunnage_CategoryHub>();

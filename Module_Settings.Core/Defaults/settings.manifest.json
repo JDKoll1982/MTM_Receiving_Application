@@ -2918,6 +2918,17 @@
       "validationRules": "String"
     },
     {
+      "category": "Reporting",
+      "key": "Reporting.Output.PdfSaveFolder",
+      "displayName": "Reporting - Report PDF Save Folder",
+      "defaultValue": "\\\\mtmanu-fs01\\expo drive\\RECEIVING\\EoD Reports",
+      "dataType": "String",
+      "scope": "System",
+      "permissionLevel": "User",
+      "isSensitive": false,
+      "validationRules": "String"
+    },
+    {
       "category": "Dunnage",
       "key": "Dunnage.UiText.Workflow.Back",
       "displayName": "Workflow - Back Button",

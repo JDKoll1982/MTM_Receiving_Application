@@ -111,4 +111,45 @@ public sealed class Service_ReportingSettings : IService_ReportingSettings
 
         return Model_Dao_Result_Factory.Success();
     }
+
+    public async Task<string> GetPdfSaveFolderAsync(int? userId = null)
+    {
+        var result = await _settings.GetSettingAsync(
+            ReportingSettingsKeys.Category,
+            ReportingSettingsKeys.Output.PdfSaveFolder,
+            userId
+        );
+
+        if (
+            result.IsSuccess
+            && result.Data is not null
+            && string.IsNullOrWhiteSpace(result.Data.Value) is false
+        )
+        {
+            return result.Data.Value.Trim();
+        }
+
+        return ReportingSettingsKeys.DefaultPdfSaveFolder;
+    }
+
+    public async Task<Model_Dao_Result> SavePdfSaveFolderAsync(
+        string folderPath,
+        int? userId = null
+    )
+    {
+        var normalized = folderPath?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return Model_Dao_Result_Factory.Failure(
+                "A report output folder is required."
+            );
+        }
+
+        return await _settings.SetSettingAsync(
+            ReportingSettingsKeys.Category,
+            ReportingSettingsKeys.Output.PdfSaveFolder,
+            normalized,
+            userId
+        );
+    }
 }

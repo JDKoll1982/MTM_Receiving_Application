@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
@@ -6,6 +8,7 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
 using MTM_Receiving_Application.Module_Reporting.Contracts;
 using MTM_Receiving_Application.Module_Reporting.Models;
+using MTM_Receiving_Application.Module_Reporting.Settings;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
 
 namespace MTM_Receiving_Application.Tests.Unit.Module_Reporting.ViewModels;
@@ -306,6 +309,145 @@ public sealed class ViewModel_Reporting_MainTests
         viewModel.IsReceivingEnabled.Should().BeFalse();
     }
 
+    // ── Save PDF writes to the configured folder and reveals it ──────────────────
+
+    [Fact]
+    public async Task SaveReportPdfAsync_ShouldWriteIntoTheConfiguredFolder_AndRevealTheFile()
+    {
+        const string folder = @"\\server\share\RECEIVING\EoD Reports";
+        const string savedPath = folder + @"\End of Day Report.pdf";
+
+        var reportingSettings = new Mock<IService_ReportingSettings>();
+        reportingSettings.Setup(service => service.GetPdfSaveFolderAsync(It.IsAny<int?>()))
+            .ReturnsAsync(folder);
+
+        var reportingOutput = new Mock<IService_ReportingOutput>();
+        reportingOutput
+            .Setup(service =>
+                service.WriteReportPdfAsync(
+                    It.IsAny<IReadOnlyList<Model_ReportingPreviewModuleCard>>(),
+                    It.IsAny<string>(),
+                    folder,
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(savedPath));
+        reportingOutput
+            .Setup(service => service.RevealSavedFileAsync(savedPath))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success());
+
+        var viewModel = CreateViewModel(
+            reportingSettings: reportingSettings.Object,
+            reportingOutput: reportingOutput.Object
+        );
+
+        var result = await viewModel.SaveReportPdfAsync();
+
+        result.IsSuccess.Should().BeTrue(result.ErrorMessage);
+        result.Data.Should().Be(savedPath);
+
+        // The folder comes from settings, and the saved file is revealed in one click.
+        reportingOutput.Verify(
+            service => service.RevealSavedFileAsync(savedPath),
+            Times.Once
+        );
+        viewModel.StatusMessage.Should().Contain(savedPath);
+    }
+
+    [Fact]
+    public async Task SaveReportPdfAsync_ShouldNotRevealAnything_WhenTheWriteFails()
+    {
+        const string folder = @"\\server\share\RECEIVING\EoD Reports";
+
+        var reportingSettings = new Mock<IService_ReportingSettings>();
+        reportingSettings.Setup(service => service.GetPdfSaveFolderAsync(It.IsAny<int?>()))
+            .ReturnsAsync(folder);
+
+        var reportingOutput = new Mock<IService_ReportingOutput>();
+        reportingOutput
+            .Setup(service =>
+                service.WriteReportPdfAsync(
+                    It.IsAny<IReadOnlyList<Model_ReportingPreviewModuleCard>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure<string>(
+                    $"Could not reach the report folder '{folder}'."
+                )
+            );
+
+        var viewModel = CreateViewModel(
+            reportingSettings: reportingSettings.Object,
+            reportingOutput: reportingOutput.Object
+        );
+
+        var result = await viewModel.SaveReportPdfAsync();
+
+        result.IsSuccess.Should().BeFalse();
+        viewModel.StatusMessage.Should().Contain(folder);
+        reportingOutput.Verify(
+            service => service.RevealSavedFileAsync(It.IsAny<string>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task SaveReportPdfAsync_ShouldKeepTheSave_WhenTheFolderCannotBeRevealed()
+    {
+        const string savedPath = @"\\server\share\RECEIVING\EoD Reports\report.pdf";
+
+        var reportingOutput = new Mock<IService_ReportingOutput>();
+        reportingOutput
+            .Setup(service =>
+                service.WriteReportPdfAsync(
+                    It.IsAny<IReadOnlyList<Model_ReportingPreviewModuleCard>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(savedPath));
+        reportingOutput
+            .Setup(service => service.RevealSavedFileAsync(savedPath))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Failure("File Explorer could not be opened.")
+            );
+
+        var viewModel = CreateViewModel(
+            reportingSettings: CreateSettingsWithFolder(
+                @"\\server\share\RECEIVING\EoD Reports"
+            ).Object,
+            reportingOutput: reportingOutput.Object
+        );
+
+        var result = await viewModel.SaveReportPdfAsync();
+
+        // Revealing is a convenience; a failure there must not mark the saved report as failed.
+        result.IsSuccess.Should().BeTrue();
+        viewModel.StatusMessage.Should().Contain("File Explorer could not be opened.");
+        viewModel.StatusMessage.Should().Contain(savedPath);
+    }
+
+    private static Mock<IService_ReportingSettings> CreateSettingsWithFolder(string folder)
+    {
+        var settings = new Mock<IService_ReportingSettings>();
+        settings.Setup(service => service.GetPdfSaveFolderAsync(It.IsAny<int?>()))
+            .ReturnsAsync(folder);
+        return settings;
+    }
+
     private static void InvokeApplySavedModulePreferences(
         ViewModel_Reporting_Main viewModel,
         Model_ReportingPreviewModuleCard previewModuleCard
@@ -322,7 +464,8 @@ public sealed class ViewModel_Reporting_MainTests
 
     private static ViewModel_Reporting_Main CreateViewModel(
         IService_Reporting? reportingService = null,
-        IService_ReportingSettings? reportingSettings = null
+        IService_ReportingSettings? reportingSettings = null,
+        IService_ReportingOutput? reportingOutput = null
     )
     {
         return new ViewModel_Reporting_Main(
@@ -330,7 +473,7 @@ public sealed class ViewModel_Reporting_MainTests
             new Mock<IService_ReportingClipboard>().Object,
             new Mock<IService_ReportingRecipientSettings>().Object,
             reportingSettings ?? new Mock<IService_ReportingSettings>().Object,
-            new Mock<IService_ReportingPdf>().Object,
+            reportingOutput ?? new Mock<IService_ReportingOutput>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
@@ -351,6 +494,14 @@ public sealed class ViewModel_Reporting_MainTests
 
         public Task<Model_Dao_Result> SavePreviewSettingsAsync(
             Model_ReportingPreviewSettings settings,
+            int? userId = null
+        ) => Task.FromResult(Model_Dao_Result_Factory.Success());
+
+        public Task<string> GetPdfSaveFolderAsync(int? userId = null) =>
+            Task.FromResult(ReportingSettingsKeys.DefaultPdfSaveFolder);
+
+        public Task<Model_Dao_Result> SavePdfSaveFolderAsync(
+            string folderPath,
             int? userId = null
         ) => Task.FromResult(Model_Dao_Result_Factory.Success());
     }

@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Reporting.ViewModels;
-using Windows.Storage.Pickers;
 
 namespace MTM_Receiving_Application.Module_Reporting.Views;
 
@@ -34,25 +32,9 @@ public sealed partial class View_Reporting_PreviewPage : Page
     {
         try
         {
-            var picker = new FileSavePicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = System.IO.Path.GetFileNameWithoutExtension(
-                    ViewModel.ReportPdfSuggestedFileName
-                ),
-            };
-            picker.FileTypeChoices.Add("PDF", new List<string> { ".pdf" });
-
-            var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, windowHandle);
-
-            var file = await picker.PickSaveFileAsync();
-            if (file is null)
-            {
-                return;
-            }
-
-            await ViewModel.SaveReportPdfAsync(file.Path);
+            // The destination folder comes from Settings > Reporting, so one click saves the
+            // report and opens the folder that contains it.
+            await ViewModel.SaveReportPdfAsync();
         }
         catch (Exception ex)
         {

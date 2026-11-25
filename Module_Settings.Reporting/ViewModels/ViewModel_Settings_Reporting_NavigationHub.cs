@@ -21,6 +21,10 @@ public sealed partial class ViewModel_Settings_Reporting_NavigationHub
 
         SetSteps(
             new Model_SettingsNavigationStep(
+                "Report PDF Output",
+                typeof(Views.View_Settings_Reporting_PdfOutput)
+            ),
+            new Model_SettingsNavigationStep(
                 "Email Recipients",
                 typeof(Views.View_Settings_Reporting_EmailRecipients)
             )

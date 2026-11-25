@@ -32,7 +32,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
     private readonly IService_ReportingClipboard _reportingClipboard;
     private readonly IService_ReportingRecipientSettings _recipientSettings;
     private readonly IService_ReportingSettings _reportingSettings;
-    private readonly IService_ReportingPdf _reportingPdf;
+    private readonly IService_ReportingOutput _reportingOutput;
     private bool _isSynchronizingModuleSelections;
     private bool _isApplyingDateRangePreset;
     private bool _suppressDateRangeReset;
@@ -282,7 +282,7 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         IService_ReportingClipboard reportingClipboard,
         IService_ReportingRecipientSettings recipientSettings,
         IService_ReportingSettings reportingSettings,
-        IService_ReportingPdf reportingPdf,
+        IService_ReportingOutput reportingOutput,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -297,7 +297,8 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             recipientSettings ?? throw new ArgumentNullException(nameof(recipientSettings));
         _reportingSettings =
             reportingSettings ?? throw new ArgumentNullException(nameof(reportingSettings));
-        _reportingPdf = reportingPdf ?? throw new ArgumentNullException(nameof(reportingPdf));
+        _reportingOutput =
+            reportingOutput ?? throw new ArgumentNullException(nameof(reportingOutput));
         Title = "End of Day Reports";
         ResetAvailabilityState();
 
@@ -541,10 +542,10 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         Helper_ReportingPdfFileName.BuildFileName(ReportDocumentTitle);
 
     /// <summary>
-    /// Writes the included report modules to <paramref name="filePath"/> as a PDF that the user
-    /// can keep, print, or attach to an email manually.
+    /// Writes the included report modules to the configured output folder as a PDF, then opens
+    /// that folder with the new file selected so the operator can see where it landed.
     /// </summary>
-    public async Task<Model_Dao_Result<string>> SaveReportPdfAsync(string filePath)
+    public async Task<Model_Dao_Result<string>> SaveReportPdfAsync()
     {
         if (IsBusy)
         {
@@ -557,12 +558,14 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             NotifyActionCommands();
             ShowStatus("Creating report PDF...", InfoBarSeverity.Informational);
 
-            var pdfResult = await _reportingPdf.CreateReportPdfAsync(
+            var folderPath = await _reportingSettings.GetPdfSaveFolderAsync();
+            var pdfResult = await _reportingOutput.WriteReportPdfAsync(
                 IncludedPreviewModuleCards.ToList(),
                 ReportDocumentTitle,
+                folderPath,
+                ReportPdfSuggestedFileName,
                 DateTime.Now,
-                Environment.UserName,
-                filePath
+                Environment.UserName
             );
 
             if (!pdfResult.IsSuccess || string.IsNullOrWhiteSpace(pdfResult.Data))
@@ -575,6 +578,9 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
             }
 
             ShowStatus($"Report saved to {pdfResult.Data}", InfoBarSeverity.Success);
+            _logger.LogInfo($"Report PDF saved to {pdfResult.Data}");
+
+            await RevealSavedReportAsync(pdfResult.Data);
             return pdfResult;
         }
         catch (Exception ex)
@@ -591,6 +597,22 @@ public partial class ViewModel_Reporting_Main : ViewModel_Shared_Base
         {
             IsBusy = false;
             NotifyActionCommands();
+        }
+    }
+
+    /// <summary>
+    /// Opens the folder that holds the saved report. A failure here does not undo the save, so it
+    /// only downgrades the status message instead of reporting the whole action as failed.
+    /// </summary>
+    private async Task RevealSavedReportAsync(string filePath)
+    {
+        var revealResult = await _reportingOutput.RevealSavedFileAsync(filePath);
+        if (!revealResult.IsSuccess)
+        {
+            ShowStatus(
+                $"{revealResult.ErrorMessage} The report is at {filePath}.",
+                InfoBarSeverity.Warning
+            );
         }
     }
 

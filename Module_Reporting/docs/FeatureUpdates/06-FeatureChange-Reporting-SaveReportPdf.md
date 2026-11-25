@@ -19,8 +19,12 @@ Decision: keep the PDF capability, remove all send code.
 
 ## Required Outcome
 
-- A **Save PDF** button in the preview toolbar opens a save dialog and writes the report as a
-  PDF with the included modules, summary table, detail rows, and a generated-by footer.
+- A **Save PDF** button in the preview toolbar writes the report as a PDF with the included
+  modules, summary table, detail rows, and a generated-by footer.
+- The PDF goes into the folder configured in Settings > Reporting > **Report PDF Output**, which
+  defaults to `\\mtmanu-fs01\expo drive\RECEIVING\EoD Reports`. No file dialog is shown.
+- The output folder is created when it is missing, and after a successful save the folder opens
+  with the new PDF selected.
 - Suggested file name derives from the report title, e.g.
   `End of Day Report for 11-18-2026 - 11-24-2026.pdf`.
 - No email, Outlook, or mail-credential code remains in the change set.
@@ -28,15 +32,20 @@ Decision: keep the PDF capability, remove all send code.
 ## Files
 
 - `Module_Reporting/Contracts/IService_ReportingPdf.cs`
+- `Module_Reporting/Contracts/IService_ReportingOutput.cs` (folder creation + reveal in Explorer)
+- `Module_Reporting/Services/Service_ReportingOutput.cs`
 - `Module_Reporting/Services/Service_ReportingPdf.cs` (QuestPDF, Community license)
 - `Module_Reporting/Helpers/Helper_ReportingPdfFileName.cs`
 - `Module_Reporting/Helpers/Helper_ReportingModuleAccent.cs` (shared module accent colors)
+- `Module_Reporting/Settings/ReportingSettingsKeys.cs` (`Output.PdfSaveFolder` + its default)
 - `Module_Reporting/ViewModels/ViewModel_Reporting_Main.cs`
   (`SaveReportPdfAsync`, `ReportPdfSuggestedFileName`, `ReportPdfSaveFailureAsync`)
-- `Module_Reporting/Views/View_Reporting_PreviewPage.xaml` and `.xaml.cs`
-  (Save PDF button plus `FileSavePicker` wiring)
+- `Module_Reporting/Views/View_Reporting_PreviewPage.xaml` and `.xaml.cs` (Save PDF button)
+- `Module_Settings.Reporting/Views/View_Settings_Reporting_PdfOutput.xaml` and its ViewModel
+  (Report PDF Output settings page: folder, Use default, Open folder, Save)
+- `Module_Settings.Core/Defaults/settings.manifest.json` (`Reporting.Output.PdfSaveFolder`)
 - `Infrastructure/DependencyInjection/ModuleServicesExtensions.cs`
-  (`IService_ReportingPdf` registration)
+  (`IService_ReportingPdf`, `IService_ReportingOutput`, and the new settings page registrations)
 - `MTM_Receiving_Application.csproj` (`QuestPDF`)
 
 ## Removed
@@ -50,8 +59,11 @@ Decision: keep the PDF capability, remove all send code.
 
 - `dotnet build MTM_Receiving_Application.slnx`
 - `dotnet test MTM_Receiving_Application.Tests/MTM_Receiving_Application.Tests.csproj --filter "FullyQualifiedName~Module_Reporting"`
-- Manual check: generate a preview, choose **Save PDF**, and confirm the file opens with the
-  summary table and detail rows.
+- Manual check: generate a preview, choose **Save PDF**, and confirm the PDF appears in the
+  configured folder, opens with the summary table and detail rows, and that the containing folder
+  is shown with the file selected.
+- Manual check: change the folder in Settings > Reporting > **Report PDF Output**, save, and
+  confirm the next **Save PDF** uses the new folder.
 
 ## Notes
 

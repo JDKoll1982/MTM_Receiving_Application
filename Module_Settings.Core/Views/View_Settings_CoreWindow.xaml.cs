@@ -362,6 +362,10 @@ public sealed partial class View_Settings_CoreWindow : Window, ISettingsNavigati
                 "Reporting Settings",
                 "Reporting settings are not currently implemented."
             ),
+            "View_Settings_Reporting_PdfOutput" => (
+                "Report PDF Output",
+                "Choose the folder Save PDF writes the end-of-day report into."
+            ),
 
             // Volvo Settings Pages
             "View_Settings_Volvo_PartCatalog" => (
