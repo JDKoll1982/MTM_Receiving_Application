@@ -500,6 +500,7 @@
                                 MinWidth="180"
                                 IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
                                 KeyDown="SearchBox_KeyDown"
+                                LostFocus="SearchBox_LostFocus"
                                 PlaceholderText="{x:Bind ViewModel.SearchPlaceholder, Mode=OneWay}"
                                 Text="{x:Bind ViewModel.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Visibility="{x:Bind ViewModel.IsSingleLocationSearchVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />

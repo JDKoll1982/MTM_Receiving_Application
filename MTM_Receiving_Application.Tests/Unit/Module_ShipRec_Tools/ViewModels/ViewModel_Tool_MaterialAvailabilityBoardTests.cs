@@ -7,6 +7,8 @@ using Moq;
 using MTM_Receiving_Application.Module_Core.Contracts.Services;
 using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
@@ -30,7 +32,8 @@ public sealed class ViewModel_Tool_MaterialAvailabilityBoardTests
 
     private static ViewModel_Tool_MaterialAvailabilityBoard CreateViewModel(
         IService_Tool_MaterialAvailabilityBoard service,
-        IService_SharedLocationRange locationRange
+        IService_SharedLocationRange locationRange,
+        IService_ReceivingSettings? receivingSettings = null
     )
     {
         return new ViewModel_Tool_MaterialAvailabilityBoard(
@@ -38,6 +41,7 @@ public sealed class ViewModel_Tool_MaterialAvailabilityBoardTests
             new Mock<IService_ShipRecToolsSettings>().Object,
             locationRange,
             new Mock<IService_AppSettings>().Object,
+            receivingSettings ?? new Mock<IService_ReceivingSettings>().Object,
             new Mock<IService_ErrorHandler>().Object,
             new Mock<IService_LoggingUtility>().Object,
             new Mock<IService_Notification>().Object
@@ -317,5 +321,120 @@ public sealed class ViewModel_Tool_MaterialAvailabilityBoardTests
                 ),
             Times.Once
         );
+    }
+
+    [Theory]
+    [InlineData("va001", "V-A0-01")]
+    [InlineData("V-A001", "V-A0-01")]
+    [InlineData("r04", "R-04")]
+    [InlineData("RECV", "RECV")]
+    public async Task FormatSearchTermAsync_ShouldCanonicalizeLocation_WhenSearchingByLocation(
+        string rawInput,
+        string expected
+    )
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock().Object
+        );
+        viewModel.IsSearchByLocationMode.Should().BeTrue();
+
+        var formatted = await viewModel.FormatSearchTermAsync(rawInput);
+
+        formatted.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("mmc1000", "MMC0001000")]
+    [InlineData(" mmf42 ", "MMF0000042")]
+    [InlineData("unknown-part", "UNKNOWN-PART")]
+    public async Task FormatSearchTermAsync_ShouldPrefixPadPartNumber_WhenPaddingIsEnabled(
+        string rawInput,
+        string expected
+    )
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock().Object,
+            CreateReceivingSettingsMock(
+                paddingEnabled: true,
+                rulesJson:
+                    "[{\"Name\":\"Coil\",\"Prefix\":\"MMC\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true},"
+                    + "{\"Name\":\"Flat Stock\",\"Prefix\":\"MMF\",\"MaxLength\":10,\"PadChar\":\"0\",\"IsEnabled\":true}]"
+            ).Object
+        );
+        viewModel.SetSearchByPartCommand.Execute(null);
+
+        var formatted = await viewModel.FormatSearchTermAsync(rawInput);
+
+        formatted.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task FormatSearchTermAsync_ShouldOnlyUppercasePartNumber_WhenPaddingIsDisabled()
+    {
+        var viewModel = CreateViewModel(
+            new Mock<IService_Tool_MaterialAvailabilityBoard>().Object,
+            CreateLocationRangeMock().Object,
+            CreateReceivingSettingsMock(paddingEnabled: false, rulesJson: string.Empty).Object
+        );
+        viewModel.SetSearchByPartCommand.Execute(null);
+
+        var formatted = await viewModel.FormatSearchTermAsync("  mmc1000 ");
+
+        formatted.Should().Be("MMC1000");
+    }
+
+    [Fact]
+    public async Task SearchAsync_ShouldSearchWithTheFormattedLocation_WhenTheTypedValueIsShorthand()
+    {
+        var service = new Mock<IService_Tool_MaterialAvailabilityBoard>();
+        service
+            .Setup(boards => boards.LocationExistsAsync("V-A0-01", WarehouseCode))
+            .ReturnsAsync(Model_Dao_Result_Factory.Success(true));
+        service
+            .Setup(boards => boards.GetBoardByLocationAsync("V-A0-01", WarehouseCode, 30))
+            .ReturnsAsync(
+                Model_Dao_Result_Factory.Success(
+                    new List<Model_Tool_MaterialAvailabilityCard> { CreateCard("MMC0000001") }
+                )
+            );
+
+        var viewModel = CreateViewModel(service.Object, CreateLocationRangeMock().Object);
+        viewModel.SearchTerm = "va001";
+
+        await viewModel.SearchCommand.ExecuteAsync(null);
+
+        viewModel.SearchTerm.Should().Be("V-A0-01");
+        service.Verify(
+            boards => boards.GetBoardByLocationAsync("V-A0-01", WarehouseCode, 30),
+            Times.Once
+        );
+    }
+
+    private static Mock<IService_ReceivingSettings> CreateReceivingSettingsMock(
+        bool paddingEnabled,
+        string rulesJson
+    )
+    {
+        var settings = new Mock<IService_ReceivingSettings>();
+        settings
+            .Setup(receiving =>
+                receiving.GetBoolAsync(
+                    ReceivingSettingsKeys.PartNumberPadding.Enabled,
+                    It.IsAny<int?>()
+                )
+            )
+            .ReturnsAsync(paddingEnabled);
+        settings
+            .Setup(receiving =>
+                receiving.GetStringAsync(
+                    ReceivingSettingsKeys.PartNumberPadding.RulesJson,
+                    It.IsAny<int?>()
+                )
+            )
+            .ReturnsAsync(rulesJson);
+
+        return settings;
     }
 }

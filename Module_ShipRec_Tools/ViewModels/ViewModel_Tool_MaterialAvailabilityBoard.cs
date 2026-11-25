@@ -11,8 +11,11 @@ using MTM_Receiving_Application.Module_Core.Models.Core;
 using MTM_Receiving_Application.Module_Core.Models.Enums;
 using MTM_Receiving_Application.Module_Core.Models.InforVisual;
 using MTM_Receiving_Application.Module_Core.Models.Reporting;
+using MTM_Receiving_Application.Module_Receiving.Contracts;
+using MTM_Receiving_Application.Module_Receiving.Settings;
 using MTM_Receiving_Application.Module_Shared.Contracts.Lookup;
 using MTM_Receiving_Application.Module_Shared.Helpers;
+using MTM_Receiving_Application.Module_Shared.Models.Lookup;
 using MTM_Receiving_Application.Module_Shared.ViewModels;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Contracts;
 using MTM_Receiving_Application.Module_ShipRec_Tools.Models;
@@ -31,7 +34,16 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     private readonly IService_Tool_MaterialAvailabilityBoard _service;
     private readonly IService_ShipRecToolsSettings _shipRecToolsSettings;
     private readonly IService_SharedLocationRange _locationRangeService;
+    private readonly IService_ReceivingSettings _receivingSettings;
     private readonly bool _isMockDataEnabled;
+
+    /// <summary>
+    /// Part-number prefix padding rules loaded from the same Receiving setting the Scanner
+    /// Workbench lookup uses, so both boxes format a typed part number identically.
+    /// </summary>
+    private IReadOnlyList<Model_SharedLookupPrefixPaddingRule> _partNumberPaddingRules = [];
+
+    private bool _partNumberPaddingRulesLoaded;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SearchLabel))]
@@ -200,6 +212,7 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         IService_ShipRecToolsSettings shipRecToolsSettings,
         IService_SharedLocationRange locationRangeService,
         IService_AppSettings appSettings,
+        IService_ReceivingSettings receivingSettings,
         IService_ErrorHandler errorHandler,
         IService_LoggingUtility logger,
         IService_Notification notificationService
@@ -210,9 +223,11 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         ArgumentNullException.ThrowIfNull(shipRecToolsSettings);
         ArgumentNullException.ThrowIfNull(locationRangeService);
         ArgumentNullException.ThrowIfNull(appSettings);
+        ArgumentNullException.ThrowIfNull(receivingSettings);
         _service = service;
         _shipRecToolsSettings = shipRecToolsSettings;
         _locationRangeService = locationRangeService;
+        _receivingSettings = receivingSettings;
         _isMockDataEnabled = appSettings.GetUseInforVisualMockData();
     }
 
@@ -267,6 +282,10 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
         try
         {
             IsBusy = true;
+
+            // Same normalization the Scanner Workbench lookup box applies before it validates,
+            // so "va001" resolves as "V-A0-01" and a short part number is prefix-padded.
+            SearchTerm = await FormatSearchTermAsync(SearchTerm);
             SetLocalStatus($"Searching for '{SearchTerm.Trim()}'…");
 
             if (IsSearchByLocationMode)
@@ -814,6 +833,69 @@ public partial class ViewModel_Tool_MaterialAvailabilityBoard : ViewModel_Shared
     public string FormatLocation(string location)
     {
         return Helper_SharedLocationFormat.FormatOrPassThrough(location);
+    }
+
+    /// <summary>
+    /// Formats the single search box the same way the Scanner Workbench lookup box does: a
+    /// warehouse location becomes its canonical form ("va001" to "V-A0-01", "r04" to "R-04"),
+    /// and a part number is trimmed, upper-cased, and prefix-padded with the configured rules.
+    /// </summary>
+    /// <param name="rawInput">Text exactly as typed or scanned into the search box.</param>
+    /// <returns>The canonical value to display and search with.</returns>
+    public async Task<string> FormatSearchTermAsync(string rawInput)
+    {
+        if (IsSearchByLocationMode)
+        {
+            return Helper_SharedLocationFormat.FormatOrPassThrough(rawInput);
+        }
+
+        await EnsurePartNumberPaddingRulesLoadedAsync();
+        return Helper_SharedPartNumberFormat.FormatOrPassThrough(
+            rawInput,
+            _partNumberPaddingRules
+        );
+    }
+
+    /// <summary>
+    /// Loads the Receiving part-number padding rules the first time a part number is formatted,
+    /// then keeps them for the life of the view so focus-loss formatting stays synchronous.
+    /// </summary>
+    private async Task EnsurePartNumberPaddingRulesLoadedAsync()
+    {
+        if (_partNumberPaddingRulesLoaded)
+        {
+            return;
+        }
+
+        // Set before the first await so a second focus-loss cannot start an overlapping load.
+        _partNumberPaddingRulesLoaded = true;
+
+        try
+        {
+            if (
+                await _receivingSettings.GetBoolAsync(
+                    ReceivingSettingsKeys.PartNumberPadding.Enabled
+                ) is false
+            )
+            {
+                _partNumberPaddingRules = [];
+                return;
+            }
+
+            var rulesJson = await _receivingSettings.GetStringAsync(
+                ReceivingSettingsKeys.PartNumberPadding.RulesJson
+            );
+            _partNumberPaddingRules = Helper_SharedPartNumberFormat.ParseRules(rulesJson);
+        }
+        catch (Exception ex)
+        {
+            // Formatting is a convenience: a settings read failure must not block the search.
+            _logger.LogError(
+                "Failed to load part number padding rules for the material availability board.",
+                ex
+            );
+            _partNumberPaddingRules = [];
+        }
     }
 
     private int? GetSelectedLookAheadDays()

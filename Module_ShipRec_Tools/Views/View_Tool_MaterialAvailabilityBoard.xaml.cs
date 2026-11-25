@@ -90,12 +90,48 @@ public sealed partial class View_Tool_MaterialAvailabilityBoard : Page
         return result == ContentDialogResult.Primary ? dialog.SelectedResult : null;
     }
 
-    private void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    private async void SearchBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        if (e.Key == Windows.System.VirtualKey.Enter && ViewModel.SearchCommand.CanExecute(null))
+        await ApplySearchFormattingAsync();
+    }
+
+    private async void SearchBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != Windows.System.VirtualKey.Enter)
+        {
+            return;
+        }
+
+        e.Handled = true;
+
+        // Format first so the search carries the same canonical value the Scanner box would.
+        await ApplySearchFormattingAsync();
+
+        if (ViewModel.SearchCommand.CanExecute(null))
         {
             ViewModel.SearchCommand.Execute(null);
         }
+    }
+
+    /// <summary>
+    /// Replaces the search box text with the formatted value the ViewModel resolves, so a typed
+    /// "va001" shows as "V-A0-01" and a short part number shows its padded form.
+    /// </summary>
+    private async Task ApplySearchFormattingAsync()
+    {
+        if (SearchBox is null)
+        {
+            return;
+        }
+
+        var formatted = await ViewModel.FormatSearchTermAsync(SearchBox.Text ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(formatted))
+        {
+            return;
+        }
+
+        SearchBox.Text = formatted;
+        ViewModel.SearchTerm = formatted;
     }
 
     private void ClearButton_Click(object sender, RoutedEventArgs e)

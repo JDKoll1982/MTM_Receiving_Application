@@ -1,6 +1,6 @@
 # Material Availability Board - Location Range Search
 
-Last Updated: 2026-10-06
+Last Updated: 2026-11-25
 
 ## What this adds
 
@@ -32,6 +32,12 @@ Both bounds use the same shared rule as the rest of the application.
 | `s00`, `S00`                | `S-00`         |
 | `w04`, `W04`                | `W-04`         |
 | `RECV`, `FG-A1-01`, `T-00`  | left as typed  |
+
+The single **Warehouse Location** / **Part Number** search box formats the same way, using the
+shared rules the Scanner Workbench lookup box applies: a location becomes its canonical form,
+and a part number is upper-cased and prefix-padded with the configured part-padding rules
+(`mmc1000` becomes `MMC0001000` when the Coil rule is on). Formatting happens when the box loses
+focus and again before each search, so the board always searches the value shown on screen.
 
 ## Behavior notes
 
