@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "repository": "MTM_Receiving_Application",
+  "layers": {
+    "rules": [
+      {
+        "layer": "model",
+        "namePrefixes": [
+          "Model_",
+          "Enum_"
+        ]
+      },
+      {
+        "layer": "viewmodel",
+        "namePrefixes": [
+          "ViewModel_",
+          "IViewModel_"
+        ]
+      },
+      {
+        "layer": "view",
+        "namePrefixes": [
+          "View_",
+          "Dialog_",
+          "Control_"
+        ]
+      },
+      {
+        "layer": "viewmodel",
+        "kinds": [
+          "class"
+        ],
+        "namespaceSegments": [
+          "ViewModels"
+        ],
+        "unlessNameSuffixes": [
+          "Option",
+          "Entry",
+          "Row",
+          "Result",
+          "Item",
+          "Data",
+          "Args",
+          "EventArgs"
+        ]
+      },
+      {
+        "layer": "service",
+        "namePrefixes": [
+          "Service_",
+          "IService_",
+          "Dao_",
+          "IDao_",
+          "Helper_",
+          "Strategy_",
+          "Behavior_",
+          "Converter_"
+        ]
+      },
+      {
+        "layer": "service",
+        "kinds": [
+          "class"
+        ],
+        "nameSuffixes": [
+          "Handler",
+          "Validator",
+          "Behavior",
+          "Provider",
+          "Extensions"
+        ]
+      },
+      {
+        "layer": "service",
+        "kinds": [
+          "interface"
+        ],
+        "namespaceSegments": [
+          "Contracts"
+        ]
+      },
+      {
+        "layer": "service",
+        "kinds": [
+          "class"
+        ],
+        "namespaceSegments": [
+          "Services",
+          "Helpers",
+          "Converters"
+        ]
+      }
+    ],
+    "default": "model"
+  },
+  "findings": {
+    "transparentBases": [
+      "Application",
+      "ContentDialog",
+      "DataTemplateSelector",
+      "ModalWindow",
+      "ObservableObject",
+      "Page",
+      "UserControl",
+      "Window"
+    ]
+  }
+}
