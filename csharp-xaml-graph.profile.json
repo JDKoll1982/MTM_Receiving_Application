@@ -5,95 +5,62 @@
     "rules": [
       {
         "layer": "model",
-        "namePrefixes": [
-          "Model_",
-          "Enum_"
-        ]
+        "namePrefixes": ["Model_", "Enum_"]
       },
       {
         "layer": "viewmodel",
-        "namePrefixes": [
-          "ViewModel_",
-          "IViewModel_"
-        ]
+        "namePrefixes": ["ViewModel_", "IViewModel_"],
+        "unlessNameSuffixes": ["Row"]
       },
       {
         "layer": "view",
-        "namePrefixes": [
-          "View_",
-          "Dialog_",
-          "Control_"
-        ]
+        "namePrefixes": ["View_", "Dialog_", "Control_", "Converter_"]
+      },
+      {
+        "layer": "service",
+        "namePrefixes": ["Service_", "IService_", "Dao_", "IDao_", "Helper_", "Strategy_"]
+      },
+      {
+        "layer": "view",
+        "kinds": ["class"],
+        "nameSuffixes": ["Window", "Dialog"]
+      },
+      {
+        "layer": "view",
+        "kinds": ["class"],
+        "namespaceSegments": ["Views", "Converters"]
       },
       {
         "layer": "viewmodel",
-        "kinds": [
-          "class"
-        ],
-        "namespaceSegments": [
-          "ViewModels"
-        ],
-        "unlessNameSuffixes": [
-          "Option",
-          "Entry",
-          "Row",
-          "Result",
-          "Item",
-          "Data",
-          "Args",
-          "EventArgs"
-        ]
+        "namespaceSegments": ["ViewModels"],
+        "unlessNameSuffixes": ["Row", "Option", "Entry", "Item", "Result", "Data", "Args", "EventArgs", "Keys"]
       },
       {
         "layer": "service",
-        "namePrefixes": [
-          "Service_",
-          "IService_",
-          "Dao_",
-          "IDao_",
-          "Helper_",
-          "Strategy_",
-          "Behavior_",
-          "Converter_"
-        ]
+        "kinds": ["class"],
+        "nameSuffixes": ["Handler", "Validator", "Behavior", "Provider", "Extensions"]
       },
       {
         "layer": "service",
-        "kinds": [
-          "class"
-        ],
-        "nameSuffixes": [
-          "Handler",
-          "Validator",
-          "Behavior",
-          "Provider",
-          "Extensions"
-        ]
+        "kinds": ["interface"],
+        "namespaceSegments": ["Contracts", "Interfaces"],
+        "unlessNameSuffixes": ["ViewModel"]
       },
       {
         "layer": "service",
-        "kinds": [
-          "interface"
-        ],
-        "namespaceSegments": [
-          "Contracts"
-        ]
-      },
-      {
-        "layer": "service",
-        "kinds": [
-          "class"
-        ],
-        "namespaceSegments": [
-          "Services",
-          "Helpers",
-          "Converters"
-        ]
+        "kinds": ["class"],
+        "namespaceSegments": ["Services", "Helpers", "Behaviors"]
       }
     ],
     "default": "model"
   },
+  "links": {
+    "dependencyPropertyCall": "Register",
+    "addCallPattern": "^Add[A-Z]",
+    "serviceLocator": ["GetService", "GetRequiredService"]
+  },
   "findings": {
+    "entryPoints": ["App", "MainWindow"],
     "transparentBases": [
       "Application",
       "ContentDialog",
@@ -103,6 +70,14 @@
       "Page",
       "UserControl",
       "Window"
+    ],
+    "generatedMembers": [
+      { "attribute": "RelayCommand", "on": "method", "form": "commandSuffix" },
+      { "attribute": "ObservableProperty", "on": "field", "form": "pascalCaseWithoutPrefix" }
     ]
+  },
+  "files": {
+    "include": ["**/*.cs", "**/*.xaml"],
+    "exclude": ["**/obj/**", "**/bin/**"]
   }
 }
